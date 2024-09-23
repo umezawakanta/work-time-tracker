@@ -1,12 +1,25 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-export default function WorkTimeTracker() {
+export default function WorkTimeEntry() {
   const [totalTime, setTotalTime] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [description, setDescription] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -46,50 +59,19 @@ export default function WorkTimeTracker() {
     setTotalTime(0);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement form submission logic here
+    console.log({ projectName, totalTime, description });
+    navigate("/reports");
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8">
         作業時間トラッカー
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>作業時間の記録</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              日々の作業時間を簡単に記録できます。プロジェクトごとに作業時間を記録し、効率的に時間管理を行いましょう。
-            </p>
-            <Button className="w-full">作業時間を記録する</Button>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>レポート機能</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              作業時間の分析と可視化ができます。記録した作業時間をグラフや表で確認し、生産性を向上させましょう。
-            </p>
-            <Button variant="outline" className="w-full">
-              レポートを見る
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-      <Separator className="my-8" />
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>最近の統計</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="mb-2">今週の総作業時間: 32時間</p>
-          <p className="mb-4">
-            最も作業時間が長いプロジェクト: ウェブサイトリニューアル
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="mt-8">
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle>タイムトラッカー</CardTitle>
         </CardHeader>
@@ -111,7 +93,40 @@ export default function WorkTimeTracker() {
           </div>
         </CardContent>
       </Card>
-      <Card className="mt-8">
+      <Card>
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>作業時間の記録</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="projectName">プロジェクト名</Label>
+              <Input
+                id="projectName"
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">作業内容</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full">
+              記録を保存
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+      <Separator className="my-8" />
+      <Card>
         <CardHeader>
           <CardTitle>使い方</CardTitle>
         </CardHeader>
@@ -122,6 +137,9 @@ export default function WorkTimeTracker() {
             <li>休憩後、「再開」をクリックして作業を再開します。</li>
             <li>
               作業が完了したら「リセット」をクリックして記録をリセットします。
+            </li>
+            <li>
+              プロジェクト名と作業内容を入力し、「記録を保存」をクリックして作業時間を記録します。
             </li>
           </ol>
         </CardContent>
