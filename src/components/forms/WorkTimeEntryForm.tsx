@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { nanoid } from "@reduxjs/toolkit";
-import { addWorkTimeEntry } from "../store/workTimeSlice";
+import { addWorkTimeEntry } from "../../store/workTimeSlice";
+import { workTimeApi, WorkTimeEntry } from "../../services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,9 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/components/ui/use-toast";
 
-export default function WorkTimeEntry() {
+export default function WorkTimeEntryForm() {
   const [totalTime, setTotalTime] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -63,17 +64,31 @@ export default function WorkTimeEntry() {
     setTotalTime(0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newEntry = {
-      id: nanoid(),
+    const newEntry: WorkTimeEntry = {
       projectName,
       description,
       duration: totalTime,
       date: new Date().toISOString(),
     };
-    dispatch(addWorkTimeEntry(newEntry));
-    navigate("/reports");
+    try {
+      const response = await workTimeApi.create(newEntry);
+      dispatch(addWorkTimeEntry(response.data));
+      toast({
+        title: "作業時間を記録しました",
+        description: "作業時間が正常に記録されました。",
+      });
+      navigate("/reports");
+    } catch (error) {
+      console.error("Error creating work time entry:", error);
+      toast({
+        title: "エラー",
+        description:
+          "作業時間の記録中にエラーが発生しました。もう一度お試しください。",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
