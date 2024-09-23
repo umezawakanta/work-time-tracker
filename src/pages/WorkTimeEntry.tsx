@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { nanoid } from "@reduxjs/toolkit";
-import { addWorkTimeEntry } from "../store/workTimeSlice";
+import { addWorkTimeEntry } from "@/store/workTimeSlice";
+import { workTimeApi, WorkTimeEntry } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,27 +15,33 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/components/ui/use-toast";
 
-export default function WorkTimeEntry() {
-  const [totalTime, setTotalTime] = useState(0);
-  const [isTracking, setIsTracking] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
+export default function WorkTimeEntryForm() {
+  const [totalTime, setTotalTime] = useState<number>(0);
+  const [isTracking, setIsTracking] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [projectName, setProjectName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number | undefined;
     if (isTracking && !isPaused) {
-      interval = setInterval(() => {
+      interval = window.setInterval(() => {
         setTotalTime((prevTime) => prevTime + 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isTracking, isPaused]);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
@@ -63,17 +69,31 @@ export default function WorkTimeEntry() {
     setTotalTime(0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newEntry = {
-      id: nanoid(),
+    const newEntry: WorkTimeEntry = {
       projectName,
       description,
       duration: totalTime,
       date: new Date().toISOString(),
     };
-    dispatch(addWorkTimeEntry(newEntry));
-    navigate("/reports");
+    try {
+      const response = await workTimeApi.create(newEntry);
+      dispatch(addWorkTimeEntry(response.data));
+      toast({
+        title: "作業時間を記録しました",
+        description: "作業時間が正常に記録されました。",
+      });
+      navigate("/reports");
+    } catch (error) {
+      console.error("Error creating work time entry:", error);
+      toast({
+        title: "エラー",
+        description:
+          "作業時間の記録中にエラーが発生しました。もう一度お試しください。",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -83,7 +103,7 @@ export default function WorkTimeEntry() {
       </h1>
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>タイムトラッカー</CardTitle>
+          <CardTitle className="text-2xl">タイムトラッカー</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-4xl font-bold mb-4 text-center">
@@ -91,13 +111,32 @@ export default function WorkTimeEntry() {
           </p>
           <div className="flex justify-center space-x-4">
             {!isTracking ? (
-              <Button onClick={handleStart}>開始</Button>
+              <Button
+                onClick={handleStart}
+                className="bg-green-500 hover:bg-green-600"
+              >
+                開始
+              </Button>
             ) : isPaused ? (
-              <Button onClick={handleResume}>再開</Button>
+              <Button
+                onClick={handleResume}
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                再開
+              </Button>
             ) : (
-              <Button onClick={handlePause}>一時停止</Button>
+              <Button
+                onClick={handlePause}
+                className="bg-yellow-500 hover:bg-yellow-600"
+              >
+                一時停止
+              </Button>
             )}
-            <Button variant="outline" onClick={handleReset}>
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="border-gray-300"
+            >
               リセット
             </Button>
           </div>
@@ -106,30 +145,39 @@ export default function WorkTimeEntry() {
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>作業時間の記録</CardTitle>
+            <CardTitle className="text-2xl">作業時間の記録</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="projectName">プロジェクト名</Label>
+              <Label htmlFor="projectName" className="text-sm font-medium">
+                プロジェクト名
+              </Label>
               <Input
                 id="projectName"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 required
+                className="w-full p-2 border rounded"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">作業内容</Label>
+              <Label htmlFor="description" className="text-sm font-medium">
+                作業内容
+              </Label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
+                className="w-full p-2 border rounded"
               />
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground"
+            >
               記録を保存
             </Button>
           </CardFooter>
@@ -138,7 +186,7 @@ export default function WorkTimeEntry() {
       <Separator className="my-8" />
       <Card>
         <CardHeader>
-          <CardTitle>使い方</CardTitle>
+          <CardTitle className="text-2xl">使い方</CardTitle>
         </CardHeader>
         <CardContent>
           <ol className="list-decimal list-inside space-y-2">
