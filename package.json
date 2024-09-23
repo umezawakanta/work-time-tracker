@@ -2,13 +2,12 @@
   "name": "work-time-tracker",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js"
+    "test": "jest"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

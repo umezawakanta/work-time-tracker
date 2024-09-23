@@ -8,11 +8,13 @@ import App from "../App";
 import workTimeReducer from "../store/workTimeSlice";
 
 // APIのモック
+const mockWorkTimeApi = {
+  create: jest.fn(),
+  getAll: jest.fn(),
+};
+
 jest.mock("../services/api", () => ({
-  workTimeApi: {
-    create: jest.fn(),
-    getAll: jest.fn(),
-  },
+  workTimeApi: mockWorkTimeApi,
 }));
 
 const createMockStore = () =>
