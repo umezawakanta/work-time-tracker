@@ -15,7 +15,7 @@ export default function Home() {
         作業時間トラッカーへようこそ
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>効率的な時間管理</CardTitle>
             <CardDescription>
@@ -27,12 +27,12 @@ export default function Home() {
               プロジェクトごとに作業時間を追跡し、効率的に時間を管理することで、
               生産性を最大化し、目標達成をサポートします。
             </p>
-            <Link to="/work-time">
+            <Link to="/work-time" className="w-full">
               <Button className="w-full">作業時間トラッカーを開始</Button>
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>詳細な分析</CardTitle>
             <CardDescription>
