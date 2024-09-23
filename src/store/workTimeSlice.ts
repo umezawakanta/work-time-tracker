@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// 作業時間の状態の形を定義
 interface WorkTimeState {
   isTracking: boolean;
   startTime: number | null;
@@ -9,7 +8,6 @@ interface WorkTimeState {
   breaks: { start: number; end: number | null }[];
 }
 
-// 初期状態を定義
 const initialState: WorkTimeState = {
   isTracking: false,
   startTime: null,
@@ -18,7 +16,6 @@ const initialState: WorkTimeState = {
   breaks: [],
 };
 
-// 作業時間スライスを作成
 const workTimeSlice = createSlice({
   name: 'workTime',
   initialState,
@@ -54,7 +51,6 @@ const workTimeSlice = createSlice({
   },
 });
 
-// 休憩時間の合計を計算するヘルパー関数
 const calculateBreakTime = (breaks: { start: number; end: number | null }[]): number => {
   return breaks.reduce((total, breakPeriod) => {
     if (breakPeriod.end) {
@@ -64,7 +60,6 @@ const calculateBreakTime = (breaks: { start: number; end: number | null }[]): nu
   }, 0);
 };
 
-// アクションとリデューサーをエクスポート
 export const {
   startTracking,
   stopTracking,
@@ -76,7 +71,6 @@ export const {
 
 export default workTimeSlice.reducer;
 
-// フォーマットされた合計時間を取得するセレクター
 export const selectFormattedTotalTime = (state: { workTime: WorkTimeState }) => {
   const totalSeconds = Math.floor(state.workTime.totalTime / 1000);
   const hours = Math.floor(totalSeconds / 3600);

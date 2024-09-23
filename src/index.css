@@ -66,3 +66,21 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@media (forced-colors: active) {
+  a {
+    color: linktext;
+  }
+  a:hover {
+    color: activetext;
+  }
+  button {
+    border-color: buttontext;
+    background-color: buttonface;
+    color: buttontext;
+  }
+  button:hover,
+  button:focus {
+    border-color: highlight;
+  }
+}

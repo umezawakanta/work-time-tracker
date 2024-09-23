@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+@media (forced-colors: active) {
+  .logo:hover,
+  .logo.react:hover {
+    filter: none;
+  }
+}
