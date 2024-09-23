@@ -92,3 +92,16 @@ export function addDays(date: Date, days: number): Date {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+export function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}時間`);
+  if (minutes > 0) parts.push(`${minutes}分`);
+  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}秒`);
+
+  return parts.join(' ');
+}
