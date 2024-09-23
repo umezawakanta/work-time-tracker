@@ -15,16 +15,17 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function WorkTimeEntryForm() {
-  const [totalTime, setTotalTime] = useState(0);
-  const [isTracking, setIsTracking] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
+  const [totalTime, setTotalTime] = useState<number>(0);
+  const [isTracking, setIsTracking] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [projectName, setProjectName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -36,7 +37,7 @@ export default function WorkTimeEntryForm() {
     return () => clearInterval(interval);
   }, [isTracking, isPaused]);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
