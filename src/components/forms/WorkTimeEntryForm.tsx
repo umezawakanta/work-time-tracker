@@ -18,6 +18,8 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function WorkTimeEntryForm() {
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
   const [totalTime, setTotalTime] = useState<number>(0);
   const [isTracking, setIsTracking] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -51,6 +53,7 @@ export default function WorkTimeEntryForm() {
   };
 
   const handleStart = () => {
+    setStartTime(new Date());
     setIsTracking(true);
     setIsPaused(false);
   };
@@ -67,13 +70,26 @@ export default function WorkTimeEntryForm() {
     setIsTracking(false);
     setIsPaused(false);
     setTotalTime(0);
+    setStartTime(null);
+    setEndTime(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!startTime) {
+      toast({
+        title: "エラー",
+        description: "開始時間が設定されていません。",
+        variant: "destructive",
+      });
+      return;
+    }
+    const newEndTime = endTime || new Date();
     const newEntry: WorkTimeEntry = {
       projectName,
       description,
+      startTime,
+      endTime: newEndTime,
       duration: totalTime,
       date: new Date().toISOString(),
     };
@@ -168,7 +184,6 @@ export default function WorkTimeEntryForm() {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                required
                 className="w-full p-2 border rounded"
               />
             </div>
@@ -177,6 +192,7 @@ export default function WorkTimeEntryForm() {
             <Button
               type="submit"
               className="w-full bg-primary text-primary-foreground"
+              disabled={!isTracking && totalTime === 0}
             >
               記録を保存
             </Button>

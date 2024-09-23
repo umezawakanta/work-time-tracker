@@ -1,11 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface WorkTimeEntry {
-  id?: string;  // idを省略可能に変更
+  _id?: string;
   projectName: string;
   description: string;
-  duration: number;
-  date: string;
+  startTime: Date;
+  endTime: Date;
+  duration?: number;
+  date?: string;
 }
 
 interface WorkTimeState {
@@ -17,23 +19,15 @@ const initialState: WorkTimeState = {
 };
 
 const workTimeSlice = createSlice({
-  name: 'workTime',
+  name: "workTime",
   initialState,
   reducers: {
     addWorkTimeEntry: (state, action: PayloadAction<WorkTimeEntry>) => {
       state.entries.push(action.payload);
     },
-    updateWorkTimeEntry: (state, action: PayloadAction<WorkTimeEntry>) => {
-      const index = state.entries.findIndex(entry => entry.id === action.payload.id);
-      if (index !== -1) {
-        state.entries[index] = action.payload;
-      }
-    },
-    deleteWorkTimeEntry: (state, action: PayloadAction<string>) => {
-      state.entries = state.entries.filter(entry => entry.id !== action.payload);
-    },
+    // 他のリデューサーがあればここに追加
   },
 });
 
-export const { addWorkTimeEntry, updateWorkTimeEntry, deleteWorkTimeEntry } = workTimeSlice.actions;
+export const { addWorkTimeEntry } = workTimeSlice.actions;
 export default workTimeSlice.reducer;

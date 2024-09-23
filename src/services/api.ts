@@ -41,25 +41,31 @@ api.interceptors.response.use(
 );
 
 export interface WorkTimeEntry {
-  id?: string;
+  _id?: string;
   projectName: string;
   description: string;
-  duration: number;
-  date: string;
+  startTime: Date;
+  endTime: Date;
+  duration?: number;
+  date?: string;
 }
 
 const mockData: WorkTimeEntry[] = [
   {
-    id: "1",
+    _id: "1",
     projectName: "Project A",
     description: "Task 1",
+    startTime: new Date(Date.now() - 3600000),
+    endTime: new Date(),
     duration: 3600,
     date: new Date().toISOString(),
   },
   {
-    id: "2",
+    _id: "2",
     projectName: "Project B",
     description: "Task 2",
+    startTime: new Date(Date.now() - 7200000),
+    endTime: new Date(),
     duration: 7200,
     date: new Date().toISOString(),
   },
@@ -69,23 +75,25 @@ export const workTimeApi = {
   getAll: () =>
     USE_MOCK_DATA
       ? Promise.resolve({ data: mockData })
-      : api.get<WorkTimeEntry[]>("/work-time"),
+      : api.get<WorkTimeEntry[]>("/worktime"),
   getById: (id: string) =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: mockData.find((entry) => entry.id === id) })
-      : api.get<WorkTimeEntry>(`/work-time/${id}`),
+      ? Promise.resolve({ data: mockData.find((entry) => entry._id === id) })
+      : api.get<WorkTimeEntry>(`/worktime/${id}`),
   create: (entry: WorkTimeEntry) =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: { ...entry, id: String(mockData.length + 1) } })
-      : api.post<WorkTimeEntry>("/work-time", entry),
+      ? Promise.resolve({
+          data: { ...entry, _id: String(mockData.length + 1) },
+        })
+      : api.post<WorkTimeEntry>("/worktime", entry),
   update: (id: string, entry: WorkTimeEntry) =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: { ...entry, id } })
-      : api.put<WorkTimeEntry>(`/work-time/${id}`, entry),
+      ? Promise.resolve({ data: { ...entry, _id: id } })
+      : api.put<WorkTimeEntry>(`/worktime/${id}`, entry),
   delete: (id: string) =>
     USE_MOCK_DATA
       ? Promise.resolve({ data: null })
-      : api.delete(`/work-time/${id}`),
+      : api.delete(`/worktime/${id}`),
 };
 
 export default api;

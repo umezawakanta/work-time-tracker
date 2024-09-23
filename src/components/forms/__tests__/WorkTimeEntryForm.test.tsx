@@ -7,16 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import WorkTimeEntryForm from "../WorkTimeEntryForm";
 import workTimeReducer from "../../../store/workTimeSlice";
 
-// APIのモック
-const mockWorkTimeApi = {
-  create: jest.fn(),
-  getAll: jest.fn(),
-};
-
-jest.mock("../services/api", () => ({
-  workTimeApi: mockWorkTimeApi,
-}));
-
 const createMockStore = () =>
   configureStore({
     reducer: {
