@@ -1,6 +1,7 @@
+import { WorkTimeEntry } from "@/pages/WorkTimeEntry";
 import axios, { AxiosError } from "axios";
 
-let API_BASE_URL = "http://localhost:3000/api"; // デフォルト値
+let API_BASE_URL = "http://localhost:3001/api"; // デフォルト値
 const USE_MOCK_DATA = process.env.VITE_USE_MOCK_DATA === "true" || false;
 
 if (typeof process !== "undefined" && process.env) {
@@ -39,16 +40,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export interface WorkTimeEntry {
-  _id?: string;
-  projectName: string;
-  description: string;
-  startTime: Date;
-  endTime: Date;
-  duration?: number;
-  date?: string;
-}
 
 const mockData: WorkTimeEntry[] = [
   {

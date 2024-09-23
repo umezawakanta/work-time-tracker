@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWorkTimeEntry } from "../../store/workTimeSlice";
-import { workTimeApi, WorkTimeEntry } from "../../services/api";
+import { workTimeApi } from "../../services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { WorkTimeEntry } from "@/types/workTimeEntry";
 
 export default function WorkTimeEntryForm() {
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -94,7 +95,11 @@ export default function WorkTimeEntryForm() {
       date: new Date().toISOString(),
     };
     try {
-      const response = await workTimeApi.create(newEntry);
+      const response = await workTimeApi.create({
+        ...newEntry,
+        startTime: new Date(newEntry.startTime),
+        endTime: new Date(newEntry.endTime),
+      });
       dispatch(addWorkTimeEntry(response.data));
       toast({
         title: "作業時間を記録しました",

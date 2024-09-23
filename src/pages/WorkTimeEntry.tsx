@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWorkTimeEntry } from "@/store/workTimeSlice";
-import { workTimeApi, WorkTimeEntry } from "@/services/api";
+import { workTimeApi } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+
+export interface WorkTimeEntry {
+  _id?: string;
+  projectName: string;
+  description: string;
+  startTime: Date;
+  endTime: Date;
+  duration?: number;
+  date?: string;
+}
 
 export default function WorkTimeEntryForm() {
   const [startTime, setStartTime] = useState<Date | null>(null);

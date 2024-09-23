@@ -1,14 +1,5 @@
+import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface WorkTimeEntry {
-  _id?: string;
-  projectName: string;
-  description: string;
-  startTime: Date;
-  endTime: Date;
-  duration?: number;
-  date?: string;
-}
 
 interface WorkTimeState {
   entries: WorkTimeEntry[];
