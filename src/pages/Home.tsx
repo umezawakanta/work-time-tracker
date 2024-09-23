@@ -44,9 +44,11 @@ export default function Home() {
               記録した作業時間をグラフや表で分析し、時間の使い方を最適化。
               プロジェクトの進捗状況を把握し、改善点を見つけることができます。
             </p>
-            <Button variant="outline" className="w-full">
-              レポートを見る
-            </Button>
+            <Link to="/reports" className="w-full">
+              <Button variant="outline" className="w-full">
+                レポートを見る
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
