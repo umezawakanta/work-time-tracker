@@ -1,19 +1,54 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">
+      <h1 className="text-4xl font-bold text-center mb-8">
         作業時間トラッカーへようこそ
       </h1>
-      <p className="text-center mb-8">
-        効率的に作業時間を管理し、生産性を向上させましょう。
-      </p>
-      <div className="text-center">
-        <Link to="/work-time">
-          <Button>作業時間トラッカーを開始</Button>
-        </Link>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>効率的な時間管理</CardTitle>
+            <CardDescription>
+              作業時間を記録し、生産性を向上させましょう。
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              プロジェクトごとに作業時間を追跡し、効率的に時間を管理することで、
+              生産性を最大化し、目標達成をサポートします。
+            </p>
+            <Link to="/work-time">
+              <Button className="w-full">作業時間トラッカーを開始</Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>詳細な分析</CardTitle>
+            <CardDescription>
+              作業時間のデータを可視化し、インサイトを得る
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              記録した作業時間をグラフや表で分析し、時間の使い方を最適化。
+              プロジェクトの進捗状況を把握し、改善点を見つけることができます。
+            </p>
+            <Button variant="outline" className="w-full">
+              レポートを見る
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
