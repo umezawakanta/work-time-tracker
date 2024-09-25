@@ -72,8 +72,11 @@ const WorkTimeEntryForm: React.FC = () => {
       date: start.toISOString().split("T")[0], // YYYY-MM-DD形式
     };
 
+    console.log("Sending data:", newEntry); // 送信データをログに出力
+
     try {
       const response = await workTimeApi.create(newEntry);
+      console.log("Response received:", response.data); // レスポンスデータをログに出力
       dispatch(addWorkTimeEntry(response.data));
       toast({
         title: "成功",

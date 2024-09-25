@@ -64,6 +64,8 @@ app.post(
       .withMessage("日付は有効なISO8601形式である必要があります"),
   ],
   async (req: Request, res: Response) => {
+    console.log("Received request body:", req.body); // リクエストボディをログに出力
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.error("Validation errors:", errors.array());
@@ -71,8 +73,6 @@ app.post(
         .status(400)
         .json({ message: "入力データが無効です", errors: errors.array() });
     }
-
-    console.log("Received data:", req.body);
 
     try {
       const workTimeData: IWorkTimeEntry = {
@@ -86,6 +86,7 @@ app.post(
 
       const workTime = new WorkTime(workTimeData);
       await workTime.save();
+      console.log("Work time saved successfully:", workTime); // 保存されたデータをログに出力
       res
         .status(201)
         .json({ message: "作業時間が正常に記録されました", workTime });

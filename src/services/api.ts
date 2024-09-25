@@ -22,6 +22,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
+    console.log("Request data:", config.data); // リクエストデータをログに出力
     return config;
   },
   (error: AxiosError) => {
@@ -31,7 +32,10 @@ api.interceptors.request.use(
 
 // レスポンスインターセプター
 api.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    console.log("Response data:", response.data); // レスポンスデータをログに出力
+    return response;
+  },
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // 認証エラーの場合、ログインページにリダイレクト
