@@ -25,20 +25,22 @@ mongoose
 // WorkTimeEntryインターフェース
 interface IWorkTimeEntry {
   projectName: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   description?: string;
   duration?: number;
+  date?: string;
   createdAt?: Date;
 }
 
 // WorkTimeモデルの定義
 const WorkTimeSchema = new mongoose.Schema<IWorkTimeEntry>({
   projectName: { type: String, required: true },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: true },
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
   description: String,
   duration: Number,
+  date: String,
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -51,14 +53,16 @@ app.post(
     body("projectName").notEmpty().withMessage("プロジェクト名は必須です"),
     body("startTime")
       .isISO8601()
-      .toDate()
-      .withMessage("開始時間は有効な日時である必要があります"),
+      .withMessage("開始時間は有効なISO8601形式である必要があります"),
     body("endTime")
       .isISO8601()
-      .toDate()
-      .withMessage("終了時間は有効な日時である必要があります"),
+      .withMessage("終了時間は有効なISO8601形式である必要があります"),
     body("description").optional().isString(),
-    body("duration").optional().isNumeric(),
+    body("duration").optional().isInt(),
+    body("date")
+      .optional()
+      .isISO8601()
+      .withMessage("日付は有効なISO8601形式である必要があります"),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -69,10 +73,11 @@ app.post(
     try {
       const workTimeData: IWorkTimeEntry = {
         projectName: req.body.projectName,
-        startTime: new Date(req.body.startTime),
-        endTime: new Date(req.body.endTime),
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
         description: req.body.description,
         duration: req.body.duration,
+        date: req.body.date,
       };
 
       const workTime = new WorkTime(workTimeData);

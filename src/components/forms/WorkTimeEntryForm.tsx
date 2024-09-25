@@ -21,8 +21,8 @@ import { useToast } from "@/components/ui/use-toast";
 const WorkTimeEntryForm: React.FC = () => {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
@@ -30,28 +30,37 @@ const WorkTimeEntryForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!projectName || !startTime || !endTime) {
+      toast({
+        title: "入力エラー",
+        description: "すべての必須フィールドを入力してください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const start = new Date(startTime);
     const end = new Date(endTime);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       toast({
-        title: "Invalid date",
-        description: "Please enter valid start and end times.",
+        title: "日付エラー",
+        description: "有効な開始時間と終了時間を入力してください。",
         variant: "destructive",
       });
       return;
     }
 
-    const duration = (end.getTime() - start.getTime()) / 1000; // duration in seconds
-
-    if (duration < 0) {
+    if (end <= start) {
       toast({
-        title: "Invalid time range",
-        description: "End time must be after start time.",
+        title: "時間エラー",
+        description: "終了時間は開始時間より後でなければなりません。",
         variant: "destructive",
       });
       return;
     }
+
+    const duration = Math.floor((end.getTime() - start.getTime()) / 1000); // 秒単位の期間（小数点以下切り捨て）
 
     const newEntry: Omit<WorkTimeEntry, "_id"> = {
       projectName,
@@ -59,22 +68,23 @@ const WorkTimeEntryForm: React.FC = () => {
       startTime: start.toISOString(),
       endTime: end.toISOString(),
       duration,
-      date: start.toISOString().split("T")[0], // YYYY-MM-DD format
+      date: start.toISOString().split("T")[0], // YYYY-MM-DD形式
     };
 
     try {
       const response = await workTimeApi.create(newEntry);
       dispatch(addWorkTimeEntry(response.data));
       toast({
-        title: "Success",
-        description: "Work time entry has been created.",
+        title: "成功",
+        description: "作業時間エントリーが作成されました。",
       });
       navigate("/reports");
     } catch (error) {
-      console.error("Error creating work time entry:", error);
+      console.error("作業時間エントリーの作成エラー:", error);
       toast({
-        title: "Error",
-        description: "Failed to create work time entry. Please try again.",
+        title: "エラー",
+        description:
+          "作業時間エントリーの作成に失敗しました。もう一度お試しください。",
         variant: "destructive",
       });
     }
