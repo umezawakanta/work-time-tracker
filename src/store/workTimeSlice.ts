@@ -2,6 +2,11 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import { workTimeApi } from "../services/api";
 
+interface ApiResponse {
+  message: string;
+  workTime: WorkTimeEntry;
+}
+
 export const fetchWorkTimeEntries = createAsyncThunk<WorkTimeEntry[]>(
   "workTime/fetchEntries",
   async () => {
@@ -15,7 +20,7 @@ export const addWorkTimeEntry = createAsyncThunk<
   Omit<WorkTimeEntry, "_id">
 >("workTime/addEntry", async (entry) => {
   const response = await workTimeApi.create(entry);
-  return response.data.workTime; // Return the workTime property from the ApiResponse
+  return (response.data as ApiResponse).workTime;
 });
 
 export const updateWorkTimeEntry = createAsyncThunk<

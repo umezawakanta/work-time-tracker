@@ -102,9 +102,9 @@ export const workTimeApi = {
           data: { ...entry, _id: id } as WorkTimeEntry,
         } as AxiosResponse<WorkTimeEntry>)
       : api.put<WorkTimeEntry>(`/worktime/${id}`, entry),
-  delete: (id: string): Promise<AxiosResponse<null>> =>
+  delete: (id: string): Promise<AxiosResponse<void>> =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: null } as AxiosResponse<null>)
+      ? Promise.resolve({} as AxiosResponse<void>)
       : api.delete(`/worktime/${id}`),
 };
 

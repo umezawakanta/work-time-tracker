@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWorkTimeEntry } from "@/store/workTimeSlice";
-import { workTimeApi } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,36 +16,30 @@ import {
 import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { AppDispatch } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
-import axios, { AxiosError } from "axios";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-interface ApiResponse {
-  message: string;
-  workTime: WorkTimeEntry;
-}
-
-const WorkTimeEntryForm: React.FC = () => {
+export default function WorkTimeEntryForm() {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (isSubmitting) {
       return;
     }
 
     if (!projectName || !startTime || !endTime) {
-      toast({
-        title: "入力エラー",
-        description: "すべての必須フィールドを入力してください。",
-        variant: "destructive",
-      });
+      setError("すべての必須フィールドを入力してください。");
       return;
     }
 
@@ -54,24 +47,16 @@ const WorkTimeEntryForm: React.FC = () => {
     const end = new Date(endTime);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      toast({
-        title: "日付エラー",
-        description: "有効な開始時間と終了時間を入力してください。",
-        variant: "destructive",
-      });
+      setError("有効な開始時間と終了時間を入力してください。");
       return;
     }
 
     if (end <= start) {
-      toast({
-        title: "時間エラー",
-        description: "終了時間は開始時間より後でなければなりません。",
-        variant: "destructive",
-      });
+      setError("終了時間は開始時間より後でなければなりません。");
       return;
     }
 
-    const duration = Math.floor((end.getTime() - start.getTime()) / 1000); // 秒単位の期間（小数点以下切り捨て）
+    const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
 
     const newEntry: Omit<WorkTimeEntry, "_id"> = {
       projectName,
@@ -79,18 +64,13 @@ const WorkTimeEntryForm: React.FC = () => {
       startTime: start.toISOString(),
       endTime: end.toISOString(),
       duration,
-      date: start.toISOString().split("T")[0], // YYYY-MM-DD形式
+      date: start.toISOString().split("T")[0],
     };
-
-    console.log("Sending data:", newEntry); // 送信データをログに出力
 
     setIsSubmitting(true);
 
     try {
-      const response = await workTimeApi.create(newEntry);
-      console.log("Response received:", response.data); // レスポンスデータをログに出力
-      const apiResponse = response.data as ApiResponse;
-      dispatch(addWorkTimeEntry(apiResponse.workTime));
+      await dispatch(addWorkTimeEntry(newEntry)).unwrap();
       toast({
         title: "成功",
         description: "作業時間エントリーが作成されました。",
@@ -98,23 +78,7 @@ const WorkTimeEntryForm: React.FC = () => {
       navigate("/reports");
     } catch (error) {
       console.error("作業時間エントリーの作成エラー:", error);
-      let errorMessage = "不明なエラーが発生しました。";
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<{
-          message: string;
-          errors?: { msg: string }[];
-        }>;
-        errorMessage = axiosError.response?.data?.message || errorMessage;
-        if (axiosError.response?.data?.errors) {
-          errorMessage +=
-            " " + axiosError.response.data.errors.map((e) => e.msg).join(", ");
-        }
-      }
-      toast({
-        title: "エラー",
-        description: `作業時間エントリーの作成に失敗しました: ${errorMessage}`,
-        variant: "destructive",
-      });
+      setError(`作業時間エントリーの作成に失敗しました: ${error}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -128,6 +92,13 @@ const WorkTimeEntryForm: React.FC = () => {
             <CardTitle className="text-2xl">作業時間の記録</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <ExclamationTriangleIcon className="h-4 w-4" />
+                <AlertTitle>エラー</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <div className="space-y-2">
               <Label htmlFor="projectName">プロジェクト名</Label>
               <Input
@@ -175,6 +146,4 @@ const WorkTimeEntryForm: React.FC = () => {
       </Card>
     </div>
   );
-};
-
-export default WorkTimeEntryForm;
+}
