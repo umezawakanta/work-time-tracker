@@ -28,8 +28,8 @@ interface IWorkTimeEntry {
   startTime: string;
   endTime: string;
   description?: string;
-  duration?: number;
-  date?: string;
+  duration: number;
+  date: string;
   createdAt?: Date;
 }
 
@@ -39,8 +39,8 @@ const WorkTimeSchema = new mongoose.Schema<IWorkTimeEntry>({
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
   description: String,
-  duration: Number,
-  date: String,
+  duration: { type: Number, required: true },
+  date: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -58,17 +58,21 @@ app.post(
       .isISO8601()
       .withMessage("終了時間は有効なISO8601形式である必要があります"),
     body("description").optional().isString(),
-    body("duration").optional().isInt(),
+    body("duration").isInt().withMessage("期間は整数である必要があります"),
     body("date")
-      .optional()
       .isISO8601()
       .withMessage("日付は有効なISO8601形式である必要があります"),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.error("Validation errors:", errors.array());
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
     }
+
+    console.log("Received data:", req.body);
 
     try {
       const workTimeData: IWorkTimeEntry = {

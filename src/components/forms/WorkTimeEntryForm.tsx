@@ -17,6 +17,7 @@ import {
 import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { AppDispatch } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
+import axios, { AxiosError } from "axios";
 
 const WorkTimeEntryForm: React.FC = () => {
   const [projectName, setProjectName] = useState("");
@@ -81,10 +82,21 @@ const WorkTimeEntryForm: React.FC = () => {
       navigate("/reports");
     } catch (error) {
       console.error("作業時間エントリーの作成エラー:", error);
+      let errorMessage = "不明なエラーが発生しました。";
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{
+          message: string;
+          errors?: { msg: string }[];
+        }>;
+        errorMessage = axiosError.response?.data?.message || errorMessage;
+        if (axiosError.response?.data?.errors) {
+          errorMessage +=
+            " " + axiosError.response.data.errors.map((e) => e.msg).join(", ");
+        }
+      }
       toast({
         title: "エラー",
-        description:
-          "作業時間エントリーの作成に失敗しました。もう一度お試しください。",
+        description: `作業時間エントリーの作成に失敗しました: ${errorMessage}`,
         variant: "destructive",
       });
     }

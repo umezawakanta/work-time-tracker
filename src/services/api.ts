@@ -1,5 +1,5 @@
 import { WorkTimeEntry } from "@/types/workTimeEntry";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 let API_BASE_URL = "http://localhost:3001/api"; // デフォルト値
 const USE_MOCK_DATA = process.env.VITE_USE_MOCK_DATA === "true" || false;
@@ -24,14 +24,14 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
 // レスポンスインターセプター
 api.interceptors.response.use(
-  (response) => response,
+  (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // 認証エラーの場合、ログインページにリダイレクト
@@ -49,7 +49,7 @@ const mockData: WorkTimeEntry[] = [
     startTime: new Date(Date.now() - 3600000).toISOString(),
     endTime: new Date().toISOString(),
     duration: 3600,
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split("T")[0],
   },
   {
     _id: "2",
@@ -58,32 +58,41 @@ const mockData: WorkTimeEntry[] = [
     startTime: new Date(Date.now() - 7200000).toISOString(),
     endTime: new Date().toISOString(),
     duration: 7200,
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split("T")[0],
   },
 ];
 
 export const workTimeApi = {
-  getAll: () =>
+  getAll: (): Promise<AxiosResponse<WorkTimeEntry[]>> =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: mockData })
+      ? Promise.resolve({ data: mockData } as AxiosResponse<WorkTimeEntry[]>)
       : api.get<WorkTimeEntry[]>("/worktime"),
-  getById: (id: string) =>
+  getById: (id: string): Promise<AxiosResponse<WorkTimeEntry | undefined>> =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: mockData.find((entry) => entry._id === id) })
+      ? Promise.resolve({
+          data: mockData.find((entry) => entry._id === id),
+        } as AxiosResponse<WorkTimeEntry | undefined>)
       : api.get<WorkTimeEntry>(`/worktime/${id}`),
-  create: (entry: Omit<WorkTimeEntry, "_id">) =>
+  create: (
+    entry: Omit<WorkTimeEntry, "_id">
+  ): Promise<AxiosResponse<WorkTimeEntry>> =>
     USE_MOCK_DATA
       ? Promise.resolve({
           data: { ...entry, _id: String(mockData.length + 1) },
-        })
+        } as AxiosResponse<WorkTimeEntry>)
       : api.post<WorkTimeEntry>("/worktime", entry),
-  update: (id: string, entry: Partial<WorkTimeEntry>) =>
+  update: (
+    id: string,
+    entry: Partial<WorkTimeEntry>
+  ): Promise<AxiosResponse<WorkTimeEntry>> =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: { ...entry, _id: id } as WorkTimeEntry })
+      ? Promise.resolve({
+          data: { ...entry, _id: id } as WorkTimeEntry,
+        } as AxiosResponse<WorkTimeEntry>)
       : api.put<WorkTimeEntry>(`/worktime/${id}`, entry),
-  delete: (id: string) =>
+  delete: (id: string): Promise<AxiosResponse<null>> =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: null })
+      ? Promise.resolve({ data: null } as AxiosResponse<null>)
       : api.delete(`/worktime/${id}`),
 };
 
