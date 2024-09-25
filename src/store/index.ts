@@ -1,8 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from './rootReducer';
+import { configureStore } from "@reduxjs/toolkit";
+import workTimeReducer from "./workTimeSlice";
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    workTime: workTimeReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

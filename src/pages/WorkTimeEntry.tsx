@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWorkTimeEntry } from "@/store/workTimeSlice";
-import { workTimeApi } from "@/services/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
+import { AppDispatch } from "@/store"; // AppDispatchをインポート
 
 export interface WorkTimeEntry {
   _id?: string;
@@ -35,7 +35,7 @@ export default function WorkTimeEntryForm() {
   const [projectName, setProjectName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // AppDispatchを使用
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,13 +102,16 @@ export default function WorkTimeEntryForm() {
       date: startTime.toISOString(),
     };
     try {
-      const response = await workTimeApi.create(newEntry);
-      dispatch(addWorkTimeEntry(response.data));
-      toast({
-        title: "作業時間を記録しました",
-        description: "作業時間が正常に記録されました。",
-      });
-      navigate("/reports");
+      const resultAction = await dispatch(addWorkTimeEntry(newEntry));
+      if (addWorkTimeEntry.fulfilled.match(resultAction)) {
+        toast({
+          title: "作業時間を記録しました",
+          description: "作業時間が正常に記録されました。",
+        });
+        navigate("/reports");
+      } else {
+        throw new Error("作業時間の記録に失敗しました");
+      }
     } catch (error) {
       console.error("Error creating work time entry:", error);
       toast({
@@ -120,6 +123,7 @@ export default function WorkTimeEntryForm() {
     }
   };
 
+  // ... (残りのコードは変更なし)
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8">

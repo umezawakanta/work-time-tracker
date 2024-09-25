@@ -17,6 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { WorkTimeEntry } from "@/types/workTimeEntry";
+import { AppDispatch } from "@/store"; // AppDispatchをインポート
 
 export default function WorkTimeEntryForm() {
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -27,7 +28,7 @@ export default function WorkTimeEntryForm() {
   const [projectName, setProjectName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // AppDispatchを使用
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function WorkTimeEntryForm() {
         startTime: new Date(newEntry.startTime),
         endTime: new Date(newEntry.endTime),
       });
-      dispatch(addWorkTimeEntry(response.data));
+      await dispatch(addWorkTimeEntry(response.data));
       toast({
         title: "作業時間を記録しました",
         description: "作業時間が正常に記録されました。",
