@@ -9,14 +9,7 @@ export function useWorkTime() {
     // LocalStorageから作業時間エントリーを読み込む
     const storedEntries = localStorage.getItem("workTimeEntries");
     if (storedEntries) {
-      setWorkTimeEntries(
-        JSON.parse(storedEntries, (key, value) => {
-          if (key === "startTime" || key === "endTime") {
-            return new Date(value);
-          }
-          return value;
-        })
-      );
+      setWorkTimeEntries(JSON.parse(storedEntries));
     }
   }, []);
 
@@ -35,8 +28,8 @@ export function useWorkTime() {
       _id: Date.now().toString(),
       duration,
       date: startDateTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
-      startTime: startDateTime,
-      endTime: endDateTime,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
     };
 
     setWorkTimeEntries((prevEntries) => [...prevEntries, newEntry]);
@@ -63,8 +56,8 @@ export function useWorkTime() {
           return {
             ...entry,
             ...updatedEntry,
-            startTime: updatedStartDateTime,
-            endTime: updatedEndDateTime,
+            startTime: updatedStartDateTime.toISOString(),
+            endTime: updatedEndDateTime.toISOString(),
             duration: updatedDuration,
             date: updatedStartDateTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
           };

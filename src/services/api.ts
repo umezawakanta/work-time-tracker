@@ -1,4 +1,4 @@
-import { WorkTimeEntry } from "@/pages/WorkTimeEntry";
+import { WorkTimeEntry } from "@/types/workTimeEntry";
 import axios, { AxiosError } from "axios";
 
 let API_BASE_URL = "http://localhost:3001/api"; // デフォルト値
@@ -46,8 +46,8 @@ const mockData: WorkTimeEntry[] = [
     _id: "1",
     projectName: "Project A",
     description: "Task 1",
-    startTime: new Date(Date.now() - 3600000),
-    endTime: new Date(),
+    startTime: new Date(Date.now() - 3600000).toISOString(),
+    endTime: new Date().toISOString(),
     duration: 3600,
     date: new Date().toISOString(),
   },
@@ -55,8 +55,8 @@ const mockData: WorkTimeEntry[] = [
     _id: "2",
     projectName: "Project B",
     description: "Task 2",
-    startTime: new Date(Date.now() - 7200000),
-    endTime: new Date(),
+    startTime: new Date(Date.now() - 7200000).toISOString(),
+    endTime: new Date().toISOString(),
     duration: 7200,
     date: new Date().toISOString(),
   },
@@ -71,15 +71,15 @@ export const workTimeApi = {
     USE_MOCK_DATA
       ? Promise.resolve({ data: mockData.find((entry) => entry._id === id) })
       : api.get<WorkTimeEntry>(`/worktime/${id}`),
-  create: (entry: WorkTimeEntry) =>
+  create: (entry: Omit<WorkTimeEntry, "_id">) =>
     USE_MOCK_DATA
       ? Promise.resolve({
           data: { ...entry, _id: String(mockData.length + 1) },
         })
       : api.post<WorkTimeEntry>("/worktime", entry),
-  update: (id: string, entry: WorkTimeEntry) =>
+  update: (id: string, entry: Partial<WorkTimeEntry>) =>
     USE_MOCK_DATA
-      ? Promise.resolve({ data: { ...entry, _id: id } })
+      ? Promise.resolve({ data: { ...entry, _id: id } as WorkTimeEntry })
       : api.put<WorkTimeEntry>(`/worktime/${id}`, entry),
   delete: (id: string) =>
     USE_MOCK_DATA

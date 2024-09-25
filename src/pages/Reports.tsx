@@ -20,7 +20,7 @@ const Reports: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatTime = (dateString: string | Date | undefined) => {
+  const formatTime = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
     return new Date(dateString).toLocaleTimeString();
   };

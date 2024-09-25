@@ -2,8 +2,8 @@ export interface WorkTimeEntry {
   _id?: string;
   projectName: string;
   description: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   duration?: number;
   date?: string;
 }

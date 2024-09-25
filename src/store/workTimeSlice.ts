@@ -10,17 +10,17 @@ export const fetchWorkTimeEntries = createAsyncThunk<WorkTimeEntry[]>(
   }
 );
 
-export const addWorkTimeEntry = createAsyncThunk<WorkTimeEntry, WorkTimeEntry>(
-  "workTime/addEntry",
-  async (entry) => {
-    const response = await workTimeApi.create(entry);
-    return response.data;
-  }
-);
+export const addWorkTimeEntry = createAsyncThunk<
+  WorkTimeEntry,
+  Omit<WorkTimeEntry, "_id">
+>("workTime/addEntry", async (entry) => {
+  const response = await workTimeApi.create(entry);
+  return response.data;
+});
 
 export const updateWorkTimeEntry = createAsyncThunk<
   WorkTimeEntry,
-  { id: string; entry: WorkTimeEntry }
+  { id: string; entry: Partial<WorkTimeEntry> }
 >("workTime/updateEntry", async ({ id, entry }) => {
   const response = await workTimeApi.update(id, entry);
   return response.data;
@@ -59,11 +59,7 @@ const workTimeSlice = createSlice({
         fetchWorkTimeEntries.fulfilled,
         (state, action: PayloadAction<WorkTimeEntry[]>) => {
           state.status = "succeeded";
-          state.entries = action.payload.map((entry) => ({
-            ...entry,
-            startTime: new Date(entry.startTime),
-            endTime: new Date(entry.endTime),
-          }));
+          state.entries = action.payload;
         }
       )
       .addCase(fetchWorkTimeEntries.rejected, (state, action) => {
@@ -73,11 +69,7 @@ const workTimeSlice = createSlice({
       .addCase(
         addWorkTimeEntry.fulfilled,
         (state, action: PayloadAction<WorkTimeEntry>) => {
-          state.entries.push({
-            ...action.payload,
-            startTime: new Date(action.payload.startTime),
-            endTime: new Date(action.payload.endTime),
-          });
+          state.entries.push(action.payload);
         }
       )
       .addCase(
@@ -87,11 +79,7 @@ const workTimeSlice = createSlice({
             (entry) => entry._id === action.payload._id
           );
           if (index !== -1) {
-            state.entries[index] = {
-              ...action.payload,
-              startTime: new Date(action.payload.startTime),
-              endTime: new Date(action.payload.endTime),
-            };
+            state.entries[index] = action.payload;
           }
         }
       )
