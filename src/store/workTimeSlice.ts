@@ -15,7 +15,7 @@ export const addWorkTimeEntry = createAsyncThunk<
   Omit<WorkTimeEntry, "_id">
 >("workTime/addEntry", async (entry) => {
   const response = await workTimeApi.create(entry);
-  return response.data;
+  return response.data.workTime; // Return the workTime property from the ApiResponse
 });
 
 export const updateWorkTimeEntry = createAsyncThunk<

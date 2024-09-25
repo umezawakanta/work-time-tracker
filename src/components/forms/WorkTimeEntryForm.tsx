@@ -19,17 +19,27 @@ import { AppDispatch } from "@/store";
 import { useToast } from "@/components/ui/use-toast";
 import axios, { AxiosError } from "axios";
 
+interface ApiResponse {
+  message: string;
+  workTime: WorkTimeEntry;
+}
+
 const WorkTimeEntryForm: React.FC = () => {
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     if (!projectName || !startTime || !endTime) {
       toast({
@@ -74,10 +84,13 @@ const WorkTimeEntryForm: React.FC = () => {
 
     console.log("Sending data:", newEntry); // 送信データをログに出力
 
+    setIsSubmitting(true);
+
     try {
       const response = await workTimeApi.create(newEntry);
       console.log("Response received:", response.data); // レスポンスデータをログに出力
-      dispatch(addWorkTimeEntry(response.data));
+      const apiResponse = response.data as ApiResponse;
+      dispatch(addWorkTimeEntry(apiResponse.workTime));
       toast({
         title: "成功",
         description: "作業時間エントリーが作成されました。",
@@ -102,6 +115,8 @@ const WorkTimeEntryForm: React.FC = () => {
         description: `作業時間エントリーの作成に失敗しました: ${errorMessage}`,
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -152,8 +167,8 @@ const WorkTimeEntryForm: React.FC = () => {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              記録を保存
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "送信中..." : "記録を保存"}
             </Button>
           </CardFooter>
         </form>

@@ -66,6 +66,11 @@ const mockData: WorkTimeEntry[] = [
   },
 ];
 
+interface ApiResponse {
+  message: string;
+  workTime: WorkTimeEntry;
+}
+
 export const workTimeApi = {
   getAll: (): Promise<AxiosResponse<WorkTimeEntry[]>> =>
     USE_MOCK_DATA
@@ -79,12 +84,15 @@ export const workTimeApi = {
       : api.get<WorkTimeEntry>(`/worktime/${id}`),
   create: (
     entry: Omit<WorkTimeEntry, "_id">
-  ): Promise<AxiosResponse<WorkTimeEntry>> =>
+  ): Promise<AxiosResponse<ApiResponse>> =>
     USE_MOCK_DATA
       ? Promise.resolve({
-          data: { ...entry, _id: String(mockData.length + 1) },
-        } as AxiosResponse<WorkTimeEntry>)
-      : api.post<WorkTimeEntry>("/worktime", entry),
+          data: {
+            message: "作業時間が正常に記録されました",
+            workTime: { ...entry, _id: String(mockData.length + 1) },
+          },
+        } as AxiosResponse<ApiResponse>)
+      : api.post<ApiResponse>("/worktime", entry),
   update: (
     id: string,
     entry: Partial<WorkTimeEntry>
