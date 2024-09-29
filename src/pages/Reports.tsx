@@ -165,6 +165,14 @@ const Reports: React.FC = () => {
 
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentAssetAccount) {
+      toast({
+        title: "エラー",
+        description: "口座を選択してください。",
+        variant: "destructive",
+      });
+      return;
+    }
     const newAssetEntry = {
       date: new Date().toISOString().split("T")[0],
       value: parseFloat(currentAssetValue),
@@ -204,7 +212,10 @@ const Reports: React.FC = () => {
 
   const assetAccounts = Array.from(
     new Set(assetEntries.map((entry) => entry.account))
-  );
+  ).filter(Boolean);
+
+  console.log("Asset Entries:", assetEntries);
+  console.log("Asset Accounts:", assetAccounts);
 
   return (
     <div className="container mx-auto p-4">
@@ -419,7 +430,7 @@ const Reports: React.FC = () => {
                       data={assetEntries.filter(
                         (entry) => entry.account === account
                       )}
-                      name={`資産 (${account})`}
+                      name={`資産 (${account || "未分類"})`}
                       stroke={COLORS[index % COLORS.length]}
                       strokeWidth={2}
                       dot={{ r: 4 }}
