@@ -251,7 +251,11 @@ const Reports: React.FC = () => {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={barChartData}>
-                    <XAxis dataKey="name" />
+                    <XAxis
+                      dataKey="name"
+                      scale="point"
+                      padding={{ left: 10, right: 10 }}
+                    />
                     <YAxis />
                     <Tooltip />
                     <Bar dataKey="duration" fill="#8884d8">
@@ -305,7 +309,12 @@ const Reports: React.FC = () => {
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={assetEntries}>
-                  <XAxis dataKey="date" />
+                  <XAxis
+                    dataKey="date"
+                    scale="time"
+                    type="category"
+                    padding={{ left: 10, right: 10 }}
+                  />
                   <YAxis />
                   <Tooltip />
                   <Legend />
