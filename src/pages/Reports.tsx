@@ -23,7 +23,18 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
-import { Bar, BarChart, Pie, PieChart, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  Pie,
+  PieChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Cell,
+  Legend,
+} from "recharts";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +42,7 @@ const Reports: React.FC = () => {
     (state: RootState) => state.workTime.entries
   );
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
@@ -82,30 +94,49 @@ const Reports: React.FC = () => {
     dispatch(fetchWorkTimeEntries());
   };
 
-  // 棒グラフのデータを準備
-  const barChartData = workTimeEntries.map((entry) => ({
-    name: formatDate(entry.date),
-    duration: entry.duration ? entry.duration / 3600 : 0, // 時間単位に変換
-  }));
+  const filterEntriesByTimeRange = (entries: WorkTimeEntry[]) => {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  // パイチャートのデータを準備
-  const pieChartData = workTimeEntries.reduce((acc, entry) => {
-    if (entry.projectName) {
-      if (acc[entry.projectName]) {
-        acc[entry.projectName] += entry.duration || 0;
-      } else {
-        acc[entry.projectName] = entry.duration || 0;
+    return entries.filter((entry) => {
+      const entryDate = entry.date ? new Date(entry.date) : null;
+      if (!entryDate) return false;
+      if (timeRange === "week") return entryDate >= oneWeekAgo;
+      if (timeRange === "month") return entryDate >= oneMonthAgo;
+      return true;
+    });
+  };
+
+  const barChartData = filterEntriesByTimeRange(workTimeEntries).map(
+    (entry) => ({
+      name: formatDate(entry.date),
+      duration: entry.duration ? entry.duration / 3600 : 0,
+    })
+  );
+
+  const pieChartData = filterEntriesByTimeRange(workTimeEntries).reduce(
+    (acc, entry) => {
+      if (entry.projectName) {
+        if (acc[entry.projectName]) {
+          acc[entry.projectName] += entry.duration || 0;
+        } else {
+          acc[entry.projectName] = entry.duration || 0;
+        }
       }
-    }
-    return acc;
-  }, {} as Record<string, number>);
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   const pieChartDataArray = Object.entries(pieChartData).map(
     ([name, value]) => ({
       name,
-      value: value / 3600, // 時間単位に変換
+      value: value / 3600,
     })
   );
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
   return (
     <div className="container mx-auto p-4">
@@ -114,7 +145,7 @@ const Reports: React.FC = () => {
         <p>データがありません。</p>
       ) : (
         <>
-          <div className="mb-4">
+          <div className="mb-4 flex justify-between items-center">
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -141,6 +172,28 @@ const Reports: React.FC = () => {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            <div>
+              <Button
+                variant={timeRange === "week" ? "default" : "outline"}
+                onClick={() => setTimeRange("week")}
+                className="mr-2"
+              >
+                週間
+              </Button>
+              <Button
+                variant={timeRange === "month" ? "default" : "outline"}
+                onClick={() => setTimeRange("month")}
+                className="mr-2"
+              >
+                月間
+              </Button>
+              <Button
+                variant={timeRange === "all" ? "default" : "outline"}
+                onClick={() => setTimeRange("all")}
+              >
+                全期間
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -149,12 +202,21 @@ const Reports: React.FC = () => {
                 <CardTitle>日別作業時間</CardTitle>
               </CardHeader>
               <CardContent>
-                <BarChart width={400} height={300} data={barChartData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="duration" fill="#8884d8" />
-                </BarChart>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={barChartData}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="duration" fill="#8884d8">
+                      {barChartData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
             <Card>
@@ -162,49 +224,61 @@ const Reports: React.FC = () => {
                 <CardTitle>プロジェクト別作業時間</CardTitle>
               </CardHeader>
               <CardContent>
-                <PieChart width={400} height={300}>
-                  <Pie
-                    data={pieChartDataArray}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#82ca9d"
-                    label
-                  />
-                  <Tooltip />
-                </PieChart>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={pieChartDataArray}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#82ca9d"
+                      label
+                    >
+                      {pieChartDataArray.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
 
-          {workTimeEntries.map((entry: WorkTimeEntry) => (
-            <Card
-              key={entry._id || `entry-${entry.date}-${entry.startTime}`}
-              className="mb-4"
-            >
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{entry.projectName || "未設定"}</CardTitle>
-                {entry._id && (
-                  <Checkbox
-                    id={`select-${entry._id}`}
-                    checked={selectedEntries.includes(entry._id)}
-                    onCheckedChange={() =>
-                      entry._id && handleCheckboxChange(entry._id)
-                    }
-                  />
-                )}
-              </CardHeader>
-              <CardContent>
-                <p>日付: {formatDate(entry.date)}</p>
-                <p>開始時間: {formatTime(entry.startTime)}</p>
-                <p>終了時間: {formatTime(entry.endTime)}</p>
-                <p>作業時間: {formatDuration(entry.duration)}</p>
-                <p>説明: {entry.description || "未設定"}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {filterEntriesByTimeRange(workTimeEntries).map(
+            (entry: WorkTimeEntry) => (
+              <Card
+                key={entry._id || `entry-${entry.date}-${entry.startTime}`}
+                className="mb-4"
+              >
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>{entry.projectName || "未設定"}</CardTitle>
+                  {entry._id && (
+                    <Checkbox
+                      id={`select-${entry._id}`}
+                      checked={selectedEntries.includes(entry._id)}
+                      onCheckedChange={() =>
+                        entry._id && handleCheckboxChange(entry._id)
+                      }
+                    />
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <p>日付: {formatDate(entry.date)}</p>
+                  <p>開始時間: {formatTime(entry.startTime)}</p>
+                  <p>終了時間: {formatTime(entry.endTime)}</p>
+                  <p>作業時間: {formatDuration(entry.duration)}</p>
+                  <p>説明: {entry.description || "未設定"}</p>
+                </CardContent>
+              </Card>
+            )
+          )}
         </>
       )}
     </div>
