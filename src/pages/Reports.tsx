@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store";
@@ -21,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
+import { Bar, BarChart, Pie, PieChart, Tooltip, XAxis, YAxis } from "recharts";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -79,6 +82,31 @@ const Reports: React.FC = () => {
     dispatch(fetchWorkTimeEntries());
   };
 
+  // 棒グラフのデータを準備
+  const barChartData = workTimeEntries.map((entry) => ({
+    name: formatDate(entry.date),
+    duration: entry.duration ? entry.duration / 3600 : 0, // 時間単位に変換
+  }));
+
+  // パイチャートのデータを準備
+  const pieChartData = workTimeEntries.reduce((acc, entry) => {
+    if (entry.projectName) {
+      if (acc[entry.projectName]) {
+        acc[entry.projectName] += entry.duration || 0;
+      } else {
+        acc[entry.projectName] = entry.duration || 0;
+      }
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  const pieChartDataArray = Object.entries(pieChartData).map(
+    ([name, value]) => ({
+      name,
+      value: value / 3600, // 時間単位に変換
+    })
+  );
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">作業時間レポート</h1>
@@ -114,6 +142,43 @@ const Reports: React.FC = () => {
               </AlertDialogContent>
             </AlertDialog>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>日別作業時間</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BarChart width={400} height={300} data={barChartData}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="duration" fill="#8884d8" />
+                </BarChart>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>プロジェクト別作業時間</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PieChart width={400} height={300}>
+                  <Pie
+                    data={pieChartDataArray}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#82ca9d"
+                    label
+                  />
+                  <Tooltip />
+                </PieChart>
+              </CardContent>
+            </Card>
+          </div>
+
           {workTimeEntries.map((entry: WorkTimeEntry) => (
             <Card
               key={entry._id || `entry-${entry.date}-${entry.startTime}`}
