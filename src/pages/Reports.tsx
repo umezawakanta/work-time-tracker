@@ -236,9 +236,13 @@ const Reports: React.FC = () => {
                     <SelectValue placeholder="口座を選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="普通預金">普通預金</SelectItem>
-                    <SelectItem value="投資口座">投資口座</SelectItem>
-                    <SelectItem value="その他">その他</SelectItem>
+                    <SelectItem value="三井住友銀行大塚支店">
+                      三井住友銀行大塚支店
+                    </SelectItem>
+                    <SelectItem value="三井住友銀行神田支店">
+                      三井住友銀行神田支店
+                    </SelectItem>
+                    <SelectItem value="横浜銀行">横浜銀行</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
