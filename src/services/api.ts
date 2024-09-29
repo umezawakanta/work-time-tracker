@@ -115,11 +115,13 @@ const mockAssetData: AssetEntry[] = [
     _id: "1",
     date: new Date().toISOString().split("T")[0],
     value: 1000000,
+    account: "普通預金",
   },
   {
     _id: "2",
     date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
-    value: 990000,
+    value: 500000,
+    account: "投資口座",
   },
 ];
 

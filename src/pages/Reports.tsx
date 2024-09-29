@@ -9,6 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import {
   fetchWorkTimeEntries,
@@ -53,6 +60,7 @@ const Reports: React.FC = () => {
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
   const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
+  const [currentAssetAccount, setCurrentAssetAccount] = useState<string>("");
   const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
   const [currentDebtDescription, setCurrentDebtDescription] =
     useState<string>("");
@@ -160,9 +168,11 @@ const Reports: React.FC = () => {
     const newAssetEntry = {
       date: new Date().toISOString().split("T")[0],
       value: parseFloat(currentAssetValue),
+      account: currentAssetAccount,
     };
     dispatch(addAssetEntry(newAssetEntry));
     setCurrentAssetValue("");
+    setCurrentAssetAccount("");
     toast({
       title: "成功",
       description: "資産情報が記録されました。",
@@ -192,6 +202,10 @@ const Reports: React.FC = () => {
       id: `financial-${index}`,
     }));
 
+  const assetAccounts = Array.from(
+    new Set(assetEntries.map((entry) => entry.account))
+  );
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">作業時間と財務レポート</h1>
@@ -211,6 +225,22 @@ const Reports: React.FC = () => {
                   onChange={(e) => setCurrentAssetValue(e.target.value)}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="assetAccount">口座</Label>
+                <Select
+                  value={currentAssetAccount}
+                  onValueChange={setCurrentAssetAccount}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="口座を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="普通預金">普通預金</SelectItem>
+                    <SelectItem value="投資口座">投資口座</SelectItem>
+                    <SelectItem value="その他">その他</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit">資産情報を記録</Button>
             </form>
@@ -377,20 +407,27 @@ const Reports: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
+                  {assetAccounts.map((account, index) => (
+                    <Line
+                      key={account}
+                      type="monotone"
+                      dataKey="value"
+                      data={assetEntries.filter(
+                        (entry) => entry.account === account
+                      )}
+                      name={`資産 (${account})`}
+                      stroke={COLORS[index % COLORS.length]}
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      connectNulls
+                    />
+                  ))}
                   <Line
                     type="monotone"
                     dataKey="value"
-                    name="資産"
-                    stroke="#8884d8"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    connectNulls
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
+                    data={debtEntries}
                     name="負債"
-                    stroke="#82ca9d"
+                    stroke="#FF0000"
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     connectNulls
