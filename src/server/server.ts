@@ -101,7 +101,9 @@ const DebtEntry = mongoose.model<IDebtEntry>("DebtEntry", DebtEntrySchema);
 // エラーハンドリングミドルウェア
 const errorHandler = (err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
-  res.status(500).json({ message: "サーバーエラーが発生しました" });
+  res
+    .status(500)
+    .json({ message: "サーバーエラーが発生しました", error: err.message });
 };
 
 // バリデーションミドルウェア
@@ -306,6 +308,31 @@ app.get(
   }
 );
 
+// 資産情報を削除するAPIエンドポイント
+app.delete(
+  "/api/asset/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      console.log(`Attempting to delete asset with id: ${id}`);
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "無効なIDです" });
+      }
+
+      const deletedAsset = await AssetEntry.findByIdAndDelete(id);
+      if (!deletedAsset) {
+        return res.status(404).json({ message: "資産が見つかりません" });
+      }
+      console.log(`Successfully deleted asset with id: ${id}`);
+      res.json({ message: "資産が正常に削除されました", deletedAsset });
+    } catch (error) {
+      console.error("Error deleting asset:", error);
+      next(error);
+    }
+  }
+);
+
 // 負債情報を記録するAPIエンドポイント
 app.post(
   "/api/debt",
@@ -365,6 +392,31 @@ app.get(
       ]);
       res.json(debts);
     } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 負債情報を削除するAPIエンドポイント
+app.delete(
+  "/api/debt/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      console.log(`Attempting to delete debt with id: ${id}`);
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "無効なIDです" });
+      }
+
+      const deletedDebt = await DebtEntry.findByIdAndDelete(id);
+      if (!deletedDebt) {
+        return res.status(404).json({ message: "負債が見つかりません" });
+      }
+      console.log(`Successfully deleted debt with id: ${id}`);
+      res.json({ message: "負債が正常に削除されました", deletedDebt });
+    } catch (error) {
+      console.error("Error deleting debt:", error);
       next(error);
     }
   }

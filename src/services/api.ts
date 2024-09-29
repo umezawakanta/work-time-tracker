@@ -203,6 +203,9 @@ export const assetApi = {
           })
           .catch((error) => {
             console.error("Error deleting asset entry:", error);
+            if (error.response) {
+              console.error("Server responded with:", error.response.data);
+            }
             throw error;
           });
   },
@@ -246,6 +249,9 @@ export const debtApi = {
           })
           .catch((error) => {
             console.error("Error deleting debt entry:", error);
+            if (error.response) {
+              console.error("Server responded with:", error.response.data);
+            }
             throw error;
           });
   },
