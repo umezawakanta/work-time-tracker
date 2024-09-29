@@ -6,6 +6,8 @@ import { RootState, AppDispatch } from "../store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import {
   fetchWorkTimeEntries,
@@ -34,7 +36,14 @@ import {
   ResponsiveContainer,
   Cell,
   Legend,
+  LineChart,
+  Line,
 } from "recharts";
+
+interface AssetEntry {
+  date: string;
+  value: number;
+}
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +52,8 @@ const Reports: React.FC = () => {
   );
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
+  const [assetEntries, setAssetEntries] = useState<AssetEntry[]>([]);
+  const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
@@ -138,10 +149,46 @@ const Reports: React.FC = () => {
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
+  const handleAssetSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newAssetEntry: AssetEntry = {
+      date: new Date().toISOString().split("T")[0],
+      value: parseFloat(currentAssetValue),
+    };
+    setAssetEntries([...assetEntries, newAssetEntry]);
+    setCurrentAssetValue("");
+    toast({
+      title: "成功",
+      description: "資産情報が記録されました。",
+    });
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">作業時間レポート</h1>
-      {workTimeEntries.length === 0 ? (
+      <h1 className="text-2xl font-bold mb-4">作業時間と資産レポート</h1>
+      <div className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>資産情報の入力</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAssetSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="assetValue">現在の資産価値（円）</Label>
+                <Input
+                  id="assetValue"
+                  type="number"
+                  value={currentAssetValue}
+                  onChange={(e) => setCurrentAssetValue(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit">資産情報を記録</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+      {workTimeEntries.length === 0 && assetEntries.length === 0 ? (
         <p>データがありません。</p>
       ) : (
         <>
@@ -251,6 +298,24 @@ const Reports: React.FC = () => {
             </Card>
           </div>
 
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>資産推移</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={assetEntries}>
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="value" stroke="#8884d8" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <h2 className="text-xl font-bold mb-4">作業時間エントリー</h2>
           {filterEntriesByTimeRange(workTimeEntries).map(
             (entry: WorkTimeEntry) => (
               <Card
