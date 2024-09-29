@@ -124,9 +124,10 @@ const Reports: React.FC = () => {
   };
 
   const barChartData = filterEntriesByTimeRange(workTimeEntries).map(
-    (entry) => ({
+    (entry, index) => ({
       name: formatDate(entry.date),
       duration: entry.duration ? entry.duration / 3600 : 0,
+      id: entry._id || `entry-${index}`,
     })
   );
 
@@ -145,9 +146,10 @@ const Reports: React.FC = () => {
   );
 
   const pieChartDataArray = Object.entries(pieChartData).map(
-    ([name, value]) => ({
+    ([name, value], index) => ({
       name,
       value: value / 3600,
+      id: `project-${index}`,
     })
   );
 
@@ -183,10 +185,12 @@ const Reports: React.FC = () => {
     });
   };
 
-  // 資産と負債のデータを結合して日付でソート
-  const combinedData = [...assetEntries, ...debtEntries].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  const combinedData = [...assetEntries, ...debtEntries]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((entry, index) => ({
+      ...entry,
+      id: `financial-${index}`,
+    }));
 
   return (
     <div className="container mx-auto p-4">
@@ -315,9 +319,9 @@ const Reports: React.FC = () => {
                     <YAxis />
                     <Tooltip />
                     <Bar dataKey="duration" fill="#8884d8">
-                      {barChartData.map((_, index) => (
+                      {barChartData.map((entry, index) => (
                         <Cell
-                          key={`cell-${index}`}
+                          key={`cell-${entry.id}`}
                           fill={COLORS[index % COLORS.length]}
                         />
                       ))}
@@ -343,9 +347,9 @@ const Reports: React.FC = () => {
                       fill="#82ca9d"
                       label
                     >
-                      {pieChartDataArray.map((_, index) => (
+                      {pieChartDataArray.map((entry, index) => (
                         <Cell
-                          key={`cell-${index}`}
+                          key={`cell-${entry.id}`}
                           fill={COLORS[index % COLORS.length]}
                         />
                       ))}
@@ -395,6 +399,7 @@ const Reports: React.FC = () => {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+
           <h2 className="text-xl font-bold mb-4">作業時間エントリー</h2>
           {filterEntriesByTimeRange(workTimeEntries).map(
             (entry: WorkTimeEntry) => (
