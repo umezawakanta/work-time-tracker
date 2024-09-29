@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import { workTimeApi } from "../services/api";
 
-interface ApiResponse {
+interface WorkTimeApiResponse {
   message: string;
   workTime: WorkTimeEntry;
 }
@@ -30,7 +30,7 @@ export const addWorkTimeEntry = createAsyncThunk<
 >("workTime/addEntry", async (entry, { rejectWithValue }) => {
   try {
     const response = await workTimeApi.create(entry);
-    return (response.data as ApiResponse).workTime;
+    return (response.data as WorkTimeApiResponse).workTime;
   } catch (error) {
     console.error("エントリーの追加中にエラーが発生しました:", error);
     return rejectWithValue(
@@ -46,7 +46,7 @@ export const updateWorkTimeEntry = createAsyncThunk<
 >("workTime/updateEntry", async ({ id, entry }, { rejectWithValue }) => {
   try {
     const response = await workTimeApi.update(id, entry);
-    return response.data;
+    return (response.data as WorkTimeApiResponse).workTime;
   } catch (error) {
     console.error("エントリーの更新中にエラーが発生しました:", error);
     return rejectWithValue(

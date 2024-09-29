@@ -57,6 +57,24 @@ export const addDebtEntry = createAsyncThunk<
   }
 });
 
+export const deleteDebtEntry = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>("debt/deleteEntry", async (id, { rejectWithValue }) => {
+  try {
+    await debtApi.delete(id);
+    return id;
+  } catch (error) {
+    console.error("負債エントリーの削除中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "負債エントリーの削除に失敗しました"
+    );
+  }
+});
+
 const debtSlice = createSlice({
   name: "debt",
   initialState,
@@ -88,6 +106,18 @@ const debtSlice = createSlice({
       )
       .addCase(addDebtEntry.rejected, (state, action) => {
         state.error = action.payload || "負債エントリーの追加に失敗しました";
+      })
+      .addCase(
+        deleteDebtEntry.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.entries = state.entries.filter(
+            (entry) => entry._id !== action.payload
+          );
+          state.error = null;
+        }
+      )
+      .addCase(deleteDebtEntry.rejected, (state, action) => {
+        state.error = action.payload || "負債エントリーの削除に失敗しました";
       });
   },
 });

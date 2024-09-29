@@ -78,7 +78,7 @@ const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
 
 const AssetEntry = mongoose.model<IAssetEntry>("AssetEntry", AssetEntrySchema);
 
-// DebtEntryインターフェースを更新
+// DebtEntryインターフェース
 interface IDebtEntry extends mongoose.Document {
   date: string;
   value: number;
@@ -87,7 +87,7 @@ interface IDebtEntry extends mongoose.Document {
   createdAt: Date;
 }
 
-// DebtEntryモデルの定義を更新
+// DebtEntryモデルの定義
 const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
   date: { type: String, required: true },
   value: { type: Number, required: true },
@@ -128,7 +128,6 @@ const validateAssetEntry = [
   body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
-// バリデーションミドルウェアを更新
 const validateDebtEntry = [
   body("date")
     .isISO8601()
@@ -260,7 +259,7 @@ app.delete(
   }
 );
 
-// 資産情報を記録するAPIエンドポイントを更新
+// 資産情報を記録するAPIエンドポイント
 app.post(
   "/api/asset",
   validateAssetEntry,
@@ -307,7 +306,7 @@ app.get(
   }
 );
 
-// 負債情報を記録するAPIエンドポイントを更新
+// 負債情報を記録するAPIエンドポイント
 app.post(
   "/api/debt",
   validateDebtEntry,
@@ -342,7 +341,7 @@ app.post(
   }
 );
 
-// 負債情報を取得するAPIエンドポイントを更新
+// 負債情報を取得するAPIエンドポイント
 app.get(
   "/api/debt",
   async (_req: Request, res: Response, next: NextFunction) => {

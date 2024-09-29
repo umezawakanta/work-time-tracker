@@ -21,8 +21,16 @@ import {
   fetchWorkTimeEntries,
   deleteWorkTimeEntry,
 } from "../store/workTimeSlice";
-import { fetchAssetEntries, addAssetEntry } from "../store/assetSlice";
-import { fetchDebtEntries, addDebtEntry } from "../store/debtSlice";
+import {
+  fetchAssetEntries,
+  addAssetEntry,
+  deleteAssetEntry,
+} from "../store/assetSlice";
+import {
+  fetchDebtEntries,
+  addDebtEntry,
+  deleteDebtEntry,
+} from "../store/debtSlice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +57,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
+import { Trash2Icon } from "lucide-react";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,11 +80,6 @@ const Reports: React.FC = () => {
     dispatch(fetchAssetEntries());
     dispatch(fetchDebtEntries());
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log("Asset Entries:", assetEntries);
-    console.log("Debt Entries:", debtEntries);
-  }, [assetEntries, debtEntries]);
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
@@ -101,6 +105,7 @@ const Reports: React.FC = () => {
         : [...prev, entryId]
     );
   };
+
   const handleDelete = async () => {
     for (const entryId of selectedEntries) {
       try {
@@ -166,6 +171,16 @@ const Reports: React.FC = () => {
     })
   );
 
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884D8",
+    "#82ca9d",
+    "#ffc658",
+  ];
+
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentAssetAccount) {
@@ -216,6 +231,46 @@ const Reports: React.FC = () => {
     });
   };
 
+  const handleDeleteAsset = async (id: string) => {
+    try {
+      await dispatch(deleteAssetEntry(id)).unwrap();
+      toast({
+        title: "成功",
+        description: "資産情報が削除されました。",
+      });
+    } catch (error) {
+      console.error("Failed to delete asset entry:", error);
+      toast({
+        title: "エラー",
+        description:
+          error instanceof Error
+            ? error.message
+            : "資産情報の削除に失敗しました。",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteDebt = async (id: string) => {
+    try {
+      await dispatch(deleteDebtEntry(id)).unwrap();
+      toast({
+        title: "成功",
+        description: "負債情報が削除されました。",
+      });
+    } catch (error) {
+      console.error("Failed to delete debt entry:", error);
+      toast({
+        title: "エラー",
+        description:
+          error instanceof Error
+            ? error.message
+            : "負債情報の削除に失敗しました。",
+        variant: "destructive",
+      });
+    }
+  };
+
   const combinedData = [...assetEntries, ...debtEntries]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((entry, index) => ({
@@ -228,30 +283,126 @@ const Reports: React.FC = () => {
       ...assetEntries.map((entry) => entry.account),
       ...debtEntries.map((entry) => entry.account),
     ])
-  ).filter(Boolean);
-
-  const COLORS = [
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#8884D8",
-    "#82ca9d",
-    "#ffc658",
-  ];
+  );
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">作業時間と財務レポート</h1>
-      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <h1 className="text-2xl font-bold mb-4">レポート</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle>資産情報の入力</CardTitle>
+            <CardTitle>作業時間記録</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <Label htmlFor="timeRange">期間</Label>
+              <Select
+                value={timeRange}
+                onValueChange={(value) =>
+                  setTimeRange(value as "week" | "month" | "all")
+                }
+              >
+                <SelectTrigger id="timeRange">
+                  <SelectValue placeholder="期間を選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="week">1週間</SelectItem>
+                  <SelectItem value="month">1ヶ月</SelectItem>
+                  <SelectItem value="all">全期間</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={barChartData}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="duration" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>プロジェクト別作業時間</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieChartDataArray}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label
+                  >
+                    {pieChartDataArray.map((entry, index) => (
+                      <Cell
+                        key={`cell-${entry.id}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>資産と負債の推移</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-96">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={combinedData}>
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                {accounts.map((account, index) => (
+                  <Line
+                    key={account}
+                    type="monotone"
+                    dataKey={(entry) =>
+                      entry.account === account
+                        ? "value" in entry
+                          ? entry.value
+                          : -entry.value
+                        : undefined
+                    }
+                    name={account}
+                    stroke={COLORS[index % COLORS.length]}
+                    connectNulls
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>資産情報の登録</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAssetSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="assetValue">現在の資産価値（円）</Label>
+              <div>
+                <Label htmlFor="assetValue">資産価値</Label>
                 <Input
                   id="assetValue"
                   type="number"
@@ -260,39 +411,29 @@ const Reports: React.FC = () => {
                   required
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="assetAccount">口座</Label>
-                <Select
+                <Input
+                  id="assetAccount"
+                  type="text"
                   value={currentAssetAccount}
-                  onValueChange={setCurrentAssetAccount}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="口座を選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="三井住友銀行大塚支店">
-                      三井住友銀行大塚支店
-                    </SelectItem>
-                    <SelectItem value="三井住友銀行神田支店">
-                      三井住友銀行神田支店
-                    </SelectItem>
-                    <SelectItem value="横浜銀行">横浜銀行</SelectItem>
-                    <SelectItem value="その他">その他</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(e) => setCurrentAssetAccount(e.target.value)}
+                  required
+                />
               </div>
-              <Button type="submit">資産情報を記録</Button>
+              <Button type="submit">登録</Button>
             </form>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>負債情報の入力</CardTitle>
+            <CardTitle>負債情報の登録</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleDebtSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="debtValue">現在の負債額（円）</Label>
+              <div>
+                <Label htmlFor="debtValue">負債額</Label>
                 <Input
                   id="debtValue"
                   type="number"
@@ -301,8 +442,8 @@ const Reports: React.FC = () => {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="debtDescription">負債の説明</Label>
+              <div>
+                <Label htmlFor="debtDescription">説明</Label>
                 <Textarea
                   id="debtDescription"
                   value={currentDebtDescription}
@@ -310,227 +451,161 @@ const Reports: React.FC = () => {
                   required
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="debtAccount">口座</Label>
-                <Select
+                <Input
+                  id="debtAccount"
+                  type="text"
                   value={currentDebtAccount}
-                  onValueChange={setCurrentDebtAccount}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="口座を選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="アコムカードローン">
-                      アコムカードローン
-                    </SelectItem>
-                    <SelectItem value="クレジットカード">
-                      クレジットカード
-                    </SelectItem>
-                    <SelectItem value="その他">その他</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(e) => setCurrentDebtAccount(e.target.value)}
+                  required
+                />
               </div>
-              <Button type="submit">負債情報を記録</Button>
+              <Button type="submit">登録</Button>
             </form>
           </CardContent>
         </Card>
       </div>
-      {workTimeEntries.length === 0 &&
-      assetEntries.length === 0 &&
-      debtEntries.length === 0 ? (
-        <p>データがありません。</p>
-      ) : (
-        <>
-          <div className="mb-4 flex justify-between items-center">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="destructive"
-                  disabled={selectedEntries.length === 0}
-                >
-                  選択したエントリーを削除
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    この操作は取り消せません。選択された{" "}
-                    {selectedEntries.length}{" "}
-                    件のエントリーが永久に削除されます。
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    削除
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>作業時間エントリー</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {workTimeEntries.length > 0 ? (
             <div>
-              <Button
-                variant={timeRange === "week" ? "default" : "outline"}
-                onClick={() => setTimeRange("week")}
-                className="mr-2"
-              >
-                週間
-              </Button>
-              <Button
-                variant={timeRange === "month" ? "default" : "outline"}
-                onClick={() => setTimeRange("month")}
-                className="mr-2"
-              >
-                月間
-              </Button>
-              <Button
-                variant={timeRange === "all" ? "default" : "outline"}
-                onClick={() => setTimeRange("all")}
-              >
-                全期間
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>日別作業時間</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={barChartData}>
-                    <XAxis
-                      dataKey="name"
-                      scale="point"
-                      padding={{ left: 10, right: 10 }}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="duration" fill="#8884d8">
-                      {barChartData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.id}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>プロジェクト別作業時間</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={pieChartDataArray}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      fill="#82ca9d"
-                      label
-                    >
-                      {pieChartDataArray.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.id}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>資産と負債の推移</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={combinedData}>
-                  <XAxis
-                    dataKey="date"
-                    type="category"
-                    padding={{ left: 10, right: 10 }}
-                  />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  {accounts.map((account, index) => (
-                    <React.Fragment key={account}>
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        data={assetEntries.filter(
-                          (entry) => entry.account === account
-                        )}
-                        name={`資産 (${account || "未分類"})`}
-                        stroke={COLORS[index % COLORS.length]}
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        connectNulls
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        data={debtEntries.filter(
-                          (entry) => entry.account === account
-                        )}
-                        name={`負債 (${account || "未分類"})`}
-                        stroke={COLORS[(index + 1) % COLORS.length]}
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        connectNulls
-                        strokeDasharray="5 5"
-                      />
-                    </React.Fragment>
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <h2 className="text-xl font-bold mb-4">作業時間エントリー</h2>
-          {filterEntriesByTimeRange(workTimeEntries).map(
-            (entry: WorkTimeEntry) => (
-              <Card
-                key={entry._id || `entry-${entry.date}-${entry.startTime}`}
-                className="mb-4"
-              >
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>{entry.projectName || "未設定"}</CardTitle>
-                  {entry._id && (
+              {workTimeEntries.map((entry) => (
+                <div
+                  key={entry._id}
+                  className="flex items-center justify-between py-2 border-b"
+                >
+                  <div className="flex items-center space-x-2">
                     <Checkbox
                       id={`select-${entry._id}`}
-                      checked={selectedEntries.includes(entry._id)}
+                      checked={selectedEntries.includes(entry._id || "")}
                       onCheckedChange={() =>
-                        entry._id && handleCheckboxChange(entry._id)
+                        handleCheckboxChange(entry._id || "")
                       }
                     />
-                  )}
-                </CardHeader>
-                <CardContent>
-                  <p>日付: {formatDate(entry.date)}</p>
-                  <p>開始時間: {formatTime(entry.startTime)}</p>
-                  <p>終了時間: {formatTime(entry.endTime)}</p>
-                  <p>作業時間: {formatDuration(entry.duration)}</p>
-                  <p>説明: {entry.description || "未設定"}</p>
-                </CardContent>
-              </Card>
-            )
+                    <div>
+                      <p className="font-semibold">{entry.projectName}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(entry.date)} {formatTime(entry.startTime)} -{" "}
+                        {formatTime(entry.endTime)}
+                      </p>
+                      <p className="text-sm">
+                        作業時間: {formatDuration(entry.duration)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {selectedEntries.length > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="mt-4">
+                      選択したエントリーを削除
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>削除の確認</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        選択したエントリーを削除してもよろしいですか？この操作は取り消せません。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete}>
+                        削除
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
+          ) : (
+            <p>作業時間エントリーがありません。</p>
           )}
-        </>
-      )}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>資産情報</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {assetEntries.length > 0 ? (
+              <div>
+                {assetEntries.map((entry) => (
+                  <div
+                    key={entry._id}
+                    className="flex items-center justify-between py-2 border-b"
+                  >
+                    <div>
+                      <p className="font-semibold">{entry.account}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(entry.date)}
+                      </p>
+                      <p className="text-sm">
+                        価値: {entry.value.toLocaleString()}円
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteAsset(entry._id || "")}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>資産情報がありません。</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>負債情報</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {debtEntries.length > 0 ? (
+              <div>
+                {debtEntries.map((entry) => (
+                  <div
+                    key={entry._id}
+                    className="flex items-center justify-between py-2 border-b"
+                  >
+                    <div>
+                      <p className="font-semibold">{entry.account}</p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(entry.date)}
+                      </p>
+                      <p className="text-sm">
+                        金額: {entry.value.toLocaleString()}円
+                      </p>
+                      <p className="text-sm">説明: {entry.description}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteDebt(entry._id || "")}
+                    >
+                      <Trash2Icon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>負債情報がありません。</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

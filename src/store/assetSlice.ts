@@ -56,6 +56,24 @@ export const addAssetEntry = createAsyncThunk<
   }
 });
 
+export const deleteAssetEntry = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>("asset/deleteEntry", async (id, { rejectWithValue }) => {
+  try {
+    await assetApi.delete(id);
+    return id;
+  } catch (error) {
+    console.error("資産エントリーの削除中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "資産エントリーの削除に失敗しました"
+    );
+  }
+});
+
 const assetSlice = createSlice({
   name: "asset",
   initialState,
@@ -87,6 +105,18 @@ const assetSlice = createSlice({
       )
       .addCase(addAssetEntry.rejected, (state, action) => {
         state.error = action.payload || "資産エントリーの追加に失敗しました";
+      })
+      .addCase(
+        deleteAssetEntry.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.entries = state.entries.filter(
+            (entry) => entry._id !== action.payload
+          );
+          state.error = null;
+        }
+      )
+      .addCase(deleteAssetEntry.rejected, (state, action) => {
+        state.error = action.payload || "資産エントリーの削除に失敗しました";
       });
   },
 });
