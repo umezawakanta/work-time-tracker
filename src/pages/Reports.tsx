@@ -183,6 +183,11 @@ const Reports: React.FC = () => {
     });
   };
 
+  // 資産と負債のデータを結合して日付でソート
+  const combinedData = [...assetEntries, ...debtEntries].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">作業時間と財務レポート</h1>
@@ -359,10 +364,9 @@ const Reports: React.FC = () => {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart>
+                <LineChart data={combinedData}>
                   <XAxis
                     dataKey="date"
-                    scale="time"
                     type="category"
                     padding={{ left: 10, right: 10 }}
                   />
@@ -371,23 +375,26 @@ const Reports: React.FC = () => {
                   <Legend />
                   <Line
                     type="monotone"
-                    data={assetEntries}
                     dataKey="value"
                     name="資産"
                     stroke="#8884d8"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    connectNulls
                   />
                   <Line
                     type="monotone"
-                    data={debtEntries}
                     dataKey="value"
                     name="負債"
                     stroke="#82ca9d"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    connectNulls
                   />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
-
           <h2 className="text-xl font-bold mb-4">作業時間エントリー</h2>
           {filterEntriesByTimeRange(workTimeEntries).map(
             (entry: WorkTimeEntry) => (
