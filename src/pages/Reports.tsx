@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import {
   fetchWorkTimeEntries,
   deleteWorkTimeEntry,
 } from "../store/workTimeSlice";
 import { fetchAssetEntries, addAssetEntry } from "../store/assetSlice";
+import { fetchDebtEntries, addDebtEntry } from "../store/debtSlice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,13 +49,18 @@ const Reports: React.FC = () => {
     (state: RootState) => state.workTime.entries
   );
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
+  const debtEntries = useSelector((state: RootState) => state.debt.entries);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
   const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
+  const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
+  const [currentDebtDescription, setCurrentDebtDescription] =
+    useState<string>("");
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
     dispatch(fetchAssetEntries());
+    dispatch(fetchDebtEntries());
   }, [dispatch]);
 
   const formatDate = (dateString: string | undefined) => {
@@ -160,10 +167,26 @@ const Reports: React.FC = () => {
     });
   };
 
+  const handleDebtSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newDebtEntry = {
+      date: new Date().toISOString().split("T")[0],
+      value: parseFloat(currentDebtValue),
+      description: currentDebtDescription,
+    };
+    dispatch(addDebtEntry(newDebtEntry));
+    setCurrentDebtValue("");
+    setCurrentDebtDescription("");
+    toast({
+      title: "成功",
+      description: "負債情報が記録されました。",
+    });
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">作業時間と資産レポート</h1>
-      <div className="mb-8">
+      <h1 className="text-2xl font-bold mb-4">作業時間と財務レポート</h1>
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle>資産情報の入力</CardTitle>
@@ -184,8 +207,39 @@ const Reports: React.FC = () => {
             </form>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>負債情報の入力</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleDebtSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="debtValue">現在の負債額（円）</Label>
+                <Input
+                  id="debtValue"
+                  type="number"
+                  value={currentDebtValue}
+                  onChange={(e) => setCurrentDebtValue(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="debtDescription">負債の説明</Label>
+                <Textarea
+                  id="debtDescription"
+                  value={currentDebtDescription}
+                  onChange={(e) => setCurrentDebtDescription(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit">負債情報を記録</Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
-      {workTimeEntries.length === 0 && assetEntries.length === 0 ? (
+      {workTimeEntries.length === 0 &&
+      assetEntries.length === 0 &&
+      debtEntries.length === 0 ? (
         <p>データがありません。</p>
       ) : (
         <>
@@ -301,11 +355,11 @@ const Reports: React.FC = () => {
 
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>資産推移</CardTitle>
+              <CardTitle>資産と負債の推移</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={assetEntries}>
+                <LineChart>
                   <XAxis
                     dataKey="date"
                     scale="time"
@@ -315,7 +369,20 @@ const Reports: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="value" stroke="#8884d8" />
+                  <Line
+                    type="monotone"
+                    data={assetEntries}
+                    dataKey="value"
+                    name="資産"
+                    stroke="#8884d8"
+                  />
+                  <Line
+                    type="monotone"
+                    data={debtEntries}
+                    dataKey="value"
+                    name="負債"
+                    stroke="#82ca9d"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>

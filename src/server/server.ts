@@ -76,6 +76,24 @@ const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
 
 const AssetEntry = mongoose.model<IAssetEntry>("AssetEntry", AssetEntrySchema);
 
+// DebtEntryインターフェース
+interface IDebtEntry extends mongoose.Document {
+  date: string;
+  value: number;
+  description: string;
+  createdAt: Date;
+}
+
+// DebtEntryモデルの定義
+const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
+  date: { type: String, required: true },
+  value: { type: Number, required: true },
+  description: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const DebtEntry = mongoose.model<IDebtEntry>("DebtEntry", DebtEntrySchema);
+
 // エラーハンドリングミドルウェア
 const errorHandler = (err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
@@ -103,6 +121,14 @@ const validateAssetEntry = [
     .isISO8601()
     .withMessage("日付は有効なISO8601形式である必要があります"),
   body("value").isNumeric().withMessage("資産価値は数値である必要があります"),
+];
+
+const validateDebtEntry = [
+  body("date")
+    .isISO8601()
+    .withMessage("日付は有効なISO8601形式である必要があります"),
+  body("value").isNumeric().withMessage("負債額は数値である必要があります"),
+  body("description").notEmpty().withMessage("説明は必須です"),
 ];
 
 // 作業時間を記録するAPIエンドポイント
@@ -267,6 +293,53 @@ app.get(
     try {
       const assets = await AssetEntry.find().sort({ date: -1 });
       res.json(assets);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 負債情報を記録するAPIエンドポイント
+app.post(
+  "/api/debt",
+  validateDebtEntry,
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Received debt request body:", req.body);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error("Validation errors:", errors.array());
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const debtData: IDebtEntry = new DebtEntry({
+        date: req.body.date,
+        value: req.body.value,
+        description: req.body.description,
+      });
+
+      const savedDebt = await debtData.save();
+      console.log("Debt entry saved successfully:", savedDebt);
+      res.status(201).json({
+        message: "負債情報が正常に記録されました",
+        debt: savedDebt,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 負債情報を取得するAPIエンドポイント
+app.get(
+  "/api/debt",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const debts = await DebtEntry.find().sort({ date: -1 });
+      res.json(debts);
     } catch (error) {
       next(error);
     }

@@ -1,5 +1,6 @@
 import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { AssetEntry } from "@/store/assetSlice";
+import { DebtEntry } from "@/store/debtSlice";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 let API_BASE_URL = "http://localhost:3001/api"; // デフォルト値
@@ -143,6 +144,44 @@ export const assetApi = {
           },
         } as AxiosResponse<AssetApiResponse>)
       : api.post<AssetApiResponse>("/asset", entry),
+};
+
+const mockDebtData: DebtEntry[] = [
+  {
+    _id: "1",
+    date: new Date().toISOString().split("T")[0],
+    value: 500000,
+    description: "住宅ローン",
+  },
+  {
+    _id: "2",
+    date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
+    value: 100000,
+    description: "クレジットカード",
+  },
+];
+
+interface DebtApiResponse {
+  message: string;
+  debt: DebtEntry;
+}
+
+export const debtApi = {
+  getAll: (): Promise<AxiosResponse<DebtEntry[]>> =>
+    USE_MOCK_DATA
+      ? Promise.resolve({ data: mockDebtData } as AxiosResponse<DebtEntry[]>)
+      : api.get<DebtEntry[]>("/debt"),
+  create: (
+    entry: Omit<DebtEntry, "_id">
+  ): Promise<AxiosResponse<DebtApiResponse>> =>
+    USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "負債情報が正常に記録されました",
+            debt: { ...entry, _id: String(mockDebtData.length + 1) },
+          },
+        } as AxiosResponse<DebtApiResponse>)
+      : api.post<DebtApiResponse>("/debt", entry),
 };
 
 export default api;
