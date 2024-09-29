@@ -164,12 +164,14 @@ const mockDebtData: DebtEntry[] = [
     date: new Date().toISOString().split("T")[0],
     value: 500000,
     description: "住宅ローン",
+    account: "銀行A",
   },
   {
     _id: "2",
     date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
     value: 100000,
     description: "クレジットカード",
+    account: "カード会社B",
   },
 ];
 
@@ -179,21 +181,31 @@ interface DebtApiResponse {
 }
 
 export const debtApi = {
-  getAll: (): Promise<AxiosResponse<DebtEntry[]>> =>
-    USE_MOCK_DATA
+  getAll: (): Promise<AxiosResponse<DebtEntry[]>> => {
+    console.log("Fetching all debt entries");
+    return USE_MOCK_DATA
       ? Promise.resolve({ data: mockDebtData } as AxiosResponse<DebtEntry[]>)
-      : api.get<DebtEntry[]>("/debt"),
+      : api.get<DebtEntry[]>("/debt").then((response) => {
+          console.log("Received debt entries:", response.data);
+          return response;
+        });
+  },
   create: (
     entry: Omit<DebtEntry, "_id">
-  ): Promise<AxiosResponse<DebtApiResponse>> =>
-    USE_MOCK_DATA
+  ): Promise<AxiosResponse<DebtApiResponse>> => {
+    console.log("Creating new debt entry:", entry);
+    return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "負債情報が正常に記録されました",
             debt: { ...entry, _id: String(mockDebtData.length + 1) },
           },
         } as AxiosResponse<DebtApiResponse>)
-      : api.post<DebtApiResponse>("/debt", entry),
+      : api.post<DebtApiResponse>("/debt", entry).then((response) => {
+          console.log("Created debt entry:", response.data);
+          return response;
+        });
+  },
 };
 
 export default api;

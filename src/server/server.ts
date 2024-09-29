@@ -78,19 +78,21 @@ const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
 
 const AssetEntry = mongoose.model<IAssetEntry>("AssetEntry", AssetEntrySchema);
 
-// DebtEntryインターフェース
+// DebtEntryインターフェースを更新
 interface IDebtEntry extends mongoose.Document {
   date: string;
   value: number;
   description: string;
+  account: string;
   createdAt: Date;
 }
 
-// DebtEntryモデルの定義
+// DebtEntryモデルの定義を更新
 const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
   date: { type: String, required: true },
   value: { type: Number, required: true },
   description: { type: String, required: true },
+  account: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -126,12 +128,14 @@ const validateAssetEntry = [
   body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
+// バリデーションミドルウェアを更新
 const validateDebtEntry = [
   body("date")
     .isISO8601()
     .withMessage("日付は有効なISO8601形式である必要があります"),
   body("value").isNumeric().withMessage("負債額は数値である必要があります"),
   body("description").notEmpty().withMessage("説明は必須です"),
+  body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
 // 作業時間を記録するAPIエンドポイント
@@ -303,7 +307,7 @@ app.get(
   }
 );
 
-// 負債情報を記録するAPIエンドポイント
+// 負債情報を記録するAPIエンドポイントを更新
 app.post(
   "/api/debt",
   validateDebtEntry,
@@ -323,6 +327,7 @@ app.post(
         date: req.body.date,
         value: req.body.value,
         description: req.body.description,
+        account: req.body.account,
       });
 
       const savedDebt = await debtData.save();
@@ -337,12 +342,28 @@ app.post(
   }
 );
 
-// 負債情報を取得するAPIエンドポイント
+// 負債情報を取得するAPIエンドポイントを更新
 app.get(
   "/api/debt",
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
-      const debts = await DebtEntry.find().sort({ date: -1 });
+      const debts = await DebtEntry.aggregate([
+        {
+          $sort: { date: -1, createdAt: -1 },
+        },
+        {
+          $group: {
+            _id: { date: "$date", account: "$account" },
+            latestEntry: { $first: "$$ROOT" },
+          },
+        },
+        {
+          $replaceRoot: { newRoot: "$latestEntry" },
+        },
+        {
+          $sort: { date: -1, account: 1 },
+        },
+      ]);
       res.json(debts);
     } catch (error) {
       next(error);

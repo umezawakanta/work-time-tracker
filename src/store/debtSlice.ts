@@ -6,6 +6,7 @@ export interface DebtEntry {
   date: string;
   value: number;
   description: string;
+  account: string;
 }
 
 interface DebtState {

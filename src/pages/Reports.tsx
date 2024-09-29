@@ -64,20 +64,12 @@ const Reports: React.FC = () => {
   const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
   const [currentDebtDescription, setCurrentDebtDescription] =
     useState<string>("");
+  const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await dispatch(fetchWorkTimeEntries()).unwrap();
-        await dispatch(fetchAssetEntries()).unwrap();
-        await dispatch(fetchDebtEntries()).unwrap();
-        console.log("Data fetched successfully");
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    dispatch(fetchWorkTimeEntries());
+    dispatch(fetchAssetEntries());
+    dispatch(fetchDebtEntries());
   }, [dispatch]);
 
   useEffect(() => {
@@ -174,8 +166,6 @@ const Reports: React.FC = () => {
     })
   );
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentAssetAccount) {
@@ -202,14 +192,24 @@ const Reports: React.FC = () => {
 
   const handleDebtSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentDebtAccount) {
+      toast({
+        title: "エラー",
+        description: "口座を選択してください。",
+        variant: "destructive",
+      });
+      return;
+    }
     const newDebtEntry = {
       date: new Date().toISOString().split("T")[0],
       value: parseFloat(currentDebtValue),
       description: currentDebtDescription,
+      account: currentDebtAccount,
     };
     dispatch(addDebtEntry(newDebtEntry));
     setCurrentDebtValue("");
     setCurrentDebtDescription("");
+    setCurrentDebtAccount("");
     toast({
       title: "成功",
       description: "負債情報が記録されました。",
@@ -223,12 +223,22 @@ const Reports: React.FC = () => {
       id: `financial-${index}`,
     }));
 
-  const assetAccounts = Array.from(
-    new Set(assetEntries.map((entry) => entry.account))
+  const accounts = Array.from(
+    new Set([
+      ...assetEntries.map((entry) => entry.account),
+      ...debtEntries.map((entry) => entry.account),
+    ])
   ).filter(Boolean);
 
-  console.log("Combined Data:", combinedData);
-  console.log("Asset Accounts:", assetAccounts);
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884D8",
+    "#82ca9d",
+    "#ffc658",
+  ];
 
   return (
     <div className="container mx-auto p-4">
@@ -260,7 +270,6 @@ const Reports: React.FC = () => {
                     <SelectValue placeholder="口座を選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="現金">現金</SelectItem>
                     <SelectItem value="三井住友銀行大塚支店">
                       三井住友銀行大塚支店
                     </SelectItem>
@@ -268,6 +277,7 @@ const Reports: React.FC = () => {
                       三井住友銀行神田支店
                     </SelectItem>
                     <SelectItem value="横浜銀行">横浜銀行</SelectItem>
+                    <SelectItem value="その他">その他</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -299,6 +309,26 @@ const Reports: React.FC = () => {
                   onChange={(e) => setCurrentDebtDescription(e.target.value)}
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="debtAccount">口座</Label>
+                <Select
+                  value={currentDebtAccount}
+                  onValueChange={setCurrentDebtAccount}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="口座を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="アコムカードローン">
+                      アコムカードローン
+                    </SelectItem>
+                    <SelectItem value="クレジットカード">
+                      クレジットカード
+                    </SelectItem>
+                    <SelectItem value="その他">その他</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit">負債情報を記録</Button>
             </form>
@@ -436,31 +466,35 @@ const Reports: React.FC = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {assetAccounts.map((account, index) => (
-                    <Line
-                      key={account}
-                      type="monotone"
-                      dataKey="value"
-                      data={assetEntries.filter(
-                        (entry) => entry.account === account
-                      )}
-                      name={`資産 (${account || "未分類"})`}
-                      stroke={COLORS[index % COLORS.length]}
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      connectNulls
-                    />
+                  {accounts.map((account, index) => (
+                    <React.Fragment key={account}>
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        data={assetEntries.filter(
+                          (entry) => entry.account === account
+                        )}
+                        name={`資産 (${account || "未分類"})`}
+                        stroke={COLORS[index % COLORS.length]}
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                        connectNulls
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        data={debtEntries.filter(
+                          (entry) => entry.account === account
+                        )}
+                        name={`負債 (${account || "未分類"})`}
+                        stroke={COLORS[(index + 1) % COLORS.length]}
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                        connectNulls
+                        strokeDasharray="5 5"
+                      />
+                    </React.Fragment>
                   ))}
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    data={debtEntries}
-                    name="負債"
-                    stroke="#FF0000"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    connectNulls
-                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
