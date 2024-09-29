@@ -66,10 +66,24 @@ const Reports: React.FC = () => {
     useState<string>("");
 
   useEffect(() => {
-    dispatch(fetchWorkTimeEntries());
-    dispatch(fetchAssetEntries());
-    dispatch(fetchDebtEntries());
+    const fetchData = async () => {
+      try {
+        await dispatch(fetchWorkTimeEntries()).unwrap();
+        await dispatch(fetchAssetEntries()).unwrap();
+        await dispatch(fetchDebtEntries()).unwrap();
+        console.log("Data fetched successfully");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Asset Entries:", assetEntries);
+    console.log("Debt Entries:", debtEntries);
+  }, [assetEntries, debtEntries]);
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
@@ -95,7 +109,6 @@ const Reports: React.FC = () => {
         : [...prev, entryId]
     );
   };
-
   const handleDelete = async () => {
     for (const entryId of selectedEntries) {
       try {
@@ -214,7 +227,7 @@ const Reports: React.FC = () => {
     new Set(assetEntries.map((entry) => entry.account))
   ).filter(Boolean);
 
-  console.log("Asset Entries:", assetEntries);
+  console.log("Combined Data:", combinedData);
   console.log("Asset Accounts:", assetAccounts);
 
   return (
@@ -247,6 +260,7 @@ const Reports: React.FC = () => {
                     <SelectValue placeholder="口座を選択" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="現金">現金</SelectItem>
                     <SelectItem value="三井住友銀行大塚支店">
                       三井住友銀行大塚支店
                     </SelectItem>

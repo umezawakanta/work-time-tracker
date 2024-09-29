@@ -131,21 +131,31 @@ interface AssetApiResponse {
 }
 
 export const assetApi = {
-  getAll: (): Promise<AxiosResponse<AssetEntry[]>> =>
-    USE_MOCK_DATA
+  getAll: (): Promise<AxiosResponse<AssetEntry[]>> => {
+    console.log("Fetching all asset entries");
+    return USE_MOCK_DATA
       ? Promise.resolve({ data: mockAssetData } as AxiosResponse<AssetEntry[]>)
-      : api.get<AssetEntry[]>("/asset"),
+      : api.get<AssetEntry[]>("/asset").then((response) => {
+          console.log("Received asset entries:", response.data);
+          return response;
+        });
+  },
   create: (
     entry: Omit<AssetEntry, "_id">
-  ): Promise<AxiosResponse<AssetApiResponse>> =>
-    USE_MOCK_DATA
+  ): Promise<AxiosResponse<AssetApiResponse>> => {
+    console.log("Creating new asset entry:", entry);
+    return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "資産情報が正常に記録されました",
             asset: { ...entry, _id: String(mockAssetData.length + 1) },
           },
         } as AxiosResponse<AssetApiResponse>)
-      : api.post<AssetApiResponse>("/asset", entry),
+      : api.post<AssetApiResponse>("/asset", entry).then((response) => {
+          console.log("Created asset entry:", response.data);
+          return response;
+        });
+  },
 };
 
 const mockDebtData: DebtEntry[] = [

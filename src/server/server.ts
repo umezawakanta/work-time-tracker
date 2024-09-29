@@ -64,6 +64,7 @@ const WorkTime = mongoose.model<IWorkTimeEntry>("WorkTime", WorkTimeSchema);
 interface IAssetEntry extends mongoose.Document {
   date: string;
   value: number;
+  account: string;
   createdAt: Date;
 }
 
@@ -71,6 +72,7 @@ interface IAssetEntry extends mongoose.Document {
 const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
   date: { type: String, required: true },
   value: { type: Number, required: true },
+  account: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -121,6 +123,7 @@ const validateAssetEntry = [
     .isISO8601()
     .withMessage("日付は有効なISO8601形式である必要があります"),
   body("value").isNumeric().withMessage("資産価値は数値である必要があります"),
+  body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
 const validateDebtEntry = [
@@ -253,7 +256,7 @@ app.delete(
   }
 );
 
-// 資産情報を記録するAPIエンドポイント
+// 資産情報を記録するAPIエンドポイントを更新
 app.post(
   "/api/asset",
   validateAssetEntry,
@@ -272,6 +275,7 @@ app.post(
       const assetData: IAssetEntry = new AssetEntry({
         date: req.body.date,
         value: req.body.value,
+        account: req.body.account,
       });
 
       const savedAsset = await assetData.save();
