@@ -1,4 +1,5 @@
 import { WorkTimeEntry } from "@/types/workTimeEntry";
+import { AssetEntry } from "@/store/assetSlice";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 let API_BASE_URL = "http://localhost:3001/api"; // デフォルト値
@@ -106,6 +107,42 @@ export const workTimeApi = {
     USE_MOCK_DATA
       ? Promise.resolve({} as AxiosResponse<void>)
       : api.delete(`/worktime/${id}`),
+};
+
+const mockAssetData: AssetEntry[] = [
+  {
+    _id: "1",
+    date: new Date().toISOString().split("T")[0],
+    value: 1000000,
+  },
+  {
+    _id: "2",
+    date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
+    value: 990000,
+  },
+];
+
+interface AssetApiResponse {
+  message: string;
+  asset: AssetEntry;
+}
+
+export const assetApi = {
+  getAll: (): Promise<AxiosResponse<AssetEntry[]>> =>
+    USE_MOCK_DATA
+      ? Promise.resolve({ data: mockAssetData } as AxiosResponse<AssetEntry[]>)
+      : api.get<AssetEntry[]>("/asset"),
+  create: (
+    entry: Omit<AssetEntry, "_id">
+  ): Promise<AxiosResponse<AssetApiResponse>> =>
+    USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "資産情報が正常に記録されました",
+            asset: { ...entry, _id: String(mockAssetData.length + 1) },
+          },
+        } as AxiosResponse<AssetApiResponse>)
+      : api.post<AssetApiResponse>("/asset", entry),
 };
 
 export default api;

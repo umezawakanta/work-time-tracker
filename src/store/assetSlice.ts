@@ -1,0 +1,93 @@
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { assetApi } from "../services/api";
+
+export interface AssetEntry {
+  _id?: string;
+  date: string;
+  value: number;
+}
+
+interface AssetState {
+  entries: AssetEntry[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: AssetState = {
+  entries: [],
+  status: "idle",
+  error: null,
+};
+
+export const fetchAssetEntries = createAsyncThunk<
+  AssetEntry[],
+  void,
+  { rejectValue: string }
+>("asset/fetchEntries", async (_, { rejectWithValue }) => {
+  try {
+    const response = await assetApi.getAll();
+    return response.data;
+  } catch (error) {
+    console.error("資産エントリーの取得中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "資産エントリーの取得に失敗しました"
+    );
+  }
+});
+
+export const addAssetEntry = createAsyncThunk<
+  AssetEntry,
+  Omit<AssetEntry, "_id">,
+  { rejectValue: string }
+>("asset/addEntry", async (entry, { rejectWithValue }) => {
+  try {
+    const response = await assetApi.create(entry);
+    return response.data.asset;
+  } catch (error) {
+    console.error("資産エントリーの追加中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "資産エントリーの追加に失敗しました"
+    );
+  }
+});
+
+const assetSlice = createSlice({
+  name: "asset",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAssetEntries.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        fetchAssetEntries.fulfilled,
+        (state, action: PayloadAction<AssetEntry[]>) => {
+          state.status = "succeeded";
+          state.entries = action.payload;
+          state.error = null;
+        }
+      )
+      .addCase(fetchAssetEntries.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "資産エントリーの取得に失敗しました";
+      })
+      .addCase(
+        addAssetEntry.fulfilled,
+        (state, action: PayloadAction<AssetEntry>) => {
+          state.entries.push(action.payload);
+          state.error = null;
+        }
+      )
+      .addCase(addAssetEntry.rejected, (state, action) => {
+        state.error = action.payload || "資産エントリーの追加に失敗しました";
+      });
+  },
+});
+
+export default assetSlice.reducer;

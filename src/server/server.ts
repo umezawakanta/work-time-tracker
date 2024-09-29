@@ -60,6 +60,22 @@ const WorkTimeSchema = new mongoose.Schema<IWorkTimeEntry>({
 
 const WorkTime = mongoose.model<IWorkTimeEntry>("WorkTime", WorkTimeSchema);
 
+// AssetEntryインターフェース
+interface IAssetEntry extends mongoose.Document {
+  date: string;
+  value: number;
+  createdAt: Date;
+}
+
+// AssetEntryモデルの定義
+const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
+  date: { type: String, required: true },
+  value: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const AssetEntry = mongoose.model<IAssetEntry>("AssetEntry", AssetEntrySchema);
+
 // エラーハンドリングミドルウェア
 const errorHandler = (err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
@@ -80,6 +96,13 @@ const validateWorkTimeEntry = [
   body("date")
     .isISO8601()
     .withMessage("日付は有効なISO8601形式である必要があります"),
+];
+
+const validateAssetEntry = [
+  body("date")
+    .isISO8601()
+    .withMessage("日付は有効なISO8601形式である必要があります"),
+  body("value").isNumeric().withMessage("資産価値は数値である必要があります"),
 ];
 
 // 作業時間を記録するAPIエンドポイント
@@ -198,6 +221,52 @@ app.delete(
         message: "作業時間が正常に削除されました",
         workTime: deletedWorkTime,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 資産情報を記録するAPIエンドポイント
+app.post(
+  "/api/asset",
+  validateAssetEntry,
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Received asset request body:", req.body);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error("Validation errors:", errors.array());
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const assetData: IAssetEntry = new AssetEntry({
+        date: req.body.date,
+        value: req.body.value,
+      });
+
+      const savedAsset = await assetData.save();
+      console.log("Asset entry saved successfully:", savedAsset);
+      res.status(201).json({
+        message: "資産情報が正常に記録されました",
+        asset: savedAsset,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 資産情報を取得するAPIエンドポイント
+app.get(
+  "/api/asset",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const assets = await AssetEntry.find().sort({ date: -1 });
+      res.json(assets);
     } catch (error) {
       next(error);
     }

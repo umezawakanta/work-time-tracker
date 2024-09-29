@@ -13,6 +13,7 @@ import {
   fetchWorkTimeEntries,
   deleteWorkTimeEntry,
 } from "../store/workTimeSlice";
+import { fetchAssetEntries, addAssetEntry } from "../store/assetSlice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,23 +41,19 @@ import {
   Line,
 } from "recharts";
 
-interface AssetEntry {
-  date: string;
-  value: number;
-}
-
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const workTimeEntries = useSelector(
     (state: RootState) => state.workTime.entries
   );
+  const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
-  const [assetEntries, setAssetEntries] = useState<AssetEntry[]>([]);
   const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
+    dispatch(fetchAssetEntries());
   }, [dispatch]);
 
   const formatDate = (dateString: string | undefined) => {
@@ -151,11 +148,11 @@ const Reports: React.FC = () => {
 
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newAssetEntry: AssetEntry = {
+    const newAssetEntry = {
       date: new Date().toISOString().split("T")[0],
       value: parseFloat(currentAssetValue),
     };
-    setAssetEntries([...assetEntries, newAssetEntry]);
+    dispatch(addAssetEntry(newAssetEntry));
     setCurrentAssetValue("");
     toast({
       title: "成功",
