@@ -20,8 +20,8 @@ app.use(morgan("combined"));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 app.use(limiter);
 
@@ -39,22 +39,22 @@ mongoose
 // WorkTimeEntryインターフェース
 interface IWorkTimeEntry extends mongoose.Document {
   projectName: string;
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
   description?: string;
   duration: number;
-  date: string;
+  date: Date;
   createdAt: Date;
 }
 
 // WorkTimeモデルの定義
 const WorkTimeSchema = new mongoose.Schema<IWorkTimeEntry>({
   projectName: { type: String, required: true },
-  startTime: { type: String, required: true },
-  endTime: { type: String, required: true },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
   description: String,
   duration: { type: Number, required: true },
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -62,7 +62,7 @@ const WorkTime = mongoose.model<IWorkTimeEntry>("WorkTime", WorkTimeSchema);
 
 // AssetEntryインターフェース
 interface IAssetEntry extends mongoose.Document {
-  date: string;
+  date: Date;
   value: number;
   account: string;
   createdAt: Date;
@@ -70,7 +70,7 @@ interface IAssetEntry extends mongoose.Document {
 
 // AssetEntryモデルの定義
 const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
   value: { type: Number, required: true },
   account: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
@@ -80,7 +80,7 @@ const AssetEntry = mongoose.model<IAssetEntry>("AssetEntry", AssetEntrySchema);
 
 // DebtEntryインターフェース
 interface IDebtEntry extends mongoose.Document {
-  date: string;
+  date: Date;
   value: number;
   description: string;
   account: string;
@@ -89,7 +89,7 @@ interface IDebtEntry extends mongoose.Document {
 
 // DebtEntryモデルの定義
 const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
   value: { type: Number, required: true },
   description: { type: String, required: true },
   account: { type: String, required: true },
@@ -111,20 +111,24 @@ const validateWorkTimeEntry = [
   body("projectName").notEmpty().withMessage("プロジェクト名は必須です"),
   body("startTime")
     .isISO8601()
+    .toDate()
     .withMessage("開始時間は有効なISO8601形式である必要があります"),
   body("endTime")
     .isISO8601()
+    .toDate()
     .withMessage("終了時間は有効なISO8601形式である必要があります"),
   body("description").optional().isString(),
   body("duration").isInt().withMessage("期間は整数である必要があります"),
   body("date")
     .isISO8601()
+    .toDate()
     .withMessage("日付は有効なISO8601形式である必要があります"),
 ];
 
 const validateAssetEntry = [
   body("date")
     .isISO8601()
+    .toDate()
     .withMessage("日付は有効なISO8601形式である必要があります"),
   body("value").isNumeric().withMessage("資産価値は数値である必要があります"),
   body("account").notEmpty().withMessage("口座は必須です"),
@@ -133,6 +137,7 @@ const validateAssetEntry = [
 const validateDebtEntry = [
   body("date")
     .isISO8601()
+    .toDate()
     .withMessage("日付は有効なISO8601形式である必要があります"),
   body("value").isNumeric().withMessage("負債額は数値である必要があります"),
   body("description").notEmpty().withMessage("説明は必須です"),
@@ -414,7 +419,10 @@ app.delete(
         return res.status(404).json({ message: "負債が見つかりません" });
       }
       console.log(`Successfully deleted debt with id: ${id}`);
-      res.json({ message: "負債が正常に削除されました", deletedDebt });
+      res.json({
+        message: "負債が正常に削除されました",
+        deletedDebt,
+      });
     } catch (error) {
       console.error("Error deleting debt:", error);
       next(error);

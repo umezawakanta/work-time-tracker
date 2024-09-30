@@ -58,9 +58,12 @@ import {
   Line,
 } from "recharts";
 import { Trash2Icon } from "lucide-react";
+import { useLocale } from "../hooks/useLocale";
+import { formatDateAndTime } from "../utils/dateUtils";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { locale } = useLocale();
   const workTimeEntries = useSelector(
     (state: RootState) => state.workTime.entries
   );
@@ -83,12 +86,12 @@ const Reports: React.FC = () => {
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
-    return new Date(dateString).toLocaleDateString();
+    return formatDateAndTime(dateString, locale, { dateStyle: "short" });
   };
 
   const formatTime = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
-    return new Date(dateString).toLocaleTimeString();
+    return formatDateAndTime(dateString, locale, { timeStyle: "short" });
   };
 
   const formatDuration = (duration: number | undefined) => {

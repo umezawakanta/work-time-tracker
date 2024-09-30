@@ -1,26 +1,31 @@
-// utils/dateUtils.ts
-
 /**
- * 日付をYYYY-MM-DD形式の文字列に変換します。
- * @param date - 変換する日付
- * @returns YYYY-MM-DD形式の文字列
+ * 日付と時刻を指定されたロケールと書式でフォーマットします。
+ * @param date - フォーマットする日付（Date オブジェクトまたは ISO 8601 文字列）
+ * @param locale - ロケール（例: 'ja-JP', 'en-US'）
+ * @param options - Intl.DateTimeFormatOptions オブジェクト
+ * @returns フォーマットされた日付と時刻の文字列
  */
-export function formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+export function formatDateAndTime(
+  date: Date | string,
+  locale: string,
+  options: Intl.DateTimeFormatOptions = {}
+): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return new Intl.DateTimeFormat(locale, options).format(dateObj);
 }
 
 /**
  * 時刻をHH:MM形式の文字列に変換します。
  * @param date - 変換する日付
+ * @param locale - ロケール（例: 'ja-JP', 'en-US'）
  * @returns HH:MM形式の文字列
  */
-export function formatTime(date: Date): string {
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
+export function formatTime(date: Date, locale: string): string {
+  return formatDateAndTime(date, locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
 /**
@@ -39,7 +44,10 @@ export function calculateDuration(start: Date, end: Date): number {
  * @param minutes - 合計分数
  * @returns 時間と分のオブジェクト
  */
-export function minutesToHoursAndMinutes(minutes: number): { hours: number; minutes: number } {
+export function minutesToHoursAndMinutes(minutes: number): {
+  hours: number;
+  minutes: number;
+} {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
   return { hours, minutes: remainingMinutes };
@@ -52,21 +60,23 @@ export function minutesToHoursAndMinutes(minutes: number): { hours: number; minu
  * @returns Date型のオブジェクト
  */
 export function parseDateTime(dateString: string, timeString: string): Date {
-  const [year, month, day] = dateString.split('-').map(Number);
-  const [hours, minutes] = timeString.split(':').map(Number);
+  const [year, month, day] = dateString.split("-").map(Number);
+  const [hours, minutes] = timeString.split(":").map(Number);
   return new Date(year, month - 1, day, hours, minutes);
 }
 
 /**
- * 日付を日本語形式（YYYY年MM月DD日）に変換します。
+ * 日付を指定されたロケールの形式に変換します。
  * @param date - 変換する日付
- * @returns 日本語形式の日付文字列
+ * @param locale - ロケール（例: 'ja-JP', 'en-US'）
+ * @returns ロケールに応じた形式の日付文字列
  */
-export function formatDateJapanese(date: Date): string {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${year}年${month}月${day}日`;
+export function formatDate(date: Date, locale: string): string {
+  return formatDateAndTime(date, locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 /**
@@ -77,7 +87,9 @@ export function formatDateJapanese(date: Date): string {
  */
 export function calculateDaysBetween(start: Date, end: Date): number {
   const oneDay = 24 * 60 * 60 * 1000; // 1日のミリ秒数
-  const diffDays = Math.round(Math.abs((start.getTime() - end.getTime()) / oneDay));
+  const diffDays = Math.round(
+    Math.abs((start.getTime() - end.getTime()) / oneDay)
+  );
   return diffDays;
 }
 
@@ -93,6 +105,11 @@ export function addDays(date: Date, days: number): Date {
   return result;
 }
 
+/**
+ * 秒数を時間、分、秒の文字列に変換します。
+ * @param seconds - 合計秒数
+ * @returns フォーマットされた時間文字列
+ */
 export function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -101,7 +118,8 @@ export function formatDuration(seconds: number): string {
   const parts = [];
   if (hours > 0) parts.push(`${hours}時間`);
   if (minutes > 0) parts.push(`${minutes}分`);
-  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}秒`);
+  if (remainingSeconds > 0 || parts.length === 0)
+    parts.push(`${remainingSeconds}秒`);
 
-  return parts.join(' ');
+  return parts.join(" ");
 }
