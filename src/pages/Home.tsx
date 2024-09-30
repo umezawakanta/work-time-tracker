@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import DailyBalanceReminder from "@/components/dailyBalanceReminder";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-center mb-8">
         作業時間トラッカーへようこそ
       </h1>
+      <DailyBalanceReminder />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card className="w-full">
           <CardHeader>
@@ -52,6 +54,7 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">{/* ... */}</div>
     </div>
   );
 }
