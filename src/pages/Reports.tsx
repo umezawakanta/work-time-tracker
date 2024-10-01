@@ -58,13 +58,12 @@ import {
   ResponsiveContainer,
   Cell,
   Legend,
-  LineChart,
-  Line,
 } from "recharts";
 import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
 import { formatDateAndTime } from "../utils/dateUtils";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
+import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -306,17 +305,11 @@ const Reports: React.FC = () => {
 
   const combinedData = [...assetEntries, ...debtEntries]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((entry, index) => ({
-      ...entry,
-      id: `financial-${index}`,
+    .map((entry) => ({
+      date: new Date(entry.date),
+      value: "description" in entry ? -entry.value : entry.value,
+      account: entry.account,
     }));
-
-  const accounts = Array.from(
-    new Set([
-      ...assetEntries.map((entry) => entry.account),
-      ...debtEntries.map((entry) => entry.account),
-    ])
-  );
 
   const updateLastBalanceDate = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -463,41 +456,7 @@ const Reports: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>資産と負債の推移</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-96">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={combinedData}>
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {accounts.map((account, index) => (
-                  <Line
-                    key={account}
-                    type="monotone"
-                    dataKey={(entry) =>
-                      entry.account === account
-                        ? "value" in entry
-                          ? entry.value
-                          : -entry.value
-                        : undefined
-                    }
-                    name={account}
-                    stroke={COLORS[index % COLORS.length]}
-                    connectNulls
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
+      <AssetLiabilityTrendChart data={combinedData} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
           <CardHeader>
