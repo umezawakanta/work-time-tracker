@@ -57,6 +57,24 @@ export const addDebtEntry = createAsyncThunk<
   }
 });
 
+export const updateDebtEntry = createAsyncThunk<
+  DebtEntry,
+  { id: string; entry: Partial<DebtEntry> },
+  { rejectValue: string }
+>("debt/updateEntry", async ({ id, entry }, { rejectWithValue }) => {
+  try {
+    const response = await debtApi.update(id, entry);
+    return response.data.debt;
+  } catch (error) {
+    console.error("負債エントリーの更新中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "負債エントリーの更新に失敗しました"
+    );
+  }
+});
+
 export const deleteDebtEntry = createAsyncThunk<
   string,
   string,
@@ -106,6 +124,21 @@ const debtSlice = createSlice({
       )
       .addCase(addDebtEntry.rejected, (state, action) => {
         state.error = action.payload || "負債エントリーの追加に失敗しました";
+      })
+      .addCase(
+        updateDebtEntry.fulfilled,
+        (state, action: PayloadAction<DebtEntry>) => {
+          const index = state.entries.findIndex(
+            (entry) => entry._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.entries[index] = action.payload;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(updateDebtEntry.rejected, (state, action) => {
+        state.error = action.payload || "負債エントリーの更新に失敗しました";
       })
       .addCase(
         deleteDebtEntry.fulfilled,

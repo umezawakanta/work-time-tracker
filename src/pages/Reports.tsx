@@ -25,11 +25,15 @@ import {
   fetchAssetEntries,
   addAssetEntry,
   deleteAssetEntry,
+  updateAssetEntry,
+  AssetEntry,
 } from "../store/assetSlice";
 import {
   fetchDebtEntries,
   addDebtEntry,
   deleteDebtEntry,
+  updateDebtEntry,
+  DebtEntry,
 } from "../store/debtSlice";
 import {
   AlertDialog,
@@ -57,7 +61,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
 import { formatDateAndTime } from "../utils/dateUtils";
 
@@ -77,6 +81,8 @@ const Reports: React.FC = () => {
   const [currentDebtDescription, setCurrentDebtDescription] =
     useState<string>("");
   const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
+  const [editingAsset, setEditingAsset] = useState<string | null>(null);
+  const [editingDebt, setEditingDebt] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
@@ -199,12 +205,17 @@ const Reports: React.FC = () => {
       value: parseFloat(currentAssetValue),
       account: currentAssetAccount,
     };
-    dispatch(addAssetEntry(newAssetEntry));
+    if (editingAsset) {
+      dispatch(updateAssetEntry({ id: editingAsset, entry: newAssetEntry }));
+      setEditingAsset(null);
+    } else {
+      dispatch(addAssetEntry(newAssetEntry));
+    }
     setCurrentAssetValue("");
     setCurrentAssetAccount("");
     toast({
       title: "成功",
-      description: "資産情報が記録されました。",
+      description: editingAsset ? "資産情報が更新されました。" : "資産情報が記録されました。",
     });
   };
 
@@ -224,13 +235,18 @@ const Reports: React.FC = () => {
       description: currentDebtDescription,
       account: currentDebtAccount,
     };
-    dispatch(addDebtEntry(newDebtEntry));
+    if (editingDebt) {
+      dispatch(updateDebtEntry({ id: editingDebt, entry: newDebtEntry }));
+      setEditingDebt(null);
+    } else {
+      dispatch(addDebtEntry(newDebtEntry));
+    }
     setCurrentDebtValue("");
     setCurrentDebtDescription("");
     setCurrentDebtAccount("");
     toast({
       title: "成功",
-      description: "負債情報が記録されました。",
+      description: editingDebt ? "負債情報が更新されました。" : "負債情報が記録されました。",
     });
   };
 
@@ -239,7 +255,7 @@ const Reports: React.FC = () => {
       await dispatch(deleteAssetEntry(id)).unwrap();
       toast({
         title: "成功",
-        description: "資産情報が削除されました。",
+        description: "資産情報が削除され��した。",
       });
     } catch (error) {
       console.error("Failed to delete asset entry:", error);
@@ -272,6 +288,19 @@ const Reports: React.FC = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditAsset = (entry: AssetEntry) => {
+    setEditingAsset(entry._id || null);
+    setCurrentAssetValue(entry.value.toString());
+    setCurrentAssetAccount(entry.account);
+  };
+
+  const handleEditDebt = (entry: DebtEntry) => {
+    setEditingDebt(entry._id || null);
+    setCurrentDebtValue(entry.value.toString());
+    setCurrentDebtAccount(entry.account);
+    setCurrentDebtDescription(entry.description);
   };
 
   const combinedData = [...assetEntries, ...debtEntries]
@@ -400,7 +429,7 @@ const Reports: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
           <CardHeader>
-            <CardTitle>資産情報の登録</CardTitle>
+            <CardTitle>資産情報の登録/更新</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAssetSubmit} className="space-y-4">
@@ -424,14 +453,19 @@ const Reports: React.FC = () => {
                   required
                 />
               </div>
-              <Button type="submit">登録</Button>
+              <Button type="submit">{editingAsset ? "更新" : "登録"}</Button>
+              {editingAsset && (
+                <Button type="button" variant="outline" onClick={() => setEditingAsset(null)}>
+                  キャンセル
+                </Button>
+              )}
             </form>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>負債情報の登録</CardTitle>
+            <CardTitle>負債情報の登録/更新</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleDebtSubmit} className="space-y-4">
@@ -464,7 +498,12 @@ const Reports: React.FC = () => {
                   required
                 />
               </div>
-              <Button type="submit">登録</Button>
+              <Button type="submit">{editingDebt ? "更新" : "登録"}</Button>
+              {editingDebt && (
+                <Button type="button" variant="outline" onClick={() => setEditingDebt(null)}>
+                  キャンセル
+                </Button>
+              )}
             </form>
           </CardContent>
         </Card>
@@ -555,13 +594,22 @@ const Reports: React.FC = () => {
                         価値: {entry.value.toLocaleString()}円
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteAsset(entry._id || "")}
-                    >
-                      <Trash2Icon className="h-4 w-4" />
-                    </Button>
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditAsset(entry)}
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteAsset(entry._id || "")}
+                      >
+                        <Trash2Icon className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -593,13 +641,22 @@ const Reports: React.FC = () => {
                       </p>
                       <p className="text-sm">説明: {entry.description}</p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteDebt(entry._id || "")}
-                    >
-                      <Trash2Icon className="h-4 w-4" />
-                    </Button>
+                    <div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditDebt(entry)}
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteDebt(entry._id || "")}
+                      >
+                        <Trash2Icon className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

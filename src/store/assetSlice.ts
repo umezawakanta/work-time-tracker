@@ -56,6 +56,24 @@ export const addAssetEntry = createAsyncThunk<
   }
 });
 
+export const updateAssetEntry = createAsyncThunk<
+  AssetEntry,
+  { id: string; entry: Partial<AssetEntry> },
+  { rejectValue: string }
+>("asset/updateEntry", async ({ id, entry }, { rejectWithValue }) => {
+  try {
+    const response = await assetApi.update(id, entry);
+    return response.data.asset;
+  } catch (error) {
+    console.error("資産エントリーの更新中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error
+        ? error.message
+        : "資産エントリーの更新に失敗しました"
+    );
+  }
+});
+
 export const deleteAssetEntry = createAsyncThunk<
   string,
   string,
@@ -105,6 +123,21 @@ const assetSlice = createSlice({
       )
       .addCase(addAssetEntry.rejected, (state, action) => {
         state.error = action.payload || "資産エントリーの追加に失敗しました";
+      })
+      .addCase(
+        updateAssetEntry.fulfilled,
+        (state, action: PayloadAction<AssetEntry>) => {
+          const index = state.entries.findIndex(
+            (entry) => entry._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.entries[index] = action.payload;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(updateAssetEntry.rejected, (state, action) => {
+        state.error = action.payload || "資産エントリーの更新に失敗しました";
       })
       .addCase(
         deleteAssetEntry.fulfilled,

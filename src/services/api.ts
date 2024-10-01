@@ -191,6 +191,27 @@ export const assetApi = {
           return response;
         });
   },
+  update: (
+    id: string,
+    entry: Partial<AssetEntry>
+  ): Promise<AxiosResponse<AssetApiResponse>> => {
+    console.log("Updating asset entry:", id, entry);
+    return USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "資産情報が正常に更新されました",
+            asset: {
+              ...mockAssetData.find((e) => e._id === id),
+              ...entry,
+              _id: id,
+            },
+          },
+        } as AxiosResponse<AssetApiResponse>)
+      : api.put<AssetApiResponse>(`/asset/${id}`, entry).then((response) => {
+          console.log("Updated asset entry:", response.data);
+          return response;
+        });
+  },
   delete: (id: string): Promise<AxiosResponse<void>> => {
     console.log("Deleting asset entry:", id);
     return USE_MOCK_DATA
@@ -234,6 +255,27 @@ export const debtApi = {
         } as AxiosResponse<DebtApiResponse>)
       : api.post<DebtApiResponse>("/debt", entry).then((response) => {
           console.log("Created debt entry:", response.data);
+          return response;
+        });
+  },
+  update: (
+    id: string,
+    entry: Partial<DebtEntry>
+  ): Promise<AxiosResponse<DebtApiResponse>> => {
+    console.log("Updating debt entry:", id, entry);
+    return USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "負債情報が正常に更新されました",
+            debt: {
+              ...mockDebtData.find((e) => e._id === id),
+              ...entry,
+              _id: id,
+            },
+          },
+        } as AxiosResponse<DebtApiResponse>)
+      : api.put<DebtApiResponse>(`/debt/${id}`, entry).then((response) => {
+          console.log("Updated debt entry:", response.data);
           return response;
         });
   },

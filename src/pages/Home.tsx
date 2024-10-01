@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DailyBalanceReminder from "@/components/dailyBalanceReminder";
+import DailyBalanceReminder from "@/components/DailyBalanceReminder";
 
 export default function Home() {
   return (
