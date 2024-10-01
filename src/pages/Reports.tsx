@@ -83,11 +83,14 @@ const Reports: React.FC = () => {
   const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
+  const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
     dispatch(fetchAssetEntries());
     dispatch(fetchDebtEntries());
+    const storedDate = localStorage.getItem("lastBalanceUpdateDate");
+    setLastUpdateDate(storedDate);
   }, [dispatch]);
 
   const formatDate = (dateString: string | undefined) => {
@@ -213,6 +216,7 @@ const Reports: React.FC = () => {
     }
     setCurrentAssetValue("");
     setCurrentAssetAccount("");
+    updateLastBalanceDate();
     toast({
       title: "成功",
       description: editingAsset
@@ -246,6 +250,7 @@ const Reports: React.FC = () => {
     setCurrentDebtValue("");
     setCurrentDebtDescription("");
     setCurrentDebtAccount("");
+    updateLastBalanceDate();
     toast({
       title: "成功",
       description: editingDebt
@@ -321,9 +326,35 @@ const Reports: React.FC = () => {
     ])
   );
 
+  const updateLastBalanceDate = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setLastUpdateDate(today);
+    localStorage.setItem("lastBalanceUpdateDate", today);
+  };
+
+  const isUpdateNeeded = () => {
+    if (!lastUpdateDate) return true;
+    const today = new Date().toISOString().split("T")[0];
+    return lastUpdateDate !== today;
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">レポート</h1>
+
+      {isUpdateNeeded() && (
+        <Card className="mb-8 bg-yellow-100">
+          <CardHeader>
+            <CardTitle>残高更新リマインダー</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>
+              本日の資産・負債の残高を入力してください。最後の更新日:{" "}
+              {lastUpdateDate || "未更新"}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
