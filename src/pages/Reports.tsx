@@ -5,18 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
 import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
@@ -27,10 +15,8 @@ import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
 import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
 import { AssetForm } from "@/components/forms/AssetForm";
 import { DebtForm } from "@/components/forms/DebtForm";
-import {
-  fetchWorkTimeEntries,
-  deleteWorkTimeEntry,
-} from "../store/workTimeSlice";
+import { WorkTimeList } from "@/components/list/WorkTimeList";
+import { fetchWorkTimeEntries } from "../store/workTimeSlice";
 import {
   fetchAssetEntries,
   deleteAssetEntry,
@@ -52,7 +38,6 @@ const Reports: React.FC = () => {
   );
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
-  const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
@@ -72,47 +57,6 @@ const Reports: React.FC = () => {
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "未設定";
     return formatDateAndTime(dateString, locale, { dateStyle: "short" });
-  };
-
-  const formatTime = (dateString: string | undefined) => {
-    if (!dateString) return "未設定";
-    return formatDateAndTime(dateString, locale, { timeStyle: "short" });
-  };
-
-  const formatDuration = (duration: number | undefined) => {
-    if (duration === undefined) return "未設定";
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    return `${hours}時間${minutes}分`;
-  };
-
-  const handleCheckboxChange = (entryId: string) => {
-    setSelectedEntries((prev) =>
-      prev.includes(entryId)
-        ? prev.filter((id) => id !== entryId)
-        : [...prev, entryId]
-    );
-  };
-
-  const handleDelete = async () => {
-    for (const entryId of selectedEntries) {
-      try {
-        await dispatch(deleteWorkTimeEntry(entryId)).unwrap();
-      } catch (error) {
-        console.error(`Failed to delete entry ${entryId}:`, error);
-        toast({
-          title: "エラー",
-          description: `エントリー ${entryId} の削除に失敗しました。`,
-          variant: "destructive",
-        });
-      }
-    }
-    setSelectedEntries([]);
-    toast({
-      title: "成功",
-      description: "選択されたエントリーが削除されました。",
-    });
-    dispatch(fetchWorkTimeEntries());
   };
 
   const handleDeleteAsset = async (id: string) => {
@@ -268,68 +212,7 @@ const Reports: React.FC = () => {
         />
       </div>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>作業時間エントリー</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {workTimeEntries.length > 0 ? (
-            <div>
-              {workTimeEntries.map((entry) => (
-                <div
-                  key={entry._id}
-                  className="flex items-center justify-between py-2 border-b"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`select-${entry._id}`}
-                      checked={selectedEntries.includes(entry._id || "")}
-                      onCheckedChange={() =>
-                        handleCheckboxChange(entry._id || "")
-                      }
-                    />
-                    <div>
-                      <p className="font-semibold">{entry.projectName}</p>
-                      <p className="text-sm text-gray-500">
-                        {formatDate(entry.date)} {formatTime(entry.startTime)} -{" "}
-                        {formatTime(entry.endTime)}
-                      </p>
-                      <p className="text-sm">
-                        作業時間: {formatDuration(entry.duration)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {selectedEntries.length > 0 && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="mt-4">
-                      選択したエントリーを削除
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>削除の確認</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        選択したエントリーを削除してもよろしいですか？この操作は取り消せません。
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete}>
-                        削除
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
-            </div>
-          ) : (
-            <p>作業時間エントリーがありません。</p>
-          )}
-        </CardContent>
-      </Card>
+      <WorkTimeList workTimeEntries={workTimeEntries} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>

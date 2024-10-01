@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import Layout from "./components/Layout";
+import Layout from "@/components/layout/Layout";
 import Home from "./pages/Home";
 import WorkTimeEntryForm from "./components/forms/WorkTimeEntryForm";
 import Reports from "./pages/Reports";
