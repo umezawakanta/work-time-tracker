@@ -215,7 +215,9 @@ const Reports: React.FC = () => {
     setCurrentAssetAccount("");
     toast({
       title: "成功",
-      description: editingAsset ? "資産情報が更新されました。" : "資産情報が記録されました。",
+      description: editingAsset
+        ? "資産情報が更新されました。"
+        : "資産情報が記録されました。",
     });
   };
 
@@ -246,7 +248,9 @@ const Reports: React.FC = () => {
     setCurrentDebtAccount("");
     toast({
       title: "成功",
-      description: editingDebt ? "負債情報が更新されました。" : "負債情報が記録されました。",
+      description: editingDebt
+        ? "負債情報が更新されました。"
+        : "負債情報が記録されました。",
     });
   };
 
@@ -255,7 +259,7 @@ const Reports: React.FC = () => {
       await dispatch(deleteAssetEntry(id)).unwrap();
       toast({
         title: "成功",
-        description: "資産情報が削除され��した。",
+        description: "資産情報が削除されました。",
       });
     } catch (error) {
       console.error("Failed to delete asset entry:", error);
@@ -455,7 +459,11 @@ const Reports: React.FC = () => {
               </div>
               <Button type="submit">{editingAsset ? "更新" : "登録"}</Button>
               {editingAsset && (
-                <Button type="button" variant="outline" onClick={() => setEditingAsset(null)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingAsset(null)}
+                >
                   キャンセル
                 </Button>
               )}
@@ -500,7 +508,11 @@ const Reports: React.FC = () => {
               </div>
               <Button type="submit">{editingDebt ? "更新" : "登録"}</Button>
               {editingDebt && (
-                <Button type="button" variant="outline" onClick={() => setEditingDebt(null)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingDebt(null)}
+                >
                   キャンセル
                 </Button>
               )}
