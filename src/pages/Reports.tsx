@@ -15,7 +15,6 @@ import {
 } from "../store/workTimeSlice";
 import {
   fetchAssetEntries,
-  addAssetEntry,
   deleteAssetEntry,
   updateAssetEntry,
   AssetEntry,
@@ -46,9 +45,9 @@ import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
 import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
 import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
+import { AssetForm } from "@/components/forms/AssetForm";
 
 const Reports: React.FC = () => {
-  // ... (既存のコード)
   const dispatch = useDispatch<AppDispatch>();
   const { locale } = useLocale();
   const workTimeEntries = useSelector(
@@ -57,8 +56,6 @@ const Reports: React.FC = () => {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
-  const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
-  const [currentAssetAccount, setCurrentAssetAccount] = useState<string>("");
   const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
   const [currentDebtDescription, setCurrentDebtDescription] =
     useState<string>("");
@@ -123,38 +120,6 @@ const Reports: React.FC = () => {
       description: "選択されたエントリーが削除されました。",
     });
     dispatch(fetchWorkTimeEntries());
-  };
-
-  const handleAssetSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentAssetAccount) {
-      toast({
-        title: "エラー",
-        description: "口座を選択してください。",
-        variant: "destructive",
-      });
-      return;
-    }
-    const newAssetEntry = {
-      date: new Date().toISOString().split("T")[0],
-      value: parseFloat(currentAssetValue),
-      account: currentAssetAccount,
-    };
-    if (editingAsset) {
-      dispatch(updateAssetEntry({ id: editingAsset, entry: newAssetEntry }));
-      setEditingAsset(null);
-    } else {
-      dispatch(addAssetEntry(newAssetEntry));
-    }
-    setCurrentAssetValue("");
-    setCurrentAssetAccount("");
-    updateLastBalanceDate();
-    toast({
-      title: "成功",
-      description: editingAsset
-        ? "資産情報が更新されました。"
-        : "資産情報が記録されました。",
-    });
   };
 
   const handleDebtSubmit = (e: React.FormEvent) => {
@@ -337,45 +302,11 @@ const Reports: React.FC = () => {
       <AssetLiabilityTrendChart data={combinedData} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>資産情報の登録/更新</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleAssetSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="assetValue">資産価値</Label>
-                <Input
-                  id="assetValue"
-                  type="number"
-                  value={currentAssetValue}
-                  onChange={(e) => setCurrentAssetValue(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="assetAccount">口座</Label>
-                <Input
-                  id="assetAccount"
-                  type="text"
-                  value={currentAssetAccount}
-                  onChange={(e) => setCurrentAssetAccount(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit">{editingAsset ? "更新" : "登録"}</Button>
-              {editingAsset && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setEditingAsset(null)}
-                >
-                  キャンセル
-                </Button>
-              )}
-            </form>
-          </CardContent>
-        </Card>
+        <AssetForm
+          editingAsset={editingAsset}
+          setEditingAsset={setEditingAsset}
+          updateLastBalanceDate={updateLastBalanceDate}
+        />
 
         <Card>
           <CardHeader>
