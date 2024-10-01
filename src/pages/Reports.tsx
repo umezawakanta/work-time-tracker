@@ -6,26 +6,6 @@ import { RootState, AppDispatch } from "../store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  fetchWorkTimeEntries,
-  deleteWorkTimeEntry,
-} from "../store/workTimeSlice";
-import {
-  fetchAssetEntries,
-  deleteAssetEntry,
-  updateAssetEntry,
-  AssetEntry,
-} from "../store/assetSlice";
-import {
-  fetchDebtEntries,
-  addDebtEntry,
-  deleteDebtEntry,
-  updateDebtEntry,
-  DebtEntry,
-} from "../store/debtSlice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +26,23 @@ import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendCh
 import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
 import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
 import { AssetForm } from "@/components/forms/AssetForm";
+import { DebtForm } from "@/components/forms/DebtForm";
+import {
+  fetchWorkTimeEntries,
+  deleteWorkTimeEntry,
+} from "../store/workTimeSlice";
+import {
+  fetchAssetEntries,
+  deleteAssetEntry,
+  updateAssetEntry,
+  AssetEntry,
+} from "../store/assetSlice";
+import {
+  fetchDebtEntries,
+  deleteDebtEntry,
+  updateDebtEntry,
+  DebtEntry,
+} from "../store/debtSlice";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -56,10 +53,6 @@ const Reports: React.FC = () => {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
-  const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
-  const [currentDebtDescription, setCurrentDebtDescription] =
-    useState<string>("");
-  const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
@@ -120,40 +113,6 @@ const Reports: React.FC = () => {
       description: "選択されたエントリーが削除されました。",
     });
     dispatch(fetchWorkTimeEntries());
-  };
-
-  const handleDebtSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentDebtAccount) {
-      toast({
-        title: "エラー",
-        description: "口座を選択してください。",
-        variant: "destructive",
-      });
-      return;
-    }
-    const newDebtEntry = {
-      date: new Date().toISOString().split("T")[0],
-      value: parseFloat(currentDebtValue),
-      description: currentDebtDescription,
-      account: currentDebtAccount,
-    };
-    if (editingDebt) {
-      dispatch(updateDebtEntry({ id: editingDebt, entry: newDebtEntry }));
-      setEditingDebt(null);
-    } else {
-      dispatch(addDebtEntry(newDebtEntry));
-    }
-    setCurrentDebtValue("");
-    setCurrentDebtDescription("");
-    setCurrentDebtAccount("");
-    updateLastBalanceDate();
-    toast({
-      title: "成功",
-      description: editingDebt
-        ? "負債情報が更新されました。"
-        : "負債情報が記録されました。",
-    });
   };
 
   const handleDeleteAsset = async (id: string) => {
@@ -261,11 +220,6 @@ const Reports: React.FC = () => {
     }
   };
 
-  // デバッグ用のログを追加
-  useEffect(() => {
-    console.log("workTimeEntries:", workTimeEntries);
-  }, [workTimeEntries]);
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">レポート</h1>
@@ -307,55 +261,11 @@ const Reports: React.FC = () => {
           setEditingAsset={setEditingAsset}
           updateLastBalanceDate={updateLastBalanceDate}
         />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>負債情報の登録/更新</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleDebtSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="debtValue">負債額</Label>
-                <Input
-                  id="debtValue"
-                  type="number"
-                  value={currentDebtValue}
-                  onChange={(e) => setCurrentDebtValue(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="debtDescription">説明</Label>
-                <Textarea
-                  id="debtDescription"
-                  value={currentDebtDescription}
-                  onChange={(e) => setCurrentDebtDescription(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="debtAccount">口座</Label>
-                <Input
-                  id="debtAccount"
-                  type="text"
-                  value={currentDebtAccount}
-                  onChange={(e) => setCurrentDebtAccount(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit">{editingDebt ? "更新" : "登録"}</Button>
-              {editingDebt && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setEditingDebt(null)}
-                >
-                  キャンセル
-                </Button>
-              )}
-            </form>
-          </CardContent>
-        </Card>
+        <DebtForm
+          editingDebt={editingDebt}
+          setEditingDebt={setEditingDebt}
+          updateLastBalanceDate={updateLastBalanceDate}
+        />
       </div>
 
       <Card className="mb-8">
