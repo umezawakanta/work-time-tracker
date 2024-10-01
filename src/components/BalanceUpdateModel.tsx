@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,9 @@ export function BalanceUpdateModal({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>残高修正 - {accountName}</DialogTitle>
+          <DialogDescription>
+            以下のフォームで残高を修正してください。不明金として記帳する場合はチェックボックスを選択してください。
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-4 items-center gap-4">
