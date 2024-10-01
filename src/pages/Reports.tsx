@@ -45,8 +45,10 @@ import { formatDateAndTime } from "../utils/dateUtils";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
 import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
+import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
 
 const Reports: React.FC = () => {
+  // ... (既存のコード)
   const dispatch = useDispatch<AppDispatch>();
   const { locale } = useLocale();
   const workTimeEntries = useSelector(
@@ -317,11 +319,14 @@ const Reports: React.FC = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {workTimeEntries.length > 0 ? (
-          <WorkTimeChart workTimeEntries={workTimeEntries} locale={locale} />
+          <>
+            <WorkTimeChart workTimeEntries={workTimeEntries} locale={locale} />
+            <ProjectPieChart workTimeEntries={workTimeEntries} />
+          </>
         ) : (
-          <Card>
+          <Card className="md:col-span-2">
             <CardContent>
               <p>作業時間データがありません。</p>
             </CardContent>
