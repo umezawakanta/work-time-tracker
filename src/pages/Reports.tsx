@@ -64,6 +64,7 @@ import {
 import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
 import { formatDateAndTime } from "../utils/dateUtils";
+import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 
 const Reports: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -84,6 +85,10 @@ const Reports: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
+  const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<
+    AssetEntry | DebtEntry | null
+  >(null);
 
   useEffect(() => {
     dispatch(fetchWorkTimeEntries());
@@ -299,19 +304,6 @@ const Reports: React.FC = () => {
     }
   };
 
-  const handleEditAsset = (entry: AssetEntry) => {
-    setEditingAsset(entry._id || null);
-    setCurrentAssetValue(entry.value.toString());
-    setCurrentAssetAccount(entry.account);
-  };
-
-  const handleEditDebt = (entry: DebtEntry) => {
-    setEditingDebt(entry._id || null);
-    setCurrentDebtValue(entry.value.toString());
-    setCurrentDebtAccount(entry.account);
-    setCurrentDebtDescription(entry.description);
-  };
-
   const combinedData = [...assetEntries, ...debtEntries]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((entry, index) => ({
@@ -336,6 +328,51 @@ const Reports: React.FC = () => {
     if (!lastUpdateDate) return true;
     const today = new Date().toISOString().split("T")[0];
     return lastUpdateDate !== today;
+  };
+
+  const handleBalanceUpdate = (accountId: string, isAsset: boolean) => {
+    const account = isAsset
+      ? assetEntries.find((entry) => entry._id === accountId)
+      : debtEntries.find((entry) => entry._id === accountId);
+    if (account) {
+      setSelectedAccount(account);
+      setIsBalanceModalOpen(true);
+    }
+  };
+
+  const handleBalanceUpdateSubmit = (
+    newBalance: number,
+    isUnknownFunds: boolean,
+    date: string
+  ) => {
+    if (selectedAccount) {
+      const updatedEntry = {
+        ...selectedAccount,
+        value: newBalance,
+        date: date,
+        isUnknownFunds: isUnknownFunds,
+      };
+      if ("description" in selectedAccount) {
+        dispatch(
+          updateDebtEntry({
+            id: selectedAccount._id || "",
+            entry: updatedEntry as DebtEntry,
+          })
+        );
+      } else {
+        dispatch(
+          updateAssetEntry({
+            id: selectedAccount._id || "",
+            entry: updatedEntry as AssetEntry,
+          })
+        );
+      }
+      updateLastBalanceDate();
+      toast({
+        title: "成功",
+        description: "残高が更新されました。",
+      });
+    }
   };
 
   return (
@@ -641,7 +678,9 @@ const Reports: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditAsset(entry)}
+                        onClick={() =>
+                          handleBalanceUpdate(entry._id || "", true)
+                        }
                       >
                         <PencilIcon className="h-4 w-4" />
                       </Button>
@@ -688,7 +727,9 @@ const Reports: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditDebt(entry)}
+                        onClick={() =>
+                          handleBalanceUpdate(entry._id || "", false)
+                        }
                       >
                         <PencilIcon className="h-4 w-4" />
                       </Button>
@@ -709,6 +750,14 @@ const Reports: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      <BalanceUpdateModal
+        isOpen={isBalanceModalOpen}
+        onClose={() => setIsBalanceModalOpen(false)}
+        onSubmit={handleBalanceUpdateSubmit}
+        currentBalance={selectedAccount?.value || 0}
+        accountName={selectedAccount?.account || ""}
+      />
     </div>
   );
 };

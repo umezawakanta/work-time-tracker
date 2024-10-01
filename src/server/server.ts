@@ -98,12 +98,13 @@ const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
 
 const DebtEntry = mongoose.model<IDebtEntry>("DebtEntry", DebtEntrySchema);
 
-// エラーハンドリングミドルウェア
+// エラーハンドリングミドルウェアの修正
 const errorHandler = (err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
-  res
-    .status(500)
-    .json({ message: "サーバーエラーが発生しました", error: err.message });
+  res.status(500).json({
+    message: "サーバーエラーが発生しました",
+    error: process.env.NODE_ENV === "production" ? {} : err.message,
+  });
 };
 
 // バリデーションミドルウェア
@@ -307,6 +308,39 @@ app.get(
     try {
       const assets = await AssetEntry.find().sort({ date: -1 });
       res.json(assets);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 資産情報を更新するAPIエンドポイント
+app.put(
+  "/api/asset/:id",
+  validateAssetEntry,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const updatedAsset = await AssetEntry.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedAsset) {
+        return res
+          .status(404)
+          .json({ message: "指定された資産情報が見つかりません" });
+      }
+      res.json({
+        message: "資産情報が正常に更新されました",
+        asset: updatedAsset,
+      });
     } catch (error) {
       next(error);
     }
