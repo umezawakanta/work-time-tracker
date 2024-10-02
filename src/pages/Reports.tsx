@@ -3,18 +3,15 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { useLocale } from "../hooks/useLocale";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
-import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
-import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
-import { AssetForm } from "@/components/forms/AssetForm";
-import { DebtForm } from "@/components/forms/DebtForm";
 import { WorkTimeList } from "@/components/list/WorkTimeList";
-import { AssetList } from "@/components/list/AssetList";
-import { DebtList } from "@/components/list/DebtList";
+import { BalanceUpdateReminder } from "@/components/BalanceUpdateReminder";
+import { WorkTimeCharts } from "@/components/chart/WorkTimeChars";
+import { AssetDebtForms } from "@/components/forms/AssetDebtForms";
+import { AssetDebtLists } from "@/components/list/AssetDebtLists";
 import { fetchWorkTimeEntries } from "@/store/workTimeSlice";
 import {
   fetchAssetEntries,
@@ -121,61 +118,28 @@ const Reports: React.FC = () => {
       <h1 className="text-2xl font-bold mb-4">レポート</h1>
 
       {isUpdateNeeded() && (
-        <Card className="mb-8 bg-yellow-100">
-          <CardHeader>
-            <CardTitle>残高更新リマインダー</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>
-              本日の資産・負債の残高を入力してください。最後の更新日:{" "}
-              {lastUpdateDate || "未更新"}
-            </p>
-          </CardContent>
-        </Card>
+        <BalanceUpdateReminder lastUpdateDate={lastUpdateDate} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {workTimeEntries.length > 0 ? (
-          <>
-            <WorkTimeChart workTimeEntries={workTimeEntries} locale={locale} />
-            <ProjectPieChart workTimeEntries={workTimeEntries} />
-          </>
-        ) : (
-          <Card className="md:col-span-2">
-            <CardContent>
-              <p>作業時間データがありません。</p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      <WorkTimeCharts workTimeEntries={workTimeEntries} locale={locale} />
 
       <AssetLiabilityTrendChart data={combinedData} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <AssetForm
-          editingAsset={editingAsset}
-          setEditingAsset={setEditingAsset}
-          updateLastBalanceDate={updateLastBalanceDate}
-        />
-        <DebtForm
-          editingDebt={editingDebt}
-          setEditingDebt={setEditingDebt}
-          updateLastBalanceDate={updateLastBalanceDate}
-        />
-      </div>
+      <AssetDebtForms
+        editingAsset={editingAsset}
+        setEditingAsset={setEditingAsset}
+        editingDebt={editingDebt}
+        setEditingDebt={setEditingDebt}
+        updateLastBalanceDate={updateLastBalanceDate}
+      />
 
       <WorkTimeList workTimeEntries={workTimeEntries} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <AssetList
-          assetEntries={assetEntries}
-          onBalanceUpdate={handleBalanceUpdate}
-        />
-        <DebtList
-          debtEntries={debtEntries}
-          onBalanceUpdate={handleBalanceUpdate}
-        />
-      </div>
+      <AssetDebtLists
+        assetEntries={assetEntries}
+        debtEntries={debtEntries}
+        onBalanceUpdate={handleBalanceUpdate}
+      />
 
       <BalanceUpdateModal
         isOpen={isBalanceModalOpen}
