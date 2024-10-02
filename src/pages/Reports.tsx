@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../store";
+import { RootState, AppDispatch } from "@/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
@@ -16,7 +14,8 @@ import { AssetForm } from "@/components/forms/AssetForm";
 import { DebtForm } from "@/components/forms/DebtForm";
 import { WorkTimeList } from "@/components/list/WorkTimeList";
 import { AssetList } from "@/components/list/AssetList";
-import { fetchWorkTimeEntries } from "../store/workTimeSlice";
+import { DebtList } from "@/components/list/DebtList";
+import { fetchWorkTimeEntries } from "@/store/workTimeSlice";
 import {
   fetchAssetEntries,
   updateAssetEntry,
@@ -24,7 +23,6 @@ import {
 } from "../store/assetSlice";
 import {
   fetchDebtEntries,
-  deleteDebtEntry,
   updateDebtEntry,
   DebtEntry,
 } from "../store/debtSlice";
@@ -52,26 +50,6 @@ const Reports: React.FC = () => {
     const storedDate = localStorage.getItem("lastBalanceUpdateDate");
     setLastUpdateDate(storedDate);
   }, [dispatch]);
-
-  const handleDeleteDebt = async (id: string) => {
-    try {
-      await dispatch(deleteDebtEntry(id)).unwrap();
-      toast({
-        title: "成功",
-        description: "負債情報が削除されました。",
-      });
-    } catch (error) {
-      console.error("Failed to delete debt entry:", error);
-      toast({
-        title: "エラー",
-        description:
-          error instanceof Error
-            ? error.message
-            : "負債情報の削除に失敗しました。",
-        variant: "destructive",
-      });
-    }
-  };
 
   const combinedData = [...assetEntries, ...debtEntries]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -193,55 +171,10 @@ const Reports: React.FC = () => {
           assetEntries={assetEntries}
           onBalanceUpdate={handleBalanceUpdate}
         />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>負債情報</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {debtEntries.length > 0 ? (
-              <div>
-                {debtEntries.map((entry) => (
-                  <div
-                    key={entry._id}
-                    className="flex items-center justify-between py-2 border-b"
-                  >
-                    <div>
-                      <p className="font-semibold">{entry.account}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(entry.date).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm">
-                        金額: {entry.value.toLocaleString()}円
-                      </p>
-                      <p className="text-sm">説明: {entry.description}</p>
-                    </div>
-                    <div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          handleBalanceUpdate(entry._id || "", false)
-                        }
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteDebt(entry._id || "")}
-                      >
-                        <Trash2Icon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>負債情報がありません。</p>
-            )}
-          </CardContent>
-        </Card>
+        <DebtList
+          debtEntries={debtEntries}
+          onBalanceUpdate={handleBalanceUpdate}
+        />
       </div>
 
       <BalanceUpdateModal
