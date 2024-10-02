@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { ja } from "date-fns/locale";
+import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
 import "./AssetLibraryTrendChart.css";
 
@@ -52,27 +53,61 @@ export function AssetLiabilityTrendChart({
     };
   }, []);
 
+  const processedData = useMemo(() => {
+    const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
+    const accountData: Record<string, { date: Date; value: number }[]> = {};
+
+    sortedData.forEach((point) => {
+      if (!accountData[point.account]) {
+        accountData[point.account] = [];
+      }
+      accountData[point.account].push({ date: point.date, value: point.value });
+    });
+
+    const filledData: DataPoint[] = [];
+    Object.entries(accountData).forEach(([account, points]) => {
+      let lastValue = points[0].value;
+      const allDates = Array.from(
+        new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
+      )
+        .sort()
+        .map((dateStr) => new Date(dateStr));
+
+      allDates.forEach((date) => {
+        const point = points.find(
+          (p) =>
+            p.date.toISOString().split("T")[0] ===
+            date.toISOString().split("T")[0]
+        );
+        if (point) {
+          lastValue = point.value;
+        }
+        filledData.push({ date, value: lastValue, account });
+      });
+    });
+
+    return filledData;
+  }, [data]);
+
   const aggregatedData = useMemo(() => {
-    return data.reduce((acc, curr) => {
+    return processedData.reduce((acc, curr) => {
       const dateStr = curr.date.toISOString().split("T")[0];
       if (!acc[dateStr]) {
         acc[dateStr] = {};
       }
-      if (!acc[dateStr][curr.account]) {
-        acc[dateStr][curr.account] = curr.value;
-      }
+      acc[dateStr][curr.account] = curr.value;
       return acc;
     }, {} as Record<string, Record<string, number>>);
-  }, [data]);
+  }, [processedData]);
 
   const sortedDates = Object.keys(aggregatedData).sort();
-  const accounts = Array.from(new Set(data.map((d) => d.account)));
+  const accounts = Array.from(new Set(processedData.map((d) => d.account)));
 
   const chartData: ChartData<"line"> = {
     labels: sortedDates,
     datasets: accounts.map((account, index) => ({
       label: account,
-      data: sortedDates.map((date) => aggregatedData[date][account] || null),
+      data: sortedDates.map((date) => aggregatedData[date][account]),
       borderColor: `hsl(${(index * 360) / accounts.length}, 70%, 50%)`,
       backgroundColor: `hsla(${
         (index * 360) / accounts.length
@@ -110,6 +145,11 @@ export function AssetLiabilityTrendChart({
         adapters: {
           date: {
             locale: ja,
+          },
+        },
+        ticks: {
+          callback: function (value) {
+            return format(new Date(value), "MM/dd");
           },
         },
       },
