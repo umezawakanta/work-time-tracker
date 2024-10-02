@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "../hooks/useLocale";
-import { formatDateAndTime } from "../utils/dateUtils";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
 import { WorkTimeChart } from "@/components/chart/WorkTimeChart";
@@ -16,10 +15,10 @@ import { ProjectPieChart } from "@/components/chart/ProjectPieChart";
 import { AssetForm } from "@/components/forms/AssetForm";
 import { DebtForm } from "@/components/forms/DebtForm";
 import { WorkTimeList } from "@/components/list/WorkTimeList";
+import { AssetList } from "@/components/list/AssetList";
 import { fetchWorkTimeEntries } from "../store/workTimeSlice";
 import {
   fetchAssetEntries,
-  deleteAssetEntry,
   updateAssetEntry,
   AssetEntry,
 } from "../store/assetSlice";
@@ -53,31 +52,6 @@ const Reports: React.FC = () => {
     const storedDate = localStorage.getItem("lastBalanceUpdateDate");
     setLastUpdateDate(storedDate);
   }, [dispatch]);
-
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return "未設定";
-    return formatDateAndTime(dateString, locale, { dateStyle: "short" });
-  };
-
-  const handleDeleteAsset = async (id: string) => {
-    try {
-      await dispatch(deleteAssetEntry(id)).unwrap();
-      toast({
-        title: "成功",
-        description: "資産情報が削除されました。",
-      });
-    } catch (error) {
-      console.error("Failed to delete asset entry:", error);
-      toast({
-        title: "エラー",
-        description:
-          error instanceof Error
-            ? error.message
-            : "資産情報の削除に失敗しました。",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleDeleteDebt = async (id: string) => {
     try {
@@ -215,53 +189,10 @@ const Reports: React.FC = () => {
       <WorkTimeList workTimeEntries={workTimeEntries} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>資産情報</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {assetEntries.length > 0 ? (
-              <div>
-                {assetEntries.map((entry) => (
-                  <div
-                    key={entry._id}
-                    className="flex items-center justify-between py-2 border-b"
-                  >
-                    <div>
-                      <p className="font-semibold">{entry.account}</p>
-                      <p className="text-sm text-gray-500">
-                        {formatDate(entry.date)}
-                      </p>
-                      <p className="text-sm">
-                        価値: {entry.value.toLocaleString()}円
-                      </p>
-                    </div>
-                    <div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          handleBalanceUpdate(entry._id || "", true)
-                        }
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteAsset(entry._id || "")}
-                      >
-                        <Trash2Icon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>資産情報がありません。</p>
-            )}
-          </CardContent>
-        </Card>
+        <AssetList
+          assetEntries={assetEntries}
+          onBalanceUpdate={handleBalanceUpdate}
+        />
 
         <Card>
           <CardHeader>
@@ -278,7 +209,7 @@ const Reports: React.FC = () => {
                     <div>
                       <p className="font-semibold">{entry.account}</p>
                       <p className="text-sm text-gray-500">
-                        {formatDate(entry.date)}
+                        {new Date(entry.date).toLocaleDateString()}
                       </p>
                       <p className="text-sm">
                         金額: {entry.value.toLocaleString()}円
