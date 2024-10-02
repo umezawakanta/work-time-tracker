@@ -3,6 +3,7 @@ import workTimeReducer from "./workTimeSlice";
 import assetReducer from "./assetSlice";
 import debtReducer from "./debtSlice";
 import userReducer from "./userSlice";
+import todoReducer from "./todoSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     asset: assetReducer,
     debt: debtReducer,
     user: userReducer,
+    todo: todoReducer,
   },
 });
 

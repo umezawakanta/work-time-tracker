@@ -88,6 +88,14 @@ const mockDebtData: DebtEntry[] = [
   },
 ];
 
+// ToDoリストのモックデータを追加
+const mockTodoData: TodoItem[] = [
+  { id: "1", task: "洗い物", completed: false },
+  { id: "2", task: "掃除", completed: false },
+  { id: "3", task: "ゴミ捨て", completed: false },
+  { id: "4", task: "片づけ", completed: false },
+];
+
 interface WorkTimeApiResponse {
   message: string;
   workTime: WorkTimeEntry;
@@ -101,6 +109,18 @@ interface AssetApiResponse {
 interface DebtApiResponse {
   message: string;
   debt: DebtEntry;
+}
+
+// ToDoアイテムのインターフェースを追加
+interface TodoItem {
+  id: string;
+  task: string;
+  completed: boolean;
+}
+
+interface TodoApiResponse {
+  message: string;
+  todo: TodoItem;
 }
 
 export const workTimeApi = {
@@ -296,5 +316,75 @@ export const debtApi = {
             }
             throw error;
           });
+  },
+};
+
+// ToDoリストのAPIを追加
+export const todoApi = {
+  getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
+    console.log("Fetching all todo items");
+    return USE_MOCK_DATA
+      ? Promise.resolve({ data: mockTodoData } as AxiosResponse<TodoItem[]>)
+      : api.get<TodoItem[]>("/todos").then((response) => {
+          console.log("Received todo items:", response.data);
+          return response;
+        });
+  },
+  create: (task: string): Promise<AxiosResponse<TodoApiResponse>> => {
+    console.log("Creating new todo item:", task);
+    return USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "ToDoアイテムが正常に追加されました",
+            todo: {
+              id: String(mockTodoData.length + 1),
+              task,
+              completed: false,
+            },
+          },
+        } as AxiosResponse<TodoApiResponse>)
+      : api.post<TodoApiResponse>("/todos", { task }).then((response) => {
+          console.log("Created todo item:", response.data);
+          return response;
+        });
+  },
+  update: (
+    id: string,
+    updates: Partial<TodoItem>
+  ): Promise<AxiosResponse<TodoApiResponse>> => {
+    console.log("Updating todo item:", id, updates);
+    return USE_MOCK_DATA
+      ? Promise.resolve({
+          data: {
+            message: "ToDoアイテムが正常に更新されました",
+            todo: {
+              ...mockTodoData.find((item) => item.id === id),
+              ...updates,
+              id,
+            },
+          },
+        } as AxiosResponse<TodoApiResponse>)
+      : api.put<TodoApiResponse>(`/todos/${id}`, updates).then((response) => {
+          console.log("Updated todo item:", response.data);
+          return response;
+        });
+  },
+  delete: (id: string): Promise<AxiosResponse<void>> => {
+    console.log("Deleting todo item:", id);
+    return USE_MOCK_DATA
+      ? Promise.resolve({} as AxiosResponse<void>)
+      : api.delete(`/todos/${id}`).then((response) => {
+          console.log("Deleted todo item:", id);
+          return response;
+        });
+  },
+  reset: (): Promise<AxiosResponse<void>> => {
+    console.log("Resetting todo list");
+    return USE_MOCK_DATA
+      ? Promise.resolve({} as AxiosResponse<void>)
+      : api.post("/todos/reset").then((response) => {
+          console.log("Reset todo list");
+          return response;
+        });
   },
 };

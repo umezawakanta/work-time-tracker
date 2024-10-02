@@ -1,73 +1,77 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RefreshCcw, Trash2, Edit, Check, X } from "lucide-react";
-
-interface TodoItem {
-  id: number;
-  task: string;
-  completed: boolean;
-}
-
-const defaultTodos: TodoItem[] = [
-  { id: 1, task: "洗い物", completed: false },
-  { id: 2, task: "掃除", completed: false },
-  { id: 3, task: "ゴミ捨て", completed: false },
-  { id: 4, task: "片づけ", completed: false },
-];
+import {
+  fetchTodoItems,
+  addTodoItem,
+  updateTodoItem,
+  deleteTodoItem,
+  resetTodoList,
+  TodoItem,
+} from "@/store/todoSlice";
+import { RootState, AppDispatch } from "@/store";
 
 export default function DailyTodoReminder() {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const todos = useSelector((state: RootState) => state.todo.items);
+  const status = useSelector((state: RootState) => state.todo.status);
+  const error = useSelector((state: RootState) => state.todo.error);
+
   const [newTodo, setNewTodo] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
-    const storedTodos = localStorage.getItem("dailyTodos");
-    if (storedTodos) {
-      setTodos(JSON.parse(storedTodos));
-    } else {
-      setTodos(defaultTodos);
-    }
-  }, []);
+    dispatch(fetchTodoItems());
+  }, [dispatch]);
 
-  useEffect(() => {
-    localStorage.setItem("dailyTodos", JSON.stringify(todos));
-  }, [todos]);
-
-  const handleToggle = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  const handleToggle = (id: string) => {
+    const todoToUpdate = todos.find((todo) => todo.id === id);
+    if (todoToUpdate && id) {
+      dispatch(
+        updateTodoItem({
+          id,
+          updates: { completed: !todoToUpdate.completed },
+        })
       )
-    );
+        .unwrap()
+        .then(() => {
+          console.log(`Todo item ${id} updated successfully`);
+        })
+        .catch((error) => {
+          console.error(`Error updating todo item ${id}:`, error);
+        });
+    } else {
+      console.error(`Invalid todo item or ID: ${id}`);
+    }
   };
 
   const handleReset = () => {
-    setTodos(defaultTodos);
+    dispatch(resetTodoList());
   };
 
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
-      const newId =
-        todos.length > 0 ? Math.max(...todos.map((t) => t.id)) + 1 : 1;
-      setTodos([
-        ...todos,
-        { id: newId, task: newTodo.trim(), completed: false },
-      ]);
+      dispatch(addTodoItem(newTodo.trim()));
       setNewTodo("");
     }
   };
 
-  const handleDeleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const handleDeleteTodo = (id: string) => {
+    if (id) {
+      dispatch(deleteTodoItem(id));
+    } else {
+      console.error("削除しようとしたTODOアイテムのIDが不正です:", id);
+    }
   };
 
-  const handleEditStart = (id: number, task: string) => {
+  const handleEditStart = (id: string, task: string) => {
     setEditingId(id);
     setEditingText(task);
   };
@@ -77,17 +81,30 @@ export default function DailyTodoReminder() {
     setEditingText("");
   };
 
-  const handleEditSave = (id: number) => {
-    if (editingText.trim()) {
-      setTodos(
-        todos.map((todo) =>
-          todo.id === id ? { ...todo, task: editingText.trim() } : todo
-        )
-      );
-      setEditingId(null);
-      setEditingText("");
+  const handleEditSave = (id: string) => {
+    if (editingText.trim() && id) {
+      dispatch(updateTodoItem({ id, updates: { task: editingText.trim() } }))
+        .unwrap()
+        .then(() => {
+          console.log(`Todo item ${id} updated successfully`);
+          setEditingId(null);
+          setEditingText("");
+        })
+        .catch((error) => {
+          console.error(`Error updating todo item ${id}:`, error);
+        });
+    } else {
+      console.error(`Invalid todo item or ID: ${id}`);
     }
   };
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <Card className="w-full mb-8">
@@ -108,7 +125,7 @@ export default function DailyTodoReminder() {
           <Button type="submit">追加</Button>
         </form>
         <div className="space-y-4">
-          {todos.map((todo) => (
+          {todos.map((todo: TodoItem) => (
             <div key={todo.id} className="flex items-center space-x-2">
               <Checkbox
                 id={`todo-${todo.id}`}
