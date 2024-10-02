@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import { AssetEntry } from "../types/assetEntry";
 import { DebtEntry } from "../types/debtEntry";
+import { TodoItem } from "../store/todoSlice";
 
 const USE_MOCK_DATA = false;
 
@@ -88,12 +89,11 @@ const mockDebtData: DebtEntry[] = [
   },
 ];
 
-// ToDoリストのモックデータを追加
 const mockTodoData: TodoItem[] = [
-  { id: "1", task: "洗い物", completed: false },
-  { id: "2", task: "掃除", completed: false },
-  { id: "3", task: "ゴミ捨て", completed: false },
-  { id: "4", task: "片づけ", completed: false },
+  { _id: "1", task: "洗い物", completed: false },
+  { _id: "2", task: "掃除", completed: false },
+  { _id: "3", task: "ゴミ捨て", completed: false },
+  { _id: "4", task: "片づけ", completed: false },
 ];
 
 interface WorkTimeApiResponse {
@@ -109,13 +109,6 @@ interface AssetApiResponse {
 interface DebtApiResponse {
   message: string;
   debt: DebtEntry;
-}
-
-// ToDoアイテムのインターフェースを追加
-interface TodoItem {
-  id: string;
-  task: string;
-  completed: boolean;
 }
 
 interface TodoApiResponse {
@@ -152,34 +145,34 @@ export const workTimeApi = {
         });
   },
   update: (
-    id: string,
+    _id: string,
     entry: Partial<WorkTimeEntry>
   ): Promise<AxiosResponse<WorkTimeApiResponse>> => {
-    console.log("Updating work time entry:", id, entry);
+    console.log("Updating work time entry:", _id, entry);
     return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "作業時間が正常に更新されました",
             workTime: {
-              ...mockWorkTimeData.find((e) => e._id === id),
+              ...mockWorkTimeData.find((e) => e._id === _id),
               ...entry,
-              _id: id,
+              _id: _id,
             },
           },
         } as AxiosResponse<WorkTimeApiResponse>)
       : api
-          .put<WorkTimeApiResponse>(`/worktime/${id}`, entry)
+          .put<WorkTimeApiResponse>(`/worktime/${_id}`, entry)
           .then((response) => {
             console.log("Updated work time entry:", response.data);
             return response;
           });
   },
-  delete: (id: string): Promise<AxiosResponse<void>> => {
-    console.log("Deleting work time entry:", id);
+  delete: (_id: string): Promise<AxiosResponse<void>> => {
+    console.log("Deleting work time entry:", _id);
     return USE_MOCK_DATA
       ? Promise.resolve({} as AxiosResponse<void>)
-      : api.delete(`/worktime/${id}`).then((response) => {
-          console.log("Deleted work time entry:", id);
+      : api.delete(`/worktime/${_id}`).then((response) => {
+          console.log("Deleted work time entry:", _id);
           return response;
         });
   },
@@ -212,34 +205,34 @@ export const assetApi = {
         });
   },
   update: (
-    id: string,
+    _id: string,
     entry: Partial<AssetEntry>
   ): Promise<AxiosResponse<AssetApiResponse>> => {
-    console.log("Updating asset entry:", id, entry);
+    console.log("Updating asset entry:", _id, entry);
     return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "資産情報が正常に更新されました",
             asset: {
-              ...mockAssetData.find((e) => e._id === id),
+              ...mockAssetData.find((e) => e._id === _id),
               ...entry,
-              _id: id,
+              _id: _id,
             },
           },
         } as AxiosResponse<AssetApiResponse>)
-      : api.put<AssetApiResponse>(`/asset/${id}`, entry).then((response) => {
+      : api.put<AssetApiResponse>(`/asset/${_id}`, entry).then((response) => {
           console.log("Updated asset entry:", response.data);
           return response;
         });
   },
-  delete: (id: string): Promise<AxiosResponse<void>> => {
-    console.log("Deleting asset entry:", id);
+  delete: (_id: string): Promise<AxiosResponse<void>> => {
+    console.log("Deleting asset entry:", _id);
     return USE_MOCK_DATA
       ? Promise.resolve({} as AxiosResponse<void>)
       : api
-          .delete(`/asset/${id}`)
+          .delete(`/asset/${_id}`)
           .then((response) => {
-            console.log("Deleted asset entry:", id);
+            console.log("Deleted asset entry:", _id);
             return response;
           })
           .catch((error) => {
@@ -279,34 +272,34 @@ export const debtApi = {
         });
   },
   update: (
-    id: string,
+    _id: string,
     entry: Partial<DebtEntry>
   ): Promise<AxiosResponse<DebtApiResponse>> => {
-    console.log("Updating debt entry:", id, entry);
+    console.log("Updating debt entry:", _id, entry);
     return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "負債情報が正常に更新されました",
             debt: {
-              ...mockDebtData.find((e) => e._id === id),
+              ...mockDebtData.find((e) => e._id === _id),
               ...entry,
-              _id: id,
+              _id: _id,
             },
           },
         } as AxiosResponse<DebtApiResponse>)
-      : api.put<DebtApiResponse>(`/debt/${id}`, entry).then((response) => {
+      : api.put<DebtApiResponse>(`/debt/${_id}`, entry).then((response) => {
           console.log("Updated debt entry:", response.data);
           return response;
         });
   },
-  delete: (id: string): Promise<AxiosResponse<void>> => {
-    console.log("Deleting debt entry:", id);
+  delete: (_id: string): Promise<AxiosResponse<void>> => {
+    console.log("Deleting debt entry:", _id);
     return USE_MOCK_DATA
       ? Promise.resolve({} as AxiosResponse<void>)
       : api
-          .delete(`/debt/${id}`)
+          .delete(`/debt/${_id}`)
           .then((response) => {
-            console.log("Deleted debt entry:", id);
+            console.log("Deleted debt entry:", _id);
             return response;
           })
           .catch((error) => {
@@ -319,7 +312,6 @@ export const debtApi = {
   },
 };
 
-// ToDoリストのAPIを追加
 export const todoApi = {
   getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
     console.log("Fetching all todo items");
@@ -337,7 +329,7 @@ export const todoApi = {
           data: {
             message: "ToDoアイテムが正常に追加されました",
             todo: {
-              id: String(mockTodoData.length + 1),
+              _id: String(mockTodoData.length + 1),
               task,
               completed: false,
             },
@@ -349,32 +341,32 @@ export const todoApi = {
         });
   },
   update: (
-    id: string,
+    _id: string,
     updates: Partial<TodoItem>
   ): Promise<AxiosResponse<TodoApiResponse>> => {
-    console.log("Updating todo item:", id, updates);
+    console.log("Updating todo item:", _id, updates);
     return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
             message: "ToDoアイテムが正常に更新されました",
             todo: {
-              ...mockTodoData.find((item) => item.id === id),
+              ...mockTodoData.find((item) => item._id === _id),
               ...updates,
-              id,
+              _id,
             },
           },
         } as AxiosResponse<TodoApiResponse>)
-      : api.put<TodoApiResponse>(`/todos/${id}`, updates).then((response) => {
+      : api.put<TodoApiResponse>(`/todos/${_id}`, updates).then((response) => {
           console.log("Updated todo item:", response.data);
           return response;
         });
   },
-  delete: (id: string): Promise<AxiosResponse<void>> => {
-    console.log("Deleting todo item:", id);
+  delete: (_id: string): Promise<AxiosResponse<void>> => {
+    console.log("Deleting todo item:", _id);
     return USE_MOCK_DATA
       ? Promise.resolve({} as AxiosResponse<void>)
-      : api.delete(`/todos/${id}`).then((response) => {
-          console.log("Deleted todo item:", id);
+      : api.delete(`/todos/${_id}`).then((response) => {
+          console.log("Deleted todo item:", _id);
           return response;
         });
   },

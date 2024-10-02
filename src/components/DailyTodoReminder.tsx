@@ -30,24 +30,24 @@ export default function DailyTodoReminder() {
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
-  const handleToggle = (id: string) => {
-    const todoToUpdate = todos.find((todo) => todo.id === id);
-    if (todoToUpdate && id) {
+  const handleToggle = (_id: string) => {
+    const todoToUpdate = todos.find((todo) => todo._id === _id);
+    if (todoToUpdate && _id) {
       dispatch(
         updateTodoItem({
-          id,
+          _id,
           updates: { completed: !todoToUpdate.completed },
         })
       )
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${id} updated successfully`);
+          console.log(`Todo item ${_id} updated successfully`);
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${id}:`, error);
+          console.error(`Error updating todo item ${_id}:`, error);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${id}`);
+      console.error(`Invalid todo item or ID: ${_id}`);
     }
   };
 
@@ -63,16 +63,16 @@ export default function DailyTodoReminder() {
     }
   };
 
-  const handleDeleteTodo = (id: string) => {
-    if (id) {
-      dispatch(deleteTodoItem(id));
+  const handleDeleteTodo = (_id: string) => {
+    if (_id) {
+      dispatch(deleteTodoItem(_id));
     } else {
-      console.error("削除しようとしたTODOアイテムのIDが不正です:", id);
+      console.error("削除しようとしたTODOアイテムのIDが不正です:", _id);
     }
   };
 
-  const handleEditStart = (id: string, task: string) => {
-    setEditingId(id);
+  const handleEditStart = (_id: string, task: string) => {
+    setEditingId(_id);
     setEditingText(task);
   };
 
@@ -81,20 +81,20 @@ export default function DailyTodoReminder() {
     setEditingText("");
   };
 
-  const handleEditSave = (id: string) => {
-    if (editingText.trim() && id) {
-      dispatch(updateTodoItem({ id, updates: { task: editingText.trim() } }))
+  const handleEditSave = (_id: string) => {
+    if (editingText.trim() && _id) {
+      dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }))
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${id} updated successfully`);
+          console.log(`Todo item ${_id} updated successfully`);
           setEditingId(null);
           setEditingText("");
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${id}:`, error);
+          console.error(`Error updating todo item ${_id}:`, error);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${id}`);
+      console.error(`Invalid todo item or ID: ${_id}`);
     }
   };
 
@@ -126,20 +126,20 @@ export default function DailyTodoReminder() {
         </form>
         <div className="space-y-4">
           {todos.map((todo: TodoItem) => (
-            <div key={todo.id} className="flex items-center space-x-2">
+            <div key={todo._id} className="flex items-center space-x-2">
               <Checkbox
-                id={`todo-${todo.id}`}
+                id={`todo-${todo._id}`}
                 checked={todo.completed}
-                onCheckedChange={() => handleToggle(todo.id)}
+                onCheckedChange={() => handleToggle(todo._id)}
               />
-              {editingId === todo.id ? (
+              {editingId === todo._id ? (
                 <>
                   <Input
                     value={editingText}
                     onChange={(e) => setEditingText(e.target.value)}
                     className="flex-grow"
                   />
-                  <Button size="sm" onClick={() => handleEditSave(todo.id)}>
+                  <Button size="sm" onClick={() => handleEditSave(todo._id)}>
                     <Check className="h-4 w-4" />
                   </Button>
                   <Button
@@ -153,7 +153,7 @@ export default function DailyTodoReminder() {
               ) : (
                 <>
                   <Label
-                    htmlFor={`todo-${todo.id}`}
+                    htmlFor={`todo-${todo._id}`}
                     className={`flex-grow ${
                       todo.completed ? "line-through text-gray-500" : ""
                     }`}
@@ -163,14 +163,14 @@ export default function DailyTodoReminder() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => handleEditStart(todo.id, todo.task)}
+                    onClick={() => handleEditStart(todo._id, todo.task)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => handleDeleteTodo(todo.id)}
+                    onClick={() => handleDeleteTodo(todo._id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

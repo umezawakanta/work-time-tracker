@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { todoApi } from "../services/api";
 
 export interface TodoItem {
-  id: string;
+  _id: string;
   task: string;
   completed: boolean;
 }
@@ -57,11 +57,11 @@ export const addTodoItem = createAsyncThunk<
 
 export const updateTodoItem = createAsyncThunk<
   TodoItem,
-  { id: string; updates: Partial<TodoItem> },
+  { _id: string; updates: Partial<TodoItem> },
   { rejectValue: string }
->("todo/updateItem", async ({ id, updates }, { rejectWithValue }) => {
+>("todo/updateItem", async ({ _id, updates }, { rejectWithValue }) => {
   try {
-    const response = await todoApi.update(id, updates);
+    const response = await todoApi.update(_id, updates);
     return response.data.todo;
   } catch (error) {
     console.error("ToDoアイテムの更新中にエラーが発生しました:", error);
@@ -77,10 +77,10 @@ export const deleteTodoItem = createAsyncThunk<
   string,
   string,
   { rejectValue: string }
->("todo/deleteItem", async (id, { rejectWithValue }) => {
+>("todo/deleteItem", async (_id, { rejectWithValue }) => {
   try {
-    await todoApi.delete(id);
-    return id;
+    await todoApi.delete(_id);
+    return _id;
   } catch (error) {
     console.error("ToDoアイテムの削除中にエラーが発生しました:", error);
     return rejectWithValue(
@@ -144,7 +144,7 @@ const todoSlice = createSlice({
         updateTodoItem.fulfilled,
         (state, action: PayloadAction<TodoItem>) => {
           const index = state.items.findIndex(
-            (item) => item.id === action.payload.id
+            (item) => item._id === action.payload._id
           );
           if (index !== -1) {
             state.items[index] = action.payload;
@@ -159,7 +159,7 @@ const todoSlice = createSlice({
         deleteTodoItem.fulfilled,
         (state, action: PayloadAction<string>) => {
           state.items = state.items.filter(
-            (item) => item.id !== action.payload
+            (item) => item._id !== action.payload
           );
           state.error = null;
         }
