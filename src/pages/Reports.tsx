@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
-import { toast } from "@/components/ui/use-toast";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import { useLocale } from "../hooks/useLocale";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
@@ -12,20 +11,11 @@ import { BalanceUpdateReminder } from "@/components/BalanceUpdateReminder";
 import { WorkTimeCharts } from "@/components/chart/WorkTimeChars";
 import { AssetDebtForms } from "@/components/forms/AssetDebtForms";
 import { AssetDebtLists } from "@/components/list/AssetDebtLists";
-import { fetchWorkTimeEntries } from "@/store/workTimeSlice";
-import {
-  fetchAssetEntries,
-  updateAssetEntry,
-  AssetEntry,
-} from "../store/assetSlice";
-import {
-  fetchDebtEntries,
-  updateDebtEntry,
-  DebtEntry,
-} from "../store/debtSlice";
+import { useReportData } from "@/hooks/useReportData";
+import { useBalanceUpdate } from "@/hooks/useBalanceUpdate";
+import { combineData } from "@/utils/combineData";
 
 const Reports: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const { locale } = useLocale();
   const workTimeEntries = useSelector(
     (state: RootState) => state.workTime.entries
@@ -35,26 +25,8 @@ const Reports: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
-  const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<
-    AssetEntry | DebtEntry | null
-  >(null);
 
-  useEffect(() => {
-    dispatch(fetchWorkTimeEntries());
-    dispatch(fetchAssetEntries());
-    dispatch(fetchDebtEntries());
-    const storedDate = localStorage.getItem("lastBalanceUpdateDate");
-    setLastUpdateDate(storedDate);
-  }, [dispatch]);
-
-  const combinedData = [...assetEntries, ...debtEntries]
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map((entry) => ({
-      date: new Date(entry.date),
-      value: "description" in entry ? -entry.value : entry.value,
-      account: entry.account,
-    }));
+  useReportData();
 
   const updateLastBalanceDate = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -62,55 +34,20 @@ const Reports: React.FC = () => {
     localStorage.setItem("lastBalanceUpdateDate", today);
   };
 
+  const {
+    isBalanceModalOpen,
+    setIsBalanceModalOpen,
+    selectedAccount,
+    handleBalanceUpdate,
+    handleBalanceUpdateSubmit,
+  } = useBalanceUpdate(updateLastBalanceDate);
+
+  const combinedData = combineData(assetEntries, debtEntries);
+
   const isUpdateNeeded = () => {
     if (!lastUpdateDate) return true;
     const today = new Date().toISOString().split("T")[0];
     return lastUpdateDate !== today;
-  };
-
-  const handleBalanceUpdate = (accountId: string, isAsset: boolean) => {
-    const account = isAsset
-      ? assetEntries.find((entry) => entry._id === accountId)
-      : debtEntries.find((entry) => entry._id === accountId);
-    if (account) {
-      setSelectedAccount(account);
-      setIsBalanceModalOpen(true);
-    }
-  };
-
-  const handleBalanceUpdateSubmit = (
-    newBalance: number,
-    isUnknownFunds: boolean,
-    date: string
-  ) => {
-    if (selectedAccount) {
-      const updatedEntry = {
-        ...selectedAccount,
-        value: newBalance,
-        date: date,
-        isUnknownFunds: isUnknownFunds,
-      };
-      if ("description" in selectedAccount) {
-        dispatch(
-          updateDebtEntry({
-            id: selectedAccount._id || "",
-            entry: updatedEntry as DebtEntry,
-          })
-        );
-      } else {
-        dispatch(
-          updateAssetEntry({
-            id: selectedAccount._id || "",
-            entry: updatedEntry as AssetEntry,
-          })
-        );
-      }
-      updateLastBalanceDate();
-      toast({
-        title: "成功",
-        description: "残高が更新されました。",
-      });
-    }
   };
 
   return (
@@ -138,7 +75,13 @@ const Reports: React.FC = () => {
       <AssetDebtLists
         assetEntries={assetEntries}
         debtEntries={debtEntries}
-        onBalanceUpdate={handleBalanceUpdate}
+        onBalanceUpdate={(accountId, isAsset) =>
+          handleBalanceUpdate(
+            accountId,
+            isAsset,
+            isAsset ? assetEntries : debtEntries
+          )
+        }
       />
 
       <BalanceUpdateModal
