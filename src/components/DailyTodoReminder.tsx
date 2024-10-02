@@ -45,6 +45,7 @@ export default function DailyTodoReminder() {
         })
         .catch((error) => {
           console.error(`Error updating todo item ${_id}:`, error);
+          // エラーメッセージをユーザーに表示する処理をここに追加
         });
     } else {
       console.error(`Invalid todo item or ID: ${_id}`);
@@ -92,6 +93,7 @@ export default function DailyTodoReminder() {
         })
         .catch((error) => {
           console.error(`Error updating todo item ${_id}:`, error);
+          // エラーメッセージをユーザーに表示する処理をここに追加
         });
     } else {
       console.error(`Invalid todo item or ID: ${_id}`);

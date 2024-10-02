@@ -100,6 +100,7 @@ const DebtEntry = mongoose.model<IDebtEntry>("DebtEntry", DebtEntrySchema);
 
 // TodoItemインターフェース
 interface ITodoItem extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   task: string;
   completed: boolean;
   createdAt: Date;
@@ -161,8 +162,13 @@ const validateDebtEntry = [
   body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
+// バリデーションミドルウェアの修正
 const validateTodoItem = [
-  body("task").notEmpty().withMessage("タスクは必須です"),
+  body("task").optional().notEmpty().withMessage("タスクは空にできません"),
+  body("completed")
+    .optional()
+    .isBoolean()
+    .withMessage("completedはブール値である必要があります"),
 ];
 
 // 作業時間を記録するAPIエンドポイント
@@ -492,6 +498,7 @@ app.get(
       const todos = await TodoItem.find().sort({ createdAt: -1 });
       res.json(todos);
     } catch (error) {
+      console.error("Error fetching todos:", error);
       next(error);
     }
   }
@@ -515,11 +522,13 @@ app.post(
       });
 
       const savedTodo = await todoData.save();
+      console.log("Todo item created:", savedTodo);
       res.status(201).json({
         message: "ToDoアイテムが正常に作成されました",
         todo: savedTodo,
       });
     } catch (error) {
+      console.error("Error creating todo item:", error);
       next(error);
     }
   }
@@ -538,21 +547,29 @@ app.put(
     }
 
     try {
+      console.log("Updating todo item with id:", req.params.id);
+      console.log("Update data:", req.body);
+
       const updatedTodo = await TodoItem.findByIdAndUpdate(
         req.params.id,
-        req.body,
-        { new: true }
+        { $set: req.body },
+        { new: true, runValidators: true }
       );
+
       if (!updatedTodo) {
+        console.log("Todo item not found for id:", req.params.id);
         return res
           .status(404)
           .json({ message: "指定されたToDoアイテムが見つかりません" });
       }
+
+      console.log("Todo item updated successfully:", updatedTodo);
       res.json({
         message: "ToDoアイテムが正常に更新されました",
         todo: updatedTodo,
       });
     } catch (error) {
+      console.error("Error updating todo item:", error);
       next(error);
     }
   }
@@ -563,17 +580,23 @@ app.delete(
   "/api/todos/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("Deleting todo item with id:", req.params.id);
+
       const deletedTodo = await TodoItem.findByIdAndDelete(req.params.id);
       if (!deletedTodo) {
+        console.log("Todo item not found for id:", req.params.id);
         return res
           .status(404)
           .json({ message: "指定されたToDoアイテムが見つかりません" });
       }
+
+      console.log("Todo item deleted successfully:", deletedTodo);
       res.json({
         message: "ToDoアイテムが正常に削除されました",
         todo: deletedTodo,
       });
     } catch (error) {
+      console.error("Error deleting todo item:", error);
       next(error);
     }
   }
@@ -592,8 +615,10 @@ app.post(
         { task: "片づけ", completed: false },
       ];
       await TodoItem.insertMany(defaultTodos);
+      console.log("Todo list reset successfully");
       res.json({ message: "ToDoリストが正常にリセットされました" });
     } catch (error) {
+      console.error("Error resetting todo list:", error);
       next(error);
     }
   }

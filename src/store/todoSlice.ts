@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { todoApi } from "../services/api";
+import { todoApi } from "@/services/api";
 
 export interface TodoItem {
   _id: string;
@@ -19,94 +19,46 @@ const initialState: TodoState = {
   error: null,
 };
 
-export const fetchTodoItems = createAsyncThunk<
-  TodoItem[],
-  void,
-  { rejectValue: string }
->("todo/fetchItems", async (_, { rejectWithValue }) => {
-  try {
+export const fetchTodoItems = createAsyncThunk(
+  "todo/fetchTodoItems",
+  async () => {
     const response = await todoApi.getAll();
     return response.data;
-  } catch (error) {
-    console.error("ToDoアイテムの取得中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error
-        ? error.message
-        : "ToDoアイテムの取得に失敗しました"
-    );
   }
-});
+);
 
-export const addTodoItem = createAsyncThunk<
-  TodoItem,
-  string,
-  { rejectValue: string }
->("todo/addItem", async (task, { rejectWithValue }) => {
-  try {
+export const addTodoItem = createAsyncThunk(
+  "todo/addTodoItem",
+  async (task: string) => {
     const response = await todoApi.create(task);
     return response.data.todo;
-  } catch (error) {
-    console.error("ToDoアイテムの追加中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error
-        ? error.message
-        : "ToDoアイテムの追加に失敗しました"
-    );
   }
-});
+);
 
-export const updateTodoItem = createAsyncThunk<
-  TodoItem,
-  { _id: string; updates: Partial<TodoItem> },
-  { rejectValue: string }
->("todo/updateItem", async ({ _id, updates }, { rejectWithValue }) => {
-  try {
+export const updateTodoItem = createAsyncThunk(
+  "todo/updateTodoItem",
+  async ({ _id, updates }: { _id: string; updates: Partial<TodoItem> }) => {
     const response = await todoApi.update(_id, updates);
     return response.data.todo;
-  } catch (error) {
-    console.error("ToDoアイテムの更新中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error
-        ? error.message
-        : "ToDoアイテムの更新に失敗しました"
-    );
   }
-});
+);
 
-export const deleteTodoItem = createAsyncThunk<
-  string,
-  string,
-  { rejectValue: string }
->("todo/deleteItem", async (_id, { rejectWithValue }) => {
-  try {
+export const deleteTodoItem = createAsyncThunk(
+  "todo/deleteTodoItem",
+  async (_id: string) => {
     await todoApi.delete(_id);
     return _id;
-  } catch (error) {
-    console.error("ToDoアイテムの削除中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error
-        ? error.message
-        : "ToDoアイテムの削除に失敗しました"
-    );
   }
-});
+);
 
-export const resetTodoList = createAsyncThunk<
-  void,
-  void,
-  { rejectValue: string }
->("todo/resetList", async (_, { rejectWithValue }) => {
-  try {
-    await todoApi.reset();
-  } catch (error) {
-    console.error("ToDoリストのリセット中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error
-        ? error.message
-        : "ToDoリストのリセットに失敗しました"
-    );
+export const resetTodoList = createAsyncThunk(
+  "todo/resetTodoList",
+  async () => {
+    const response = await todoApi.reset();
+    // APIのレスポンスに合わせて、TodoItem[]を返すように修正
+    return response.data as TodoItem[];
   }
-});
+);
 
 const todoSlice = createSlice({
   name: "todo",
@@ -116,30 +68,24 @@ const todoSlice = createSlice({
     builder
       .addCase(fetchTodoItems.pending, (state) => {
         state.status = "loading";
-        state.error = null;
       })
       .addCase(
         fetchTodoItems.fulfilled,
         (state, action: PayloadAction<TodoItem[]>) => {
           state.status = "succeeded";
           state.items = action.payload;
-          state.error = null;
         }
       )
       .addCase(fetchTodoItems.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || "ToDoアイテムの取得に失敗しました";
+        state.error = action.error.message || "Something went wrong";
       })
       .addCase(
         addTodoItem.fulfilled,
         (state, action: PayloadAction<TodoItem>) => {
           state.items.push(action.payload);
-          state.error = null;
         }
       )
-      .addCase(addTodoItem.rejected, (state, action) => {
-        state.error = action.payload || "ToDoアイテムの追加に失敗しました";
-      })
       .addCase(
         updateTodoItem.fulfilled,
         (state, action: PayloadAction<TodoItem>) => {
@@ -149,31 +95,22 @@ const todoSlice = createSlice({
           if (index !== -1) {
             state.items[index] = action.payload;
           }
-          state.error = null;
         }
       )
-      .addCase(updateTodoItem.rejected, (state, action) => {
-        state.error = action.payload || "ToDoアイテムの更新に失敗しました";
-      })
       .addCase(
         deleteTodoItem.fulfilled,
         (state, action: PayloadAction<string>) => {
           state.items = state.items.filter(
             (item) => item._id !== action.payload
           );
-          state.error = null;
         }
       )
-      .addCase(deleteTodoItem.rejected, (state, action) => {
-        state.error = action.payload || "ToDoアイテムの削除に失敗しました";
-      })
-      .addCase(resetTodoList.fulfilled, (state) => {
-        state.items = [];
-        state.error = null;
-      })
-      .addCase(resetTodoList.rejected, (state, action) => {
-        state.error = action.payload || "ToDoリストのリセットに失敗しました";
-      });
+      .addCase(
+        resetTodoList.fulfilled,
+        (state, action: PayloadAction<TodoItem[]>) => {
+          state.items = action.payload;
+        }
+      );
   },
 });
 

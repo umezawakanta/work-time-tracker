@@ -356,10 +356,16 @@ export const todoApi = {
             },
           },
         } as AxiosResponse<TodoApiResponse>)
-      : api.put<TodoApiResponse>(`/todos/${_id}`, updates).then((response) => {
-          console.log("Updated todo item:", response.data);
-          return response;
-        });
+      : api
+          .put<TodoApiResponse>(`/todos/${_id}`, updates)
+          .then((response) => {
+            console.log("Updated todo item:", response.data);
+            return response;
+          })
+          .catch((error) => {
+            console.error("Error updating todo item:", error.response?.data);
+            throw error;
+          });
   },
   delete: (_id: string): Promise<AxiosResponse<void>> => {
     console.log("Deleting todo item:", _id);
@@ -370,11 +376,11 @@ export const todoApi = {
           return response;
         });
   },
-  reset: (): Promise<AxiosResponse<void>> => {
+  reset: (): Promise<AxiosResponse<TodoItem[]>> => {
     console.log("Resetting todo list");
     return USE_MOCK_DATA
-      ? Promise.resolve({} as AxiosResponse<void>)
-      : api.post("/todos/reset").then((response) => {
+      ? Promise.resolve({ data: mockTodoData } as AxiosResponse<TodoItem[]>)
+      : api.post<TodoItem[]>("/todos/reset").then((response) => {
           console.log("Reset todo list");
           return response;
         });
