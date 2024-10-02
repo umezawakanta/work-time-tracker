@@ -23,7 +23,7 @@ const theme = createTheme({
   },
 });
 
-function App() {
+export default function App() {
   return (
     <LocaleProvider>
       <ThemeProvider theme={theme}>
@@ -46,5 +46,3 @@ function App() {
     </LocaleProvider>
   );
 }
-
-export default App;

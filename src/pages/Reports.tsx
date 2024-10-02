@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useLocale } from "../hooks/useLocale";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
 import { WorkTimeList } from "@/components/list/WorkTimeList";
-import { BalanceUpdateReminder } from "@/components/BalanceUpdateReminder";
+import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import { WorkTimeCharts } from "@/components/chart/WorkTimeChars";
 import { AssetDebtForms } from "@/components/forms/AssetDebtForms";
 import { AssetDebtLists } from "@/components/list/AssetDebtLists";
@@ -15,7 +15,7 @@ import { useReportData } from "@/hooks/useReportData";
 import { useBalanceUpdate } from "@/hooks/useBalanceUpdate";
 import { combineData } from "@/utils/combineData";
 
-const Reports: React.FC = () => {
+export default function Reports() {
   const { locale } = useLocale();
   const workTimeEntries = useSelector(
     (state: RootState) => state.workTime.entries
@@ -24,13 +24,11 @@ const Reports: React.FC = () => {
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
   const [editingAsset, setEditingAsset] = useState<string | null>(null);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
-  const [lastUpdateDate, setLastUpdateDate] = useState<string | null>(null);
 
   useReportData();
 
   const updateLastBalanceDate = () => {
     const today = new Date().toISOString().split("T")[0];
-    setLastUpdateDate(today);
     localStorage.setItem("lastBalanceUpdateDate", today);
   };
 
@@ -44,19 +42,18 @@ const Reports: React.FC = () => {
 
   const combinedData = combineData(assetEntries, debtEntries);
 
-  const isUpdateNeeded = () => {
-    if (!lastUpdateDate) return true;
-    const today = new Date().toISOString().split("T")[0];
-    return lastUpdateDate !== today;
+  const handleBalanceUpdateWrapper = (accountId: string, isAsset: boolean) => {
+    handleBalanceUpdate(accountId, isAsset ? assetEntries : debtEntries);
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">レポート</h1>
 
-      {isUpdateNeeded() && (
-        <BalanceUpdateReminder lastUpdateDate={lastUpdateDate} />
-      )}
+      <BalanceUpdateReminder
+        assetEntries={assetEntries}
+        debtEntries={debtEntries}
+      />
 
       <WorkTimeCharts workTimeEntries={workTimeEntries} locale={locale} />
 
@@ -75,13 +72,7 @@ const Reports: React.FC = () => {
       <AssetDebtLists
         assetEntries={assetEntries}
         debtEntries={debtEntries}
-        onBalanceUpdate={(accountId, isAsset) =>
-          handleBalanceUpdate(
-            accountId,
-            isAsset,
-            isAsset ? assetEntries : debtEntries
-          )
-        }
+        onBalanceUpdate={handleBalanceUpdateWrapper}
       />
 
       <BalanceUpdateModal
@@ -93,6 +84,4 @@ const Reports: React.FC = () => {
       />
     </div>
   );
-};
-
-export default Reports;
+}

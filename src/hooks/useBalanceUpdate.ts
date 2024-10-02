@@ -14,7 +14,6 @@ export const useBalanceUpdate = (updateLastBalanceDate: () => void) => {
 
   const handleBalanceUpdate = (
     accountId: string,
-    isAsset: boolean,
     entries: AssetEntry[] | DebtEntry[]
   ) => {
     const account = entries.find((entry) => entry._id === accountId);
