@@ -1,108 +1,138 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useRef, useEffect, useMemo } from "react";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { format, subMonths, subYears, isAfter } from "date-fns";
+  TimeScale,
+  ChartOptions,
+  ChartData,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { ja } from "date-fns/locale";
+import "chartjs-adapter-date-fns";
+import "./AssetLibraryTrendChart.css";
 
-interface DataEntry {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale
+);
+
+interface DataPoint {
   date: Date;
   value: number;
   account: string;
 }
 
 interface AssetLiabilityTrendChartProps {
-  data: DataEntry[];
+  data: DataPoint[];
 }
 
-export const AssetLiabilityTrendChart: React.FC<
-  AssetLiabilityTrendChartProps
-> = ({ data }) => {
-  const [timeRange, setTimeRange] = useState<"1m" | "3m" | "6m" | "1y" | "all">(
-    "all"
-  );
+export function AssetLiabilityTrendChart({
+  data,
+}: AssetLiabilityTrendChartProps) {
+  const chartRef = useRef<ChartJS<"line"> | null>(null);
 
-  const filteredData = data.filter((entry) => {
-    const now = new Date();
-    switch (timeRange) {
-      case "1m":
-        return isAfter(entry.date, subMonths(now, 1));
-      case "3m":
-        return isAfter(entry.date, subMonths(now, 3));
-      case "6m":
-        return isAfter(entry.date, subMonths(now, 6));
-      case "1y":
-        return isAfter(entry.date, subYears(now, 1));
-      default:
-        return true;
-    }
-  });
+  useEffect(() => {
+    const chart = chartRef.current;
+    return () => {
+      if (chart) {
+        chart.destroy();
+      }
+    };
+  }, []);
 
-  const accounts = Array.from(new Set(data.map((entry) => entry.account)));
+  const aggregatedData = useMemo(() => {
+    return data.reduce((acc, curr) => {
+      const dateStr = curr.date.toISOString().split("T")[0];
+      if (!acc[dateStr]) {
+        acc[dateStr] = {};
+      }
+      if (!acc[dateStr][curr.account]) {
+        acc[dateStr][curr.account] = curr.value;
+      }
+      return acc;
+    }, {} as Record<string, Record<string, number>>);
+  }, [data]);
+
+  const sortedDates = Object.keys(aggregatedData).sort();
+  const accounts = Array.from(new Set(data.map((d) => d.account)));
+
+  const chartData: ChartData<"line"> = {
+    labels: sortedDates,
+    datasets: accounts.map((account, index) => ({
+      label: account,
+      data: sortedDates.map((date) => aggregatedData[date][account] || null),
+      borderColor: `hsl(${(index * 360) / accounts.length}, 70%, 50%)`,
+      backgroundColor: `hsla(${
+        (index * 360) / accounts.length
+      }, 70%, 50%, 0.5)`,
+      fill: false,
+    })),
+  };
+
+  const options: ChartOptions<"line"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+      },
+      title: {
+        display: true,
+        text: "資産・負債の推移",
+      },
+    },
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "day",
+          tooltipFormat: "yyyy-MM-dd",
+          displayFormats: {
+            day: "MM/dd",
+          },
+        },
+        title: {
+          display: true,
+          text: "日付",
+        },
+        adapters: {
+          date: {
+            locale: ja,
+          },
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "金額 (円)",
+        },
+        ticks: {
+          callback: function (value: number | string) {
+            if (typeof value === "number") {
+              return value.toLocaleString() + "円";
+            }
+            return value;
+          },
+        },
+      },
+    },
+  };
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>資産の時系列推移</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 flex justify-center space-x-2">
-          {["1m", "3m", "6m", "1y", "all"].map((range) => (
-            <Button
-              key={range}
-              variant={timeRange === range ? "default" : "outline"}
-              onClick={() => setTimeRange(range as typeof timeRange)}
-            >
-              {range === "all"
-                ? "全期間"
-                : range.replace("m", "ヶ月").replace("y", "年")}
-            </Button>
-          ))}
-        </div>
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={filteredData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(date) => format(new Date(date), "yyyy-MM-dd")}
-              />
-              <YAxis tickFormatter={(value) => `${value / 10000}万円`} />
-              <Tooltip
-                labelFormatter={(label) =>
-                  format(new Date(label), "yyyy-MM-dd")
-                }
-                formatter={(value: number) => [
-                  `${value.toLocaleString()}円`,
-                  "",
-                ]}
-              />
-              <Legend />
-              {accounts.map((account, index) => (
-                <Line
-                  key={account}
-                  type="monotone"
-                  dataKey={(entry: DataEntry) =>
-                    entry.account === account ? entry.value : undefined
-                  }
-                  name={account}
-                  stroke={index === 0 ? "#8884d8" : "#82ca9d"}
-                  dot={false}
-                  connectNulls
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="asset-liability-chart">
+      <Line ref={chartRef} data={chartData} options={options} />
+    </div>
   );
-};
+}
