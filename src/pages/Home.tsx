@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,17 +9,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DailyBalanceReminder from "@/components/DailyBalanceReminder";
+import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import DailyTodoReminder from "@/components/DailyTodoReminder";
-
 export default function Home() {
+  const assetEntries = useSelector((state: RootState) => state.asset.entries);
+  const debtEntries = useSelector((state: RootState) => state.debt.entries);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8">
         作業時間トラッカーへようこそ
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <DailyBalanceReminder />
+      <div className="mb-8">
+        <BalanceUpdateReminder
+          assetEntries={assetEntries}
+          debtEntries={debtEntries}
+        />
         <DailyTodoReminder />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

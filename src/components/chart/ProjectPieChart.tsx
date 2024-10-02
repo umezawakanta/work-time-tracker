@@ -1,14 +1,16 @@
 import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
+  Chart as ChartJS,
+  ArcElement,
   Tooltip,
   Legend,
-} from "recharts";
+  ChartOptions,
+} from "chart.js";
+import { Pie } from "react-chartjs-2";
 import { WorkTimeEntry } from "@/types/workTimeEntry";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface ProjectPieChartProps {
   workTimeEntries: WorkTimeEntry[];
@@ -25,20 +27,51 @@ export const ProjectPieChart: React.FC<ProjectPieChartProps> = ({
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(projectTotals).map(([name, value]) => ({
-      name,
-      value: Math.round(value / 3600), // Convert seconds to hours
-    }));
+    const labels = Object.keys(projectTotals);
+    const values = Object.values(projectTotals).map((value) =>
+      Math.round(value / 3600)
+    ); // Convert seconds to hours
+
+    return {
+      labels,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: [
+            "#0088FE",
+            "#00C49F",
+            "#FFBB28",
+            "#FF8042",
+            "#8884D8",
+            "#82CA9D",
+          ],
+        },
+      ],
+    };
   }, [workTimeEntries]);
 
-  const COLORS = [
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#8884D8",
-    "#82CA9D",
-  ];
+  const options: ChartOptions<"pie"> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label || "";
+            const value = context.raw as number;
+            const total = context.dataset.data.reduce(
+              (acc: number, cur: number) => acc + cur,
+              0
+            );
+            const percentage = ((value / total) * 100).toFixed(0);
+            return `${label}: ${value}時間 (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
 
   return (
     <Card className="w-full">
@@ -47,31 +80,7 @@ export const ProjectPieChart: React.FC<ProjectPieChartProps> = ({
       </CardHeader>
       <CardContent>
         <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {data.map((_, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => `${value}時間`} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <Pie data={data} options={options} />
         </div>
       </CardContent>
     </Card>

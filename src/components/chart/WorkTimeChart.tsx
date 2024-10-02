@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,15 +9,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Bar,
-  BarChart,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
   Tooltip,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-} from "recharts";
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
 import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { formatDateAndTime } from "@/utils/dateUtils";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface WorkTimeChartProps {
   workTimeEntries: WorkTimeEntry[];
@@ -30,32 +41,71 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
 }) => {
   const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
 
-  const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return "未設定";
-    return formatDateAndTime(dateString, locale, { dateStyle: "short" });
-  };
-
-  const filterEntriesByTimeRange = (entries: WorkTimeEntry[]) => {
-    const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-    return entries.filter((entry) => {
-      const entryDate = entry.date ? new Date(entry.date) : null;
-      if (!entryDate) return false;
-      if (timeRange === "week") return entryDate >= oneWeekAgo;
-      if (timeRange === "month") return entryDate >= oneMonthAgo;
-      return true;
-    });
-  };
-
-  const barChartData = filterEntriesByTimeRange(workTimeEntries).map(
-    (entry, index) => ({
-      name: formatDate(entry.date),
-      duration: entry.duration ? entry.duration / 3600 : 0,
-      id: entry._id || `entry-${index}`,
-    })
+  const formatDate = useCallback(
+    (dateString: string | undefined) => {
+      if (!dateString) return "未設定";
+      return formatDateAndTime(dateString, locale, { dateStyle: "short" });
+    },
+    [locale]
   );
+
+  const filterEntriesByTimeRange = useCallback(
+    (entries: WorkTimeEntry[]) => {
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      return entries.filter((entry) => {
+        const entryDate = entry.date ? new Date(entry.date) : null;
+        if (!entryDate) return false;
+        if (timeRange === "week") return entryDate >= oneWeekAgo;
+        if (timeRange === "month") return entryDate >= oneMonthAgo;
+        return true;
+      });
+    },
+    [timeRange]
+  );
+
+  const chartData = useMemo(() => {
+    const filteredData = filterEntriesByTimeRange(workTimeEntries);
+    const labels = filteredData.map((entry) => formatDate(entry.date));
+    const durations = filteredData.map((entry) =>
+      entry.duration ? entry.duration / 3600 : 0
+    );
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: "作業時間 (時間)",
+          data: durations,
+          backgroundColor: "#8884d8",
+        },
+      ],
+    };
+  }, [workTimeEntries, filterEntriesByTimeRange, formatDate]);
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "作業時間記録",
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "時間",
+        },
+      },
+    },
+  };
 
   return (
     <Card className="w-full">
@@ -82,14 +132,7 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
           </Select>
         </div>
         <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={barChartData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="duration" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
+          <Bar options={options} data={chartData} />
         </div>
       </CardContent>
     </Card>
