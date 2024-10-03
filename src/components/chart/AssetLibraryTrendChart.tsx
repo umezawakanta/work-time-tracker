@@ -90,7 +90,7 @@ export function AssetLiabilityTrendChart({
   }, [data]);
 
   const aggregatedData = useMemo(() => {
-    return processedData.reduce((acc, curr) => {
+    const aggregated = processedData.reduce((acc, curr) => {
       const dateStr = curr.date.toISOString().split("T")[0];
       if (!acc[dateStr]) {
         acc[dateStr] = {};
@@ -98,21 +98,41 @@ export function AssetLiabilityTrendChart({
       acc[dateStr][curr.account] = curr.value;
       return acc;
     }, {} as Record<string, Record<string, number>>);
+
+    // Calculate total for each date
+    Object.keys(aggregated).forEach((dateStr) => {
+      const total = Object.values(aggregated[dateStr]).reduce(
+        (sum, value) => sum + value,
+        0
+      );
+      aggregated[dateStr]["合計"] = total;
+    });
+
+    return aggregated;
   }, [processedData]);
 
   const sortedDates = Object.keys(aggregatedData).sort();
-  const accounts = Array.from(new Set(processedData.map((d) => d.account)));
+  const accounts = Array.from(
+    new Set([...processedData.map((d) => d.account), "合計"])
+  );
 
   const chartData: ChartData<"line"> = {
     labels: sortedDates,
     datasets: accounts.map((account, index) => ({
       label: account,
       data: sortedDates.map((date) => aggregatedData[date][account]),
-      borderColor: `hsl(${(index * 360) / accounts.length}, 70%, 50%)`,
-      backgroundColor: `hsla(${
-        (index * 360) / accounts.length
-      }, 70%, 50%, 0.5)`,
+      borderColor:
+        account === "合計"
+          ? "black"
+          : `hsl(${(index * 360) / (accounts.length - 1)}, 70%, 50%)`,
+      backgroundColor:
+        account === "合計"
+          ? "rgba(0, 0, 0, 0.5)"
+          : `hsla(${(index * 360) / (accounts.length - 1)}, 70%, 50%, 0.5)`,
       fill: false,
+      borderWidth: account === "合計" ? 3 : 1,
+      borderDash: account === "合計" ? [5, 5] : [],
+      pointRadius: account === "合計" ? 4 : 2,
     })),
   };
 

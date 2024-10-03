@@ -45,7 +45,6 @@ export default function DailyTodoReminder() {
         })
         .catch((error) => {
           console.error(`Error updating todo item ${_id}:`, error);
-          // エラーメッセージをユーザーに表示する処理をここに追加
         });
     } else {
       console.error(`Invalid todo item or ID: ${_id}`);
@@ -53,7 +52,14 @@ export default function DailyTodoReminder() {
   };
 
   const handleReset = () => {
-    dispatch(resetTodoList());
+    dispatch(resetTodoList())
+      .unwrap()
+      .then(() => {
+        console.log("Todo list reset successfully");
+      })
+      .catch((error) => {
+        console.error("Error resetting todo list:", error);
+      });
   };
 
   const handleAddTodo = (e: React.FormEvent) => {
@@ -93,7 +99,6 @@ export default function DailyTodoReminder() {
         })
         .catch((error) => {
           console.error(`Error updating todo item ${_id}:`, error);
-          // エラーメッセージをユーザーに表示する処理をここに追加
         });
     } else {
       console.error(`Invalid todo item or ID: ${_id}`);
@@ -127,59 +132,60 @@ export default function DailyTodoReminder() {
           <Button type="submit">追加</Button>
         </form>
         <div className="space-y-4">
-          {todos.map((todo: TodoItem) => (
-            <div key={todo._id} className="flex items-center space-x-2">
-              <Checkbox
-                id={`todo-${todo._id}`}
-                checked={todo.completed}
-                onCheckedChange={() => handleToggle(todo._id)}
-              />
-              {editingId === todo._id ? (
-                <>
-                  <Input
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                    className="flex-grow"
-                  />
-                  <Button size="sm" onClick={() => handleEditSave(todo._id)}>
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleEditCancel}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Label
-                    htmlFor={`todo-${todo._id}`}
-                    className={`flex-grow ${
-                      todo.completed ? "line-through text-gray-500" : ""
-                    }`}
-                  >
-                    {todo.task}
-                  </Label>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleEditStart(todo._id, todo.task)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDeleteTodo(todo._id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-          ))}
+          {Array.isArray(todos) &&
+            todos.map((todo: TodoItem) => (
+              <div key={todo._id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`todo-${todo._id}`}
+                  checked={todo.completed}
+                  onCheckedChange={() => handleToggle(todo._id)}
+                />
+                {editingId === todo._id ? (
+                  <>
+                    <Input
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      className="flex-grow"
+                    />
+                    <Button size="sm" onClick={() => handleEditSave(todo._id)}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleEditCancel}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Label
+                      htmlFor={`todo-${todo._id}`}
+                      className={`flex-grow ${
+                        todo.completed ? "line-through text-gray-500" : ""
+                      }`}
+                    >
+                      {todo.task}
+                    </Label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEditStart(todo._id, todo.task)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDeleteTodo(todo._id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            ))}
         </div>
       </CardContent>
     </Card>
