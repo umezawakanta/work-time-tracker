@@ -41,6 +41,7 @@
 .difference {
   font-size: 0.9rem;
   font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .difference.positive {
@@ -49,6 +50,11 @@
 
 .difference.negative {
   color: red;
+}
+
+.last-update {
+  font-size: 0.8rem;
+  color: #666;
 }
 
 .chart-wrapper {

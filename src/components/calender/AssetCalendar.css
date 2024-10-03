@@ -1,0 +1,48 @@
+.asset-calendar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.asset-calendar-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.event-content {
+  font-size: 0.8em;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.event-content.positive {
+  background-color: rgba(0, 128, 0, 0.2);
+  color: green;
+}
+
+.event-content.negative {
+  background-color: rgba(255, 0, 0, 0.2);
+  color: red;
+}
+
+.custom-day-cell {
+  text-align: center;
+  padding: 5px;
+}
+
+.fc-day-today {
+  background-color: rgba(0, 0, 255, 0.1) !important;
+}
+
+.fc-button-primary {
+  background-color: #4a90e2 !important;
+  border-color: #4a90e2 !important;
+}
+
+.fc-button-primary:hover {
+  background-color: #3a7bc8 !important;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5em !important;
+}

@@ -7,6 +7,7 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import { LocaleProvider } from "./context/LocaleContext";
+import { AssetCalendarPage } from "./pages/AssetCalendarPage";
 // import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/work-time" element={<WorkTimeEntryForm />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/asset-calendar" element={<AssetCalendarPage />} />
             {/* <Route element={<PrivateRoute />}>
               <Route path="/work-time" element={<WorkTimeEntryForm />} />
               <Route path="/reports" element={<Reports />} />

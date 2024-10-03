@@ -197,12 +197,14 @@ export function AssetLiabilityTrendChart({
       const currentValue = aggregatedData[latestDate][account];
       const previousValue = aggregatedData[previousDate][account];
       const difference = currentValue - previousValue;
+      const lastUpdateDate = new Date(latestDate);
       acc[account] = {
         value: currentValue,
         difference: difference,
+        lastUpdate: lastUpdateDate,
       };
       return acc;
-    }, {} as Record<string, { value: number; difference: number }>);
+    }, {} as Record<string, { value: number; difference: number; lastUpdate: Date }>);
   }, [aggregatedData, sortedDates, accounts]);
 
   // 資産と負債を分類する
@@ -244,6 +246,13 @@ export function AssetLiabilityTrendChart({
                 {currentBalances[account].difference >= 0 ? "+" : ""}
                 {currentBalances[account].difference.toLocaleString()} 円
               </p>
+              <p className="last-update">
+                最終更新:{" "}
+                {format(
+                  currentBalances[account].lastUpdate,
+                  "yyyy/MM/dd HH:mm"
+                )}
+              </p>
             </div>
           ))}
         </div>
@@ -268,6 +277,13 @@ export function AssetLiabilityTrendChart({
                 ).toLocaleString()}{" "}
                 円
               </p>
+              <p className="last-update">
+                最終更新:{" "}
+                {format(
+                  currentBalances[account].lastUpdate,
+                  "yyyy/MM/dd HH:mm"
+                )}
+              </p>
             </div>
           ))}
         </div>
@@ -287,6 +303,10 @@ export function AssetLiabilityTrendChart({
             >
               {currentBalances["合計"].difference >= 0 ? "+" : ""}
               {currentBalances["合計"].difference.toLocaleString()} 円
+            </p>
+            <p className="last-update">
+              最終更新:{" "}
+              {format(currentBalances["合計"].lastUpdate, "yyyy/MM/dd HH:mm")}
             </p>
           </div>
         </div>

@@ -47,6 +47,11 @@ export default function Layout({ children }: LayoutProps) {
               </li>
               <li>
                 <Button variant="ghost" asChild>
+                  <Link to="/asset-calendar">資産カレンダー</Link>
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" asChild>
                   <Link to="/login">ログイン</Link>
                 </Button>
               </li>
