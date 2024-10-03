@@ -198,22 +198,56 @@ export function AssetLiabilityTrendChart({
     }, {} as Record<string, number>);
   }, [aggregatedData, sortedDates, accounts]);
 
+  // 資産と負債を分類する
+  const { assets, liabilities } = useMemo(() => {
+    return accounts.reduce(
+      (acc, account) => {
+        if (currentBalances[account] >= 0) {
+          acc.assets.push(account);
+        } else {
+          acc.liabilities.push(account);
+        }
+        return acc;
+      },
+      { assets: [] as string[], liabilities: [] as string[] }
+    );
+  }, [accounts, currentBalances]);
+
   return (
     <div className="asset-liability-chart-container">
       <div className="current-balances">
-        {accounts.map((account, index) => (
-          <div
-            key={account}
-            className={`balance-card ${
-              account === "合計" ? "total" : ""
-            } color-${index}`}
-          >
-            <h3 className="account-name">{account}</h3>
-            <p className="balance-amount">
-              {currentBalances[account].toLocaleString()} 円
-            </p>
-          </div>
-        ))}
+        <div className="balance-section assets">
+          <h2>資産</h2>
+          {assets.map((account, index) => (
+            <div
+              key={account}
+              className={`balance-card ${
+                account === "合計" ? "total" : ""
+              } color-${index}`}
+            >
+              <h3 className="account-name">{account}</h3>
+              <p className="balance-amount">
+                {currentBalances[account].toLocaleString()} 円
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="balance-section liabilities">
+          <h2>負債</h2>
+          {liabilities.map((account, index) => (
+            <div
+              key={account}
+              className={`balance-card ${
+                account === "合計" ? "total" : ""
+              } color-${assets.length + index}`}
+            >
+              <h3 className="account-name">{account}</h3>
+              <p className="balance-amount">
+                {Math.abs(currentBalances[account]).toLocaleString()} 円
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="chart-wrapper">
         <Line ref={chartRef} data={chartData} options={options} />

@@ -5,66 +5,52 @@
 }
 
 .current-balances {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.balance-section {
+  width: 48%;
+}
+
+.balance-section h2 {
+  font-size: 1.2rem;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .balance-card {
+  background-color: #f0f0f0;
+  border-radius: 8px;
   padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin-bottom: 1rem;
 }
 
 .balance-card.total {
-  background-color: rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  border: 2px solid #000;
 }
 
 .account-name {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
 
 .balance-amount {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
 .chart-wrapper {
   height: 400px;
-  width: 100%;
 }
 
-/* Generate background colors for balance cards */
-.balance-card.color-0 {
-  background-color: hsla(0, 70%, 95%, 0.5);
+/* 資産と負債の色分け */
+.balance-section.assets .balance-card {
+  background-color: rgba(0, 128, 0, 0.1);
 }
-.balance-card.color-1 {
-  background-color: hsla(36, 70%, 95%, 0.5);
-}
-.balance-card.color-2 {
-  background-color: hsla(72, 70%, 95%, 0.5);
-}
-.balance-card.color-3 {
-  background-color: hsla(108, 70%, 95%, 0.5);
-}
-.balance-card.color-4 {
-  background-color: hsla(144, 70%, 95%, 0.5);
-}
-.balance-card.color-5 {
-  background-color: hsla(180, 70%, 95%, 0.5);
-}
-.balance-card.color-6 {
-  background-color: hsla(216, 70%, 95%, 0.5);
-}
-.balance-card.color-7 {
-  background-color: hsla(252, 70%, 95%, 0.5);
-}
-.balance-card.color-8 {
-  background-color: hsla(288, 70%, 95%, 0.5);
-}
-.balance-card.color-9 {
-  background-color: hsla(324, 70%, 95%, 0.5);
+
+.balance-section.liabilities .balance-card {
+  background-color: rgba(255, 0, 0, 0.1);
 }
