@@ -202,6 +202,9 @@ export function AssetLiabilityTrendChart({
   const { assets, liabilities } = useMemo(() => {
     return accounts.reduce(
       (acc, account) => {
+        if (account === "合計") {
+          return acc;
+        }
         if (currentBalances[account] >= 0) {
           acc.assets.push(account);
         } else {
@@ -218,13 +221,8 @@ export function AssetLiabilityTrendChart({
       <div className="current-balances">
         <div className="balance-section assets">
           <h2>資産</h2>
-          {assets.map((account, index) => (
-            <div
-              key={account}
-              className={`balance-card ${
-                account === "合計" ? "total" : ""
-              } color-${index}`}
-            >
+          {assets.map((account) => (
+            <div key={account} className="balance-card asset">
               <h3 className="account-name">{account}</h3>
               <p className="balance-amount">
                 {currentBalances[account].toLocaleString()} 円
@@ -234,19 +232,23 @@ export function AssetLiabilityTrendChart({
         </div>
         <div className="balance-section liabilities">
           <h2>負債</h2>
-          {liabilities.map((account, index) => (
-            <div
-              key={account}
-              className={`balance-card ${
-                account === "合計" ? "total" : ""
-              } color-${assets.length + index}`}
-            >
+          {liabilities.map((account) => (
+            <div key={account} className="balance-card liability">
               <h3 className="account-name">{account}</h3>
               <p className="balance-amount">
                 {Math.abs(currentBalances[account]).toLocaleString()} 円
               </p>
             </div>
           ))}
+        </div>
+        <div className="balance-section total">
+          <h2>合計</h2>
+          <div className="balance-card total">
+            <h3 className="account-name">純資産</h3>
+            <p className="balance-amount">
+              {currentBalances["合計"].toLocaleString()} 円
+            </p>
+          </div>
         </div>
       </div>
       <div className="chart-wrapper">
