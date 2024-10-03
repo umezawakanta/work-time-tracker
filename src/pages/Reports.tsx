@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useLocale } from "../hooks/useLocale";
 import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
-import { AssetLiabilityTrendChart } from "@/components/chart/AssetLibraryTrendChart";
+import { AssetLiabilityTrendChart } from "@/components/chart/AssetLiabilityTrendChart";
 import { WorkTimeList } from "@/components/list/WorkTimeList";
 import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import { WorkTimeCharts } from "@/components/chart/WorkTimeChars";

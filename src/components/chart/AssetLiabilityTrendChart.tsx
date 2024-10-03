@@ -16,7 +16,7 @@ import { Line } from "react-chartjs-2";
 import { ja } from "date-fns/locale";
 import { format } from "date-fns";
 import "chartjs-adapter-date-fns";
-import "./AssetLibraryTrendChart.css";
+import "./AssetLiabilityTrendChart.css";
 
 ChartJS.register(
   CategoryScale,
@@ -190,9 +190,34 @@ export function AssetLiabilityTrendChart({
     },
   };
 
+  const currentBalances = useMemo(() => {
+    const latestDate = sortedDates[sortedDates.length - 1];
+    return accounts.reduce((acc, account) => {
+      acc[account] = aggregatedData[latestDate][account];
+      return acc;
+    }, {} as Record<string, number>);
+  }, [aggregatedData, sortedDates, accounts]);
+
   return (
-    <div className="asset-liability-chart">
-      <Line ref={chartRef} data={chartData} options={options} />
+    <div className="asset-liability-chart-container">
+      <div className="current-balances">
+        {accounts.map((account, index) => (
+          <div
+            key={account}
+            className={`balance-card ${
+              account === "合計" ? "total" : ""
+            } color-${index}`}
+          >
+            <h3 className="account-name">{account}</h3>
+            <p className="balance-amount">
+              {currentBalances[account].toLocaleString()} 円
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="chart-wrapper">
+        <Line ref={chartRef} data={chartData} options={options} />
+      </div>
     </div>
   );
 }

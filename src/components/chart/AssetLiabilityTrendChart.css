@@ -1,0 +1,70 @@
+.asset-liability-chart-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.current-balances {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.balance-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.balance-card.total {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.account-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.chart-wrapper {
+  height: 400px;
+  width: 100%;
+}
+
+/* Generate background colors for balance cards */
+.balance-card.color-0 {
+  background-color: hsla(0, 70%, 95%, 0.5);
+}
+.balance-card.color-1 {
+  background-color: hsla(36, 70%, 95%, 0.5);
+}
+.balance-card.color-2 {
+  background-color: hsla(72, 70%, 95%, 0.5);
+}
+.balance-card.color-3 {
+  background-color: hsla(108, 70%, 95%, 0.5);
+}
+.balance-card.color-4 {
+  background-color: hsla(144, 70%, 95%, 0.5);
+}
+.balance-card.color-5 {
+  background-color: hsla(180, 70%, 95%, 0.5);
+}
+.balance-card.color-6 {
+  background-color: hsla(216, 70%, 95%, 0.5);
+}
+.balance-card.color-7 {
+  background-color: hsla(252, 70%, 95%, 0.5);
+}
+.balance-card.color-8 {
+  background-color: hsla(288, 70%, 95%, 0.5);
+}
+.balance-card.color-9 {
+  background-color: hsla(324, 70%, 95%, 0.5);
+}
