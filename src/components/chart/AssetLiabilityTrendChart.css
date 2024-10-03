@@ -35,6 +35,20 @@
 .balance-amount {
   font-size: 1.1rem;
   font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.difference {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.difference.positive {
+  color: green;
+}
+
+.difference.negative {
+  color: red;
 }
 
 .chart-wrapper {

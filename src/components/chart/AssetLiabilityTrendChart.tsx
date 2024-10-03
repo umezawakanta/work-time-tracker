@@ -192,10 +192,17 @@ export function AssetLiabilityTrendChart({
 
   const currentBalances = useMemo(() => {
     const latestDate = sortedDates[sortedDates.length - 1];
+    const previousDate = sortedDates[sortedDates.length - 2] || latestDate;
     return accounts.reduce((acc, account) => {
-      acc[account] = aggregatedData[latestDate][account];
+      const currentValue = aggregatedData[latestDate][account];
+      const previousValue = aggregatedData[previousDate][account];
+      const difference = currentValue - previousValue;
+      acc[account] = {
+        value: currentValue,
+        difference: difference,
+      };
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, { value: number; difference: number }>);
   }, [aggregatedData, sortedDates, accounts]);
 
   // 資産と負債を分類する
@@ -205,7 +212,7 @@ export function AssetLiabilityTrendChart({
         if (account === "合計") {
           return acc;
         }
-        if (currentBalances[account] >= 0) {
+        if (currentBalances[account].value >= 0) {
           acc.assets.push(account);
         } else {
           acc.liabilities.push(account);
@@ -225,7 +232,17 @@ export function AssetLiabilityTrendChart({
             <div key={account} className="balance-card asset">
               <h3 className="account-name">{account}</h3>
               <p className="balance-amount">
-                {currentBalances[account].toLocaleString()} 円
+                {currentBalances[account].value.toLocaleString()} 円
+              </p>
+              <p
+                className={`difference ${
+                  currentBalances[account].difference >= 0
+                    ? "positive"
+                    : "negative"
+                }`}
+              >
+                {currentBalances[account].difference >= 0 ? "+" : ""}
+                {currentBalances[account].difference.toLocaleString()} 円
               </p>
             </div>
           ))}
@@ -236,7 +253,20 @@ export function AssetLiabilityTrendChart({
             <div key={account} className="balance-card liability">
               <h3 className="account-name">{account}</h3>
               <p className="balance-amount">
-                {Math.abs(currentBalances[account]).toLocaleString()} 円
+                {Math.abs(currentBalances[account].value).toLocaleString()} 円
+              </p>
+              <p
+                className={`difference ${
+                  currentBalances[account].difference <= 0
+                    ? "positive"
+                    : "negative"
+                }`}
+              >
+                {currentBalances[account].difference <= 0 ? "+" : ""}
+                {Math.abs(
+                  currentBalances[account].difference
+                ).toLocaleString()}{" "}
+                円
               </p>
             </div>
           ))}
@@ -246,7 +276,17 @@ export function AssetLiabilityTrendChart({
           <div className="balance-card total">
             <h3 className="account-name">純資産</h3>
             <p className="balance-amount">
-              {currentBalances["合計"].toLocaleString()} 円
+              {currentBalances["合計"].value.toLocaleString()} 円
+            </p>
+            <p
+              className={`difference ${
+                currentBalances["合計"].difference >= 0
+                  ? "positive"
+                  : "negative"
+              }`}
+            >
+              {currentBalances["合計"].difference >= 0 ? "+" : ""}
+              {currentBalances["合計"].difference.toLocaleString()} 円
             </p>
           </div>
         </div>
