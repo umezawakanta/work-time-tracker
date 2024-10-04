@@ -52,6 +52,11 @@ export default function Layout({ children }: LayoutProps) {
               </li>
               <li>
                 <Button variant="ghost" asChild>
+                  <Link to="/election-candidates">選挙候補者</Link>
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" asChild>
                   <Link to="/login">ログイン</Link>
                 </Button>
               </li>

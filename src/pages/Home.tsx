@@ -82,6 +82,23 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>衆議院選挙 候補者擁立状況</CardTitle>
+            <CardDescription>選挙候補者の情報を管理・閲覧</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              衆議院選挙の候補者情報を登録・管理できます。
+              政党別、選挙区別の候補者一覧を簡単に確認することができます。
+            </p>
+            <Link to="/election-candidates" className="w-full">
+              <Button variant="default" className="w-full">
+                候補者情報を見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
