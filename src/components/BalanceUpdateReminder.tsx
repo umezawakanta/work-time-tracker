@@ -14,6 +14,7 @@ interface AccountStatus {
   account: string;
   isUpdated: boolean;
   lastUpdateDate: string;
+  balance: number;
 }
 
 export default function BalanceUpdateReminder({
@@ -39,6 +40,7 @@ export default function BalanceUpdateReminder({
             account: entry.account,
             isUpdated: isUpdated,
             lastUpdateDate: entry.date,
+            balance: entry.value,
           });
         }
       } else {
@@ -46,6 +48,7 @@ export default function BalanceUpdateReminder({
           account: entry.account,
           isUpdated: isUpdated,
           lastUpdateDate: entry.date,
+          balance: entry.value,
         });
       }
     });
@@ -83,12 +86,17 @@ export default function BalanceUpdateReminder({
                 {status.account}: {status.isUpdated ? "更新済み" : "未更新"}
               </span>
             </div>
-            <span className="text-sm text-gray-500">
-              {formatDateAndTime(status.lastUpdateDate, locale, {
-                dateStyle: "short",
-                timeStyle: "medium",
-              })}
-            </span>
+            <div className="flex items-center">
+              <span className="mr-4 font-medium">
+                {status.balance.toLocaleString()}円
+              </span>
+              <span className="text-sm text-gray-500">
+                {formatDateAndTime(status.lastUpdateDate, locale, {
+                  dateStyle: "short",
+                  timeStyle: "medium",
+                })}
+              </span>
+            </div>
           </li>
         ))}
       </ul>
