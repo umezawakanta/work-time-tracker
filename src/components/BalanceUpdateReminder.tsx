@@ -34,10 +34,10 @@ interface DebtAccountStatus extends BaseAccountStatus {
 
 type AccountStatus = AssetAccountStatus | DebtAccountStatus;
 
-export default function BalanceUpdateReminder({
+const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
   assetEntries,
   debtEntries,
-}: BalanceUpdateReminderProps) {
+}) => {
   const { locale } = useLocale();
   const dispatch = useDispatch<AppDispatch>();
   const [updatingAccounts, setUpdatingAccounts] = useState<Set<string>>(
@@ -185,4 +185,6 @@ export default function BalanceUpdateReminder({
       </CardContent>
     </Card>
   );
-}
+};
+
+export default BalanceUpdateReminder;
