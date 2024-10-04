@@ -30,6 +30,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
 
     const filledData: DataPoint[] = [];
     Object.entries(accountData).forEach(([account, points]) => {
+      if (points.length === 0) return; // Skip if no points for this account
       let lastValue = points[0].value;
       const allDates = Array.from(
         new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
@@ -77,26 +78,54 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
 
   const events = useMemo(() => {
     const sortedDates = Object.keys(aggregatedData).sort();
+    if (sortedDates.length === 0) return []; // Return empty array if no dates
+
+    const monthStartTotal = aggregatedData[sortedDates[0]]?.["合計"] ?? 0;
+    let cumulativeChange = 0;
+
     return sortedDates.map((date, index) => {
       const prevDate = index > 0 ? sortedDates[index - 1] : date;
-      const change =
-        aggregatedData[date]["合計"] - aggregatedData[prevDate]["合計"];
+      const dailyChange =
+        (aggregatedData[date]?.["合計"] ?? 0) -
+        (aggregatedData[prevDate]?.["合計"] ?? 0);
+      cumulativeChange =
+        (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal;
+
       return {
-        title: `${change.toLocaleString()}円`,
+        title: `日次: ${dailyChange.toLocaleString()}円\n累計: ${cumulativeChange.toLocaleString()}円`,
         date,
         extendedProps: {
-          value: change,
+          dailyChange,
+          cumulativeChange,
         },
       };
     });
   }, [aggregatedData]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const value = (eventInfo.event.extendedProps as { value: number }).value;
-    const isPositive = value >= 0;
+    const { dailyChange, cumulativeChange } = eventInfo.event.extendedProps as {
+      dailyChange: number;
+      cumulativeChange: number;
+    };
+    const isDailyPositive = dailyChange >= 0;
+    const isCumulativePositive = cumulativeChange >= 0;
+
     return (
-      <div className={`event-content ${isPositive ? "positive" : "negative"}`}>
-        {eventInfo.event.title}
+      <div className="event-content">
+        <div
+          className={`daily-change ${
+            isDailyPositive ? "positive" : "negative"
+          }`}
+        >
+          日次: {dailyChange.toLocaleString()}円
+        </div>
+        <div
+          className={`cumulative-change ${
+            isCumulativePositive ? "positive" : "negative"
+          }`}
+        >
+          累計: {cumulativeChange.toLocaleString()}円
+        </div>
       </div>
     );
   };
