@@ -9,27 +9,37 @@ import { useLocale } from "@/hooks/useLocale";
 import { useDispatch } from "react-redux";
 import { addAssetEntry } from "@/store/assetSlice";
 import { addDebtEntry } from "@/store/debtSlice";
-import { AppDispatch } from "@/store"; // この行を追加
+import { AppDispatch } from "@/store";
 
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];
   debtEntries: DebtEntry[];
 }
 
-interface AccountStatus {
+interface BaseAccountStatus {
   account: string;
   isUpdated: boolean;
   lastUpdateDate: string;
   balance: number;
-  type: "asset" | "debt";
 }
+
+interface AssetAccountStatus extends BaseAccountStatus {
+  type: "asset";
+}
+
+interface DebtAccountStatus extends BaseAccountStatus {
+  type: "debt";
+  description: string;
+}
+
+type AccountStatus = AssetAccountStatus | DebtAccountStatus;
 
 export default function BalanceUpdateReminder({
   assetEntries,
   debtEntries,
 }: BalanceUpdateReminderProps) {
   const { locale } = useLocale();
-  const dispatch = useDispatch<AppDispatch>(); // この行を修正
+  const dispatch = useDispatch<AppDispatch>();
   const [updatingAccounts, setUpdatingAccounts] = useState<Set<string>>(
     new Set()
   );
@@ -46,24 +56,30 @@ export default function BalanceUpdateReminder({
         new Date(entry.date).toISOString().split("T")[0] === today;
       const currentStatus = accountMap.get(entry.account);
 
+      const newStatus: AccountStatus =
+        type === "asset"
+          ? {
+              account: entry.account,
+              isUpdated: isUpdated,
+              lastUpdateDate: entry.date,
+              balance: entry.value,
+              type: "asset",
+            }
+          : {
+              account: entry.account,
+              isUpdated: isUpdated,
+              lastUpdateDate: entry.date,
+              balance: entry.value,
+              type: "debt",
+              description: (entry as DebtEntry).description,
+            };
+
       if (currentStatus) {
         if (new Date(entry.date) > new Date(currentStatus.lastUpdateDate)) {
-          accountMap.set(entry.account, {
-            account: entry.account,
-            isUpdated: isUpdated,
-            lastUpdateDate: entry.date,
-            balance: entry.value,
-            type,
-          });
+          accountMap.set(entry.account, newStatus);
         }
       } else {
-        accountMap.set(entry.account, {
-          account: entry.account,
-          isUpdated: isUpdated,
-          lastUpdateDate: entry.date,
-          balance: entry.value,
-          type,
-        });
+        accountMap.set(entry.account, newStatus);
       }
     });
 
@@ -87,13 +103,14 @@ export default function BalanceUpdateReminder({
       account: status.account,
       value: status.balance,
       date: new Date().toISOString(),
+      ...(status.type === "debt" && { description: status.description }),
     };
 
     try {
       if (status.type === "asset") {
         await dispatch(addAssetEntry(newEntry));
       } else {
-        await dispatch(addDebtEntry(newEntry));
+        await dispatch(addDebtEntry(newEntry as DebtEntry));
       }
     } catch (error) {
       console.error("Failed to update balance:", error);
