@@ -1,6 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { toast } from "@/components/ui/use-toast";
 
 interface Candidate {
+  id: string;
   name: string;
   party: string;
   prefecture: string;
@@ -69,138 +88,271 @@ const prefectures = [
 
 export default function ElectionCandidatesPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [newCandidate, setNewCandidate] = useState<Candidate>({
+  const [newCandidate, setNewCandidate] = useState<Omit<Candidate, "id">>({
     name: "",
     party: "",
     prefecture: "",
     district: 1,
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof Candidate;
+    direction: "asc" | "desc";
+  } | null>(null);
+  const [filters, setFilters] = useState<{ party: string; prefecture: string }>(
+    { party: "all", prefecture: "all" }
+  );
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  useEffect(() => {
+    // ここでAPIから候補者データを取得する
+    // 仮のデータをセット
+    setCandidates([
+      {
+        id: "1",
+        name: "道下大樹",
+        party: "立憲民主党",
+        prefecture: "北海道",
+        district: 1,
+      },
+      {
+        id: "2",
+        name: "加藤貴弘",
+        party: "自民党",
+        prefecture: "北海道",
+        district: 1,
+      },
+    ]);
+  }, []);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    setNewCandidate((prev) => ({
+      ...prev,
+      [name]: name === "district" ? parseInt(value, 10) : value,
+    }));
+  };
+
+  const handleSelectChange = (name: string) => (value: string) => {
     setNewCandidate((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setCandidates((prev) => [...prev, newCandidate]);
+    if (editingId) {
+      // 編集モード
+      setCandidates(
+        candidates.map((c) =>
+          c.id === editingId ? { ...newCandidate, id: editingId } : c
+        )
+      );
+      setEditingId(null);
+      toast({ title: "候補者情報を更新しました" });
+    } else {
+      // 新規追加モード
+      const id = Date.now().toString();
+      setCandidates([...candidates, { ...newCandidate, id }]);
+      toast({ title: "新しい候補者を登録しました" });
+    }
     setNewCandidate({ name: "", party: "", prefecture: "", district: 1 });
   };
+
+  const handleEdit = (candidate: Candidate) => {
+    setNewCandidate(candidate);
+    setEditingId(candidate.id);
+  };
+
+  const handleDelete = (id: string) => {
+    setCandidates(candidates.filter((c) => c.id !== id));
+    toast({ title: "候補者を削除しました" });
+  };
+
+  const handleSort = (key: keyof Candidate) => {
+    let direction: "asc" | "desc" = "asc";
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "asc"
+    ) {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const handleFilterChange = (name: string) => (value: string) => {
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const sortedAndFilteredCandidates = React.useMemo(() => {
+    let result = [...candidates];
+    if (sortConfig) {
+      result.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key])
+          return sortConfig.direction === "asc" ? -1 : 1;
+        if (a[sortConfig.key] > b[sortConfig.key])
+          return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    if (filters.party !== "all") {
+      result = result.filter((c) => c.party === filters.party);
+    }
+    if (filters.prefecture !== "all") {
+      result = result.filter((c) => c.prefecture === filters.prefecture);
+    }
+    return result;
+  }, [candidates, sortConfig, filters]);
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">衆議院選挙 候補者擁立状況</h1>
 
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <h2 className="text-xl font-semibold mb-4">新規候補者登録</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
+      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
+        <h2 className="text-xl font-semibold">
+          {editingId ? "候補者情報編集" : "新規候補者登録"}
+        </h2>
+        <Input
+          type="text"
+          placeholder="候補者名"
+          name="name"
+          value={newCandidate.name}
+          onChange={handleInputChange}
+          required
+        />
+        <Select
+          value={newCandidate.party}
+          onValueChange={handleSelectChange("party")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="政党を選択してください" />
+          </SelectTrigger>
+          <SelectContent>
+            {parties.map((party) => (
+              <SelectItem key={party} value={party}>
+                {party}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={newCandidate.prefecture}
+          onValueChange={handleSelectChange("prefecture")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="都道府県を選択してください" />
+          </SelectTrigger>
+          <SelectContent>
+            {prefectures.map((prefecture) => (
+              <SelectItem key={prefecture} value={prefecture}>
+                {prefecture}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          type="number"
+          placeholder="選挙区"
+          name="district"
+          value={newCandidate.district}
+          onChange={handleInputChange}
+          min="1"
+          required
+        />
+        <Button type="submit">{editingId ? "更新" : "登録"}</Button>
+      </form>
+
+      <h2 className="text-xl font-semibold mb-4">登録済み候補者一覧</h2>
+      <div className="mb-4 flex space-x-4">
+        <Select
+          value={filters.party}
+          onValueChange={handleFilterChange("party")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="政党でフィルター" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">すべての政党</SelectItem>
+            {parties.map((party) => (
+              <SelectItem key={party} value={party}>
+                {party}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={filters.prefecture}
+          onValueChange={handleFilterChange("prefecture")}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="都道府県でフィルター" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">すべての都道府県</SelectItem>
+            {prefectures.map((prefecture) => (
+              <SelectItem key={prefecture} value={prefecture}>
+                {prefecture}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              onClick={() => handleSort("name")}
+              className="cursor-pointer"
             >
-              候補者名
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={newCandidate.name}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="party"
-              className="block text-sm font-medium text-gray-700"
+              名前
+            </TableHead>
+            <TableHead
+              onClick={() => handleSort("party")}
+              className="cursor-pointer"
             >
               政党
-            </label>
-            <select
-              id="party"
-              name="party"
-              value={newCandidate.party}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">選択してください</option>
-              {parties.map((party) => (
-                <option key={party} value={party}>
-                  {party}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="prefecture"
-              className="block text-sm font-medium text-gray-700"
+            </TableHead>
+            <TableHead
+              onClick={() => handleSort("prefecture")}
+              className="cursor-pointer"
             >
               都道府県
-            </label>
-            <select
-              id="prefecture"
-              name="prefecture"
-              value={newCandidate.prefecture}
-              onChange={handleInputChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">選択してください</option>
-              {prefectures.map((prefecture) => (
-                <option key={prefecture} value={prefecture}>
-                  {prefecture}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor="district"
-              className="block text-sm font-medium text-gray-700"
+            </TableHead>
+            <TableHead
+              onClick={() => handleSort("district")}
+              className="cursor-pointer"
             >
               選挙区
-            </label>
-            <input
-              type="number"
-              id="district"
-              name="district"
-              value={newCandidate.district}
-              onChange={handleInputChange}
-              min="1"
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            候補者を登録
-          </button>
-        </form>
-      </div>
-
-      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8">
-        <h2 className="text-xl font-semibold mb-4">登録済み候補者一覧</h2>
-        {candidates.length === 0 ? (
-          <p>まだ候補者が登録されていません。</p>
-        ) : (
-          <ul className="space-y-2">
-            {candidates.map((candidate, index) => (
-              <li key={index} className="border-b pb-2">
-                {candidate.name} ({candidate.party}) - {candidate.prefecture} 第
-                {candidate.district}区
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+            </TableHead>
+            <TableHead>操作</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedAndFilteredCandidates.map((candidate) => (
+            <TableRow key={candidate.id}>
+              <TableCell>{candidate.name}</TableCell>
+              <TableCell>{candidate.party}</TableCell>
+              <TableCell>{candidate.prefecture}</TableCell>
+              <TableCell>{candidate.district}</TableCell>
+              <TableCell>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleEdit(candidate)}
+                  className="mr-2"
+                >
+                  編集
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDelete(candidate.id)}
+                >
+                  削除
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
