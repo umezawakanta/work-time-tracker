@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { EventContentArg } from "@fullcalendar/core";
-import { format, startOfMonth } from "date-fns";
+import { format, startOfMonth, startOfWeek, isSameWeek } from "date-fns";
 import { ja } from "date-fns/locale";
 import "./AssetCalendar.css";
 
@@ -91,7 +91,11 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           ]["合計"]
         : 0);
 
+    let weekStartTotal = 0;
+    let lastWeekStart = new Date(0);
+
     return sortedDates.map((date, index) => {
+      const currentDate = new Date(date);
       const prevDate = index > 0 ? sortedDates[index - 1] : date;
       const dailyChange =
         (aggregatedData[date]?.["合計"] ?? 0) -
@@ -101,11 +105,23 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           ? (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal
           : 0;
 
+      const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+      if (!isSameWeek(currentDate, lastWeekStart, { weekStartsOn: 1 })) {
+        weekStartTotal =
+          aggregatedData[sortedDates.find((d) => new Date(d) >= weekStart)!]?.[
+            "合計"
+          ] ?? 0;
+        lastWeekStart = weekStart;
+      }
+      const weeklyChange =
+        (aggregatedData[date]?.["合計"] ?? 0) - weekStartTotal;
+
       return {
-        title: `日次: ${dailyChange.toLocaleString()}円\n累計: ${cumulativeChange.toLocaleString()}円`,
+        title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円`,
         date,
         extendedProps: {
           dailyChange,
+          weeklyChange,
           cumulativeChange,
         },
       };
@@ -113,11 +129,14 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
   }, [aggregatedData]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const { dailyChange, cumulativeChange } = eventInfo.event.extendedProps as {
+    const { dailyChange, weeklyChange, cumulativeChange } = eventInfo.event
+      .extendedProps as {
       dailyChange: number;
+      weeklyChange: number;
       cumulativeChange: number;
     };
     const isDailyPositive = dailyChange >= 0;
+    const isWeeklyPositive = weeklyChange >= 0;
     const isCumulativePositive = cumulativeChange >= 0;
 
     return (
@@ -131,11 +150,21 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           <span className="change-value">{dailyChange.toLocaleString()}円</span>
         </div>
         <div
+          className={`change-item weekly-change ${
+            isWeeklyPositive ? "positive" : "negative"
+          }`}
+        >
+          <span className="change-label">週次:</span>
+          <span className="change-value">
+            {weeklyChange.toLocaleString()}円
+          </span>
+        </div>
+        <div
           className={`change-item cumulative-change ${
             isCumulativePositive ? "positive" : "negative"
           }`}
         >
-          <span className="change-label">累計:</span>
+          <span className="change-label">月次:</span>
           <span className="change-value">
             {cumulativeChange.toLocaleString()}円
           </span>

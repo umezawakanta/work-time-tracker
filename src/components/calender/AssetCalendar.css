@@ -17,7 +17,7 @@
 }
 
 .event-content {
-  font-size: 0.8em;
+  font-size: 0.75em;
   padding: 4px;
   border-radius: 4px;
   background-color: #ffffff;
@@ -43,12 +43,14 @@
 }
 
 .daily-change.positive,
+.weekly-change.positive,
 .cumulative-change.positive {
   background-color: rgba(76, 175, 80, 0.1);
   color: #2e7d32;
 }
 
 .daily-change.negative,
+.weekly-change.negative,
 .cumulative-change.negative {
   background-color: rgba(244, 67, 54, 0.1);
   color: #c62828;
