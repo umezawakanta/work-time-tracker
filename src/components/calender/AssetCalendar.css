@@ -15,12 +15,21 @@
   border-radius: 4px;
 }
 
-.event-content.positive {
+.daily-change,
+.cumulative-change {
+  padding: 2px 4px;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+.daily-change.positive,
+.cumulative-change.positive {
   background-color: rgba(0, 128, 0, 0.2);
   color: green;
 }
 
-.event-content.negative {
+.daily-change.negative,
+.cumulative-change.negative {
   background-color: rgba(255, 0, 0, 0.2);
   color: red;
 }

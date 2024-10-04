@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { EventContentArg } from "@fullcalendar/core";
-import { format } from "date-fns";
+import { format, startOfMonth } from "date-fns";
 import { ja } from "date-fns/locale";
 import "./AssetCalendar.css";
 
@@ -30,7 +30,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
 
     const filledData: DataPoint[] = [];
     Object.entries(accountData).forEach(([account, points]) => {
-      if (points.length === 0) return; // Skip if no points for this account
+      if (points.length === 0) return;
       let lastValue = points[0].value;
       const allDates = Array.from(
         new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
@@ -64,7 +64,6 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
       return acc;
     }, {} as Record<string, Record<string, number>>);
 
-    // Calculate total for each date
     Object.keys(aggregated).forEach((dateStr) => {
       const total = Object.values(aggregated[dateStr]).reduce(
         (sum, value) => sum + value,
@@ -78,18 +77,29 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
 
   const events = useMemo(() => {
     const sortedDates = Object.keys(aggregatedData).sort();
-    if (sortedDates.length === 0) return []; // Return empty array if no dates
+    if (sortedDates.length === 0) return [];
 
-    const monthStartTotal = aggregatedData[sortedDates[0]]?.["合計"] ?? 0;
-    let cumulativeChange = 0;
+    const currentMonthStart = startOfMonth(
+      new Date(sortedDates[sortedDates.length - 1])
+    );
+    const monthStartDateStr = currentMonthStart.toISOString().split("T")[0];
+    const monthStartTotal =
+      aggregatedData[monthStartDateStr]?.["合計"] ??
+      (sortedDates.find((date) => date >= monthStartDateStr)
+        ? aggregatedData[
+            sortedDates.find((date) => date >= monthStartDateStr)!
+          ]["合計"]
+        : 0);
 
     return sortedDates.map((date, index) => {
       const prevDate = index > 0 ? sortedDates[index - 1] : date;
       const dailyChange =
         (aggregatedData[date]?.["合計"] ?? 0) -
         (aggregatedData[prevDate]?.["合計"] ?? 0);
-      cumulativeChange =
-        (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal;
+      const cumulativeChange =
+        date >= monthStartDateStr
+          ? (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal
+          : 0;
 
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n累計: ${cumulativeChange.toLocaleString()}円`,
