@@ -16,7 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Candidate {
   id: string;
@@ -34,8 +36,10 @@ const parties = [
   "共産党",
   "国民民主党",
   "社民党",
+  "参政党",
   "無所属",
 ];
+
 const prefectures = [
   "北海道",
   "青森県",
@@ -100,11 +104,16 @@ export default function ElectionCandidatesPage() {
     direction: "asc" | "desc";
   } | null>(null);
   const [filters, setFilters] = useState<{ party: string; prefecture: string }>(
-    { party: "all", prefecture: "all" }
+    {
+      party: "all",
+      prefecture: "all",
+    }
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const { toast } = useToast();
 
   useEffect(() => {
     // ここでAPIから候補者データを取得する
@@ -131,6 +140,20 @@ export default function ElectionCandidatesPage() {
         prefecture: "北海道",
         district: 1,
       },
+      {
+        id: "4",
+        name: "千葉恵子",
+        party: "共産党",
+        prefecture: "北海道",
+        district: 1,
+      },
+      {
+        id: "5",
+        name: "田中義人",
+        party: "参政党",
+        prefecture: "北海道",
+        district: 1,
+      },
     ]);
   }, []);
 
@@ -150,8 +173,8 @@ export default function ElectionCandidatesPage() {
     event.preventDefault();
     if (editingId) {
       // 編集モード
-      setCandidates(
-        candidates.map((c) =>
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((c) =>
           c.id === editingId ? { ...newCandidate, id: editingId } : c
         )
       );
@@ -160,7 +183,10 @@ export default function ElectionCandidatesPage() {
     } else {
       // 新規追加モード
       const id = Date.now().toString();
-      setCandidates([...candidates, { ...newCandidate, id }]);
+      setCandidates((prevCandidates) => [
+        ...prevCandidates,
+        { ...newCandidate, id },
+      ]);
       toast({ title: "新しい候補者を登録しました" });
     }
     setNewCandidate({ name: "", party: "", prefecture: "", district: 1 });
@@ -172,7 +198,9 @@ export default function ElectionCandidatesPage() {
   };
 
   const handleDelete = (id: string) => {
-    setCandidates(candidates.filter((c) => c.id !== id));
+    setCandidates((prevCandidates) =>
+      prevCandidates.filter((c) => c.id !== id)
+    );
     toast({ title: "候補者を削除しました" });
   };
 
@@ -190,18 +218,17 @@ export default function ElectionCandidatesPage() {
 
   const handleFilterChange = (name: string) => (value: string) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
-    setCurrentPage(1); // フィルター変更時にページを1に戻す
+    setCurrentPage(1);
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // 検索時にページを1に戻す
+    setCurrentPage(1);
   };
 
   const filteredAndSortedCandidates = React.useMemo(() => {
     let result = [...candidates];
 
-    // 検索
     if (searchTerm) {
       result = result.filter(
         (c) =>
@@ -212,7 +239,6 @@ export default function ElectionCandidatesPage() {
       );
     }
 
-    // フィルタリング
     if (filters.party !== "all") {
       result = result.filter((c) => c.party === filters.party);
     }
@@ -220,7 +246,6 @@ export default function ElectionCandidatesPage() {
       result = result.filter((c) => c.prefecture === filters.prefecture);
     }
 
-    // ソート
     if (sortConfig) {
       result.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key])
@@ -234,7 +259,6 @@ export default function ElectionCandidatesPage() {
     return result;
   }, [candidates, sortConfig, filters, searchTerm]);
 
-  // ページネーション
   const pageCount = Math.ceil(
     filteredAndSortedCandidates.length / itemsPerPage
   );
@@ -244,193 +268,218 @@ export default function ElectionCandidatesPage() {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">衆議院選挙 候補者擁立状況</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">衆議院選挙 候補者擁立状況</h1>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <h2 className="text-xl font-semibold">
-          {editingId ? "候補者情報編集" : "新規候補者登録"}
-        </h2>
-        <Input
-          type="text"
-          placeholder="候補者名"
-          name="name"
-          value={newCandidate.name}
-          onChange={handleInputChange}
-          required
-        />
-        <Select
-          value={newCandidate.party}
-          onValueChange={handleSelectChange("party")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="政党を選択してください" />
-          </SelectTrigger>
-          <SelectContent>
-            {parties.map((party) => (
-              <SelectItem key={party} value={party}>
-                {party}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={newCandidate.prefecture}
-          onValueChange={handleSelectChange("prefecture")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="都道府県を選択してください" />
-          </SelectTrigger>
-          <SelectContent>
-            {prefectures.map((prefecture) => (
-              <SelectItem key={prefecture} value={prefecture}>
-                {prefecture}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Input
-          type="number"
-          placeholder="選挙区"
-          name="district"
-          value={newCandidate.district}
-          onChange={handleInputChange}
-          min="1"
-          required
-        />
-        <Button type="submit">{editingId ? "更新" : "登録"}</Button>
-      </form>
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>
+            {editingId ? "候補者情報編集" : "新規候補者登録"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="text"
+              placeholder="候補者名"
+              name="name"
+              value={newCandidate.name}
+              onChange={handleInputChange}
+              required
+            />
+            <Select
+              value={newCandidate.party}
+              onValueChange={handleSelectChange("party")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="政党を選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                {parties.map((party) => (
+                  <SelectItem key={party} value={party}>
+                    {party}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={newCandidate.prefecture}
+              onValueChange={handleSelectChange("prefecture")}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="都道府県を選択してください" />
+              </SelectTrigger>
+              <SelectContent>
+                {prefectures.map((prefecture) => (
+                  <SelectItem key={prefecture} value={prefecture}>
+                    {prefecture}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              placeholder="選挙区"
+              name="district"
+              value={newCandidate.district}
+              onChange={handleInputChange}
+              min="1"
+              required
+            />
+            <Button type="submit" className="w-full">
+              {editingId ? "更新" : "登録"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-      <h2 className="text-xl font-semibold mb-4">登録済み候補者一覧</h2>
-      <div className="mb-4 flex space-x-4">
-        <Input
-          type="text"
-          placeholder="検索..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="max-w-xs"
-        />
-        <Select
-          value={filters.party}
-          onValueChange={handleFilterChange("party")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="政党でフィルター" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">すべての政党</SelectItem>
-            {parties.map((party) => (
-              <SelectItem key={party} value={party}>
-                {party}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={filters.prefecture}
-          onValueChange={handleFilterChange("prefecture")}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="都道府県でフィルター" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">すべての都道府県</SelectItem>
-            {prefectures.map((prefecture) => (
-              <SelectItem key={prefecture} value={prefecture}>
-                {prefecture}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead
-              onClick={() => handleSort("name")}
-              className="cursor-pointer"
-            >
-              名前
-            </TableHead>
-            <TableHead
-              onClick={() => handleSort("party")}
-              className="cursor-pointer"
-            >
-              政党
-            </TableHead>
-            <TableHead
-              onClick={() => handleSort("prefecture")}
-              className="cursor-pointer"
-            >
-              都道府県
-            </TableHead>
-            <TableHead
-              onClick={() => handleSort("district")}
-              className="cursor-pointer"
-            >
-              選挙区
-            </TableHead>
-            <TableHead>操作</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedCandidates.map((candidate) => (
-            <TableRow key={candidate.id}>
-              <TableCell>{candidate.name}</TableCell>
-              <TableCell>{candidate.party}</TableCell>
-              <TableCell>{candidate.prefecture}</TableCell>
-              <TableCell>{candidate.district}</TableCell>
-              <TableCell>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(candidate)}
-                  className="mr-2"
-                >
-                  編集
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(candidate.id)}
-                >
-                  削除
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <div className="mt-4 flex justify-between items-center">
-        <div>
-          全{filteredAndSortedCandidates.length}件中{" "}
-          {(currentPage - 1) * itemsPerPage + 1} -{" "}
-          {Math.min(
-            currentPage * itemsPerPage,
-            filteredAndSortedCandidates.length
-          )}
-          件を表示
-        </div>
-        <div className="space-x-2">
-          <Button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            前へ
-          </Button>
-          <span>
-            {currentPage} / {pageCount}
-          </span>
-          <Button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, pageCount))
-            }
-            disabled={currentPage === pageCount}
-          >
-            次へ
-          </Button>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>登録済み候補者一覧</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 space-y-4">
+            <Input
+              type="text"
+              placeholder="検索..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full"
+            />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Select
+                value={filters.party}
+                onValueChange={handleFilterChange("party")}
+              >
+                <SelectTrigger className="w-full sm:w-auto">
+                  <SelectValue placeholder="政党でフィルター" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">すべての政党</SelectItem>
+                  {parties.map((party) => (
+                    <SelectItem key={party} value={party}>
+                      {party}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={filters.prefecture}
+                onValueChange={handleFilterChange("prefecture")}
+              >
+                <SelectTrigger className="w-full sm:w-auto">
+                  <SelectValue placeholder="都道府県でフィルター" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">すべての都道府県</SelectItem>
+                  {prefectures.map((prefecture) => (
+                    <SelectItem key={prefecture} value={prefecture}>
+                      {prefecture}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    onClick={() => handleSort("name")}
+                    className="cursor-pointer"
+                  >
+                    名前
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort("party")}
+                    className="cursor-pointer"
+                  >
+                    政党
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort("prefecture")}
+                    className="cursor-pointer"
+                  >
+                    都道府県
+                  </TableHead>
+                  <TableHead
+                    onClick={() => handleSort("district")}
+                    className="cursor-pointer"
+                  >
+                    選挙区
+                  </TableHead>
+                  <TableHead>操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedCandidates.map((candidate) => (
+                  <TableRow key={candidate.id}>
+                    <TableCell className="font-medium">
+                      {candidate.name}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{candidate.party}</Badge>
+                    </TableCell>
+                    <TableCell>{candidate.prefecture}</TableCell>
+                    <TableCell>{candidate.district}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(candidate)}
+                        >
+                          編集
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(candidate.id)}
+                        >
+                          削除
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
+            <div className="mb-2 sm:mb-0 text-sm text-gray-600">
+              全{filteredAndSortedCandidates.length}件中{" "}
+              {(currentPage - 1) * itemsPerPage + 1} -{" "}
+              {Math.min(
+                currentPage * itemsPerPage,
+                filteredAndSortedCandidates.length
+              )}
+              件を表示
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                size="sm"
+              >
+                前へ
+              </Button>
+              <span className="text-sm">
+                {currentPage} / {pageCount}
+              </span>
+              <Button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, pageCount))
+                }
+                disabled={currentPage === pageCount}
+                size="sm"
+              >
+                次へ
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
