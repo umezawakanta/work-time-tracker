@@ -9,6 +9,7 @@ import { useLocale } from "@/hooks/useLocale";
 import { useDispatch } from "react-redux";
 import { addAssetEntry } from "@/store/assetSlice";
 import { addDebtEntry } from "@/store/debtSlice";
+import { AppDispatch } from "@/store"; // この行を追加
 
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];
@@ -28,7 +29,7 @@ export default function BalanceUpdateReminder({
   debtEntries,
 }: BalanceUpdateReminderProps) {
   const { locale } = useLocale();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); // この行を修正
   const [updatingAccounts, setUpdatingAccounts] = useState<Set<string>>(
     new Set()
   );
