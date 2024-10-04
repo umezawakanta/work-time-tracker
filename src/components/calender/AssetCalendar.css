@@ -2,56 +2,96 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  font-family: "Arial", sans-serif;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.asset-calendar-container h1 {
+.calendar-title {
   text-align: center;
   margin-bottom: 20px;
+  color: #333;
+  font-size: 2em;
+  font-weight: 300;
 }
 
 .event-content {
   font-size: 0.8em;
-  padding: 2px 4px;
+  padding: 4px;
   border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.daily-change,
-.cumulative-change {
+.change-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 2px 4px;
   border-radius: 3px;
   margin-bottom: 2px;
 }
 
+.change-label {
+  font-weight: bold;
+  color: #555;
+}
+
+.change-value {
+  font-weight: 500;
+}
+
 .daily-change.positive,
 .cumulative-change.positive {
-  background-color: rgba(0, 128, 0, 0.2);
-  color: green;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #2e7d32;
 }
 
 .daily-change.negative,
 .cumulative-change.negative {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: red;
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #c62828;
 }
 
 .custom-day-cell {
   text-align: center;
   padding: 5px;
+  font-weight: bold;
+  color: #333;
 }
 
 .fc-day-today {
-  background-color: rgba(0, 0, 255, 0.1) !important;
+  background-color: rgba(33, 150, 243, 0.1) !important;
 }
 
 .fc-button-primary {
-  background-color: #4a90e2 !important;
-  border-color: #4a90e2 !important;
+  background-color: #1976d2 !important;
+  border-color: #1976d2 !important;
+  transition: background-color 0.3s ease;
 }
 
 .fc-button-primary:hover {
-  background-color: #3a7bc8 !important;
+  background-color: #1565c0 !important;
 }
 
 .fc-toolbar-title {
   font-size: 1.5em !important;
+  color: #333;
+  font-weight: 300;
+}
+
+.fc th {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.fc td {
+  border-color: #e0e0e0;
+}
+
+.fc-day-other {
+  background-color: #f5f5f5;
 }

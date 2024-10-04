@@ -123,18 +123,22 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     return (
       <div className="event-content">
         <div
-          className={`daily-change ${
+          className={`change-item daily-change ${
             isDailyPositive ? "positive" : "negative"
           }`}
         >
-          日次: {dailyChange.toLocaleString()}円
+          <span className="change-label">日次:</span>
+          <span className="change-value">{dailyChange.toLocaleString()}円</span>
         </div>
         <div
-          className={`cumulative-change ${
+          className={`change-item cumulative-change ${
             isCumulativePositive ? "positive" : "negative"
           }`}
         >
-          累計: {cumulativeChange.toLocaleString()}円
+          <span className="change-label">累計:</span>
+          <span className="change-value">
+            {cumulativeChange.toLocaleString()}円
+          </span>
         </div>
       </div>
     );
@@ -142,7 +146,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
 
   return (
     <div className="asset-calendar-container">
-      <h1>資産増減カレンダー</h1>
+      <h1 className="calendar-title">資産増減カレンダー</h1>
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
