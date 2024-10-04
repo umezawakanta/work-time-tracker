@@ -28,13 +28,27 @@ import {
   deleteCandidate,
   Candidate,
 } from "../store/candidateSlice";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+import { Bar, Pie } from "react-chartjs-2";
 
-interface CandidateFormData {
-  name: string;
-  party: string;
-  prefecture: string;
-  district: number;
-}
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const parties = [
   "自民党",
@@ -98,6 +112,103 @@ const prefectures = [
   "沖縄県",
 ];
 
+const COLORS = [
+  "rgba(255, 99, 132, 0.8)",
+  "rgba(54, 162, 235, 0.8)",
+  "rgba(255, 206, 86, 0.8)",
+  "rgba(75, 192, 192, 0.8)",
+  "rgba(153, 102, 255, 0.8)",
+  "rgba(255, 159, 64, 0.8)",
+  "rgba(199, 199, 199, 0.8)",
+  "rgba(83, 102, 255, 0.8)",
+  "rgba(40, 159, 64, 0.8)",
+];
+
+const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
+  candidates,
+}) => {
+  const partyData = {
+    labels: parties,
+    datasets: [
+      {
+        data: parties.map(
+          (party) => candidates.filter((c) => c.party === party).length
+        ),
+        backgroundColor: COLORS,
+        borderColor: COLORS.map((color) => color.replace("0.8", "1")),
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const prefectureData = {
+    labels: prefectures,
+    datasets: [
+      {
+        label: "候補者数",
+        data: prefectures.map(
+          (prefecture) =>
+            candidates.filter((c) => c.prefecture === prefecture).length
+        ),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const pieOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "right" as const,
+      },
+      title: {
+        display: true,
+        text: "政党別候補者数",
+      },
+    },
+  };
+
+  const barOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "都道府県別候補者数",
+      },
+    },
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>政党別候補者数</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <Pie data={partyData} options={pieOptions} />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>都道府県別候補者数</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <Bar data={prefectureData} options={barOptions} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 export default function ElectionCandidatesPage() {
   const dispatch = useDispatch<AppDispatch>();
   const candidates = useSelector(
@@ -106,7 +217,7 @@ export default function ElectionCandidatesPage() {
   const status = useSelector((state: RootState) => state.candidate.status);
   const error = useSelector((state: RootState) => state.candidate.error);
 
-  const [newCandidate, setNewCandidate] = useState<CandidateFormData>({
+  const [newCandidate, setNewCandidate] = useState<Omit<Candidate, "_id">>({
     name: "",
     party: "",
     prefecture: "",
@@ -253,10 +364,14 @@ export default function ElectionCandidatesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">衆議院選挙 候補者擁立状況</h1>
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">
+        衆議院選挙 候補者擁立状況
+      </h1>
 
-      <Card className="mb-8">
+      <CandidateCharts candidates={candidates} />
+
+      <Card className="mb-8 mt-8">
         <CardHeader>
           <CardTitle>
             {editingId ? "候補者情報編集" : "新規候補者登録"}
@@ -276,7 +391,7 @@ export default function ElectionCandidatesPage() {
               value={newCandidate.party}
               onValueChange={handleSelectChange("party")}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="政党を選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -291,7 +406,7 @@ export default function ElectionCandidatesPage() {
               value={newCandidate.prefecture}
               onValueChange={handleSelectChange("prefecture")}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="都道府県を選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -331,12 +446,12 @@ export default function ElectionCandidatesPage() {
               onChange={handleSearch}
               className="w-full"
             />
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Select
                 value={filters.party}
                 onValueChange={handleFilterChange("party")}
               >
-                <SelectTrigger className="w-full sm:w-auto">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="政党でフィルター" />
                 </SelectTrigger>
                 <SelectContent>
@@ -352,7 +467,7 @@ export default function ElectionCandidatesPage() {
                 value={filters.prefecture}
                 onValueChange={handleFilterChange("prefecture")}
               >
-                <SelectTrigger className="w-full sm:w-auto">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="都道府県でフィルター" />
                 </SelectTrigger>
                 <SelectContent>
@@ -366,70 +481,72 @@ export default function ElectionCandidatesPage() {
               </Select>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead
-                    onClick={() => handleSort("name")}
-                    className="cursor-pointer"
-                  >
-                    名前
-                  </TableHead>
-                  <TableHead
-                    onClick={() => handleSort("party")}
-                    className="cursor-pointer"
-                  >
-                    政党
-                  </TableHead>
-                  <TableHead
-                    onClick={() => handleSort("prefecture")}
-                    className="cursor-pointer"
-                  >
-                    都道府県
-                  </TableHead>
-                  <TableHead
-                    onClick={() => handleSort("district")}
-                    className="cursor-pointer"
-                  >
-                    選挙区
-                  </TableHead>
-                  <TableHead>操作</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedCandidates.map((candidate) => (
-                  <TableRow key={candidate._id}>
-                    <TableCell className="font-medium">
-                      {candidate.name}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{candidate.party}</Badge>
-                    </TableCell>
-                    <TableCell>{candidate.prefecture}</TableCell>
-                    <TableCell>{candidate.district}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEdit(candidate)}
-                        >
-                          編集
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(candidate._id)}
-                        >
-                          削除
-                        </Button>
-                      </div>
-                    </TableCell>
+          <div className="overflow-x-auto -mx-4 sm:-mx-6">
+            <div className="inline-block min-w-full align-middle">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead
+                      onClick={() => handleSort("name")}
+                      className="cursor-pointer"
+                    >
+                      名前
+                    </TableHead>
+                    <TableHead
+                      onClick={() => handleSort("party")}
+                      className="cursor-pointer"
+                    >
+                      政党
+                    </TableHead>
+                    <TableHead
+                      onClick={() => handleSort("prefecture")}
+                      className="cursor-pointer"
+                    >
+                      都道府県
+                    </TableHead>
+                    <TableHead
+                      onClick={() => handleSort("district")}
+                      className="cursor-pointer"
+                    >
+                      選挙区
+                    </TableHead>
+                    <TableHead>操作</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {paginatedCandidates.map((candidate) => (
+                    <TableRow key={candidate._id}>
+                      <TableCell className="font-medium">
+                        {candidate.name}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{candidate.party}</Badge>
+                      </TableCell>
+                      <TableCell>{candidate.prefecture}</TableCell>
+                      <TableCell>{candidate.district}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(candidate)}
+                          >
+                            編集
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(candidate._id)}
+                          >
+                            削除
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
           <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
             <div className="mb-2 sm:mb-0 text-sm text-gray-600">
