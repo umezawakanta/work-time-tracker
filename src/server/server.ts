@@ -624,6 +624,126 @@ app.post(
   }
 );
 
+// 候補者インターフェース
+interface ICandidate extends mongoose.Document {
+  name: string;
+  party: string;
+  prefecture: string;
+  district: number;
+}
+
+// 候補者モデルの定義
+const CandidateSchema = new mongoose.Schema<ICandidate>({
+  name: { type: String, required: true },
+  party: { type: String, required: true },
+  prefecture: { type: String, required: true },
+  district: { type: Number, required: true },
+});
+
+const Candidate = mongoose.model<ICandidate>("Candidate", CandidateSchema);
+
+// バリデーションミドルウェア
+const validateCandidate = [
+  body("name").notEmpty().withMessage("名前は必須です"),
+  body("party").notEmpty().withMessage("政党は必須です"),
+  body("prefecture").notEmpty().withMessage("都道府県は必須です"),
+  body("district")
+    .isInt({ min: 1 })
+    .withMessage("選挙区は1以上の整数である必要があります"),
+];
+
+// 候補者を取得するAPIエンドポイント
+app.get(
+  "/api/candidates",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const candidates = await Candidate.find().sort({ name: 1 });
+      res.json(candidates);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 候補者を追加するAPIエンドポイント
+app.post(
+  "/api/candidates",
+  validateCandidate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const newCandidate = new Candidate(req.body);
+      const savedCandidate = await newCandidate.save();
+      res.status(201).json({
+        message: "候補者が正常に登録されました",
+        candidate: savedCandidate,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 候補者を更新するAPIエンドポイント
+app.put(
+  "/api/candidates/:id",
+  validateCandidate,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const updatedCandidate = await Candidate.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedCandidate) {
+        return res
+          .status(404)
+          .json({ message: "指定された候補者が見つかりません" });
+      }
+      res.json({
+        message: "候補者情報が正常に更新されました",
+        candidate: updatedCandidate,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 候補者を削除するAPIエンドポイント
+app.delete(
+  "/api/candidates/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id);
+      if (!deletedCandidate) {
+        return res
+          .status(404)
+          .json({ message: "指定された候補者が見つかりません" });
+      }
+      res.json({
+        message: "候補者が正常に削除されました",
+        candidate: deletedCandidate,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // エラーハンドリングミドルウェアを使用
 app.use(errorHandler);
 

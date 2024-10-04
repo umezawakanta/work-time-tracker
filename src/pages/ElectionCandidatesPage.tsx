@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,9 +20,16 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AppDispatch, RootState } from "../store";
+import {
+  fetchCandidates,
+  addCandidate,
+  updateCandidate,
+  deleteCandidate,
+  Candidate,
+} from "../store/candidateSlice";
 
-interface Candidate {
-  id: string;
+interface CandidateFormData {
   name: string;
   party: string;
   prefecture: string;
@@ -91,8 +99,14 @@ const prefectures = [
 ];
 
 export default function ElectionCandidatesPage() {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [newCandidate, setNewCandidate] = useState<Omit<Candidate, "id">>({
+  const dispatch = useDispatch<AppDispatch>();
+  const candidates = useSelector(
+    (state: RootState) => state.candidate.candidates
+  );
+  const status = useSelector((state: RootState) => state.candidate.status);
+  const error = useSelector((state: RootState) => state.candidate.error);
+
+  const [newCandidate, setNewCandidate] = useState<CandidateFormData>({
     name: "",
     party: "",
     prefecture: "",
@@ -116,46 +130,8 @@ export default function ElectionCandidatesPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // ここでAPIから候補者データを取得する
-    // 仮のデータをセット
-    setCandidates([
-      {
-        id: "1",
-        name: "道下大樹",
-        party: "立憲民主党",
-        prefecture: "北海道",
-        district: 1,
-      },
-      {
-        id: "2",
-        name: "加藤貴弘",
-        party: "自民党",
-        prefecture: "北海道",
-        district: 1,
-      },
-      {
-        id: "3",
-        name: "小林陽",
-        party: "日本維新の会",
-        prefecture: "北海道",
-        district: 1,
-      },
-      {
-        id: "4",
-        name: "千葉恵子",
-        party: "共産党",
-        prefecture: "北海道",
-        district: 1,
-      },
-      {
-        id: "5",
-        name: "田中義人",
-        party: "参政党",
-        prefecture: "北海道",
-        district: 1,
-      },
-    ]);
-  }, []);
+    dispatch(fetchCandidates());
+  }, [dispatch]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -172,21 +148,11 @@ export default function ElectionCandidatesPage() {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (editingId) {
-      // 編集モード
-      setCandidates((prevCandidates) =>
-        prevCandidates.map((c) =>
-          c.id === editingId ? { ...newCandidate, id: editingId } : c
-        )
-      );
+      dispatch(updateCandidate({ id: editingId, candidate: newCandidate }));
       setEditingId(null);
       toast({ title: "候補者情報を更新しました" });
     } else {
-      // 新規追加モード
-      const id = Date.now().toString();
-      setCandidates((prevCandidates) => [
-        ...prevCandidates,
-        { ...newCandidate, id },
-      ]);
+      dispatch(addCandidate(newCandidate));
       toast({ title: "新しい候補者を登録しました" });
     }
     setNewCandidate({ name: "", party: "", prefecture: "", district: 1 });
@@ -194,14 +160,20 @@ export default function ElectionCandidatesPage() {
 
   const handleEdit = (candidate: Candidate) => {
     setNewCandidate(candidate);
-    setEditingId(candidate.id);
+    setEditingId(candidate._id ?? null);
   };
 
-  const handleDelete = (id: string) => {
-    setCandidates((prevCandidates) =>
-      prevCandidates.filter((c) => c.id !== id)
-    );
-    toast({ title: "候補者を削除しました" });
+  const handleDelete = (id: string | undefined) => {
+    if (id) {
+      dispatch(deleteCandidate(id));
+      toast({ title: "候補者を削除しました" });
+    } else {
+      toast({
+        title: "削除に失敗しました",
+        description: "候補者IDが見つかりません",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSort = (key: keyof Candidate) => {
@@ -248,10 +220,15 @@ export default function ElectionCandidatesPage() {
 
     if (sortConfig) {
       result.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key])
-          return sortConfig.direction === "asc" ? -1 : 1;
-        if (a[sortConfig.key] > b[sortConfig.key])
-          return sortConfig.direction === "asc" ? 1 : -1;
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue === undefined && bValue === undefined) return 0;
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
@@ -266,6 +243,14 @@ export default function ElectionCandidatesPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  if (status === "loading") {
+    return <div>データを読み込んでいます...</div>;
+  }
+
+  if (status === "failed") {
+    return <div>エラーが発生しました: {error}</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -414,7 +399,7 @@ export default function ElectionCandidatesPage() {
               </TableHeader>
               <TableBody>
                 {paginatedCandidates.map((candidate) => (
-                  <TableRow key={candidate.id}>
+                  <TableRow key={candidate._id}>
                     <TableCell className="font-medium">
                       {candidate.name}
                     </TableCell>
@@ -435,7 +420,7 @@ export default function ElectionCandidatesPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => handleDelete(candidate.id)}
+                          onClick={() => handleDelete(candidate._id)}
                         >
                           削除
                         </Button>
