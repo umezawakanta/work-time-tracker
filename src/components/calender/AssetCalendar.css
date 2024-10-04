@@ -17,7 +17,7 @@
 }
 
 .event-content {
-  font-size: 0.75em;
+  font-size: 0.7em;
   padding: 4px;
   border-radius: 4px;
   background-color: #ffffff;
@@ -28,9 +28,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2px 4px;
+  padding: 1px 3px;
   border-radius: 3px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .change-label {
@@ -44,14 +44,16 @@
 
 .daily-change.positive,
 .weekly-change.positive,
-.cumulative-change.positive {
+.cumulative-change.positive,
+.total-change.positive {
   background-color: rgba(76, 175, 80, 0.1);
   color: #2e7d32;
 }
 
 .daily-change.negative,
 .weekly-change.negative,
-.cumulative-change.negative {
+.cumulative-change.negative,
+.total-change.negative {
   background-color: rgba(244, 67, 54, 0.1);
   color: #c62828;
 }
