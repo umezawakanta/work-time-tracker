@@ -102,6 +102,9 @@ export default function ElectionCandidatesPage() {
   const [filters, setFilters] = useState<{ party: string; prefecture: string }>(
     { party: "all", prefecture: "all" }
   );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     // ここでAPIから候補者データを取得する
@@ -118,6 +121,13 @@ export default function ElectionCandidatesPage() {
         id: "2",
         name: "加藤貴弘",
         party: "自民党",
+        prefecture: "北海道",
+        district: 1,
+      },
+      {
+        id: "3",
+        name: "小林陽",
+        party: "日本維新の会",
         prefecture: "北海道",
         district: 1,
       },
@@ -180,10 +190,37 @@ export default function ElectionCandidatesPage() {
 
   const handleFilterChange = (name: string) => (value: string) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1); // フィルター変更時にページを1に戻す
   };
 
-  const sortedAndFilteredCandidates = React.useMemo(() => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1); // 検索時にページを1に戻す
+  };
+
+  const filteredAndSortedCandidates = React.useMemo(() => {
     let result = [...candidates];
+
+    // 検索
+    if (searchTerm) {
+      result = result.filter(
+        (c) =>
+          c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.party.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.prefecture.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          c.district.toString().includes(searchTerm)
+      );
+    }
+
+    // フィルタリング
+    if (filters.party !== "all") {
+      result = result.filter((c) => c.party === filters.party);
+    }
+    if (filters.prefecture !== "all") {
+      result = result.filter((c) => c.prefecture === filters.prefecture);
+    }
+
+    // ソート
     if (sortConfig) {
       result.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key])
@@ -193,14 +230,18 @@ export default function ElectionCandidatesPage() {
         return 0;
       });
     }
-    if (filters.party !== "all") {
-      result = result.filter((c) => c.party === filters.party);
-    }
-    if (filters.prefecture !== "all") {
-      result = result.filter((c) => c.prefecture === filters.prefecture);
-    }
+
     return result;
-  }, [candidates, sortConfig, filters]);
+  }, [candidates, sortConfig, filters, searchTerm]);
+
+  // ページネーション
+  const pageCount = Math.ceil(
+    filteredAndSortedCandidates.length / itemsPerPage
+  );
+  const paginatedCandidates = filteredAndSortedCandidates.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="container mx-auto p-4">
@@ -262,6 +303,13 @@ export default function ElectionCandidatesPage() {
 
       <h2 className="text-xl font-semibold mb-4">登録済み候補者一覧</h2>
       <div className="mb-4 flex space-x-4">
+        <Input
+          type="text"
+          placeholder="検索..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="max-w-xs"
+        />
         <Select
           value={filters.party}
           onValueChange={handleFilterChange("party")}
@@ -326,7 +374,7 @@ export default function ElectionCandidatesPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedAndFilteredCandidates.map((candidate) => (
+          {paginatedCandidates.map((candidate) => (
             <TableRow key={candidate.id}>
               <TableCell>{candidate.name}</TableCell>
               <TableCell>{candidate.party}</TableCell>
@@ -353,6 +401,36 @@ export default function ElectionCandidatesPage() {
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4 flex justify-between items-center">
+        <div>
+          全{filteredAndSortedCandidates.length}件中{" "}
+          {(currentPage - 1) * itemsPerPage + 1} -{" "}
+          {Math.min(
+            currentPage * itemsPerPage,
+            filteredAndSortedCandidates.length
+          )}
+          件を表示
+        </div>
+        <div className="space-x-2">
+          <Button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            前へ
+          </Button>
+          <span>
+            {currentPage} / {pageCount}
+          </span>
+          <Button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, pageCount))
+            }
+            disabled={currentPage === pageCount}
+          >
+            次へ
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
