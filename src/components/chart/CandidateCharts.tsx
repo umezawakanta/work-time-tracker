@@ -134,8 +134,8 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
       padding: {
         top: 50,
         bottom: 50,
-        left: 100,
-        right: 100,
+        left: 50,
+        right: 50,
       },
     },
     plugins: {
@@ -196,41 +196,46 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                 {
                   id: "pieChartLabels",
                   afterDraw: (chart) => {
-                    const { ctx } = chart;
+                    const { ctx, width, height } = chart;
                     ctx.save();
                     const fontSize = 12;
                     ctx.font = `${fontSize}px Arial`;
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
 
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    const radius = (Math.min(width, height) / 2) * 0.8; // Reduce radius to 80% of the minimum dimension
+
                     const total = chart.data.datasets[0].data.reduce(
                       (sum: number, value: number) => sum + value,
                       0
                     );
 
+                    let startAngle = -Math.PI / 2;
                     chart.data.datasets[0].data.forEach(
                       (value: number, i: number) => {
-                        const meta = chart.getDatasetMeta(0);
-                        const arc = meta.data[i] as unknown as {
-                          startAngle: number;
-                          endAngle: number;
-                          x: number;
-                          y: number;
-                          outerRadius: number;
-                        };
+                        const sliceAngle = (value / total) * (2 * Math.PI);
+                        const endAngle = startAngle + sliceAngle;
+                        const middleAngle = startAngle + sliceAngle / 2;
 
-                        // Get the position of the label
-                        const angle =
-                          Math.PI / 2 -
-                          (arc.startAngle +
-                            (arc.endAngle - arc.startAngle) / 2);
-                        const labelRadius = arc.outerRadius * 1.4;
-                        const x = arc.x + Math.cos(angle) * labelRadius;
-                        const y = arc.y - Math.sin(angle) * labelRadius;
+                        // Calculate label position
+                        const labelRadius = radius * 1.2;
+                        let x = centerX + Math.cos(middleAngle) * labelRadius;
+                        let y = centerY + Math.sin(middleAngle) * labelRadius;
+
+                        // Adjust label position if it's outside the chart area
+                        const padding = 10;
+                        if (x < padding) x = padding;
+                        if (x > width - padding) x = width - padding;
+                        if (y < padding) y = padding;
+                        if (y > height - padding) y = height - padding;
 
                         // Draw the connecting line
+                        const innerX = centerX + Math.cos(middleAngle) * radius;
+                        const innerY = centerY + Math.sin(middleAngle) * radius;
                         ctx.beginPath();
-                        ctx.moveTo(arc.x, arc.y);
+                        ctx.moveTo(innerX, innerY);
                         ctx.lineTo(x, y);
                         ctx.strokeStyle =
                           partyColors[chart.data.labels?.[i] as string];
@@ -247,6 +252,8 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                           x,
                           y + fontSize
                         );
+
+                        startAngle = endAngle;
                       }
                     );
 
