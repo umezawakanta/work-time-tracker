@@ -10,6 +10,7 @@ import { LocaleProvider } from "./context/LocaleContext";
 import { AssetCalendarPage } from "./pages/AssetCalendarPage";
 import ElectionCandidatesPage from "./pages/ElectionCandidatesPage";
 import CandidateRegistrationPage from "./pages/CandidateRegistrationPage";
+import DistrictPage from "./pages/DistrictPage";
 // import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -45,6 +46,10 @@ export default function App() {
             <Route
               path="/candidate-registration"
               element={<CandidateRegistrationPage />}
+            />
+            <Route
+              path="/district/:prefecture/:district"
+              element={<DistrictPage />}
             />
             {/* <Route element={<PrivateRoute />}>
               <Route path="/work-time" element={<WorkTimeEntryForm />} />

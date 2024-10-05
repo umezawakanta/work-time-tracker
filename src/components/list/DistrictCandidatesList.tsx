@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -64,9 +65,11 @@ export default function DistrictCandidatesList({
 
           return (
             <div key={district} className="mb-8">
-              <h3 className="text-xl font-semibold mb-4">
-                {selectedPrefecture} 第{district}区
-              </h3>
+              <Link to={`/district/${selectedPrefecture}/${district}`}>
+                <h3 className="text-xl font-semibold mb-4 hover:text-blue-600 cursor-pointer">
+                  {selectedPrefecture} 第{district}区
+                </h3>
+              </Link>
               <div className="space-y-4">
                 {districtCandidates.map((candidate) => (
                   <div
