@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -110,6 +111,8 @@ const proportionalBlocks = [
 const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   candidates,
 }) => {
+  const [chartsPerRow, setChartsPerRow] = useState<1 | 2 | 3>(1);
+
   const { partyData, prefectureData, proportionalData } = useMemo(() => {
     const partyCounts = parties.map(
       (party) => candidates.filter((c) => c.party === party).length
@@ -339,41 +342,63 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   };
 
   return (
-    <div className="space-y-8 mt-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>政党別候補者数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[650px]">
-            <Pie
-              data={partyData}
-              options={pieOptions}
-              plugins={[pieChartPlugin]}
-            />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>都道府県別候補者数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[650px]">
-            <Bar data={prefectureData} options={barOptions} />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>比例代表ブロック別候補者数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[650px]">
-            <Bar data={proportionalData} options={proportionalBarOptions} />
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-4 mt-8">
+      <div className="flex justify-center space-x-4">
+        <Button
+          onClick={() => setChartsPerRow(1)}
+          variant={chartsPerRow === 1 ? "default" : "outline"}
+        >
+          1列
+        </Button>
+        <Button
+          onClick={() => setChartsPerRow(2)}
+          variant={chartsPerRow === 2 ? "default" : "outline"}
+        >
+          2列
+        </Button>
+        <Button
+          onClick={() => setChartsPerRow(3)}
+          variant={chartsPerRow === 3 ? "default" : "outline"}
+        >
+          3列
+        </Button>
+      </div>
+      <div className={`grid grid-cols-1 md:grid-cols-${chartsPerRow} gap-8`}>
+        <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
+          <CardHeader>
+            <CardTitle>政党別候補者数</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+              <Pie
+                data={partyData}
+                options={pieOptions}
+                plugins={[pieChartPlugin]}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
+          <CardHeader>
+            <CardTitle>都道府県別候補者数</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+              <Bar data={prefectureData} options={barOptions} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
+          <CardHeader>
+            <CardTitle>比例代表ブロック別候補者数</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+              <Bar data={proportionalData} options={proportionalBarOptions} />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
