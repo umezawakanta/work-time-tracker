@@ -93,10 +93,24 @@ const prefectures = [
   "沖縄県",
 ];
 
+const proportionalBlocks = [
+  "北海道",
+  "東北",
+  "北関東",
+  "南関東",
+  "東京",
+  "北陸信越",
+  "東海",
+  "近畿",
+  "中国",
+  "四国",
+  "九州",
+];
+
 const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   candidates,
 }) => {
-  const { partyData, prefectureData } = useMemo(() => {
+  const { partyData, prefectureData, proportionalData } = useMemo(() => {
     const partyCounts = parties.map(
       (party) => candidates.filter((c) => c.party === party).length
     );
@@ -104,6 +118,10 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     const prefectureCounts = prefectures.map(
       (prefecture) =>
         candidates.filter((c) => c.prefecture === prefecture).length
+    );
+
+    const proportionalCounts = proportionalBlocks.map(
+      (block) => candidates.filter((c) => c.proportionalBlock === block).length
     );
 
     return {
@@ -126,6 +144,18 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             data: prefectureCounts,
             backgroundColor: "rgba(75, 192, 192, 0.6)",
             borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          },
+        ],
+      } as ChartData<"bar">,
+      proportionalData: {
+        labels: proportionalBlocks,
+        datasets: [
+          {
+            label: "比例代表候補者数",
+            data: proportionalCounts,
+            backgroundColor: "rgba(255, 159, 64, 0.6)",
+            borderColor: "rgba(255, 159, 64, 1)",
             borderWidth: 1,
           },
         ],
@@ -183,6 +213,20 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     scales: {
       y: {
         beginAtZero: true,
+      },
+    },
+  };
+
+  const proportionalBarOptions: ChartOptions<"bar"> = {
+    ...barOptions,
+    plugins: {
+      ...barOptions.plugins,
+      title: {
+        display: true,
+        text: "比例代表ブロック別候補者数",
+        font: {
+          size: 18,
+        },
       },
     },
   };
@@ -295,13 +339,13 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
       <Card>
         <CardHeader>
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[650px]">
+          <div className="h-[400px]">
             <Pie
               data={partyData}
               options={pieOptions}
@@ -315,8 +359,18 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[650px]">
+          <div className="h-[400px]">
             <Bar data={prefectureData} options={barOptions} />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>比例代表ブロック別候補者数</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[400px]">
+            <Bar data={proportionalData} options={proportionalBarOptions} />
           </div>
         </CardContent>
       </Card>
