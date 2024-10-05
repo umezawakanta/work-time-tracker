@@ -205,7 +205,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
 
                     const centerX = width / 2;
                     const centerY = height / 2;
-                    const radius = (Math.min(width, height) / 2) * 0.8; // Reduce radius to 80% of the minimum dimension
+                    const radius = (Math.min(width, height) / 2) * 0.8;
 
                     const total = chart.data.datasets[0].data.reduce(
                       (sum: number, value: number) => sum + value,
@@ -213,6 +213,13 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                     );
 
                     let startAngle = -Math.PI / 2;
+                    const labelPositions: {
+                      x: number;
+                      y: number;
+                      width: number;
+                      height: number;
+                    }[] = [];
+
                     chart.data.datasets[0].data.forEach(
                       (value: number, i: number) => {
                         const sliceAngle = (value / total) * (2 * Math.PI);
@@ -220,7 +227,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         const middleAngle = startAngle + sliceAngle / 2;
 
                         // Calculate label position
-                        const labelRadius = radius * 1.2;
+                        let labelRadius = radius * (1 + value / total);
                         let x = centerX + Math.cos(middleAngle) * labelRadius;
                         let y = centerY + Math.sin(middleAngle) * labelRadius;
 
@@ -230,6 +237,36 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         if (x > width - padding) x = width - padding;
                         if (y < padding) y = padding;
                         if (y > height - padding) y = height - padding;
+
+                        // Simple collision detection
+                        const labelWidth = ctx.measureText(
+                          chart.data.labels?.[i] as string
+                        ).width;
+                        const labelHeight = fontSize * 2;
+                        let collision = true;
+                        let attempts = 0;
+                        while (collision && attempts < 10) {
+                          collision = labelPositions.some(
+                            (pos) =>
+                              x < pos.x + pos.width &&
+                              x + labelWidth > pos.x &&
+                              y < pos.y + pos.height &&
+                              y + labelHeight > pos.y
+                          );
+                          if (collision) {
+                            labelRadius += 5;
+                            x = centerX + Math.cos(middleAngle) * labelRadius;
+                            y = centerY + Math.sin(middleAngle) * labelRadius;
+                          }
+                          attempts++;
+                        }
+
+                        labelPositions.push({
+                          x: x - labelWidth / 2,
+                          y: y - labelHeight / 2,
+                          width: labelWidth,
+                          height: labelHeight,
+                        });
 
                         // Draw the connecting line
                         const innerX = centerX + Math.cos(middleAngle) * radius;
@@ -246,11 +283,11 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         const label = chart.data.labels?.[i] as string;
                         const percentage = ((value / total) * 100).toFixed(1);
                         ctx.fillStyle = "#000";
-                        ctx.fillText(`${label}`, x, y - fontSize);
+                        ctx.fillText(`${label}`, x, y - fontSize / 2);
                         ctx.fillText(
                           `${value}人 (${percentage}%)`,
                           x,
-                          y + fontSize
+                          y + fontSize / 2
                         );
 
                         startAngle = endAngle;
