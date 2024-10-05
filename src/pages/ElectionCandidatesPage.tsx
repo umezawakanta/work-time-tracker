@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link"; // Add this import
+import Link from "next/link";
 import { AppDispatch, RootState } from "../store";
-import { fetchCandidates } from "../store/candidateSlice";
+import { fetchCandidates, Candidate } from "../store/candidateSlice";
 import DistrictCandidatesList from "@/components/list/DistrictCandidatesList";
 import CandidateCharts from "@/components/chart/CandidateCharts";
+import CandidateEditForm from "@/components/forms/CandidateEditForm";
 import { Button } from "@/components/ui/button";
 
 export default function ElectionCandidatesPage() {
@@ -16,6 +17,9 @@ export default function ElectionCandidatesPage() {
   const error = useSelector((state: RootState) => state.candidate.error);
 
   const [selectedPrefecture, setSelectedPrefecture] = useState<string>("");
+  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(
+    null
+  );
 
   useEffect(() => {
     dispatch(fetchCandidates());
@@ -26,6 +30,19 @@ export default function ElectionCandidatesPage() {
       setSelectedPrefecture(candidates[0].prefecture);
     }
   }, [candidates, selectedPrefecture]);
+
+  const handleEditCandidate = (candidate: Candidate) => {
+    setEditingCandidate(candidate);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCandidate(null);
+  };
+
+  const handleEditSuccess = () => {
+    setEditingCandidate(null);
+    dispatch(fetchCandidates());
+  };
 
   if (status === "loading") {
     return <div>データを読み込んでいます...</div>;
@@ -41,18 +58,29 @@ export default function ElectionCandidatesPage() {
         衆議院選挙 候補者擁立状況
       </h1>
 
-      <Link href="/candidate-registration">
-        <Button>候補者登録</Button>
-      </Link>
+      <div className="mb-4">
+        <Link href="/candidate-registration">
+          <Button>候補者登録</Button>
+        </Link>
+      </div>
 
       <CandidateCharts candidates={candidates} />
 
       <div className="mt-12">
-        <DistrictCandidatesList
-          candidates={candidates}
-          selectedPrefecture={selectedPrefecture}
-          onPrefectureChange={setSelectedPrefecture}
-        />
+        {editingCandidate ? (
+          <CandidateEditForm
+            candidate={editingCandidate}
+            onCancel={handleCancelEdit}
+            onSuccess={handleEditSuccess}
+          />
+        ) : (
+          <DistrictCandidatesList
+            candidates={candidates}
+            selectedPrefecture={selectedPrefecture}
+            onPrefectureChange={setSelectedPrefecture}
+            onEditCandidate={handleEditCandidate}
+          />
+        )}
       </div>
     </div>
   );

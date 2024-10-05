@@ -6,20 +6,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { Candidate } from "@/store/candidateSlice";
-import { InfoIcon } from "lucide-react";
-import "@/styles/candidates.css";
+import { InfoIcon, Edit2Icon } from "lucide-react";
 
 interface DistrictCandidatesListProps {
   candidates: Candidate[];
   selectedPrefecture: string;
   onPrefectureChange: (prefecture: string) => void;
+  onEditCandidate: (candidate: Candidate) => void;
 }
 
 export default function DistrictCandidatesList({
   candidates,
   selectedPrefecture,
   onPrefectureChange,
+  onEditCandidate,
 }: DistrictCandidatesListProps) {
   const districts = Array.from(new Set(candidates.map((c) => c.district))).sort(
     (a, b) => a - b
@@ -80,6 +82,14 @@ export default function DistrictCandidatesList({
                         {candidate.party}
                       </div>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onEditCandidate(candidate)}
+                    >
+                      <Edit2Icon className="w-4 h-4 mr-2" />
+                      編集
+                    </Button>
                     <InfoIcon className="w-5 h-5 text-gray-400" />
                   </div>
                 ))}
