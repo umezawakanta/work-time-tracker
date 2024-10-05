@@ -244,7 +244,14 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                   afterDraw: (chart) => {
                     const { ctx, data } = chart;
                     const meta = chart.getDatasetMeta(0);
-                    meta.data.forEach((arc, i) => {
+                    meta.data.forEach((element, i) => {
+                      const arc = element as unknown as {
+                        startAngle: number;
+                        endAngle: number;
+                        x: number;
+                        y: number;
+                        outerRadius: number;
+                      };
                       const angle =
                         Math.PI / 2 -
                         (arc.startAngle + (arc.endAngle - arc.startAngle) / 2);
