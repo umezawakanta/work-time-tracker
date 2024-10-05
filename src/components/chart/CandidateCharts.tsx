@@ -131,68 +131,22 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-      padding: 80,
+      padding: {
+        top: 50,
+        bottom: 50,
+        left: 100,
+        right: 100,
+      },
     },
     plugins: {
       legend: {
-        position: "right" as const,
-        labels: {
-          generateLabels: (chart) => {
-            const datasets = chart.data.datasets;
-            const total = datasets[0].data.reduce((acc: number, val) => {
-              const numVal = typeof val === "number" ? val : 0;
-              return acc + numVal;
-            }, 0);
-            return (chart.data.labels as string[]).map((label, i) => {
-              const meta = chart.getDatasetMeta(0);
-              const style = meta.controller.getStyle(i, false);
-              const value = datasets[0].data[i];
-              const numValue = typeof value === "number" ? value : 0;
-              const percentage =
-                total > 0 ? ((numValue / total) * 100).toFixed(1) : "0.0";
-              return {
-                text: `${label}: ${numValue}人 (${percentage}%)`,
-                fillStyle: style.backgroundColor,
-                strokeStyle: style.borderColor,
-                lineWidth: style.borderWidth,
-                hidden: false,
-                index: i,
-              };
-            });
-          },
-          font: {
-            size: 12,
-          },
-        },
+        display: false,
       },
       tooltip: {
-        callbacks: {
-          label: (context) => {
-            const label = context.label || "";
-            const value = context.parsed;
-            const total = context.dataset.data.reduce(
-              (acc, data) => acc + (data as number),
-              0
-            );
-            const percentage = ((value / total) * 100).toFixed(1);
-            return `${label}: ${value}人 (${percentage}%)`;
-          },
-        },
+        enabled: false,
       },
       datalabels: {
-        color: "#000",
-        font: {
-          size: 12,
-          weight: "bold" as const,
-        },
-        formatter: (value: number, ctx) => {
-          const label = ctx.chart.data.labels?.[ctx.dataIndex] as string;
-          return `${label}\n${value}人`;
-        },
-        align: "center" as const,
-        anchor: "end" as const,
-        offset: 10,
-        textAlign: "center" as const,
+        display: false,
       },
     },
   };
@@ -234,41 +188,69 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[500px]">
+          <div className="h-[600px]">
             <Pie
               data={partyData}
               options={pieOptions}
               plugins={[
                 {
-                  id: "pieChartLines",
+                  id: "pieChartLabels",
                   afterDraw: (chart) => {
-                    const { ctx, data } = chart;
-                    const meta = chart.getDatasetMeta(0);
-                    meta.data.forEach((element, i) => {
-                      const arc = element as unknown as {
-                        startAngle: number;
-                        endAngle: number;
-                        x: number;
-                        y: number;
-                        outerRadius: number;
-                      };
-                      const angle =
-                        Math.PI / 2 -
-                        (arc.startAngle + (arc.endAngle - arc.startAngle) / 2);
-                      const x =
-                        arc.x + Math.cos(angle) * (arc.outerRadius + 30);
-                      const y =
-                        arc.y - Math.sin(angle) * (arc.outerRadius + 30);
+                    const { ctx } = chart;
+                    ctx.save();
+                    const fontSize = 12;
+                    ctx.font = `${fontSize}px Arial`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
 
-                      ctx.save();
-                      ctx.beginPath();
-                      ctx.moveTo(arc.x, arc.y);
-                      ctx.lineTo(x, y);
-                      ctx.strokeStyle = partyColors[data.labels?.[i] as string];
-                      ctx.lineWidth = 1;
-                      ctx.stroke();
-                      ctx.restore();
-                    });
+                    const total = chart.data.datasets[0].data.reduce(
+                      (sum: number, value: number) => sum + value,
+                      0
+                    );
+
+                    chart.data.datasets[0].data.forEach(
+                      (value: number, i: number) => {
+                        const meta = chart.getDatasetMeta(0);
+                        const arc = meta.data[i] as unknown as {
+                          startAngle: number;
+                          endAngle: number;
+                          x: number;
+                          y: number;
+                          outerRadius: number;
+                        };
+
+                        // Get the position of the label
+                        const angle =
+                          Math.PI / 2 -
+                          (arc.startAngle +
+                            (arc.endAngle - arc.startAngle) / 2);
+                        const labelRadius = arc.outerRadius * 1.4;
+                        const x = arc.x + Math.cos(angle) * labelRadius;
+                        const y = arc.y - Math.sin(angle) * labelRadius;
+
+                        // Draw the connecting line
+                        ctx.beginPath();
+                        ctx.moveTo(arc.x, arc.y);
+                        ctx.lineTo(x, y);
+                        ctx.strokeStyle =
+                          partyColors[chart.data.labels?.[i] as string];
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        // Draw the label
+                        const label = chart.data.labels?.[i] as string;
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        ctx.fillStyle = "#000";
+                        ctx.fillText(`${label}`, x, y - fontSize);
+                        ctx.fillText(
+                          `${value}人 (${percentage}%)`,
+                          x,
+                          y + fontSize
+                        );
+                      }
+                    );
+
+                    ctx.restore();
                   },
                 },
               ]}
@@ -281,7 +263,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[500px]">
+          <div className="h-[600px]">
             <Bar data={prefectureData} options={barOptions} />
           </div>
         </CardContent>
