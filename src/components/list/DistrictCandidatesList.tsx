@@ -18,6 +18,18 @@ interface DistrictCandidatesListProps {
   onEditCandidate: (candidate: Candidate) => void;
 }
 
+const partyColors: { [key: string]: string } = {
+  自民党: "bg-red-500",
+  立憲民主党: "bg-blue-500",
+  日本維新の会: "bg-green-500",
+  公明党: "bg-yellow-500",
+  共産党: "bg-pink-500",
+  国民民主党: "bg-cyan-500",
+  社民党: "bg-orange-500",
+  参政党: "bg-purple-500",
+  無所属: "bg-gray-500",
+};
+
 export default function DistrictCandidatesList({
   candidates,
   selectedPrefecture,
@@ -74,10 +86,12 @@ export default function DistrictCandidatesList({
                 {districtCandidates.map((candidate) => (
                   <div
                     key={candidate._id}
-                    className="flex items-center space-x-4"
+                    className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
                   >
                     <div
-                      className={`party-color-bar party-color-${candidate.party}`}
+                      className={`w-6 h-6 rounded-full ${
+                        partyColors[candidate.party] || "bg-gray-500"
+                      }`}
                     />
                     <div className="flex-grow">
                       <div className="font-medium">{candidate.name}</div>

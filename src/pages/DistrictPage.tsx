@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -30,30 +30,42 @@ export default function DistrictPage() {
     prefecture: string;
     district: string;
   }>();
-  const [selectedDistrict, setSelectedDistrict] = useState<number>(
-    parseInt(initialDistrict || "1", 10)
-  );
+  const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
   const navigate = useNavigate();
   const candidates = useSelector(
     (state: RootState) => state.candidate.candidates
   );
 
-  const districtCandidates = candidates.filter(
-    (c) => c.prefecture === prefecture && c.district === selectedDistrict
+  const prefectureCandidates = candidates.filter(
+    (c) => c.prefecture === prefecture
   );
 
   const districts = Array.from(
-    new Set(
-      candidates
-        .filter((c) => c.prefecture === prefecture)
-        .map((c) => c.district)
-    )
+    new Set(prefectureCandidates.map((c) => c.district))
   ).sort((a, b) => a - b);
+
+  const districtCandidates = prefectureCandidates.filter(
+    (c) => c.district === selectedDistrict
+  );
+
+  useEffect(() => {
+    const initialDistrictNumber = parseInt(initialDistrict || "1", 10);
+    if (districts.includes(initialDistrictNumber)) {
+      setSelectedDistrict(initialDistrictNumber);
+    } else if (districts.length > 0) {
+      setSelectedDistrict(districts[0]);
+      navigate(`/district/${prefecture}/${districts[0]}`, { replace: true });
+    }
+  }, [initialDistrict, districts, prefecture, navigate]);
 
   const handleDistrictChange = (district: number) => {
     setSelectedDistrict(district);
     navigate(`/district/${prefecture}/${district}`);
   };
+
+  if (selectedDistrict === null) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -91,6 +103,7 @@ export default function DistrictPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
           <HokkaidoMap
+            districts={districts.map((d) => ({ id: d, name: `第${d}区` }))}
             selectedDistrict={selectedDistrict}
             onDistrictSelect={handleDistrictChange}
           />
@@ -100,8 +113,10 @@ export default function DistrictPage() {
             <CardContent className="p-4">
               <h2 className="text-xl font-semibold mb-2">選挙区情報</h2>
               <p className="text-sm text-gray-600">
-                {prefecture}第{selectedDistrict}区は、人口でみて
-                {selectedDistrict}区の約97%から成ります。
+                {prefecture}第{selectedDistrict}区
+                {districtCandidates.length > 0
+                  ? `には現在${districtCandidates.length}名の候補者が登録されています。`
+                  : "の候補者はまだ登録されていません。"}
               </p>
             </CardContent>
           </Card>
@@ -109,25 +124,29 @@ export default function DistrictPage() {
       </div>
 
       <h2 className="text-2xl font-bold mt-8 mb-4">予想される顔ぶれ</h2>
-      <div className="space-y-4">
-        {districtCandidates.map((candidate) => (
-          <div
-            key={candidate._id}
-            className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
-          >
+      {districtCandidates.length > 0 ? (
+        <div className="space-y-4">
+          {districtCandidates.map((candidate) => (
             <div
-              className={`w-6 h-6 rounded-full ${
-                partyColors[candidate.party] || "bg-gray-500"
-              }`}
-            />
-            <div className="flex-grow">
-              <div className="font-medium">{candidate.name}</div>
-              <div className="text-sm text-gray-500">{candidate.party}</div>
+              key={candidate._id}
+              className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
+            >
+              <div
+                className={`w-6 h-6 rounded-full ${
+                  partyColors[candidate.party] || "bg-gray-500"
+                }`}
+              />
+              <div className="flex-grow">
+                <div className="font-medium">{candidate.name}</div>
+                <div className="text-sm text-gray-500">{candidate.party}</div>
+              </div>
+              <InfoIcon className="w-5 h-5 text-gray-400" />
             </div>
-            <InfoIcon className="w-5 h-5 text-gray-400" />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p>この選挙区の候補者はまだ登録されていません。</p>
+      )}
     </div>
   );
 }
