@@ -193,28 +193,6 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         anchor: "end" as const,
         offset: 10,
         textAlign: "center" as const,
-        listeners: {
-          draw: function (context) {
-            const { ctx, data } = context.chart;
-            const meta = context.chart.getDatasetMeta(0);
-            const arc = meta.data[context.dataIndex] as any;
-            const centerX = arc.x;
-            const centerY = arc.y;
-            const angle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
-            const x = centerX + Math.cos(angle) * (arc.outerRadius + 30);
-            const y = centerY + Math.sin(angle) * (arc.outerRadius + 30);
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.lineTo(x, y);
-            ctx.strokeStyle =
-              partyColors[data.labels?.[context.dataIndex] as string];
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.restore();
-          },
-        },
       },
     },
   };
@@ -257,7 +235,37 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         </CardHeader>
         <CardContent>
           <div className="h-[500px]">
-            <Pie data={partyData} options={pieOptions} />
+            <Pie
+              data={partyData}
+              options={pieOptions}
+              plugins={[
+                {
+                  id: "pieChartLines",
+                  afterDraw: (chart) => {
+                    const { ctx, data } = chart;
+                    const meta = chart.getDatasetMeta(0);
+                    meta.data.forEach((arc, i) => {
+                      const angle =
+                        Math.PI / 2 -
+                        (arc.startAngle + (arc.endAngle - arc.startAngle) / 2);
+                      const x =
+                        arc.x + Math.cos(angle) * (arc.outerRadius + 30);
+                      const y =
+                        arc.y - Math.sin(angle) * (arc.outerRadius + 30);
+
+                      ctx.save();
+                      ctx.beginPath();
+                      ctx.moveTo(arc.x, arc.y);
+                      ctx.lineTo(x, y);
+                      ctx.strokeStyle = partyColors[data.labels?.[i] as string];
+                      ctx.lineWidth = 1;
+                      ctx.stroke();
+                      ctx.restore();
+                    });
+                  },
+                },
+              ]}
+            />
           </div>
         </CardContent>
       </Card>
