@@ -339,13 +339,13 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+    <div className="space-y-8 mt-8">
       <Card>
         <CardHeader>
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[650px]">
             <Pie
               data={partyData}
               options={pieOptions}
@@ -359,7 +359,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[650px]">
             <Bar data={prefectureData} options={barOptions} />
           </div>
         </CardContent>
@@ -369,7 +369,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>比例代表ブロック別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[650px]">
             <Bar data={proportionalData} options={proportionalBarOptions} />
           </div>
         </CardContent>
