@@ -130,6 +130,9 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   const pieOptions: ChartOptions<"pie"> = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: 20,
+    },
     plugins: {
       legend: {
         position: "right" as const,
@@ -166,13 +169,12 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         callbacks: {
           label: (context) => {
             const label = context.label || "";
-            const value = context.formattedValue;
-            const dataset = context.dataset;
-            const total = (dataset.data as number[]).reduce(
-              (acc, data) => acc + (data || 0),
+            const value = context.parsed;
+            const total = context.dataset.data.reduce(
+              (acc, data) => acc + (data as number),
               0
             );
-            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            const percentage = ((value / total) * 100).toFixed(1);
             return `${label}: ${value}人 (${percentage}%)`;
           },
         },
@@ -190,8 +192,9 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             0
           );
           const percentage = ((value / total) * 100).toFixed(1);
-          return percentage + "%";
+          return `${value}人\n(${percentage}%)`;
         },
+        textAlign: "center" as const,
       },
     },
   };
