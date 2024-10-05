@@ -1,8 +1,27 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { InfoIcon } from "lucide-react";
+
+const partyColors: { [key: string]: string } = {
+  自民党: "bg-red-500",
+  立憲民主党: "bg-blue-500",
+  日本維新の会: "bg-green-500",
+  公明党: "bg-yellow-500",
+  共産党: "bg-pink-500",
+  国民民主党: "bg-cyan-500",
+  社民党: "bg-orange-500",
+  参政党: "bg-purple-500",
+  無所属: "bg-gray-500",
+};
 
 export default function DistrictPage() {
   const { prefecture, district } = useParams<{
@@ -19,32 +38,83 @@ export default function DistrictPage() {
       c.district === parseInt(district || "0", 10)
   );
 
+  const districts = Array.from(
+    new Set(
+      candidates
+        .filter((c) => c.prefecture === prefecture)
+        .map((c) => c.district)
+    )
+  ).sort((a, b) => a - b);
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        {prefecture} 第{district}区
-      </h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>候補者一覧</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {districtCandidates.map((candidate) => (
-              <div key={candidate._id} className="flex items-center space-x-4">
-                <div
-                  className={`party-color-bar party-color-${candidate.party}`}
-                />
-                <div className="flex-grow">
-                  <div className="font-medium">{candidate.name}</div>
-                  <div className="text-sm text-gray-500">{candidate.party}</div>
-                </div>
-                <InfoIcon className="w-5 h-5 text-gray-400" />
-              </div>
-            ))}
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Link
+        to="/election-candidates"
+        className="text-blue-600 hover:underline mb-4 block"
+      >
+        ← 選挙区一覧に戻る
+      </Link>
+      <div className="bg-blue-100 p-8 rounded-lg mb-8">
+        <h1 className="text-3xl font-bold mb-4 text-center">
+          選挙ウォッチ 次期衆院選
+        </h1>
+        <div className="flex justify-center items-center space-x-2">
+          <Select defaultValue={district}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder={`${prefecture} 第${district}区`} />
+            </SelectTrigger>
+            <SelectContent>
+              {districts.map((d) => (
+                <SelectItem key={d} value={d.toString()}>
+                  {prefecture} 第{d}区
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <img
+            src="/placeholder.svg?height=300&width=500"
+            alt="地図"
+            className="w-full h-auto rounded-lg shadow-lg"
+          />
+        </div>
+        <div>
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="text-xl font-semibold mb-2">選挙区情報</h2>
+              <p className="text-sm text-gray-600">
+                {prefecture}第{district}区は、人口でみて{district}
+                区の約97%から成ります。
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <h2 className="text-2xl font-bold mt-8 mb-4">予想される顔ぶれ</h2>
+      <div className="space-y-4">
+        {districtCandidates.map((candidate) => (
+          <div
+            key={candidate._id}
+            className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
+          >
+            <div
+              className={`w-6 h-6 rounded-full ${
+                partyColors[candidate.party] || "bg-gray-500"
+              }`}
+            />
+            <div className="flex-grow">
+              <div className="font-medium">{candidate.name}</div>
+              <div className="text-sm text-gray-500">{candidate.party}</div>
+            </div>
+            <InfoIcon className="w-5 h-5 text-gray-400" />
           </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
     </div>
   );
 }
