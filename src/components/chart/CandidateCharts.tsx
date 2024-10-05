@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Chart as ChartJS,
@@ -11,6 +11,7 @@ import {
   Title,
   ChartData,
   ChartOptions,
+  Plugin,
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
 import { Candidate } from "@/store/candidateSlice";
@@ -95,37 +96,42 @@ const prefectures = [
 const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   candidates,
 }) => {
-  const partyCounts = parties.map(
-    (party) => candidates.filter((c) => c.party === party).length
-  );
+  const { partyData, prefectureData } = useMemo(() => {
+    const partyCounts = parties.map(
+      (party) => candidates.filter((c) => c.party === party).length
+    );
 
-  const partyData: ChartData<"pie"> = {
-    labels: parties,
-    datasets: [
-      {
-        data: partyCounts,
-        backgroundColor: parties.map((party) => partyColors[party]),
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-    ],
-  };
+    const prefectureCounts = prefectures.map(
+      (prefecture) =>
+        candidates.filter((c) => c.prefecture === prefecture).length
+    );
 
-  const prefectureData: ChartData<"bar"> = {
-    labels: prefectures,
-    datasets: [
-      {
-        label: "候補者数",
-        data: prefectures.map(
-          (prefecture) =>
-            candidates.filter((c) => c.prefecture === prefecture).length
-        ),
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
+    return {
+      partyData: {
+        labels: parties,
+        datasets: [
+          {
+            data: partyCounts,
+            backgroundColor: parties.map((party) => partyColors[party]),
+            borderColor: "#fff",
+            borderWidth: 2,
+          },
+        ],
+      } as ChartData<"pie">,
+      prefectureData: {
+        labels: prefectures,
+        datasets: [
+          {
+            label: "候補者数",
+            data: prefectureCounts,
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1,
+          },
+        ],
+      } as ChartData<"bar">,
+    };
+  }, [candidates]);
 
   const pieOptions: ChartOptions<"pie"> = {
     responsive: true,
@@ -181,6 +187,113 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     },
   };
 
+  const pieChartPlugin: Plugin<"pie"> = {
+    id: "pieChartLabels",
+    afterDraw: (chart) => {
+      const { ctx, width, height } = chart;
+      ctx.save();
+      const fontSize = 12;
+      ctx.font = `${fontSize}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = (Math.min(width, height) / 2) * 0.7;
+
+      const total = chart.data.datasets[0].data.reduce(
+        (sum, value) => sum + (typeof value === "number" ? value : 0),
+        0
+      );
+
+      let startAngle = -Math.PI / 2;
+      const labelPositions: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      }[] = [];
+
+      chart.data.datasets[0].data.forEach((value, i) => {
+        if (typeof value !== "number") return;
+
+        const sliceAngle = (value / total) * (2 * Math.PI);
+        const endAngle = startAngle + sliceAngle;
+        const middleAngle = startAngle + sliceAngle / 2;
+
+        // Calculate label position
+        let labelRadius = radius * 1.2;
+        let x = centerX + Math.cos(middleAngle) * labelRadius;
+        let y = centerY + Math.sin(middleAngle) * labelRadius;
+
+        // Adjust label position if it's outside the chart area
+        const padding = 20;
+        if (x < padding) x = padding;
+        if (x > width - padding) x = width - padding;
+        if (y < padding) y = padding;
+        if (y > height - padding) y = height - padding;
+
+        // Simple collision detection
+        const labelWidth = ctx.measureText(
+          chart.data.labels?.[i] as string
+        ).width;
+        const labelHeight = fontSize * 3;
+        let collision = true;
+        let attempts = 0;
+        while (collision && attempts < 50) {
+          collision = labelPositions.some(
+            (pos) =>
+              x < pos.x + pos.width &&
+              x + labelWidth > pos.x &&
+              y < pos.y + pos.height &&
+              y + labelHeight > pos.y
+          );
+          if (collision) {
+            labelRadius += 5;
+            x = centerX + Math.cos(middleAngle) * labelRadius;
+            y = centerY + Math.sin(middleAngle) * labelRadius;
+
+            // Re-adjust if outside chart area
+            if (x < padding) x = padding;
+            if (x > width - padding) x = width - padding;
+            if (y < padding) y = padding;
+            if (y > height - padding) y = height - padding;
+          }
+          attempts++;
+        }
+
+        labelPositions.push({
+          x: x - labelWidth / 2,
+          y: y - labelHeight / 2,
+          width: labelWidth,
+          height: labelHeight,
+        });
+
+        // Draw the connecting line
+        const innerX = centerX + Math.cos(middleAngle) * radius;
+        const innerY = centerY + Math.sin(middleAngle) * radius;
+        ctx.beginPath();
+        ctx.moveTo(innerX, innerY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = partyColors[chart.data.labels?.[i] as string];
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Draw the label
+        const label = chart.data.labels?.[i] as string;
+        const percentage = ((value / total) * 100).toFixed(1);
+        ctx.fillStyle = "#000";
+        ctx.fillText(`${label}`, x, y - fontSize);
+        ctx.fillText(`${value}人`, x, y);
+        ctx.fillText(`(${percentage}%)`, x, y + fontSize);
+
+        startAngle = endAngle;
+      });
+
+      ctx.restore();
+    },
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
       <Card>
@@ -192,115 +305,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             <Pie
               data={partyData}
               options={pieOptions}
-              plugins={[
-                {
-                  id: "pieChartLabels",
-                  afterDraw: (chart) => {
-                    const { ctx, width, height } = chart;
-                    ctx.save();
-                    const fontSize = 12;
-                    ctx.font = `${fontSize}px Arial`;
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-
-                    const centerX = width / 2;
-                    const centerY = height / 2;
-                    const radius = (Math.min(width, height) / 2) * 0.7;
-
-                    const total = chart.data.datasets[0].data.reduce(
-                      (sum: number, value: number) => sum + value,
-                      0
-                    );
-
-                    let startAngle = -Math.PI / 2;
-                    const labelPositions: {
-                      x: number;
-                      y: number;
-                      width: number;
-                      height: number;
-                    }[] = [];
-
-                    chart.data.datasets[0].data.forEach(
-                      (value: number, i: number) => {
-                        const sliceAngle = (value / total) * (2 * Math.PI);
-                        const endAngle = startAngle + sliceAngle;
-                        const middleAngle = startAngle + sliceAngle / 2;
-
-                        // Calculate label position
-                        let labelRadius = radius * 1.2;
-                        let x = centerX + Math.cos(middleAngle) * labelRadius;
-                        let y = centerY + Math.sin(middleAngle) * labelRadius;
-
-                        // Adjust label position if it's outside the chart area
-                        const padding = 20;
-                        if (x < padding) x = padding;
-                        if (x > width - padding) x = width - padding;
-                        if (y < padding) y = padding;
-                        if (y > height - padding) y = height - padding;
-
-                        // Simple collision detection
-                        const labelWidth = ctx.measureText(
-                          chart.data.labels?.[i] as string
-                        ).width;
-                        const labelHeight = fontSize * 3;
-                        let collision = true;
-                        let attempts = 0;
-                        while (collision && attempts < 50) {
-                          collision = labelPositions.some(
-                            (pos) =>
-                              x < pos.x + pos.width &&
-                              x + labelWidth > pos.x &&
-                              y < pos.y + pos.height &&
-                              y + labelHeight > pos.y
-                          );
-                          if (collision) {
-                            labelRadius += 5;
-                            x = centerX + Math.cos(middleAngle) * labelRadius;
-                            y = centerY + Math.sin(middleAngle) * labelRadius;
-
-                            // Re-adjust if outside chart area
-                            if (x < padding) x = padding;
-                            if (x > width - padding) x = width - padding;
-                            if (y < padding) y = padding;
-                            if (y > height - padding) y = height - padding;
-                          }
-                          attempts++;
-                        }
-
-                        labelPositions.push({
-                          x: x - labelWidth / 2,
-                          y: y - labelHeight / 2,
-                          width: labelWidth,
-                          height: labelHeight,
-                        });
-
-                        // Draw the connecting line
-                        const innerX = centerX + Math.cos(middleAngle) * radius;
-                        const innerY = centerY + Math.sin(middleAngle) * radius;
-                        ctx.beginPath();
-                        ctx.moveTo(innerX, innerY);
-                        ctx.lineTo(x, y);
-                        ctx.strokeStyle =
-                          partyColors[chart.data.labels?.[i] as string];
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-
-                        // Draw the label
-                        const label = chart.data.labels?.[i] as string;
-                        const percentage = ((value / total) * 100).toFixed(1);
-                        ctx.fillStyle = "#000";
-                        ctx.fillText(`${label}`, x, y - fontSize);
-                        ctx.fillText(`${value}人`, x, y);
-                        ctx.fillText(`(${percentage}%)`, x, y + fontSize);
-
-                        startAngle = endAngle;
-                      }
-                    );
-
-                    ctx.restore();
-                  },
-                },
-              ]}
+              plugins={[pieChartPlugin]}
             />
           </div>
         </CardContent>
