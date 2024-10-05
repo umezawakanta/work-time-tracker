@@ -132,10 +132,10 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     maintainAspectRatio: false,
     layout: {
       padding: {
-        top: 50,
-        bottom: 50,
-        left: 50,
-        right: 50,
+        top: 60,
+        bottom: 60,
+        left: 60,
+        right: 60,
       },
     },
     plugins: {
@@ -188,7 +188,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[600px]">
+          <div className="h-[650px]">
             <Pie
               data={partyData}
               options={pieOptions}
@@ -205,7 +205,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
 
                     const centerX = width / 2;
                     const centerY = height / 2;
-                    const radius = (Math.min(width, height) / 2) * 0.8;
+                    const radius = (Math.min(width, height) / 2) * 0.7;
 
                     const total = chart.data.datasets[0].data.reduce(
                       (sum: number, value: number) => sum + value,
@@ -227,12 +227,12 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         const middleAngle = startAngle + sliceAngle / 2;
 
                         // Calculate label position
-                        let labelRadius = radius * (1 + value / total);
+                        let labelRadius = radius * 1.2;
                         let x = centerX + Math.cos(middleAngle) * labelRadius;
                         let y = centerY + Math.sin(middleAngle) * labelRadius;
 
                         // Adjust label position if it's outside the chart area
-                        const padding = 10;
+                        const padding = 20;
                         if (x < padding) x = padding;
                         if (x > width - padding) x = width - padding;
                         if (y < padding) y = padding;
@@ -242,10 +242,10 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         const labelWidth = ctx.measureText(
                           chart.data.labels?.[i] as string
                         ).width;
-                        const labelHeight = fontSize * 2;
+                        const labelHeight = fontSize * 3;
                         let collision = true;
                         let attempts = 0;
-                        while (collision && attempts < 10) {
+                        while (collision && attempts < 50) {
                           collision = labelPositions.some(
                             (pos) =>
                               x < pos.x + pos.width &&
@@ -257,6 +257,12 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                             labelRadius += 5;
                             x = centerX + Math.cos(middleAngle) * labelRadius;
                             y = centerY + Math.sin(middleAngle) * labelRadius;
+
+                            // Re-adjust if outside chart area
+                            if (x < padding) x = padding;
+                            if (x > width - padding) x = width - padding;
+                            if (y < padding) y = padding;
+                            if (y > height - padding) y = height - padding;
                           }
                           attempts++;
                         }
@@ -283,12 +289,9 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
                         const label = chart.data.labels?.[i] as string;
                         const percentage = ((value / total) * 100).toFixed(1);
                         ctx.fillStyle = "#000";
-                        ctx.fillText(`${label}`, x, y - fontSize / 2);
-                        ctx.fillText(
-                          `${value}人 (${percentage}%)`,
-                          x,
-                          y + fontSize / 2
-                        );
+                        ctx.fillText(`${label}`, x, y - fontSize);
+                        ctx.fillText(`${value}人`, x, y);
+                        ctx.fillText(`(${percentage}%)`, x, y + fontSize);
 
                         startAngle = endAngle;
                       }
@@ -307,7 +310,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[600px]">
+          <div className="h-[650px]">
             <Bar data={prefectureData} options={barOptions} />
           </div>
         </CardContent>
