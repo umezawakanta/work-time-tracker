@@ -131,7 +131,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     responsive: true,
     maintainAspectRatio: false,
     layout: {
-      padding: 20,
+      padding: 80,
     },
     plugins: {
       legend: {
@@ -180,21 +180,41 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         },
       },
       datalabels: {
-        color: "#fff",
+        color: "#000",
         font: {
+          size: 12,
           weight: "bold" as const,
-          size: 14,
         },
         formatter: (value: number, ctx) => {
-          const dataset = ctx.dataset;
-          const total = (dataset.data as number[]).reduce(
-            (acc, data) => acc + (data || 0),
-            0
-          );
-          const percentage = ((value / total) * 100).toFixed(1);
-          return `${value}人\n(${percentage}%)`;
+          const label = ctx.chart.data.labels?.[ctx.dataIndex] as string;
+          return `${label}\n${value}人`;
         },
+        align: "center" as const,
+        anchor: "end" as const,
+        offset: 10,
         textAlign: "center" as const,
+        listeners: {
+          draw: function (context) {
+            const { ctx, data } = context.chart;
+            const meta = context.chart.getDatasetMeta(0);
+            const arc = meta.data[context.dataIndex] as any;
+            const centerX = arc.x;
+            const centerY = arc.y;
+            const angle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
+            const x = centerX + Math.cos(angle) * (arc.outerRadius + 30);
+            const y = centerY + Math.sin(angle) * (arc.outerRadius + 30);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle =
+              partyColors[data.labels?.[context.dataIndex] as string];
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+          },
+        },
       },
     },
   };
@@ -236,7 +256,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[500px]">
             <Pie data={partyData} options={pieOptions} />
           </div>
         </CardContent>
@@ -246,7 +266,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[500px]">
             <Bar data={prefectureData} options={barOptions} />
           </div>
         </CardContent>
