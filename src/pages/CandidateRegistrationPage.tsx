@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../store";
 import { addCandidate, Candidate } from "../store/candidateSlice";
 import { Button } from "@/components/ui/button";
@@ -78,6 +79,7 @@ const prefectures = [
 
 export default function CandidateRegistrationPage() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const [newCandidate, setNewCandidate] = useState<Omit<Candidate, "_id">>({
@@ -99,11 +101,24 @@ export default function CandidateRegistrationPage() {
     setNewCandidate((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    dispatch(addCandidate(newCandidate));
-    toast({ title: "新しい候補者を登録しました" });
-    setNewCandidate({ name: "", party: "", prefecture: "", district: 1 });
+    try {
+      await dispatch(addCandidate(newCandidate)).unwrap();
+      toast({ title: "新しい候補者を登録しました" });
+      navigate("/election-candidates");
+    } catch (error) {
+      toast({
+        title: "登録に失敗しました",
+        description:
+          error instanceof Error ? error.message : "不明なエラーが発生しました",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    navigate("/election-candidates");
   };
 
   return (
@@ -201,9 +216,19 @@ export default function CandidateRegistrationPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              登録
-            </Button>
+            <div className="flex justify-between space-x-4">
+              <Button type="submit" className="flex-1">
+                登録
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={handleCancel}
+              >
+                キャンセル
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
