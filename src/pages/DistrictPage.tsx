@@ -1,4 +1,5 @@
-import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { InfoIcon } from "lucide-react";
+import HokkaidoMap from "@/components/map/HokkaidoMap";
 
 const partyColors: { [key: string]: string } = {
   自民党: "bg-red-500",
@@ -24,18 +26,20 @@ const partyColors: { [key: string]: string } = {
 };
 
 export default function DistrictPage() {
-  const { prefecture, district } = useParams<{
+  const { prefecture, district: initialDistrict } = useParams<{
     prefecture: string;
     district: string;
   }>();
+  const [selectedDistrict, setSelectedDistrict] = useState<number>(
+    parseInt(initialDistrict || "1", 10)
+  );
+  const navigate = useNavigate();
   const candidates = useSelector(
     (state: RootState) => state.candidate.candidates
   );
 
   const districtCandidates = candidates.filter(
-    (c) =>
-      c.prefecture === prefecture &&
-      c.district === parseInt(district || "0", 10)
+    (c) => c.prefecture === prefecture && c.district === selectedDistrict
   );
 
   const districts = Array.from(
@@ -45,6 +49,11 @@ export default function DistrictPage() {
         .map((c) => c.district)
     )
   ).sort((a, b) => a - b);
+
+  const handleDistrictChange = (district: number) => {
+    setSelectedDistrict(district);
+    navigate(`/district/${prefecture}/${district}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -59,9 +68,14 @@ export default function DistrictPage() {
           選挙ウォッチ 次期衆院選
         </h1>
         <div className="flex justify-center items-center space-x-2">
-          <Select defaultValue={district}>
+          <Select
+            value={selectedDistrict.toString()}
+            onValueChange={(value) => handleDistrictChange(parseInt(value, 10))}
+          >
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder={`${prefecture} 第${district}区`} />
+              <SelectValue
+                placeholder={`${prefecture} 第${selectedDistrict}区`}
+              />
             </SelectTrigger>
             <SelectContent>
               {districts.map((d) => (
@@ -76,10 +90,9 @@ export default function DistrictPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
-          <img
-            src="/placeholder.svg?height=300&width=500"
-            alt="地図"
-            className="w-full h-auto rounded-lg shadow-lg"
+          <HokkaidoMap
+            selectedDistrict={selectedDistrict}
+            onDistrictSelect={handleDistrictChange}
           />
         </div>
         <div>
@@ -87,8 +100,8 @@ export default function DistrictPage() {
             <CardContent className="p-4">
               <h2 className="text-xl font-semibold mb-2">選挙区情報</h2>
               <p className="text-sm text-gray-600">
-                {prefecture}第{district}区は、人口でみて{district}
-                区の約97%から成ります。
+                {prefecture}第{selectedDistrict}区は、人口でみて
+                {selectedDistrict}区の約97%から成ります。
               </p>
             </CardContent>
           </Card>

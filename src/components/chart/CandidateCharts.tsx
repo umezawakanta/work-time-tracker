@@ -1,8 +1,28 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+} from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
 import { ChartData, ChartOptions } from "chart.js";
 import { Candidate } from "@/store/candidateSlice";
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title
+);
 
 // 政党ごとの色を定義
 const partyColors: { [key: string]: string } = {
@@ -72,16 +92,18 @@ const prefectures = [
 const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   candidates,
 }) => {
+  const partyCounts = parties.map(
+    (party) => candidates.filter((c) => c.party === party).length
+  );
+
   const partyData: ChartData<"pie"> = {
     labels: parties,
     datasets: [
       {
-        data: parties.map(
-          (party) => candidates.filter((c) => c.party === party).length
-        ),
+        data: partyCounts,
         backgroundColor: parties.map((party) => partyColors[party]),
-        borderColor: parties.map((party) => partyColors[party]),
-        borderWidth: 1,
+        borderColor: "#fff",
+        borderWidth: 2,
       },
     ],
   };
@@ -104,26 +126,63 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
 
   const pieOptions: ChartOptions<"pie"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "right" as const,
+        labels: {
+          generateLabels: (chart) => {
+            const datasets = chart.data.datasets;
+            const total = datasets[0].data.reduce((acc: number, val) => {
+              const numVal = typeof val === "number" ? val : 0;
+              return acc + numVal;
+            }, 0);
+            return (chart.data.labels as string[]).map((label, i) => {
+              const meta = chart.getDatasetMeta(0);
+              const style = meta.controller.getStyle(i, false);
+              const value = datasets[0].data[i];
+              const numValue = typeof value === "number" ? value : 0;
+              const percentage =
+                total > 0 ? ((numValue / total) * 100).toFixed(1) : "0.0";
+              return {
+                text: `${label}: ${numValue}人 (${percentage}%)`,
+                fillStyle: style.backgroundColor,
+                strokeStyle: style.borderColor,
+                lineWidth: style.borderWidth,
+                hidden: false,
+                index: i,
+              };
+            });
+          },
+          font: {
+            size: 12,
+          },
+        },
       },
-      title: {
-        display: true,
-        text: "政党別候補者数",
+      tooltip: {
+        enabled: false,
       },
     },
   };
 
   const barOptions: ChartOptions<"bar"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
+        display: false,
       },
       title: {
         display: true,
         text: "都道府県別候補者数",
+        font: {
+          size: 18,
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
       },
     },
   };
@@ -135,7 +194,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>政党別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="h-[400px]">
             <Pie data={partyData} options={pieOptions} />
           </div>
         </CardContent>
@@ -145,7 +204,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           <CardTitle>都道府県別候補者数</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
+          <div className="h-[400px]">
             <Bar data={prefectureData} options={barOptions} />
           </div>
         </CardContent>
