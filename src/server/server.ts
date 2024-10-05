@@ -628,7 +628,7 @@ app.post(
 interface ICandidate extends mongoose.Document {
   name: string;
   party: string;
-  prefecture: string;
+  prefecture: string | null;
   district: number | null;
   proportionalBlock: string | null;
 }
@@ -649,15 +649,15 @@ const validateCandidate = [
   body("name").notEmpty().withMessage("名前は必須です"),
   body("party").notEmpty().withMessage("政党は必須です"),
   body("prefecture")
-    .optional()
+    .optional({ nullable: true })
     .isString()
     .withMessage("都道府県は文字列である必要があります"),
   body("district")
-    .optional()
+    .optional({ nullable: true })
     .isInt({ min: 1 })
     .withMessage("選挙区は1以上の整数である必要があります"),
   body("proportionalBlock")
-    .optional()
+    .optional({ nullable: true })
     .isString()
     .withMessage("比例代表ブロックは文字列である必要があります"),
   body().custom((value) => {
@@ -694,13 +694,22 @@ app.post(
     }
 
     try {
-      const newCandidate = new Candidate(req.body);
+      const candidateData = {
+        name: req.body.name,
+        party: req.body.party,
+        prefecture: req.body.prefecture || null,
+        district: req.body.district || null,
+        proportionalBlock: req.body.proportionalBlock || null,
+      };
+
+      const newCandidate = new Candidate(candidateData);
       const savedCandidate = await newCandidate.save();
       res.status(201).json({
         message: "候補者が正常に登録されました",
         candidate: savedCandidate,
       });
     } catch (error) {
+      console.error("Error creating candidate:", error);
       next(error);
     }
   }
@@ -767,5 +776,4 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
 export default app;
