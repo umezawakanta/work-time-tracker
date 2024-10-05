@@ -41,7 +41,11 @@ export default function DistrictPage() {
   );
 
   const districts = Array.from(
-    new Set(prefectureCandidates.map((c) => c.district))
+    new Set(
+      prefectureCandidates
+        .map((c) => c.district)
+        .filter((d): d is number => d !== null)
+    )
   ).sort((a, b) => a - b);
 
   const districtCandidates = prefectureCandidates.filter(

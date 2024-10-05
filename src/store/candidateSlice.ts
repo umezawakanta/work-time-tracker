@@ -1,5 +1,3 @@
-// candidateSlice.ts
-
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { candidateApi } from "../services/api";
 
@@ -8,7 +6,7 @@ export interface Candidate {
   name: string;
   party: string;
   prefecture: string;
-  district: number;
+  district: number | null;
 }
 
 interface CandidateState {

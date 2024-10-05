@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const parties = [
   "自民党",
@@ -91,21 +93,31 @@ export default function CandidateEditForm({
   const { toast } = useToast();
 
   const [editedCandidate, setEditedCandidate] = useState<Candidate>(candidate);
+  const [isProportionalOnly, setIsProportionalOnly] = useState(false);
 
   useEffect(() => {
     setEditedCandidate(candidate);
+    setIsProportionalOnly(!candidate.district);
   }, [candidate]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setEditedCandidate((prev) => ({
       ...prev,
-      [name]: name === "district" ? parseInt(value, 10) : value,
+      [name]:
+        name === "district" ? (value ? parseInt(value, 10) : null) : value,
     }));
   };
 
   const handleSelectChange = (name: string) => (value: string) => {
     setEditedCandidate((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProportionalOnlyChange = (checked: boolean) => {
+    setIsProportionalOnly(checked);
+    if (checked) {
+      setEditedCandidate((prev) => ({ ...prev, district: null }));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -215,24 +227,35 @@ export default function CandidateEditForm({
             </Select>
           </div>
 
-          <div>
-            <label
-              htmlFor="district"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              選挙区
-            </label>
-            <Input
-              id="district"
-              type="number"
-              placeholder="選挙区"
-              name="district"
-              value={editedCandidate.district}
-              onChange={handleInputChange}
-              min="1"
-              required
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="isProportionalOnly"
+              checked={isProportionalOnly}
+              onCheckedChange={handleProportionalOnlyChange}
             />
+            <Label htmlFor="isProportionalOnly">比例単独出馬</Label>
           </div>
+
+          {!isProportionalOnly && (
+            <div>
+              <label
+                htmlFor="district"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                選挙区
+              </label>
+              <Input
+                id="district"
+                type="number"
+                placeholder="選挙区"
+                name="district"
+                value={editedCandidate.district || ""}
+                onChange={handleInputChange}
+                min="1"
+                required={!isProportionalOnly}
+              />
+            </div>
+          )}
 
           <div className="flex justify-between space-x-4">
             <Button type="submit" className="flex-1">

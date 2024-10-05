@@ -36,9 +36,12 @@ export default function DistrictCandidatesList({
   onPrefectureChange,
   onEditCandidate,
 }: DistrictCandidatesListProps) {
-  const districts = Array.from(new Set(candidates.map((c) => c.district))).sort(
-    (a, b) => a - b
-  );
+  const districts = Array.from(
+    new Set(
+      candidates.map((c) => c.district).filter((d): d is number => d !== null)
+    )
+  ).sort((a, b) => a - b);
+
   const prefectures = Array.from(
     new Set(candidates.map((c) => c.prefecture))
   ).sort();
