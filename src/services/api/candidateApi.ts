@@ -1,4 +1,3 @@
-// src/api/candidateApi.ts
 import { AxiosResponse } from "axios";
 import { api } from "./apiConfig";
 
@@ -6,8 +5,9 @@ interface Candidate {
   _id?: string;
   name: string;
   party: string;
-  prefecture: string;
+  prefecture: string | null;
   district: number | null;
+  proportionalBlock: string | null;
 }
 
 interface CandidateApiResponse {

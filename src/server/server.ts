@@ -629,15 +629,17 @@ interface ICandidate extends mongoose.Document {
   name: string;
   party: string;
   prefecture: string;
-  district: number;
+  district: number | null;
+  proportionalBlock: string | null;
 }
 
 // 候補者モデルの定義
 const CandidateSchema = new mongoose.Schema<ICandidate>({
   name: { type: String, required: true },
   party: { type: String, required: true },
-  prefecture: { type: String, required: true },
-  district: { type: Number, required: true },
+  prefecture: { type: String, required: false },
+  district: { type: Number, required: false },
+  proportionalBlock: { type: String, required: false },
 });
 
 const Candidate = mongoose.model<ICandidate>("Candidate", CandidateSchema);
@@ -646,10 +648,24 @@ const Candidate = mongoose.model<ICandidate>("Candidate", CandidateSchema);
 const validateCandidate = [
   body("name").notEmpty().withMessage("名前は必須です"),
   body("party").notEmpty().withMessage("政党は必須です"),
-  body("prefecture").notEmpty().withMessage("都道府県は必須です"),
+  body("prefecture")
+    .optional()
+    .isString()
+    .withMessage("都道府県は文字列である必要があります"),
   body("district")
+    .optional()
     .isInt({ min: 1 })
     .withMessage("選挙区は1以上の整数である必要があります"),
+  body("proportionalBlock")
+    .optional()
+    .isString()
+    .withMessage("比例代表ブロックは文字列である必要があります"),
+  body().custom((value) => {
+    if ((value.prefecture && value.district) || value.proportionalBlock) {
+      return true;
+    }
+    throw new Error("選挙区情報または比例代表ブロックのいずれかが必要です");
+  }),
 ];
 
 // 候補者を取得するAPIエンドポイント
