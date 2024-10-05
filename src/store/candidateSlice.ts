@@ -7,6 +7,7 @@ export interface Candidate {
   party: string;
   prefecture: string;
   district: number | null;
+  proportionalBlock: string | null;
 }
 
 interface CandidateState {
@@ -28,7 +29,7 @@ export const fetchCandidates = createAsyncThunk<
 >("candidates/fetchCandidates", async (_, { rejectWithValue }) => {
   try {
     const response = await candidateApi.getAll();
-    return response.data;
+    return response.data as Candidate[];
   } catch (error) {
     console.error("候補者の取得中にエラーが発生しました:", error);
     return rejectWithValue(
@@ -44,7 +45,7 @@ export const addCandidate = createAsyncThunk<
 >("candidates/addCandidate", async (candidate, { rejectWithValue }) => {
   try {
     const response = await candidateApi.create(candidate);
-    return response.data.candidate;
+    return response.data.candidate as Candidate;
   } catch (error) {
     console.error("候補者の追加中にエラーが発生しました:", error);
     return rejectWithValue(
@@ -62,7 +63,7 @@ export const updateCandidate = createAsyncThunk<
   async ({ id, candidate }, { rejectWithValue }) => {
     try {
       const response = await candidateApi.update(id, candidate);
-      return response.data.candidate;
+      return response.data.candidate as Candidate;
     } catch (error) {
       console.error("候補者の更新中にエラーが発生しました:", error);
       return rejectWithValue(

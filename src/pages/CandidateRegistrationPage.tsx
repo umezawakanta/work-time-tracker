@@ -79,6 +79,20 @@ const prefectures = [
   "沖縄県",
 ];
 
+const proportionalBlocks = [
+  "北海道",
+  "東北",
+  "北関東",
+  "南関東",
+  "東京",
+  "北陸信越",
+  "東海",
+  "近畿",
+  "中国",
+  "四国",
+  "九州",
+];
+
 export default function CandidateRegistrationPage() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -89,6 +103,7 @@ export default function CandidateRegistrationPage() {
     party: "",
     prefecture: "",
     district: null,
+    proportionalBlock: null,
   });
 
   const [isProportionalOnly, setIsProportionalOnly] = useState(false);
@@ -108,10 +123,11 @@ export default function CandidateRegistrationPage() {
 
   const handleProportionalOnlyChange = (checked: boolean) => {
     setIsProportionalOnly(checked);
-    setNewCandidate((prev) => ({
-      ...prev,
-      district: checked ? null : prev.district,
-    }));
+    if (checked) {
+      setNewCandidate((prev) => ({ ...prev, district: null, prefecture: "" }));
+    } else {
+      setNewCandidate((prev) => ({ ...prev, proportionalBlock: null }));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -186,30 +202,6 @@ export default function CandidateRegistrationPage() {
               </Select>
             </div>
 
-            <div>
-              <label
-                htmlFor="prefecture"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                都道府県
-              </label>
-              <Select
-                value={newCandidate.prefecture}
-                onValueChange={handleSelectChange("prefecture")}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="都道府県を選択してください" />
-                </SelectTrigger>
-                <SelectContent>
-                  {prefectures.map((prefecture) => (
-                    <SelectItem key={prefecture} value={prefecture}>
-                      {prefecture}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="isProportionalOnly"
@@ -219,27 +211,75 @@ export default function CandidateRegistrationPage() {
               <Label htmlFor="isProportionalOnly">比例単独出馬</Label>
             </div>
 
-            {!isProportionalOnly && (
+            {isProportionalOnly ? (
               <div>
                 <label
-                  htmlFor="district"
+                  htmlFor="proportionalBlock"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  選挙区
+                  比例代表ブロック
                 </label>
-                <Input
-                  id="district"
-                  type="number"
-                  placeholder="選挙区"
-                  name="district"
-                  value={
-                    newCandidate.district === null ? "" : newCandidate.district
-                  }
-                  onChange={handleInputChange}
-                  min="1"
-                  required={!isProportionalOnly}
-                />
+                <Select
+                  value={newCandidate.proportionalBlock || ""}
+                  onValueChange={handleSelectChange("proportionalBlock")}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="比例代表ブロックを選択してください" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {proportionalBlocks.map((block) => (
+                      <SelectItem key={block} value={block}>
+                        {block}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+            ) : (
+              <>
+                <div>
+                  <label
+                    htmlFor="prefecture"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    都道府県
+                  </label>
+                  <Select
+                    value={newCandidate.prefecture}
+                    onValueChange={handleSelectChange("prefecture")}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="都道府県を選択してください" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {prefectures.map((prefecture) => (
+                        <SelectItem key={prefecture} value={prefecture}>
+                          {prefecture}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="district"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    選挙区
+                  </label>
+                  <Input
+                    id="district"
+                    type="number"
+                    placeholder="選挙区"
+                    name="district"
+                    value={newCandidate.district || ""}
+                    onChange={handleInputChange}
+                    min="1"
+                    required={!isProportionalOnly}
+                  />
+                </div>
+              </>
             )}
 
             <div className="flex justify-between space-x-4">
