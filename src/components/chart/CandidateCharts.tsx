@@ -9,10 +9,12 @@ import {
   LinearScale,
   BarElement,
   Title,
+  ChartData,
+  ChartOptions,
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import { ChartData, ChartOptions } from "chart.js";
 import { Candidate } from "@/store/candidateSlice";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 ChartJS.register(
   ArcElement,
@@ -21,7 +23,8 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  Title
+  Title,
+  ChartDataLabels
 );
 
 // 政党ごとの色を定義
@@ -160,7 +163,35 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         },
       },
       tooltip: {
-        enabled: false,
+        callbacks: {
+          label: (context) => {
+            const label = context.label || "";
+            const value = context.formattedValue;
+            const dataset = context.dataset;
+            const total = (dataset.data as number[]).reduce(
+              (acc, data) => acc + (data || 0),
+              0
+            );
+            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            return `${label}: ${value}人 (${percentage}%)`;
+          },
+        },
+      },
+      datalabels: {
+        color: "#fff",
+        font: {
+          weight: "bold" as const,
+          size: 14,
+        },
+        formatter: (value: number, ctx) => {
+          const dataset = ctx.dataset;
+          const total = (dataset.data as number[]).reduce(
+            (acc, data) => acc + (data || 0),
+            0
+          );
+          const percentage = ((value / total) * 100).toFixed(1);
+          return percentage + "%";
+        },
       },
     },
   };
@@ -177,6 +208,14 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         text: "都道府県別候補者数",
         font: {
           size: 18,
+        },
+      },
+      datalabels: {
+        anchor: "end",
+        align: "top",
+        formatter: (value: number) => (value > 0 ? value.toString() : ""),
+        font: {
+          weight: "bold" as const,
         },
       },
     },
