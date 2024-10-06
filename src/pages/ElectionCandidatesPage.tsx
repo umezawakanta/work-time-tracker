@@ -7,6 +7,7 @@ import DistrictCandidatesList from "@/components/list/DistrictCandidatesList";
 import CandidateCharts from "@/components/chart/CandidateCharts";
 import CandidateEditForm from "@/components/forms/CandidateEditForm";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ElectionCandidatesPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -64,24 +65,31 @@ export default function ElectionCandidatesPage() {
         </Link>
       </div>
 
-      <CandidateCharts candidates={candidates} />
-
-      <div className="mt-12">
-        {editingCandidate ? (
-          <CandidateEditForm
-            candidate={editingCandidate}
-            onCancel={handleCancelEdit}
-            onSuccess={handleEditSuccess}
-          />
-        ) : (
-          <DistrictCandidatesList
-            candidates={candidates}
-            selectedPrefecture={selectedPrefecture}
-            onPrefectureChange={setSelectedPrefecture}
-            onEditCandidate={handleEditCandidate}
-          />
-        )}
-      </div>
+      <Tabs defaultValue="charts" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="charts">グラフ</TabsTrigger>
+          <TabsTrigger value="list">候補者一覧</TabsTrigger>
+        </TabsList>
+        <TabsContent value="charts">
+          <CandidateCharts candidates={candidates} />
+        </TabsContent>
+        <TabsContent value="list">
+          {editingCandidate ? (
+            <CandidateEditForm
+              candidate={editingCandidate}
+              onCancel={handleCancelEdit}
+              onSuccess={handleEditSuccess}
+            />
+          ) : (
+            <DistrictCandidatesList
+              candidates={candidates}
+              selectedPrefecture={selectedPrefecture}
+              onPrefectureChange={setSelectedPrefecture}
+              onEditCandidate={handleEditCandidate}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
