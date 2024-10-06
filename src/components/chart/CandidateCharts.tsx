@@ -17,6 +17,7 @@ import {
 import { Pie, Bar } from "react-chartjs-2";
 import { Candidate } from "@/store/candidateSlice";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import "./CandidateCharts.css";
 
 ChartJS.register(
   ArcElement,
@@ -369,7 +370,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             <CardTitle>政党別候補者数</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+            <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>
               <Pie
                 data={partyData}
                 options={pieOptions}
@@ -383,7 +384,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             <CardTitle>都道府県別候補者数</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+            <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>
               <Bar data={prefectureData} options={barOptions} />
             </div>
           </CardContent>
@@ -393,7 +394,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             <CardTitle>比例代表ブロック別候補者数</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`h-[${chartsPerRow > 1 ? "400px" : "650px"}]`}>
+            <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>
               <Bar data={proportionalData} options={proportionalBarOptions} />
             </div>
           </CardContent>
