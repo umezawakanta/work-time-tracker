@@ -58,9 +58,26 @@ export default function Home() {
               記録した作業時間をグラフや表で分析し、時間の使い方を最適化。
               プロジェクトの進捗状況を把握し、改善点を見つけることができます。
             </p>
-            <Link to="/reports" className="w-full">
+            <Link to="/work-time-reports" className="w-full">
               <Button variant="outline" className="w-full">
-                レポートを見る
+                作業時間レポートを見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>資産/負債レポート</CardTitle>
+            <CardDescription>資産と負債の状況を分析</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              資産と負債の推移を確認し、財務状況を把握できます。
+              グラフや表を使って、長期的な傾向を分析することができます。
+            </p>
+            <Link to="/reports" className="w-full">
+              <Button variant="secondary" className="w-full">
+                資産/負債レポートを見る
               </Button>
             </Link>
           </CardContent>
