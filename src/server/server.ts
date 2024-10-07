@@ -115,6 +115,27 @@ const TodoItemSchema = new mongoose.Schema<ITodoItem>({
 
 const TodoItem = mongoose.model<ITodoItem>("TodoItem", TodoItemSchema);
 
+// Subscriptionインターフェース
+interface ISubscription extends mongoose.Document {
+  name: string;
+  billingDate: string;
+  type: string;
+  amount: number;
+}
+
+// Subscriptionモデルの定義
+const SubscriptionSchema = new mongoose.Schema<ISubscription>({
+  name: { type: String, required: true },
+  billingDate: { type: String, required: true },
+  type: { type: String, required: true },
+  amount: { type: Number, required: true },
+});
+
+const Subscription = mongoose.model<ISubscription>(
+  "Subscription",
+  SubscriptionSchema
+);
+
 // エラーハンドリングミドルウェアの修正
 const errorHandler = (err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
@@ -162,13 +183,19 @@ const validateDebtEntry = [
   body("account").notEmpty().withMessage("口座は必須です"),
 ];
 
-// バリデーションミドルウェアの修正
 const validateTodoItem = [
   body("task").optional().notEmpty().withMessage("タスクは空にできません"),
   body("completed")
     .optional()
     .isBoolean()
     .withMessage("completedはブール値である必要があります"),
+];
+
+const validateSubscription = [
+  body("name").notEmpty().withMessage("名称は必須です"),
+  body("billingDate").notEmpty().withMessage("引き落とし日は必須です"),
+  body("type").notEmpty().withMessage("種別は必須です"),
+  body("amount").isNumeric().withMessage("金額は数値である必要があります"),
 ];
 
 // 作業時間を記録するAPIエンドポイント
@@ -769,6 +796,108 @@ app.delete(
   }
 );
 
+// サブスクリプションを取得するAPIエンドポイント
+app.get(
+  "/api/subscription",
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const subscriptions = await Subscription.find().sort({ name: 1 });
+      res.json(subscriptions);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// サブスクリプションを追加するAPIエンドポイント
+app.post(
+  "/api/subscription",
+  validateSubscription,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const subscriptionData = {
+        name: req.body.name,
+        billingDate: req.body.billingDate,
+        type: req.body.type,
+        amount: req.body.amount,
+      };
+
+      const newSubscription = new Subscription(subscriptionData);
+      const savedSubscription = await newSubscription.save();
+      res.status(201).json({
+        message: "サブスクリプションが正常に登録されました",
+        subscription: savedSubscription,
+      });
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      next(error);
+    }
+  }
+);
+
+// サブスクリプションを更新するAPIエンドポイント
+app.put(
+  "/api/subscription/:id",
+  validateSubscription,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(400)
+        .json({ message: "入力データが無効です", errors: errors.array() });
+    }
+
+    try {
+      const updatedSubscription = await Subscription.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedSubscription) {
+        return res
+          .status(404)
+          .json({ message: "指定されたサブスクリプションが見つかりません" });
+      }
+      res.json({
+        message: "サブスクリプション情報が正常に更新されました",
+        subscription: updatedSubscription,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// サブスクリプションを削除するAPIエンドポイント
+app.delete(
+  "/api/subscription/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const deletedSubscription = await Subscription.findByIdAndDelete(
+        req.params.id
+      );
+      if (!deletedSubscription) {
+        return res
+          .status(404)
+          .json({ message: "指定されたサブスクリプションが見つかりません" });
+      }
+      res.json({
+        message: "サブスクリプションが正常に削除されました",
+        subscription: deletedSubscription,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // エラーハンドリングミドルウェアを使用
 app.use(errorHandler);
 
@@ -776,4 +905,5 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
 export default app;

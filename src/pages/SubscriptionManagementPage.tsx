@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { Button } from "@/components/ui/button";
@@ -14,35 +14,92 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { addSubscription, Subscription } from "@/store/subscriptionSlice";
+import {
+  addSubscription,
+  fetchSubscriptions,
+  updateSubscription,
+  deleteSubscription,
+} from "@/store/subscriptionSlice";
+import { Subscription } from "@/types/subscription";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Loader2, Pencil, Trash } from "lucide-react";
 
 export default function SubscriptionManagementPage() {
-  const subscriptions = useSelector(
-    (state: RootState) => state.subscription.subscriptions
+  const dispatch = useDispatch<AppDispatch>();
+  const { subscriptions, status, error } = useSelector(
+    (state: RootState) => state.subscription
   );
-  const [newSubscription, setNewSubscription] = useState<Subscription>({
-    id: "",
+  const [newSubscription, setNewSubscription] = useState<
+    Omit<Subscription, "_id">
+  >({
     name: "",
     billingDate: "",
     type: "",
     amount: 0,
   });
+  const [editingSubscription, setEditingSubscription] =
+    useState<Subscription | null>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchSubscriptions());
+    }
+  }, [status, dispatch]);
 
-  const handleSubscriptionSubmit = (e: React.FormEvent) => {
+  const handleSubscriptionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(
-      addSubscription({ ...newSubscription, id: Date.now().toString() })
-    );
-    setNewSubscription({
-      id: "",
-      name: "",
-      billingDate: "",
-      type: "",
-      amount: 0,
-    });
+    try {
+      if (editingSubscription) {
+        await dispatch(
+          updateSubscription({
+            _id: editingSubscription._id,
+            subscription: newSubscription,
+          })
+        ).unwrap();
+        setEditingSubscription(null);
+      } else {
+        await dispatch(addSubscription(newSubscription)).unwrap();
+      }
+      setNewSubscription({
+        name: "",
+        billingDate: "",
+        type: "",
+        amount: 0,
+      });
+    } catch (err) {
+      console.error("Failed to save the subscription: ", err);
+    }
   };
+
+  const handleEdit = (subscription: Subscription) => {
+    setEditingSubscription(subscription);
+    setNewSubscription(subscription);
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await dispatch(deleteSubscription(id)).unwrap();
+    } catch (err) {
+      console.error("Failed to delete the subscription: ", err);
+    }
+  };
+
+  if (status === "loading") {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <Alert variant="destructive">
+        <AlertTitle>エラー</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -103,7 +160,7 @@ export default function SubscriptionManagementPage() {
             required
           />
         </div>
-        <Button type="submit">登録</Button>
+        <Button type="submit">{editingSubscription ? "更新" : "登録"}</Button>
       </form>
 
       <div className="mt-8">
@@ -115,15 +172,32 @@ export default function SubscriptionManagementPage() {
               <TableHead>引き落とし日</TableHead>
               <TableHead>種別</TableHead>
               <TableHead>金額</TableHead>
+              <TableHead>操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {subscriptions.map((sub) => (
-              <TableRow key={sub.id}>
+              <TableRow key={sub._id}>
                 <TableCell>{sub.name}</TableCell>
                 <TableCell>{sub.billingDate}</TableCell>
                 <TableCell>{sub.type}</TableCell>
                 <TableCell>{sub.amount.toLocaleString()}円</TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEdit(sub)}
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(sub._id)}
+                  >
+                    <Trash size={16} />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
