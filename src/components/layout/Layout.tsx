@@ -47,7 +47,14 @@ export default function Layout({ children }: LayoutProps) {
               </li>
               <li>
                 <Button variant="ghost" asChild>
-                  <Link to="/reports">資産/負債レポート</Link>
+                  <Link to="/asset-liability-report">資産/負債レポート</Link>
+                </Button>
+              </li>
+              <li>
+                <Button variant="ghost" asChild>
+                  <Link to="/subscription-management">
+                    サブスクリプション管理
+                  </Link>
                 </Button>
               </li>
               <li>

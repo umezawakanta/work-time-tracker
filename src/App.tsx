@@ -3,7 +3,6 @@ import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import Layout from "@/components/layout/Layout";
 import Home from "./pages/Home";
 import WorkTimeEntryForm from "./components/forms/WorkTimeEntryForm";
-import Reports from "./pages/Reports";
 import WorkTimeReports from "./pages/WorkTimeReports";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -12,6 +11,8 @@ import { AssetCalendarPage } from "./pages/AssetCalendarPage";
 import ElectionCandidatesPage from "./pages/ElectionCandidatesPage";
 import CandidateRegistrationPage from "./pages/CandidateRegistrationPage";
 import DistrictPage from "./pages/DistrictPage";
+import SubscriptionManagementPage from "./pages/SubscriptionManagementPage";
+import AssetLiabilityReportPage from "./pages/AssetLiabilityReportPage";
 // import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -38,7 +39,14 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/work-time" element={<WorkTimeEntryForm />} />
-            <Route path="/reports" element={<Reports />} />
+            <Route
+              path="/asset-liability-report"
+              element={<AssetLiabilityReportPage />}
+            />
+            <Route
+              path="/subscription-management"
+              element={<SubscriptionManagementPage />}
+            />
             <Route path="/work-time-reports" element={<WorkTimeReports />} />
             <Route path="/asset-calendar" element={<AssetCalendarPage />} />
             <Route
