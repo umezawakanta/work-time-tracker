@@ -1,18 +1,26 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
-const workTimeEntrySchema = new mongoose.Schema(
-  {
-    projectName: { type: String, required: true },
-    description: String,
-    startTime: { type: Date, required: true },
-    endTime: { type: Date, required: true },
-    duration: { type: Number, required: true },
-    date: { type: String, required: true },
-  },
-  { timestamps: true }
-);
+export interface IWorkTimeEntry extends Document {
+  projectName: string;
+  startTime: Date;
+  endTime: Date;
+  description?: string;
+  duration: number;
+  date: Date;
+  createdAt: Date;
+}
 
-export const WorkTimeEntry = mongoose.model(
-  "WorkTimeEntry",
-  workTimeEntrySchema
+const WorkTimeSchema = new Schema<IWorkTimeEntry>({
+  projectName: { type: String, required: true },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
+  description: String,
+  duration: { type: Number, required: true },
+  date: { type: Date, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export const WorkTimeEntry = mongoose.model<IWorkTimeEntry>(
+  "WorkTime",
+  WorkTimeSchema
 );

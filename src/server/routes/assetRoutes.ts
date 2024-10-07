@@ -1,0 +1,102 @@
+import express, { Request, Response, NextFunction } from "express";
+import { body, validationResult } from "express-validator";
+import { AssetEntry, IAssetEntry } from "../models/AssetEntry.js";
+
+const router = express.Router();
+
+const validateAssetEntry = [
+  body("date")
+    .isISO8601()
+    .toDate()
+    .withMessage("日付は有効なISO8601形式である必要があります"),
+  body("value").isNumeric().withMessage("資産価値は数値である必要があります"),
+  body("account").notEmpty().withMessage("口座は必須です"),
+];
+
+router.post(
+  "/",
+  validateAssetEntry,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const assetData: IAssetEntry = new AssetEntry({
+        date: req.body.date,
+        value: req.body.value,
+        account: req.body.account,
+      });
+
+      const savedAsset = await assetData.save();
+      res.status(201).json({
+        message: "資産情報が正常に記録されました",
+        asset: savedAsset,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const assets = await AssetEntry.find().sort({ date: -1 });
+    res.json(assets);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put(
+  "/:id",
+  validateAssetEntry,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const updatedAsset = await AssetEntry.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedAsset) {
+        return res
+          .status(404)
+          .json({ message: "指定された資産情報が見つかりません" });
+      }
+      res.json({
+        message: "資産情報が正常に更新されました",
+        asset: updatedAsset,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  "/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const deletedAsset = await AssetEntry.findByIdAndDelete(req.params.id);
+      if (!deletedAsset) {
+        return res
+          .status(404)
+          .json({ message: "指定された資産情報が見つかりません" });
+      }
+      res.json({
+        message: "資産情報が正常に削除されました",
+        asset: deletedAsset,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+export default router;
