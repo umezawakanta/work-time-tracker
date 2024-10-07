@@ -7,6 +7,7 @@ import debtReducer from "./debtSlice";
 import userReducer from "./userSlice";
 import todoReducer from "./todoSlice";
 import candidateReducer from "./candidateSlice";
+import subscriptionReducer from "./subscriptionSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     user: userReducer,
     todo: todoReducer,
     candidate: candidateReducer,
+    subscription: subscriptionReducer,
   },
 });
 
