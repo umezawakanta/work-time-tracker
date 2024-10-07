@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -56,22 +56,32 @@ export default function DistrictCandidatesList({
     proportionalBlocks[0]
   );
 
-  const districts = Array.from(
-    new Set(
-      candidates
-        .filter(
-          (c) => c.prefecture === selectedPrefecture && c.district !== null
-        )
-        .map((c) => c.district)
-    )
-  ).sort((a, b) => (a || 0) - (b || 0));
+  const prefectures = useMemo(() => {
+    const uniquePrefectures = Array.from(
+      new Set(candidates.map((c) => c.prefecture))
+    ).filter(Boolean);
+    return uniquePrefectures.sort();
+  }, [candidates]);
 
-  const prefectures = Array.from(
-    new Set(candidates.map((c) => c.prefecture))
-  ).sort();
+  const districts = useMemo(() => {
+    const uniqueDistricts = Array.from(
+      new Set(
+        candidates
+          .filter(
+            (c) => c.prefecture === selectedPrefecture && c.district != null
+          )
+          .map((c) => c.district)
+      )
+    ).filter((district): district is number => district != null);
+    return uniqueDistricts.sort((a, b) => a - b);
+  }, [candidates, selectedPrefecture]);
 
-  const proportionalCandidates = candidates.filter(
-    (c) => c.proportionalBlock === selectedProportionalBlock
+  const proportionalCandidates = useMemo(
+    () =>
+      candidates.filter(
+        (c) => c.proportionalBlock === selectedProportionalBlock
+      ),
+    [candidates, selectedProportionalBlock]
   );
 
   const renderCandidateList = (candidateList: Candidate[]) => (
@@ -120,7 +130,7 @@ export default function DistrictCandidatesList({
           <TabsContent value="district">
             <div className="flex justify-center items-center space-x-2 mt-4 mb-6">
               <Select
-                value={selectedPrefecture}
+                value={selectedPrefecture || prefectures[0] || ""}
                 onValueChange={onPrefectureChange}
               >
                 <SelectTrigger className="w-[200px]">
