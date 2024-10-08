@@ -1,8 +1,9 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
+import { CalendarApi } from "@fullcalendar/core";
 import {
   format,
   startOfMonth,
@@ -12,10 +13,17 @@ import {
   parseISO,
 } from "date-fns";
 import { ja } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import "./AssetCalendar.css";
 
 interface DataPoint {
@@ -45,8 +53,24 @@ export function AssetCalendar({
   onAddWithdrawal,
 }: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [newWithdrawal, setNewWithdrawal] = useState<
+    Omit<WithdrawalEntry, "_id" | "date">
+  >({
+    bank: "",
+    branch: "",
+    amount: 0,
+    description: "",
+  });
+
+  const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
+
+  useEffect(() => {
+    if (calendarApi) {
+      calendarApi.refetchEvents();
+    }
+  }, [withdrawals, calendarApi]);
 
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -126,12 +150,12 @@ export function AssetCalendar({
     let weekStartTotal = 0;
     let lastWeekStart = new Date(0);
 
-    return sortedDates.map((date, index) => {
+    return sortedDates.map((date) => {
       const currentDate = new Date(date);
-      const prevDate = index > 0 ? sortedDates[index - 1] : date;
       const dailyChange =
         (aggregatedData[date]?.["合計"] ?? 0) -
-        (aggregatedData[prevDate]?.["合計"] ?? 0);
+        (aggregatedData[sortedDates[sortedDates.indexOf(date) - 1]]?.["合計"] ??
+          0);
       const cumulativeChange =
         date >= monthStartDateStr
           ? (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal
@@ -223,16 +247,22 @@ export function AssetCalendar({
           <span className="change-label">全期間:</span>
           <span className="change-value">{totalChange.toLocaleString()}円</span>
         </div>
-        {withdrawals.map((withdrawal, index) => (
-          <div key={index} className="withdrawal-info">
-            <span>
-              {withdrawal.bank} {withdrawal.branch}
-            </span>
-            <span>
-              {withdrawal.description}: {withdrawal.amount.toLocaleString()}円
-            </span>
+        {withdrawals && withdrawals.length > 0 && (
+          <div className="withdrawals-container">
+            <h4>引き落とし情報:</h4>
+            {withdrawals.map((withdrawal, index) => (
+              <div key={index} className="withdrawal-info">
+                <span>
+                  {withdrawal.bank} {withdrawal.branch}
+                </span>
+                <span>
+                  {withdrawal.description}: {withdrawal.amount.toLocaleString()}
+                  円
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     );
   };
@@ -282,24 +312,36 @@ export function AssetCalendar({
 
   const handleDateClick = (arg: { date: Date }) => {
     setSelectedDate(arg.date);
-    setShowWithdrawalForm(true);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setNewWithdrawal({
+      bank: "",
+      branch: "",
+      amount: 0,
+      description: "",
+    });
   };
 
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+    if (selectedDate) {
+      onAddWithdrawal({
+        ...newWithdrawal,
+        date: selectedDate.toISOString().split("T")[0],
+      });
+      handleDialogClose();
+    }
+  };
 
-    const newWithdrawal: Omit<WithdrawalEntry, "_id"> = {
-      date: selectedDate!.toISOString().split("T")[0],
-      bank: formData.get("bank") as string,
-      branch: formData.get("branch") as string,
-      amount: Number(formData.get("amount")),
-      description: formData.get("description") as string,
-    };
-
-    onAddWithdrawal(newWithdrawal);
-    setShowWithdrawalForm(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewWithdrawal((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? Number(value) || 0 : value,
+    }));
   };
 
   return (
@@ -351,51 +393,85 @@ export function AssetCalendar({
         firstDay={1}
         datesSet={handleDatesSet}
         dateClick={handleDateClick}
-        dayCellContent={(args) => {
-          return (
-            <div className="custom-day-cell">
-              {format(args.date, "d", { locale: ja })}
-            </div>
-          );
+        dayCellContent={(args) => (
+          <div className="custom-day-cell">
+            {format(args.date, "d", { locale: ja })}
+          </div>
+        )}
+        ref={(el) => {
+          if (el) {
+            setCalendarApi(el.getApi());
+          }
         }}
       />
-      {showWithdrawalForm && (
-        <Card className="withdrawal-form">
-          <CardHeader>
-            <CardTitle>口座引き落とし情報登録</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleWithdrawalSubmit}>
-              <div className="form-group">
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>引き落とし情報登録</DialogTitle>
+            <DialogDescription>
+              選択した日付:{" "}
+              {selectedDate
+                ? format(selectedDate, "yyyy年MM月dd日", { locale: ja })
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleWithdrawalSubmit}>
+            <div className="space-y-4">
+              <div>
                 <Label htmlFor="bank">銀行名</Label>
-                <Input id="bank" name="bank" required />
+                <Input
+                  id="bank"
+                  name="bank"
+                  value={newWithdrawal.bank}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-              <div className="form-group">
+              <div>
                 <Label htmlFor="branch">支店名</Label>
-                <Input id="branch" name="branch" required />
+                <Input
+                  id="branch"
+                  name="branch"
+                  value={newWithdrawal.branch}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-              <div className="form-group">
+              <div>
                 <Label htmlFor="amount">金額</Label>
-                <Input id="amount" name="amount" type="number" required />
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  value={newWithdrawal.amount.toString()}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-              <div className="form-group">
+              <div>
                 <Label htmlFor="description">説明</Label>
-                <Input id="description" name="description" required />
+                <Input
+                  id="description"
+                  name="description"
+                  value={newWithdrawal.description}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
-              <div className="form-actions">
-                <Button type="submit">登録</Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowWithdrawalForm(false)}
-                >
-                  キャンセル
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
+            </div>
+            <DialogFooter className="mt-4">
+              <Button type="submit">登録</Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDialogClose}
+              >
+                キャンセル
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
