@@ -1,8 +1,15 @@
-import { useState, useMemo, useCallback } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
-import { format, startOfMonth, endOfMonth, isSameMonth, parseISO, startOfWeek, isSameWeek } from "date-fns";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  isSameWeek,
+  parseISO,
+} from "date-fns";
 import { ja } from "date-fns/locale";
 import "./AssetCalendar.css";
 
@@ -20,7 +27,40 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const processedData = useMemo(() => {
-    return data.sort((a, b) => a.date.getTime() - b.date.getTime());
+    const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
+    const accountData: Record<string, { date: Date; value: number }[]> = {};
+
+    sortedData.forEach((point) => {
+      if (!accountData[point.account]) {
+        accountData[point.account] = [];
+      }
+      accountData[point.account].push({ date: point.date, value: point.value });
+    });
+
+    const filledData: DataPoint[] = [];
+    Object.entries(accountData).forEach(([account, points]) => {
+      if (points.length === 0) return;
+      let lastValue = points[0].value;
+      const allDates = Array.from(
+        new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
+      )
+        .sort()
+        .map((dateStr) => new Date(dateStr));
+
+      allDates.forEach((date) => {
+        const point = points.find(
+          (p) =>
+            p.date.toISOString().split("T")[0] ===
+            date.toISOString().split("T")[0]
+        );
+        if (point) {
+          lastValue = point.value;
+        }
+        filledData.push({ date, value: lastValue, account });
+      });
+    });
+
+    return filledData;
   }, [data]);
 
   const aggregatedData = useMemo(() => {
@@ -29,7 +69,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
       if (!acc[dateStr]) {
         acc[dateStr] = {};
       }
-      acc[dateStr][curr.account] = (acc[dateStr][curr.account] || 0) + curr.value;
+      acc[dateStr][curr.account] = curr.value;
       return acc;
     }, {} as Record<string, Record<string, number>>);
 
@@ -51,9 +91,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     const firstDataDate = sortedDates[0];
     const firstDataTotal = aggregatedData[firstDataDate]["合計"];
 
-    const currentMonthStart = startOfMonth(
-      new Date(sortedDates[sortedDates.length - 1])
-    );
+    const currentMonthStart = startOfMonth(currentMonth);
     const monthStartDateStr = currentMonthStart.toISOString().split("T")[0];
     const monthStartTotal =
       aggregatedData[monthStartDateStr]?.["合計"] ??
@@ -101,7 +139,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
         },
       };
     });
-  }, [aggregatedData]);
+  }, [aggregatedData, currentMonth]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     const { dailyChange, weeklyChange, cumulativeChange, totalChange } =
@@ -158,29 +196,41 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     );
   };
 
-  const monthlySummary = useMemo(() => {
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(currentMonth);
+  const calculateMonthlySummary = useCallback(
+    (month: Date) => {
+      const monthStart = startOfMonth(month);
+      const monthEnd = endOfMonth(month);
 
-    const monthData = Object.entries(aggregatedData)
-      .filter(([dateStr]) => {
-        const date = parseISO(dateStr);
-        return date >= monthStart && date <= monthEnd;
-      })
-      .map(([, accounts]) => accounts["合計"] || 0);
+      const monthData = Object.entries(aggregatedData)
+        .filter(([dateStr]) => {
+          const date = parseISO(dateStr);
+          return date >= monthStart && date <= monthEnd;
+        })
+        .map(([, accounts]) => accounts["合計"] || 0);
 
-    const income = monthData.filter(value => value > 0).reduce((sum, value) => sum + value, 0);
-    const expenses = Math.abs(monthData.filter(value => value < 0).reduce((sum, value) => sum + value, 0));
-    const balance = income - expenses;
+      const income = monthData
+        .filter((value) => value > 0)
+        .reduce((sum, value) => sum + value, 0);
+      const expenses = Math.abs(
+        monthData
+          .filter((value) => value < 0)
+          .reduce((sum, value) => sum + value, 0)
+      );
+      const balance = income - expenses;
 
-    return { income, expenses, balance };
-  }, [aggregatedData, currentMonth]);
+      return { income, expenses, balance };
+    },
+    [aggregatedData]
+  );
+
+  const monthlySummary = useMemo(
+    () => calculateMonthlySummary(currentMonth),
+    [calculateMonthlySummary, currentMonth]
+  );
 
   const handleDatesSet = useCallback((arg: DatesSetArg) => {
-    if (!isSameMonth(currentMonth, arg.start)) {
-      setCurrentMonth(arg.start);
-    }
-  }, [currentMonth]);
+    setCurrentMonth(arg.view.currentStart);
+  }, []);
 
   return (
     <div className="asset-calendar-container">
