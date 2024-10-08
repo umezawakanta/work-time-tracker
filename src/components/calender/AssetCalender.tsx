@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
@@ -206,7 +206,14 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           const date = parseISO(dateStr);
           return date >= monthStart && date <= monthEnd;
         })
-        .map(([, accounts]) => accounts["合計"] || 0);
+        .map(([dateStr, accounts]) => {
+          const prevDateStr = new Date(dateStr);
+          prevDateStr.setDate(prevDateStr.getDate() - 1);
+          const prevTotal =
+            aggregatedData[prevDateStr.toISOString().split("T")[0]]?.["合計"] ??
+            accounts["合計"];
+          return accounts["合計"] - prevTotal;
+        });
 
       const income = monthData
         .filter((value) => value > 0)
