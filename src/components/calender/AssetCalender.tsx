@@ -2,14 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  isSameMonth,
-  startOfWeek,
-  isSameWeek,
-} from "date-fns";
+import { format, startOfMonth, endOfMonth, isSameMonth, parseISO, startOfWeek, isSameWeek } from "date-fns";
 import { ja } from "date-fns/locale";
 import "./AssetCalendar.css";
 
@@ -27,40 +20,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const processedData = useMemo(() => {
-    const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
-    const accountData: Record<string, { date: Date; value: number }[]> = {};
-
-    sortedData.forEach((point) => {
-      if (!accountData[point.account]) {
-        accountData[point.account] = [];
-      }
-      accountData[point.account].push({ date: point.date, value: point.value });
-    });
-
-    const filledData: DataPoint[] = [];
-    Object.entries(accountData).forEach(([account, points]) => {
-      if (points.length === 0) return;
-      let lastValue = points[0].value;
-      const allDates = Array.from(
-        new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
-      )
-        .sort()
-        .map((dateStr) => new Date(dateStr));
-
-      allDates.forEach((date) => {
-        const point = points.find(
-          (p) =>
-            p.date.toISOString().split("T")[0] ===
-            date.toISOString().split("T")[0]
-        );
-        if (point) {
-          lastValue = point.value;
-        }
-        filledData.push({ date, value: lastValue, account });
-      });
-    });
-
-    return filledData;
+    return data.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [data]);
 
   const aggregatedData = useMemo(() => {
@@ -69,7 +29,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
       if (!acc[dateStr]) {
         acc[dateStr] = {};
       }
-      acc[dateStr][curr.account] = curr.value;
+      acc[dateStr][curr.account] = (acc[dateStr][curr.account] || 0) + curr.value;
       return acc;
     }, {} as Record<string, Record<string, number>>);
 
@@ -202,31 +162,25 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
 
-    const monthData = processedData.filter(
-      (point) => point.date >= monthStart && point.date <= monthEnd
-    );
+    const monthData = Object.entries(aggregatedData)
+      .filter(([dateStr]) => {
+        const date = parseISO(dateStr);
+        return date >= monthStart && date <= monthEnd;
+      })
+      .map(([, accounts]) => accounts["合計"] || 0);
 
-    const income = monthData
-      .filter((point) => point.value > 0)
-      .reduce((sum, point) => sum + point.value, 0);
-
-    const expenses = monthData
-      .filter((point) => point.value < 0)
-      .reduce((sum, point) => sum + Math.abs(point.value), 0);
-
+    const income = monthData.filter(value => value > 0).reduce((sum, value) => sum + value, 0);
+    const expenses = Math.abs(monthData.filter(value => value < 0).reduce((sum, value) => sum + value, 0));
     const balance = income - expenses;
 
     return { income, expenses, balance };
-  }, [processedData, currentMonth]);
+  }, [aggregatedData, currentMonth]);
 
-  const handleDatesSet = useCallback(
-    (arg: DatesSetArg) => {
-      if (!isSameMonth(currentMonth, arg.start)) {
-        setCurrentMonth(arg.start);
-      }
-    },
-    [currentMonth]
-  );
+  const handleDatesSet = useCallback((arg: DatesSetArg) => {
+    if (!isSameMonth(currentMonth, arg.start)) {
+      setCurrentMonth(arg.start);
+    }
+  }, [currentMonth]);
 
   return (
     <div className="asset-calendar-container">
