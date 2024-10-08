@@ -62,7 +62,7 @@
 }
 
 .event-content {
-  font-size: 0.7em;
+  font-size: 0.8em;
   padding: 4px;
   border-radius: 4px;
   background-color: #ffffff;
@@ -73,9 +73,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1px 3px;
+  padding: 2px 4px;
   border-radius: 3px;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .change-label {
@@ -156,20 +156,46 @@
 
 .withdrawals-container {
   background-color: rgba(255, 255, 0, 0.2);
-  padding: 2px;
-  margin: 2px 0;
-  font-size: 0.8em;
+  padding: 4px;
+  margin: 4px 0;
+  font-size: 0.9em;
+  border-radius: 4px;
 }
 
 .withdrawals-container h4 {
-  margin: 0 0 2px 0;
-  font-size: 0.9em;
+  margin: 0 0 4px 0;
+  font-size: 1em;
+  color: #333;
 }
 
 .withdrawal-info {
-  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 4px;
+  border-radius: 4px;
 }
 
-.withdrawal-info div:first-child {
+.withdrawal-details {
+  flex-grow: 1;
+}
+
+.withdrawal-bank {
   font-weight: bold;
+  color: #1976d2;
+}
+
+.withdrawal-amount {
+  color: #c62828;
+}
+
+.delete-button {
+  padding: 2px;
+  color: #c62828;
+}
+
+.delete-button:hover {
+  background-color: rgba(244, 67, 54, 0.1);
 }

@@ -26,6 +26,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 import "./AssetCalendar.css";
 
 interface DataPoint {
@@ -47,12 +59,14 @@ interface AssetCalendarProps {
   data: DataPoint[];
   withdrawals: WithdrawalEntry[];
   onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
+  onDeleteWithdrawal: (withdrawalId: string) => void;
 }
 
 export function AssetCalendar({
   data,
   withdrawals,
   onAddWithdrawal,
+  onDeleteWithdrawal,
 }: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -263,15 +277,44 @@ export function AssetCalendar({
         {withdrawals && withdrawals.length > 0 && (
           <div className="withdrawals-container">
             <h4>引き落とし:</h4>
-            {withdrawals.map((withdrawal, index) => (
-              <div key={index} className="withdrawal-info">
-                <div>
-                  {withdrawal.bank} {withdrawal.branch}
+            {withdrawals.map((withdrawal) => (
+              <div key={withdrawal._id} className="withdrawal-info">
+                <div className="withdrawal-details">
+                  <div className="withdrawal-bank">
+                    {withdrawal.bank} {withdrawal.branch}
+                  </div>
+                  <div className="withdrawal-amount">
+                    {withdrawal.description}:{" "}
+                    {withdrawal.amount.toLocaleString()}円
+                  </div>
                 </div>
-                <div>
-                  {withdrawal.description}: {withdrawal.amount.toLocaleString()}
-                  円
-                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="delete-button"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>引き落とし情報の削除</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        この引き落とし情報を削除してもよろしいですか？この操作は取り消せません。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDeleteWithdrawal(withdrawal._id!)}
+                      >
+                        削除
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ))}
           </div>

@@ -7,6 +7,7 @@ import { fetchDebtEntries } from "@/store/debtSlice";
 import {
   fetchWithdrawalEntries,
   addWithdrawalEntry,
+  deleteWithdrawalEntry,
   WithdrawalEntry,
 } from "@/store/withdrawalSlice";
 
@@ -66,6 +67,15 @@ export function AssetCalendarPage() {
     }
   };
 
+  const handleDeleteWithdrawal = async (withdrawalId: string) => {
+    try {
+      await dispatch(deleteWithdrawalEntry(withdrawalId)).unwrap();
+    } catch (error) {
+      console.error("Failed to delete withdrawal:", error);
+      // You might want to show an error message to the user here
+    }
+  };
+
   if (
     assetStatus === "loading" ||
     debtStatus === "loading" ||
@@ -80,6 +90,7 @@ export function AssetCalendarPage() {
         data={combinedData}
         withdrawals={withdrawals}
         onAddWithdrawal={handleAddWithdrawal}
+        onDeleteWithdrawal={handleDeleteWithdrawal}
       />
     </div>
   );
