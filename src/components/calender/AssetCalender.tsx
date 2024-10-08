@@ -1,8 +1,15 @@
-import { useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { EventContentArg } from "@fullcalendar/core";
-import { format, startOfMonth, startOfWeek, isSameWeek } from "date-fns";
+import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  isSameMonth,
+  startOfWeek,
+  isSameWeek,
+} from "date-fns";
 import { ja } from "date-fns/locale";
 import "./AssetCalendar.css";
 
@@ -17,6 +24,8 @@ interface AssetCalendarProps {
 }
 
 export function AssetCalendar({ data }: AssetCalendarProps) {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
     const accountData: Record<string, { date: Date; value: number }[]> = {};
@@ -189,9 +198,66 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     );
   };
 
+  const monthlySummary = useMemo(() => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+
+    const monthData = processedData.filter(
+      (point) => point.date >= monthStart && point.date <= monthEnd
+    );
+
+    const income = monthData
+      .filter((point) => point.value > 0)
+      .reduce((sum, point) => sum + point.value, 0);
+
+    const expenses = monthData
+      .filter((point) => point.value < 0)
+      .reduce((sum, point) => sum + Math.abs(point.value), 0);
+
+    const balance = income - expenses;
+
+    return { income, expenses, balance };
+  }, [processedData, currentMonth]);
+
+  const handleDatesSet = useCallback(
+    (arg: DatesSetArg) => {
+      if (!isSameMonth(currentMonth, arg.start)) {
+        setCurrentMonth(arg.start);
+      }
+    },
+    [currentMonth]
+  );
+
   return (
     <div className="asset-calendar-container">
       <h1 className="calendar-title">資産増減カレンダー</h1>
+      <div className="monthly-summary">
+        <h2>{format(currentMonth, "yyyy年M月", { locale: ja })}の収支</h2>
+        <div className="summary-content">
+          <div className="summary-item">
+            <span className="summary-label">当月収入:</span>
+            <span className="summary-value income">
+              {monthlySummary.income.toLocaleString()}円
+            </span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">当月支出:</span>
+            <span className="summary-value expenses">
+              {monthlySummary.expenses.toLocaleString()}円
+            </span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">当月収支:</span>
+            <span
+              className={`summary-value ${
+                monthlySummary.balance >= 0 ? "income" : "expenses"
+              }`}
+            >
+              {monthlySummary.balance.toLocaleString()}円
+            </span>
+          </div>
+        </div>
+      </div>
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
@@ -209,6 +275,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
         }}
         locale="ja"
         firstDay={1}
+        datesSet={handleDatesSet}
         dayCellContent={(args) => {
           return (
             <div className="custom-day-cell">

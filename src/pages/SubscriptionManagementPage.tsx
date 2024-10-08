@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { Button } from "@/components/ui/button";
@@ -23,6 +21,8 @@ import {
 import { Subscription } from "@/types/subscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Pencil, Trash } from "lucide-react";
+import { SubscriptionCharts } from "@/components/chart/SubscriptionCharts";
+import { MonthlySubscriptionChart } from "@/components/chart/MonthlySubscriptionChart";
 
 export default function SubscriptionManagementPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -203,6 +203,12 @@ export default function SubscriptionManagementPage() {
           </TableBody>
         </Table>
       </div>
+
+      <div className="mt-8">
+        <SubscriptionCharts subscriptions={subscriptions} />
+      </div>
+
+      <MonthlySubscriptionChart subscriptions={subscriptions} />
     </div>
   );
 }

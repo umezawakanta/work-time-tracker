@@ -16,6 +16,51 @@
   font-weight: 300;
 }
 
+.monthly-summary {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.monthly-summary h2 {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+  color: #333;
+  font-weight: 300;
+}
+
+.summary-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summary-item {
+  flex: 1;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.summary-value {
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+.summary-value.income {
+  color: #2e7d32;
+}
+
+.summary-value.expenses {
+  color: #c62828;
+}
+
 .event-content {
   font-size: 0.7em;
   padding: 4px;
