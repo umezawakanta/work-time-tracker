@@ -60,6 +60,7 @@ interface AssetCalendarProps {
   withdrawals: WithdrawalEntry[];
   onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
   onDeleteWithdrawal: (withdrawalId: string) => void;
+  onMonthChange: (newMonth: Date) => void;
 }
 
 export function AssetCalendar({
@@ -67,6 +68,7 @@ export function AssetCalendar({
   withdrawals,
   onAddWithdrawal,
   onDeleteWithdrawal,
+  onMonthChange,
 }: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -362,9 +364,13 @@ export function AssetCalendar({
     [calculateMonthlySummary, currentMonth]
   );
 
-  const handleDatesSet = useCallback((arg: DatesSetArg) => {
-    setCurrentMonth(arg.view.currentStart);
-  }, []);
+  const handleDatesSet = useCallback(
+    (arg: DatesSetArg) => {
+      setCurrentMonth(arg.view.currentStart);
+      onMonthChange(arg.view.currentStart);
+    },
+    [onMonthChange]
+  );
 
   const handleDateClick = (arg: { date: Date }) => {
     setSelectedDate(arg.date);
