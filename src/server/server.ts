@@ -27,12 +27,14 @@ app.use("/api/asset", assetRoutes);
 app.use("/api/debt", debtRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/candidates", candidateRoutes);
-app.use("/api/subscription", subscriptionRoutes); // Changed from "/api/subscriptions" to "/api/subscription"
+app.use("/api/subscription", subscriptionRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Something broke!" });
+  if (!res.headersSent) {
+    res.status(500).json({ message: "Something broke!" });
+  }
   next(err);
 });
 
