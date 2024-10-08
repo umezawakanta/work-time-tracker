@@ -9,6 +9,7 @@ import debtRoutes from "./routes/debtRoutes.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import withdrawalRoutes from "./routes/withdrawalRoutes.js";
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api/debt", debtRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/withdrawal", withdrawalRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
