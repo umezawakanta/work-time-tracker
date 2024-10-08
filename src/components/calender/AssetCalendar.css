@@ -144,3 +144,32 @@
 .fc-day-other {
   background-color: #f5f5f5;
 }
+
+.fc-daygrid-day-frame {
+  min-height: 120px;
+  overflow-y: auto;
+}
+
+.fc-daygrid-day-events {
+  min-height: 80px;
+}
+
+.withdrawals-container {
+  background-color: rgba(255, 255, 0, 0.2);
+  padding: 2px;
+  margin: 2px 0;
+  font-size: 0.8em;
+}
+
+.withdrawals-container h4 {
+  margin: 0 0 2px 0;
+  font-size: 0.9em;
+}
+
+.withdrawal-info {
+  margin-bottom: 2px;
+}
+
+.withdrawal-info div:first-child {
+  font-weight: bold;
+}

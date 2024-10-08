@@ -11,6 +11,8 @@ import {
   startOfWeek,
   isSameWeek,
   parseISO,
+  isSameDay,
+  addDays,
 } from "date-fns";
 import { ja } from "date-fns/locale";
 import {
@@ -65,6 +67,10 @@ export function AssetCalendar({
   });
 
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
+
+  useEffect(() => {
+    console.log("Withdrawals prop:", withdrawals);
+  }, [withdrawals]);
 
   useEffect(() => {
     if (calendarApi) {
@@ -174,7 +180,12 @@ export function AssetCalendar({
       const weeklyChange =
         (aggregatedData[date]?.["合計"] ?? 0) - weekStartTotal;
 
-      const dateWithdrawals = withdrawals.filter((w) => w.date === date);
+      const dateWithdrawals = withdrawals.filter((w) => {
+        const withdrawalDate = addDays(parseISO(w.date), 1);
+        return isSameDay(withdrawalDate, currentDate);
+      });
+
+      console.log(`Withdrawals for ${date}:`, dateWithdrawals);
 
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`,
@@ -208,6 +219,8 @@ export function AssetCalendar({
     const isWeeklyPositive = weeklyChange >= 0;
     const isCumulativePositive = cumulativeChange >= 0;
     const isTotalPositive = totalChange >= 0;
+
+    console.log("Rendering withdrawals:", withdrawals);
 
     return (
       <div className="event-content">
@@ -249,16 +262,16 @@ export function AssetCalendar({
         </div>
         {withdrawals && withdrawals.length > 0 && (
           <div className="withdrawals-container">
-            <h4>引き落とし情報:</h4>
+            <h4>引き落とし:</h4>
             {withdrawals.map((withdrawal, index) => (
               <div key={index} className="withdrawal-info">
-                <span>
+                <div>
                   {withdrawal.bank} {withdrawal.branch}
-                </span>
-                <span>
+                </div>
+                <div>
                   {withdrawal.description}: {withdrawal.amount.toLocaleString()}
                   円
-                </span>
+                </div>
               </div>
             ))}
           </div>
@@ -328,10 +341,12 @@ export function AssetCalendar({
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
-      onAddWithdrawal({
+      const newWithdrawalEntry = {
         ...newWithdrawal,
         date: selectedDate.toISOString().split("T")[0],
-      });
+      };
+      console.log("Adding new withdrawal:", newWithdrawalEntry);
+      onAddWithdrawal(newWithdrawalEntry);
       handleDialogClose();
     }
   };
