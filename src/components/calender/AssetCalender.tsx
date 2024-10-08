@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
 import {
   format,
@@ -11,6 +12,10 @@ import {
   parseISO,
 } from "date-fns";
 import { ja } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import "./AssetCalendar.css";
 
 interface DataPoint {
@@ -19,12 +24,29 @@ interface DataPoint {
   account: string;
 }
 
-interface AssetCalendarProps {
-  data: DataPoint[];
+interface WithdrawalEntry {
+  _id?: string;
+  date: string;
+  bank: string;
+  branch: string;
+  amount: number;
+  description: string;
 }
 
-export function AssetCalendar({ data }: AssetCalendarProps) {
+interface AssetCalendarProps {
+  data: DataPoint[];
+  withdrawals: WithdrawalEntry[];
+  onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
+}
+
+export function AssetCalendar({
+  data,
+  withdrawals,
+  onAddWithdrawal,
+}: AssetCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -128,6 +150,8 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
       const weeklyChange =
         (aggregatedData[date]?.["合計"] ?? 0) - weekStartTotal;
 
+      const dateWithdrawals = withdrawals.filter((w) => w.date === date);
+
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`,
         date,
@@ -136,19 +160,26 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           weeklyChange,
           cumulativeChange,
           totalChange,
+          withdrawals: dateWithdrawals,
         },
       };
     });
-  }, [aggregatedData, currentMonth]);
+  }, [aggregatedData, currentMonth, withdrawals]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const { dailyChange, weeklyChange, cumulativeChange, totalChange } =
-      eventInfo.event.extendedProps as {
-        dailyChange: number;
-        weeklyChange: number;
-        cumulativeChange: number;
-        totalChange: number;
-      };
+    const {
+      dailyChange,
+      weeklyChange,
+      cumulativeChange,
+      totalChange,
+      withdrawals,
+    } = eventInfo.event.extendedProps as {
+      dailyChange: number;
+      weeklyChange: number;
+      cumulativeChange: number;
+      totalChange: number;
+      withdrawals: WithdrawalEntry[];
+    };
     const isDailyPositive = dailyChange >= 0;
     const isWeeklyPositive = weeklyChange >= 0;
     const isCumulativePositive = cumulativeChange >= 0;
@@ -192,6 +223,16 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           <span className="change-label">全期間:</span>
           <span className="change-value">{totalChange.toLocaleString()}円</span>
         </div>
+        {withdrawals.map((withdrawal, index) => (
+          <div key={index} className="withdrawal-info">
+            <span>
+              {withdrawal.bank} {withdrawal.branch}
+            </span>
+            <span>
+              {withdrawal.description}: {withdrawal.amount.toLocaleString()}円
+            </span>
+          </div>
+        ))}
       </div>
     );
   };
@@ -239,6 +280,28 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
     setCurrentMonth(arg.view.currentStart);
   }, []);
 
+  const handleDateClick = (arg: { date: Date }) => {
+    setSelectedDate(arg.date);
+    setShowWithdrawalForm(true);
+  };
+
+  const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const newWithdrawal: Omit<WithdrawalEntry, "_id"> = {
+      date: selectedDate!.toISOString().split("T")[0],
+      bank: formData.get("bank") as string,
+      branch: formData.get("branch") as string,
+      amount: Number(formData.get("amount")),
+      description: formData.get("description") as string,
+    };
+
+    onAddWithdrawal(newWithdrawal);
+    setShowWithdrawalForm(false);
+  };
+
   return (
     <div className="asset-calendar-container">
       <h1 className="calendar-title">資産増減カレンダー</h1>
@@ -270,7 +333,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
         </div>
       </div>
       <FullCalendar
-        plugins={[dayGridPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         events={events}
         eventContent={renderEventContent}
@@ -287,6 +350,7 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
         locale="ja"
         firstDay={1}
         datesSet={handleDatesSet}
+        dateClick={handleDateClick}
         dayCellContent={(args) => {
           return (
             <div className="custom-day-cell">
@@ -295,6 +359,43 @@ export function AssetCalendar({ data }: AssetCalendarProps) {
           );
         }}
       />
+      {showWithdrawalForm && (
+        <Card className="withdrawal-form">
+          <CardHeader>
+            <CardTitle>口座引き落とし情報登録</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleWithdrawalSubmit}>
+              <div className="form-group">
+                <Label htmlFor="bank">銀行名</Label>
+                <Input id="bank" name="bank" required />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="branch">支店名</Label>
+                <Input id="branch" name="branch" required />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="amount">金額</Label>
+                <Input id="amount" name="amount" type="number" required />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="description">説明</Label>
+                <Input id="description" name="description" required />
+              </div>
+              <div className="form-actions">
+                <Button type="submit">登録</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowWithdrawalForm(false)}
+                >
+                  キャンセル
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
