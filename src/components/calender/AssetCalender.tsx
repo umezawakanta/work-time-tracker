@@ -9,9 +9,9 @@ import {
   startOfMonth,
   endOfMonth,
   startOfWeek,
-  isSameWeek,
-  parseISO,
   isSameDay,
+  parseISO,
+  subDays,
   addDays,
 } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -142,24 +142,21 @@ export function AssetCalendar({
   }, [data]);
 
   const aggregatedData = useMemo(() => {
-    const aggregated = processedData.reduce((acc, curr) => {
-      const dateStr = curr.date.toISOString().split("T")[0];
-      if (!acc[dateStr]) {
-        acc[dateStr] = {};
+    const result: Record<string, Record<string, number>> = {};
+    processedData.forEach((item) => {
+      const dateStr = item.date.toISOString().split('T')[0];
+      if (!result[dateStr]) {
+        result[dateStr] = {};
       }
-      acc[dateStr][curr.account] = curr.value;
-      return acc;
-    }, {} as Record<string, Record<string, number>>);
-
-    Object.keys(aggregated).forEach((dateStr) => {
-      const total = Object.values(aggregated[dateStr]).reduce(
-        (sum, value) => sum + value,
-        0
-      );
-      aggregated[dateStr]["合計"] = total;
+      result[dateStr][item.account] = item.value;
     });
 
-    return aggregated;
+    // 各日付の合計を計算
+    Object.keys(result).forEach((dateStr) => {
+      result[dateStr]['合計'] = Object.values(result[dateStr]).reduce((sum, value) => sum + value, 0);
+    });
+
+    return result;
   }, [processedData]);
 
   const events = useMemo(() => {
@@ -167,57 +164,33 @@ export function AssetCalendar({
     if (sortedDates.length === 0) return [];
 
     const firstDataDate = sortedDates[0];
-    const firstDataTotal = aggregatedData[firstDataDate]["合計"];
-
-    const currentMonthStart = startOfMonth(currentMonth);
-    const monthStartDateStr = currentMonthStart.toISOString().split("T")[0];
-    const monthStartTotal =
-      aggregatedData[monthStartDateStr]?.["合計"] ??
-      (sortedDates.find((date) => date >= monthStartDateStr)
-        ? aggregatedData[
-        sortedDates.find((date) => date >= monthStartDateStr)!
-        ]["合計"]
-        : 0);
-
-    let weekStartTotal = 0;
-    let lastWeekStart = new Date(0);
+    const firstDataTotal = aggregatedData[firstDataDate]['合計'];
 
     return sortedDates.map((date) => {
       const currentDate = new Date(date);
-      const dailyChange =
-        (aggregatedData[date]?.["合計"] ?? 0) -
-        (aggregatedData[sortedDates[sortedDates.indexOf(date) - 1]]?.["合計"] ??
-          0);
-      const cumulativeChange =
-        date >= monthStartDateStr
-          ? (aggregatedData[date]?.["合計"] ?? 0) - monthStartTotal
-          : 0;
-      const totalChange =
-        (aggregatedData[date]?.["合計"] ?? 0) - firstDataTotal;
+      const prevDate = subDays(currentDate, 1);
+      const prevDateStr = prevDate.toISOString().split('T')[0];
+
+      const dailyChange = aggregatedData[date]['合計'] - (aggregatedData[prevDateStr]?.['合計'] || aggregatedData[date]['合計']);
 
       const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-      if (!isSameWeek(currentDate, lastWeekStart, { weekStartsOn: 1 })) {
-        weekStartTotal =
-          aggregatedData[sortedDates.find((d) => new Date(d) >= weekStart)!]?.[
-          "合計"
-          ] ?? 0;
-        lastWeekStart = weekStart;
-      }
-      const weeklyChange =
-        (aggregatedData[date]?.["合計"] ?? 0) - weekStartTotal;
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+      const weekStartTotal = aggregatedData[weekStartStr]?.['合計'] || aggregatedData[date]['合計'];
+      const weeklyChange = aggregatedData[date]['合計'] - weekStartTotal;
 
+      const monthStart = startOfMonth(currentDate);
+      const monthStartStr = monthStart.toISOString().split('T')[0];
+      const monthStartTotal = aggregatedData[monthStartStr]?.['合計'] || aggregatedData[date]['合計'];
+      const cumulativeChange = aggregatedData[date]['合計'] - monthStartTotal;
+
+      const totalChange = aggregatedData[date]['合計'] - firstDataTotal;
+
+      // 修正: 日付の比較を調整
       const dateWithdrawals = withdrawals.filter((w) => {
         const withdrawalDate = addDays(parseISO(w.date), 1);
         return isSameDay(withdrawalDate, currentDate);
       });
-
-      const dateSubscriptions = subscriptions.filter((s) => {
-        const subscriptionDate = parseISO(s.billingDate);
-        return isSameDay(subscriptionDate, currentDate);
-      });
-
-      console.log(`Withdrawals for ${date}:`, dateWithdrawals);
-      console.log(`Subscriptions for ${date}:`, dateSubscriptions);
+      const dateSubscriptions = subscriptions.filter((s) => isSameDay(parseISO(s.billingDate), currentDate));
 
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`,
@@ -232,7 +205,7 @@ export function AssetCalendar({
         },
       };
     });
-  }, [aggregatedData, currentMonth, withdrawals, subscriptions]);
+  }, [aggregatedData, withdrawals, subscriptions]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     const {
@@ -563,6 +536,6 @@ export function AssetCalendar({
           </form>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>  
+    );
 }
