@@ -43,7 +43,10 @@ export default function DailyTodoReminder() {
       dispatch(
         updateTodoItem({
           _id,
-          updates: { completed: !todoToUpdate.completed, task: todoToUpdate.task },
+          updates: {
+            completed: !todoToUpdate.completed,
+            task: todoToUpdate.task,
+          },
         })
       )
         .unwrap()
