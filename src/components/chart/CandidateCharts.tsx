@@ -30,84 +30,50 @@ ChartJS.register(
   ChartDataLabels
 );
 
-// 政党ごとの色を定義
 const partyColors: { [key: string]: string } = {
-  自民党: "#ff0000", // 赤
-  立憲民主党: "#0000ff", // 青
-  日本維新の会: "#00ff00", // 緑
-  公明党: "#ffff00", // 黄
-  共産党: "#ff00ff", // マゼンタ
-  国民民主党: "#00ffff", // シアン
-  社民党: "#ff8000", // オレンジ
-  参政党: "#8000ff", // 紫
-  無所属: "#808080", // グレー
+  自民党: "#ff0000",
+  立憲民主党: "#0000ff",
+  日本維新の会: "#00ff00",
+  公明党: "#ffff00",
+  共産党: "#ff00ff",
+  国民民主党: "#00ffff",
+  社民党: "#ff8000",
+  参政党: "#8000ff",
+  無所属: "#808080",
 };
 
 const parties = Object.keys(partyColors);
 
 const prefectures = [
-  "北海道",
-  "青森県",
-  "岩手県",
-  "宮城県",
-  "秋田県",
-  "山形県",
-  "福島県",
-  "茨城県",
-  "栃木県",
-  "群馬県",
-  "埼玉県",
-  "千葉県",
-  "東京都",
-  "神奈川県",
-  "新潟県",
-  "富山県",
-  "石川県",
-  "福井県",
-  "山梨県",
-  "長野県",
-  "岐阜県",
-  "静岡県",
-  "愛知県",
-  "三重県",
-  "滋賀県",
-  "京都府",
-  "大阪府",
-  "兵庫県",
-  "奈良県",
-  "和歌山県",
-  "鳥取県",
-  "島根県",
-  "岡山県",
-  "広島県",
-  "山口県",
-  "徳島県",
-  "香川県",
-  "愛媛県",
-  "高知県",
-  "福岡県",
-  "佐賀県",
-  "長崎県",
-  "熊本県",
-  "大分県",
-  "宮崎県",
-  "鹿児島県",
-  "沖縄県",
+  "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
+  "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
+  "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
+  "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
+  "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
+  "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
+  "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県",
 ];
 
 const proportionalBlocks = [
-  "北海道",
-  "東北",
-  "北関東",
-  "南関東",
-  "東京",
-  "北陸信越",
-  "東海",
-  "近畿",
-  "中国",
-  "四国",
-  "九州",
-];
+  "北海道", "東北", "北関東", "南関東", "東京", "北陸信越",
+  "東海", "近畿", "中国", "四国", "九州",
+] as const;
+
+type ProportionalBlock = typeof proportionalBlocks[number];
+
+const proportionalBlockInfo: Record<ProportionalBlock, { seats: number }> = {
+  "北海道": { seats: 8 },
+  "東北": { seats: 12 },
+  "北関東": { seats: 19 },
+  "南関東": { seats: 22 },
+  "東京": { seats: 17 },
+  "北陸信越": { seats: 11 },
+  "東海": { seats: 21 },
+  "近畿": { seats: 28 },
+  "中国": { seats: 11 },
+  "四国": { seats: 6 },
+  "九州": { seats: 21 },
+};
 
 const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
   candidates,
@@ -153,13 +119,20 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         ],
       } as ChartData<"bar">,
       proportionalData: {
-        labels: proportionalBlocks,
+        labels: [...proportionalBlocks],
         datasets: [
           {
             label: "比例代表候補者数",
             data: proportionalCounts,
             backgroundColor: "rgba(255, 159, 64, 0.6)",
             borderColor: "rgba(255, 159, 64, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "議席数",
+            data: proportionalBlocks.map((block) => proportionalBlockInfo[block].seats),
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1,
           },
         ],
@@ -232,6 +205,29 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           size: 18,
         },
       },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.dataset.label || "";
+            const value = context.parsed.y;
+            if (label === "比例代表候補者数") {
+              return `${label}: ${value}`;
+            } else if (label === "定数") {
+              return `${label}: ${value}`;
+            }
+            return "";
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        stacked: false,
+      },
+      y: {
+        stacked: false,
+        beginAtZero: true,
+      },
     },
   };
 
@@ -269,19 +265,16 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         const endAngle = startAngle + sliceAngle;
         const middleAngle = startAngle + sliceAngle / 2;
 
-        // Calculate label position
         let labelRadius = radius * 1.2;
         let x = centerX + Math.cos(middleAngle) * labelRadius;
         let y = centerY + Math.sin(middleAngle) * labelRadius;
 
-        // Adjust label position if it's outside the chart area
         const padding = 20;
         if (x < padding) x = padding;
         if (x > width - padding) x = width - padding;
         if (y < padding) y = padding;
         if (y > height - padding) y = height - padding;
 
-        // Simple collision detection
         const labelWidth = ctx.measureText(
           chart.data.labels?.[i] as string
         ).width;
@@ -301,7 +294,6 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             x = centerX + Math.cos(middleAngle) * labelRadius;
             y = centerY + Math.sin(middleAngle) * labelRadius;
 
-            // Re-adjust if outside chart area
             if (x < padding) x = padding;
             if (x > width - padding) x = width - padding;
             if (y < padding) y = padding;
@@ -317,7 +309,6 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           height: labelHeight,
         });
 
-        // Draw the connecting line
         const innerX = centerX + Math.cos(middleAngle) * radius;
         const innerY = centerY + Math.sin(middleAngle) * radius;
         ctx.beginPath();
@@ -327,7 +318,6 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Draw the label
         const label = chart.data.labels?.[i] as string;
         const percentage = ((value / total) * 100).toFixed(1);
         ctx.fillStyle = "#000";
