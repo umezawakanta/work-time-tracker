@@ -55,9 +55,18 @@ interface WithdrawalEntry {
   description: string;
 }
 
+interface Subscription {
+  _id: string;
+  name: string;
+  billingDate: string;
+  type: string;
+  amount: number;
+}
+
 interface AssetCalendarProps {
   data: DataPoint[];
   withdrawals: WithdrawalEntry[];
+  subscriptions: Subscription[];
   onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
   onDeleteWithdrawal: (withdrawalId: string) => void;
   onMonthChange: (newMonth: Date) => void;
@@ -66,6 +75,7 @@ interface AssetCalendarProps {
 export function AssetCalendar({
   data,
   withdrawals,
+  subscriptions,
   onAddWithdrawal,
   onDeleteWithdrawal,
   onMonthChange,
@@ -165,8 +175,8 @@ export function AssetCalendar({
       aggregatedData[monthStartDateStr]?.["合計"] ??
       (sortedDates.find((date) => date >= monthStartDateStr)
         ? aggregatedData[
-            sortedDates.find((date) => date >= monthStartDateStr)!
-          ]["合計"]
+        sortedDates.find((date) => date >= monthStartDateStr)!
+        ]["合計"]
         : 0);
 
     let weekStartTotal = 0;
@@ -189,7 +199,7 @@ export function AssetCalendar({
       if (!isSameWeek(currentDate, lastWeekStart, { weekStartsOn: 1 })) {
         weekStartTotal =
           aggregatedData[sortedDates.find((d) => new Date(d) >= weekStart)!]?.[
-            "合計"
+          "合計"
           ] ?? 0;
         lastWeekStart = weekStart;
       }
@@ -201,7 +211,13 @@ export function AssetCalendar({
         return isSameDay(withdrawalDate, currentDate);
       });
 
+      const dateSubscriptions = subscriptions.filter((s) => {
+        const subscriptionDate = parseISO(s.billingDate);
+        return isSameDay(subscriptionDate, currentDate);
+      });
+
       console.log(`Withdrawals for ${date}:`, dateWithdrawals);
+      console.log(`Subscriptions for ${date}:`, dateSubscriptions);
 
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`,
@@ -212,10 +228,11 @@ export function AssetCalendar({
           cumulativeChange,
           totalChange,
           withdrawals: dateWithdrawals,
+          subscriptions: dateSubscriptions,
         },
       };
     });
-  }, [aggregatedData, currentMonth, withdrawals]);
+  }, [aggregatedData, currentMonth, withdrawals, subscriptions]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     const {
@@ -224,12 +241,14 @@ export function AssetCalendar({
       cumulativeChange,
       totalChange,
       withdrawals,
+      subscriptions,
     } = eventInfo.event.extendedProps as {
       dailyChange: number;
       weeklyChange: number;
       cumulativeChange: number;
       totalChange: number;
       withdrawals: WithdrawalEntry[];
+      subscriptions: Subscription[];
     };
     const isDailyPositive = dailyChange >= 0;
     const isWeeklyPositive = weeklyChange >= 0;
@@ -241,17 +260,15 @@ export function AssetCalendar({
     return (
       <div className="event-content">
         <div
-          className={`change-item daily-change ${
-            isDailyPositive ? "positive" : "negative"
-          }`}
+          className={`change-item daily-change ${isDailyPositive ? "positive" : "negative"
+            }`}
         >
           <span className="change-label">日次:</span>
           <span className="change-value">{dailyChange.toLocaleString()}円</span>
         </div>
         <div
-          className={`change-item weekly-change ${
-            isWeeklyPositive ? "positive" : "negative"
-          }`}
+          className={`change-item weekly-change ${isWeeklyPositive ? "positive" : "negative"
+            }`}
         >
           <span className="change-label">週次:</span>
           <span className="change-value">
@@ -259,9 +276,8 @@ export function AssetCalendar({
           </span>
         </div>
         <div
-          className={`change-item cumulative-change ${
-            isCumulativePositive ? "positive" : "negative"
-          }`}
+          className={`change-item cumulative-change ${isCumulativePositive ? "positive" : "negative"
+            }`}
         >
           <span className="change-label">月次:</span>
           <span className="change-value">
@@ -269,9 +285,8 @@ export function AssetCalendar({
           </span>
         </div>
         <div
-          className={`change-item total-change ${
-            isTotalPositive ? "positive" : "negative"
-          }`}
+          className={`change-item total-change ${isTotalPositive ? "positive" : "negative"
+            }`}
         >
           <span className="change-label">全期間:</span>
           <span className="change-value">{totalChange.toLocaleString()}円</span>
@@ -317,6 +332,19 @@ export function AssetCalendar({
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+              </div>
+            ))}
+          </div>
+        )}
+        {subscriptions && subscriptions.length > 0 && (
+          <div className="subscriptions-container">
+            <h4>サブスクリプション:</h4>
+            {subscriptions.map((subscription) => (
+              <div key={subscription._id} className="subscription-info">
+                <div className="subscription-name">{subscription.name}</div>
+                <div className="subscription-amount">
+                  {subscription.amount.toLocaleString()}円
+                </div>
               </div>
             ))}
           </div>
@@ -429,9 +457,8 @@ export function AssetCalendar({
           <div className="summary-item">
             <span className="summary-label">当月収支:</span>
             <span
-              className={`summary-value ${
-                monthlySummary.balance >= 0 ? "income" : "expenses"
-              }`}
+              className={`summary-value ${monthlySummary.balance >= 0 ? "income" : "expenses"
+                }`}
             >
               {monthlySummary.balance.toLocaleString()}円
             </span>

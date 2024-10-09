@@ -199,3 +199,36 @@
 .delete-button:hover {
   background-color: rgba(244, 67, 54, 0.1);
 }
+
+.subscriptions-container {
+  background-color: rgba(255, 255, 0, 0.1);
+  padding: 4px;
+  margin: 4px 0;
+  font-size: 0.9em;
+  border-radius: 4px;
+}
+
+.subscriptions-container h4 {
+  margin: 0 0 4px 0;
+  font-size: 1em;
+  color: #333;
+}
+
+.subscription-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.subscription-name {
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.subscription-amount {
+  color: #c62828;
+}

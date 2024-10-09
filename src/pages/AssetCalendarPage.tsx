@@ -11,6 +11,7 @@ import {
   deleteWithdrawalEntry,
   WithdrawalEntry,
 } from "@/store/withdrawalSlice";
+import { fetchSubscriptions } from "@/store/subscriptionSlice";
 
 interface DataPoint {
   date: Date;
@@ -26,10 +27,16 @@ export function AssetCalendarPage() {
   const withdrawalEntries = useSelector(
     (state: RootState) => state.withdrawal.entries
   );
+  const subscriptions = useSelector(
+    (state: RootState) => state.subscription.subscriptions
+  );
   const assetStatus = useSelector((state: RootState) => state.asset.status);
   const debtStatus = useSelector((state: RootState) => state.debt.status);
   const withdrawalStatus = useSelector(
     (state: RootState) => state.withdrawal.status
+  );
+  const subscriptionStatus = useSelector(
+    (state: RootState) => state.subscription.status
   );
 
   useEffect(() => {
@@ -42,7 +49,10 @@ export function AssetCalendarPage() {
     if (withdrawalStatus === "idle") {
       dispatch(fetchWithdrawalEntries());
     }
-  }, [dispatch, assetStatus, debtStatus, withdrawalStatus]);
+    if (subscriptionStatus === "idle") {
+      dispatch(fetchSubscriptions());
+    }
+  }, [dispatch, assetStatus, debtStatus, withdrawalStatus, subscriptionStatus]);
 
   const combinedData: DataPoint[] = [
     ...assetEntries.map((entry) => ({ ...entry, date: new Date(entry.date) })),
@@ -55,7 +65,7 @@ export function AssetCalendarPage() {
 
   const withdrawals: WithdrawalEntry[] = withdrawalEntries.map((entry) => ({
     ...entry,
-    date: entry.date, // Keep the date as a string
+    date: entry.date,
   }));
 
   const handleAddWithdrawal = async (
@@ -65,7 +75,6 @@ export function AssetCalendarPage() {
       await dispatch(addWithdrawalEntry(newWithdrawal)).unwrap();
     } catch (error) {
       console.error("Failed to add withdrawal:", error);
-      // You might want to show an error message to the user here
     }
   };
 
@@ -74,7 +83,6 @@ export function AssetCalendarPage() {
       await dispatch(deleteWithdrawalEntry(withdrawalId)).unwrap();
     } catch (error) {
       console.error("Failed to delete withdrawal:", error);
-      // You might want to show an error message to the user here
     }
   };
 
@@ -85,7 +93,8 @@ export function AssetCalendarPage() {
   if (
     assetStatus === "loading" ||
     debtStatus === "loading" ||
-    withdrawalStatus === "loading"
+    withdrawalStatus === "loading" ||
+    subscriptionStatus === "loading"
   ) {
     return <div>Loading...</div>;
   }
@@ -100,6 +109,7 @@ export function AssetCalendarPage() {
       <AssetCalendar
         data={combinedData}
         withdrawals={withdrawals}
+        subscriptions={subscriptions}
         onAddWithdrawal={handleAddWithdrawal}
         onDeleteWithdrawal={handleDeleteWithdrawal}
         onMonthChange={handleMonthChange}
