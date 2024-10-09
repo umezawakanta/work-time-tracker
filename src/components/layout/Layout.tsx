@@ -11,6 +11,7 @@ import {
   Vote,
   LogIn,
   LogOut,
+  BookOpen,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -68,6 +69,12 @@ export default function Layout({ children }: LayoutProps) {
       label: "選挙候補者",
       path: "/election-candidates",
       authRequired: false,
+    },
+    {
+      icon: <BookOpen size={18} />,
+      label: "ネット本棚",
+      path: "/bookshelf",
+      authRequired: true,
     },
   ];
 
