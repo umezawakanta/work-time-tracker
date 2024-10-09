@@ -10,6 +10,7 @@ import todoRoutes from "./routes/todoRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import withdrawalRoutes from "./routes/withdrawalRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(morgan("combined"));
 connectDB();
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/worktime", workTimeRoutes);
 app.use("/api/asset", assetRoutes);
 app.use("/api/debt", debtRoutes);

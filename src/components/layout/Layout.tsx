@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/hooks/useLocale";
 import { Locale } from "@/context/LocaleContext";
@@ -10,7 +10,11 @@ import {
   Calendar,
   Vote,
   LogIn,
+  LogOut,
 } from "lucide-react";
+import { logout } from "@/services/api/authApi";
+import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,40 +22,53 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { locale, setLocale } = useLocale();
+  const navigate = useNavigate();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   const handleLocaleChange = (value: string) => {
     setLocale(value as Locale);
   };
 
+  const handleLogout = () => {
+    logout();
+    setIsAuthenticated(false);
+    toast.success("ログアウトしました");
+    navigate("/login");
+  };
+
   const menuItems = [
-    { icon: <Home size={18} />, label: "ホーム", path: "/" },
-    { icon: <Clock size={18} />, label: "作業時間入力", path: "/work-time" },
+    { icon: <Home size={18} />, label: "ホーム", path: "/", authRequired: true },
+    { icon: <Clock size={18} />, label: "作業時間入力", path: "/work-time", authRequired: true },
     {
       icon: <BarChart2 size={18} />,
       label: "作業時間レポート",
       path: "/work-time-reports",
+      authRequired: true,
     },
     {
       icon: <BarChart2 size={18} />,
       label: "資産/負債レポート",
       path: "/asset-liability-report",
+      authRequired: true,
     },
     {
       icon: <CreditCard size={18} />,
       label: "サブスクリプション管理",
       path: "/subscription-management",
+      authRequired: true,
     },
     {
       icon: <Calendar size={18} />,
       label: "資産カレンダー",
       path: "/asset-calendar",
+      authRequired: true,
     },
     {
       icon: <Vote size={18} />,
       label: "選挙候補者",
       path: "/election-candidates",
+      authRequired: false,
     },
-    { icon: <LogIn size={18} />, label: "ログイン", path: "/login" },
   ];
 
   return (
@@ -68,17 +85,19 @@ export default function Layout({ children }: LayoutProps) {
           </div>
           <nav className="flex-grow flex justify-end items-center space-x-1">
             {menuItems.map((item) => (
-              <Button
-                key={item.path}
-                variant="ghost"
-                asChild
-                className="flex items-center px-3 py-2"
-              >
-                <Link to={item.path}>
-                  {item.icon}
-                  <span className="ml-2">{item.label}</span>
-                </Link>
-              </Button>
+              (isAuthenticated || !item.authRequired) && (
+                <Button
+                  key={item.path}
+                  variant="ghost"
+                  asChild
+                  className="flex items-center px-3 py-2"
+                >
+                  <Link to={item.path}>
+                    {item.icon}
+                    <span className="ml-2">{item.label}</span>
+                  </Link>
+                </Button>
+              )
             ))}
             <Button
               variant="ghost"
@@ -88,6 +107,25 @@ export default function Layout({ children }: LayoutProps) {
             >
               {locale === "ja-JP" ? "日本語" : "English"}
             </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="flex items-center px-3 py-2"
+              >
+                <LogOut size={18} />
+                <span className="ml-2">ログアウト</span>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/login")}
+                className="flex items-center px-3 py-2"
+              >
+                <LogIn size={18} />
+                <span className="ml-2">ログイン</span>
+              </Button>
+            )}
           </nav>
         </div>
       </header>

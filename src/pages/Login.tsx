@@ -10,18 +10,35 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { login } from "@/services/api/authApi";
+import { toast } from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual login logic here
-    console.log("Login attempt with:", { email, password });
-    // For now, just navigate to the home page
-    navigate("/");
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      setIsAuthenticated(true);
+      toast.success("ログインに成功しました");
+      navigate("/");
+    } catch (error: any) {
+      console.error("ログインエラー:", error);
+      if (error.response && error.response.status === 401) {
+        toast.error("メールアドレスまたはパスワードが正しくありません");
+      } else {
+        toast.error("ログインに失敗しました。しばらくしてからもう一度お試しください");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,6 +59,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -52,12 +70,13 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              ログイン
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "ログイン中..." : "ログイン"}
             </Button>
           </CardFooter>
         </form>

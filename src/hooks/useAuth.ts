@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react';
+import { checkAuth } from '@/services/api/authApi';
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
+    const verifyAuth = async () => {
       try {
-        // Replace this with your actual authentication check
-        const response = await fetch('/api/check-auth');
-        const data = await response.json();
-        setIsAuthenticated(data.isAuthenticated);
+        const authStatus = await checkAuth();
+        setIsAuthenticated(authStatus);
       } catch (error) {
         console.error('Error checking authentication:', error);
         setIsAuthenticated(false);
@@ -20,7 +18,7 @@ export function useAuth() {
       }
     };
 
-    checkAuth();
+    verifyAuth();
   }, []);
 
   return { isAuthenticated, isLoading };

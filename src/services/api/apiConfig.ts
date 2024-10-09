@@ -1,4 +1,3 @@
-// src/api/apiConfig.ts
 import axios from "axios";
 
 export const USE_MOCK_DATA = false;
@@ -7,9 +6,13 @@ export const api = axios.create({
   baseURL: "http://localhost:3001/api",
 });
 
-// リクエストインターセプター
+// Add a request interceptor
 api.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
     console.log("Request:", config.method?.toUpperCase(), config.url);
     console.log("Request data:", config.data);
     return config;
@@ -20,7 +23,7 @@ api.interceptors.request.use(
   }
 );
 
-// レスポンスインターセプター
+// Add a response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log("Response:", response.status, response.statusText);
