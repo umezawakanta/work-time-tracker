@@ -41,6 +41,9 @@ export default function App() {
           <Layout>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
+              <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
+              <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
               <Route element={<PrivateRoute />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/work-time" element={<WorkTimeEntryForm />} />
@@ -54,18 +57,6 @@ export default function App() {
                   element={<SubscriptionManagementPage />}
                 />
                 <Route path="/asset-calendar" element={<AssetCalendarPage />} />
-                <Route
-                  path="/election-candidates"
-                  element={<ElectionCandidatesPage />}
-                />
-                <Route
-                  path="/candidate-registration"
-                  element={<CandidateRegistrationPage />}
-                />
-                <Route
-                  path="/district/:prefecture/:district"
-                  element={<DistrictPage />}
-                />
               </Route>
               <Route path="/404" element={<NotFound />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
