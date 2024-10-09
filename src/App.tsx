@@ -13,7 +13,8 @@ import CandidateRegistrationPage from "./pages/CandidateRegistrationPage";
 import DistrictPage from "./pages/DistrictPage";
 import SubscriptionManagementPage from "./pages/SubscriptionManagementPage";
 import AssetLiabilityReportPage from "./pages/AssetLiabilityReportPage";
-// import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/PrivateRoute";
+import { useAuth } from "@/hooks/useAuth";
 
 const theme = createTheme({
   palette: {
@@ -30,6 +31,12 @@ const theme = createTheme({
 });
 
 export default function App() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <LocaleProvider>
       <ThemeProvider theme={theme}>
@@ -38,17 +45,19 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/work-time" element={<WorkTimeEntryForm />} />
-            <Route
-              path="/asset-liability-report"
-              element={<AssetLiabilityReportPage />}
-            />
-            <Route
-              path="/subscription-management"
-              element={<SubscriptionManagementPage />}
-            />
-            <Route path="/work-time-reports" element={<WorkTimeReports />} />
-            <Route path="/asset-calendar" element={<AssetCalendarPage />} />
+            <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
+              <Route path="/work-time" element={<WorkTimeEntryForm />} />
+              <Route path="/work-time-reports" element={<WorkTimeReports />} />
+              <Route
+                path="/asset-liability-report"
+                element={<AssetLiabilityReportPage />}
+              />
+              <Route
+                path="/subscription-management"
+                element={<SubscriptionManagementPage />}
+              />
+              <Route path="/asset-calendar" element={<AssetCalendarPage />} />
+            </Route>
             <Route
               path="/election-candidates"
               element={<ElectionCandidatesPage />}
@@ -61,11 +70,6 @@ export default function App() {
               path="/district/:prefecture/:district"
               element={<DistrictPage />}
             />
-            {/* <Route element={<PrivateRoute />}>
-              <Route path="/work-time" element={<WorkTimeEntryForm />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/work-time-reports" element={<WorkTimeReports />} />
-            </Route> */}
             <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<Navigate to="/404" replace />} />
           </Routes>

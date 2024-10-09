@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RefreshCcw, Trash2, Edit, Check, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 import {
   fetchTodoItems,
   addTodoItem,
@@ -30,24 +31,30 @@ export default function DailyTodoReminder() {
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   const handleToggle = (_id: string) => {
     const todoToUpdate = todos.find((todo) => todo._id === _id);
     if (todoToUpdate && _id) {
       dispatch(
         updateTodoItem({
           _id,
-          updates: { completed: !todoToUpdate.completed },
+          updates: { completed: !todoToUpdate.completed, task: todoToUpdate.task },
         })
       )
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${_id} updated successfully`);
+          toast.success(`Todo item ${_id} updated successfully`);
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${_id}:`, error);
+          toast.error(`Error updating todo item ${_id}: ${error}`);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${_id}`);
+      toast.error(`Invalid todo item or ID: ${_id}`);
     }
   };
 
@@ -55,26 +62,40 @@ export default function DailyTodoReminder() {
     dispatch(resetTodoList())
       .unwrap()
       .then(() => {
-        console.log("Todo list reset successfully");
+        toast.success("Todo list reset successfully");
       })
       .catch((error) => {
-        console.error("Error resetting todo list:", error);
+        toast.error(`Error resetting todo list: ${error}`);
       });
   };
 
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
-      dispatch(addTodoItem(newTodo.trim()));
-      setNewTodo("");
+      dispatch(addTodoItem(newTodo.trim()))
+        .unwrap()
+        .then(() => {
+          toast.success("New todo item added successfully");
+          setNewTodo("");
+        })
+        .catch((error) => {
+          toast.error(`Error adding new todo item: ${error}`);
+        });
     }
   };
 
   const handleDeleteTodo = (_id: string) => {
     if (_id) {
-      dispatch(deleteTodoItem(_id));
+      dispatch(deleteTodoItem(_id))
+        .unwrap()
+        .then(() => {
+          toast.success(`Todo item ${_id} deleted successfully`);
+        })
+        .catch((error) => {
+          toast.error(`Error deleting todo item ${_id}: ${error}`);
+        });
     } else {
-      console.error("削除しようとしたTODOアイテムのIDが不正です:", _id);
+      toast.error(`Invalid todo item ID: ${_id}`);
     }
   };
 
@@ -93,24 +114,20 @@ export default function DailyTodoReminder() {
       dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }))
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${_id} updated successfully`);
+          toast.success(`Todo item ${_id} updated successfully`);
           setEditingId(null);
           setEditingText("");
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${_id}:`, error);
+          toast.error(`Error updating todo item ${_id}: ${error}`);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${_id}`);
+      toast.error(`Invalid todo item or ID: ${_id}`);
     }
   };
 
   if (status === "loading") {
     return <div>Loading...</div>;
-  }
-
-  if (status === "failed") {
-    return <div>Error: {error}</div>;
   }
 
   return (

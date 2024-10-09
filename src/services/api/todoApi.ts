@@ -1,4 +1,3 @@
-// src/api/todoApi.ts
 import { AxiosResponse } from "axios";
 import { TodoItem } from "../../store/todoSlice";
 import { api, USE_MOCK_DATA } from "./apiConfig";
@@ -48,6 +47,20 @@ export const todoApi = {
     updates: Partial<TodoItem>
   ): Promise<AxiosResponse<TodoApiResponse>> => {
     console.log("Updating todo item:", _id, updates);
+    
+    // Ensure that the task field is always included in the update request
+    if (!updates.task) {
+      const existingTodo = USE_MOCK_DATA
+        ? mockTodoData.find((item) => item._id === _id)
+        : undefined;
+      
+      if (existingTodo) {
+        updates.task = existingTodo.task;
+      } else {
+        return Promise.reject(new Error("Task field is required for updates"));
+      }
+    }
+
     return USE_MOCK_DATA
       ? Promise.resolve({
           data: {
