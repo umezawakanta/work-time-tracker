@@ -150,11 +150,11 @@ export default function SubscriptionManagementPage() {
             type="number"
             min="0"
             step="1"
-            value={newSubscription.amount}
+            value={newSubscription.amount.toString()}
             onChange={(e) =>
               setNewSubscription({
                 ...newSubscription,
-                amount: parseInt(e.target.value),
+                amount: e.target.value === "" ? 0 : parseInt(e.target.value, 10),
               })
             }
             required
