@@ -11,6 +11,7 @@ import {
   startOfWeek,
   isSameDay,
   parseISO,
+  parse,
   subDays,
 } from "date-fns";
 import { toZonedTime, format as formatTZ } from 'date-fns-tz';
@@ -95,10 +96,11 @@ export function AssetCalendar({
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
 
   useEffect(() => {
+    console.log("Subscriptions updated:", subscriptions);
     if (calendarApi) {
       calendarApi.refetchEvents();
     }
-  }, [withdrawals, calendarApi]);
+  }, [withdrawals, calendarApi, subscriptions]);
 
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -155,10 +157,11 @@ export function AssetCalendar({
   }, [processedData]);
 
   const events = useMemo(() => {
+    console.log("Calculating events. Subscriptions:", subscriptions);
     const allDates = new Set([
       ...Object.keys(aggregatedData),
       ...withdrawals.map(w => w.date),
-      ...subscriptions.map(s => s.billingDate)
+      ...subscriptions.map(s => s.billingDate.replace(/\//g, '-'))
     ]);
     const sortedDates = Array.from(allDates).sort();
     if (sortedDates.length === 0) return [];
@@ -190,9 +193,11 @@ export function AssetCalendar({
         return isSameDay(withdrawalDate, currentDate);
       });
       const dateSubscriptions = subscriptions.filter((s) => {
-        const subscriptionDate = toZonedTime(parseISO(s.billingDate), 'Asia/Tokyo');
+        const subscriptionDate = parse(s.billingDate, 'yyyy/MM/dd', new Date());
         return isSameDay(subscriptionDate, currentDate);
       });
+
+      console.log(`Date: ${date}, Subscriptions:`, dateSubscriptions);
 
       const hasAggregatedData = !!aggregatedData[date];
 
@@ -215,6 +220,7 @@ export function AssetCalendar({
   }, [aggregatedData, withdrawals, subscriptions]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
+    console.log("Rendering event:", eventInfo);
     const {
       dailyChange,
       weeklyChange,
@@ -360,7 +366,7 @@ export function AssetCalendar({
     [calculateMonthlySummary, currentMonth]
   );
 
-  const handleDatesSet = useCallback(
+  const  handleDatesSet = useCallback(
     (arg: DatesSetArg) => {
       setCurrentMonth(arg.view.currentStart);
       onMonthChange(arg.view.currentStart);
@@ -386,7 +392,7 @@ export function AssetCalendar({
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
-      const tokyoDate = toZonedTime(selectedDate,   'Asia/Tokyo');
+      const tokyoDate = toZonedTime(selectedDate, 'Asia/Tokyo');
       const newWithdrawalEntry = {
         ...newWithdrawal,
         date: formatTZ(tokyoDate, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' }),
