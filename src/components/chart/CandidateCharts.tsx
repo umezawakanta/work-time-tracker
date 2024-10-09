@@ -376,7 +376,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         </Card>
         <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
           <CardHeader>
-            <CardTitle>比例代表ブロック別候補者数</CardTitle>
+            <CardTitle>比例単独候補者数</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>
