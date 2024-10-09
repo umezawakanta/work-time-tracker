@@ -122,14 +122,14 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         labels: [...proportionalBlocks],
         datasets: [
           {
-            label: "比例代表候補者数",
+            label: "候補者数",
             data: proportionalCounts,
             backgroundColor: "rgba(255, 159, 64, 0.6)",
             borderColor: "rgba(255, 159, 64, 1)",
             borderWidth: 1,
           },
           {
-            label: "議席数",
+            label: "定数",
             data: proportionalBlocks.map((block) => proportionalBlockInfo[block].seats),
             backgroundColor: "rgba(75, 192, 192, 0.6)",
             borderColor: "rgba(75, 192, 192, 1)",
@@ -198,24 +198,19 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     ...barOptions,
     plugins: {
       ...barOptions.plugins,
-      title: {
+      legend: {
         display: true,
-        text: "比例代表ブロック別候補者数",
-        font: {
-          size: 18,
-        },
+        position: 'top' as const,
+      },
+      title: {
+        display: false,
       },
       tooltip: {
         callbacks: {
           label: (context) => {
             const label = context.dataset.label || "";
             const value = context.parsed.y;
-            if (label === "比例代表候補者数") {
-              return `${label}: ${value}`;
-            } else if (label === "定数") {
-              return `${label}: ${value}`;
-            }
-            return "";
+            return `${label}: ${value}`;
           },
         },
       },
