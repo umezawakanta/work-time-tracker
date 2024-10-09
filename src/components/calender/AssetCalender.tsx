@@ -98,7 +98,7 @@ export function AssetCalendar({
     if (calendarApi) {
       calendarApi.refetchEvents();
     }
-  }, [withdrawals, subscriptions, calendarApi]);
+  }, [withdrawals, calendarApi]);
 
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -255,7 +255,7 @@ export function AssetCalendar({
             </div>
           </>
         )}
-        {(!hasAggregatedData || withdrawals.length > 0) && (
+        {!hasAggregatedData && withdrawals.length > 0 && (
           <div className="withdrawals-container">
             <h4>引き落とし:</h4>
             {withdrawals.map((withdrawal) => (
