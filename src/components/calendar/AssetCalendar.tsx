@@ -13,6 +13,7 @@ import {
   parseISO,
   parse,
   subDays,
+  isWithinInterval,
 } from "date-fns";
 import { toZonedTime, format as formatTZ } from 'date-fns-tz';
 import { ja } from "date-fns/locale";
@@ -100,7 +101,7 @@ export function AssetCalendar({
     if (calendarApi) {
       calendarApi.refetchEvents();
     }
-  }, [withdrawals, calendarApi, subscriptions]);
+  }, [withdrawals, subscriptions, calendarApi]);
 
   const processedData = useMemo(() => {
     const sortedData = data.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -352,13 +353,29 @@ export function AssetCalendar({
 
       const totalChange = monthEndTotal - monthStartTotal;
 
+      const monthlyWithdrawals = withdrawals.filter((w) => {
+        const withdrawalDate = parseISO(w.date);
+        return isWithinInterval(withdrawalDate, { start: monthStart, end: monthEnd });
+      });
+
+      const totalWithdrawals = monthlyWithdrawals.reduce((sum, w)   => sum + w.amount, 0);
+
+      const monthlySubscriptions = subscriptions.filter((s) => {
+        const subscriptionDate = parse(s.billingDate, 'yyyy/MM/dd', new Date());
+        return isWithinInterval(subscriptionDate, { start: monthStart, end: monthEnd });
+      });
+
+      const totalSubscriptions = monthlySubscriptions.reduce((sum, s) => sum + s.amount, 0);
+
       return {
         income: totalChange > 0 ? totalChange : 0,
         expenses: totalChange < 0 ? -totalChange : 0,
         balance: totalChange,
+        totalWithdrawals,
+        totalSubscriptions,
       };
     },
-    [aggregatedData]
+    [aggregatedData, withdrawals, subscriptions]
   );
 
   const monthlySummary = useMemo(
@@ -366,7 +383,7 @@ export function AssetCalendar({
     [calculateMonthlySummary, currentMonth]
   );
 
-  const  handleDatesSet = useCallback(
+  const handleDatesSet = useCallback(
     (arg: DatesSetArg) => {
       setCurrentMonth(arg.view.currentStart);
       onMonthChange(arg.view.currentStart);
@@ -434,6 +451,18 @@ export function AssetCalendar({
               className={`summary-value ${monthlySummary.balance >= 0 ? "income" : "expenses"}`}
             >
               {monthlySummary.balance.toLocaleString()}円
+            </span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">当月引き落とし合計:</span>
+            <span className="summary-value expenses">
+              {monthlySummary.totalWithdrawals.toLocaleString()}円
+            </span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">当月サブスクリプション合計:</span>
+            <span className="summary-value expenses">
+              {monthlySummary.totalSubscriptions.toLocaleString()}円
             </span>
           </div>
         </div>
