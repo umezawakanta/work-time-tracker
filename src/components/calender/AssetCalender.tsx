@@ -12,8 +12,8 @@ import {
   isSameDay,
   parseISO,
   subDays,
-  addDays,
 } from "date-fns";
+import { toZonedTime, format as formatTZ } from 'date-fns-tz';
 import { ja } from "date-fns/locale";
 import {
   Dialog,
@@ -167,30 +167,32 @@ export function AssetCalendar({
     const firstDataTotal = aggregatedData[firstDataDate]['合計'];
 
     return sortedDates.map((date) => {
-      const currentDate = new Date(date);
+      const currentDate = toZonedTime(new Date(date), 'Asia/Tokyo');
       const prevDate = subDays(currentDate, 1);
-      const prevDateStr = prevDate.toISOString().split('T')[0];
+      const prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' });
 
       const dailyChange = aggregatedData[date]['合計'] - (aggregatedData[prevDateStr]?.['合計'] || aggregatedData[date]['合計']);
 
       const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-      const weekStartStr = weekStart.toISOString().split('T')[0];
+      const weekStartStr = formatTZ(weekStart, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' });
       const weekStartTotal = aggregatedData[weekStartStr]?.['合計'] || aggregatedData[date]['合計'];
       const weeklyChange = aggregatedData[date]['合計'] - weekStartTotal;
 
       const monthStart = startOfMonth(currentDate);
-      const monthStartStr = monthStart.toISOString().split('T')[0];
+      const monthStartStr = formatTZ(monthStart, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' });
       const monthStartTotal = aggregatedData[monthStartStr]?.['合計'] || aggregatedData[date]['合計'];
       const cumulativeChange = aggregatedData[date]['合計'] - monthStartTotal;
 
       const totalChange = aggregatedData[date]['合計'] - firstDataTotal;
 
-      // 修正: 日付の比較を調整
       const dateWithdrawals = withdrawals.filter((w) => {
-        const withdrawalDate = addDays(parseISO(w.date), 1);
+        const withdrawalDate = toZonedTime(parseISO(w.date), 'Asia/Tokyo');
         return isSameDay(withdrawalDate, currentDate);
       });
-      const dateSubscriptions = subscriptions.filter((s) => isSameDay(parseISO(s.billingDate), currentDate));
+      const dateSubscriptions = subscriptions.filter((s) => {
+        const subscriptionDate = toZonedTime(parseISO(s.billingDate), 'Asia/Tokyo');
+        return isSameDay(subscriptionDate, currentDate);
+      });
 
       return {
         title: `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`,
@@ -391,9 +393,10 @@ export function AssetCalendar({
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
+      const tokyoDate = toZonedTime(selectedDate, 'Asia/Tokyo');
       const newWithdrawalEntry = {
         ...newWithdrawal,
-        date: selectedDate.toISOString().split("T")[0],
+        date: formatTZ(tokyoDate, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' }),
       };
       console.log("Adding new withdrawal:", newWithdrawalEntry);
       onAddWithdrawal(newWithdrawalEntry);
