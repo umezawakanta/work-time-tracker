@@ -15,6 +15,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Trash2, Edit } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 const BookShelf: React.FC = () => {
   const dispatch = useDispatch();
@@ -26,13 +27,17 @@ const BookShelf: React.FC = () => {
     author: '',
     isbn: '',
     publishedYear: new Date().getFullYear(),
+    totalPages: 0,
+    readPages: 0,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewBook(prev => ({
       ...prev,
-      [name]: name === 'publishedYear' ? parseInt(value, 10) : value,
+      [name]: ['publishedYear', 'totalPages', 'readPages'].includes(name) 
+        ? Math.max(0, parseInt(value, 10) || 0)
+        : value,
     }));
   };
 
@@ -50,6 +55,8 @@ const BookShelf: React.FC = () => {
       author: '',
       isbn: '',
       publishedYear: new Date().getFullYear(),
+      totalPages: 0,
+      readPages: 0,
     });
   };
 
@@ -73,6 +80,11 @@ const BookShelf: React.FC = () => {
             <p>著者: {book.author}</p>
             <p>ISBN: {book.isbn}</p>
             <p>出版年: {book.publishedYear}</p>
+            <p>総ページ数: {book.totalPages}</p>
+            <p>読了ページ: {book.readPages}</p>
+            <div className="mt-2">
+              <Progress value={book.totalPages > 0 ? (book.readPages / book.totalPages) * 100 : 0} />
+            </div>
             <div className="mt-4 flex justify-end space-x-2">
               <Button variant="outline" size="icon" onClick={() => handleEdit(book)}>
                 <Edit className="h-4 w-4" />
@@ -130,9 +142,35 @@ const BookShelf: React.FC = () => {
                   id="publishedYear"
                   name="publishedYear"
                   type="number"
-                  value={newBook.publishedYear}
+                  value={newBook.publishedYear.toString()}
                   onChange={handleInputChange}
                   required
+                  min="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="totalPages">総ページ数</Label>
+                <Input
+                  id="totalPages"
+                  name="totalPages"
+                  type="number"
+                  value={newBook.totalPages.toString()}
+                  onChange={handleInputChange}
+                  required
+                  min="0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="readPages">読了ページ</Label>
+                <Input
+                  id="readPages"
+                  name="readPages"
+                  type="number"
+                  value={newBook.readPages.toString()}
+                  onChange={handleInputChange}
+                  required
+                  min="0"
+                  max={newBook.totalPages.toString()}
                 />
               </div>
             </div>

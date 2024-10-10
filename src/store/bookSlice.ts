@@ -6,6 +6,8 @@ export interface Book {
   author: string;
   isbn: string;
   publishedYear: number;
+  totalPages: number;
+  readPages: number;
 }
 
 interface BookState {
