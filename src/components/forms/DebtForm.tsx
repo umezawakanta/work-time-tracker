@@ -22,8 +22,7 @@ export const DebtForm: React.FC<DebtFormProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
-  const [currentDebtDescription, setCurrentDebtDescription] =
-    useState<string>("");
+  const [currentDebtDescription, setCurrentDebtDescription] = useState<string>("");
   const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
 
   const handleDebtSubmit = (e: React.FormEvent) => {
@@ -39,7 +38,7 @@ export const DebtForm: React.FC<DebtFormProps> = ({
     const newDebtEntry = {
       date: new Date().toISOString().split("T")[0],
       value: parseFloat(currentDebtValue),
-      description: currentDebtDescription,
+      description: currentDebtDescription.trim() || "日時残額更新",
       account: currentDebtAccount,
     };
     if (editingDebt) {
@@ -78,12 +77,12 @@ export const DebtForm: React.FC<DebtFormProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="debtDescription">説明</Label>
+            <Label htmlFor="debtDescription">説明 (任意)</Label>
             <Textarea
               id="debtDescription"
               value={currentDebtDescription}
               onChange={(e) => setCurrentDebtDescription(e.target.value)}
-              required
+              placeholder="説明を入力してください（空白の場合は「日時残額更新」と記録されます）"
             />
           </div>
           <div>

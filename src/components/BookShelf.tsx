@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { nanoid } from '@reduxjs/toolkit';
-import { Book, addBook, removeBook, updateBook } from '../store/bookSlice';
-import { RootState } from '../store';
+import { AppDispatch, RootState } from '../store';
+import { Book, fetchBooks, addBook, updateBook, removeBook } from '../store/bookSlice';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BookCard from './BookCard';
+import { toast } from "@/components/ui/use-toast";
 
 const initialBookState: Omit<Book, 'id'> = {
   title: '',
@@ -29,13 +29,19 @@ const initialBookState: Omit<Book, 'id'> = {
 };
 
 const BookShelf: React.FC = () => {
-  const dispatch = useDispatch();
-  const books = useSelector((state: RootState) => state.book.books);
+  const dispatch = useDispatch<AppDispatch>();
+  const { books, status, error } = useSelector((state: RootState) => state.book);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [newBook, setNewBook] = useState<Omit<Book, 'id'>>(initialBookState);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchBooks());
+    }
+  }, [status, dispatch]);
 
   useEffect(() => {
     if (editingBook) {
@@ -44,6 +50,16 @@ const BookShelf: React.FC = () => {
       setNewBook(initialBookState);
     }
   }, [editingBook]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "エラー",
+        description: error,
+        variant: "destructive",
+      });
+    }
+  }, [error]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -55,12 +71,12 @@ const BookShelf: React.FC = () => {
     }));
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingBook) {
-      dispatch(updateBook({ ...newBook, id: editingBook.id }));
+      await dispatch(updateBook({ ...newBook, id: editingBook.id }));
     } else {
-      dispatch(addBook({ ...newBook, id: nanoid() }));
+      await dispatch(addBook(newBook));
     }
     setIsDialogOpen(false);
     setEditingBook(null);
@@ -72,26 +88,21 @@ const BookShelf: React.FC = () => {
     setIsDialogOpen(true);
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
-    dispatch(removeBook(id));
+  const handleDelete = useCallback(async (id: string) => {
+    await dispatch(removeBook(id));
   }, [dispatch]);
 
-  const filteredBooks = useMemo(() => {
-    return books.filter(book => 
-      (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedCategory === 'all' || book.category === selectedCategory)
-    );
-  }, [books, searchTerm, selectedCategory]);
+  const filteredBooks = books.filter(book => 
+    (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (selectedCategory === 'all' || book.category === selectedCategory)
+  );
 
   const categories = ['小説', 'ノンフィクション', '技術書', 'その他'];
 
-  const safeToString = (value: string | number | undefined | null): string => {
-    if (value === undefined || value === null) {
-      return '';
-    }
-    return value.toString();
-  };
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -125,13 +136,7 @@ const BookShelf: React.FC = () => {
           />
         ))}
       </div>
-      <Dialog open={isDialogOpen} onOpenChange={(open) => {
-        setIsDialogOpen(open);
-        if (!open) {
-          setEditingBook(null);
-          setNewBook(initialBookState);
-        }
-      }}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingBook ? '本を編集' : '新しい本を追加'}</DialogTitle>
@@ -146,7 +151,7 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="title"
                   name="title"
-                  value={safeToString(newBook.title)}
+                  value={newBook.title}
                   onChange={handleInputChange}
                   required
                 />
@@ -156,7 +161,7 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="author"
                   name="author"
-                  value={safeToString(newBook.author)}
+                  value={newBook.author}
                   onChange={handleInputChange}
                   required
                 />
@@ -166,7 +171,7 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="isbn"
                   name="isbn"
-                  value={safeToString(newBook.isbn)}
+                  value={newBook.isbn}
                   onChange={handleInputChange}
                   required
                 />
@@ -177,15 +182,14 @@ const BookShelf: React.FC = () => {
                   id="publishedYear"
                   name="publishedYear"
                   type="number"
-                  value={safeToString(newBook.publishedYear)}
+                  value={newBook.publishedYear}
                   onChange={handleInputChange}
                   required
-                  min="0"
                 />
               </div>
               <div>
                 <Label htmlFor="category">カテゴリー</Label>
-                <Select name="category" value={safeToString(newBook.category)} onValueChange={(value) => setNewBook(prev => ({ ...prev, category: value }))}>
+                <Select name="category" value={newBook.category} onValueChange={(value) => setNewBook(prev => ({ ...prev, category: value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="カテゴリーを選択" />
                   </SelectTrigger>
@@ -202,10 +206,9 @@ const BookShelf: React.FC = () => {
                   id="totalPages"
                   name="totalPages"
                   type="number"
-                  value={safeToString(newBook.totalPages)}
+                  value={newBook.totalPages}
                   onChange={handleInputChange}
                   required
-                  min="0"
                 />
               </div>
               <div>
@@ -214,16 +217,14 @@ const BookShelf: React.FC = () => {
                   id="readPages"
                   name="readPages"
                   type="number"
-                  value={safeToString(newBook.readPages)}
+                  value={newBook.readPages}
                   onChange={handleInputChange}
                   required
-                  min="0"
-                  max={safeToString(newBook.totalPages)}
                 />
               </div>
               <div>
                 <Label htmlFor="rating">評価</Label>
-                <Select name="rating" value={safeToString(newBook.rating)} onValueChange={(value) => setNewBook(prev => ({ ...prev, rating: parseInt(value, 10) }))}>
+                <Select name="rating" value={newBook.rating.toString()} onValueChange={(value) => setNewBook(prev => ({ ...prev, rating: parseInt(value, 10) }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="評価を選択" />
                   </SelectTrigger>

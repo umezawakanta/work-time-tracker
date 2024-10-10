@@ -11,6 +11,7 @@ import candidateRoutes from "./routes/candidateRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import withdrawalRoutes from "./routes/withdrawalRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import bookRoutes from "./routes/bookRoutes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/todos", todoRoutes);
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/withdrawal", withdrawalRoutes);
+app.use("/api/books", bookRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {

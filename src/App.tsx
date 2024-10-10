@@ -1,9 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { Toaster } from "react-hot-toast";
-import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
-import { store, persistor } from './store';
+import { store } from './store';
 import Layout from "@/components/layout/Layout";
 import Home from "./pages/Home";
 import WorkTimeEntryForm from "./components/forms/WorkTimeEntryForm";
@@ -38,41 +37,39 @@ const theme = createTheme({
 export default function App() {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AuthProvider>
-          <LocaleProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Toaster position="top-right" />
-              <Layout>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
-                  <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
-                  <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
-                  <Route element={<PrivateRoute />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/work-time" element={<WorkTimeEntryForm />} />
-                    <Route path="/work-time-reports" element={<WorkTimeReports />} />
-                    <Route
-                      path="/asset-liability-report"
-                      element={<AssetLiabilityReportPage />}
-                    />
-                    <Route
-                      path="/subscription-management"
-                      element={<SubscriptionManagementPage />}
-                    />
-                    <Route path="/asset-calendar" element={<AssetCalendarPage />} />
-                    <Route path="/bookshelf" element={<BookShelfPage />} />
-                  </Route>
-                  <Route path="/404" element={<NotFound />} />
-                  <Route path="*" element={<Navigate to="/404" replace />} />
-                </Routes>
-              </Layout>
-            </ThemeProvider>
-          </LocaleProvider>
-        </AuthProvider>
-      </PersistGate>
+      <AuthProvider>
+        <LocaleProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Toaster position="top-right" />
+            <Layout>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
+                <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
+                <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
+                <Route element={<PrivateRoute />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/work-time" element={<WorkTimeEntryForm />} />
+                  <Route path="/work-time-reports" element={<WorkTimeReports />} />
+                  <Route
+                    path="/asset-liability-report"
+                    element={<AssetLiabilityReportPage />}
+                  />
+                  <Route
+                    path="/subscription-management"
+                    element={<SubscriptionManagementPage />}
+                  />
+                  <Route path="/asset-calendar" element={<AssetCalendarPage />} />
+                  <Route path="/bookshelf" element={<BookShelfPage />} />
+                </Route>
+                <Route path="/404" element={<NotFound />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
+              </Routes>
+            </Layout>
+          </ThemeProvider>
+        </LocaleProvider>
+      </AuthProvider>
     </Provider>
   );
 }
