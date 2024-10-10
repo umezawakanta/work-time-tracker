@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
 import { Book, addBook, removeBook, updateBook } from '../store/bookSlice';
@@ -18,6 +18,7 @@ import { Trash2, Edit, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import debounce from 'lodash/debounce';
 
 const initialBookState: Omit<Book, 'id'> = {
   title: '',
@@ -48,7 +49,7 @@ const BookShelf: React.FC = () => {
     }
   }, [editingBook]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewBook(prev => ({
       ...prev,
@@ -56,7 +57,9 @@ const BookShelf: React.FC = () => {
         ? Math.max(0, parseInt(value, 10) || 0)
         : value,
     }));
-  };
+  }, []);
+
+  const debouncedHandleInputChange = debounce(handleInputChange, 300);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +89,13 @@ const BookShelf: React.FC = () => {
   );
 
   const categories = ['小説', 'ノンフィクション', '技術書', 'その他'];
+
+  const safeToString = (value: string | number | undefined | null): string => {
+    if (value === undefined || value === null) {
+      return '';
+    }
+    return value.toString();
+  };
 
   return (
     <div className="space-y-4">
@@ -160,8 +170,8 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="title"
                   name="title"
-                  value={newBook.title}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.title)}
+                  onChange={debouncedHandleInputChange}
                   required
                 />
               </div>
@@ -170,8 +180,8 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="author"
                   name="author"
-                  value={newBook.author}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.author)}
+                  onChange={debouncedHandleInputChange}
                   required
                 />
               </div>
@@ -180,8 +190,8 @@ const BookShelf: React.FC = () => {
                 <Input
                   id="isbn"
                   name="isbn"
-                  value={newBook.isbn}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.isbn)}
+                  onChange={debouncedHandleInputChange}
                   required
                 />
               </div>
@@ -191,15 +201,15 @@ const BookShelf: React.FC = () => {
                   id="publishedYear"
                   name="publishedYear"
                   type="number"
-                  value={newBook.publishedYear.toString()}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.publishedYear)}
+                  onChange={debouncedHandleInputChange}
                   required
                   min="0"
                 />
               </div>
               <div>
                 <Label htmlFor="category">カテゴリー</Label>
-                <Select name="category" value={newBook.category} onValueChange={(value) => setNewBook(prev => ({ ...prev, category: value }))}>
+                <Select name="category" value={safeToString(newBook.category)} onValueChange={(value) => setNewBook(prev => ({ ...prev, category: value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="カテゴリーを選択" />
                   </SelectTrigger>
@@ -216,8 +226,8 @@ const BookShelf: React.FC = () => {
                   id="totalPages"
                   name="totalPages"
                   type="number"
-                  value={newBook.totalPages.toString()}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.totalPages)}
+                  onChange={debouncedHandleInputChange}
                   required
                   min="0"
                 />
@@ -228,16 +238,16 @@ const BookShelf: React.FC = () => {
                   id="readPages"
                   name="readPages"
                   type="number"
-                  value={newBook.readPages.toString()}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.readPages)}
+                  onChange={debouncedHandleInputChange}
                   required
                   min="0"
-                  max={newBook.totalPages.toString()}
+                  max={safeToString(newBook.totalPages)}
                 />
               </div>
               <div>
                 <Label htmlFor="rating">評価</Label>
-                <Select name="rating" value={newBook.rating.toString()} onValueChange={(value) => setNewBook(prev => ({ ...prev, rating: parseInt(value, 10) }))}>
+                <Select name="rating" value={safeToString(newBook.rating)} onValueChange={(value) => setNewBook(prev => ({ ...prev, rating: parseInt(value, 10) }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="評価を選択" />
                   </SelectTrigger>
@@ -253,8 +263,8 @@ const BookShelf: React.FC = () => {
                 <Textarea
                   id="notes"
                   name="notes"
-                  value={newBook.notes}
-                  onChange={handleInputChange}
+                  value={safeToString(newBook.notes)}
+                  onChange={debouncedHandleInputChange}
                   placeholder="読書メモや感想を入力してください"
                 />
               </div>
