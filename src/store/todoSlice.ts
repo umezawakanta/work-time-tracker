@@ -23,10 +23,13 @@ export const fetchTodoItems = createAsyncThunk<TodoItem[], void, { rejectValue: 
   'todo/fetchItems',
   async (_, { rejectWithValue }) => {
     try {
+      console.log("Fetching todo items from API");
       const response = await todoApi.getAll();
+      console.log("Fetched todo items:", response.data);
       return response.data;
-    } catch {
-      return rejectWithValue('Todo項目の取得に失敗しました');
+    } catch (error) {
+      console.error("Error fetching todo items:", error);
+      return rejectWithValue('Failed to fetch todo items');
     }
   }
 );
@@ -35,10 +38,13 @@ export const addTodoItem = createAsyncThunk<TodoItem, string, { rejectValue: str
   'todo/addItem',
   async (task, { rejectWithValue }) => {
     try {
+      console.log("Adding new todo item:", task);
       const response = await todoApi.create(task);
+      console.log("Added todo item:", response.data);
       return response.data;
-    } catch {
-      return rejectWithValue('Todo項目の追加に失敗しました');
+    } catch (error) {
+      console.error("Error adding todo item:", error);
+      return rejectWithValue('Failed to add todo item');
     }
   }
 );
@@ -49,10 +55,13 @@ export const updateTodoItem = createAsyncThunk<
   { rejectValue: string }
 >('todo/updateItem', async ({ _id, updates }, { rejectWithValue }) => {
   try {
+    console.log("Updating todo item:", _id, updates);
     const response = await todoApi.update(_id, updates);
+    console.log("Updated todo item:", response.data);
     return response.data;
-  } catch {
-    return rejectWithValue('Todo項目の更新に失敗しました');
+  } catch (error) {
+    console.error("Error updating todo item:", error);
+    return rejectWithValue('Failed to update todo item');
   }
 });
 
@@ -60,10 +69,13 @@ export const deleteTodoItem = createAsyncThunk<string, string, { rejectValue: st
   'todo/deleteItem',
   async (_id, { rejectWithValue }) => {
     try {
+      console.log("Deleting todo item:", _id);
       await todoApi.delete(_id);
+      console.log("Deleted todo item:", _id);
       return _id;
-    } catch {
-      return rejectWithValue('Todo項目の削除に失敗しました');
+    } catch (error) {
+      console.error("Error deleting todo item:", error);
+      return rejectWithValue('Failed to delete todo item');
     }
   }
 );
@@ -72,9 +84,12 @@ export const resetTodoList = createAsyncThunk<void, void, { rejectValue: string 
   'todo/resetList',
   async (_, { rejectWithValue }) => {
     try {
+      console.log("Resetting todo list");
       await todoApi.reset();
-    } catch {
-      return rejectWithValue('Todoリストのリセットに失敗しました');
+      console.log("Todo list reset completed");
+    } catch (error) {
+      console.error("Error resetting todo list:", error);
+      return rejectWithValue('Failed to reset todo list');
     }
   }
 );
@@ -83,10 +98,13 @@ export const reorderTodoItems = createAsyncThunk<TodoItem[], TodoItem[], { rejec
   'todo/reorderItems',
   async (items, { rejectWithValue }) => {
     try {
+      console.log("Reordering todo items:", items);
       const response = await todoApi.reorder(items);
+      console.log("Reordered todo items:", response.data);
       return response.data;
-    } catch {
-      return rejectWithValue('Todo項目の並べ替えに失敗しました');
+    } catch (error) {
+      console.error("Error reordering todo items:", error);
+      return rejectWithValue('Failed to reorder todo items');
     }
   }
 );
@@ -98,55 +116,41 @@ const todoSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
+        console.log("fetchTodoItems: pending");
         state.status = 'loading';
-        state.error = null;
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
+        console.log("fetchTodoItems: fulfilled", action.payload);
         state.status = 'succeeded';
         state.items = action.payload;
-        state.error = null;
       })
       .addCase(fetchTodoItems.rejected, (state, action) => {
+        console.log("fetchTodoItems: rejected", action.payload);
         state.status = 'failed';
-        state.error = action.payload || 'Todo項目の取得に失敗しました';
+        state.error = action.payload || 'Failed to fetch todo items';
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {
+        console.log("addTodoItem: fulfilled", action.payload);
         state.items.push(action.payload);
-        state.error = null;
-      })
-      .addCase(addTodoItem.rejected, (state, action) => {
-        state.error = action.payload || 'Todo項目の追加に失敗しました';
       })
       .addCase(updateTodoItem.fulfilled, (state, action) => {
+        console.log("updateTodoItem: fulfilled", action.payload);
         const index = state.items.findIndex((item) => item._id === action.payload._id);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
-        state.error = null;
-      })
-      .addCase(updateTodoItem.rejected, (state, action) => {
-        state.error = action.payload || 'Todo項目の更新に失敗しました';
       })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
+        console.log("deleteTodoItem: fulfilled", action.payload);
         state.items = state.items.filter((item) => item._id !== action.payload);
-        state.error = null;
-      })
-      .addCase(deleteTodoItem.rejected, (state, action) => {
-        state.error = action.payload || 'Todo項目の削除に失敗しました';
       })
       .addCase(resetTodoList.fulfilled, (state) => {
+        console.log("resetTodoList: fulfilled");
         state.items = [];
-        state.error = null;
-      })
-      .addCase(resetTodoList.rejected, (state, action) => {
-        state.error = action.payload || 'Todoリストのリセットに失敗しました';
       })
       .addCase(reorderTodoItems.fulfilled, (state, action) => {
+        console.log("reorderTodoItems: fulfilled", action.payload);
         state.items = action.payload;
-        state.error = null;
-      })
-      .addCase(reorderTodoItems.rejected, (state, action) => {
-        state.error = action.payload || 'Todo項目の並べ替えに失敗しました';
       });
   },
 });

@@ -1,15 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-export interface ITodoItem extends mongoose.Document {
+export interface ITodoItem extends Document {
   task: string;
   completed: boolean;
-  createdAt: Date;
+  order: number;
 }
 
-const TodoItemSchema = new mongoose.Schema<ITodoItem>({
-  task: { type: String, required: true },
-  completed: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-});
+const todoItemSchema = new Schema({
+  task: {
+    type: String,
+    required: true,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+  order: {
+    type: Number,
+    default: 0,
+  },
+}, { timestamps: true });
 
-export const TodoItem = mongoose.model<ITodoItem>("TodoItem", TodoItemSchema);
+export const TodoItem = mongoose.model<ITodoItem>('TodoItem', todoItemSchema);
