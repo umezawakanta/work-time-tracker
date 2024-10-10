@@ -8,6 +8,9 @@ export interface Book {
   publishedYear: number;
   totalPages: number;
   readPages: number;
+  category: string;
+  rating: number;
+  notes: string;
 }
 
 interface BookState {
