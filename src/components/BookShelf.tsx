@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
 import { Book, addBook, removeBook, updateBook } from '../store/bookSlice';
@@ -14,11 +14,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Trash2, Edit, Star } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import debounce from 'lodash/debounce';
+import BookCard from './BookCard';
 
 const initialBookState: Omit<Book, 'id'> = {
   title: '',
@@ -29,7 +26,6 @@ const initialBookState: Omit<Book, 'id'> = {
   readPages: 0,
   category: '',
   rating: 0,
-  notes: '',
 };
 
 const BookShelf: React.FC = () => {
@@ -49,7 +45,7 @@ const BookShelf: React.FC = () => {
     }
   }, [editingBook]);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewBook(prev => ({
       ...prev,
@@ -58,8 +54,6 @@ const BookShelf: React.FC = () => {
         : value,
     }));
   }, []);
-
-  const debouncedHandleInputChange = debounce(handleInputChange, 300);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,20 +67,22 @@ const BookShelf: React.FC = () => {
     setNewBook(initialBookState);
   };
 
-  const handleEdit = (book: Book) => {
+  const handleEdit = useCallback((book: Book) => {
     setEditingBook(book);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     dispatch(removeBook(id));
-  };
+  }, [dispatch]);
 
-  const filteredBooks = books.filter(book => 
-    (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'all' || book.category === selectedCategory)
-  );
+  const filteredBooks = useMemo(() => {
+    return books.filter(book => 
+      (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (selectedCategory === 'all' || book.category === selectedCategory)
+    );
+  }, [books, searchTerm, selectedCategory]);
 
   const categories = ['小説', 'ノンフィクション', '技術書', 'その他'];
 
@@ -121,32 +117,12 @@ const BookShelf: React.FC = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredBooks.map(book => (
-          <div key={book.id} className="border p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold">{book.title}</h2>
-            <p>著者: {book.author}</p>
-            <p>ISBN: {book.isbn}</p>
-            <p>出版年: {book.publishedYear}</p>
-            <p>カテゴリー: {book.category}</p>
-            <p>総ページ数: {book.totalPages}</p>
-            <p>読了ページ: {book.readPages}</p>
-            <div className="mt-2">
-              <Progress value={book.totalPages > 0 ? (book.readPages / book.totalPages) * 100 : 0} />
-            </div>
-            <div className="mt-2">
-              評価: {Array(5).fill(0).map((_, i) => (
-                <Star key={i} className={`inline-block w-4 h-4 ${i < book.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-              ))}
-            </div>
-            {book.notes && <p className="mt-2 text-sm text-gray-600">メモ: {book.notes}</p>}
-            <div className="mt-4 flex justify-end space-x-2">
-              <Button variant="outline" size="icon" onClick={() => handleEdit(book)}>
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon" onClick={() => handleDelete(book.id)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <BookCard
+            key={book.id}
+            book={book}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -171,7 +147,7 @@ const BookShelf: React.FC = () => {
                   id="title"
                   name="title"
                   value={safeToString(newBook.title)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -181,7 +157,7 @@ const BookShelf: React.FC = () => {
                   id="author"
                   name="author"
                   value={safeToString(newBook.author)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -191,7 +167,7 @@ const BookShelf: React.FC = () => {
                   id="isbn"
                   name="isbn"
                   value={safeToString(newBook.isbn)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -202,7 +178,7 @@ const BookShelf: React.FC = () => {
                   name="publishedYear"
                   type="number"
                   value={safeToString(newBook.publishedYear)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                   min="0"
                 />
@@ -227,7 +203,7 @@ const BookShelf: React.FC = () => {
                   name="totalPages"
                   type="number"
                   value={safeToString(newBook.totalPages)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                   min="0"
                 />
@@ -239,7 +215,7 @@ const BookShelf: React.FC = () => {
                   name="readPages"
                   type="number"
                   value={safeToString(newBook.readPages)}
-                  onChange={debouncedHandleInputChange}
+                  onChange={handleInputChange}
                   required
                   min="0"
                   max={safeToString(newBook.totalPages)}
@@ -257,16 +233,6 @@ const BookShelf: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <Label htmlFor="notes">メモ</Label>
-                <Textarea
-                  id="notes"
-                  name="notes"
-                  value={safeToString(newBook.notes)}
-                  onChange={debouncedHandleInputChange}
-                  placeholder="読書メモや感想を入力してください"
-                />
               </div>
             </div>
             <DialogFooter className="mt-4">

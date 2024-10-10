@@ -10,7 +10,6 @@ export interface Book {
   readPages: number;
   category: string;
   rating: number;
-  notes: string;
 }
 
 interface BookState {
