@@ -42,72 +42,76 @@ const TodoItemComponent = memo(({
   onEditSave, 
   onEditCancel 
 }: TodoItemComponentProps) => {
+  console.log(`Rendering TodoItemComponent for todo: ${todo._id}`);
   return (
     <Draggable key={todo._id} draggableId={todo._id} index={index}>
-      {(provided) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm"
-        >
-          <GripVertical className="h-4 w-4 text-gray-400" />
-          <Checkbox
-            id={`todo-${todo._id}`}
-            checked={todo.completed}
-            onCheckedChange={() => onToggle(todo._id)}
-          />
-          {editingId === todo._id ? (
-            <>
-              <Input
-                value={editingText}
-                onChange={(e) => onEdit(todo._id, e.target.value)}
-                className="flex-grow"
-              />
-              <Button size="sm" onClick={() => onEditSave(todo._id)}>
-                <Check className="h-4 w-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={onEditCancel}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </>
-          ) : (
-            <>
-              <Label
-                htmlFor={`todo-${todo._id}`}
-                className={`flex-grow ${
-                  todo.completed ? "line-through text-gray-500" : ""
-                }`}
-              >
-                {todo.task}
-              </Label>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onEdit(todo._id, todo.task)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onDelete(todo._id)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </>
-          )}
-        </div>
-      )}
+      {(provided, snapshot) => {
+        console.log(`Draggable state for todo ${todo._id}:`, snapshot);
+        return (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm"
+          >
+            <GripVertical className="h-4 w-4 text-gray-400" />
+            <Checkbox
+              id={`todo-${todo._id}`}
+              checked={todo.completed}
+              onCheckedChange={() => onToggle(todo._id)}
+            />
+            {editingId === todo._id ? (
+              <>
+                <Input
+                  value={editingText}
+                  onChange={(e) => onEdit(todo._id, e.target.value)}
+                  className="flex-grow"
+                />
+                <Button size="sm" onClick={() => onEditSave(todo._id)}>
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onEditCancel}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Label
+                  htmlFor={`todo-${todo._id}`}
+                  className={`flex-grow ${
+                    todo.completed ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {todo.task}
+                </Label>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onEdit(todo._id, todo.task)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onDelete(todo._id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
+        );
+      }}
     </Draggable>
   );
 });
 
-export default function DailyTodoReminder() {
+export default function Component() {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.todo.items);
   const status = useSelector((state: RootState) => state.todo.status);
@@ -202,6 +206,7 @@ export default function DailyTodoReminder() {
   const onDragEnd = useCallback((result: DropResult) => {
     console.log("Drag ended:", result);
     if (!result.destination) {
+      console.log("No destination, skipping reorder");
       return;
     }
 
@@ -241,25 +246,28 @@ export default function DailyTodoReminder() {
         </form>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="todos">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                {memoizedTodos.map((todo, index) => (
-                  <TodoItemComponent
-                    key={todo._id}
-                    todo={todo}
-                    index={index}
-                    onToggle={handleToggle}
-                    onEdit={handleEditStart}
-                    onDelete={handleDeleteTodo}
-                    editingId={editingId}
-                    editingText={editingText}
-                    onEditSave={handleEditSave}
-                    onEditCancel={handleEditCancel}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
+            {(provided, snapshot) => {
+              console.log("Droppable state:", snapshot);
+              return (
+                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+                  {memoizedTodos.map((todo, index) => (
+                    <TodoItemComponent
+                      key={todo._id}
+                      todo={todo}
+                      index={index}
+                      onToggle={handleToggle}
+                      onEdit={handleEditStart}
+                      onDelete={handleDeleteTodo}
+                      editingId={editingId}
+                      editingText={editingText}
+                      onEditSave={handleEditSave}
+                      onEditCancel={handleEditCancel}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              );
+            }}
           </Droppable>
         </DragDropContext>
       </CardContent>
