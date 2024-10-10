@@ -1,29 +1,13 @@
-import { AxiosResponse } from "axios";
-import { Book } from "@/store/bookSlice";
-import { api } from "./apiConfig";
-
-interface BookApiResponse {
-  message: string;
-  book: Book;
-}
+import { api } from './apiConfig';
+import { Book } from '@/store/bookSlice';
 
 export const bookApi = {
-  getAll: (): Promise<AxiosResponse<Book[]>> => {
-    return api.get<Book[]>("/books");
+  getAll: () => api.get<Book[]>('/books'),
+  getById: (id: string) => api.get<Book>(`/books/${id}`),
+  create: (book: Omit<Book, 'id'>) => api.post<{ book: Book }>('/books', book),
+  update: (id: string, book: Partial<Book>) => {
+    console.log('Updating book in API:', { id, book });
+    return api.put<{ book: Book }>(`/books/${id}`, book);
   },
-
-  create: (book: Omit<Book, 'id'>): Promise<AxiosResponse<BookApiResponse>> => {
-    return api.post<BookApiResponse>("/books", book);
-  },
-
-  update: (
-    id: string,
-    updates: Partial<Book>
-  ): Promise<AxiosResponse<BookApiResponse>> => {
-    return api.put<BookApiResponse>(`/books/${id}`, updates);
-  },
-
-  delete: (id: string): Promise<AxiosResponse<void>> => {
-    return api.delete(`/books/${id}`);
-  },
+  delete: (id: string) => api.delete(`/books/${id}`),
 };

@@ -28,7 +28,7 @@ const initialBookState: Omit<Book, 'id'> = {
   rating: 0,
 };
 
-const BookShelf: React.FC = () => {
+export default function Component() {
   const dispatch = useDispatch<AppDispatch>();
   const { books, status, error } = useSelector((state: RootState) => state.book);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -73,23 +73,56 @@ const BookShelf: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingBook) {
-      await dispatch(updateBook({ ...newBook, id: editingBook.id }));
-    } else {
-      await dispatch(addBook(newBook));
+    try {
+      if (editingBook) {
+        console.log('Updating book:', { ...newBook, id: editingBook.id });
+        await dispatch(updateBook({ ...newBook, id: editingBook.id })).unwrap();
+        toast({
+          title: "成功",
+          description: "本が正常に更新されました。",
+        });
+      } else {
+        console.log('Adding new book:', newBook);
+        await dispatch(addBook(newBook)).unwrap();
+        toast({
+          title: "成功",
+          description: "新しい本が正常に追加されました。",
+        });
+      }
+      setIsDialogOpen(false);
+      setEditingBook(null);
+      setNewBook(initialBookState);
+    } catch (error) {
+      console.error('本の保存中にエラーが発生しました:', error);
+      toast({
+        title: "エラー",
+        description: "本の保存中にエラーが発生しました。",
+        variant: "destructive",
+      });
     }
-    setIsDialogOpen(false);
-    setEditingBook(null);
-    setNewBook(initialBookState);
   };
 
   const handleEdit = useCallback((book: Book) => {
+    console.log('Editing book:', book);
     setEditingBook(book);
     setIsDialogOpen(true);
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
-    await dispatch(removeBook(id));
+    try {
+      await dispatch(removeBook(id)).unwrap();
+      toast({
+        title: "成功",
+        description: "本が正常に削除されました。",
+      });
+    } catch (error) {
+      console.error('本の削除中にエラーが発生しました:', error);
+      toast({
+        title: "エラー",
+        description: "本の削除中にエラーが発生しました。",
+        variant: "destructive",
+      });
+    }
   }, [dispatch]);
 
   const filteredBooks = books.filter(book => 
@@ -244,6 +277,4 @@ const BookShelf: React.FC = () => {
       </Dialog>
     </div>
   );
-};
-
-export default BookShelf;
+}

@@ -8,8 +8,12 @@ router.get('/', async (_req, res) => {
   try {
     const books = await Book.find();
     res.json(books);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching books', error });
+  } catch (error: unknown) {
+    console.error('Error fetching books:', error);
+    res.status(500).json({ 
+      message: 'Error fetching books', 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    });
   }
 });
 
@@ -19,8 +23,12 @@ router.post('/', async (req, res) => {
     const newBook = new Book(req.body);
     const savedBook = await newBook.save();
     res.status(201).json({ message: 'Book created successfully', book: savedBook });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating book', error });
+  } catch (error: unknown) {
+    console.error('Error creating book:', error);
+    res.status(500).json({ 
+      message: 'Error creating book', 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    });
   }
 });
 
@@ -34,8 +42,12 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Book not found' });
     }
     res.json({ message: 'Book updated successfully', book: updatedBook });
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating book', error });
+  } catch (error: unknown) {
+    console.error('Error updating book:', error);
+    res.status(500).json({ 
+      message: 'Error updating book', 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    });
   }
 });
 
@@ -48,8 +60,12 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Book not found' });
     }
     res.json({ message: 'Book deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting book', error });
+  } catch (error: unknown) {
+    console.error('Error deleting book:', error);
+    res.status(500).json({ 
+      message: 'Error deleting book', 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    });
   }
 });
 

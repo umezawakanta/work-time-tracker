@@ -55,7 +55,9 @@ export const updateBook = createAsyncThunk<Book, Book, { rejectValue: string }>(
   'book/updateBook',
   async (book, { rejectWithValue }) => {
     try {
+      console.log('Updating book in slice:', book);
       const response = await bookApi.update(book.id, book);
+      console.log('Update response:', response);
       return response.data.book;
     } catch (error) {
       console.error('本の更新中にエラーが発生しました:', error);
@@ -115,6 +117,7 @@ const bookSlice = createSlice({
       })
       .addCase(removeBook.fulfilled, (state, action: PayloadAction<string>) => {
         state.books = state.books.filter(book => book.id !== action.payload);
+        
         state.error = null;
       })
       .addCase(removeBook.rejected, (state, action) => {

@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -35,13 +35,15 @@ app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/withdrawal", withdrawalRoutes);
 app.use("/api/books", bookRoutes);
 
+// Not Found middleware
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ message: "Resource not found" });
+});
+
 // Error handling middleware
-app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
-  if (!res.headersSent) {
-    res.status(500).json({ message: "Something broke!" });
-  }
-  next(err);
+  res.status(500).json({ message: "Something went wrong!", error: err.message });
 });
 
 const PORT = process.env.PORT || 3001;
