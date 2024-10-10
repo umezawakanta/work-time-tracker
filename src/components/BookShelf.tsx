@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import {
@@ -29,8 +29,7 @@ import {
 import BookCard from "./BookCard";
 import { toast } from "@/components/ui/use-toast";
 
-const initialBookState: Omit<Book, "id"> = {
-  _id: "",
+const initialBookState: Omit<Book, "_id" | "createdAt"> = {
   title: "",
   author: "",
   isbn: "",
@@ -39,19 +38,18 @@ const initialBookState: Omit<Book, "id"> = {
   readPages: 0,
   category: "",
   rating: 0,
-  createdAt: new Date(),
 };
 
-export default function Component() {
+const categories = ["小説", "ノンフィクション", "技術書", "その他"];
+
+export default function BookShelf() {
   const dispatch = useDispatch<AppDispatch>();
-  const { books, status, error } = useSelector(
-    (state: RootState) => state.book
-  );
+  const { books, status, error } = useSelector((state: RootState) => state.book);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [newBook, setNewBook] = useState<Omit<Book, "id">>(initialBookState);
+  const [newBook, setNewBook] = useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
 
   useEffect(() => {
     if (status === "idle") {
@@ -61,7 +59,16 @@ export default function Component() {
 
   useEffect(() => {
     if (editingBook) {
-      setNewBook(editingBook);
+      setNewBook({
+        title: editingBook.title,
+        author: editingBook.author,
+        isbn: editingBook.isbn,
+        publishedYear: editingBook.publishedYear,
+        totalPages: editingBook.totalPages,
+        readPages: editingBook.readPages,
+        category: editingBook.category,
+        rating: editingBook.rating,
+      });
     } else {
       setNewBook(initialBookState);
     }
@@ -82,9 +89,7 @@ export default function Component() {
       const { name, value } = e.target;
       setNewBook((prev) => ({
         ...prev,
-        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(
-          name
-        )
+        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(name)
           ? Math.max(0, parseInt(value, 10) || 0)
           : value,
       }));
@@ -96,16 +101,12 @@ export default function Component() {
     e.preventDefault();
     try {
       if (editingBook) {
-        console.log("Updating book:", { ...newBook, id: editingBook._id });
-        await dispatch(
-          updateBook({ ...newBook, _id: editingBook._id })
-        ).unwrap();
+        await dispatch(updateBook({ ...editingBook, ...newBook })).unwrap();
         toast({
           title: "成功",
           description: "本が正常に更新されました。",
         });
       } else {
-        console.log("Adding new book:", newBook);
         await dispatch(addBook(newBook)).unwrap();
         toast({
           title: "成功",
@@ -126,7 +127,6 @@ export default function Component() {
   };
 
   const handleEdit = useCallback((book: Book) => {
-    console.log("Editing book:", book);
     setEditingBook(book);
     setIsDialogOpen(true);
   }, []);
@@ -151,14 +151,14 @@ export default function Component() {
     [dispatch]
   );
 
-  const filteredBooks = books.filter(
-    (book) =>
-      (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedCategory === "all" || book.category === selectedCategory)
-  );
-
-  const categories = ["小説", "ノンフィクション", "技術書", "その他"];
+  const filteredBooks = useMemo(() => {
+    return books.filter(
+      (book) =>
+        (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (selectedCategory === "all" || book.category === selectedCategory)
+    );
+  }, [books, searchTerm, selectedCategory]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
