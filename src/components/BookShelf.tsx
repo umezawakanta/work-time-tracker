@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
 import { Book, addBook, removeBook, updateBook } from '../store/bookSlice';
@@ -19,6 +19,18 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+const initialBookState: Omit<Book, 'id'> = {
+  title: '',
+  author: '',
+  isbn: '',
+  publishedYear: new Date().getFullYear(),
+  totalPages: 0,
+  readPages: 0,
+  category: '',
+  rating: 0,
+  notes: '',
+};
+
 const BookShelf: React.FC = () => {
   const dispatch = useDispatch();
   const books = useSelector((state: RootState) => state.book.books);
@@ -26,17 +38,15 @@ const BookShelf: React.FC = () => {
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [newBook, setNewBook] = useState<Omit<Book, 'id'>>({
-    title: '',
-    author: '',
-    isbn: '',
-    publishedYear: new Date().getFullYear(),
-    totalPages: 0,
-    readPages: 0,
-    category: '',
-    rating: 0,
-    notes: '',
-  });
+  const [newBook, setNewBook] = useState<Omit<Book, 'id'>>(initialBookState);
+
+  useEffect(() => {
+    if (editingBook) {
+      setNewBook(editingBook);
+    } else {
+      setNewBook(initialBookState);
+    }
+  }, [editingBook]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,22 +67,11 @@ const BookShelf: React.FC = () => {
     }
     setIsDialogOpen(false);
     setEditingBook(null);
-    setNewBook({
-      title: '',
-      author: '',
-      isbn: '',
-      publishedYear: new Date().getFullYear(),
-      totalPages: 0,
-      readPages: 0,
-      category: '',
-      rating: 0,
-      notes: '',
-    });
+    setNewBook(initialBookState);
   };
 
   const handleEdit = (book: Book) => {
     setEditingBook(book);
-    setNewBook(book);
     setIsDialogOpen(true);
   };
 
@@ -140,7 +139,13 @@ const BookShelf: React.FC = () => {
           </div>
         ))}
       </div>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          setEditingBook(null);
+          setNewBook(initialBookState);
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingBook ? '本を編集' : '新しい本を追加'}</DialogTitle>
