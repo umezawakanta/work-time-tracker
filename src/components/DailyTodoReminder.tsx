@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback, memo, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,12 +22,12 @@ import { RootState, AppDispatch } from "@/store";
 interface TodoItemComponentProps {
   todo: TodoItem;
   index: number;
-  onToggle: (_id: string) => void;
-  onEdit: (_id: string, task: string) => void;
-  onDelete: (_id: string) => void;
+  onToggle: (id: string) => void;
+  onEdit: (id: string, task: string) => void;
+  onDelete: (id: string) => void;
   editingId: string | null;
   editingText: string;
-  onEditSave: (_id: string) => void;
+  onEditSave: (id: string) => void;
   onEditCancel: () => void;
 }
 
@@ -136,20 +136,20 @@ export default function DailyTodoReminder() {
     }
   }, [error]);
 
-  const handleToggle = useCallback((_id: string) => {
-    console.log("Toggling todo:", _id);
-    const todoToUpdate = todos.find((todo) => todo._id === _id);
-    if (todoToUpdate && _id) {
+  const handleToggle = useCallback((id: string) => {
+    console.log("Toggling todo:", id);
+    const todoToUpdate = todos.find((todo) => todo._id === id);
+    if (todoToUpdate) {
       dispatch(
         updateTodoItem({
-          _id,
+          _id: id,
           updates: {
             completed: !todoToUpdate.completed,
           },
         })
       );
     } else {
-      console.error("Failed to find todo for toggling:", _id);
+      console.error("Failed to find todo for toggling:", id);
     }
   }, [dispatch, todos]);
 
@@ -167,18 +167,18 @@ export default function DailyTodoReminder() {
     }
   }, [dispatch, newTodo]);
 
-  const handleDeleteTodo = useCallback((_id: string) => {
-    if (_id) {
-      console.log("Deleting todo:", _id);
-      dispatch(deleteTodoItem(_id));
+  const handleDeleteTodo = useCallback((id: string) => {
+    if (id) {
+      console.log("Deleting todo:", id);
+      dispatch(deleteTodoItem(id));
     } else {
       console.error("Invalid todo ID for deletion");
     }
   }, [dispatch]);
 
-  const handleEditStart = useCallback((_id: string, task: string) => {
-    console.log("Starting edit for todo:", _id);
-    setEditingId(_id);
+  const handleEditStart = useCallback((id: string, task: string) => {
+    console.log("Starting edit for todo:", id);
+    setEditingId(id);
     setEditingText(task);
   }, []);
 
@@ -188,14 +188,14 @@ export default function DailyTodoReminder() {
     setEditingText("");
   }, []);
 
-  const handleEditSave = useCallback((_id: string) => {
-    if (editingText.trim() && _id) {
-      console.log("Saving edit for todo:", _id);
-      dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }));
+  const handleEditSave = useCallback((id: string) => {
+    if (editingText.trim() && id) {
+      console.log("Saving edit for todo:", id);
+      dispatch(updateTodoItem({ _id: id, updates: { task: editingText.trim() } }));
       setEditingId(null);
       setEditingText("");
     } else {
-      console.error("Invalid edit data:", { _id, editingText });
+      console.error("Invalid edit data:", { id, editingText });
     }
   }, [dispatch, editingText]);
 
@@ -212,6 +212,8 @@ export default function DailyTodoReminder() {
     console.log("Reordering todos:", items);
     dispatch(reorderTodoItems(items));
   }, [dispatch, todos]);
+
+  const memoizedTodos = useMemo(() => todos, [todos]);
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
@@ -241,7 +243,7 @@ export default function DailyTodoReminder() {
           <Droppable droppableId="todos">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                {todos.map((todo, index) => (
+                {memoizedTodos.map((todo, index) => (
                   <TodoItemComponent
                     key={todo._id}
                     todo={todo}

@@ -1,10 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { todoApi } from '@/services/api/todoApi';
 
 export interface TodoItem {
   _id: string;
   task: string;
   completed: boolean;
+  order: number;
 }
 
 interface TodoState {
@@ -80,13 +81,14 @@ export const deleteTodoItem = createAsyncThunk<string, string, { rejectValue: st
   }
 );
 
-export const resetTodoList = createAsyncThunk<void, void, { rejectValue: string }>(
+export const resetTodoList = createAsyncThunk<TodoItem[], void, { rejectValue: string }>(
   'todo/resetList',
   async (_, { rejectWithValue }) => {
     try {
       console.log("Resetting todo list");
-      await todoApi.reset();
+      const response = await todoApi.reset();
       console.log("Todo list reset completed");
+      return response.data;
     } catch (error) {
       console.error("Error resetting todo list:", error);
       return rejectWithValue('Failed to reset todo list');
@@ -112,44 +114,37 @@ export const reorderTodoItems = createAsyncThunk<TodoItem[], TodoItem[], { rejec
 const todoSlice = createSlice({
   name: 'todo',
   initialState,
+  
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
-        console.log("fetchTodoItems: pending");
         state.status = 'loading';
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
-        console.log("fetchTodoItems: fulfilled", action.payload);
         state.status = 'succeeded';
         state.items = action.payload;
       })
       .addCase(fetchTodoItems.rejected, (state, action) => {
-        console.log("fetchTodoItems: rejected", action.payload);
         state.status = 'failed';
         state.error = action.payload || 'Failed to fetch todo items';
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {
-        console.log("addTodoItem: fulfilled", action.payload);
         state.items.push(action.payload);
       })
       .addCase(updateTodoItem.fulfilled, (state, action) => {
-        console.log("updateTodoItem: fulfilled", action.payload);
         const index = state.items.findIndex((item) => item._id === action.payload._id);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
       })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
-        console.log("deleteTodoItem: fulfilled", action.payload);
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
-      .addCase(resetTodoList.fulfilled, (state) => {
-        console.log("resetTodoList: fulfilled");
-        state.items = [];
+      .addCase(resetTodoList.fulfilled, (state, action) => {
+        state.items = action.payload;
       })
       .addCase(reorderTodoItems.fulfilled, (state, action) => {
-        console.log("reorderTodoItems: fulfilled", action.payload);
         state.items = action.payload;
       });
   },
