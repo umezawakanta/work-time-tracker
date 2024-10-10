@@ -1,33 +1,11 @@
-import { AxiosResponse } from "axios";
-import { TodoItem } from "@/store/todoSlice";
-import { api } from "./apiConfig";
-
-interface TodoApiResponse {
-  message: string;
-  todo: TodoItem;
-}
+import { api } from './apiConfig';
+import { TodoItem } from '@/store/todoSlice';
 
 export const todoApi = {
-  getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
-    return api.get<TodoItem[]>("/todos");
-  },
-
-  create: (task: string): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.post<TodoApiResponse>("/todos", { task });
-  },
-
-  update: (
-    _id: string,
-    updates: Partial<TodoItem>
-  ): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.put<TodoApiResponse>(`/todos/${_id}`, updates);
-  },
-
-  delete: (_id: string): Promise<AxiosResponse<void>> => {
-    return api.delete(`/todos/${_id}`);
-  },
-
-  reset: (): Promise<AxiosResponse<TodoItem[]>> => {
-    return api.post<TodoItem[]>("/todos/reset");
-  },
+  getAll: () => api.get<TodoItem[]>('/todos'),
+  create: (task: string) => api.post<TodoItem>('/todos', { task }),
+  update: (id: string, updates: Partial<TodoItem>) => api.put<TodoItem>(`/todos/${id}`, updates),
+  delete: (id: string) => api.delete(`/todos/${id}`),
+  reset: () => api.post('/todos/reset'),
+  reorder: (items: TodoItem[]) => api.put<TodoItem[]>('/todos/reorder', { items }),
 };
