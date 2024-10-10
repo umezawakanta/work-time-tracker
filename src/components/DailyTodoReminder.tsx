@@ -15,12 +15,22 @@ import {
   deleteTodoItem,
   resetTodoList,
   reorderTodoItems,
-  TodoItem,
 } from "@/store/todoSlice";
 import { RootState, AppDispatch } from "@/store";
 
+interface TodoItemInterface {
+  _id: string;
+  task: string;
+  completed: boolean;
+  order: number;
+}
+
+interface DraggableTodoItem extends TodoItemInterface {
+  id: string;
+}
+
 interface TodoItemComponentProps {
-  todo: TodoItem;
+  todo: DraggableTodoItem;
   index: number;
   onToggle: (id: string) => void;
   onEdit: (id: string, task: string) => void;
@@ -42,11 +52,12 @@ const TodoItemComponent = memo(({
   onEditSave, 
   onEditCancel 
 }: TodoItemComponentProps) => {
-  console.log(`Rendering TodoItemComponent for todo: ${todo._id}`);
+  console.log(`Rendering TodoItemComponent for todo:`, todo);
+
   return (
-    <Draggable key={todo._id} draggableId={todo._id} index={index}>
+    <Draggable draggableId={todo.id} index={index}>
       {(provided, snapshot) => {
-        console.log(`Draggable state for todo ${todo._id}:`, snapshot);
+        console.log(`Draggable state for todo ${todo.id}:`, snapshot);
         return (
           <div
             ref={provided.innerRef}
@@ -56,7 +67,7 @@ const TodoItemComponent = memo(({
           >
             <GripVertical className="h-4 w-4 text-gray-400" />
             <Checkbox
-              id={`todo-${todo._id}`}
+              id={`todo-${todo.id}`}
               checked={todo.completed}
               onCheckedChange={() => onToggle(todo._id)}
             />
@@ -81,7 +92,7 @@ const TodoItemComponent = memo(({
             ) : (
               <>
                 <Label
-                  htmlFor={`todo-${todo._id}`}
+                  htmlFor={`todo-${todo.id}`}
                   className={`flex-grow ${
                     todo.completed ? "line-through text-gray-500" : ""
                   }`}
@@ -111,7 +122,7 @@ const TodoItemComponent = memo(({
   );
 });
 
-export default function Component() {
+export default function DailyTodoReminder() {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.todo.items);
   const status = useSelector((state: RootState) => state.todo.status);
@@ -131,6 +142,11 @@ export default function Component() {
 
   useEffect(() => {
     console.log("Todos updated:", todos);
+    todos.forEach(todo => {
+      if (!todo._id) {
+        console.error("Todo item missing _id:", todo);
+      }
+    });
   }, [todos]);
 
   useEffect(() => {
@@ -218,7 +234,12 @@ export default function Component() {
     dispatch(reorderTodoItems(items));
   }, [dispatch, todos]);
 
-  const memoizedTodos = useMemo(() => todos, [todos]);
+  const memoizedTodos = useMemo(() => {
+    return todos.map(todo => ({
+      ...todo,
+      id: todo._id
+    }));
+  }, [todos]);
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
@@ -252,7 +273,7 @@ export default function Component() {
                 <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
                   {memoizedTodos.map((todo, index) => (
                     <TodoItemComponent
-                      key={todo._id}
+                      key={todo.id}
                       todo={todo}
                       index={index}
                       onToggle={handleToggle}
