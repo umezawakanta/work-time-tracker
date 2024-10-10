@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { Book, fetchBooks, addBook, updateBook, removeBook } from '../store/bookSlice';
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
+import {
+  Book,
+  fetchBooks,
+  addBook,
+  updateBook,
+  removeBook,
+} from "../store/bookSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,32 +19,40 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import BookCard from './BookCard';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import BookCard from "./BookCard";
 import { toast } from "@/components/ui/use-toast";
 
-const initialBookState: Omit<Book, 'id'> = {
-  title: '',
-  author: '',
-  isbn: '',
+const initialBookState: Omit<Book, "id"> = {
+  title: "",
+  author: "",
+  isbn: "",
   publishedYear: new Date().getFullYear(),
   totalPages: 0,
   readPages: 0,
-  category: '',
+  category: "",
   rating: 0,
 };
 
 export default function Component() {
   const dispatch = useDispatch<AppDispatch>();
-  const { books, status, error } = useSelector((state: RootState) => state.book);
+  const { books, status, error } = useSelector(
+    (state: RootState) => state.book
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [newBook, setNewBook] = useState<Omit<Book, 'id'>>(initialBookState);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [newBook, setNewBook] = useState<Omit<Book, "id">>(initialBookState);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchBooks());
     }
   }, [status, dispatch]);
@@ -61,28 +75,35 @@ export default function Component() {
     }
   }, [error]);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewBook(prev => ({
-      ...prev,
-      [name]: ['publishedYear', 'totalPages', 'readPages', 'rating'].includes(name) 
-        ? Math.max(0, parseInt(value, 10) || 0)
-        : value,
-    }));
-  }, []);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setNewBook((prev) => ({
+        ...prev,
+        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(
+          name
+        )
+          ? Math.max(0, parseInt(value, 10) || 0)
+          : value,
+      }));
+    },
+    []
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editingBook) {
-        console.log('Updating book:', { ...newBook, id: editingBook.id });
-        await dispatch(updateBook({ ...newBook, id: editingBook.id })).unwrap();
+        console.log("Updating book:", { ...newBook, id: editingBook.id });
+        await dispatch(
+          updateBook({ ...newBook, id: editingBook.id })
+        ).unwrap();
         toast({
           title: "成功",
           description: "本が正常に更新されました。",
         });
       } else {
-        console.log('Adding new book:', newBook);
+        console.log("Adding new book:", newBook);
         await dispatch(addBook(newBook)).unwrap();
         toast({
           title: "成功",
@@ -93,7 +114,7 @@ export default function Component() {
       setEditingBook(null);
       setNewBook(initialBookState);
     } catch (error) {
-      console.error('本の保存中にエラーが発生しました:', error);
+      console.error("本の保存中にエラーが発生しました:", error);
       toast({
         title: "エラー",
         description: "本の保存中にエラーが発生しました。",
@@ -103,37 +124,41 @@ export default function Component() {
   };
 
   const handleEdit = useCallback((book: Book) => {
-    console.log('Editing book:', book);
+    console.log("Editing book:", book);
     setEditingBook(book);
     setIsDialogOpen(true);
   }, []);
 
-  const handleDelete = useCallback(async (id: string) => {
-    try {
-      await dispatch(removeBook(id)).unwrap();
-      toast({
-        title: "成功",
-        description: "本が正常に削除されました。",
-      });
-    } catch (error) {
-      console.error('本の削除中にエラーが発生しました:', error);
-      toast({
-        title: "エラー",
-        description: "本の削除中にエラーが発生しました。",
-        variant: "destructive",
-      });
-    }
-  }, [dispatch]);
-
-  const filteredBooks = books.filter(book => 
-    (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'all' || book.category === selectedCategory)
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await dispatch(removeBook(id)).unwrap();
+        toast({
+          title: "成功",
+          description: "本が正常に削除されました。",
+        });
+      } catch (error) {
+        console.error("本の削除中にエラーが発生しました:", error);
+        toast({
+          title: "エラー",
+          description: "本の削除中にエラーが発生しました。",
+          variant: "destructive",
+        });
+      }
+    },
+    [dispatch]
   );
 
-  const categories = ['小説', 'ノンフィクション', '技術書', 'その他'];
+  const filteredBooks = books.filter(
+    (book) =>
+      (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (selectedCategory === "all" || book.category === selectedCategory)
+  );
 
-  if (status === 'loading') {
+  const categories = ["小説", "ノンフィクション", "技術書", "その他"];
+
+  if (status === "loading") {
     return <div>Loading...</div>;
   }
 
@@ -152,15 +177,17 @@ export default function Component() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">全て</SelectItem>
-            {categories.map(category => (
-              <SelectItem key={category} value={category}>{category}</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredBooks.map(book => (
+        {filteredBooks.map((book) => (
           <BookCard
             key={book.id}
             book={book}
@@ -172,9 +199,13 @@ export default function Component() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingBook ? '本を編集' : '新しい本を追加'}</DialogTitle>
+            <DialogTitle>
+              {editingBook ? "本を編集" : "新しい本を追加"}
+            </DialogTitle>
             <DialogDescription>
-              {editingBook ? '本の情報を更新してください。' : '新しい本の情報を入力してください。'}
+              {editingBook
+                ? "本の情報を更新してください。"
+                : "新しい本の情報を入力してください。"}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
@@ -222,13 +253,21 @@ export default function Component() {
               </div>
               <div>
                 <Label htmlFor="category">カテゴリー</Label>
-                <Select name="category" value={newBook.category} onValueChange={(value) => setNewBook(prev => ({ ...prev, category: value }))}>
+                <Select
+                  name="category"
+                  value={newBook.category}
+                  onValueChange={(value) =>
+                    setNewBook((prev) => ({ ...prev, category: value }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="カテゴリーを選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -257,20 +296,31 @@ export default function Component() {
               </div>
               <div>
                 <Label htmlFor="rating">評価</Label>
-                <Select name="rating" value={newBook.rating.toString()} onValueChange={(value) => setNewBook(prev => ({ ...prev, rating: parseInt(value, 10) }))}>
+                <Select
+                  name="rating"
+                  value={newBook.rating.toString()}
+                  onValueChange={(value) =>
+                    setNewBook((prev) => ({
+                      ...prev,
+                      rating: parseInt(value, 10),
+                    }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="評価を選択" />
                   </SelectTrigger>
                   <SelectContent>
-                    {[0, 1, 2, 3, 4, 5].map(rating => (
-                      <SelectItem key={rating} value={rating.toString()}>{rating} {rating === 1 ? '星' : '星'}</SelectItem>
+                    {[0, 1, 2, 3, 4, 5].map((rating) => (
+                      <SelectItem key={rating} value={rating.toString()}>
+                        {rating} {rating === 1 ? "星" : "星"}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter className="mt-4">
-              <Button type="submit">{editingBook ? '更新' : '追加'}</Button>
+              <Button type="submit">{editingBook ? "更新" : "追加"}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
