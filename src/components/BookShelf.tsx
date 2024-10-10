@@ -30,6 +30,7 @@ import BookCard from "./BookCard";
 import { toast } from "@/components/ui/use-toast";
 
 const initialBookState: Omit<Book, "id"> = {
+  _id: "",
   title: "",
   author: "",
   isbn: "",
@@ -38,6 +39,7 @@ const initialBookState: Omit<Book, "id"> = {
   readPages: 0,
   category: "",
   rating: 0,
+  createdAt: new Date(),
 };
 
 export default function Component() {
@@ -94,9 +96,9 @@ export default function Component() {
     e.preventDefault();
     try {
       if (editingBook) {
-        console.log("Updating book:", { ...newBook, id: editingBook.id });
+        console.log("Updating book:", { ...newBook, id: editingBook._id });
         await dispatch(
-          updateBook({ ...newBook, id: editingBook.id })
+          updateBook({ ...newBook, _id: editingBook._id })
         ).unwrap();
         toast({
           title: "成功",
@@ -189,7 +191,7 @@ export default function Component() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredBooks.map((book) => (
           <BookCard
-            key={book.id}
+            key={book._id}
             book={book}
             onEdit={handleEdit}
             onDelete={handleDelete}

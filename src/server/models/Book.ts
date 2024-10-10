@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IBook extends mongoose.Document {
+  _id: mongoose.Types.ObjectId;
   title: string;
   author: string;
   isbn: string;

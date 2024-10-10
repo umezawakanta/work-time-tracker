@@ -34,23 +34,26 @@ router.get('/', async (_req, res) => {
 
 // PUT update book
 router.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    console.log('Updating book on server. ID:', id);
-    console.log('Update data:', updates);
-    const updatedBook = await Book.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
-    if (!updatedBook) {
-      console.log('Book not found. ID:', id);
-      return res.status(404).json({ message: 'Book not found' });
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      console.log('Updating book on server. ID:', id);
+      console.log('Update data:', updates);
+      if (!id) {
+        return res.status(400).json({ message: 'Book ID is required' });
+      }
+      const updatedBook = await Book.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+      if (!updatedBook) {
+        console.log('Book not found. ID:', id);
+        return res.status(404).json({ message: 'Book not found' });
+      }
+      console.log('Book updated successfully:', updatedBook);
+      res.json({ message: 'Book updated successfully', book: updatedBook });
+    } catch (error) {
+      console.error('Error updating book:', error);
+      res.status(500).json({ message: 'Error updating book', error: error instanceof Error ? error.message : 'An unknown error occurred' });
     }
-    console.log('Book updated successfully:', updatedBook);
-    res.json({ message: 'Book updated successfully', book: updatedBook });
-  } catch (error) {
-    console.error('Error updating book:', error);
-    res.status(500).json({ message: 'Error updating book', error: error instanceof Error ? error.message : 'An unknown error occurred' });
-  }
-});
+  });
 
 // DELETE book
 router.delete('/:id', async (req, res) => {

@@ -32,7 +32,7 @@ const BookCard: React.FC<BookCardProps> = memo(({ book, onEdit, onDelete }) => {
         <Button variant="outline" size="icon" onClick={() => onEdit(book)}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon" onClick={() => onDelete(book.id)}>
+        <Button variant="outline" size="icon" onClick={() => onDelete(book._id)}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
