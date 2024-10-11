@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +44,7 @@ export default function DailyTodoReminder() {
     }
   }, [error]);
 
-  const handleToggle = (_id: string) => {
+  const handleToggle = useCallback((_id: string) => {
     console.log("Toggling todo:", _id);
     const todoToUpdate = todos.find((todo) => todo._id === _id);
     if (todoToUpdate && _id) {
@@ -70,9 +70,9 @@ export default function DailyTodoReminder() {
       console.error(`Invalid todo item or ID: ${_id}`);
       toast.error(`Invalid todo item or ID: ${_id}`);
     }
-  };
+  }, [dispatch, todos]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     console.log("Resetting todo list");
     dispatch(resetTodoList())
       .unwrap()
@@ -84,9 +84,9 @@ export default function DailyTodoReminder() {
         console.error("Error resetting todo list:", error);
         toast.error(`Error resetting todo list: ${error}`);
       });
-  };
+  }, [dispatch]);
 
-  const handleAddTodo = (e: React.FormEvent) => {
+  const handleAddTodo = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
       console.log("Adding new todo:", newTodo.trim());
@@ -102,9 +102,9 @@ export default function DailyTodoReminder() {
           toast.error(`Error adding new todo item: ${error}`);
         });
     }
-  };
+  }, [dispatch, newTodo]);
 
-  const handleDeleteTodo = (_id: string) => {
+  const handleDeleteTodo = useCallback((_id: string) => {
     if (_id) {
       console.log("Deleting todo:", _id);
       dispatch(deleteTodoItem(_id))
@@ -121,21 +121,21 @@ export default function DailyTodoReminder() {
       console.error(`Invalid todo item ID: ${_id}`);
       toast.error(`Invalid todo item ID: ${_id}`);
     }
-  };
+  }, [dispatch]);
 
-  const handleEditStart = (_id: string, task: string) => {
+  const handleEditStart = useCallback((_id: string, task: string) => {
     console.log("Starting edit for todo:", _id);
     setEditingId(_id);
     setEditingText(task);
-  };
+  }, []);
 
-  const handleEditCancel = () => {
+  const handleEditCancel = useCallback(() => {
     console.log("Cancelling edit");
     setEditingId(null);
     setEditingText("");
-  };
+  }, []);
 
-  const handleEditSave = (_id: string) => {
+  const handleEditSave = useCallback((_id: string) => {
     if (editingText.trim() && _id) {
       console.log("Saving edit for todo:", _id);
       dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }))
@@ -154,9 +154,9 @@ export default function DailyTodoReminder() {
       console.error(`Invalid todo item or ID: ${_id}`);
       toast.error(`Invalid todo item or ID: ${_id}`);
     }
-  };
+  }, [dispatch, editingText]);
 
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = useCallback((result: DropResult) => {
     console.log("Drag ended:", result);
     if (!result.destination) {
       return;
@@ -169,7 +169,7 @@ export default function DailyTodoReminder() {
     console.log("Reordered items:", items);
     // ここでReorderのアクションをディスパッチする必要があります
     // 例: dispatch(reorderTodoItems(items));
-  };
+  }, [todos]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -201,7 +201,7 @@ export default function DailyTodoReminder() {
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
                 {Array.isArray(todos) &&
                   todos.map((todo: TodoItem, index: number) => (
-                    <Draggable key={todo._id} draggableId={todo._id} index={index}>
+                    <Draggable key={todo._id} draggableId={todo._id.toString()} index={index}>
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
