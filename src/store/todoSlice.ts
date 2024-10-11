@@ -1,152 +1,120 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { todoApi } from '@/services/api/todoApi';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { todoApi } from "@/services/api/todoApi";
 
 export interface TodoItem {
   _id: string;
   task: string;
   completed: boolean;
-  order: number;
 }
 
 interface TodoState {
   items: TodoItem[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: TodoState = {
   items: [],
-  status: 'idle',
+  status: "idle",
   error: null,
 };
 
-export const fetchTodoItems = createAsyncThunk<TodoItem[], void, { rejectValue: string }>(
-  'todo/fetchItems',
-  async (_, { rejectWithValue }) => {
-    try {
-      console.log("Fetching todo items from API");
-      const response = await todoApi.getAll();
-      console.log("Fetched todo items:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching todo items:", error);
-      return rejectWithValue('Failed to fetch todo items');
-    }
-  }
-);
-
-export const addTodoItem = createAsyncThunk<TodoItem, string, { rejectValue: string }>(
-  'todo/addItem',
-  async (task, { rejectWithValue }) => {
-    try {
-      console.log("Adding new todo item:", task);
-      const response = await todoApi.create(task);
-      console.log("Added todo item:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error adding todo item:", error);
-      return rejectWithValue('Failed to add todo item');
-    }
-  }
-);
-
-export const updateTodoItem = createAsyncThunk<
-  TodoItem,
-  { _id: string; updates: Partial<TodoItem> },
-  { rejectValue: string }
->('todo/updateItem', async ({ _id, updates }, { rejectWithValue }) => {
-  try {
-    console.log("Updating todo item:", _id, updates);
-    const response = await todoApi.update(_id, updates);
-    console.log("Updated todo item:", response.data);
+export const fetchTodoItems = createAsyncThunk(
+  "todo/fetchTodoItems",
+  async () => {
+    const response = await todoApi.getAll();
     return response.data;
-  } catch (error) {
-    console.error("Error updating todo item:", error);
-    return rejectWithValue('Failed to update todo item');
-  }
-});
-
-export const deleteTodoItem = createAsyncThunk<string, string, { rejectValue: string }>(
-  'todo/deleteItem',
-  async (_id, { rejectWithValue }) => {
-    try {
-      console.log("Deleting todo item:", _id);
-      await todoApi.delete(_id);
-      console.log("Deleted todo item:", _id);
-      return _id;
-    } catch (error) {
-      console.error("Error deleting todo item:", error);
-      return rejectWithValue('Failed to delete todo item');
-    }
   }
 );
 
-export const resetTodoList = createAsyncThunk<TodoItem[], void, { rejectValue: string }>(
-  'todo/resetList',
-  async (_, { rejectWithValue }) => {
-    try {
-      console.log("Resetting todo list");
-      const response = await todoApi.reset();
-      console.log("Todo list reset completed");
-      return response.data;
-    } catch (error) {
-      console.error("Error resetting todo list:", error);
-      return rejectWithValue('Failed to reset todo list');
-    }
+export const addTodoItem = createAsyncThunk(
+  "todo/addTodoItem",
+  async (task: string) => {
+    const response = await todoApi.create(task);
+    return response.data.todo;
   }
 );
 
-export const reorderTodoItems = createAsyncThunk<TodoItem[], TodoItem[], { rejectValue: string }>(
-  'todo/reorderItems',
-  async (items, { rejectWithValue }) => {
-    try {
-      console.log("Reordering todo items:", items);
-      const response = await todoApi.reorder(items);
-      console.log("Reordered todo items:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error reordering todo items:", error);
-      return rejectWithValue('Failed to reorder todo items');
-    }
+export const updateTodoItem = createAsyncThunk(
+  "todo/updateTodoItem",
+  async ({ _id, updates }: { _id: string; updates: Partial<TodoItem> }) => {
+    const response = await todoApi.update(_id, updates);
+    return response.data.todo;
+  }
+);
+
+export const deleteTodoItem = createAsyncThunk(
+  "todo/deleteTodoItem",
+  async (_id: string) => {
+    await todoApi.delete(_id);
+    return _id;
+  }
+);
+
+export const resetTodoList = createAsyncThunk(
+  "todo/resetTodoList",
+  async () => {
+    const response = await todoApi.reset();
+    return response.data;
   }
 );
 
 const todoSlice = createSlice({
-  name: 'todo',
+  name: "todo",
   initialState,
-  
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
-      .addCase(fetchTodoItems.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.items = action.payload;
-      })
-      .addCase(fetchTodoItems.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload || 'Failed to fetch todo items';
-      })
-      .addCase(addTodoItem.fulfilled, (state, action) => {
-        state.items.push(action.payload);
-      })
-      .addCase(updateTodoItem.fulfilled, (state, action) => {
-        const index = state.items.findIndex((item) => item._id === action.payload._id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
+      .addCase(
+        fetchTodoItems.fulfilled,
+        (state, action: PayloadAction<TodoItem[]>) => {
+          state.status = "succeeded";
+          state.items = action.payload;
+          state.error = null;
         }
+      )
+      .addCase(fetchTodoItems.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Something went wrong";
       })
-      .addCase(deleteTodoItem.fulfilled, (state, action) => {
-        state.items = state.items.filter((item) => item._id !== action.payload);
-      })
-      .addCase(resetTodoList.fulfilled, (state, action) => {
-        state.items = action.payload;
-      })
-      .addCase(reorderTodoItems.fulfilled, (state, action) => {
-        state.items = action.payload;
-      });
+      .addCase(
+        addTodoItem.fulfilled,
+        (state, action: PayloadAction<TodoItem>) => {
+          state.items.push(action.payload);
+          state.error = null;
+        }
+      )
+      .addCase(
+        updateTodoItem.fulfilled,
+        (state, action: PayloadAction<TodoItem>) => {
+          const index = state.items.findIndex(
+            (item) => item._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.items[index] = action.payload;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(
+        deleteTodoItem.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.items = state.items.filter(
+            (item) => item._id !== action.payload
+          );
+          state.error = null;
+        }
+      )
+      .addCase(
+        resetTodoList.fulfilled,
+        (state, action: PayloadAction<TodoItem[]>) => {
+          state.items = action.payload;
+          state.error = null;
+        }
+      );
   },
 });
 
