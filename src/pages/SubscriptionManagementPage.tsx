@@ -125,6 +125,9 @@ export default function SubscriptionManagementPage() {
         : dateB.getTime() - dateA.getTime();
     });
 
+  // フィルターされた月の合計金額を計算
+  const totalAmount = sortedAndFilteredSubscriptions.reduce((sum, sub) => sum + sub.amount, 0);
+
   // ユニークな月のリストを作成
   const uniqueMonths = Array.from(
     new Set(
@@ -157,7 +160,7 @@ export default function SubscriptionManagementPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">サブスクリプション管理</h1>
-      
+
       {/* サブスクリプション追加/編集フォーム */}
       <form onSubmit={handleSubscriptionSubmit} className="space-y-4">
         <div>
@@ -239,6 +242,9 @@ export default function SubscriptionManagementPage() {
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="mb-4 text-lg font-semibold">
+          {filterMonth === "all" ? "全ての" : filterMonth}サブスクリプションの合計金額: {totalAmount.toLocaleString()}円
         </div>
         <Table>
           <TableHeader>
