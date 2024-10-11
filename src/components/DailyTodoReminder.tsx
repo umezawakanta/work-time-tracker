@@ -28,16 +28,23 @@ export default function DailyTodoReminder() {
   const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
+    console.log("Component mounted, fetching todo items");
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
   useEffect(() => {
+    console.log("Todos updated:", todos);
+  }, [todos]);
+
+  useEffect(() => {
     if (error) {
+      console.error("Error occurred:", error);
       toast.error(error);
     }
   }, [error]);
 
   const handleToggle = (_id: string) => {
+    console.log("Toggling todo:", _id);
     const todoToUpdate = todos.find((todo) => todo._id === _id);
     if (todoToUpdate && _id) {
       dispatch(
@@ -51,23 +58,29 @@ export default function DailyTodoReminder() {
       )
         .unwrap()
         .then(() => {
+          console.log(`Todo item ${_id} updated successfully`);
           toast.success(`Todo item ${_id} updated successfully`);
         })
         .catch((error) => {
+          console.error(`Error updating todo item ${_id}:`, error);
           toast.error(`Error updating todo item ${_id}: ${error}`);
         });
     } else {
+      console.error(`Invalid todo item or ID: ${_id}`);
       toast.error(`Invalid todo item or ID: ${_id}`);
     }
   };
 
   const handleReset = () => {
+    console.log("Resetting todo list");
     dispatch(resetTodoList())
       .unwrap()
       .then(() => {
+        console.log("Todo list reset successfully");
         toast.success("Todo list reset successfully");
       })
       .catch((error) => {
+        console.error("Error resetting todo list:", error);
         toast.error(`Error resetting todo list: ${error}`);
       });
   };
@@ -75,13 +88,16 @@ export default function DailyTodoReminder() {
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
+      console.log("Adding new todo:", newTodo.trim());
       dispatch(addTodoItem(newTodo.trim()))
         .unwrap()
         .then(() => {
+          console.log("New todo item added successfully");
           toast.success("New todo item added successfully");
           setNewTodo("");
         })
         .catch((error) => {
+          console.error("Error adding new todo item:", error);
           toast.error(`Error adding new todo item: ${error}`);
         });
     }
@@ -89,42 +105,52 @@ export default function DailyTodoReminder() {
 
   const handleDeleteTodo = (_id: string) => {
     if (_id) {
+      console.log("Deleting todo:", _id);
       dispatch(deleteTodoItem(_id))
         .unwrap()
         .then(() => {
+          console.log(`Todo item ${_id} deleted successfully`);
           toast.success(`Todo item ${_id} deleted successfully`);
         })
         .catch((error) => {
+          console.error(`Error deleting todo item ${_id}:`, error);
           toast.error(`Error deleting todo item ${_id}: ${error}`);
         });
     } else {
+      console.error(`Invalid todo item ID: ${_id}`);
       toast.error(`Invalid todo item ID: ${_id}`);
     }
   };
 
   const handleEditStart = (_id: string, task: string) => {
+    console.log("Starting edit for todo:", _id);
     setEditingId(_id);
     setEditingText(task);
   };
 
   const handleEditCancel = () => {
+    console.log("Cancelling edit");
     setEditingId(null);
     setEditingText("");
   };
 
   const handleEditSave = (_id: string) => {
     if (editingText.trim() && _id) {
+      console.log("Saving edit for todo:", _id);
       dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }))
         .unwrap()
         .then(() => {
+          console.log(`Todo item ${_id} updated successfully`);
           toast.success(`Todo item ${_id} updated successfully`);
           setEditingId(null);
           setEditingText("");
         })
         .catch((error) => {
+          console.error(`Error updating todo item ${_id}:`, error);
           toast.error(`Error updating todo item ${_id}: ${error}`);
         });
     } else {
+      console.error(`Invalid todo item or ID: ${_id}`);
       toast.error(`Invalid todo item or ID: ${_id}`);
     }
   };
@@ -132,6 +158,8 @@ export default function DailyTodoReminder() {
   if (status === "loading") {
     return <div>Loading...</div>;
   }
+
+  console.log("Rendering DailyTodoReminder. Todos count:", todos.length);
 
   return (
     <Card className="w-full mb-8">
