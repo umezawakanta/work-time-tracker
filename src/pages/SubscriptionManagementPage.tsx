@@ -37,7 +37,6 @@ export default function SubscriptionManagementPage() {
     (state: RootState) => state.subscription
   );
 
-  // 新しいサブスクリプションの状態
   const [newSubscription, setNewSubscription] = useState<
     Omit<Subscription, "_id">
   >({
@@ -47,24 +46,18 @@ export default function SubscriptionManagementPage() {
     amount: 0,
   });
 
-  // 編集中のサブスクリプションの状態
   const [editingSubscription, setEditingSubscription] =
     useState<Subscription | null>(null);
-
-  // ソート順の状態
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-
-  // フィルター月の状態
   const [filterMonth, setFilterMonth] = useState<string>("all");
+  const [filterType, setFilterType] = useState<string>("all");
 
-  // コンポーネントのマウント時にサブスクリプションを取得
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchSubscriptions());
     }
   }, [status, dispatch]);
 
-  // サブスクリプションの追加または更新を処理する関数
   const handleSubscriptionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -90,13 +83,11 @@ export default function SubscriptionManagementPage() {
     }
   };
 
-  // サブスクリプションの編集を開始する関数
   const handleEdit = (subscription: Subscription) => {
     setEditingSubscription(subscription);
     setNewSubscription(subscription);
   };
 
-  // サブスクリプションを削除する関数
   const handleDelete = async (id: string) => {
     try {
       await dispatch(deleteSubscription(id)).unwrap();
@@ -105,17 +96,18 @@ export default function SubscriptionManagementPage() {
     }
   };
 
-  // ソート順を切り替える関数
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
-  // サブスクリプションをソートおよびフィルタリングする
   const sortedAndFilteredSubscriptions = subscriptions
     .filter((sub) => {
-      if (filterMonth === "all") return true;
-      const [year, month] = sub.billingDate.split("/");
-      return `${year}/${month}` === filterMonth;
+      const monthFilter = filterMonth === "all" || (() => {
+        const [year, month] = sub.billingDate.split("/");
+        return `${year}/${month}` === filterMonth;
+      })();
+      const typeFilter = filterType === "all" || sub.type === filterType;
+      return monthFilter && typeFilter;
     })
     .sort((a, b) => {
       const dateA = new Date(a.billingDate.replace(/\//g, "-"));
@@ -125,10 +117,8 @@ export default function SubscriptionManagementPage() {
         : dateB.getTime() - dateA.getTime();
     });
 
-  // フィルターされた月の合計金額を計算
   const totalAmount = sortedAndFilteredSubscriptions.reduce((sum, sub) => sum + sub.amount, 0);
 
-  // ユニークな月のリストを作成
   const uniqueMonths = Array.from(
     new Set(
       subscriptions.map((sub) => {
@@ -138,7 +128,10 @@ export default function SubscriptionManagementPage() {
     )
   ).sort();
 
-  // ローディング中の表示
+  const uniqueTypes = Array.from(
+    new Set(subscriptions.map((sub) => sub.type))
+  ).sort();
+
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -147,7 +140,6 @@ export default function SubscriptionManagementPage() {
     );
   }
 
-  // エラー時の表示
   if (status === "failed") {
     return (
       <Alert variant="destructive">
@@ -161,7 +153,6 @@ export default function SubscriptionManagementPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">サブスクリプション管理</h1>
 
-      {/* サブスクリプション追加/編集フォーム */}
       <form onSubmit={handleSubscriptionSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">名称</Label>
@@ -221,7 +212,6 @@ export default function SubscriptionManagementPage() {
         <Button type="submit">{editingSubscription ? "更新" : "登録"}</Button>
       </form>
 
-      {/* サブスクリプション一覧 */}
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">サブスクリプション一覧</h2>
         <div className="flex justify-between items-center mb-4">
@@ -229,22 +219,39 @@ export default function SubscriptionManagementPage() {
             引き落とし日でソート
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-          <Select value={filterMonth} onValueChange={setFilterMonth}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="月でフィルター" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全て表示</SelectItem>
-              {uniqueMonths.map((month) => (
-                <SelectItem key={month} value={month}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex space-x-2">
+            <Select value={filterMonth} onValueChange={setFilterMonth}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="月でフィルター" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全ての月</SelectItem>
+                {uniqueMonths.map((month) => (
+                  <SelectItem key={month} value={month}>
+                    {month}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="種別でフィルター" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全ての種別</SelectItem>
+                {uniqueTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="mb-4 text-lg font-semibold">
-          {filterMonth === "all" ? "全ての" : filterMonth}サブスクリプションの合計金額: {totalAmount.toLocaleString()}円
+          {filterMonth === "all" ? "全ての月" : filterMonth}
+          {filterType !== "all" && `、${filterType}`}
+          のサブスクリプションの合計金額: {totalAmount.toLocaleString()}円
         </div>
         <Table>
           <TableHeader>
@@ -285,12 +292,10 @@ export default function SubscriptionManagementPage() {
         </Table>
       </div>
 
-      {/* サブスクリプションチャート */}
       <div className="mt-8">
         <SubscriptionCharts subscriptions={subscriptions} />
       </div>
 
-      {/* 月別サブスクリプションチャート */}
       <MonthlySubscriptionChart subscriptions={subscriptions} />
     </div>
   );
