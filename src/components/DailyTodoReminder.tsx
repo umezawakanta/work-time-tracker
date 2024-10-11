@@ -100,24 +100,24 @@ export default function DailyTodoReminder() {
   }
 
   return (
-    <Card className="w-full mb-8">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">本日のToDoリスト</CardTitle>
-        <Button variant="ghost" size="sm" onClick={handleReset}>
-          <RefreshCcw className="h-4 w-4" />
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
-          <Input
-            type="text"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            placeholder="新しいタスクを追加"
-          />
-          <Button type="submit">追加</Button>
-        </form>
-        <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Card className="w-full mb-8">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">本日のToDoリスト</CardTitle>
+          <Button variant="ghost" size="sm" onClick={handleReset}>
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
+            <Input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="新しいタスクを追加"
+            />
+            <Button type="submit">追加</Button>
+          </form>
           <Droppable droppableId="todos">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
@@ -127,10 +127,11 @@ export default function DailyTodoReminder() {
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        {...provided.dragHandleProps}
                         className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm"
                       >
-                        <GripVertical className="h-4 w-4 text-gray-400" />
+                        <div {...provided.dragHandleProps}>
+                          <GripVertical className="h-4 w-4 text-gray-400" />
+                        </div>
                         <Checkbox
                           id={`todo-${todo._id}`}
                           checked={todo.completed}
@@ -188,8 +189,8 @@ export default function DailyTodoReminder() {
               </div>
             )}
           </Droppable>
-        </DragDropContext>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </DragDropContext>
   );
 }
