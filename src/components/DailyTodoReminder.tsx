@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -95,11 +95,6 @@ export default function DailyTodoReminder() {
     dispatch(reorderTodoItems(items));
   }, [dispatch, todos]);
 
-  const memoizedTodos = useMemo(() => todos.map((todo) => ({
-    ...todo,
-    id: todo._id.toString(),
-  })), [todos]);
-
   if (status === "loading") {
     return <div>読み込み中...</div>;
   }
@@ -126,8 +121,8 @@ export default function DailyTodoReminder() {
           <Droppable droppableId="todos">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                {memoizedTodos.map((todo, index) => (
-                  <Draggable key={todo.id} draggableId={todo.id} index={index}>
+                {todos.map((todo, index) => (
+                  <Draggable key={todo._id} draggableId={todo._id} index={index}>
                     {(provided) => (
                       <div
                         ref={provided.innerRef}
@@ -137,7 +132,7 @@ export default function DailyTodoReminder() {
                       >
                         <GripVertical className="h-4 w-4 text-gray-400" />
                         <Checkbox
-                          id={`todo-${todo.id}`}
+                          id={`todo-${todo._id}`}
                           checked={todo.completed}
                           onCheckedChange={() => handleToggle(todo._id)}
                         />
@@ -162,7 +157,7 @@ export default function DailyTodoReminder() {
                         ) : (
                           <>
                             <Label
-                              htmlFor={`todo-${todo.id}`}
+                              htmlFor={`todo-${todo._id}`}
                               className={`flex-grow ${
                                 todo.completed ? "line-through text-gray-500" : ""
                               }`}
