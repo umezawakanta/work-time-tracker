@@ -29,23 +29,28 @@ export default function DailyTodoReminder() {
   const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
-    console.log("Component mounted, fetching todo items");
+    console.log("コンポーネントがマウントされました。Todoアイテムを取得中...");
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Todos updated:", todos);
+    console.log("Todosが更新されました:", todos);
+    todos.forEach(todo => {
+      if (typeof todo._id !== 'string') {
+        console.warn(`Todoアイテムの_idが文字列ではありません:`, todo);
+      }
+    });
   }, [todos]);
 
   useEffect(() => {
     if (error) {
-      console.error("Error occurred:", error);
+      console.error("エラーが発生しました:", error);
       toast.error(error);
     }
   }, [error]);
 
   const handleToggle = useCallback((_id: string) => {
-    console.log("Toggling todo:", _id);
+    console.log("Todoの状態を切り替えています:", _id);
     const todoToUpdate = todos.find((todo) => todo._id === _id);
     if (todoToUpdate && _id) {
       dispatch(
@@ -59,105 +64,105 @@ export default function DailyTodoReminder() {
       )
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${_id} updated successfully`);
-          toast.success(`Todo item ${_id} updated successfully`);
+          console.log(`Todoアイテム ${_id} が正常に更新されました`);
+          toast.success(`Todoアイテム ${_id} が正常に更新されました`);
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${_id}:`, error);
-          toast.error(`Error updating todo item ${_id}: ${error}`);
+          console.error(`Todoアイテム ${_id} の更新中にエラーが発生しました:`, error);
+          toast.error(`Todoアイテム ${_id} の更新中にエラーが発生しました: ${error}`);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${_id}`);
-      toast.error(`Invalid todo item or ID: ${_id}`);
+      console.error(`無効なTodoアイテムまたはID: ${_id}`);
+      toast.error(`無効なTodoアイテムまたはID: ${_id}`);
     }
   }, [dispatch, todos]);
 
   const handleReset = useCallback(() => {
-    console.log("Resetting todo list");
+    console.log("Todoリストをリセットしています");
     dispatch(resetTodoList())
       .unwrap()
       .then(() => {
-        console.log("Todo list reset successfully");
-        toast.success("Todo list reset successfully");
+        console.log("Todoリストが正常にリセットされました");
+        toast.success("Todoリストが正常にリセットされました");
       })
       .catch((error) => {
-        console.error("Error resetting todo list:", error);
-        toast.error(`Error resetting todo list: ${error}`);
+        console.error("Todoリストのリセット中にエラーが発生しました:", error);
+        toast.error(`Todoリストのリセット中にエラーが発生しました: ${error}`);
       });
   }, [dispatch]);
 
   const handleAddTodo = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
-      console.log("Adding new todo:", newTodo.trim());
+      console.log("新しいTodoを追加しています:", newTodo.trim());
       dispatch(addTodoItem(newTodo.trim()))
         .unwrap()
         .then(() => {
-          console.log("New todo item added successfully");
-          toast.success("New todo item added successfully");
+          console.log("新しいTodoアイテムが正常に追加されました");
+          toast.success("新しいTodoアイテムが正常に追加されました");
           setNewTodo("");
         })
         .catch((error) => {
-          console.error("Error adding new todo item:", error);
-          toast.error(`Error adding new todo item: ${error}`);
+          console.error("新しいTodoアイテムの追加中にエラーが発生しました:", error);
+          toast.error(`新しいTodoアイテムの追加中にエラーが発生しました: ${error}`);
         });
     }
   }, [dispatch, newTodo]);
 
   const handleDeleteTodo = useCallback((_id: string) => {
     if (_id) {
-      console.log("Deleting todo:", _id);
+      console.log("Todoを削除しています:", _id);
       dispatch(deleteTodoItem(_id))
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${_id} deleted successfully`);
-          toast.success(`Todo item ${_id} deleted successfully`);
+          console.log(`Todoアイテム ${_id} が正常に削除されました`);
+          toast.success(`Todoアイテム ${_id} が正常に削除されました`);
         })
         .catch((error) => {
-          console.error(`Error deleting todo item ${_id}:`, error);
-          toast.error(`Error deleting todo item ${_id}: ${error}`);
+          console.error(`Todoアイテム ${_id} の削除中にエラーが発生しました:`, error);
+          toast.error(`Todoアイテム ${_id} の削除中にエラーが発生しました: ${error}`);
         });
     } else {
-      console.error(`Invalid todo item ID: ${_id}`);
-      toast.error(`Invalid todo item ID: ${_id}`);
+      console.error(`無効なTodoアイテムID: ${_id}`);
+      toast.error(`無効なTodoアイテムID: ${_id}`);
     }
   }, [dispatch]);
 
   const handleEditStart = useCallback((_id: string, task: string) => {
-    console.log("Starting edit for todo:", _id);
+    console.log("Todoの編集を開始しています:", _id);
     setEditingId(_id);
     setEditingText(task);
   }, []);
 
   const handleEditCancel = useCallback(() => {
-    console.log("Cancelling edit");
+    console.log("編集をキャンセルしています");
     setEditingId(null);
     setEditingText("");
   }, []);
 
   const handleEditSave = useCallback((_id: string) => {
     if (editingText.trim() && _id) {
-      console.log("Saving edit for todo:", _id);
+      console.log("Todoの編集を保存しています:", _id);
       dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }))
         .unwrap()
         .then(() => {
-          console.log(`Todo item ${_id} updated successfully`);
-          toast.success(`Todo item ${_id} updated successfully`);
+          console.log(`Todoアイテム ${_id} が正常に更新されました`);
+          toast.success(`Todoアイテム ${_id} が正常に更新されました`);
           setEditingId(null);
           setEditingText("");
         })
         .catch((error) => {
-          console.error(`Error updating todo item ${_id}:`, error);
-          toast.error(`Error updating todo item ${_id}: ${error}`);
+          console.error(`Todoアイテム ${_id} の更新中にエラーが発生しました:`, error);
+          toast.error(`Todoアイテム ${_id} の更新中にエラーが発生しました: ${error}`);
         });
     } else {
-      console.error(`Invalid todo item or ID: ${_id}`);
-      toast.error(`Invalid todo item or ID: ${_id}`);
+      console.error(`無効なTodoアイテムまたはID: ${_id}`);
+      toast.error(`無効なTodoアイテムまたはID: ${_id}`);
     }
   }, [dispatch, editingText]);
 
   const onDragEnd = useCallback((result: DropResult) => {
-    console.log("Drag ended:", result);
+    console.log("ドラッグが終了しました:", result);
     if (!result.destination) {
       return;
     }
@@ -166,16 +171,16 @@ export default function DailyTodoReminder() {
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    console.log("Reordered items:", items);
-    // ここでReorderのアクションをディスパッチする必要があります
-    // 例: dispatch(reorderTodoItems(items));
+    console.log("並び替えられたアイテム:", items);
+    // TODO: reorderTodoItemsアクションを実装してディスパッチする
+    // dispatch(reorderTodoItems(items));
   }, [todos]);
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <div>読み込み中...</div>;
   }
 
-  console.log("Rendering DailyTodoReminder. Todos count:", todos.length);
+  console.log("DailyTodoReminderをレンダリングしています。Todoの数:", todos.length);
 
   return (
     <Card className="w-full mb-8">
@@ -201,7 +206,7 @@ export default function DailyTodoReminder() {
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
                 {Array.isArray(todos) &&
                   todos.map((todo: TodoItem, index: number) => (
-                    <Draggable key={todo._id} draggableId={todo._id.toString()} index={index}>
+                    <Draggable key={todo._id} draggableId={todo._id} index={index}>
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
