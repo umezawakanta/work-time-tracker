@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCcw, Trash2, Edit, Check, X } from "lucide-react";
+import { RefreshCcw, Trash2, Edit, Check, X, GripVertical } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
   fetchTodoItems,
@@ -155,6 +156,21 @@ export default function DailyTodoReminder() {
     }
   };
 
+  const onDragEnd = (result: DropResult) => {
+    console.log("Drag ended:", result);
+    if (!result.destination) {
+      return;
+    }
+
+    const items = Array.from(todos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    console.log("Reordered items:", items);
+    // ここでReorderのアクションをディスパッチする必要があります
+    // 例: dispatch(reorderTodoItems(items));
+  };
+
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -179,62 +195,79 @@ export default function DailyTodoReminder() {
           />
           <Button type="submit">追加</Button>
         </form>
-        <div className="space-y-4">
-          {Array.isArray(todos) &&
-            todos.map((todo: TodoItem) => (
-              <div key={todo._id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`todo-${todo._id}`}
-                  checked={todo.completed}
-                  onCheckedChange={() => handleToggle(todo._id)}
-                />
-                {editingId === todo._id ? (
-                  <>
-                    <Input
-                      value={editingText}
-                      onChange={(e) => setEditingText(e.target.value)}
-                      className="flex-grow"
-                    />
-                    <Button size="sm" onClick={() => handleEditSave(todo._id)}>
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleEditCancel}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Label
-                      htmlFor={`todo-${todo._id}`}
-                      className={`flex-grow ${
-                        todo.completed ? "line-through text-gray-500" : ""
-                      }`}
-                    >
-                      {todo.task}
-                    </Label>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEditStart(todo._id, todo.task)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDeleteTodo(todo._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="todos">
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+                {Array.isArray(todos) &&
+                  todos.map((todo: TodoItem, index: number) => (
+                    <Draggable key={todo._id} draggableId={todo._id} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm"
+                        >
+                          <GripVertical className="h-4 w-4 text-gray-400" />
+                          <Checkbox
+                            id={`todo-${todo._id}`}
+                            checked={todo.completed}
+                            onCheckedChange={() => handleToggle(todo._id)}
+                          />
+                          {editingId === todo._id ? (
+                            <>
+                              <Input
+                                value={editingText}
+                                onChange={(e) => setEditingText(e.target.value)}
+                                className="flex-grow"
+                              />
+                              <Button size="sm" onClick={() => handleEditSave(todo._id)}>
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleEditCancel}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Label
+                                htmlFor={`todo-${todo._id}`}
+                                className={`flex-grow ${
+                                  todo.completed ? "line-through text-gray-500" : ""
+                                }`}
+                              >
+                                {todo.task}
+                              </Label>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleEditStart(todo._id, todo.task)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDeleteTodo(todo._id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
               </div>
-            ))}
-        </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </CardContent>
     </Card>
   );
