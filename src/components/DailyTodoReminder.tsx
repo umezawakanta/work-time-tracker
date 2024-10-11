@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,14 +16,17 @@ import {
   resetTodoList,
   reorderTodoItems,
   TodoItem,
+  selectTodos,
+  selectTodoStatus,
+  selectTodoError,
 } from "@/store/todoSlice";
-import { RootState, AppDispatch } from "@/store";
+import { AppDispatch } from "@/store";
 
 export default function DailyTodoReminder() {
   const dispatch = useDispatch<AppDispatch>();
-  const todos = useSelector((state: RootState) => state.todo.items);
-  const status = useSelector((state: RootState) => state.todo.status);
-  const error = useSelector((state: RootState) => state.todo.error);
+  const todos = useSelector(selectTodos);
+  const status = useSelector(selectTodoStatus);
+  const error = useSelector(selectTodoError);
 
   const [newTodo, setNewTodo] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -35,91 +38,74 @@ export default function DailyTodoReminder() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Todosが更新されました:", todos);
-  }, [todos]);
-
-  useEffect(() => {
     if (error) {
       console.error("エラーが発生しました:", error);
       toast.error(error);
     }
   }, [error]);
 
-  const handleToggle = useCallback((_id: string) => {
-    console.log("Todoの状態を切り替えています:", _id);
-    const todoToUpdate = todos.find((todo) => todo._id === _id);
-    if (todoToUpdate && _id) {
+  const handleToggle = useCallback((id: string) => {
+    const todoToUpdate = todos.find((todo) => todo._id === id);
+    if (todoToUpdate) {
       dispatch(updateTodoItem({
-        _id,
-        updates: {
-          completed: !todoToUpdate.completed,
-          task: todoToUpdate.task,
-        },
+        _id: id,
+        updates: { completed: !todoToUpdate.completed },
       }));
     }
   }, [dispatch, todos]);
 
   const handleReset = useCallback(() => {
-    console.log("Todoリストをリセットしています");
     dispatch(resetTodoList());
   }, [dispatch]);
 
   const handleAddTodo = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (newTodo.trim()) {
-      console.log("新しいTodoを追加しています:", newTodo.trim());
       dispatch(addTodoItem(newTodo.trim()));
       setNewTodo("");
     }
   }, [dispatch, newTodo]);
 
-  const handleDeleteTodo = useCallback((_id: string) => {
-    if (_id) {
-      console.log("Todoを削除しています:", _id);
-      dispatch(deleteTodoItem(_id));
-    }
+  const handleDeleteTodo = useCallback((id: string) => {
+    dispatch(deleteTodoItem(id));
   }, [dispatch]);
 
-  const handleEditStart = useCallback((_id: string, task: string) => {
-    console.log("Todoの編集を開始しています:", _id);
-    setEditingId(_id);
+  const handleEditStart = useCallback((id: string, task: string) => {
+    setEditingId(id);
     setEditingText(task);
   }, []);
 
   const handleEditCancel = useCallback(() => {
-    console.log("編集をキャンセルしています");
     setEditingId(null);
     setEditingText("");
   }, []);
 
-  const handleEditSave = useCallback((_id: string) => {
-    if (editingText.trim() && _id) {
-      console.log("Todoの編集を保存しています:", _id);
-      dispatch(updateTodoItem({ _id, updates: { task: editingText.trim() } }));
+  const handleEditSave = useCallback((id: string) => {
+    if (editingText.trim()) {
+      dispatch(updateTodoItem({ _id: id, updates: { task: editingText.trim() } }));
       setEditingId(null);
       setEditingText("");
     }
   }, [dispatch, editingText]);
 
   const onDragEnd = useCallback((result: DropResult) => {
-    console.log("ドラッグが終了しました:", result);
-    if (!result.destination) {
-      return;
-    }
+    if (!result.destination) return;
 
     const items = Array.from(todos);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    console.log("並び替えられたアイテム:", items);
     dispatch(reorderTodoItems(items));
   }, [dispatch, todos]);
+
+  const memoizedTodos = useMemo(() => todos.map((todo) => ({
+    ...todo,
+    id: todo._id.toString(), // Ensure id is a string
+  })), [todos]);
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
   }
-
-  console.log("DailyTodoReminderをレンダリングしています。Todoの数:", todos.length);
 
   return (
     <Card className="w-full mb-8">
@@ -143,8 +129,8 @@ export default function DailyTodoReminder() {
           <Droppable droppableId="todos">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                {todos.map((todo: TodoItem, index: number) => (
-                  <Draggable key={todo._id} draggableId={todo._id} index={index}>
+                {memoizedTodos.map((todo, index) => (
+                  <Draggable key={todo.id} draggableId={todo.id} index={index}>
                     {(provided) => (
                       <div
                         ref={provided.innerRef}
@@ -154,7 +140,7 @@ export default function DailyTodoReminder() {
                       >
                         <GripVertical className="h-4 w-4 text-gray-400" />
                         <Checkbox
-                          id={`todo-${todo._id}`}
+                          id={`todo-${todo.id}`}
                           checked={todo.completed}
                           onCheckedChange={() => handleToggle(todo._id)}
                         />
@@ -179,7 +165,7 @@ export default function DailyTodoReminder() {
                         ) : (
                           <>
                             <Label
-                              htmlFor={`todo-${todo._id}`}
+                              htmlFor={`todo-${todo.id}`}
                               className={`flex-grow ${
                                 todo.completed ? "line-through text-gray-500" : ""
                               }`}
