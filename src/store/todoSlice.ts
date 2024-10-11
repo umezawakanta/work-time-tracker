@@ -8,14 +8,22 @@ export interface TodoItem {
   completed: boolean;
 }
 
+export interface TodoHistoryItem {
+  date: string;
+  completedTasks: number;
+  totalTasks: number;
+}
+
 interface TodoState {
   items: TodoItem[];
+  history: TodoHistoryItem[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: TodoState = {
   items: [],
+  history: [],
   status: "idle",
   error: null,
 };
@@ -67,66 +75,60 @@ const todoSlice = createSlice({
     reorderTodoItems: (state, action: PayloadAction<TodoItem[]>) => {
       state.items = action.payload;
     },
+    updateTodoHistory: (state) => {
+      const today = new Date().toISOString().split('T')[0];
+      const completedTasks = state.items.filter(item => item.completed).length;
+      const totalTasks = state.items.length;
+
+      const  existingHistoryIndex = state.history.findIndex(item => item.date === today);
+      if (existingHistoryIndex !== -1) {
+        state.history[existingHistoryIndex] = { date: today, completedTasks, totalTasks };
+      } else {
+        state.history.push({ date: today, completedTasks, totalTasks });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(
-        fetchTodoItems.fulfilled,
-        (state, action: PayloadAction<TodoItem[]>) => {
-          state.status = "succeeded";
-          state.items = action.payload;
-          state.error = null;
-        }
-      )
+      .addCase(fetchTodoItems.fulfilled, (state, action: PayloadAction<TodoItem[]>) => {
+        state.status = "succeeded";
+        state.items = action.payload;
+        state.error = null;
+      })
       .addCase(fetchTodoItems.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Something went wrong";
       })
-      .addCase(
-        addTodoItem.fulfilled,
-        (state, action: PayloadAction<TodoItem>) => {
-          state.items.push(action.payload);
-          state.error = null;
+      .addCase(addTodoItem.fulfilled, (state, action: PayloadAction<TodoItem>) => {
+        state.items.push(action.payload);
+        state.error = null;
+      })
+      .addCase(updateTodoItem.fulfilled, (state, action: PayloadAction<TodoItem>) => {
+        const index = state.items.findIndex((item) => item._id === action.payload._id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
         }
-      )
-      .addCase(
-        updateTodoItem.fulfilled,
-        (state, action: PayloadAction<TodoItem>) => {
-          const index = state.items.findIndex(
-            (item) => item._id === action.payload._id
-          );
-          if (index !== -1) {
-            state.items[index] = action.payload;
-          }
-          state.error = null;
-        }
-      )
-      .addCase(
-        deleteTodoItem.fulfilled,
-        (state, action: PayloadAction<string>) => {
-          state.items = state.items.filter(
-            (item) => item._id !== action.payload
-          );
-          state.error = null;
-        }
-      )
-      .addCase(
-        resetTodoList.fulfilled,
-        (state, action: PayloadAction<TodoItem[]>) => {
-          state.items = action.payload;
-          state.error = null;
-        }
-      );
+        state.error = null;
+      })
+      .addCase(deleteTodoItem.fulfilled, (state, action: PayloadAction<string>) => {
+        state.items = state.items.filter((item) => item._id !== action.payload);
+        state.error = null;
+      })
+      .addCase(resetTodoList.fulfilled, (state, action: PayloadAction<TodoItem[]>) => {
+        state.items = action.payload;
+        state.error = null;
+      });
   },
 });
 
-export const { reorderTodoItems } = todoSlice.actions;
+export const { reorderTodoItems, updateTodoHistory } = todoSlice.actions;
 
 export const selectTodos = (state: RootState) => state.todo.items;
 export const selectTodoStatus = (state: RootState) => state.todo.status;
 export const selectTodoError = (state: RootState) => state.todo.error;
+export const selectTodoHistory = (state: RootState) => state.todo.history;
 
 export default todoSlice.reducer;

@@ -15,7 +15,7 @@ import {
   subDays,
   isWithinInterval,
 } from "date-fns";
-import { toZonedTime, format as formatTZ } from 'date-fns-tz';
+import { utcToZonedTime, format as formatTZ } from 'date-fns-tz';
 import { ja } from "date-fns/locale";
 import {
   Dialog,
@@ -171,7 +171,7 @@ export function AssetCalendar({
     const firstDataTotal = aggregatedData[firstDataDate]?.['合計'] || 0;
 
     return sortedDates.map((date) => {
-      const currentDate = toZonedTime(new Date(date), 'Asia/Tokyo');
+      const currentDate = utcToZonedTime(new Date(date), 'Asia/Tokyo');
       const prevDate = subDays(currentDate, 1);
       const prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' });
 
@@ -190,7 +190,7 @@ export function AssetCalendar({
       const totalChange = (aggregatedData[date]?.['合計'] || 0) - firstDataTotal;
 
       const dateWithdrawals = withdrawals.filter((w) => {
-        const withdrawalDate = toZonedTime(parseISO(w.date), 'Asia/Tokyo');
+        const withdrawalDate = utcToZonedTime(parseISO(w.date), 'Asia/Tokyo');
         return isSameDay(withdrawalDate, currentDate);
       });
       const dateSubscriptions = subscriptions.filter((s) => {
@@ -409,7 +409,7 @@ export function AssetCalendar({
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
-      const tokyoDate = toZonedTime(selectedDate, 'Asia/Tokyo');
+      const tokyoDate = utcToZonedTime(selectedDate, 'Asia/Tokyo');
       const newWithdrawalEntry = {
         ...newWithdrawal,
         date: formatTZ(tokyoDate, "yyyy-MM-dd", { timeZone: 'Asia/Tokyo' }),
