@@ -15,7 +15,6 @@ import {
   deleteTodoItem,
   resetTodoList,
   reorderTodoItems,
-  TodoItem,
   selectTodos,
   selectTodoStatus,
   selectTodoError,
@@ -33,13 +32,11 @@ export default function DailyTodoReminder() {
   const [editingText, setEditingText] = useState("");
 
   useEffect(() => {
-    console.log("コンポーネントがマウントされました。Todoアイテムを取得中...");
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
   useEffect(() => {
     if (error) {
-      console.error("エラーが発生しました:", error);
       toast.error(error);
     }
   }, [error]);
@@ -100,7 +97,7 @@ export default function DailyTodoReminder() {
 
   const memoizedTodos = useMemo(() => todos.map((todo) => ({
     ...todo,
-    id: todo._id.toString(), // Ensure id is a string
+    id: todo._id.toString(),
   })), [todos]);
 
   if (status === "loading") {
