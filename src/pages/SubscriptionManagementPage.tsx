@@ -85,7 +85,12 @@ export default function SubscriptionManagementPage() {
 
   const handleEdit = (subscription: Subscription) => {
     setEditingSubscription(subscription);
-    setNewSubscription(subscription);
+    setNewSubscription({
+      name: subscription.name,
+      billingDate: subscription.billingDate,
+      type: subscription.type,
+      amount: subscription.amount,
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -210,6 +215,19 @@ export default function SubscriptionManagementPage() {
           />
         </div>
         <Button type="submit">{editingSubscription ? "更新" : "登録"}</Button>
+        {editingSubscription && (
+          <Button type="button" onClick={() => {
+            setEditingSubscription(null);
+            setNewSubscription({
+              name: "",
+              billingDate: "",
+              type: "",
+              amount: 0,
+            });
+          }}>
+            キャンセル
+          </Button>
+        )}
       </form>
 
       <div className="mt-8">

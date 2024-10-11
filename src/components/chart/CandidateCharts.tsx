@@ -38,6 +38,7 @@ const partyColors: { [key: string]: string } = {
   共産党: "#ff00ff",
   国民民主党: "#00ffff",
   社民党: "#ff8000",
+  れいわ新選組: "#ff0080",
   参政党: "#8000ff",
   無所属: "#808080",
 };
@@ -53,6 +54,16 @@ const prefectures = [
   "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
   "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県",
 ];
+
+const prefectureSeats: { [key: string]: number } = {
+  "北海道": 12, "青森県": 3, "岩手県": 3, "宮城県": 5, "秋田県": 3, "山形県": 2, "福島県": 4,
+  "茨城県": 6, "栃木県": 4, "群馬県": 4, "埼玉県": 15, "千葉県": 12, "東京都": 25, "神奈川県": 18,
+  "新潟県": 5, "富山県": 2, "石川県": 3, "福井県": 2, "山梨県": 2, "長野県": 4, "岐阜県": 4,
+  "静岡県": 7, "愛知県": 15, "三重県": 4, "滋賀県": 3, "京都府": 6, "大阪府": 19, "兵庫県": 11,
+  "奈良県": 3, "和歌山県": 2, "鳥取県": 1, "島根県": 2, "岡山県": 4, "広島県": 6, "山口県": 3,
+  "徳島県": 2, "香川県": 2, "愛媛県": 3, "高知県": 2, "福岡県": 11, "佐賀県": 2, "長崎県": 3,
+  "熊本県": 4, "大分県": 3, "宮崎県": 2, "鹿児島県": 4, "沖縄県": 3,
+};
 
 const proportionalBlocks = [
   "北海道", "東北", "北関東", "南関東", "東京", "北陸信越",
@@ -116,6 +127,13 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
             borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1,
           },
+          {
+            label: "選挙区数",
+            data: prefectures.map((prefecture) => prefectureSeats[prefecture]),
+            backgroundColor: "rgba(255, 159, 64, 0.6)",
+            borderColor: "rgba(255, 159, 64, 1)",
+            borderWidth: 1,
+          },
         ],
       } as ChartData<"bar">,
       proportionalData: {
@@ -169,11 +187,12 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: true,
+        position: 'top' as const,
       },
       title: {
         display: true,
-        text: "都道府県別候補者数",
+        text: "都道府県別候補者数と選挙区数",
         font: {
           size: 18,
         },
@@ -181,37 +200,17 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
       datalabels: {
         anchor: "end",
         align: "top",
-        formatter: (value: number) => (value > 0 ? value.toString() : ""),
+        formatter: (value: number) => {
+          if (value > 0) {
+            return value.toString();
+          }
+          return '';
+        },
         font: {
           weight: "bold" as const,
         },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
-  const proportionalBarOptions: ChartOptions<"bar"> = {
-    ...barOptions,
-    plugins: {
-      ...barOptions.plugins,
-      legend: {
-        display: true,
-        position: 'top' as const,
-      },
-      title: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const label = context.dataset.label || "";
-            const value = context.parsed.y;
-            return `${label}: ${value}`;
-          },
+        color: (context: { datasetIndex: number }) => {
+          return context.datasetIndex === 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 159, 64, 1)';
         },
       },
     },
@@ -222,6 +221,20 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
       y: {
         stacked: false,
         beginAtZero: true,
+      },
+    },
+  };
+
+  const proportionalBarOptions: ChartOptions<"bar"> = {
+    ...barOptions,
+    plugins: {
+      ...barOptions.plugins,
+      title: {
+        display: true,
+        text: "比例単独候補者数と定数",
+        font: {
+          size: 18,
+        },
       },
     },
   };
@@ -350,7 +363,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         </Button>
       </div>
       <div className={`grid grid-cols-1 md:grid-cols-${chartsPerRow} gap-8`}>
-        <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
+        <Card className={chartsPerRow > 1 ?   "col-span-1" : "col-span-full"}>
           <CardHeader>
             <CardTitle>政党別候補者数</CardTitle>
           </CardHeader>
@@ -366,7 +379,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         </Card>
         <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
           <CardHeader>
-            <CardTitle>都道府県別候補者数</CardTitle>
+            <CardTitle>都道府県別候補者数と選挙区数</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>
@@ -376,7 +389,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         </Card>
         <Card className={chartsPerRow > 1 ? "col-span-1" : "col-span-full"}>
           <CardHeader>
-            <CardTitle>比例単独候補者数</CardTitle>
+            <CardTitle>比例単独候補者数と定数</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`h-${chartsPerRow > 1 ? "400" : "650"}`}>

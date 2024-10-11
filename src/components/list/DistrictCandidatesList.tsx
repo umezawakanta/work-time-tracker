@@ -28,6 +28,7 @@ const partyColors: { [key: string]: string } = {
   共産党: "bg-pink-500",
   国民民主党: "bg-cyan-500",
   社民党: "bg-orange-500",
+  れいわ新選組: "bg-teal-500",
   参政党: "bg-purple-500",
   無所属: "bg-gray-500",
 };
