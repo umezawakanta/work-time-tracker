@@ -13,6 +13,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   addSubscription,
   fetchSubscriptions,
   updateSubscription,
@@ -20,7 +27,7 @@ import {
 } from "@/store/subscriptionSlice";
 import { Subscription } from "@/types/subscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Loader2, Pencil, Trash } from "lucide-react";
+import { Loader2, Pencil, Trash, ArrowUpDown } from "lucide-react";
 import { SubscriptionCharts } from "@/components/chart/SubscriptionCharts";
 import { MonthlySubscriptionChart } from "@/components/chart/MonthlySubscriptionChart";
 
@@ -29,6 +36,8 @@ export default function SubscriptionManagementPage() {
   const { subscriptions, status, error } = useSelector(
     (state: RootState) => state.subscription
   );
+
+  // 新しいサブスクリプションの状態
   const [newSubscription, setNewSubscription] = useState<
     Omit<Subscription, "_id">
   >({
@@ -37,15 +46,25 @@ export default function SubscriptionManagementPage() {
     type: "",
     amount: 0,
   });
+
+  // 編集中のサブスクリプションの状態
   const [editingSubscription, setEditingSubscription] =
     useState<Subscription | null>(null);
 
+  // ソート順の状態
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  // フィルター月の状態
+  const [filterMonth, setFilterMonth] = useState<string>("all");
+
+  // コンポーネントのマウント時にサブスクリプションを取得
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchSubscriptions());
     }
   }, [status, dispatch]);
 
+  // サブスクリプションの追加または更新を処理する関数
   const handleSubscriptionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -71,11 +90,13 @@ export default function SubscriptionManagementPage() {
     }
   };
 
+  // サブスクリプションの編集を開始する関数
   const handleEdit = (subscription: Subscription) => {
     setEditingSubscription(subscription);
     setNewSubscription(subscription);
   };
 
+  // サブスクリプションを削除する関数
   const handleDelete = async (id: string) => {
     try {
       await dispatch(deleteSubscription(id)).unwrap();
@@ -84,6 +105,37 @@ export default function SubscriptionManagementPage() {
     }
   };
 
+  // ソート順を切り替える関数
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  // サブスクリプションをソートおよびフィルタリングする
+  const sortedAndFilteredSubscriptions = subscriptions
+    .filter((sub) => {
+      if (filterMonth === "all") return true;
+      const [year, month] = sub.billingDate.split("/");
+      return `${year}/${month}` === filterMonth;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.billingDate.replace(/\//g, "-"));
+      const dateB = new Date(b.billingDate.replace(/\//g, "-"));
+      return sortOrder === "asc"
+        ? dateA.getTime() - dateB.getTime()
+        : dateB.getTime() - dateA.getTime();
+    });
+
+  // ユニークな月のリストを作成
+  const uniqueMonths = Array.from(
+    new Set(
+      subscriptions.map((sub) => {
+        const [year, month] = sub.billingDate.split("/");
+        return `${year}/${month}`;
+      })
+    )
+  ).sort();
+
+  // ローディング中の表示
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -92,6 +144,7 @@ export default function SubscriptionManagementPage() {
     );
   }
 
+  // エラー時の表示
   if (status === "failed") {
     return (
       <Alert variant="destructive">
@@ -104,6 +157,8 @@ export default function SubscriptionManagementPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">サブスクリプション管理</h1>
+      
+      {/* サブスクリプション追加/編集フォーム */}
       <form onSubmit={handleSubscriptionSubmit} className="space-y-4">
         <div>
           <Label htmlFor="name">名称</Label>
@@ -163,8 +218,28 @@ export default function SubscriptionManagementPage() {
         <Button type="submit">{editingSubscription ? "更新" : "登録"}</Button>
       </form>
 
+      {/* サブスクリプション一覧 */}
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">サブスクリプション一覧</h2>
+        <div className="flex justify-between items-center mb-4">
+          <Button onClick={toggleSortOrder} variant="outline">
+            引き落とし日でソート
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+          <Select value={filterMonth} onValueChange={setFilterMonth}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="月でフィルター" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">全て表示</SelectItem>
+              {uniqueMonths.map((month) => (
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -176,7 +251,7 @@ export default function SubscriptionManagementPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subscriptions.map((sub) => (
+            {sortedAndFilteredSubscriptions.map((sub) => (
               <TableRow key={sub._id}>
                 <TableCell>{sub.name}</TableCell>
                 <TableCell>{sub.billingDate}</TableCell>
@@ -204,10 +279,12 @@ export default function SubscriptionManagementPage() {
         </Table>
       </div>
 
+      {/* サブスクリプションチャート */}
       <div className="mt-8">
         <SubscriptionCharts subscriptions={subscriptions} />
       </div>
 
+      {/* 月別サブスクリプションチャート */}
       <MonthlySubscriptionChart subscriptions={subscriptions} />
     </div>
   );
