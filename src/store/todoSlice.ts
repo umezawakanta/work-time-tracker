@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { todoApi } from "@/services/api/todoApi";
+import { RootState } from "./index";
 
 export interface TodoItem {
   _id: string;
@@ -62,7 +63,11 @@ export const resetTodoList = createAsyncThunk(
 const todoSlice = createSlice({
   name: "todo",
   initialState,
-  reducers: {},
+  reducers: {
+    reorderTodoItems: (state, action: PayloadAction<TodoItem[]>) => {
+      state.items = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
@@ -117,5 +122,11 @@ const todoSlice = createSlice({
       );
   },
 });
+
+export const { reorderTodoItems } = todoSlice.actions;
+
+export const selectTodos = (state: RootState) => state.todo.items;
+export const selectTodoStatus = (state: RootState) => state.todo.status;
+export const selectTodoError = (state: RootState) => state.todo.error;
 
 export default todoSlice.reducer;
