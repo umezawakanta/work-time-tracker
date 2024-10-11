@@ -1,0 +1,11 @@
+.droppable-is-dragging-over {
+    backgroundColoer: 'lightblue';
+    padding: '8px';
+    minHeight: '100px';
+}
+
+.droppable-is-not-dragging-over {
+    backgroundColoer: 'white';
+    padding: '8px';
+    minHeight: '100px';
+}

@@ -20,6 +20,8 @@ import {
   selectTodoError,
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
+import './DailyTodoReminder.css';
+import { CSSProperties } from 'react';
 
 export default function DailyTodoReminder() {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,10 +32,17 @@ export default function DailyTodoReminder() {
   const [newTodo, setNewTodo] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     dispatch(fetchTodoItems());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (todos.length > 0 && !isInitialized) {
+      setIsInitialized(true);
+    }
+  }, [todos, isInitialized]);
 
   useEffect(() => {
     if (error) {
@@ -95,7 +104,11 @@ export default function DailyTodoReminder() {
     dispatch(reorderTodoItems(items));
   }, [dispatch, todos]);
 
-  if (status === "loading") {
+  const getItemStyle = (draggableStyle: CSSProperties | undefined): CSSProperties => ({
+    ...draggableStyle,
+  });
+
+  if (status === "loading" || !isInitialized) {
     return <div>読み込み中...</div>;
   }
 
@@ -119,19 +132,29 @@ export default function DailyTodoReminder() {
             <Button type="submit">追加</Button>
           </form>
           <Droppable droppableId="todos">
-            {(provided) => (
-              <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+            {(provided, snapshot) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`space-y-4 ${
+                  snapshot.isDraggingOver
+                    ? 'droppable-is-dragging-over'
+                    : 'droppable-is-not-dragging-over'
+                }`}
+              >
                 {todos.map((todo, index) => (
                   <Draggable key={todo._id} draggableId={todo._id} index={index}>
-                    {(provided) => (
+                    {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm"
+                        {...provided.dragHandleProps}
+                        className={`draggable-item flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm ${
+                          snapshot.isDragging ? 'bg-light-green' : ''
+                        }`}
+                        data-style={JSON.stringify(getItemStyle(provided.draggableProps.style))}
                       >
-                        <div {...provided.dragHandleProps}>
-                          <GripVertical className="h-4 w-4 text-gray-400" />
-                        </div>
+                        <GripVertical className="h-4 w-4 text-gray-400" />
                         <Checkbox
                           id={`todo-${todo._id}`}
                           checked={todo.completed}
