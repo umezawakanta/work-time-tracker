@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
+  ChartData,
 } from 'chart.js';
 import { Card } from '@/components/ui/card';
 import { TodoHistoryItem } from '@/store/todoSlice';
@@ -29,18 +30,22 @@ interface TodoChartProps {
 }
 
 export const TodoChart: React.FC<TodoChartProps> = ({ todoHistory }) => {
-  const chartData = {
-    labels: todoHistory.map(item => new Date(item.date).toLocaleDateString()),
+  const dates = todoHistory.map(item => item.date);
+  const completedTasksCounts = todoHistory.map(item => item.completedTasks.length);
+  const totalTasksCounts = todoHistory.map(item => item.totalTasks);
+
+  const chartData: ChartData<'line'> = {
+    labels: dates,
     datasets: [
       {
         label: '完了したタスク',
-        data: todoHistory.map(item => item.completedTasks),
+        data: completedTasksCounts,
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
       },
       {
         label: '全タスク',
-        data: todoHistory.map(item => item.totalTasks),
+        data: totalTasksCounts,
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       },

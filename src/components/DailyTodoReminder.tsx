@@ -67,7 +67,10 @@ export default function DailyTodoReminder() {
         dispatch(
           updateTodoItem({
             _id: id,
-            updates: { completed: !todoToUpdate.completed },
+            updates: { 
+              completed: !todoToUpdate.completed,
+              completedDate: !todoToUpdate.completed ? new Date().toISOString() : null
+            },
           })
         );
       }
@@ -162,7 +165,112 @@ export default function DailyTodoReminder() {
               <TabsTrigger value="chart">グラフ</TabsTrigger>
             </TabsList>
             <TabsContent value="list">
-              {/* リスト表示のコードは変更なし */}
+              <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
+                <Input
+                  type="text"
+                  value={newTodo}
+                  onChange={(e) => setNewTodo(e.target.value)}
+                  placeholder="新しいタスクを追加"
+                />
+                <Button type="submit">追加</Button>
+              </form>
+              <Droppable droppableId="todos">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`space-y-4 ${
+                      snapshot.isDraggingOver
+                        ? "droppable-is-dragging-over"
+                        : "droppable-is-not-dragging-over"
+                    }`}
+                  >
+                    {todos.map((todo, index) => (
+                      <Draggable
+                        key={todo._id}
+                        draggableId={todo._id}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`draggable-item flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm ${
+                              snapshot.isDragging ? "bg-light-green" : ""
+                            }`}
+                            data-style={JSON.stringify(
+                              getItemStyle(provided.draggableProps.style)
+                            )}
+                          >
+                            <GripVertical className="h-4 w-4 text-gray-400" />
+                            <Checkbox
+                              id={`todo-${todo._id}`}
+                              checked={todo.completed}
+                              onCheckedChange={() => handleToggle(todo._id)}
+                            />
+                            {editingId === todo._id ? (
+                              <>
+                                <Input
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                  className="flex-grow"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleEditSave(todo._id)}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={handleEditCancel}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Label
+                                  htmlFor={`todo-${todo._id}`}
+                                  className={`flex-grow ${
+                                    todo.completed
+                                      ? "line-through text-gray-500"
+                                      : ""
+                                  }`}
+                                >
+                                  {todo.task}
+                                </Label>
+                                <span className="text-sm text-gray-500">
+                                  {todo.completedDate ? new Date(todo.completedDate).toLocaleDateString() : '未完了'}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    handleEditStart(todo._id, todo.task)
+                                  }
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleDeleteTodo(todo._id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </TabsContent>
             <TabsContent value="calendar">
               <TodoCalendar todoHistory={todoHistory} />
@@ -171,109 +279,6 @@ export default function DailyTodoReminder() {
               <TodoChart todoHistory={todoHistory} />
             </TabsContent>
           </Tabs>
-          <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
-            <Input
-              type="text"
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="新しいタスクを追加"
-            />
-            <Button type="submit">追加</Button>
-          </form>
-          <Droppable droppableId="todos">
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className={`space-y-4 ${
-                  snapshot.isDraggingOver
-                    ? "droppable-is-dragging-over"
-                    : "droppable-is-not-dragging-over"
-                }`}
-              >
-                {todos.map((todo, index) => (
-                  <Draggable
-                    key={todo._id}
-                    draggableId={todo._id}
-                    index={index}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`draggable-item flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm ${
-                          snapshot.isDragging ? "bg-light-green" : ""
-                        }`}
-                        data-style={JSON.stringify(
-                          getItemStyle(provided.draggableProps.style)
-                        )}
-                      >
-                        <GripVertical className="h-4 w-4 text-gray-400" />
-                        <Checkbox
-                          id={`todo-${todo._id}`}
-                          checked={todo.completed}
-                          onCheckedChange={() => handleToggle(todo._id)}
-                        />
-                        {editingId === todo._id ? (
-                          <>
-                            <Input
-                              value={editingText}
-                              onChange={(e) => setEditingText(e.target.value)}
-                              className="flex-grow"
-                            />
-                            <Button
-                              size="sm"
-                              onClick={() => handleEditSave(todo._id)}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={handleEditCancel}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Label
-                              htmlFor={`todo-${todo._id}`}
-                              className={`flex-grow ${
-                                todo.completed
-                                  ? "line-through text-gray-500"
-                                  : ""
-                              }`}
-                            >
-                              {todo.task}
-                            </Label>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                handleEditStart(todo._id, todo.task)
-                              }
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDeleteTodo(todo._id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
         </CardContent>
       </Card>
     </DragDropContext>

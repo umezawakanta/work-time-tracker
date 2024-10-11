@@ -6,11 +6,17 @@ export interface TodoItem {
   _id: string;
   task: string;
   completed: boolean;
+  completedDate: string | null;
+  order: number;
 }
 
 export interface TodoHistoryItem {
   date: string;
-  completedTasks: number;
+  completedTasks: {
+    id: string;
+    task: string;
+    completedDate: string;
+  }[];
   totalTasks: number;
 }
 
@@ -28,6 +34,7 @@ const initialState: TodoState = {
   error: null,
 };
 
+// Async thunks remain the same
 export const fetchTodoItems = createAsyncThunk(
   "todo/fetchTodoItems",
   async () => {
@@ -77,10 +84,16 @@ const todoSlice = createSlice({
     },
     updateTodoHistory: (state) => {
       const today = new Date().toISOString().split('T')[0];
-      const completedTasks = state.items.filter(item => item.completed).length;
+      const completedTasks = state.items
+        .filter(item => item.completed && item.completedDate)
+        .map(item => ({
+          id: item._id,
+          task: item.task,
+          completedDate: item.completedDate!
+        }));
       const totalTasks = state.items.length;
 
-      const  existingHistoryIndex = state.history.findIndex(item => item.date === today);
+      const existingHistoryIndex = state.history.findIndex(item => item.date === today);
       if (existingHistoryIndex !== -1) {
         state.history[existingHistoryIndex] = { date: today, completedTasks, totalTasks };
       } else {

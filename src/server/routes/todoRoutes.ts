@@ -3,14 +3,6 @@ import { TodoItem } from '../models/TodoItem.js';
 
 const router = express.Router();
 
-// TodoItemインターフェースの定義
-interface TodoItemInterface {
-  _id: string;
-  task: string;
-  completed: boolean;
-  order: number;
-}
-
 // GET all todos
 router.get('/', async (_req, res) => {
   try {
@@ -27,7 +19,7 @@ router.post('/', async (req, res) => {
     const { task } = req.body;
     const maxOrderTodo = await TodoItem.findOne().sort('-order');
     const order = maxOrderTodo ? maxOrderTodo.order + 1 : 0;
-    const newTodo = new TodoItem({ task, completed: false, order });
+    const newTodo = new TodoItem({ task, completed: false, completedDate: null, order });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {
@@ -40,6 +32,11 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
+    if (updates.completed && !updates.completedDate) {
+      updates.completedDate = new Date();
+    } else if (!updates.completed) {
+      updates.completedDate = null;
+    }
     const updatedTodo = await TodoItem.findByIdAndUpdate(id, updates, { new: true });
     if (!updatedTodo) {
       return res.status(404).json({ message: 'Todo not found' });
@@ -67,7 +64,7 @@ router.delete('/:id', async (req, res) => {
 // Reset all todos
 router.post('/reset', async (_req, res) => {
   try {
-    await TodoItem.updateMany({}, { completed: false });
+    await TodoItem.updateMany({}, { completed: false, completedDate: null });
     const todos = await TodoItem.find().sort({ order: 1 });
     res.json(todos);
   } catch (error) {
@@ -78,8 +75,8 @@ router.post('/reset', async (_req, res) => {
 // Reorder todos
 router.post('/reorder', async (req, res) => {
   try {
-    const { items } = req.body as { items: TodoItemInterface[] };
-    const bulkOps = items.map((item: TodoItemInterface, index: number) => ({
+    const { items } = req.body as { items: Array<{ _id: string }> };
+    const bulkOps = items.map((item, index: number) => ({
       updateOne: {
         filter: { _id: item._id },
         update: { $set: { order: index } }
