@@ -12,6 +12,7 @@ import {
   LogIn,
   LogOut,
   BookOpen,
+  Moon,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -76,6 +77,12 @@ export default function Layout({ children }: LayoutProps) {
       path: "/bookshelf",
       authRequired: true,
     },
+    {
+      icon: <Moon size={18} />,
+      label: "睡眠トラッカー",
+      path: "/sleep-tracker",
+      authRequired: true,
+    },
   ];
 
   return (
@@ -137,7 +144,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
-      <footer className="bg-gray-100 text-gray-600">
+      <footer className="bg-gray-100  text-gray-600">
         <div className="container mx-auto px-4 py-6 text-center">
           &copy; 2024 作業時間トラッカー. All rights reserved.
         </div>

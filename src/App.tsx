@@ -18,6 +18,7 @@ import DistrictPage from "./pages/DistrictPage";
 import SubscriptionManagementPage from "./pages/SubscriptionManagementPage";
 import AssetLiabilityReportPage from "./pages/AssetLiabilityReportPage";
 import BookShelfPage from "./pages/BookShelfPage";
+import SleepTrackerPage from "./pages/SleepTrackerPage";
 import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -62,6 +63,7 @@ export default function App() {
                   />
                   <Route path="/asset-calendar" element={<AssetCalendarPage />} />
                   <Route path="/bookshelf" element={<BookShelfPage />} />
+                  <Route path="/sleep-tracker" element={<SleepTrackerPage />} />
                 </Route>
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

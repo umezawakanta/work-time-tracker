@@ -116,6 +116,23 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>睡眠トラッカー</CardTitle>
+            <CardDescription>睡眠パターンを記録・分析</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              起床時間と就寝時間を記録し、睡眠パターンを可視化します。
+              グラフやカレンダーで睡眠習慣を分析し、より良い睡眠を目指しましょう。
+            </p>
+            <Link to="/sleep-tracker" className="w-full">
+              <Button variant="secondary" className="w-full">
+                睡眠トラッカーを開く
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
