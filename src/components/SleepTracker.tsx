@@ -11,7 +11,7 @@ import { fetchSleepRecords, addSleepRecord, updateSleepRecord, deleteSleepRecord
 import { AppDispatch } from '@/store'
 import { SleepRecord } from '@/store/sleepTrackerSlice'
 import { Moon, Sun, ChevronLeft, ChevronRight, Plus, Edit, Trash2 } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
 export default function SleepTracker() {
   const dispatch = useDispatch<AppDispatch>()
@@ -133,10 +133,18 @@ export default function SleepTracker() {
   }
 
   const chartData = sleepRecords
-    .map((record: SleepRecord) => ({
-      date: format(parseISO(record.date), 'M/d'),
-      sleepDuration: calculateSleepDuration(record.wakeUp, record.bedtime) || 0
-    }))
+    .map((record: SleepRecord) => {
+      const wakeUpTime = record.wakeUp ? parseISO(record.wakeUp) : null
+      const bedTime = record.bedtime ? parseISO(record.bedtime) : null
+      return {
+        date: format(parseISO(record.date), 'M/d'),
+        sleepDuration: calculateSleepDuration(record.wakeUp, record.bedtime) || 0,
+        wakeUpTime: wakeUpTime ? wakeUpTime.getHours() + wakeUpTime.getMinutes() / 60 : null,
+        bedTime: bedTime ? 
+          (bedTime.getHours() < 10 ? bedTime.getHours() + 24 : bedTime.getHours()) + bedTime.getMinutes() / 60 
+          : null
+      }
+    })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(-7) // 直近7日間のデータのみ表示
 
@@ -177,9 +185,12 @@ export default function SleepTracker() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <XAxis dataKey="date" />
-                <YAxis domain={[0, 12]} ticks={[0, 3, 6, 9, 12]} />
+                <YAxis domain={[0, 24]} ticks={[0, 6, 12, 18, 24]} />
                 <Tooltip />
-                <Line type="monotone" dataKey="sleepDuration" stroke="#8884d8" />
+                <Legend />
+                <Line type="monotone" dataKey="sleepDuration" name="睡眠時間" stroke="#8884d8" />
+                <Line type="monotone" dataKey="wakeUpTime" name="起床時間" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="bedTime" name="就寝時間" stroke="#ffc658" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -277,6 +288,7 @@ export default function SleepTracker() {
                       <span className="flex items-center">
                         <Moon className="w-4 h-4 mr-1" />
                         <span>{record ? formatTime(record.bedtime, true) : '--:--'}</span>
+                      
                       </span>
                       <Button variant="outline" size="icon" onClick={() => openEditDialog(record)}>
                         <Edit className="h-4 w-4" />
@@ -305,7 +317,7 @@ export default function SleepTracker() {
                 id="edit-date"
                 type="date"
                 value={editRecord?.date || ''}
-                onChange={(e) => setEditRecord({ ...editRecord!, date:  e.target.value })}
+                onChange={(e) => setEditRecord({ ...editRecord!, date: e.target.value })}
                 className="col-span-3"
               />
             </div>
