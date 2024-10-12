@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { format, parseISO, isToday, addDays, subDays, differenceInHours, isBefore } from 'date-fns'
+import { format, parseISO, isToday, addDays, differenceInHours, isBefore } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
