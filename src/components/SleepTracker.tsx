@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,98 +7,59 @@ import { format } from 'date-fns'
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
+import { LineChart, Line } from "recharts"
+import { ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { fetchSleepRecords, addSleepRecord, updateSleepRecord, selectSleepRecords, selectSleepTrackerStatus, selectSleepTrackerError } from '@/store/sleepTrackerSlice'
+import { AppDispatch } from '@/store'
+import { SleepRecord } from '@/store/sleepTrackerSlice'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
-
-// Set up the localizer for react-big-calendar
 const localizer = momentLocalizer(moment)
 
-type SleepRecord = {
-  date: Date;
-  wakeUp: Date | null;
-  bedtime: Date | null;
-}
-
 export default function SleepTracker() {
-  const [sleepRecords, setSleepRecords] = useState<SleepRecord[]>([])
+  const dispatch = useDispatch<AppDispatch>()
+  const sleepRecords = useSelector(selectSleepRecords)
+  const status = useSelector(selectSleepTrackerStatus)
+  const error = useSelector(selectSleepTrackerError)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
 
   useEffect(() => {
-    const storedRecords = localStorage.getItem('sleepRecords')
-    if (storedRecords) {
-      setSleepRecords(JSON.parse(storedRecords).map((record: SleepRecord) => ({
-        ...record,
-        date: new Date(record.date),
-        wakeUp: record.wakeUp ? new Date(record.wakeUp) : null,
-        bedtime: record.bedtime ? new Date(record.bedtime) : null,
-      })))
+    if (status === 'idle') {
+      dispatch(fetchSleepRecords())
     }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('sleepRecords', JSON.stringify(sleepRecords))
-  }, [sleepRecords])
+  }, [status, dispatch])
 
   const logTime = (type: 'wakeUp' | 'bedtime') => {
     const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const today = now.toISOString().split('T')[0]
     
-    setSleepRecords(prevRecords => {
-      const existingRecordIndex = prevRecords.findIndex(record => 
-        record.date.getTime() === today.getTime()
-      )
-
-      if (existingRecordIndex !== -1) {
-        const updatedRecords = [...prevRecords]
-        updatedRecords[existingRecordIndex] = {
-          ...updatedRecords[existingRecordIndex],
-          [type]: now
-        }
-        return updatedRecords
-      } else {
-        return [...prevRecords, { 
-          date: today, 
-          wakeUp: type === 'wakeUp' ? now : null, 
-          bedtime: type === 'bedtime' ? now : null 
-        }]
-      }
-    })
+    const existingRecord = sleepRecords.find((record: SleepRecord) => record.date === today)
+    
+    if (existingRecord) {
+      dispatch(updateSleepRecord({ _id: existingRecord._id, updates: { [type]: now.toISOString() } }))
+    } else {
+      dispatch(addSleepRecord({
+        date: today,
+        wakeUp: type === 'wakeUp' ? now.toISOString() : null,
+        bedtime: type === 'bedtime' ? now.toISOString() : null
+      }))
+    }
   }
 
-  const events = sleepRecords.flatMap(record => {
+  const events = sleepRecords.flatMap((record: SleepRecord) => {
     const events = []
     if (record.wakeUp) {
       events.push({
         title: '起床',
-        start: record.wakeUp,
-        end: new Date(record.wakeUp.getTime() + 30 * 60000), // 30 minutes duration
+        start: new Date(record.wakeUp),
+        end: new Date(new Date(record.wakeUp).getTime() + 30 * 60000),
         allDay: false,
       })
     }
     if (record.bedtime) {
       events.push({
         title: '就寝',
-        start: record.bedtime,
-        end: new Date(record.bedtime.getTime() + 30 * 60000), // 30 minutes duration
+        start: new Date(record.bedtime),
+        end: new Date(new Date(record.bedtime).getTime() + 30 * 60000),
         allDay: false,
       })
     }
@@ -105,17 +67,23 @@ export default function SleepTracker() {
   })
 
   const chartData = sleepRecords
-    .map(record => ({
-      date: format(record.date, 'MM/dd'),
-      wakeUp: record.wakeUp ? record.wakeUp.getHours() + record.wakeUp.getMinutes() / 60 : null,
-      bedtime: record.bedtime ? record.bedtime.getHours() + record.bedtime.getMinutes() / 60 : null,
+    .map((record: SleepRecord) => ({
+      date: format(new Date(record.date), 'MM/dd'),
+      wakeUp: record.wakeUp ? new Date(record.wakeUp).getHours() + new Date(record.wakeUp).getMinutes() / 60 : null,
+      bedtime: record.bedtime ? new Date(record.bedtime).getHours() + new Date(record.bedtime).getMinutes() / 60 : null,
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+  if (status === 'loading') {
+    return <div>Loading...</div>
+  }
+
+  if (status === 'failed') {
+    return <div>Error: {error}</div>
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-8">
-      <h1 className="text-3xl font-bold mb-4">睡眠トラッカー</h1>
-      
       <div className="flex space-x-4">
         <Button onClick={() => logTime('wakeUp')}>起床時間を記録</Button>
         <Button onClick={() => logTime('bedtime')}>就寝時間を記録</Button>
@@ -158,37 +126,15 @@ export default function SleepTracker() {
         </CardHeader>
         <CardContent>
           <div className="w-full h-[400px]">
-            <Line
-              data={{
-                labels: chartData.map(d => d.date),
-                datasets: [
-                  {
-                    label: '起床時間',
-                    data: chartData.map(d => d.wakeUp),
-                    borderColor: '#8884d8',
-                    backgroundColor: 'rgba(136, 132, 216, 0.5)',
-                  },
-                  {
-                    label: '就寝時間',
-                    data: chartData.map(d => d.bedtime),
-                    borderColor: '#82ca9d',
-                    backgroundColor: 'rgba(130, 202, 157, 0.5)',
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                scales: {
-                  y: {
-                    min: 0,
-                    max: 24,
-                    ticks: {
-                      stepSize: 6,
-                    },
-                  },
-                },
-              }}
-            />
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <XAxis dataKey="date" />
+                <YAxis domain={[0, 24]} ticks={[0, 6, 12, 18, 24]} />
+                <Tooltip />
+                <Line type="monotone" dataKey="wakeUp" stroke="#8884d8" name="起床時間" />
+                <Line type="monotone" dataKey="bedtime" stroke="#82ca9d" name="就寝時間" />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
