@@ -9,6 +9,7 @@ import subscriptionReducer from './subscriptionSlice';
 import withdrawalReducer from './withdrawalSlice';
 import bookReducer from './bookSlice';
 import sleepTrackerReducer from './sleepTrackerSlice';
+import blogReducer from './blogSlice';
 
 const rootReducer = combineReducers({
   workTime: workTimeReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   withdrawal: withdrawalReducer,
   book: bookReducer,
   sleepTracker: sleepTrackerReducer,
+  blog: blogReducer,
 });
 
 export const store = configureStore({

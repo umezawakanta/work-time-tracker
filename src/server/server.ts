@@ -13,6 +13,7 @@ import withdrawalRoutes from "./routes/withdrawalRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import sleepTrackerRoutes from "./routes/sleepTrackerRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/withdrawal", withdrawalRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/sleep-records", sleepTrackerRoutes);
+app.use("/api/blog", blogRoutes);
 
 // Not Found middleware
 app.use((_req: Request, res: Response) => {
