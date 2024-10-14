@@ -16,6 +16,7 @@ import {
   Moon,
   Menu,
   X,
+  Pen,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -58,6 +59,7 @@ export default function Layout({ children }: LayoutProps) {
     { icon: <Vote size={18} />, label: "選挙候補者", path: "/election-candidates", authRequired: false },
     { icon: <BookOpen size={18} />, label: "ネット本棚", path: "/bookshelf", authRequired: true },
     { icon: <Moon size={18} />, label: "睡眠トラッカー", path: "/sleep-tracker", authRequired: true },
+    { icon: <Pen size={18} />, label: "ブログ", path: "/blog", authRequired: true },
   ];
 
   return (
