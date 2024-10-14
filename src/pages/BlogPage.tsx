@@ -1,20 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { Link } from 'react-router-dom';
 import { fetchBlogPosts, selectBlogPosts, selectBlogStatus } from '@/store/blogSlice';
-import { Button, Container, Typography, Grid, Card, CardContent, CardActions, CircularProgress } from '@mui/material';
+import { Button, Container, Typography, Grid, Card, CardContent, CardActions, CircularProgress, Pagination } from '@mui/material';
+
+const POSTS_PER_PAGE = 6;
 
 const BlogPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const blogPosts = useSelector(selectBlogPosts);
   const status = useSelector(selectBlogStatus);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchBlogPosts());
     }
   }, [status, dispatch]);
+
+  const handleChangePage = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
 
   if (status === 'loading') {
     return (
@@ -23,6 +30,10 @@ const BlogPage: React.FC = () => {
       </Container>
     );
   }
+
+  const indexOfLastPost = page * POSTS_PER_PAGE;
+  const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
+  const currentPosts = blogPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   return (
     <Container maxWidth="lg">
@@ -33,7 +44,7 @@ const BlogPage: React.FC = () => {
         新規投稿
       </Button>
       <Grid container spacing={4}>
-        {blogPosts.map((post) => (
+        {currentPosts.map((post) => (
           <Grid item xs={12} sm={6} md={4} key={post._id}>
             <Card>
               <CardContent>
@@ -41,7 +52,7 @@ const BlogPage: React.FC = () => {
                   {post.title}
                 </Typography>
                 <Typography color="textSecondary" gutterBottom>
-                  {post.category}
+                  カテゴリー: {post.category}
                 </Typography>
                 <Typography variant="body2" component="p">
                   {post.content.substring(0, 100)}...
@@ -56,6 +67,13 @@ const BlogPage: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      <Pagination
+        count={Math.ceil(blogPosts.length / POSTS_PER_PAGE)}
+        page={page}
+        onChange={handleChangePage}
+        color="primary"
+        sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
+      />
     </Container>
   );
 };
