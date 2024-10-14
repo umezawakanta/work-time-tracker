@@ -29,6 +29,7 @@ export interface IBlogPost extends Document {
   author: string;
   likes: number;
   comments: Types.ObjectId[];
+  category: string;
 }
 
 const blogPostSchema = new Schema({

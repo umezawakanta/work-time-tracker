@@ -38,4 +38,8 @@ export const blogApi = {
   ): Promise<AxiosResponse<CommentApiResponse>> => {
     return api.post<CommentApiResponse>(`/blog/${postId}/comments`, comment);
   },
+
+  getById: (id: string): Promise<AxiosResponse<BlogPost>> => {
+    return api.get<BlogPost>(`/blog/${id}`);
+  },
 };
