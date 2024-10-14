@@ -23,6 +23,7 @@ import SleepTrackerPage from "./pages/SleepTrackerPage";
 import BlogPage from "./pages/BlogPage";
 import NewBlogPost from "./pages/NewBlogPost";
 import BlogPostDetail from "./pages/BlogPostDetail";
+import EditBlogPost from "./pages/EditBlogPost";
 import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -65,6 +66,7 @@ export default function App() {
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/new" element={<NewBlogPost />} />
                   <Route path="/blog/:id" element={<BlogPostDetail />} />
+                  <Route path="/blog/edit/:id" element={<EditBlogPost />} />
                 </Route>
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
