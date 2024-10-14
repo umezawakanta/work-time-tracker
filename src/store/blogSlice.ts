@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { blogApi } from "@/services/api/blogApi";
-import axios from 'axios'; // Import axios
 import { RootState } from "./index";
 
 export interface BlogPost {
@@ -44,16 +43,9 @@ export const fetchBlogPosts = createAsyncThunk(
 
 export const addBlogPost = createAsyncThunk(
   "blog/addBlogPost",
-  async (postData: Partial<BlogPost>, thunkAPI) => {
-    try {
-      const response = await axios.post<BlogPost>('/api/blog', postData);
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        return thunkAPI.rejectWithValue(error.message);
-      }
-      return thunkAPI.rejectWithValue("Failed to add blog post");
-    }
+  async (postData: Pick<BlogPost, "title" | "content" | "author" | "category">) => {
+    const response = await blogApi.create(postData);
+    return response.data.post;
   }
 );
 

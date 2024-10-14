@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { Toaster } from "react-hot-toast";
