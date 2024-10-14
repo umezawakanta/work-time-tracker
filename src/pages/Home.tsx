@@ -133,6 +133,23 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>ブログ</CardTitle>
+            <CardDescription>生産性向上のヒントや体験談を共有</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              時間管理や生産性向上に関する記事を読んだり、自分の経験を共有したりできます。
+              他のユーザーとアイデアを交換し、互いに学び合いましょう。
+            </p>
+            <Link to="/blog" className="w-full">
+              <Button variant="secondary" className="w-full">
+                ブログを見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
