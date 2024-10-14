@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { blogApi } from "@/services/api/blogApi";
+import axios from 'axios'; // Import axios
 import { RootState } from "./index";
 
 export interface BlogPost {
@@ -7,10 +8,11 @@ export interface BlogPost {
   title: string;
   content: string;
   author: string;
-  createdAt: string;
-  updatedAt: string;
+  category: string;
   likes: number;
   comments: Comment[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Comment {
@@ -42,9 +44,16 @@ export const fetchBlogPosts = createAsyncThunk(
 
 export const addBlogPost = createAsyncThunk(
   "blog/addBlogPost",
-  async (post: Omit<BlogPost, "_id" | "createdAt" | "updatedAt" | "likes" | "comments">) => {
-    const response = await blogApi.create(post);
-    return response.data.post;
+  async (postData: Partial<BlogPost>, thunkAPI) => {
+    try {
+      const response = await axios.post<BlogPost>('/api/blog', postData);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+      return thunkAPI.rejectWithValue("Failed to add blog post");
+    }
   }
 );
 
@@ -69,6 +78,14 @@ export const addComment = createAsyncThunk(
   async ({ postId, comment }: { postId: string; comment: Omit<Comment, "_id" | "createdAt"> }) => {
     const response = await blogApi.addComment(postId, comment);
     return { postId, comment: response.data.comment };
+  }
+);
+
+export const fetchBlogPost = createAsyncThunk(
+  "blog/fetchBlogPost",
+  async (id: string) => {
+    const response = await blogApi.getById(id);
+    return response.data;
   }
 );
 
@@ -111,6 +128,15 @@ const blogSlice = createSlice({
           post.comments.push(action.payload.comment);
         }
         state.error = null;
+      })
+      .addCase(fetchBlogPost.fulfilled, (state, action: PayloadAction<BlogPost>) => {
+        const index = state.posts.findIndex(post => post._id === action.payload._id);
+        if (index !== -1) {
+          state.posts[index] = action.payload;
+        } else {
+          state.posts.push(action.payload);
+        }
+        state.error = null;
       });
   },
 });
@@ -118,5 +144,8 @@ const blogSlice = createSlice({
 export const selectBlogPosts = (state: RootState) => state.blog.posts;
 export const selectBlogStatus = (state: RootState) => state.blog.status;
 export const selectBlogError = (state: RootState) => state.blog.error;
+
+export const selectBlogPostById = (state: RootState, id: string | undefined) =>
+  state.blog.posts.find(post => post._id === id);
 
 export default blogSlice.reducer;
