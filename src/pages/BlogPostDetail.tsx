@@ -61,7 +61,7 @@ const BlogPostDetail: React.FC = () => {
         {post.title}
       </Typography>
       <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-        カテゴリー: {post.category}
+        カテゴリー: {post.category || '未分類'}
       </Typography>
       <Typography variant="body1" paragraph>
         {post.content}
@@ -79,7 +79,7 @@ const BlogPostDetail: React.FC = () => {
           コメント
         </Typography>
         <Divider />
-        {post.comments.length > 0 ? (
+        {post.comments && post.comments.length > 0 ? (
           post.comments.map((comment) => (
             <Box key={comment._id} sx={{ my: 2 }}>
               <Typography variant="body2" color="textSecondary">
