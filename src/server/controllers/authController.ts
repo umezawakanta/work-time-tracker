@@ -79,10 +79,28 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const checkAuth = async (req: AuthRequest, res: Response) => {
-  if (!req.user) {
-    return res.status(401).json({ isAuthenticated: false });
+  try {
+    if (!req.user) {
+      return res.status(401).json({ isAuthenticated: false });
+    }
+
+    const user = await User.findById(req.user.id).select('name email');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      isAuthenticated: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Check auth error:', error);
+    res.status(500).json({ message: 'Server error during authentication check' });
   }
-  res.json({ isAuthenticated: true, user: req.user });
 };
 
 export const updateProfile = async (req: AuthRequest, res: Response) => {

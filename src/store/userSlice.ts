@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { updateUserProfile, getUserProfile } from '@/services/api/authApi';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getUserProfile, updateUserProfile } from '@/services/api/authApi';
 
 interface UserState {
   id: string | null;
@@ -50,18 +50,7 @@ export const updateProfile = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    setUser: (state, action: PayloadAction<{ id: string; name: string; email: string }>) => {
-      state.id = action.payload.id;
-      state.name = action.payload.name;
-      state.email = action.payload.email;
-    },
-    clearUser: (state) => {
-      state.id = null;
-      state.name = '';
-      state.email = '';
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserProfile.pending, (state) => {
@@ -72,13 +61,13 @@ const userSlice = createSlice({
         state.isLoading = false;
         if (action.payload) {
           state.id = action.payload.id;
-          state.name = action.payload.name;
-          state.email = action.payload.email;
+          state.name = action.payload.name || '';
+          state.email = action.payload.email || '';
         }
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string || 'Failed to fetch user profile';
+        state.error = action.payload as string;
       })
       .addCase(updateProfile.pending, (state) => {
         state.isLoading = true;
@@ -87,16 +76,15 @@ const userSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          state.name = action.payload.name;
-          state.email = action.payload.email;
+          state.name = action.payload.name || state.name;
+          state.email = action.payload.email || state.email;
         }
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string || 'Failed to update profile';
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;
