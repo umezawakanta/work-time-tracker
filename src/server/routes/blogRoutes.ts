@@ -108,7 +108,7 @@ router.get('/:id', async (req, res) => {
 router.post('/:id/like', async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId } = req.body; // 実際の実装では、認証システムからユーザーIDを取得します
+    const { userId } = req.body;
 
     const post = await BlogPost.findById(id);
     if (!post) {
@@ -118,16 +118,21 @@ router.post('/:id/like', async (req, res) => {
     const likeIndex = post.likes.indexOf(userId);
     if (likeIndex > -1) {
       // いいねを削除
-      post.likes.splice(likeIndex, 1);
+      post.likes = post.likes.filter(like => like !== userId);
     } else {
       // いいねを追加
       post.likes.push(userId);
     }
 
     await post.save();
-    res.json({ message: 'いいねを更新しました', likes: post.likes.length });
-  } catch (error) {
-    res.status(500).json({ message: 'いいねの更新中にエラーが発生しました', error });
+    res.json({ message: 'いいねを更新しました', likes: post.likes });
+  } catch (error: unknown) {
+    console.error('Error in like route:', error);
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'いいねの更新中にエラーが発生しました', error: error.message });
+    } else {
+      res.status(500).json({ message: 'いいねの更新中に不明なエラーが発生しました' });
+    }
   }
 });
 
