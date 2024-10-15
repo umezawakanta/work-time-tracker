@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { updateUserProfile } from '@/services/api/authApi';
+import { updateUserProfile, getUserProfile } from '@/services/api/authApi';
 
 interface UserState {
   id: string | null;
@@ -16,6 +16,21 @@ const initialState: UserState = {
   isLoading: false,
   error: null,
 };
+
+export const fetchUserProfile = createAsyncThunk(
+  'user/fetchProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getUserProfile();
+      return response.user;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
+    }
+  }
+);
 
 export const updateProfile = createAsyncThunk(
   'user/updateProfile',
@@ -49,6 +64,22 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.id = action.payload.id;
+          state.name = action.payload.name;
+          state.email = action.payload.email;
+        }
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string || 'Failed to fetch user profile';
+      })
       .addCase(updateProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -62,7 +93,7 @@ const userSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string || 'An unknown error occurred';
+        state.error = action.payload as string || 'Failed to update profile';
       });
   },
 });

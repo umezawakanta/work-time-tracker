@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, RootState } from '@/store'
-import { updateProfile } from '@/store/userSlice'
+import { updateProfile, fetchUserProfile } from '@/store/userSlice'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +13,10 @@ export default function UserProfile() {
   const { name, email, isLoading, error } = useSelector((state: RootState) => state.user)
   const [formName, setFormName] = useState(name)
   const [formEmail, setFormEmail] = useState(email)
+
+  useEffect(() => {
+    dispatch(fetchUserProfile())
+  }, [dispatch])
 
   useEffect(() => {
     setFormName(name)
