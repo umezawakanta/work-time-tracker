@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { fetchBlogPost, addComment, deleteBlogPost, selectBlogPostById } from '@/store/blogSlice';
-import { Container, Typography, Box, Button, Divider, CircularProgress, TextField } from '@mui/material';
+import { Container, Typography, Box, Chip, Button, Divider, CircularProgress, TextField } from '@mui/material';
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +17,7 @@ const BlogPostDetail: React.FC = () => {
     if (id) {
       dispatch(fetchBlogPost(id));
     }
-  }, [id, dispatch]);
+  }, [dispatch, id]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,23 +54,30 @@ const BlogPostDetail: React.FC = () => {
       </Container>
     );
   }
-
+  
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="md">
       <Typography variant="h4" component="h1" gutterBottom>
         {post.title}
       </Typography>
       <Typography variant="subtitle1" color="textSecondary" gutterBottom>
         カテゴリー: {post.category || '未分類'}
       </Typography>
+      <Box sx={{ mb: 2 }}>
+        {post.tags.map((tag) => (
+          <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+        ))}
+      </Box>
       <Typography variant="body1" paragraph>
         {post.content}
       </Typography>
-      <Box sx={{ mt: 2, mb: 4 }}>
-        <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary" sx={{ mr: 2 }}>
-          編集
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+        <Button component={Link} to="/blog" variant="outlined">
+          戻る
         </Button>
-        <Button onClick={handleDelete} variant="contained" color="error">
+        <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary">
+          編集
+        </Button>        <Button onClick={handleDelete} variant="contained" color="error">
           削除
         </Button>
       </Box>
