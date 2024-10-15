@@ -32,3 +32,23 @@ export const checkAuth = async () => {
     return false;
   }
 };
+
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get("/auth/profile");
+    return response.data;
+  } catch (error) {
+    console.error("Get user profile error:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (userData: { name: string; email: string }) => {
+  try {
+    const response = await api.put("/auth/profile", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Update user profile error:", error);
+    throw error;
+  }
+};

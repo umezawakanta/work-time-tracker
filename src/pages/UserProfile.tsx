@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '@/store'
-import { updateUser } from '@/store/userSlice'
+import { AppDispatch, RootState } from '@/store'
+import { updateProfile } from '@/store/userSlice'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'react-hot-toast'
 
 export default function UserProfile() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const user = useSelector((state: RootState) => state.user)
   const [name, setName] = useState(user.name)
   const [email, setEmail] = useState(user.email)
@@ -19,10 +19,15 @@ export default function UserProfile() {
     setEmail(user.email)
   }, [user])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    dispatch(updateUser({ name, email }))
-    toast.success('プロフィールが更新されました')
+    try {
+      await dispatch(updateProfile({ name, email })).unwrap()
+      toast.success('プロフィールが更新されました')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '不明なエラーが発生しました'
+      toast.error(`プロフィールの更新に失敗しました: ${errorMessage}`)
+    }
   }
 
   return (

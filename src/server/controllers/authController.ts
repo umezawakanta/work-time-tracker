@@ -1,69 +1,67 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { Document } from 'mongoose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+interface AuthRequest extends Request {
+  user?: {
+    id: string;
+  };
+}
 
-// 暫定的なユーザー情報
-const TEMP_USER = {
-  email: 'kanta13jp@gmail.com',
-  password: 'P@ssw0rd01'
+interface IUser extends Document {
+  _id: string;
+  email: string;
+  password: string;
+  name: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+const generateToken = (userId: string) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET is not defined');
+  }
+  return jwt.sign({ id: userId }, secret, { expiresIn: '1d' });
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    console.log('ログイン試行:', email);
-
-    // 暫定的な認証ロジック
-    if (email === TEMP_USER.email && password === TEMP_USER.password) {
-      const token = jwt.sign({ userId: 'temp_user_id' }, JWT_SECRET, { expiresIn: '1h' });
-      console.log('ログイン成功:', email);
-      res.json({ token });
-    } else {
-      console.log('ログイン失敗:', email);
-      res.status(401).json({ message: 'メールアドレスまたはパスワードが正しくありません' });
+    const user = await User.findOne({ email }) as IUser | null;
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
+    const userId = user._id ? user._id.toString() : '';
+    const token = generateToken(userId);
+    res.json({ token, user: { id: userId, name: user.name, email: user.email } });
   } catch (error) {
-    console.error('ログインエラー:', error);
-    res.status(500).json({ message: 'サーバーエラーが発生しました' });
-  }
-};
-
-export const checkAuth = (req: Request, res: Response) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-
-  if (!token) {
-    console.log('認証チェック: トークンがありません');
-    return res.status(401).json({ message: 'トークンがありません、認証が拒否されました' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    console.log('認証チェック成功:', decoded.userId);
-    res.json({ isAuthenticated: true, userId: decoded.userId });
-  } catch (error) {
-    console.error('トークン検証失敗:', error);
-    res.status(401).json({ message: 'トークンが無効です' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
+    const { name, email, password } = req.body;
+    let user = await User.findOne({ email }) as IUser | null;
+    if (user) {
       return res.status(400).json({ message: 'User already exists' });
     }
-
-    const user = new User({ email, password });
+    user = new User({ name, email, password }) as IUser;
     await user.save();
-
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(201).json({ token });
+    const userId = user._id ? user._id.toString() : '';
+    const token = generateToken(userId);
+    res.status(201).json({ token, user: { id: userId, name: user.name, email: user.email } });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Server error' });
   }
+};
+
+export const checkAuth = async (req: AuthRequest, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ isAuthenticated: false });
+  }
+  res.json({ isAuthenticated: true, user: req.user });
 };

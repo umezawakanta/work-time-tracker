@@ -9,6 +9,7 @@ import WorkTimeEntryForm from "./components/forms/WorkTimeEntryForm";
 import WorkTimeReports from "./pages/WorkTimeReports";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { LocaleProvider } from "./context/LocaleContext";
 import { AuthProvider } from "./context/AuthContext";
 import { AssetCalendarPage } from "./pages/AssetCalendarPage";
@@ -51,6 +52,7 @@ export default function App() {
             <Layout>
               <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
                 <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
                 <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
