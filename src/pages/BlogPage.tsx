@@ -19,7 +19,8 @@ import {
   MenuItem,
   SelectChangeEvent,
   Box,
-  TextField
+  TextField,
+  Chip
 } from '@mui/material';
 
 const POSTS_PER_PAGE = 6;
@@ -31,6 +32,7 @@ const BlogPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string>('');
 
   useEffect(() => {
     if (status === 'idle') {
@@ -52,9 +54,15 @@ const BlogPage: React.FC = () => {
     setPage(1);
   };
 
+  const handleTagClick = (tag: string) => {
+    setSelectedTag(selectedTag === tag ? '' : tag);
+    setPage(1);
+  };
+
   if (status === 'loading') {
     return (
-      <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', 
+        alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
       </Container>
     );
@@ -64,14 +72,17 @@ const BlogPage: React.FC = () => {
     .filter(post => selectedCategory === 'all' || post.category === selectedCategory)
     .filter(post => 
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+      post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .filter(post => selectedTag === '' || post.tags.includes(selectedTag));
 
   const indexOfLastPost = page * POSTS_PER_PAGE;
   const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   const categories = ['all', ...new Set(blogPosts.map(post => post.category))];
+  const allTags = Array.from(new Set(blogPosts.flatMap(post => post.tags)));
 
   return (
     <Container maxWidth="lg">
@@ -107,6 +118,17 @@ const BlogPage: React.FC = () => {
         onChange={handleSearchChange}
         sx={{ mb: 2 }}
       />
+      <Box sx={{ mb: 2 }}>
+        {allTags.map((tag) => (
+          <Chip
+            key={tag}
+            label={tag}
+            onClick={() => handleTagClick(tag)}
+            color={selectedTag === tag ? 'primary' : 'default'}
+            sx={{ mr: 1, mb: 1 }}
+          />
+        ))}
+      </Box>
       <Grid container spacing={4}>
         {currentPosts.map((post) => (
           <Grid item xs={12} sm={6} md={4} key={post._id}>
@@ -121,6 +143,11 @@ const BlogPage: React.FC = () => {
                 <Typography variant="body2" component="p">
                   {post.content.substring(0, 100)}...
                 </Typography>
+                <Box sx={{ mt: 1 }}>
+                  {post.tags.map((tag) => (
+                    <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                  ))}
+                </Box>
               </CardContent>
               <CardActions>
                 <Button size="small" component={Link} to={`/blog/${post._id}`}>

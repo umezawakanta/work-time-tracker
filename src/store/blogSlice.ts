@@ -8,6 +8,7 @@ export interface BlogPost {
   content: string;
   author: string;
   category: string;
+  tags: string[];
   likes: number;
   comments: Comment[];
   createdAt: string;
@@ -15,41 +16,41 @@ export interface BlogPost {
 }
 
 export interface Comment {
-    _id: string;
-    content: string;
-    author: string;
-    createdAt: string;
+  _id: string;
+  content: string;
+  author: string;
+  createdAt: string;
+}
+
+interface BlogState {
+  posts: BlogPost[];
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: BlogState = {
+  posts: [],
+  status: "idle",
+  error: null,
+};
+
+export const fetchBlogPosts = createAsyncThunk(
+  "blog/fetchBlogPosts",
+  async () => {
+    const response = await blogApi.getAll();
+    return response.data;
   }
-  
-  interface BlogState {
-    posts: BlogPost[];
-    status: "idle" | "loading" | "succeeded" | "failed";
-    error: string | null;
+);
+
+export const addBlogPost = createAsyncThunk(
+  "blog/addBlogPost",
+  async (postData: Pick<BlogPost, "title" | "content" | "author" | "category" | "tags">) => {
+    const response = await blogApi.create(postData);
+    return response.data.post;
   }
-  
-  const initialState: BlogState = {
-    posts: [],
-    status: "idle",
-    error: null,
-  };
-  
-  export const fetchBlogPosts = createAsyncThunk(
-    "blog/fetchBlogPosts",
-    async () => {
-      const response = await blogApi.getAll();
-      return response.data;
-    }
-  );
-  
-  export const addBlogPost = createAsyncThunk(
-    "blog/addBlogPost",
-    async (postData: Pick<BlogPost, "title" | "content" | "author" | "category">) => {
-      const response = await blogApi.create(postData);
-      return response.data.post;
-    }
-  );
-  
-  export const updateBlogPost = createAsyncThunk(
+);
+
+export const updateBlogPost = createAsyncThunk(
     "blog/updateBlogPost",
     async ({ _id, updates }: { _id: string; updates: Partial<BlogPost> }) => {
       const response = await blogApi.update(_id, updates);
@@ -132,12 +133,12 @@ export interface Comment {
         });
     },
   });
-  
-  export const selectBlogPosts = (state: RootState) => state.blog.posts;
-  export const selectBlogStatus = (state: RootState) => state.blog.status;
-  export const selectBlogError = (state: RootState) => state.blog.error;
-  
-  export const selectBlogPostById = (state: RootState, id: string | undefined) =>
-    state.blog.posts.find(post => post._id === id);
-  
-  export default blogSlice.reducer;
+
+export const selectBlogPosts = (state: RootState) => state.blog.posts;
+export const selectBlogStatus = (state: RootState) => state.blog.status;
+export const selectBlogError = (state: RootState) => state.blog.error;
+
+export const selectBlogPostById = (state: RootState, id: string | undefined) =>
+  state.blog.posts.find(post => post._id === id);
+
+export default blogSlice.reducer;

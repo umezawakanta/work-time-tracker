@@ -28,6 +28,7 @@ export interface IBlogPost extends Document {
   content: string;
   author: string;
   category: string;
+  tags: string[];
   likes: number;
   comments: Types.ObjectId[];
   createdAt: Date;
@@ -50,6 +51,10 @@ const blogPostSchema = new Schema({
   category: {
     type: String,
     required: true,
+  },
+  tags: {
+    type: [String],
+    default: [],
   },
   likes: {
     type: Number,
