@@ -1,20 +1,11 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
-import { Document } from 'mongoose';
+import { User, IUser } from '../models/User.js';
 
 interface AuthRequest extends Request {
   user?: {
     id: string;
   };
-}
-
-interface IUser extends Document {
-  _id: string;
-  email: string;
-  password: string;
-  name: string;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const generateToken = (userId: string) => {
@@ -29,15 +20,19 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }) as IUser | null;
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    const userId = user._id ? user._id.toString() : '';
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    const userId = user._id?.toString() || '';
     const token = generateToken(userId);
     res.json({ token, user: { id: userId, name: user.name, email: user.email } });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error during login' });
   }
 };
 
@@ -50,12 +45,12 @@ export const register = async (req: Request, res: Response) => {
     }
     user = new User({ name, email, password }) as IUser;
     await user.save();
-    const userId = user._id ? user._id.toString() : '';
+    const userId = user._id?.toString() || '';
     const token = generateToken(userId);
     res.status(201).json({ token, user: { id: userId, name: user.name, email: user.email } });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
