@@ -23,6 +23,7 @@ import BlogPage from "./pages/BlogPage";
 import NewBlogPost from "./pages/NewBlogPost";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import EditBlogPost from "./pages/EditBlogPost";
+import UserProfile from "./pages/UserProfile";
 import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
@@ -66,6 +67,7 @@ export default function App() {
                   <Route path="/blog/new" element={<NewBlogPost />} />
                   <Route path="/blog/:id" element={<BlogPostDetail />} />
                   <Route path="/blog/edit/:id" element={<EditBlogPost />} />
+                  <Route path="/profile" element={<UserProfile />} />
                 </Route>
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

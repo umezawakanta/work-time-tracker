@@ -29,7 +29,7 @@ export default function Home() {
         <DailyTodoReminder />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card className="w-full">
+      <Card className="w-full">
           <CardHeader>
             <CardTitle>効率的な時間管理</CardTitle>
             <CardDescription>
@@ -146,6 +146,23 @@ export default function Home() {
             <Link to="/blog" className="w-full">
               <Button variant="secondary" className="w-full">
                 ブログを見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>ユーザープロフィール</CardTitle>
+            <CardDescription>あなたの情報を管理</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              ユーザー情報の確認や更新ができます。
+              名前やメールアドレスなど、プロフィール情報を最新の状態に保ちましょう。
+            </p>
+            <Link to="/profile" className="w-full">
+              <Button variant="outline" className="w-full">
+                プロフィールを見る
               </Button>
             </Link>
           </CardContent>
