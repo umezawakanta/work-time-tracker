@@ -18,7 +18,8 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
-  Box
+  Box,
+  TextField
 } from '@mui/material';
 
 const POSTS_PER_PAGE = 6;
@@ -29,6 +30,7 @@ const BlogPage: React.FC = () => {
   const status = useSelector(selectBlogStatus);
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (status === 'idle') {
@@ -42,7 +44,12 @@ const BlogPage: React.FC = () => {
 
   const handleCategoryChange = (event: SelectChangeEvent) => {
     setSelectedCategory(event.target.value as string);
-    setPage(1); // Reset to first page when changing category
+    setPage(1);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setPage(1);
   };
 
   if (status === 'loading') {
@@ -53,9 +60,12 @@ const BlogPage: React.FC = () => {
     );
   }
 
-  const filteredPosts = selectedCategory === 'all'
-    ? blogPosts
-    : blogPosts.filter(post => post.category === selectedCategory);
+  const filteredPosts = blogPosts
+    .filter(post => selectedCategory === 'all' || post.category === selectedCategory)
+    .filter(post => 
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   const indexOfLastPost = page * POSTS_PER_PAGE;
   const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
@@ -89,6 +99,14 @@ const BlogPage: React.FC = () => {
           </Select>
         </FormControl>
       </Box>
+      <TextField
+        fullWidth
+        label="検索"
+        variant="outlined"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        sx={{ mb: 2 }}
+      />
       <Grid container spacing={4}>
         {currentPosts.map((post) => (
           <Grid item xs={12} sm={6} md={4} key={post._id}>
