@@ -1,84 +1,71 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { getUserProfile, updateUserProfile } from "@/services/api/authApi";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { updateUserProfile } from '@/services/api/authApi';
 
 interface UserState {
-  lastReminderDate: string | null;
+  id: string | null;
   name: string;
   email: string;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
 }
 
 const initialState: UserState = {
-  lastReminderDate: null,
-  name: "",
-  email: "",
-  loading: false,
+  id: null,
+  name: '',
+  email: '',
+  isLoading: false,
   error: null,
 };
 
-export const fetchUserProfile = createAsyncThunk(
-  "user/fetchProfile",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getUserProfile();
-      return response.data;
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
-    }
-  }
-);
-
 export const updateProfile = createAsyncThunk(
-  "user/updateProfile",
+  'user/updateProfile',
   async (userData: { name: string; email: string }, { rejectWithValue }) => {
     try {
       const response = await updateUserProfile(userData);
-      return response.data;
+      return response.user;
     } catch (error) {
-      return rejectWithValue((error as Error).message);
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue('An unknown error occurred');
     }
   }
 );
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
-    updateLastReminderDate(state, action: PayloadAction<string>) {
-      state.lastReminderDate = action.payload;
+    setUser: (state, action: PayloadAction<{ id: string; name: string; email: string }>) => {
+      state.id = action.payload.id;
+      state.name = action.payload.name;
+      state.email = action.payload.email;
+    },
+    clearUser: (state) => {
+      state.id = null;
+      state.name = '';
+      state.email = '';
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUserProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.name = action.payload.name;
-        state.email = action.payload.email;
-      })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
       .addCase(updateProfile.pending, (state) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.name = action.payload.name;
-        state.email = action.payload.email;
+        state.isLoading = false;
+        if (action.payload) {
+          state.name = action.payload.name;
+          state.email = action.payload.email;
+        }
       })
       .addCase(updateProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+        state.isLoading = false;
+        state.error = action.payload as string || 'An unknown error occurred';
       });
   },
 });
 
-export const { updateLastReminderDate } = userSlice.actions;
+export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

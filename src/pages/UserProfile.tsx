@@ -10,24 +10,28 @@ import { toast } from 'react-hot-toast'
 
 export default function UserProfile() {
   const dispatch = useDispatch<AppDispatch>()
-  const user = useSelector((state: RootState) => state.user)
-  const [name, setName] = useState(user.name)
-  const [email, setEmail] = useState(user.email)
+  const { name, email, isLoading, error } = useSelector((state: RootState) => state.user)
+  const [formName, setFormName] = useState(name)
+  const [formEmail, setFormEmail] = useState(email)
 
   useEffect(() => {
-    setName(user.name)
-    setEmail(user.email)
-  }, [user])
+    setFormName(name)
+    setFormEmail(email)
+  }, [name, email])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await dispatch(updateProfile({ name, email })).unwrap()
+      await dispatch(updateProfile({ name: formName, email: formEmail })).unwrap()
       toast.success('プロフィールが更新されました')
     } catch (error) {
       console.error('Profile update error:', error)
       toast.error('プロフィールの更新に失敗しました')
     }
+  }
+
+  if (error) {
+    toast.error(`エラーが発生しました: ${error}`)
   }
 
   return (
@@ -43,8 +47,8 @@ export default function UserProfile() {
               <Label htmlFor="name">名前</Label>
               <Input
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
                 required
               />
             </div>
@@ -53,14 +57,16 @@ export default function UserProfile() {
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formEmail}
+                onChange={(e) => setFormEmail(e.target.value)}
                 required
               />
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">更新</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? '更新中...' : '更新'}
+            </Button>
           </CardFooter>
         </form>
       </Card>
