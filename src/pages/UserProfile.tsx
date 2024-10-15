@@ -24,9 +24,9 @@ export default function UserProfile() {
     try {
       await dispatch(updateProfile({ name, email })).unwrap()
       toast.success('プロフィールが更新されました')
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : '不明なエラーが発生しました'
-      toast.error(`プロフィールの更新に失敗しました: ${errorMessage}`)
+    } catch (error) {
+      console.error('Profile update error:', error)
+      toast.error('プロフィールの更新に失敗しました')
     }
   }
 

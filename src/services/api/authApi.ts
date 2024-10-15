@@ -45,7 +45,16 @@ export const getUserProfile = async () => {
 
 export const updateUserProfile = async (userData: { name: string; email: string }) => {
   try {
-    const response = await api.put("/auth/profile", userData);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('認証トークンがありません');
+    }
+
+    const response = await api.put("/auth/profile", userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Update user profile error:", error);

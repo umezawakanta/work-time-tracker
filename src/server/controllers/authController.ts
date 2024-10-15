@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User.js';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 interface AuthRequest extends Request {
   user?: {
     id: string;
@@ -81,4 +83,29 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
     return res.status(401).json({ isAuthenticated: false });
   }
   res.json({ isAuthenticated: true, user: req.user });
+};
+
+export const updateProfile = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: '認証されていません' });
+    }
+
+    const { name, email } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, email },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+    }
+
+    res.json({ user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email } });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'プロフィールの更新中にエラーが発生しました' });
+  }
 };
