@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
-import { fetchBlogPost, addComment, deleteBlogPost, selectBlogPostById } from '@/store/blogSlice';
-import { Container, Typography, Box, Chip, Button, Divider, CircularProgress, TextField } from '@mui/material';
+import { fetchBlogPost, addComment, deleteBlogPost, selectBlogPostById, toggleLike } from '@/store/blogSlice';
+import { Container, Typography, Box, Chip, Button, Divider, CircularProgress, TextField, IconButton } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +14,7 @@ const BlogPostDetail: React.FC = () => {
   const post = useSelector((state: RootState) => selectBlogPostById(state, id));
   const status = useSelector((state: RootState) => state.blog.status);
   const [newComment, setNewComment] = useState('');
+  const currentUserId = 'testUser'; // 実際の実装では、認証システムからユーザーIDを取得します
 
   useEffect(() => {
     if (id) {
@@ -31,6 +34,12 @@ const BlogPostDetail: React.FC = () => {
     if (id && window.confirm('本当にこの投稿を削除しますか？')) {
       await dispatch(deleteBlogPost(id));
       navigate('/blog');
+    }
+  };
+
+  const handleLike = async () => {
+    if (id) {
+      await dispatch(toggleLike({ postId: id, userId: currentUserId }));
     }
   };
 
@@ -55,6 +64,8 @@ const BlogPostDetail: React.FC = () => {
     );
   }
   
+  const isLiked = post.likes.includes(currentUserId);
+
   return (
     <Container maxWidth="md">
       <Typography variant="h4" component="h1" gutterBottom>
@@ -71,15 +82,26 @@ const BlogPostDetail: React.FC = () => {
       <Typography variant="body1" paragraph>
         {post.content}
       </Typography>
-      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-        <Button component={Link} to="/blog" variant="outlined">
-          戻る
-        </Button>
-        <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary">
-          編集
-        </Button>        <Button onClick={handleDelete} variant="contained" color="error">
-          削除
-        </Button>
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <IconButton onClick={handleLike} color={isLiked ? 'secondary' : 'default'}>
+            {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+          <Typography variant="body2" component="span">
+            {post.likes.length} いいね
+          </Typography>
+        </Box>
+        <Box>
+          <Button component={Link} to="/blog" variant="outlined" sx={{ mr: 1 }}>
+            戻る
+          </Button>
+          <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary" sx={{ mr: 1 }}>
+            編集
+          </Button>
+          <Button onClick={handleDelete} variant="contained" color="error">
+            削除
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" gutterBottom>
@@ -113,9 +135,6 @@ const BlogPostDetail: React.FC = () => {
           コメントを追加
         </Button>
       </Box>
-      <Button component={Link} to="/blog" variant="contained" color="primary" sx={{ mt: 4 }}>
-        ブログ一覧に戻る
-      </Button>
     </Container>
   );
 };

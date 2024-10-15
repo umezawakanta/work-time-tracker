@@ -104,4 +104,31 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// いいねを追加/削除
+router.post('/:id/like', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body; // 実際の実装では、認証システムからユーザーIDを取得します
+
+    const post = await BlogPost.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: 'ブログ投稿が見つかりません' });
+    }
+
+    const likeIndex = post.likes.indexOf(userId);
+    if (likeIndex > -1) {
+      // いいねを削除
+      post.likes.splice(likeIndex, 1);
+    } else {
+      // いいねを追加
+      post.likes.push(userId);
+    }
+
+    await post.save();
+    res.json({ message: 'いいねを更新しました', likes: post.likes.length });
+  } catch (error) {
+    res.status(500).json({ message: 'いいねの更新中にエラーが発生しました', error });
+  }
+});
+
 export default router;

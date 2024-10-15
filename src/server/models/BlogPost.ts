@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IComment extends Document {
   content: string;
@@ -29,8 +29,8 @@ export interface IBlogPost extends Document {
   author: string;
   category: string;
   tags: string[];
-  likes: number;
-  comments: Types.ObjectId[];
+  likes: string[];
+  comments: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,8 +57,8 @@ const blogPostSchema = new Schema({
     default: [],
   },
   likes: {
-    type: Number,
-    default: 0,
+    type: [String],
+    default: [],
   },
   comments: [{
     type: Schema.Types.ObjectId,
