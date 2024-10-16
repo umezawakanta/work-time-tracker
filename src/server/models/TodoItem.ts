@@ -4,7 +4,7 @@ export interface ITodoItem extends Document {
   task: string;
   completed: boolean;
   completedDate: Date | null;
-  order: number;
+  priority: number;
 }
 
 const todoItemSchema = new Schema({
@@ -20,7 +20,7 @@ const todoItemSchema = new Schema({
     type: Date,
     default: null,
   },
-  order: {
+  priority: {
     type: Number,
     default: 0,
   },

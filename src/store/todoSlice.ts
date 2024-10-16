@@ -7,7 +7,7 @@ export interface TodoItem {
   task: string;
   completed: boolean;
   completedDate: string | null;
-  order: number;
+  priority: number;
 }
 
 export interface TodoHistoryItem {
@@ -34,7 +34,6 @@ const initialState: TodoState = {
   error: null,
 };
 
-// Async thunks remain the same
 export const fetchTodoItems = createAsyncThunk(
   "todo/fetchTodoItems",
   async () => {
@@ -45,8 +44,8 @@ export const fetchTodoItems = createAsyncThunk(
 
 export const addTodoItem = createAsyncThunk(
   "todo/addTodoItem",
-  async (task: string) => {
-    const response = await todoApi.create(task);
+  async ({ task, priority }: { task: string; priority: number }) => {
+    const response = await todoApi.create(task, priority);
     return response.data.todo;
   }
 );
@@ -75,13 +74,18 @@ export const resetTodoList = createAsyncThunk(
   }
 );
 
+export const reorderTodoItems = createAsyncThunk(
+  "todo/reorderTodoItems",
+  async (items: TodoItem[]) => {
+    const response = await todoApi.reorder(items);
+    return response.data.todos;
+  }
+);
+
 const todoSlice = createSlice({
   name: "todo",
   initialState,
   reducers: {
-    reorderTodoItems: (state, action: PayloadAction<TodoItem[]>) => {
-      state.items = action.payload;
-    },
     updateTodoHistory: (state) => {
       const today = new Date().toISOString().split('T')[0];
       const completedTasks = state.items
@@ -133,11 +137,15 @@ const todoSlice = createSlice({
       .addCase(resetTodoList.fulfilled, (state, action: PayloadAction<TodoItem[]>) => {
         state.items = action.payload;
         state.error = null;
+      })
+      .addCase(reorderTodoItems.fulfilled, (state, action: PayloadAction<TodoItem[]>) => {
+        state.items = action.payload;
+        state.error = null;
       });
   },
 });
 
-export const { reorderTodoItems, updateTodoHistory } = todoSlice.actions;
+export const { updateTodoHistory } = todoSlice.actions;
 
 export const selectTodos = (state: RootState) => state.todo.items;
 export const selectTodoStatus = (state: RootState) => state.todo.status;

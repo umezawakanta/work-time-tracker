@@ -78,11 +78,12 @@ export default function DailyTodoReminder() {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (newTodo.trim()) {
-        dispatch(addTodoItem(newTodo.trim())); // 修正: オブジェクトではなく文字列を渡す
+        const maxPriority = Math.max(...todos.map(todo => todo.priority), 0);
+        dispatch(addTodoItem({ task: newTodo.trim(), priority: maxPriority + 1 }));
         setNewTodo("");
       }
     },
-    [dispatch, newTodo]
+    [dispatch, newTodo, todos]
   );
 
   const handleDeleteTodo = useCallback(
@@ -121,13 +122,26 @@ export default function DailyTodoReminder() {
       if ((direction === 'up' && index > 0) || (direction === 'down' && index < todos.length - 1)) {
         const newTodos = [...todos];
         const [movedItem] = newTodos.splice(index, 1);
-        newTodos.splice(direction === 'up' ? index - 1 : index + 1, 0, movedItem);
-        const updatedTodos = newTodos.map((todo, idx) => ({ ...todo, priority: idx }));
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        newTodos.splice(newIndex, 0, movedItem);
+        
+        // Update priorities
+        const updatedTodos = newTodos.map((todo, idx) => ({
+          ...todo,
+          priority: todos[idx].priority
+        }));
+        
+        // Swap priorities of moved items
+        [updatedTodos[index].priority, updatedTodos[newIndex].priority] = 
+        [updatedTodos[newIndex].priority, updatedTodos[index].priority];
+
         dispatch(reorderTodoItems(updatedTodos));
       }
     },
     [dispatch, todos]
   );
+
+  const sortedTodos = [...todos].sort((a, b) => a.priority - b.priority);
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
@@ -161,7 +175,7 @@ export default function DailyTodoReminder() {
               <Button type="submit">追加</Button>
             </form>
             <div className="space-y-4">
-              {todos.map((todo, index) => (
+              {sortedTodos.map((todo, index) => (
                 <div key={todo._id} className="flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm">
                   <Checkbox
                     id={`todo-${todo._id}`}
@@ -216,7 +230,7 @@ export default function DailyTodoReminder() {
                         size="sm"
                         variant="ghost"
                         onClick={() => handleMoveTodo(todo._id, 'down')}
-                        disabled={index === todos.length - 1}
+                        disabled={index === sortedTodos.length - 1}
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>

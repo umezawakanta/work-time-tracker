@@ -7,13 +7,18 @@ interface TodoApiResponse {
   todo: TodoItem;
 }
 
+interface ReorderResponse {
+  message: string;
+  todos: TodoItem[];
+}
+
 export const todoApi = {
   getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
     return api.get<TodoItem[]>("/todos");
   },
 
-  create: (task: string): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.post<TodoApiResponse>("/todos", { task });
+  create: (task: string, priority: number): Promise<AxiosResponse<TodoApiResponse>> => {
+    return api.post<TodoApiResponse>("/todos", { task, priority });
   },
 
   update: (
@@ -29,5 +34,9 @@ export const todoApi = {
 
   reset: (): Promise<AxiosResponse<TodoItem[]>> => {
     return api.post<TodoItem[]>("/todos/reset");
+  },
+
+  reorder: (items: TodoItem[]): Promise<AxiosResponse<ReorderResponse>> => {
+    return api.post<ReorderResponse>("/todos/reorder", { items });
   },
 };

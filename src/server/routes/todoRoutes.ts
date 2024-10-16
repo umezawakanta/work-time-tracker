@@ -1,12 +1,12 @@
 import express from 'express';
-import { TodoItem } from '../models/TodoItem.js';
+import { ITodoItem, TodoItem } from '../models/TodoItem.js';
 
 const router = express.Router();
 
 // GET all todos
 router.get('/', async (_req, res) => {
   try {
-    const todos = await TodoItem.find().sort({ order: 1 });
+    const todos = await TodoItem.find().sort({ priority: 1 });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching todos', error });
@@ -16,10 +16,8 @@ router.get('/', async (_req, res) => {
 // POST new todo
 router.post('/', async (req, res) => {
   try {
-    const { task } = req.body;
-    const maxOrderTodo = await TodoItem.findOne().sort('-order');
-    const order = maxOrderTodo ? maxOrderTodo.order + 1 : 0;
-    const newTodo = new TodoItem({ task, completed: false, completedDate: null, order });
+    const { task, priority } = req.body;
+    const newTodo = new TodoItem({ task, completed: false, completedDate: null, priority });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {
@@ -65,7 +63,7 @@ router.delete('/:id', async (req, res) => {
 router.post('/reset', async (_req, res) => {
   try {
     await TodoItem.updateMany({}, { completed: false, completedDate: null });
-    const todos = await TodoItem.find().sort({ order: 1 });
+    const todos = await TodoItem.find().sort({ priority: 1 });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: 'Error resetting todos', error });
@@ -75,15 +73,15 @@ router.post('/reset', async (_req, res) => {
 // Reorder todos
 router.post('/reorder', async (req, res) => {
   try {
-    const { items } = req.body as { items: Array<{ _id: string }> };
+    const { items } = req.body as { items: Array<ITodoItem> };
     const bulkOps = items.map((item, index: number) => ({
       updateOne: {
         filter: { _id: item._id },
-        update: { $set: { order: index } }
+        update: { $set: { priority: index } }
       }
     }));
     await TodoItem.bulkWrite(bulkOps);
-    const updatedTodos = await TodoItem.find().sort({ order: 1 });
+    const updatedTodos = await TodoItem.find().sort({ priority: 1 });
     res.json({ message: 'Todos reordered successfully', todos: updatedTodos });
   } catch (error) {
     res.status(500).json({ message: 'Error reordering todos', error });
