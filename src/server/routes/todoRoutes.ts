@@ -1,5 +1,5 @@
 import express from 'express';
-import { ITodoItem, TodoItem } from '../models/TodoItem.js';
+import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 
 const router = express.Router();
 
@@ -74,10 +74,10 @@ router.post('/reset', async (_req, res) => {
 router.post('/reorder', async (req, res) => {
   try {
     const { items } = req.body as { items: Array<ITodoItem> };
-    const bulkOps = items.map((item, index: number) => ({
+    const bulkOps = items.map((item) => ({
       updateOne: {
         filter: { _id: item._id },
-        update: { $set: { priority: index } }
+        update: { $set: { priority: item.priority } }
       }
     }));
     await TodoItem.bulkWrite(bulkOps);

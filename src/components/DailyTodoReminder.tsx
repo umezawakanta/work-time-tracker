@@ -128,9 +128,11 @@ export default function DailyTodoReminder() {
       if ((direction === 'up' && index > 0) || (direction === 'down' && index < sortedTodos.length - 1)) {
         const newIndex = direction === 'up' ? index - 1 : index + 1;
         if (sortedTodos[index].completed === sortedTodos[newIndex].completed) {
-          [sortedTodos[index].priority, sortedTodos[newIndex].priority] = 
-          [sortedTodos[newIndex].priority, sortedTodos[index].priority];
-          dispatch(reorderTodoItems(sortedTodos));
+          const updatedTodos = sortedTodos.map(todo => ({...todo}));
+          const temp = updatedTodos[index].priority;
+          updatedTodos[index].priority = updatedTodos[newIndex].priority;
+          updatedTodos[newIndex].priority = temp;
+          dispatch(reorderTodoItems(updatedTodos));
         }
       }
     },
