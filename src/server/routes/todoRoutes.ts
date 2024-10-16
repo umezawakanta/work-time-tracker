@@ -6,7 +6,7 @@ const router = express.Router();
 // GET all todos
 router.get('/', async (_req, res) => {
   try {
-    const todos = await TodoItem.find().sort({ priority: 1 });
+    const todos = await TodoItem.find().sort({ completed: 1, priority: 1 });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching todos', error });
@@ -81,7 +81,7 @@ router.post('/reorder', async (req, res) => {
       }
     }));
     await TodoItem.bulkWrite(bulkOps);
-    const updatedTodos = await TodoItem.find().sort({ priority: 1 });
+    const updatedTodos = await TodoItem.find().sort({ completed: 1, priority: 1 });
     res.json({ message: 'Todos reordered successfully', todos: updatedTodos });
   } catch (error) {
     res.status(500).json({ message: 'Error reordering todos', error });

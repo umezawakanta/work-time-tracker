@@ -78,7 +78,7 @@ export default function DailyTodoReminder() {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (newTodo.trim()) {
-        const maxPriority = Math.max(...todos.map(todo => todo.priority), 0);
+        const maxPriority = Math.max(...todos.filter(todo => !todo.completed).map(todo => todo.priority), 0);
         dispatch(addTodoItem({ task: newTodo.trim(), priority: maxPriority + 1 }));
         setNewTodo("");
       }
@@ -118,30 +118,31 @@ export default function DailyTodoReminder() {
 
   const handleMoveTodo = useCallback(
     (id: string, direction: 'up' | 'down') => {
-      const index = todos.findIndex(todo => todo._id === id);
-      if ((direction === 'up' && index > 0) || (direction === 'down' && index < todos.length - 1)) {
-        const newTodos = [...todos];
-        const [movedItem] = newTodos.splice(index, 1);
+      const sortedTodos = [...todos].sort((a, b) => {
+        if (a.completed === b.completed) {
+          return a.priority - b.priority;
+        }
+        return a.completed ? 1 : -1;
+      });
+      const index = sortedTodos.findIndex(todo => todo._id === id);
+      if ((direction === 'up' && index > 0) || (direction === 'down' && index < sortedTodos.length - 1)) {
         const newIndex = direction === 'up' ? index - 1 : index + 1;
-        newTodos.splice(newIndex, 0, movedItem);
-        
-        // Update priorities
-        const updatedTodos = newTodos.map((todo, idx) => ({
-          ...todo,
-          priority: todos[idx].priority
-        }));
-        
-        // Swap priorities of moved items
-        [updatedTodos[index].priority, updatedTodos[newIndex].priority] = 
-        [updatedTodos[newIndex].priority, updatedTodos[index].priority];
-
-        dispatch(reorderTodoItems(updatedTodos));
+        if (sortedTodos[index].completed === sortedTodos[newIndex].completed) {
+          [sortedTodos[index].priority, sortedTodos[newIndex].priority] = 
+          [sortedTodos[newIndex].priority, sortedTodos[index].priority];
+          dispatch(reorderTodoItems(sortedTodos));
+        }
       }
     },
     [dispatch, todos]
   );
 
-  const sortedTodos = [...todos].sort((a, b) => a.priority - b.priority);
+  const sortedTodos = [...todos].sort((a, b) => {
+    if (a.completed === b.completed) {
+      return a.priority - b.priority;
+    }
+    return a.completed ? 1 : -1;
+  });
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
@@ -222,7 +223,7 @@ export default function DailyTodoReminder() {
                         size="sm"
                         variant="ghost"
                         onClick={() => handleMoveTodo(todo._id, 'up')}
-                        disabled={index === 0}
+                        disabled={index === 0 || (index > 0 && todo.completed !== sortedTodos[index - 1].completed)}
                       >
                         <ChevronUp className="h-4 w-4" />
                       </Button>
@@ -230,7 +231,7 @@ export default function DailyTodoReminder() {
                         size="sm"
                         variant="ghost"
                         onClick={() => handleMoveTodo(todo._id, 'down')}
-                        disabled={index === sortedTodos.length - 1}
+                        disabled={index === sortedTodos.length - 1 || (index < sortedTodos.length - 1 && todo.completed !== sortedTodos[index + 1].completed)}
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>
