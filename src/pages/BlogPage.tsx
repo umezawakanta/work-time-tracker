@@ -33,6 +33,7 @@ const BlogPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('');
+  const [sortOption, setSortOption] = useState<string>('newest');
 
   useEffect(() => {
     if (status === 'idle') {
@@ -59,6 +60,11 @@ const BlogPage: React.FC = () => {
     setPage(1);
   };
 
+  const handleSortChange = (event: SelectChangeEvent) => {
+    setSortOption(event.target.value as string);
+    setPage(1);
+  };
+
   if (status === 'loading') {
     return (
       <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', 
@@ -77,9 +83,23 @@ const BlogPage: React.FC = () => {
     )
     .filter(post => selectedTag === '' || post.tags.includes(selectedTag));
 
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    switch (sortOption) {
+      case 'oldest':
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case 'mostLiked':
+        return b.likes.length - a.likes.length;
+      case 'mostCommented':
+        return b.comments.length - a.comments.length;
+      case 'newest':
+      default:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+  });
+
   const indexOfLastPost = page * POSTS_PER_PAGE;
   const indexOfFirstPost = indexOfLastPost - POSTS_PER_PAGE;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   const categories = ['all', ...new Set(blogPosts.map(post => post.category))];
   const allTags = Array.from(new Set(blogPosts.flatMap(post => post.tags)));
@@ -93,22 +113,39 @@ const BlogPage: React.FC = () => {
         <Button component={Link} to="/blog/new" variant="contained" color="primary">
           新規投稿
         </Button>
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="category-select-label">カテゴリー</InputLabel>
-          <Select
-            labelId="category-select-label"
-            id="category-select"
-            value={selectedCategory}
-            label="カテゴリー"
-            onChange={handleCategoryChange}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category === 'all' ? 'すべて' : category}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel id="category-select-label">カテゴリー</InputLabel>
+            <Select
+              labelId="category-select-label"
+              id="category-select"
+              value={selectedCategory}
+              label="カテゴリー"
+              onChange={handleCategoryChange}
+            >
+              {categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category === 'all' ? 'すべて' : category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel id="sort-select-label">並び替え</InputLabel>
+            <Select
+              labelId="sort-select-label"
+              id="sort-select"
+              value={sortOption}
+              label="並び替え"
+              onChange={handleSortChange}
+            >
+              <MenuItem value="newest">最新順</MenuItem>
+              <MenuItem value="oldest">古い順</MenuItem>
+              <MenuItem value="mostLiked">いいね数順</MenuItem>
+              <MenuItem value="mostCommented">コメント数順</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
       <TextField
         fullWidth
@@ -148,6 +185,9 @@ const BlogPage: React.FC = () => {
                     <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
                   ))}
                 </Box>
+                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                  いいね: {post.likes.length} | コメント: {post.comments.length}
+                </Typography>
               </CardContent>
               <CardActions>
                 <Button size="small" component={Link} to={`/blog/${post._id}`}>
@@ -159,7 +199,7 @@ const BlogPage: React.FC = () => {
         ))}
       </Grid>
       <Pagination
-        count={Math.ceil(filteredPosts.length / POSTS_PER_PAGE)}
+        count={Math.ceil(sortedPosts.length / POSTS_PER_PAGE)}
         page={page}
         onChange={handleChangePage}
         color="primary"
