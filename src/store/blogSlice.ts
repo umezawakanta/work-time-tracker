@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import { blogApi } from "@/services/api/blogApi";
 import { RootState } from "./index";
 
@@ -185,7 +185,11 @@ export const selectBlogError = (state: RootState) => state.blog.error;
 export const selectBlogPostById = (state: RootState, postId: string | undefined) =>
   state.blog.posts.find((post) => post._id === postId);
 export const selectTodoHistory = (state: RootState) => state.blog.todoHistory;
-export const selectDrafts = (state: RootState) => 
-  state.blog.posts.filter(post => post.status === 'draft');
+
+// Memoized selector for drafts
+export const selectDrafts = createSelector(
+  [selectBlogPosts],
+  (posts) => posts.filter(post => post.status === 'draft')
+);
 
 export default blogSlice.reducer;
