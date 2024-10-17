@@ -1,117 +1,52 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch } from '@/store';
 import { addBlogPost } from '@/store/blogSlice';
-import { Container, Typography, TextField, Button, Box, Chip, Paper } from '@mui/material';
+import { AppDispatch } from '@/store';
+import { BlogPostForm } from '@/components/BlogPostForm';
+import { Container, Typography, Box } from '@mui/material';
 
 const NewBlogPost: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [currentTag, setCurrentTag] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: {
+    title: string;
+    content: string;
+    category: string;
+    tags: string[];
+  }) => {
     try {
-      await dispatch(addBlogPost({ title, content, category, tags, author: 'Current User' })).unwrap();
-      navigate('/blog');
+      const resultAction = await dispatch(
+        addBlogPost({
+          ...formData,
+          author: 'Current User', // Replace with actual user data
+          status: 'published'
+        })
+      );
+      if (addBlogPost.fulfilled.match(resultAction)) {
+        navigate(`/blog/${resultAction.payload._id}`);
+      } else {
+        setError('Failed to create blog post');
+      }
     } catch (error) {
-      console.error('Failed to create blog post:', error);
+      setError('An error occurred while creating the blog post');
+      console.error('Error creating blog post:', error);
     }
-  };
-
-  const handleAddTag = () => {
-    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
-      setTags([...tags, currentTag.trim()]);
-      setCurrentTag('');
-    }
-  };
-
-  const handleDeleteTag = (tagToDelete: string) => {
-    setTags(tags.filter((tag) => tag !== tagToDelete));
   };
 
   return (
     <Container maxWidth="md">
       <Typography variant="h4" component="h1" gutterBottom>
-        新規投稿
+        Create New Blog Post
       </Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="title"
-          label="タイトル"
-          name="title"
-          autoFocus
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="category"
-          label="カテゴリー"
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="content"
-          label="内容"
-          id="content"
-          multiline
-          rows={6}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <Box sx={{ mt: 2, mb: 2 }}>
-          <TextField
-            fullWidth
-            name="tag"
-            label="タグ"
-            id="tag"
-            value={currentTag}
-            onChange={(e) => setCurrentTag(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddTag();
-              }
-            }}
-          />
-          <Button onClick={handleAddTag} variant="outlined" sx={{ mt: 1 }}>
-            タグを追加
-          </Button>
+      {error && (
+        <Box mb={2}>
+          <Typography color="error">{error}</Typography>
         </Box>
-        <Paper sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }}>
-          {tags.map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              onDelete={() => handleDeleteTag(tag)}
-              sx={{ m: 0.5 }}
-            />
-          ))}
-        </Paper>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
-          投稿する
-        </Button>
-      </Box>
+      )}
+      <BlogPostForm onSubmit={handleSubmit} submitButtonText="Publish" />
     </Container>
   );
 };

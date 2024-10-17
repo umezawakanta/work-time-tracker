@@ -17,6 +17,11 @@ interface LikeApiResponse {
     likes: string[];
 }
 
+interface DraftApiResponse {
+    message: string;
+    draft: BlogPost;
+}
+
 export const blogApi = {
     getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
         return api.get<BlogPost[]>("/blog");
@@ -50,5 +55,13 @@ export const blogApi = {
 
     toggleLike: (postId: string, userId: string): Promise<AxiosResponse<LikeApiResponse>> => {
         return api.post<LikeApiResponse>(`/blog/${postId}/like`, { userId });
+    },
+
+    saveDraft: (draft: Partial<BlogPost>): Promise<AxiosResponse<DraftApiResponse>> => {
+        return api.post<DraftApiResponse>("/blog/draft", draft);
+    },
+
+    publishPost: (postId: string): Promise<AxiosResponse<BlogApiResponse>> => {
+        return api.put<BlogApiResponse>(`/blog/${postId}/publish`);
     },
 };

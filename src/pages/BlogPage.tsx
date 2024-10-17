@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { Link } from 'react-router-dom';
-import { fetchBlogPosts, selectBlogPosts, selectBlogStatus } from '@/store/blogSlice';
+import { fetchBlogPosts, selectBlogPosts, selectBlogStatus, selectDrafts } from '@/store/blogSlice';
 import { 
   Button, 
   Container, 
@@ -20,7 +20,9 @@ import {
   SelectChangeEvent,
   Box,
   TextField,
-  Chip
+  Chip,
+  Tabs,
+  Tab
 } from '@mui/material';
 
 const POSTS_PER_PAGE = 6;
@@ -28,12 +30,14 @@ const POSTS_PER_PAGE = 6;
 const BlogPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const blogPosts = useSelector(selectBlogPosts);
+  const drafts = useSelector(selectDrafts);
   const status = useSelector(selectBlogStatus);
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [sortOption, setSortOption] = useState<string>('newest');
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -65,6 +69,10 @@ const BlogPage: React.FC = () => {
     setPage(1);
   };
 
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
   if (status === 'loading') {
     return (
       <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', 
@@ -74,7 +82,7 @@ const BlogPage: React.FC = () => {
     );
   }
 
-  const filteredPosts = blogPosts
+  const filteredPosts = (tabValue === 0 ? blogPosts : drafts)
     .filter(post => selectedCategory === 'all' || post.category === selectedCategory)
     .filter(post => 
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,6 +117,12 @@ const BlogPage: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         ブログ
       </Typography>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="blog tabs">
+          <Tab label="公開済み" />
+          <Tab label="下書き" />
+        </Tabs>
+      </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Button component={Link} to="/blog/new" variant="contained" color="primary">
           新規投稿
@@ -182,7 +196,8 @@ const BlogPage: React.FC = () => {
                 </Typography>
                 <Box sx={{ mt: 1 }}>
                   {post.tags.map((tag) => (
-                    <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                    <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} 
+                    />
                   ))}
                 </Box>
                 <Typography variant="caption" display="block" sx={{ mt: 1 }}>
@@ -191,7 +206,7 @@ const BlogPage: React.FC = () => {
               </CardContent>
               <CardActions>
                 <Button size="small" component={Link} to={`/blog/${post._id}`}>
-                  続きを読む
+                  {post.status === 'draft' ? '編集' : '続きを読む'}
                 </Button>
               </CardActions>
             </Card>
