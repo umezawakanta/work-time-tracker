@@ -185,7 +185,7 @@ export default function DailyTodoReminder() {
             <TabsTrigger value="chart">グラフ</TabsTrigger>
           </TabsList>
           <TabsContent value="list">
-            <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
+          <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
               <Input
                 type="text"
                 value={newTodo}
