@@ -5,6 +5,7 @@ export interface ITodoItem extends Document {
   completed: boolean;
   completedDate: Date | null;
   priority: number;
+  isPrioritized: boolean;
 }
 
 const todoItemSchema = new Schema({
@@ -23,6 +24,10 @@ const todoItemSchema = new Schema({
   priority: {
     type: Number,
     default: 0,
+  },
+  isPrioritized: {
+    type: Boolean,
+    default: false,
   },
 }, { timestamps: true });
 

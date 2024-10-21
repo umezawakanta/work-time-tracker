@@ -1,24 +1,19 @@
 import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { TodoHistoryItem } from '@/store/todoSlice';
+
+export interface TodoHistoryItem {
+  date: string;
+  count: number;
+}
 
 interface TodoCalendarProps {
   todoHistory: TodoHistoryItem[];
 }
 
 export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
-  const completedDates = todoHistory.reduce((acc, item) => {
-    item.completedTasks.forEach(task => {
-      const date = new Date(task.completedDate);
-      const dateString = date.toISOString().split('T')[0];
-      if (!acc.includes(dateString)) {
-        acc.push(dateString);
-      }
-    });
-    return acc;
-  }, [] as string[]);
+  const historyMap = new Map(todoHistory.map(item => [item.date, item.count]));
 
-  const selectedDates = completedDates.map(dateString => new Date(dateString));
+  const selectedDates = todoHistory.map(item => new Date(item.date));
 
   return (
     <div className="p-4">
@@ -27,6 +22,27 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
         mode="multiple"
         selected={selectedDates}
         className="rounded-md border"
+        modifiers={{
+          completed: (date) => {
+            const dateString = date.toISOString().split('T')[0];
+            return historyMap.has(dateString);
+          },
+        }}
+        modifiersClassNames={{
+          completed: 'bg-green-500 text-white',
+        }}
+        components={{
+          DayContent: ({ date }) => {
+            const dateString = date.toISOString().split('T')[0];
+            const count = historyMap.get(dateString) || 0;
+            return (
+              <div className="flex flex-col items-center">
+                <span>{date.getDate()}</span>
+                {count > 0 && <span className="text-xs">{count}</span>}
+              </div>
+            );
+          },
+        }}
       />
     </div>
   );

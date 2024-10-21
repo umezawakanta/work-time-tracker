@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { TodoItem } from "@/store/todoSlice";
 import { api } from "./apiConfig";
 
-interface TodoApiResponse {
+export interface TodoApiResponse {
   message: string;
   todo: TodoItem;
 }
@@ -17,8 +17,8 @@ export const todoApi = {
     return api.get<TodoItem[]>("/todos");
   },
 
-  create: (task: string, priority: number): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.post<TodoApiResponse>("/todos", { task, priority });
+  create: (task: string, priority: number, isPrioritized: boolean): Promise<AxiosResponse<TodoApiResponse>> => {
+    return api.post<TodoApiResponse>("/todos", { task, priority, isPrioritized });
   },
 
   update: (
@@ -38,5 +38,9 @@ export const todoApi = {
 
   reorder: (items: TodoItem[]): Promise<AxiosResponse<ReorderResponse>> => {
     return api.post<ReorderResponse>("/todos/reorder", { items });
+  },
+
+  togglePriority: (_id: string): Promise<AxiosResponse<TodoApiResponse>> => {
+    return api.post<TodoApiResponse>(`/todos/${_id}/toggle-priority`);
   },
 };

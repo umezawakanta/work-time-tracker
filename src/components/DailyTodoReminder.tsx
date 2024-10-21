@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RefreshCcw, Trash2, Edit, Check, X, ChevronUp, ChevronDown } from "lucide-react";
+import { RefreshCcw, Trash2, Edit, Check, X, ChevronUp, ChevronDown, Star } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
   fetchTodoItems,
@@ -15,6 +15,7 @@ import {
   deleteTodoItem,
   resetTodoList,
   reorderTodoItems,
+  toggleTodoPriority,
   selectTodos,
   selectTodoStatus,
   selectTodoError,
@@ -79,7 +80,7 @@ export default function DailyTodoReminder() {
       e.preventDefault();
       if (newTodo.trim()) {
         const maxPriority = Math.max(...todos.filter(todo => !todo.completed).map(todo => todo.priority), 0);
-        dispatch(addTodoItem({ task: newTodo.trim(), priority: maxPriority + 1 }));
+        dispatch(addTodoItem({ task: newTodo.trim(), priority: maxPriority + 1, isPrioritized: false }));
         setNewTodo("");
       }
     },
@@ -120,14 +121,18 @@ export default function DailyTodoReminder() {
     (id: string, direction: 'up' | 'down') => {
       const sortedTodos = [...todos].sort((a, b) => {
         if (a.completed === b.completed) {
-          return a.priority - b.priority;
+          if (a.isPrioritized === b.isPrioritized) {
+            return a.priority - b.priority;
+          }
+          return a.isPrioritized ? -1 : 1;
         }
         return a.completed ? 1 : -1;
       });
       const index = sortedTodos.findIndex(todo => todo._id === id);
       if ((direction === 'up' && index > 0) || (direction === 'down' && index < sortedTodos.length - 1)) {
         const newIndex = direction === 'up' ? index - 1 : index + 1;
-        if (sortedTodos[index].completed === sortedTodos[newIndex].completed) {
+        if (sortedTodos[index].completed === sortedTodos[newIndex].completed &&
+            sortedTodos[index].isPrioritized === sortedTodos[newIndex].isPrioritized) {
           const updatedTodos = sortedTodos.map(todo => ({...todo}));
           const temp = updatedTodos[index].priority;
           updatedTodos[index].priority = updatedTodos[newIndex].priority;
@@ -139,12 +144,24 @@ export default function DailyTodoReminder() {
     [dispatch, todos]
   );
 
+  const handleTogglePriority = useCallback(
+    (id: string) => {
+      dispatch(toggleTodoPriority(id));
+    },
+    [dispatch]
+  );
+
   const sortedTodos = [...todos].sort((a, b) => {
     if (a.completed === b.completed) {
-      return a.priority - b.priority;
+      if (a.isPrioritized === b.isPrioritized) {
+        return a.priority - b.priority;
+      }
+      return a.isPrioritized ? -1 : 1;
     }
     return a.completed ? 1 : -1;
   });
+
+  const todoHistoryArray = Object.entries(todoHistory).map(([date, count]) => ({ date, count }));
 
   if (status === "loading") {
     return <div>読み込み中...</div>;
@@ -224,8 +241,16 @@ export default function DailyTodoReminder() {
                       <Button
                         size="sm"
                         variant="ghost"
+                        onClick={() => handleTogglePriority(todo._id)}
+                        className={todo.isPrioritized ? "text-yellow-500" : ""}
+                      >
+                        <Star className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={() => handleMoveTodo(todo._id, 'up')}
-                        disabled={index === 0 || (index > 0 && todo.completed !== sortedTodos[index - 1].completed)}
+                        disabled={index === 0 || (index > 0 && (todo.completed !== sortedTodos[index - 1].completed || todo.isPrioritized !== sortedTodos[index - 1].isPrioritized))}
                       >
                         <ChevronUp className="h-4 w-4" />
                       </Button>
@@ -233,7 +258,7 @@ export default function DailyTodoReminder() {
                         size="sm"
                         variant="ghost"
                         onClick={() => handleMoveTodo(todo._id, 'down')}
-                        disabled={index === sortedTodos.length - 1 || (index < sortedTodos.length - 1 && todo.completed !== sortedTodos[index + 1].completed)}
+                        disabled={index === sortedTodos.length - 1 || (index < sortedTodos.length - 1 && (todo.completed !== sortedTodos[index + 1].completed || todo.isPrioritized !== sortedTodos[index + 1].isPrioritized))}
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>
@@ -260,10 +285,10 @@ export default function DailyTodoReminder() {
             </div>
           </TabsContent>
           <TabsContent value="calendar">
-            <TodoCalendar todoHistory={todoHistory} />
+            <TodoCalendar todoHistory={todoHistoryArray} />
           </TabsContent>
           <TabsContent value="chart">
-            <TodoChart todoHistory={todoHistory} />
+            <TodoChart todoHistory={todoHistoryArray} />
           </TabsContent>
         </Tabs>
       </CardContent>

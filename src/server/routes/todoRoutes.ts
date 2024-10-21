@@ -6,7 +6,7 @@ const router = express.Router();
 // GET all todos
 router.get('/', async (_req, res) => {
   try {
-    const todos = await TodoItem.find().sort({ completed: 1, priority: 1 });
+    const todos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching todos', error });
@@ -16,8 +16,8 @@ router.get('/', async (_req, res) => {
 // POST new todo
 router.post('/', async (req, res) => {
   try {
-    const { task, priority } = req.body;
-    const newTodo = new TodoItem({ task, completed: false, completedDate: null, priority });
+    const { task, priority, isPrioritized } = req.body;
+    const newTodo = new TodoItem({ task, completed: false, completedDate: null, priority, isPrioritized });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {
@@ -62,7 +62,7 @@ router.delete('/:id', async (req, res) => {
 // Reset all todos
 router.post('/reset', async (_req, res) => {
   try {
-    await TodoItem.updateMany({}, { completed: false, completedDate: null });
+    await TodoItem.updateMany({}, { completed: false, completedDate: null, isPrioritized: false });
     const todos = await TodoItem.find().sort({ priority: 1 });
     res.json(todos);
   } catch (error) {
@@ -81,10 +81,26 @@ router.post('/reorder', async (req, res) => {
       }
     }));
     await TodoItem.bulkWrite(bulkOps);
-    const updatedTodos = await TodoItem.find().sort({ completed: 1, priority: 1 });
+    const updatedTodos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
     res.json({ message: 'Todos reordered successfully', todos: updatedTodos });
   } catch (error) {
     res.status(500).json({ message: 'Error reordering todos', error });
+  }
+});
+
+// Toggle priority
+router.post('/:id/toggle-priority', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const todo = await TodoItem.findById(id);
+    if (!todo) {
+      return res.status(404).json({ message: 'Todo not found' });
+    }
+    todo.isPrioritized = !todo.isPrioritized;
+    const updatedTodo = await todo.save();
+    res.json({ message: 'Todo priority toggled successfully', todo: updatedTodo });
+  } catch (error) {
+    res.status(500).json({ message: 'Error toggling todo priority', error });
   }
 });
 
