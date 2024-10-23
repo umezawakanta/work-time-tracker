@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,8 +25,8 @@ interface WBSItem {
   wbsNumber: string
   name: string
   assignee: string
-  startDate: Date | undefined
-  endDate: Date | undefined
+  startDate: Date | null
+  endDate: Date | null
   duration: number
   progress: number
   children: WBSItem[]
@@ -36,9 +37,9 @@ export default function WBSCreator() {
   const [newItemName, setNewItemName] = useState('')
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
   const [editingItem, setEditingItem] = useState<WBSItem | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
-    // Add some sample data for demonstration
     if (wbs.length === 0) {
       setWbs([
         {
@@ -142,6 +143,7 @@ export default function WBSCreator() {
   const handleEditSave = (editedItem: WBSItem) => {
     setWbs(updateWbsItem(wbs, editedItem.id, () => editedItem))
     setEditingItem(null)
+    setIsDialogOpen(false)
   }
 
   const renderWbsItem = (item: WBSItem, depth: number = 0) => {
@@ -163,6 +165,7 @@ export default function WBSCreator() {
                     size="sm"
                     className="p-0 h-6 w-6 mr-2"
                     onClick={() => toggleExpand(item.id)}
+                    aria-label={isExpanded ? "折りたたむ" : "展開する"}
                   >
                     {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </Button>
@@ -182,78 +185,84 @@ export default function WBSCreator() {
               </TableCell>
               <TableCell>
                 <div className="flex space-x-2">
-                  <Dialog>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" onClick={() => setEditingItem(item)}>
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        setEditingItem(item)
+                        setIsDialogOpen(true)
+                      }} aria-label="タスクを編集">
                         <Edit2 className="h-4 w-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent>
                       <DialogHeader>
                         <DialogTitle>タスク編集</DialogTitle>
+                        <DialogDescription>
+                          タスクの詳細を編集します。変更後、保存ボタンをクリックしてください。
+                        </DialogDescription>
                       </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="name" className="text-right">
-                            タスク名
-                          </Label>
-                          <Input
-                            id="name"
-                            value={editingItem?.name}
-                            onChange={(e) => setEditingItem(prev => prev ? {...prev, name: e.target.value} : null)}
-                            className="col-span-3"
-                          />
+                      {editingItem && (
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                              タスク名
+                            </Label>
+                            <Input
+                              id="name"
+                              value={editingItem.name}
+                              onChange={(e) => setEditingItem(prev => prev ? {...prev, name: e.target.value} : null)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="assignee" className="text-right">
+                              担当者
+                            </Label>
+                            <Input
+                              id="assignee"
+                              value={editingItem.assignee}
+                              onChange={(e) => setEditingItem(prev => prev ? {...prev, assignee: e.target.value} : null)}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="startDate" className="text-right">
+                              開始日
+                            </Label>
+                            <DatePicker
+                              date={editingItem.startDate || undefined}
+                              setDate={(date) => setEditingItem(prev => prev ? {...prev, startDate: date || null} : null)}
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="endDate" className="text-right">
+                              終了日
+                            </Label>
+                            <DatePicker
+                              date={editingItem.endDate || undefined}
+                              setDate={(date) => setEditingItem(prev => prev ? {...prev, endDate: date || null} : null)}
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="progress" className="text-right">
+                              進捗
+                            </Label>
+                            <Input
+                              id="progress"
+                              type="number"
+                              value={editingItem.progress}
+                              onChange={(e) => setEditingItem(prev => prev ? {...prev, progress: Number(e.target.value)} : null)}
+                              className="col-span-3"
+                              min={0}
+                              max={100}
+                            />
+                          </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="assignee" className="text-right">
-                            担当者
-                          </Label>
-                          <Input
-                            id="assignee"
-                            value={editingItem?.assignee}
-                            onChange={(e) => setEditingItem(prev => prev ? {...prev, assignee: e.target.value} : null)}
-                            className="col-span-3"
-                          />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="startDate" className="text-right">
-                            開始日
-                          </Label>
-                          <DatePicker
-                            date={editingItem?.startDate}
-                            setDate={(date) => setEditingItem(prev => prev ? {...prev, startDate: date} : null)}
-                          />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="endDate" className="text-right">
-                            終了日
-                          </Label>
-                          <DatePicker
-                            date={editingItem?.endDate}
-                            setDate={(date) => setEditingItem(prev => prev ? {...prev, endDate: date} : null)}
-                          />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="progress" className="text-right">
-                            進捗
-                          </Label>
-                          <Input
-                            id="progress"
-                            type="number"
-                            value={editingItem?.progress}
-                            onChange={(e) => setEditingItem(prev => prev ? {...prev, progress: Number(e.target.value)} : null)}
-                            className="col-span-3"
-                            min={0}
-                            max={100}
-                          />
-                        </div>
-                      </div>
-                      <DialogTrigger asChild>
-                        <Button onClick={() => editingItem && handleEditSave(editingItem)}>保存</Button>
-                      </DialogTrigger>
+                      )}
+                      <Button onClick={() => editingItem && handleEditSave(editingItem)}>保存</Button>
                     </DialogContent>
                   </Dialog>
-                  <Button variant="ghost" size="sm" onClick={() => deleteItem(item.id)}>
+                  <Button variant="ghost" size="sm" onClick={() => deleteItem(item.id)} aria-label="タスクを削除">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -280,7 +289,7 @@ export default function WBSCreator() {
       item.startDate,
       item.endDate,
       ...item.children.flatMap(child => [child.startDate, child.endDate])
-    ]).filter((date): date is Date => date !== undefined)
+    ]).filter((date): date is Date => date !== null)
 
     if (allDates.length === 0) {
       return null
@@ -294,7 +303,6 @@ export default function WBSCreator() {
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-4">ガントチャート</h3>
         <div className="relative" style={{ height: `${wbs.length * 40 + 40}px` }}>
-          {/* Time scale */}
           <div className="absolute top-0 left-0 right-0 h-8 flex">
             {Array.from({ length: totalDays + 1 }).map((_, index) => {
               const date = new Date(startDate.getTime() + index * 24 * 60 * 60 * 1000)
@@ -308,7 +316,6 @@ export default function WBSCreator() {
               )
             })}
           </div>
-          {/* Gantt bars */}
           {wbs.map((item, index) => {
             if (!item.startDate || !item.endDate) return null
 
@@ -349,13 +356,14 @@ export default function WBSCreator() {
           />
           <Button onClick={() => addItem()}>
             <Plus className="h-4 w-4 mr-2" /> タスク追加
+          
           </Button>
         </div>
         <DragDropContext onDragEnd={onDragEnd}>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead  className="w-[100px]">WBS番号</TableHead>
+                <TableHead className="w-[100px]">WBS番号</TableHead>
                 <TableHead>タスク名</TableHead>
                 <TableHead>担当者</TableHead>
                 <TableHead>開始日</TableHead>
