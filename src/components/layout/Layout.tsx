@@ -37,7 +37,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { locale, setLocale } = useLocale();
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLocaleChange = (value: string) => {
@@ -107,10 +107,15 @@ export default function Layout({ children }: LayoutProps) {
                 {locale === "ja-JP" ? "日本語" : "English"}
               </Button>
               {isAuthenticated ? (
-                <Button variant="ghost" onClick={handleLogout} className="flex items-center px-3 py-2">
-                  <LogOut size={18} />
-                  <span className="ml-2">ログアウト</span>
-                </Button>
+                <>
+                  <span className="text-sm font-medium text-gray-700 mr-4">
+                    ようこそ、{user?.name || 'ゲスト'}さん
+                  </span>
+                  <Button variant="ghost" onClick={handleLogout} className="flex items-center px-3 py-2">
+                    <LogOut size={18} />
+                    <span className="ml-2">ログアウト</span>
+                  </Button>
+                </>
               ) : (
                 <Button
                   variant="ghost"
@@ -149,14 +154,19 @@ export default function Layout({ children }: LayoutProps) {
                 {locale === "ja-JP" ? "日本語" : "English"}
               </Button>
               {isAuthenticated ? (
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="w-full justify-start flex items-center px-3 py-2"
-                >
-                  <LogOut size={18} />
-                  <span className="ml-2">ログアウト</span>
-                </Button>
+                <>
+                  <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700">
+                    ようこそ、{user?.name || 'ゲスト'}さん
+                  </span>
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                    className="w-full justify-start flex items-center px-3 py-2"
+                  >
+                    <LogOut size={18} />
+                    <span className="ml-2">ログアウト</span>
+                  </Button>
+                </>
               ) : (
                 <Button
                   variant="ghost"
