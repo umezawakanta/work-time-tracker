@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { AppDispatch, RootState } from '@/store'
-import { fetchUserProfile, updateProfile } from '@/store/userSlice'
+import { useAuth } from '@/context/AuthContext'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,37 +7,60 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'react-hot-toast'
 
 export default function UserProfile() {
-  const dispatch = useDispatch<AppDispatch>()
-  const { name, email, isLoading, error } = useSelector((state: RootState) => state.user)
-  const [formName, setFormName] = useState(name || '')
-  const [formEmail, setFormEmail] = useState(email || '')
+  const { user, fetchUser, updateProfile } = useAuth()
+  const [formName, setFormName] = useState(user?.name || '')
+  const [formEmail, setFormEmail] = useState(user?.email || '')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchUserProfile())
-  }, [dispatch])
+    const loadUserData = async () => {
+      setIsLoading(true)
+      try {
+        await fetchUser()
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+        toast.error('ユーザー情報の取得に失敗しました')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (!user) {
+      loadUserData()
+    }
+  }, [fetchUser, user])
 
   useEffect(() => {
-    if (name !== undefined) setFormName(name)
-    if (email !== undefined) setFormEmail(email)
-  }, [name, email])
+    if (user) {
+      setFormName(user.name || '')
+      setFormEmail(user.email || '')
+    }
+  }, [user])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     try {
-      await dispatch(updateProfile({ name: formName, email: formEmail })).unwrap()
+      await updateProfile({ name: formName, email: formEmail })
       toast.success('プロフィールが更新されました')
     } catch (error) {
       console.error('Profile update error:', error)
       toast.error('プロフィールの更新に失敗しました')
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
+  if (isLoading && !user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="w-full max-w-md mx-auto">
+          <CardContent className="p-6">
+            <div className="text-center">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -58,6 +79,7 @@ export default function UserProfile() {
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
                 required
+                placeholder="名前を入力してください"
               />
             </div>
             <div className="space-y-2">
@@ -68,6 +90,7 @@ export default function UserProfile() {
                 value={formEmail}
                 onChange={(e) => setFormEmail(e.target.value)}
                 required
+                placeholder="メールアドレスを入力してください"
               />
             </div>
           </CardContent>
