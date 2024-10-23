@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import DailyTodoReminder from "@/components/DailyTodoReminder";
+import HabitTracker from "@/components/HabitTracker";
 
 export default function Home() {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
@@ -21,6 +22,9 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-center mb-8">
         作業時間トラッカーへようこそ
       </h1>
+      <div className="mt-8">
+        <HabitTracker />
+      </div>
       <div className="mb-8">
         <BalanceUpdateReminder
           assetEntries={assetEntries}
@@ -29,7 +33,7 @@ export default function Home() {
         <DailyTodoReminder />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <Card className="w-full">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>効率的な時間管理</CardTitle>
             <CardDescription>
@@ -163,8 +167,8 @@ export default function Home() {
             <Link to="/profile" className="w-full">
               <Button variant="outline" className="w-full">
                 プロフィールを見る
-                </Button> 
-              </Link>
+              </Button>
+            </Link>
           </CardContent>
         </Card>
         <Card className="w-full">
