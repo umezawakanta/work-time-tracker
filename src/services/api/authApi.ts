@@ -61,3 +61,13 @@ export const updateUserProfile = async (userData: { name: string; email: string 
     throw error;
   }
 };
+
+export const fetchUserData = async () => {
+  try {
+    const response = await api.get("/auth/user");
+    return response.data.user;
+  } catch (error) {
+    console.error("Fetch user data error:", error);
+    throw error;
+  }
+};

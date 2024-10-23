@@ -1,9 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { checkAuth } from '@/services/api/authApi';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { checkAuth, fetchUserData } from '@/services/api/authApi';
 
 interface User {
   name: string;
-  // 必要に応じて他のユーザー情報を追加
+  // Add other user properties as needed
 }
 
 interface AuthContextType {
@@ -12,6 +12,7 @@ interface AuthContextType {
   loading: boolean;
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  fetchUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,18 +22,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
+  const fetchUser = useCallback(async () => {
+    try {
+      const userData = await fetchUserData();
+      setUser(userData);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      setUser(null);
+    }
+  }, []);
+
   useEffect(() => {
     const verifyAuth = async () => {
       try {
         const authStatus = await checkAuth();
         setIsAuthenticated(authStatus);
         if (authStatus) {
-          // ここでユーザー情報を取得し、setUser を呼び出す
-          // 例: const userData = await fetchUserData();
-          // setUser(userData);
+          await fetchUser();
         }
       } catch (error) {
-        console.error('認証チェックエラー:', error);
+        console.error('Authentication check error:', error);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -41,10 +50,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     verifyAuth();
-  }, []);
+  }, [fetchUser]);
+
+  const contextValue = {
+    isAuthenticated,
+    setIsAuthenticated,
+    loading,
+    user,
+    setUser,
+    fetchUser
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, loading, user, setUser }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

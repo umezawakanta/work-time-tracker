@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/hooks/useLocale";
@@ -18,7 +18,7 @@ import {
   X,
   Pen,
   User,
-  GitBranch, // Add this import for the WBS icon
+  GitBranch,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -37,8 +37,14 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { locale, setLocale } = useLocale();
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated, user } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, user, fetchUser } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      fetchUser();
+    }
+  }, [isAuthenticated, user, fetchUser]);
 
   const handleLocaleChange = (value: string) => {
     setLocale(value as Locale);
@@ -63,7 +69,7 @@ export default function Layout({ children }: LayoutProps) {
     { icon: <Moon size={18} />, label: "睡眠トラッカー", path: "/sleep-tracker", authRequired: true },
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog", authRequired: true },
     { icon: <User size={18} />, label: "プロフィール", path: "/profile", authRequired: true },
-    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator", authRequired: true }, // Add this line
+    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator", authRequired: true },
   ];
 
   return (
@@ -109,7 +115,7 @@ export default function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <>
                   <span className="text-sm font-medium text-gray-700 mr-4">
-                    ようこそ、{user?.name || 'ゲスト'}さん
+                    ようこそ、{user?.name || '読み込み中...'}さん
                   </span>
                   <Button variant="ghost" onClick={handleLogout} className="flex items-center px-3 py-2">
                     <LogOut size={18} />
@@ -156,7 +162,7 @@ export default function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <>
                   <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700">
-                    ようこそ、{user?.name || 'ゲスト'}さん
+                    ようこそ、{user?.name || '読み込み中...'}さん
                   </span>
                   <Button
                     variant="ghost"

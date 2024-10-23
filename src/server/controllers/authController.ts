@@ -127,3 +127,22 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: 'プロフィールの更新中にエラーが発生しました' });
   }
 };
+
+export const getUserData = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: '認証されていません' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+    }
+
+    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+  } catch (error) {
+    console.error('Get user data error:', error);
+    res.status(500).json({ message: 'ユーザーデータの取得中にエラーが発生しました' });
+  }
+};
