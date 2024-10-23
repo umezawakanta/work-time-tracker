@@ -1,0 +1,47 @@
+.gantt-chart {
+  margin-top: 2rem;
+}
+
+.gantt-chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.gantt-chart-container {
+  position: relative;
+}
+
+.gantt-chart-bar {
+  position: absolute;
+  height: 1.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+  color: white;
+}
+
+/* Generate classes for different positions */
+@for $i from 0 through 100 {
+  .gantt-top-$(i) {
+    top: $(i * 30px);
+  }
+  
+  .gantt-left-$(i) {
+    left: $(i)%;
+  }
+  
+  .gantt-width-$(i) {
+    width: $(i)%;
+  }
+}
+
+/* Generate classes for different hues */
+@for $i from 0 through 360 {
+  .gantt-hue-$(i) {
+    background-color: hsl($i, 70%, 50%);
+  }
+}
