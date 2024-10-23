@@ -163,6 +163,23 @@ export default function Home() {
             <Link to="/profile" className="w-full">
               <Button variant="outline" className="w-full">
                 プロフィールを見る
+                </Button> 
+              </Link>
+          </CardContent>
+        </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>WBS作成ツール</CardTitle>
+            <CardDescription>プロジェクトの作業分解構造を作成</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              プロジェクトの作業を階層的に分解し、視覚化します。
+              効率的なプロジェクト管理と進捗把握に役立ちます。
+            </p>
+            <Link to="/wbs-creator" className="w-full">
+              <Button variant="secondary" className="w-full">
+                WBS作成ツールを開く
               </Button>
             </Link>
           </CardContent>

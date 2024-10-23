@@ -18,6 +18,7 @@ import {
   X,
   Pen,
   User,
+  GitBranch, // Add this import for the WBS icon
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -62,6 +63,7 @@ export default function Layout({ children }: LayoutProps) {
     { icon: <Moon size={18} />, label: "睡眠トラッカー", path: "/sleep-tracker", authRequired: true },
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog", authRequired: true },
     { icon: <User size={18} />, label: "プロフィール", path: "/profile", authRequired: true },
+    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator", authRequired: true }, // Add this line
   ];
 
   return (

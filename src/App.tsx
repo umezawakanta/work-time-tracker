@@ -26,6 +26,7 @@ import BlogPostDetail from "./pages/BlogPostDetail";
 import EditBlogPost from "./pages/EditBlogPost";
 import UserProfile from "./pages/UserProfile";
 import PrivateRoute from "./components/PrivateRoute";
+import WBSCreatorPage from "./pages/WBSCreatorPage"; // Add this import
 
 const theme = createTheme({
   palette: {
@@ -70,6 +71,7 @@ export default function App() {
                   <Route path="/blog/:id" element={<BlogPostDetail />} />
                   <Route path="/blog/edit/:id" element={<EditBlogPost />} />
                   <Route path="/profile" element={<UserProfile />} />
+                  <Route path="/wbs-creator" element={<WBSCreatorPage />} /> {/* Add this route */}
                 </Route>
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
