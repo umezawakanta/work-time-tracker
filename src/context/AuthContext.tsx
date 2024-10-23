@@ -2,9 +2,9 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
 
 interface User {
+  id: string;
   name: string;
   email: string;
-  // Add other user properties as needed
 }
 
 interface AuthContextType {
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     verifyAuth();
   }, [fetchUser]);
 
-  const contextValue = {
+  const contextValue: AuthContextType = {
     isAuthenticated,
     setIsAuthenticated,
     loading,

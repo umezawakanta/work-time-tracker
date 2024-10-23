@@ -43,6 +43,7 @@ export default function UserProfile() {
     try {
       await updateProfile({ name: formName, email: formEmail })
       toast.success('プロフィールが更新されました')
+      await fetchUser() // プロフィール更新後に最新のユーザー情報を取得
     } catch (error) {
       console.error('Profile update error:', error)
       toast.error('プロフィールの更新に失敗しました')
