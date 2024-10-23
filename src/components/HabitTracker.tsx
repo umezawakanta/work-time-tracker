@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 const habits = [
   "酒", "たばこ", "風俗", "パチンコ", "姿勢が悪い",
@@ -21,6 +22,7 @@ export default function HabitTracker() {
   const [trackedData, setTrackedData] = useState<{[key: string]: boolean[]}>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   useEffect(() => {
     const initializeData = () => {
@@ -87,6 +89,10 @@ export default function HabitTracker() {
     ))
   }
 
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded)
+  }
+
   if (isLoading) {
     return <div>データを読み込んでいます...</div>
   }
@@ -97,43 +103,51 @@ export default function HabitTracker() {
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>やらないこと トラッカー</CardTitle>
+      <CardHeader 
+        className="cursor-pointer" 
+        onClick={toggleExpanded}
+      >
+        <CardTitle className="flex justify-between items-center">
+          やらないこと トラッカー
+          {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="mb-4">
-          <Button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}>前月</Button>
-          <span className="mx-4">{currentDate.getFullYear()}年 {currentDate.getMonth() + 1}月</span>
-          <Button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}>次月</Button>
-        </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>やらないこと</TableHead>
-              <TableHead>今日</TableHead>
-              <TableHead>継続状況</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {habits.map((habit, index) => (
-              <TableRow key={index}>
-                <TableCell>{habit}</TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={trackedData[habit]?.[currentDate.getDate() - 1] || false}
-                    onCheckedChange={() => toggleHabit(habit, currentDate.getDate() - 1)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {renderHeatmap(habit)}
-                  </div>
-                </TableCell>
+      {isExpanded && (
+        <CardContent>
+          <div className="mb-4">
+            <Button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}>前月</Button>
+            <span className="mx-4">{currentDate.getFullYear()}年 {currentDate.getMonth() + 1}月</span>
+            <Button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}>次月</Button>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>やらないこと</TableHead>
+                <TableHead>今日</TableHead>
+                <TableHead>継続状況</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
+            </TableHeader>
+            <TableBody>
+              {habits.map((habit, index) => (
+                <TableRow key={index}>
+                  <TableCell>{habit}</TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={trackedData[habit]?.[currentDate.getDate() - 1] || false}
+                      onCheckedChange={() => toggleHabit(habit, currentDate.getDate() - 1)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {renderHeatmap(habit)}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      )}
     </Card>
   )
 }
