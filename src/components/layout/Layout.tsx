@@ -57,26 +57,30 @@ export default function Layout({ children }: LayoutProps) {
     navigate("/login");
   };
 
-  const menuItems = [
-    { icon: <Home size={18} />, label: "ホーム", path: "/", authRequired: true },
-    { icon: <Clock size={18} />, label: "作業時間入力", path: "/work-time", authRequired: true },
-    { icon: <BarChart2 size={18} />, label: "作業時間レポート", path: "/work-time-reports", authRequired: true },
-    { icon: <BarChart2 size={18} />, label: "資産/負債レポート", path: "/asset-liability-report", authRequired: true },
-    { icon: <CreditCard size={18} />, label: "サブスクリプション管理", path: "/subscription-management", authRequired: true },
-    { icon: <Calendar size={18} />, label: "資産カレンダー", path: "/asset-calendar", authRequired: true },
-    { icon: <Vote size={18} />, label: "選挙候補者", path: "/election-candidates", authRequired: false },
-    { icon: <BookOpen size={18} />, label: "ネット本棚", path: "/bookshelf", authRequired: true },
-    { icon: <Moon size={18} />, label: "睡眠トラッカー", path: "/sleep-tracker", authRequired: true },
-    { icon: <Pen size={18} />, label: "ブログ", path: "/blog", authRequired: true },
-    { icon: <User size={18} />, label: "プロフィール", path: "/profile", authRequired: true },
-    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator", authRequired: true },
+  const frequentMenuItems = [
+    { icon: <BarChart2 size={18} />, label: "資産/負債", path: "/asset-liability-report" },
+    { icon: <Calendar size={18} />, label: "資産カレンダー", path: "/asset-calendar" },
+    { icon: <CreditCard size={18} />, label: "サブスク管理", path: "/subscription-management" },
+    { icon: <Moon size={18} />, label: "睡眠", path: "/sleep-tracker" },
+    { icon: <BookOpen size={18} />, label: "本棚", path: "/bookshelf" },
+    { icon: <Pen size={18} />, label: "ブログ", path: "/blog" },
+    { icon: <X size={18} />, label: "Twitter", path: "/twitter" },
+  ];
+
+  const otherMenuItems = [
+    { icon: <Home size={18} />, label: "ホーム", path: "/" },
+    { icon: <Clock size={18} />, label: "作業時間入力", path: "/work-time" },
+    { icon: <BarChart2 size={18} />, label: "作業時間レポート", path: "/work-time-reports" },
+    { icon: <Vote size={18} />, label: "選挙候補者", path: "/election-candidates" },
+    { icon: <User size={18} />, label: "プロフィール", path: "/profile" },
+    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator" },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <Link to="/" className="text-2xl font-bold text-primary">
               <div className="flex flex-col items-center">
                 <span>作業時間</span>
@@ -89,23 +93,6 @@ export default function Layout({ children }: LayoutProps) {
               </Button>
             </div>
             <nav className="hidden md:flex items-center space-x-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">メニュー</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {menuItems.map((item) =>
-                    (isAuthenticated || !item.authRequired) && (
-                      <DropdownMenuItem key={item.path} asChild>
-                        <Link to={item.path} className="flex items-center px-3 py-2">
-                          {item.icon}
-                          <span className="ml-2">{item.label}</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
               <Button
                 variant="ghost"
                 onClick={() => handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")}
@@ -134,24 +121,50 @@ export default function Layout({ children }: LayoutProps) {
               )}
             </nav>
           </div>
+          <div className="flex justify-between items-center">
+            <nav className="hidden md:flex space-x-2">
+              {frequentMenuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                >
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">その他のメニュー</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {otherMenuItems.map((item) => (
+                  <DropdownMenuItem key={item.path} asChild>
+                    <Link to={item.path} className="flex items-center px-3 py-2">
+                      {item.icon}
+                      <span className="ml-2">{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {menuItems.map(
-                (item) =>
-                  (isAuthenticated || !item.authRequired) && (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.icon}
-                      <span className="ml-2">{item.label}</span>
-                    </Link>
-                  )
-              )}
+              {[...frequentMenuItems, ...otherMenuItems].map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </Link>
+              ))}
               <Button
                 variant="ghost"
                 onClick={() => handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")}

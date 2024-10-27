@@ -188,6 +188,23 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Twitter投稿</CardTitle>
+            <CardDescription>つぶやきを共有・記録</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              日々の思いや気づきをTwitter形式で投稿し、記録することができます。
+              自分の成長や変化を振り返るのに役立ちます。
+            </p>
+            <Link to="/twitter" className="w-full">
+              <Button variant="secondary" className="w-full">
+                Twitter投稿を見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
