@@ -17,14 +17,17 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
       return res.status(401).json({ message: 'ユーザーが認証されていません' });
     }
 
-    if (!content || content.trim() === '') {
-      return res.status(400).json({ message: 'ツイートの内容は必須です' });
+    if (!content && !req.file) {
+      return res.status(400).json({ message: 'ツイートの内容または画像は必須です' });
     }
 
     const tweetData: Partial<ITweet> = {
-      content: content.trim(),
       user: new mongoose.Types.ObjectId(userId),
     };
+
+    if (content) {
+      tweetData.content = content.trim();
+    }
 
     if (req.file) {
       tweetData.image = path.basename(req.file.path);

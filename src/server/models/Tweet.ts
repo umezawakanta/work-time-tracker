@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
 
 export interface ITweet extends Document {
-  content: string;
+  content?: string;
   user: mongoose.Types.ObjectId;
   image?: string;
   createdAt: Date;
@@ -10,7 +10,6 @@ export interface ITweet extends Document {
 const tweetSchema = new mongoose.Schema<ITweet>({
   content: {
     type: String,
-    required: true,
     maxlength: 280,
   },
   user: {

@@ -5,8 +5,13 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { toast } from 'react-hot-toast'
 import { createTweet } from '@/services/api/tweetApi';
 import { X } from 'lucide-react';
+import { Tweet } from '@/types/Tweet';
 
-const TweetForm: React.FC = () => {
+interface TweetFormProps {
+  onTweetAdded: (tweet: Tweet) => void;
+}
+
+const TweetForm: React.FC<TweetFormProps> = ({ onTweetAdded }) => {
   const [content, setContent] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +22,8 @@ const TweetForm: React.FC = () => {
     if (content.trim() || image) {
       setIsSubmitting(true);
       try {
-        await createTweet(content.trim(), image);
+        const newTweet = await createTweet(content.trim(), image);
+        onTweetAdded(newTweet);
         setContent('');
         setImage(null);
         toast.success('ツイートを投稿しました');
@@ -28,7 +34,7 @@ const TweetForm: React.FC = () => {
         setIsSubmitting(false);
       }
     } else {
-      toast.error('ツイートの内容を入力してください');
+      toast.error('テキストまたは画像を入力してください');
     }
   };
 
