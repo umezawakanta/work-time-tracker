@@ -20,6 +20,10 @@ const TweetForm: React.FC<TweetFormProps> = ({ onTweetAdded }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (content.trim() || image) {
+      if (content.length > 10000) {
+        toast.error('ツイートは10000文字以内で入力してください');
+        return;
+      }
       setIsSubmitting(true);
       try {
         const newTweet = await createTweet(content.trim(), image);
@@ -68,7 +72,8 @@ const TweetForm: React.FC<TweetFormProps> = ({ onTweetAdded }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onPaste={handlePaste}
-            maxLength={280}
+            maxLength={10000}
+            rows={6}
           />
           {image && (
             <div className="mt-2 relative">
@@ -86,7 +91,7 @@ const TweetForm: React.FC<TweetFormProps> = ({ onTweetAdded }) => {
           )}
         </CardContent>
         <CardFooter className="flex justify-between">
-          <div>{content.length}/280</div>
+          <div>{content.length}/10000</div>
           <Button type="submit" disabled={isSubmitting || (!content.trim() && !image)}>
             {isSubmitting ? '投稿中...' : 'ツイート'}
           </Button>

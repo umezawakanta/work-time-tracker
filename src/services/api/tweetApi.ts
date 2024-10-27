@@ -1,4 +1,4 @@
-import { api } from "./apiConfig";
+import { api } from './apiConfig';
 
 export const createTweet = async (content: string, image: string | null) => {
   try {
@@ -20,9 +20,11 @@ export const createTweet = async (content: string, image: string | null) => {
   }
 };
 
-export const getTweets = async () => {
+export const getTweets = async (search?: string) => {
   try {
-    const response = await api.get('/tweets');
+    const response = await api.get('/tweets', {
+      params: { search },
+    });
     return response.data;
   } catch (error) {
     console.error('Get tweets error:', error);

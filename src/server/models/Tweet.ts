@@ -10,7 +10,7 @@ export interface ITweet extends Document {
 const tweetSchema = new mongoose.Schema<ITweet>({
   content: {
     type: String,
-    maxlength: 280,
+    maxlength: 10000, // Updated to 10000 characters
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
