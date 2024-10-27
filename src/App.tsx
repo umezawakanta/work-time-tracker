@@ -27,6 +27,7 @@ import EditBlogPost from "./pages/EditBlogPost";
 import UserProfile from "./pages/UserProfile";
 import PrivateRoute from "./components/PrivateRoute";
 import WBSCreatorPage from "./pages/WBSCreatorPage"; // Add this import
+import TwitterPage from "./pages/TwitterPage";
 
 const theme = createTheme({
   palette: {
@@ -66,6 +67,7 @@ export default function App() {
                   <Route path="/asset-calendar" element={<AssetCalendarPage />} />
                   <Route path="/bookshelf" element={<BookShelfPage />} />
                   <Route path="/sleep-tracker" element={<SleepTrackerPage />} />
+                  <Route path="/twitter" element={<TwitterPage />} />
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/new" element={<NewBlogPost />} />
                   <Route path="/blog/:id" element={<BlogPostDetail />} />
