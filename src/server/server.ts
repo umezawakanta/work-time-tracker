@@ -15,17 +15,32 @@ import bookRoutes from "./routes/bookRoutes.js";
 import sleepTrackerRoutes from "./routes/sleepTrackerRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import tweetRoutes from "./routes/tweetRoutes.js";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
 // Middleware
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 app.use(helmet());
 app.use(morgan("combined"));
 
 // Connect to MongoDB
 connectDB();
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// 静的ファイルの提供
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -55,6 +70,7 @@ app.use((err: Error, _req: Request, res: Response) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Uploads directory: ${uploadsDir}`);
 });
 
 export default app;

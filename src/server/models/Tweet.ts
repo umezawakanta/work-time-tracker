@@ -1,6 +1,13 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
-const tweetSchema = new mongoose.Schema({
+export interface ITweet extends Document {
+  content: string;
+  user: mongoose.Types.ObjectId;
+  image?: string;
+  createdAt: Date;
+}
+
+const tweetSchema = new mongoose.Schema<ITweet>({
   content: {
     type: String,
     required: true,
@@ -11,10 +18,13 @@ const tweetSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  image: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-export const Tweet = mongoose.model('Tweet', tweetSchema);
+export const Tweet = mongoose.model<ITweet>('Tweet', tweetSchema);
