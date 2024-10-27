@@ -10,7 +10,7 @@ const TweetList: React.FC<TweetListProps> = ({ tweets }) => {
   return (
     <div className="space-y-4 mt-4">
       {tweets.map((tweet) => (
-        <Card key={tweet._id}>
+        <Card key={tweet._id.toString()}>
           <CardContent className="pt-4">
             <p>{tweet.content}</p>
             {tweet.image && (
