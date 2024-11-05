@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Trash2, Plus, ChevronRight, ChevronDown, Edit2 } from 'lucide-react'
+import { Trash2, Plus, ChevronRight, ChevronDown, Edit2, UserPlus } from 'lucide-react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Progress } from '@/components/ui/progress'
@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface WBSItem {
   id: string
@@ -32,12 +33,23 @@ interface WBSItem {
   children: WBSItem[]
 }
 
+interface ProjectMember {
+  id: string
+  name: string
+}
+
 export default function WBSCreator() {
   const [wbs, setWbs] = useState<WBSItem[]>([])
   const [newItemName, setNewItemName] = useState('')
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
   const [editingItem, setEditingItem] = useState<WBSItem | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [projectMembers, setProjectMembers] = useState<ProjectMember[]>([
+    { id: '1', name: '山田太郎' },
+    { id: '2', name: '鈴木花子' },
+  ])
+  const [newMemberName, setNewMemberName] = useState('')
+  const [isMemberDialogOpen, setIsMemberDialogOpen] = useState(false)
 
   useEffect(() => {
     if (wbs.length === 0) {
@@ -146,6 +158,14 @@ export default function WBSCreator() {
     setIsDialogOpen(false)
   }
 
+  const addProjectMember = () => {
+    if (newMemberName.trim()) {
+      setProjectMembers([...projectMembers, { id: uuidv4(), name: newMemberName.trim() }])
+      setNewMemberName('')
+      setIsMemberDialogOpen(false)
+    }
+  }
+
   const renderWbsItem = (item: WBSItem, depth: number = 0) => {
     const isExpanded = expandedItems.has(item.id)
 
@@ -218,12 +238,21 @@ export default function WBSCreator() {
                             <Label htmlFor="assignee" className="text-right">
                               担当者
                             </Label>
-                            <Input
-                              id="assignee"
+                            <Select
                               value={editingItem.assignee}
-                              onChange={(e) => setEditingItem(prev => prev ? {...prev, assignee: e.target.value} : null)}
-                              className="col-span-3"
-                            />
+                              onValueChange={(value) => setEditingItem(prev => prev ? {...prev, assignee: value} : null)}
+                            >
+                              <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="担当者を選択" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {projectMembers.map((member) => (
+                                  <SelectItem key={member.id} value={member.name}>
+                                    {member.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="startDate" className="text-right">
@@ -320,6 +349,7 @@ export default function WBSCreator() {
             if (!item.startDate || !item.endDate) return null
 
             const left = ((item.startDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100
+            
             const width = ((item.endDate.getTime() - item.startDate.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100
 
             return (
@@ -356,8 +386,36 @@ export default function WBSCreator() {
           />
           <Button onClick={() => addItem()}>
             <Plus className="h-4 w-4 mr-2" /> タスク追加
-          
           </Button>
+          <Dialog open={isMemberDialogOpen} onOpenChange={setIsMemberDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <UserPlus className="h-4 w-4 mr-2" /> メンバー追加
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>プロジェクトメンバー追加</DialogTitle>
+                <DialogDescription>
+                  新しいプロジェクトメンバーを追加します。
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="memberName" className="text-right">
+                    名前
+                  </Label>
+                  <Input
+                    id="memberName"
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <Button onClick={addProjectMember}>追加</Button>
+            </DialogContent>
+          </Dialog>
         </div>
         <DragDropContext onDragEnd={onDragEnd}>
           <Table>
