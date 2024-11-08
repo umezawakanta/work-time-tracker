@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo, useState, useCallback, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -322,43 +324,36 @@ export function AssetCalendar({
       const monthStart = startOfMonth(month);
       const monthEnd = endOfMonth(month);
 
-      let monthStartTotal = 0;
-      let monthEndTotal = 0;
+      let previousTotal: number | null = null;
 
-      Object.entries(aggregatedData).forEach(([dateStr, accounts]) => {
-        const date = parseISO(dateStr);
-        if (isSameDay(date, monthStart)) {
-          monthStartTotal = accounts["合計"];
-        }
-        if (isSameDay(date, monthEnd)) {
-          monthEndTotal = accounts["合計"];
-        }
-      });
+      const monthlyIncome = Object.entries(aggregatedData)
+        .filter(([dateStr]) => {
+          const date = parseISO(dateStr);
+          return isWithinInterval(date, { start: monthStart, end: monthEnd });
+        })
+        .reduce((sum, [, accounts]) => {
+          const dailyChange = accounts["合計"] - (previousTotal || accounts["合計"]);
+          previousTotal = accounts["合計"];
+          return sum + (dailyChange > 0 ? dailyChange : 0);
+        }, 0);
 
-      // 月初のデータがない場合、最も古いデータを使用
-      if (monthStartTotal === 0) {
-        const sortedDates = Object.keys(aggregatedData).sort();
-        if (sortedDates.length > 0) {
-          monthStartTotal = aggregatedData[sortedDates[0]]["合計"];
-        }
-      }
-
-      // 月末のデータがない場合、最新のデータを使用
-      if (monthEndTotal === 0) {
-        const sortedDates = Object.keys(aggregatedData).sort().reverse();
-        if (sortedDates.length > 0) {
-          monthEndTotal = aggregatedData[sortedDates[0]]["合計"];
-        }
-      }
-
-      const totalChange = monthEndTotal - monthStartTotal;
+      const monthlyExpenses = Object.entries(aggregatedData)
+        .filter(([dateStr]) => {
+          const date = parseISO(dateStr);
+          return isWithinInterval(date, { start: monthStart, end: monthEnd });
+        })
+        .reduce((sum, [, accounts]) => {
+          const dailyChange = accounts["合計"] - (previousTotal || accounts["合計"]);
+          previousTotal = accounts["合計"];
+          return sum + (dailyChange < 0 ? -dailyChange : 0);
+        }, 0);
 
       const monthlyWithdrawals = withdrawals.filter((w) => {
         const withdrawalDate = parseISO(w.date);
         return isWithinInterval(withdrawalDate, { start: monthStart, end: monthEnd });
       });
 
-      const totalWithdrawals = monthlyWithdrawals.reduce((sum, w)   => sum + w.amount, 0);
+      const totalWithdrawals = monthlyWithdrawals.reduce((sum, w) => sum + w.amount, 0);
 
       const monthlySubscriptions = subscriptions.filter((s) => {
         const subscriptionDate = parse(s.billingDate, 'yyyy/MM/dd', new Date());
@@ -367,12 +362,17 @@ export function AssetCalendar({
 
       const totalSubscriptions = monthlySubscriptions.reduce((sum, s) => sum + s.amount, 0);
 
+      const fixedCosts = totalWithdrawals + totalSubscriptions;
+      const availableVariableExpenses = Math.max(monthlyIncome - fixedCosts, 0);
+
       return {
-        income: totalChange > 0 ? totalChange : 0,
-        expenses: totalChange < 0 ? -totalChange : 0,
-        balance: totalChange,
+        income: monthlyIncome,
+        expenses: monthlyExpenses,
+        balance: monthlyIncome - monthlyExpenses,
         totalWithdrawals,
         totalSubscriptions,
+        fixedCosts,
+        availableVariableExpenses,
       };
     },
     [aggregatedData, withdrawals, subscriptions]
@@ -454,15 +454,15 @@ export function AssetCalendar({
             </span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">当月引き落とし合計:</span>
+            <span className="summary-label">固定費合計:</span>
             <span className="summary-value expenses">
-              {monthlySummary.totalWithdrawals.toLocaleString()}円
+              {monthlySummary.fixedCosts.toLocaleString()}円
             </span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">当月サブスクリプション合計:</span>
-            <span className="summary-value expenses">
-              {monthlySummary.totalSubscriptions.toLocaleString()}円
+            <span className="summary-label">利用可能な変動費:</span>
+            <span className="summary-value income">
+              {monthlySummary.availableVariableExpenses.toLocaleString()}円
             </span>
           </div>
         </div>
