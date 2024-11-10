@@ -31,3 +31,13 @@ export const getTweets = async (search?: string) => {
     throw error;
   }
 };
+
+export const updateTweet = async (id: string, content: string) => {
+  try {
+    const response = await api.put(`/tweets/${id}`, { content });
+    return response.data;
+  } catch (error) {
+    console.error('Update tweet error:', error);
+    throw error;
+  }
+};

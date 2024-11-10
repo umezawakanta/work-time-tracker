@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createTweet, getTweets } from '../controllers/tweetController.js';
+import { createTweet, getTweets, updateTweet } from '../controllers/tweetController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,5 +25,6 @@ const upload = multer({ storage: storage });
 
 router.post('/', authMiddleware, upload.single('image'), createTweet);
 router.get('/', authMiddleware, getTweets);
+router.put('/:id', authMiddleware, updateTweet);  // 新しいルートを追加
 
 export default router;

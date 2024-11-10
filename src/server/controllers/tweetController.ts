@@ -52,20 +52,57 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
 };
 
 export const getTweets = async (req: MulterRequest, res: Response) => {
-    try {
-      const userId = req.user?.id;
-      if (!userId) {
-        return res.status(401).json({ message: 'ユーザーが認証されていません' });
-      }
-  
-      const tweets = await Tweet.find({ user: userId }).sort({ createdAt: -1 });
-      res.json(tweets);
-    } catch (error: unknown) {
-      console.error('Error fetching tweets:', error);
-      if (error instanceof Error) {
-        res.status(500).json({ message: 'ツイートの取得に失敗しました', error: error.message });
-      } else {
-        res.status(500).json({ message: 'ツイートの取得に失敗しました', error: '不明なエラーが発生しました' });
-      }
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: 'ユーザーが認証されていません' });
     }
-  };
+
+    const tweets = await Tweet.find({ user: userId }).sort({ createdAt: -1 });
+    res.json(tweets);
+  } catch (error: unknown) {
+    console.error('Error fetching tweets:', error);
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'ツイートの取得に失敗しました', error: error.message });
+    } else {
+      res.status(500).json({ message: 'ツイートの取得に失敗しました', error: '不明なエラーが発生しました' });
+    }
+  }
+};
+export const updateTweet = async (req: MulterRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+    }
+
+    if (!content) {
+      return res.status(400).json({ message: 'ツイートの内容は必須です' });
+    }
+
+    if (content.length > 10000) {
+      return res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
+    }
+
+    const tweet = await Tweet.findOne({ _id: id, user: userId });
+
+    if (!tweet) {
+      return res.status(404).json({ message: 'ツイートが見つかりません' });
+    }
+
+    tweet.content = content.trim();
+    await tweet.save();
+
+    res.json(tweet);
+  } catch (error: unknown) {
+    console.error('Error updating tweet:', error);
+    if (error instanceof Error) {
+      res.status(500).json({ message: 'ツイートの更新に失敗しました', error: error.message });
+    } else {
+      res.status(500).json({ message: 'ツイートの更新に失敗しました', error: '不明なエラーが発生しました' });
+    }
+  }
+};

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TweetForm from '@/components/forms/TweetForm';
 import TweetList from '@/components/list/TweetList';
-import { getTweets } from '@/services/api/tweetApi';
+import { getTweets, updateTweet } from '@/services/api/tweetApi';
 import { Tweet } from '@/types/Tweet';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -33,6 +33,20 @@ const TwitterPage: React.FC = () => {
     fetchTweets(searchTerm);
   };
 
+  const handleUpdateTweet = async (id: string, content: string) => {
+    try {
+      const updatedTweet = await updateTweet(id, content);
+      setTweets(prevTweets =>
+        prevTweets.map(tweet =>
+          tweet._id.toString() === id ? { ...tweet, ...updatedTweet } : tweet
+        )
+      );
+    } catch (error) {
+      console.error('Error updating tweet:', error);
+      // ここでエラー処理を行う（例：エラーメッセージを表示する）
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">ツイート</h1>
@@ -49,7 +63,7 @@ const TwitterPage: React.FC = () => {
           <Search className="mr-2 h-4 w-4" /> 検索
         </Button>
       </form>
-      <TweetList tweets={tweets} />
+      <TweetList tweets={tweets} onUpdateTweet={handleUpdateTweet} />
     </div>
   );
 };
