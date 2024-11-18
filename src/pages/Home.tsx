@@ -13,6 +13,7 @@ import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import DailyTodoReminder from "@/components/DailyTodoReminder";
 import HabitTracker from "@/components/HabitTracker";
 
+
 export default function Home() {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
@@ -33,6 +34,25 @@ export default function Home() {
         <DailyTodoReminder />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>政党支持率トレンド</CardTitle>
+            <CardDescription>政党支持率の推移を分析</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-4">
+              各政党の支持率推移をリアルタイムで確認できます。
+              トレンドを分析し、政治動向を把握することができます。
+            </p>
+            <Link to="/political-trends" className="w-full">
+              <Button variant="secondary" className="w-full">
+                政党支持率を見る
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card className="w-full">
           <CardHeader>
             <CardTitle>効率的な時間管理</CardTitle>
@@ -205,6 +225,7 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+
       </div>
     </div>
   );
