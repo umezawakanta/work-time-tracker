@@ -1,56 +1,66 @@
+import { useEffect, useState } from 'react';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import { surveyApi } from '@/services/api/surveyApi';
+import { SupportRate, PoliticalParty } from '@/types/survey';
 
-// サンプルデータ
-const data = [
-  {
-    date: '2021',
-    自民: 20,
-    立憲: 8,
-    国民: 2,
-    公明: 5,
-    共産: 3,
-    維新: 4,
-    社民: 1,
-    れ新: 2,
-    つく: 0.5,
-    参政: 1
-  },
-  // ... 他の年のデータ
-];
+interface ChartDataPoint {
+  date: string;
+  [key: string]: string | number;
+}
 
 const PoliticalChart = () => {
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [parties, setParties] = useState<PoliticalParty[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [surveyResponse, partiesResponse] = await Promise.all([
+          surveyApi.getAll(),
+          surveyApi.getParties()
+        ]);
+
+        setParties(partiesResponse.data);
+
+        const formattedData = surveyResponse.data.map(surveyData => {
+          const dataPoint: ChartDataPoint = {
+            date: new Date(surveyData.survey.surveyEndDate).toLocaleDateString('ja-JP', {
+              year: 'numeric',
+              month: '2-digit'
+            }).replace('/', '/')
+          };
+
+          surveyData.supportRates.forEach((rate: SupportRate) => {
+            const party = partiesResponse.data.find(p => p._id === rate.partyId);
+            if (party) {
+              dataPoint[party.shortName] = rate.supportRate;
+            }
+          });
+
+          return dataPoint;
+        });
+
+        setChartData(formattedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="w-full h-[600px] bg-black p-4">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 20,
-            bottom: 10
-          }}
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-          <XAxis
-            dataKey="date"
-            stroke="#fff"
-            tick={{ fill: '#fff' }}
-          />
-          <YAxis
-            stroke="#fff"
-            tick={{ fill: '#fff' }}
-            domain={[0, 20]}
-          />
+          <XAxis dataKey="date" stroke="#fff" tick={{ fill: '#fff' }} />
+          <YAxis stroke="#fff" tick={{ fill: '#fff' }} domain={[0, 35]} />
           <Tooltip
             contentStyle={{
               backgroundColor: '#333',
@@ -58,21 +68,16 @@ const PoliticalChart = () => {
               color: '#fff'
             }}
           />
-          <Legend
-            wrapperStyle={{
-              color: '#fff'
-            }}
-          />
-          <Line type="monotone" dataKey="自民" stroke="#00ff00" dot={false} />
-          <Line type="monotone" dataKey="立憲" stroke="#0088ff" dot={false} />
-          <Line type="monotone" dataKey="国民" stroke="#ffff00" dot={false} />
-          <Line type="monotone" dataKey="公明" stroke="#ff69b4" dot={false} />
-          <Line type="monotone" dataKey="共産" stroke="#ff0000" dot={false} />
-          <Line type="monotone" dataKey="維新" stroke="#ff8c00" dot={false} />
-          <Line type="monotone" dataKey="社民" stroke="#4b0082" dot={false} />
-          <Line type="monotone" dataKey="れ新" stroke="#800080" dot={false} />
-          <Line type="monotone" dataKey="つく" stroke="#ffd700" dot={false} />
-          <Line type="monotone" dataKey="参政" stroke="#8b4513" dot={false} />
+          <Legend wrapperStyle={{ color: '#fff' }} />
+          {parties.map(party => (
+            <Line
+              key={party._id}
+              type="monotone"
+              dataKey={party.shortName}
+              stroke={party.colorCode}
+              dot={false}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
