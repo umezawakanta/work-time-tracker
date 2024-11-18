@@ -60,4 +60,24 @@ router.post("/", async (
   }
 });
 
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const survey = await Survey.findById(req.params.id);
+      if (!survey) {
+        return res.status(404).json({ message: "調査が見つかりません" });
+      }
+  
+      // Delete associated support rates first
+      await SupportRate.deleteMany({ surveyId: req.params.id });
+      
+      // Then delete the survey
+      await Survey.findByIdAndDelete(req.params.id);
+  
+      res.json({ message: "調査データが正常に削除されました" });
+    } catch (error) {
+      console.error('Error deleting survey:', error);
+      next(error);
+    }
+  });
+
 export default router;

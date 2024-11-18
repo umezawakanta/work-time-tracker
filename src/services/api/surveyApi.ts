@@ -71,5 +71,9 @@ export const surveyApi = {
           config: mockAxiosConfig
         })
       : api.get<PoliticalParty[]>("/api/parties"); // パスを/api/partiesに修正
+  },
+
+  deleteSurvey: (surveyId: string): Promise<AxiosResponse<void>> => {
+    return api.delete(`/surveys/${surveyId}`);
   }
 };
