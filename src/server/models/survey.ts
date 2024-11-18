@@ -1,4 +1,4 @@
-// src/server/models/Survey.ts
+// src/server/models/survey.ts
 import mongoose from "mongoose";
 
 const surveySchema = new mongoose.Schema({
@@ -9,6 +9,3 @@ const surveySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export const Survey = mongoose.model("Survey", surveySchema);
-
-
-

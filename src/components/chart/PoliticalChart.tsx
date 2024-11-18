@@ -3,11 +3,17 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { surveyApi } from '@/services/api/surveyApi';
-import { SupportRate, PoliticalParty } from '@/types/survey';
+import { partyApi } from '@/services/api/partyApi';
+import { SupportRate, PoliticalParty, Survey } from '@/types/survey';
 
 interface ChartDataPoint {
   date: string;
   [key: string]: string | number;
+}
+
+interface SurveyResponse {
+  surveys: Survey[];
+  supportRates: SupportRate[];
 }
 
 const PoliticalChart = () => {
@@ -19,20 +25,25 @@ const PoliticalChart = () => {
       try {
         const [surveyResponse, partiesResponse] = await Promise.all([
           surveyApi.getAll(),
-          surveyApi.getParties()
+          partyApi.getAll()
         ]);
 
+        const surveyData = surveyResponse.data as unknown as SurveyResponse;
         setParties(partiesResponse.data);
 
-        const formattedData = surveyResponse.data.map(surveyData => {
+        const formattedData = surveyData.surveys.map(survey => {
           const dataPoint: ChartDataPoint = {
-            date: new Date(surveyData.survey.surveyEndDate).toLocaleDateString('ja-JP', {
+            date: new Date(survey.surveyEndDate).toLocaleDateString('ja-JP', {
               year: 'numeric',
               month: '2-digit'
             }).replace('/', '/')
           };
 
-          surveyData.supportRates.forEach((rate: SupportRate) => {
+          const surveyRates = surveyData.supportRates.filter(
+            rate => rate.surveyId === survey._id
+          );
+
+          surveyRates.forEach((rate: SupportRate) => {
             const party = partiesResponse.data.find(p => p._id === rate.partyId);
             if (party) {
               dataPoint[party.shortName] = rate.supportRate;

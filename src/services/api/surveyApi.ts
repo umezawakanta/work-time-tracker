@@ -70,6 +70,6 @@ export const surveyApi = {
           headers: {},
           config: mockAxiosConfig
         })
-      : api.get<PoliticalParty[]>("/parties");
+      : api.get<PoliticalParty[]>("/api/parties"); // パスを/api/partiesに修正
   }
 };
