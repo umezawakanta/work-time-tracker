@@ -124,7 +124,13 @@ const PoliticalChart = () => {
                 type="monotone"
                 dataKey={party.shortName}
                 stroke={party.colorCode}
-                dot={false}
+                dot={true}
+                label={{
+                  position: 'top',
+                  fill: party.colorCode,
+                  fontSize: 12,
+                  formatter: (value: number) => `${value}%`
+                }}
               />
             ))}
           </LineChart>
