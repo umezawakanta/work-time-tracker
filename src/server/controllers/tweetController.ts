@@ -54,11 +54,30 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
 export const getTweets = async (req: MulterRequest, res: Response) => {
   try {
     const userId = req.user?.id;
+    const { search } = req.query;
+
     if (!userId) {
       return res.status(401).json({ message: 'ユーザーが認証されていません' });
     }
 
-    const tweets = await Tweet.find({ user: userId }).sort({ createdAt: -1 });
+    // 基本的なクエリ条件（ユーザーIDでフィルタリング）
+    const baseQuery = { user: userId };
+
+    // 検索条件の追加
+    const query = search && typeof search === 'string' && search.trim() !== ''
+      ? {
+          ...baseQuery,
+          content: {
+            $regex: search.trim(),
+            $options: 'i'  // 大文字小文字を区別しない
+          }
+        }
+      : baseQuery;
+
+    const tweets = await Tweet.find(query)
+      .sort({ createdAt: -1 })
+      .exec();
+
     res.json(tweets);
   } catch (error: unknown) {
     console.error('Error fetching tweets:', error);
@@ -69,6 +88,7 @@ export const getTweets = async (req: MulterRequest, res: Response) => {
     }
   }
 };
+
 export const updateTweet = async (req: MulterRequest, res: Response) => {
   try {
     const { id } = req.params;
