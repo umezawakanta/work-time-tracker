@@ -7,6 +7,8 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ChevronDown, ChevronUp, Trophy, Flame, Target } from 'lucide-react'
+import * as habitApi from '@/services/api/habitApi'
+import { useToast } from "@/components/ui/use-toast"
 
 const habits = [
   "酒", "たばこ", "風俗", "パチンコ", "姿勢が悪い",
@@ -16,17 +18,19 @@ const habits = [
   "髪をさわる", "顔をさわる"
 ]
 
-interface HabitData {
-  [key: string]: {
-    [key: string]: boolean[] // year-month をキーとした月別データ
-  }
-}
-
 interface HabitStats {
   currentStreak: number;
   longestStreak: number;
   monthlyProgress: number;
   lastChecked: string | null;
+}
+
+interface ServerHabit {
+  _id: string;
+  name: string;
+  data: {
+    [key: string]: boolean[];
+  };
 }
 
 const getDaysInMonth = (year: number, month: number) => {
@@ -39,12 +43,13 @@ const getMonthKey = (date: Date) => {
 
 export default function HabitTracker() {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [trackedData, setTrackedData] = useState<HabitData>({})
+  const [trackedData, setTrackedData] = useState<{[key: string]: ServerHabit}>({})
   const [stats, setStats] = useState<{[key: string]: HabitStats}>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isExpanded, setIsExpanded] = useState(true)
   const [showCongrats, setShowCongrats] = useState(false)
+  const { toast } = useToast()
 
   const showCongratsMessage = () => {
     setShowCongrats(true)
@@ -56,7 +61,7 @@ export default function HabitTracker() {
     const newStats: {[key: string]: HabitStats} = {}
 
     habits.forEach(habit => {
-      const habitData = trackedData[habit]?.[monthKey] || []
+      const habitData = trackedData[habit]?.data[monthKey] || []
       const today = new Date().getDate() - 1
       
       // 現在の継続日数を計算
@@ -96,94 +101,121 @@ export default function HabitTracker() {
 
   // 初期データの読み込み
   useEffect(() => {
-    const loadData = () => {
+    const loadData = async () => {
       setIsLoading(true)
       setError(null)
       try {
-        const storedData = localStorage.getItem('habitTrackerData')
-        if (storedData) {
-          const parsedData = JSON.parse(storedData)
-          setTrackedData(parsedData)
+        const serverHabits = await habitApi.getHabits()
+        if (serverHabits.length === 0) {
+          // 初回のみ初期化
+          await habitApi.initializeHabits(habits)
+          const initializedHabits = await habitApi.getHabits()
+          const habitMap = initializedHabits.reduce((acc: {[key: string]: ServerHabit}, habit: ServerHabit) => {
+            acc[habit.name] = habit
+            return acc
+          }, {})
+          setTrackedData(habitMap)
+        } else {
+          const habitMap = serverHabits.reduce((acc: {[key: string]: ServerHabit}, habit: ServerHabit) => {
+            acc[habit.name] = habit
+            return acc
+          }, {})
+          setTrackedData(habitMap)
         }
       } catch (err) {
         console.error("Error loading data:", err)
         setError("データの読み込み中にエラーが発生しました。")
+        toast({
+          variant: "destructive",
+          title: "エラー",
+          description: "データの読み込みに失敗しました。",
+        })
       } finally {
         setIsLoading(false)
       }
     }
 
     loadData()
-  }, [])
+  }, [toast])
 
   // 月が変更されたときのデータ初期化
   useEffect(() => {
     const monthKey = getMonthKey(currentDate)
     const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())
 
-    setTrackedData(prevData => {
-      const newData = { ...prevData }
-      
-      habits.forEach(habit => {
-        if (!newData[habit]) {
-          newData[habit] = {}
-        }
-        if (!newData[habit][monthKey]) {
-          newData[habit][monthKey] = Array(daysInMonth).fill(false)
-        }
-      })
-
-      return newData
-    })
-  }, [currentDate])
-
-  // データの保存と統計の更新
-  useEffect(() => {
-    if (Object.keys(trackedData).length > 0) {
+    const initializeMonthData = async () => {
       try {
-        localStorage.setItem('habitTrackerData', JSON.stringify(trackedData))
-      } catch (err) {
-        console.error("Error saving data:", err)
-        setError("データの保存中にエラーが発生しました。")
+        for (const habit of habits) {
+          const serverHabit = trackedData[habit]
+          if (serverHabit && !serverHabit.data[monthKey]) {
+            await habitApi.updateHabit(
+              serverHabit._id,
+              monthKey,
+              Array(daysInMonth).fill(false)
+            )
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing month data:', error)
+        toast({
+          variant: "destructive",
+          title: "エラー",
+          description: "月初期化の処理に失敗しました。",
+        })
       }
     }
-  }, [trackedData])
+
+    if (Object.keys(trackedData).length > 0) {
+      initializeMonthData()
+    }
+  }, [currentDate, trackedData, toast])
 
   // 統計情報の更新
   useEffect(() => {
     calculateStats()
   }, [calculateStats])
 
-  const toggleHabit = (habit: string, day: number) => {
+  const toggleHabit = async (habit: string, day: number) => {
     const monthKey = getMonthKey(currentDate)
+    const serverHabit = trackedData[habit]
     
-    setTrackedData(prevData => {
-      const newData = { ...prevData }
-      if (!newData[habit]) {
-        newData[habit] = {}
-      }
-      if (!newData[habit][monthKey]) {
-        newData[habit][monthKey] = Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
-      }
-      
-      const newValue = !newData[habit][monthKey][day]
-      newData[habit][monthKey][day] = newValue
-      
-      // 達成時にお祝いメッセージを表示
-      if (newValue && day === new Date().getDate() - 1) {
+    if (!serverHabit) return
+
+    try {
+      const currentData = serverHabit.data[monthKey] || Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
+      const newData = [...currentData]
+      newData[day] = !newData[day]
+
+      const updatedHabit = await habitApi.updateHabit(
+        serverHabit._id,
+        monthKey,
+        newData
+      )
+
+      setTrackedData(prevData => ({
+        ...prevData,
+        [habit]: updatedHabit
+      }))
+
+      if (newData[day] && day === new Date().getDate() - 1) {
         const currentStreak = stats[habit]?.currentStreak || 0
-        if (currentStreak + 1 >= 7) {  // 1週間継続達成
+        if (currentStreak + 1 >= 7) {
           showCongratsMessage()
         }
       }
-      
-      return newData
-    })
+    } catch (error) {
+      console.error('Error updating habit:', error)
+      toast({
+        variant: "destructive",
+        title: "エラー",
+        description: "データの更新に失敗しました。",
+      })
+    }
   }
 
   const renderHeatmap = (habit: string) => {
     const monthKey = getMonthKey(currentDate)
-    const habitData = trackedData[habit]?.[monthKey] || Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
+    const habitData = trackedData[habit]?.data[monthKey] || Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
     
     return habitData.map((avoided, index) => (
       <div
@@ -273,7 +305,7 @@ export default function HabitTracker() {
                     <TableCell>{habit}</TableCell>
                     <TableCell>
                       <Checkbox
-                        checked={trackedData[habit]?.[monthKey]?.[currentDate.getDate() - 1] || false}
+                        checked={trackedData[habit]?.data[monthKey]?.[currentDate.getDate() - 1] || false}
                         onCheckedChange={() => toggleHabit(habit, currentDate.getDate() - 1)}
                       />
                     </TableCell>

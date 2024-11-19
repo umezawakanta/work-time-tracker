@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import surveyRoutes from "./routes/surveyRoutes.js";
 import partyRoutes from "./routes/partyRoutes.js";
+import habitRoutes from "./routes/habitRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,6 +60,7 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/tweets", tweetRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/parties", partyRoutes);
+app.use("/api/habits", habitRoutes);
 
 // Not Found middleware
 app.use((_req: Request, res: Response) => {
