@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -46,6 +46,54 @@ export default function HabitTracker() {
   const [isExpanded, setIsExpanded] = useState(true)
   const [showCongrats, setShowCongrats] = useState(false)
 
+  const showCongratsMessage = () => {
+    setShowCongrats(true)
+    setTimeout(() => setShowCongrats(false), 3000)
+  }
+
+  const calculateStats = useCallback(() => {
+    const monthKey = getMonthKey(currentDate)
+    const newStats: {[key: string]: HabitStats} = {}
+
+    habits.forEach(habit => {
+      const habitData = trackedData[habit]?.[monthKey] || []
+      const today = new Date().getDate() - 1
+      
+      // 現在の継続日数を計算
+      let currentStreak = 0
+      for (let i = today; i >= 0; i--) {
+        if (habitData[i]) currentStreak++
+        else break
+      }
+
+      // 最長継続日数を計算
+      let longestStreak = 0
+      let tempStreak = 0
+      habitData.forEach(day => {
+        if (day) {
+          tempStreak++
+          longestStreak = Math.max(longestStreak, tempStreak)
+        } else {
+          tempStreak = 0
+        }
+      })
+
+      // 月間達成率を計算
+      const totalDays = today + 1
+      const achievedDays = habitData.slice(0, totalDays).filter(Boolean).length
+      const monthlyProgress = totalDays > 0 ? Math.round((achievedDays / totalDays) * 100) : 0
+
+      newStats[habit] = {
+        currentStreak,
+        longestStreak,
+        monthlyProgress,
+        lastChecked: habitData[today] ? new Date().toISOString() : null
+      }
+    })
+
+    setStats(newStats)
+  }, [currentDate, trackedData])
+
   // 初期データの読み込み
   useEffect(() => {
     const loadData = () => {
@@ -89,56 +137,11 @@ export default function HabitTracker() {
     })
   }, [currentDate])
 
-  // 統計情報の計算
-  const calculateStats = () => {
-    const monthKey = getMonthKey(currentDate)
-    const newStats: {[key: string]: HabitStats} = {}
-
-    habits.forEach(habit => {
-      const habitData = trackedData[habit]?.[monthKey] || []
-      const today = new Date().getDate() - 1
-      
-      // 現在の継続日数を計算
-      let currentStreak = 0
-      for (let i = today; i >= 0; i--) {
-        if (habitData[i]) currentStreak++
-        else break
-      }
-
-      // 最長継続日数を計算
-      let longestStreak = 0
-      let tempStreak = 0
-      habitData.forEach(day => {
-        if (day) {
-          tempStreak++
-          longestStreak = Math.max(longestStreak, tempStreak)
-        } else {
-          tempStreak = 0
-        }
-      })
-
-      // 月間達成率を計算
-      const totalDays = today + 1
-      const achievedDays = habitData.slice(0, totalDays).filter(Boolean).length
-      const monthlyProgress = totalDays > 0 ? Math.round((achievedDays / totalDays) * 100) : 0
-
-      newStats[habit] = {
-        currentStreak,
-        longestStreak,
-        monthlyProgress,
-        lastChecked: habitData[today] ? new Date().toISOString() : null
-      }
-    })
-
-    setStats(newStats)
-  }
-
-  // データの保存
+  // データの保存と統計の更新
   useEffect(() => {
     if (Object.keys(trackedData).length > 0) {
       try {
         localStorage.setItem('habitTrackerData', JSON.stringify(trackedData))
-        calculateStats() // データ保存時に統計も更新
       } catch (err) {
         console.error("Error saving data:", err)
         setError("データの保存中にエラーが発生しました。")
@@ -146,10 +149,10 @@ export default function HabitTracker() {
     }
   }, [trackedData])
 
-  const showCongratsMessage = (streak: number) => {
-    setShowCongrats(true)
-    setTimeout(() => setShowCongrats(false), 3000)
-  }
+  // 統計情報の更新
+  useEffect(() => {
+    calculateStats()
+  }, [calculateStats])
 
   const toggleHabit = (habit: string, day: number) => {
     const monthKey = getMonthKey(currentDate)
@@ -170,7 +173,7 @@ export default function HabitTracker() {
       if (newValue && day === new Date().getDate() - 1) {
         const currentStreak = stats[habit]?.currentStreak || 0
         if (currentStreak + 1 >= 7) {  // 1週間継続達成
-          showCongratsMessage(currentStreak + 1)
+          showCongratsMessage()
         }
       }
       
