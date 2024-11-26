@@ -3,9 +3,21 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { EventModal } from "@/components/EventModal"
+
+interface Event {
+  id: string
+  title: string
+  start: Date
+  end: Date
+}
 
 export function WeekView() {
   const [currentDate] = useState(new Date())
+  const [events, setEvents] = useState<Event[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string>("")
   
   // 0:00から23:55までの5分間隔のタイムスロットを生成
   const timeSlots = Array.from({ length: 288 }, (_, i) => {
@@ -25,6 +37,43 @@ export function WeekView() {
       dayNumber: date.getDate(),
     }
   })
+
+  const handleDoubleClick = (date: Date, time: string) => {
+    setSelectedDate(date)
+    setSelectedTime(time)
+    setIsModalOpen(true)
+  }
+
+  const handleSaveEvent = (event: Omit<Event, "id">) => {
+    const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) }
+    setEvents([...events, newEvent])
+  }
+
+  const getEventStyle = (event: Event, dayIndex: number, slotIndex: number) => {
+    const eventDate = new Date(event.start)
+    const eventDay = eventDate.getDay()
+    const eventStartMinutes = eventDate.getHours() * 60 + eventDate.getMinutes()
+    const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes()
+    const slotStartMinutes = slotIndex * 5
+
+    if (eventDay === dayIndex && eventStartMinutes <= slotStartMinutes && eventEndMinutes > slotStartMinutes) {
+      const durationInSlots = Math.ceil((eventEndMinutes - eventStartMinutes) / 5)
+      return {
+        backgroundColor: "rgba(59, 130, 246, 0.5)",
+        height: `${durationInSlots * 10}px`,
+        zIndex: 10,
+        position: "absolute" as const,
+        top: `${((eventStartMinutes % 60) / 5) * 10}px`,
+        left: 0,
+        right: 0,
+        overflow: "hidden",
+        padding: "2px",
+        fontSize: "0.75rem",
+        lineHeight: "1rem",
+      }
+    }
+    return null
+  }
 
   return (
     <div className="flex-1 overflow-hidden">
@@ -57,22 +106,40 @@ export function WeekView() {
             ))}
           </div>
           <div className="flex-1 grid grid-cols-7">
-            {weekDays.map((_, dayIndex) => (
-              <div key={dayIndex} className={cn("border-r", dayIndex === 6 && "border-r-0")}>
-                {timeSlots.map((_, slotIndex) => (
+            {weekDays.map((day, dayIndex) => (
+              <div key={dayIndex} className={cn("border-r relative", dayIndex === 6 && "border-r-0")}>
+                {timeSlots.map((time, slotIndex) => (
                   <div
                     key={slotIndex}
                     className={cn(
                       "h-2 border-b border-dashed",
                       slotIndex % 12 === 0 && "border-solid" // 1時間ごとに実線
                     )}
+                    onDoubleClick={() => handleDoubleClick(day.date, time)}
                   />
                 ))}
+                {events.map((event) => {
+                  const style = getEventStyle(event, dayIndex, slotIndex)
+                  return style ? (
+                    <div key={event.id} style={style}>
+                      {event.title}
+                    </div>
+                  ) : null
+                })}
               </div>
             ))}
           </div>
         </div>
       </ScrollArea>
+      {selectedDate && (
+        <EventModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveEvent}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+        />
+      )}
     </div>
   )
 }
