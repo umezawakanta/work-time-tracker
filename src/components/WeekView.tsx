@@ -1,79 +1,74 @@
-"use client"
+"use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
-import { useState } from "react"
-import { EventModal } from "@/components/EventModal"
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { EventModal } from "@/components/EventModal";
+import "../styles/event.css";
 
 interface Event {
-  id: string
-  title: string
-  start: Date
-  end: Date
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
 }
 
 export function WeekView() {
-  const [currentDate] = useState(new Date())
-  const [events, setEvents] = useState<Event[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [selectedTime, setSelectedTime] = useState<string>("")
-  
+  const [currentDate] = useState(new Date());
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>("");
+
   // 0:00から23:55までの5分間隔のタイムスロットを生成
   const timeSlots = Array.from({ length: 288 }, (_, i) => {
-    const minutes = i * 5
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
-  })
+    const minutes = i * 5;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}`;
+  });
 
   // 週の日付を生成
   const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(currentDate)
-    date.setDate(currentDate.getDate() - currentDate.getDay() + i)
+    const date = new Date(currentDate);
+    date.setDate(currentDate.getDate() - currentDate.getDay() + i);
     return {
       date,
       dayName: date.toLocaleDateString("ja-JP", { weekday: "short" }),
       dayNumber: date.getDate(),
-    }
-  })
+    };
+  });
 
   const handleDoubleClick = (date: Date, time: string) => {
-    setSelectedDate(date)
-    setSelectedTime(time)
-    setIsModalOpen(true)
-  }
+    setSelectedDate(date);
+    setSelectedTime(time);
+    setIsModalOpen(true);
+  };
 
   const handleSaveEvent = (event: Omit<Event, "id">) => {
-    const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) }
-    setEvents([...events, newEvent])
-  }
+    const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) };
+    setEvents([...events, newEvent]);
+  };
 
-  const getEventStyle = (event: Event, dayIndex: number, slotIndex: number) => {
-    const eventDate = new Date(event.start)
-    const eventDay = eventDate.getDay()
-    const eventStartMinutes = eventDate.getHours() * 60 + eventDate.getMinutes()
-    const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes()
-    const slotStartMinutes = slotIndex * 5
+  const generateEventClassName = (event: Event, dayIndex: number) => {
+    const eventDate = new Date(event.start);
+    const eventDay = eventDate.getDay();
+    const eventStartMinutes =
+      eventDate.getHours() * 60 + eventDate.getMinutes();
+    const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes();
 
-    if (eventDay === dayIndex && eventStartMinutes <= slotStartMinutes && eventEndMinutes > slotStartMinutes) {
-      const durationInSlots = Math.ceil((eventEndMinutes - eventStartMinutes) / 5)
-      return {
-        backgroundColor: "rgba(59, 130, 246, 0.5)",
-        height: `${durationInSlots * 10}px`,
-        zIndex: 10,
-        position: "absolute" as const,
-        top: `${((eventStartMinutes % 60) / 5) * 10}px`,
-        left: 0,
-        right: 0,
-        overflow: "hidden",
-        padding: "2px",
-        fontSize: "0.75rem",
-        lineHeight: "1rem",
-      }
+    if (eventDay === dayIndex) {
+      const durationInSlots = Math.ceil(
+        (eventEndMinutes - eventStartMinutes) / 5
+      );
+      const top = ((eventStartMinutes % 60) / 5) * 10;
+      const height = durationInSlots * 10;
+      return `event top-[${top}px] h-[${height}px]`;
     }
-    return null
-  }
+    return "";
+  };
 
   return (
     <div className="flex-1 overflow-hidden">
@@ -97,17 +92,27 @@ export function WeekView() {
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="flex">
           <div className="w-16 border-r">
-            {timeSlots.map((time, i) => (
-              time.endsWith("00") && (
-                <div key={i} className="h-12 border-b text-xs text-muted-foreground p-1">
-                  {time}
-                </div>
-              )
-            ))}
+            {timeSlots.map(
+              (time, i) =>
+                time.endsWith("00") && (
+                  <div
+                    key={i}
+                    className="h-12 border-b text-xs text-muted-foreground p-1"
+                  >
+                    {time}
+                  </div>
+                )
+            )}
           </div>
           <div className="flex-1 grid grid-cols-7">
             {weekDays.map((day, dayIndex) => (
-              <div key={dayIndex} className={cn("border-r relative", dayIndex === 6 && "border-r-0")}>
+              <div
+                key={dayIndex}
+                className={cn(
+                  "border-r relative",
+                  dayIndex === 6 && "border-r-0"
+                )}
+              >
                 {timeSlots.map((time, slotIndex) => (
                   <div
                     key={slotIndex}
@@ -119,12 +124,12 @@ export function WeekView() {
                   />
                 ))}
                 {events.map((event) => {
-                  const style = getEventStyle(event, dayIndex, slotIndex)
-                  return style ? (
-                    <div key={event.id} style={style}>
+                  const className = generateEventClassName(event, dayIndex);
+                  return className ? (
+                    <div key={event.id} className={className}>
                       {event.title}
                     </div>
-                  ) : null
+                  ) : null;
                 })}
               </div>
             ))}
@@ -141,6 +146,6 @@ export function WeekView() {
         />
       )}
     </div>
-  )
+  );
 }
 
