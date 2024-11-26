@@ -49,25 +49,25 @@ export function WeekView() {
 
   const handleSaveEvent = (event: Omit<Event, "id">) => {
     const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) };
-    setEvents([...events, newEvent]);
+    setEvents(prevEvents => [...prevEvents, newEvent]);
+    console.log("New event added:", newEvent); // デバッグ用
   };
 
-  const generateEventClassName = (event: Event, dayIndex: number) => {
+  const getEventPosition = (event: Event, dayIndex: number) => {
     const eventDate = new Date(event.start);
     const eventDay = eventDate.getDay();
-    const eventStartMinutes =
-      eventDate.getHours() * 60 + eventDate.getMinutes();
+    const eventStartMinutes = eventDate.getHours() * 60 + eventDate.getMinutes();
     const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes();
 
     if (eventDay === dayIndex) {
-      const durationInSlots = Math.ceil(
-        (eventEndMinutes - eventStartMinutes) / 5
-      );
-      const top = ((eventStartMinutes % 60) / 5) * 10;
-      const height = durationInSlots * 10;
-      return `event top-[${top}px] h-[${height}px]`;
+      const durationInSlots = Math.ceil((eventEndMinutes - eventStartMinutes) / 5);
+      const top = (eventStartMinutes / 5) * 2; // 5分 = 2px
+      const height = durationInSlots * 2; // 5分 = 2px
+      return {
+        className: `event top-[${top}px] h-[${height}px]`,
+      };
     }
-    return "";
+    return null;
   };
 
   return (
@@ -124,12 +124,18 @@ export function WeekView() {
                   />
                 ))}
                 {events.map((event) => {
-                  const className = generateEventClassName(event, dayIndex);
-                  return className ? (
-                    <div key={event.id} className={className}>
-                      {event.title}
-                    </div>
-                  ) : null;
+                  const eventPosition = getEventPosition(event, dayIndex);
+                  if (eventPosition) {
+                    return (
+                      <div
+                        key={event.id}
+                        className={eventPosition.className}
+                      >
+                        {event.title}
+                      </div>
+                    );
+                  }
+                  return null;
                 })}
               </div>
             ))}

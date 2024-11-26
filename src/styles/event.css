@@ -1,13 +1,12 @@
 .event {
-    background-color: rgba(59, 130, 246, 0.5);
-    z-index: 10;
-    position: absolute;
     left: 0;
     right: 0;
-    overflow: hidden;
-    padding: 2px;
+    background-color: rgba(59, 130, 246, 0.5);
     font-size: 0.75rem;
-    line-height: 1rem;
+    padding: 0.25rem;
+    overflow: hidden;
+    z-index: 10;
+    position: absolute;
   }
   
   
