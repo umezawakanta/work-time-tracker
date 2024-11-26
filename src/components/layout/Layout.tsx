@@ -66,6 +66,7 @@ export default function Layout({ children }: LayoutProps) {
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog" },
     { icon: <X size={18} />, label: "Twitter", path: "/twitter" },
     { icon: <BarChart2 size={18} />, label: "政党支持率", path: "/political-trends" }, // 追加
+    { icon: <Calendar size={18} />, label: "カレンダー", path: "/calendar" }, // 追加
   ];
 
   const otherMenuItems = [

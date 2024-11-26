@@ -29,6 +29,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import WBSCreatorPage from "./pages/WBSCreatorPage"; // Add this import
 import TwitterPage from "./pages/TwitterPage";
 import PoliticalTrends from "./pages/PoliticalTrends";
+import CalendarPage from "./pages/CalendarPage";
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ export default function App() {
                 <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
                 <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
                 <Route path="/political-trends" element={<PoliticalTrends />} />
+                <Route path="/calendar" element={<CalendarPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/work-time" element={<WorkTimeEntryForm />} />
