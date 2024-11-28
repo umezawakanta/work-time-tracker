@@ -7,10 +7,6 @@ import { partyApi } from '@/services/api/partyApi';
 import { toast } from 'react-hot-toast';
 import { Survey, SupportRate, PoliticalParty } from '@/types/survey';
 
-interface SurveyRegistrationFormProps {
-  onSubmitSuccess: () => void;
-}
-
 interface SurveyFormData {
   survey: Omit<Survey, '_id'>;
   supportRates: Omit<SupportRate, '_id' | 'surveyId'>[];
@@ -26,8 +22,13 @@ export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFo
 
   useEffect(() => {
     const fetchParties = async () => {
-      const response = await partyApi.getAll();
-      setParties(response.data);
+      try {
+        const response = await partyApi.getAll();
+        setParties(response.data);
+      } catch (error) {
+        console.error('Error fetching parties:', error);
+        toast.error('政党データの取得に失敗しました');
+      }
     };
     fetchParties();
   }, []);
@@ -38,13 +39,14 @@ export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFo
       toast.success('調査結果を登録しました');
       reset();
       onSubmitSuccess();
-    } catch {
+    } catch (error) {
+      console.error('Error submitting survey:', error);
       toast.error('登録に失敗しました');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-black/10 p-4 rounded-lg">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium">メディア</label>

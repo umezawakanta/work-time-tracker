@@ -170,7 +170,9 @@ const PoliticalChart = () => {
 
   return (
     <div className="space-y-8">
-      <SurveyRegistrationForm onSubmitSuccess={fetchSurveyData} />
+      <div className="bg-black/10 rounded-lg p-4">
+        <SurveyRegistrationForm onSubmitSuccess={fetchSurveyData} />
+      </div>
       
       {mediaList.length === 0 ? (
         <div className="flex justify-center items-center h-[600px]">
@@ -179,7 +181,7 @@ const PoliticalChart = () => {
       ) : (
         <div className="space-y-4">
           <Tabs defaultValue={activeMedia} value={activeMedia} onValueChange={setActiveMedia}>
-            <TabsList className="bg-black/20">
+          <TabsList className="bg-black/20">
               {mediaList.map((media) => (
                 <TabsTrigger
                   key={`trigger-${media}`}
@@ -220,7 +222,7 @@ const PoliticalChart = () => {
         </div>
       )}
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>データ編集</DialogTitle>
