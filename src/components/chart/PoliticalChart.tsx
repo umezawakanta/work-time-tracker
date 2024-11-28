@@ -1,21 +1,28 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
-import { surveyApi } from '@/services/api/surveyApi';
-import { partyApi } from '@/services/api/partyApi';
-import { SupportRate, PoliticalParty, Survey } from '@/types/survey';
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { surveyApi } from "@/services/api/surveyApi";
+import { partyApi } from "@/services/api/partyApi";
+import { SupportRate, PoliticalParty, Survey } from "@/types/survey";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 interface ChartDataPoint {
   surveyId: string;
@@ -26,17 +33,21 @@ interface ChartDataPoint {
 
 interface SurveyResponseData {
   surveys: (Survey & { mediaOutlet: string })[];
-  supportRates: Array<SupportRate & {
-    partyId: {
-      _id: string;
-      name: string;
-      shortName: string;
-    };
-  }>;
+  supportRates: Array<
+    SupportRate & {
+      partyId: {
+        _id: string;
+        name: string;
+        shortName: string;
+      };
+    }
+  >;
 }
 
 const PoliticalChart = () => {
-  const [chartData, setChartData] = useState<Record<string, ChartDataPoint[]>>({});
+  const [chartData, setChartData] = useState<Record<string, ChartDataPoint[]>>(
+    {}
+  );
   const [mediaList, setMediaList] = useState<string[]>([]);
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
@@ -49,33 +60,37 @@ const PoliticalChart = () => {
       setIsLoading(true);
       const [surveyResponse, partiesResponse] = await Promise.all([
         surveyApi.getAll(),
-        partyApi.getAll()
+        partyApi.getAll(),
       ]);
 
       setParties(partiesResponse.data);
 
       const data = surveyResponse.data as unknown as SurveyResponseData;
-      
+
       // メディアごとにデータを整理
       const mediaGroups: Record<string, ChartDataPoint[]> = {};
       const mediaSet = new Set<string>();
 
       if (data.surveys && Array.isArray(data.surveys)) {
-        data.surveys.forEach(survey => {
-          const mediaOutlet = survey.mediaOutlet || '未分類';
+        data.surveys.forEach((survey) => {
+          const mediaOutlet = survey.mediaOutlet || "未分類";
           mediaSet.add(mediaOutlet);
-          
+
           const dataPoint: ChartDataPoint = {
             surveyId: survey._id,
-            date: new Date(survey.surveyEndDate).toLocaleDateString('ja-JP', {
-              year: 'numeric',
-              month: '2-digit'
-            }).replace('/', '/'),
-            mediaOutlet: mediaOutlet
+            date: new Date(survey.surveyEndDate)
+              .toLocaleDateString("ja-JP", {
+                year: "numeric",
+                month: "2-digit",
+              })
+              .replace("/", "/"),
+            mediaOutlet: mediaOutlet,
           };
 
-          const surveyRates = data.supportRates?.filter(rate => rate.surveyId === survey._id) || [];
-          surveyRates.forEach(rate => {
+          const surveyRates =
+            data.supportRates?.filter((rate) => rate.surveyId === survey._id) ||
+            [];
+          surveyRates.forEach((rate) => {
             if (rate.partyId && rate.partyId.shortName) {
               // メディア別の政党支持率のキーを生成
               const partyKey = `${rate.partyId.shortName}_${mediaOutlet}`;
@@ -90,9 +105,9 @@ const PoliticalChart = () => {
         });
 
         // 各メディアのデータを日付順にソート
-        Object.keys(mediaGroups).forEach(media => {
-          mediaGroups[media].sort((a, b) => 
-            new Date(a.date).getTime() - new Date(b.date).getTime()
+        Object.keys(mediaGroups).forEach((media) => {
+          mediaGroups[media].sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
           );
         });
 
@@ -104,8 +119,8 @@ const PoliticalChart = () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('データの取得に失敗しました');
+      console.error("Error fetching data:", error);
+      toast.error("データの取得に失敗しました");
     } finally {
       setIsLoading(false);
     }
@@ -125,37 +140,37 @@ const PoliticalChart = () => {
 
     try {
       await surveyApi.deleteSurvey(selectedSurveyId);
-      toast.success('データを削除しました');
+      toast.success("データを削除しました");
       await fetchSurveyData();
       setIsEditDialogOpen(false);
     } catch {
-      toast.error('データの削除に失敗しました');
+      toast.error("データの削除に失敗しました");
     }
   };
 
   const selectedData = Object.values(chartData)
     .flat()
-    .find(data => data.surveyId === selectedSurveyId);
+    .find((data) => data.surveyId === selectedSurveyId);
 
   // メディアと政党の組み合わせごとの線を生成
   const generateLines = (mediaOutlet: string) => {
     const lines: JSX.Element[] = [];
-    parties.forEach(party => {
+    parties.forEach((party) => {
       const partyKey = `${party.shortName}_${mediaOutlet}`;
       lines.push(
         <Line
           key={`line-${partyKey}`}
           type="monotone"
           dataKey={partyKey}
-          name={`${party.shortName}(${mediaOutlet})`}
+          name={`${party.name}(${mediaOutlet})`}
           stroke={party.colorCode}
-          strokeDasharray={mediaOutlet === 'NHK' ? "" : "5 5"} // NHK以外は破線
+          strokeDasharray={mediaOutlet === "NHK" ? "" : "5 5"} // NHK以外は破線
           dot={true}
           label={{
-            position: 'top',
+            position: "top",
             fill: party.colorCode,
             fontSize: 12,
-            formatter: (value: number) => `${value}%`
+            formatter: (value: number) => `${value}%`,
           }}
         />
       );
@@ -164,20 +179,27 @@ const PoliticalChart = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-[600px]">データを読み込み中...</div>;
+    return (
+      <div className="flex justify-center items-center h-[600px]">
+        データを読み込み中...
+      </div>
+    );
   }
 
   return (
     <div className="space-y-8">
-      
       {mediaList.length === 0 ? (
         <div className="flex justify-center items-center h-[600px]">
           データがありません。調査結果を登録してください。
         </div>
       ) : (
         <div className="space-y-4">
-          <Tabs defaultValue={activeMedia} value={activeMedia} onValueChange={setActiveMedia}>
-          <TabsList className="bg-black/20">
+          <Tabs
+            defaultValue={activeMedia}
+            value={activeMedia}
+            onValueChange={setActiveMedia}
+          >
+            <TabsList className="bg-black/20">
               {mediaList.map((media) => (
                 <TabsTrigger
                   key={`trigger-${media}`}
@@ -195,19 +217,32 @@ const PoliticalChart = () => {
                     <LineChart
                       data={chartData[media] || []}
                       margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                      onClick={(e) => e?.activePayload && handleDataClick(e.activePayload[0].payload as ChartDataPoint)}
+                      onClick={(e) =>
+                        e?.activePayload &&
+                        handleDataClick(
+                          e.activePayload[0].payload as ChartDataPoint
+                        )
+                      }
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                      <XAxis dataKey="date" stroke="#fff" tick={{ fill: '#fff' }} />
-                      <YAxis stroke="#fff" tick={{ fill: '#fff' }} domain={[0, 35]} />
+                      <XAxis
+                        dataKey="date"
+                        stroke="#fff"
+                        tick={{ fill: "#fff" }}
+                      />
+                      <YAxis
+                        stroke="#fff"
+                        tick={{ fill: "#fff" }}
+                        domain={[0, 35]}
+                      />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#333',
-                          border: '1px solid #666',
-                          color: '#fff'
+                          backgroundColor: "#333",
+                          border: "1px solid #666",
+                          color: "#fff",
                         }}
                       />
-                      <Legend wrapperStyle={{ color: '#fff' }} />
+                      <Legend wrapperStyle={{ color: "#fff" }} />
                       {generateLines(media)}
                     </LineChart>
                   </ResponsiveContainer>
@@ -218,7 +253,7 @@ const PoliticalChart = () => {
         </div>
       )}
 
-<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>データ編集</DialogTitle>
@@ -228,11 +263,16 @@ const PoliticalChart = () => {
               <p>調査メディア: {selectedData.mediaOutlet}</p>
               <p>日付: {selectedData.date}</p>
               {Object.entries(selectedData)
-                .filter(([key]) => !['date', 'surveyId', 'mediaOutlet'].includes(key))
+                .filter(
+                  ([key]) => !["date", "surveyId", "mediaOutlet"].includes(key)
+                )
                 .map(([key, value]) => {
-                  const [partyName, mediaName] = key.split('_');
+                  const [partyName, mediaName] = key.split("_");
                   return (
-                    <div key={key} className="flex items-center justify-between">
+                    <div
+                      key={key}
+                      className="flex items-center justify-between"
+                    >
                       <span>{`${partyName}(${mediaName})`}:</span>
                       <span>{value}%</span>
                     </div>
@@ -242,7 +282,10 @@ const PoliticalChart = () => {
                 <Button variant="destructive" onClick={handleDelete}>
                   削除
                 </Button>
-                <Button variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
+                <Button
+                  variant="secondary"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
                   閉じる
                 </Button>
               </div>
@@ -255,4 +298,3 @@ const PoliticalChart = () => {
 };
 
 export default PoliticalChart;
-
