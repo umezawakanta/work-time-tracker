@@ -27,6 +27,7 @@ import { toast } from "react-hot-toast";
 interface ChartDataPoint {
   surveyId: string;
   date: string;
+  fullDate: string;
   mediaOutlet: string;
   [key: string]: string | number;
 }
@@ -67,7 +68,6 @@ const PoliticalChart = () => {
 
       const data = surveyResponse.data as unknown as SurveyResponseData;
 
-      // メディアごとにデータを整理
       const mediaGroups: Record<string, ChartDataPoint[]> = {};
       const mediaSet = new Set<string>();
 
@@ -75,6 +75,12 @@ const PoliticalChart = () => {
         data.surveys.forEach((survey) => {
           const mediaOutlet = survey.mediaOutlet || "未分類";
           mediaSet.add(mediaOutlet);
+
+          const fullDate = new Date(survey.surveyEndDate).toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
 
           const dataPoint: ChartDataPoint = {
             surveyId: survey._id,
@@ -84,6 +90,7 @@ const PoliticalChart = () => {
                 month: "2-digit",
               })
               .replace("/", "/"),
+            fullDate: fullDate,
             mediaOutlet: mediaOutlet,
           };
 
@@ -92,7 +99,6 @@ const PoliticalChart = () => {
             [];
           surveyRates.forEach((rate) => {
             if (rate.partyId && rate.partyId.shortName) {
-              // メディア別の政党支持率のキーを生成
               const partyKey = `${rate.partyId.shortName}_${mediaOutlet}`;
               dataPoint[partyKey] = rate.supportRate;
             }
@@ -104,7 +110,6 @@ const PoliticalChart = () => {
           mediaGroups[mediaOutlet].push(dataPoint);
         });
 
-        // 各メディアのデータを日付順にソート
         Object.keys(mediaGroups).forEach((media) => {
           mediaGroups[media].sort(
             (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -152,7 +157,6 @@ const PoliticalChart = () => {
     .flat()
     .find((data) => data.surveyId === selectedSurveyId);
 
-  // メディアと政党の組み合わせごとの線を生成
   const generateLines = (mediaOutlet: string) => {
     const lines: JSX.Element[] = [];
     parties.forEach((party) => {
@@ -164,13 +168,13 @@ const PoliticalChart = () => {
           dataKey={partyKey}
           name={`${party.name}(${mediaOutlet})`}
           stroke={party.colorCode}
-          strokeDasharray={mediaOutlet === "NHK" ? "" : "5 5"} // NHK以外は破線
+          strokeDasharray={mediaOutlet === "NHK" ? "" : "5 5"}
           dot={true}
           label={{
             position: "top",
             fill: party.colorCode,
             fontSize: 12,
-            formatter: (value: number) => `${value}%`,
+            formatter: (value: number) => `${party.name}: ${value}%`,
           }}
         />
       );
@@ -216,7 +220,7 @@ const PoliticalChart = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={chartData[media] || []}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
                       onClick={(e) =>
                         e?.activePayload &&
                         handleDataClick(
@@ -226,9 +230,12 @@ const PoliticalChart = () => {
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#444" />
                       <XAxis
-                        dataKey="date"
+                        dataKey="fullDate"
                         stroke="#fff"
                         tick={{ fill: "#fff" }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={100}
                       />
                       <YAxis
                         stroke="#fff"
@@ -241,8 +248,15 @@ const PoliticalChart = () => {
                           border: "1px solid #666",
                           color: "#fff",
                         }}
+                        labelFormatter={(value) => `調査日: ${value}`}
                       />
-                      <Legend wrapperStyle={{ color: "#fff" }} />
+                      <Legend 
+                        wrapperStyle={{ color: "#fff" }}
+                        formatter={(value) => {
+                          const [partyName] = value.split('(');
+                          return partyName;
+                        }}
+                      />
                       {generateLines(media)}
                     </LineChart>
                   </ResponsiveContainer>
@@ -261,10 +275,10 @@ const PoliticalChart = () => {
           {selectedData && (
             <div className="space-y-4">
               <p>調査メディア: {selectedData.mediaOutlet}</p>
-              <p>日付: {selectedData.date}</p>
+              <p>日付: {selectedData.fullDate}</p>
               {Object.entries(selectedData)
                 .filter(
-                  ([key]) => !["date", "surveyId", "mediaOutlet"].includes(key)
+                  ([key]) => !["date", "surveyId", "mediaOutlet", "fullDate"].includes(key)
                 )
                 .map(([key, value]) => {
                   const [partyName, mediaName] = key.split("_");
