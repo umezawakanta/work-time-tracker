@@ -29,7 +29,7 @@ interface ChartDataPoint {
   date: string;
   fullDate: string;
   mediaOutlet: string;
-  [key: string]: string | number;
+  [key: string]: string | number | undefined;
 }
 
 interface SurveyResponseData {
@@ -76,11 +76,14 @@ const PoliticalChart = () => {
           const mediaOutlet = survey.mediaOutlet || "未分類";
           mediaSet.add(mediaOutlet);
 
-          const fullDate = new Date(survey.surveyEndDate).toLocaleDateString("ja-JP", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          });
+          const fullDate = new Date(survey.surveyEndDate).toLocaleDateString(
+            "ja-JP",
+            {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }
+          );
 
           const dataPoint: ChartDataPoint = {
             surveyId: survey._id,
@@ -101,6 +104,10 @@ const PoliticalChart = () => {
             if (rate.partyId && rate.partyId.shortName) {
               const partyKey = `${rate.partyId.shortName}_${mediaOutlet}`;
               dataPoint[partyKey] = rate.supportRate;
+              dataPoint[`${partyKey}_prev`] =
+                rate.rateChange !== undefined
+                  ? rate.supportRate - rate.rateChange
+                  : undefined;
             }
           });
 
@@ -112,7 +119,8 @@ const PoliticalChart = () => {
 
         Object.keys(mediaGroups).forEach((media) => {
           mediaGroups[media].sort(
-            (a, b) => new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime()
+            (a, b) =>
+              new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime()
           );
         });
 
@@ -174,7 +182,23 @@ const PoliticalChart = () => {
             position: "top",
             fill: party.colorCode,
             fontSize: 12,
-            formatter: (value: number) => `${party.name}: ${value}%`,
+            formatter: (
+              value: number,
+              _name: string,
+              props: { payload: ChartDataPoint } | undefined
+            ) => {
+              if (!props || !props.payload) {
+                return `${party.name}: ${value.toFixed(1)}%`;
+              }
+              const prevValue = props.payload[`${partyKey}_prev`];
+              const change =
+                typeof prevValue === "number" ? value - prevValue : undefined;
+              const changeText =
+                change !== undefined
+                  ? `(${change > 0 ? "+" : ""}${change.toFixed(1)})`
+                  : "";
+              return `${party.name}: ${value.toFixed(1)}% ${changeText}`;
+            },
           }}
         />
       );
@@ -249,12 +273,40 @@ const PoliticalChart = () => {
                           color: "#fff",
                         }}
                         labelFormatter={(value) => `調査日: ${value}`}
+                        formatter={(value, name, props) => {
+                          if (typeof name === "string") {
+                            const [partyName, mediaName] = name.split("(");
+                            const partyKey = `${partyName}_${mediaName.slice(
+                              0,
+                              -1
+                            )}`;
+                            const prevValue = (props.payload as ChartDataPoint)[
+                              `${partyKey}_prev`
+                            ];
+                            const change =
+                              typeof prevValue === "number" &&
+                              typeof value === "number"
+                                ? value - prevValue
+                                : undefined;
+                            const changeText =
+                              change !== undefined
+                                ? `(${change > 0 ? "+" : ""}${change.toFixed(
+                                    1
+                                  )})`
+                                : "";
+                            return [`${value}% ${changeText}`, partyName];
+                          }
+                          return [value, name];
+                        }}
                       />
-                      <Legend 
+                      <Legend
                         wrapperStyle={{ color: "#fff" }}
-                        formatter={(value) => {
-                          const [partyName] = value.split('(');
-                          return partyName;
+                        formatter={(value: string | number) => {
+                          if (typeof value === "string") {
+                            const [partyName] = value.split("(");
+                            return partyName;
+                          }
+                          return value;
                         }}
                       />
                       {generateLines(media)}
@@ -278,17 +330,31 @@ const PoliticalChart = () => {
               <p>日付: {selectedData.fullDate}</p>
               {Object.entries(selectedData)
                 .filter(
-                  ([key]) => !["date", "surveyId", "mediaOutlet", "fullDate"].includes(key)
+                  ([key]) =>
+                    !["date", "surveyId", "mediaOutlet", "fullDate"].includes(
+                      key
+                    ) && !key.endsWith("_prev")
                 )
                 .map(([key, value]) => {
                   const [partyName, mediaName] = key.split("_");
+                  const prevValue = selectedData[`${key}_prev`];
+                  const change =
+                    prevValue !== undefined && typeof value === "number"
+                      ? value - (prevValue as number)
+                      : undefined;
+                  const changeText =
+                    change !== undefined
+                      ? `(${change > 0 ? "+" : ""}${change.toFixed(1)})`
+                      : "";
                   return (
                     <div
                       key={key}
                       className="flex items-center justify-between"
                     >
                       <span>{`${partyName}(${mediaName})`}:</span>
-                      <span>{value}%</span>
+                      <span>
+                        {value}% {changeText}
+                      </span>
                     </div>
                   );
                 })}
