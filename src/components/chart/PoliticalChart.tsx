@@ -16,7 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'react-hot-toast';
-import { SurveyRegistrationForm } from '@/components/forms/SurveyRegistrationForm';
 
 interface ChartDataPoint {
   surveyId: string;
@@ -170,9 +169,6 @@ const PoliticalChart = () => {
 
   return (
     <div className="space-y-8">
-      <div className="bg-black/10 rounded-lg p-4">
-        <SurveyRegistrationForm onSubmitSuccess={fetchSurveyData} />
-      </div>
       
       {mediaList.length === 0 ? (
         <div className="flex justify-center items-center h-[600px]">

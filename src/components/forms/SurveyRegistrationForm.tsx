@@ -1,3 +1,4 @@
+// src/components/forms/SurveyRegistrationForm.tsx
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -12,23 +13,14 @@ interface SurveyFormData {
   supportRates: Omit<SupportRate, '_id' | 'surveyId'>[];
 }
 
-interface SurveyRegistrationFormProps {
-  onSubmitSuccess: () => void;
-}
-
-export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFormProps) => {
+export const SurveyRegistrationForm = () => {
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const { register, handleSubmit, reset } = useForm<SurveyFormData>();
 
   useEffect(() => {
     const fetchParties = async () => {
-      try {
-        const response = await partyApi.getAll();
-        setParties(response.data);
-      } catch (error) {
-        console.error('Error fetching parties:', error);
-        toast.error('政党データの取得に失敗しました');
-      }
+      const response = await partyApi.getAll();
+      setParties(response.data);
     };
     fetchParties();
   }, []);
@@ -38,9 +30,7 @@ export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFo
       await surveyApi.create(data.survey, data.supportRates);
       toast.success('調査結果を登録しました');
       reset();
-      onSubmitSuccess();
-    } catch (error) {
-      console.error('Error submitting survey:', error);
+    } catch {
       toast.error('登録に失敗しました');
     }
   };
@@ -96,4 +86,3 @@ export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFo
     </form>
   );
 };
-
