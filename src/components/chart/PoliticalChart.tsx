@@ -52,9 +52,6 @@ const PoliticalChart = () => {
         partyApi.getAll()
       ]);
 
-      console.log('Survey Response:', surveyResponse.data);
-      console.log('Parties Response:', partiesResponse.data);
-
       setParties(partiesResponse.data);
 
       const data = surveyResponse.data as unknown as SurveyResponseData;
@@ -80,7 +77,9 @@ const PoliticalChart = () => {
           const surveyRates = data.supportRates?.filter(rate => rate.surveyId === survey._id) || [];
           surveyRates.forEach(rate => {
             if (rate.partyId && rate.partyId.shortName) {
-              dataPoint[rate.partyId.shortName] = rate.supportRate;
+              // メディア別の政党支持率のキーを生成
+              const partyKey = `${rate.partyId.shortName}_${mediaName}`;
+              dataPoint[partyKey] = rate.supportRate;
             }
           });
 
@@ -98,9 +97,6 @@ const PoliticalChart = () => {
         });
 
         const mediaArray = Array.from(mediaSet);
-        console.log('Processed Media Groups:', mediaGroups);
-        console.log('Media List:', mediaArray);
-
         setMediaList(mediaArray);
         setChartData(mediaGroups);
         if (mediaArray.length > 0) {
@@ -140,6 +136,32 @@ const PoliticalChart = () => {
   const selectedData = Object.values(chartData)
     .flat()
     .find(data => data.surveyId === selectedSurveyId);
+
+  // メディアと政党の組み合わせごとの線を生成
+  const generateLines = (mediaName: string) => {
+    const lines: JSX.Element[] = [];
+    parties.forEach(party => {
+      const partyKey = `${party.shortName}_${mediaName}`;
+      lines.push(
+        <Line
+          key={`line-${partyKey}`}
+          type="monotone"
+          dataKey={partyKey}
+          name={`${party.shortName}(${mediaName})`}
+          stroke={party.colorCode}
+          strokeDasharray={mediaName === 'NHK' ? "" : "5 5"} // NHK以外は破線
+          dot={true}
+          label={{
+            position: 'top',
+            fill: party.colorCode,
+            fontSize: 12,
+            formatter: (value: number) => `${value}%`
+          }}
+        />
+      );
+    });
+    return lines;
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-[600px]">データを読み込み中...</div>;
@@ -187,21 +209,7 @@ const PoliticalChart = () => {
                     }}
                   />
                   <Legend wrapperStyle={{ color: '#fff' }} />
-                  {parties.map(party => (
-                    <Line
-                      key={`line-${party._id}`}
-                      type="monotone"
-                      dataKey={party.shortName}
-                      stroke={party.colorCode}
-                      dot={true}
-                      label={{
-                        position: 'top',
-                        fill: party.colorCode,
-                        fontSize: 12,
-                        formatter: (value: number) => `${value}%`
-                      }}
-                    />
-                  ))}
+                  {generateLines(media)}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -220,12 +228,15 @@ const PoliticalChart = () => {
               <p>日付: {selectedData.date}</p>
               {Object.entries(selectedData)
                 .filter(([key]) => !['date', 'surveyId', 'mediaName'].includes(key))
-                .map(([party, value]) => (
-                  <div key={party} className="flex items-center justify-between">
-                    <span>{party}:</span>
-                    <span>{value}%</span>
-                  </div>
-                ))}
+                .map(([key, value]) => {
+                  const [partyName, mediaName] = key.split('_');
+                  return (
+                    <div key={key} className="flex items-center justify-between">
+                      <span>{`${partyName}(${mediaName})`}:</span>
+                      <span>{value}%</span>
+                    </div>
+                  );
+                })}
               <div className="flex justify-end space-x-2">
                 <Button variant="destructive" onClick={handleDelete}>
                   削除

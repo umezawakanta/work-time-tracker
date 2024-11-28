@@ -1,15 +1,16 @@
 import { AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { Survey, SupportRate, PoliticalParty } from "@/types/survey";
 import { api, USE_MOCK_DATA } from "./apiConfig";
+import { toast } from 'react-toastify';
 
 const mockAxiosConfig: InternalAxiosRequestConfig = {
-    headers: new AxiosHeaders({
-      'Content-Type': 'application/json'
-    }),
-    method: 'get',
-    url: '',
-    data: undefined
-  };
+  headers: new AxiosHeaders({
+    'Content-Type': 'application/json'
+  }),
+  method: 'get',
+  url: '',
+  data: undefined
+};
 
 const mockParties: PoliticalParty[] = [
   { _id: "1", name: "無所属", shortName: "無党派", colorCode: "#808080" },
@@ -58,7 +59,20 @@ export const surveyApi = {
           headers: {},
           config: mockAxiosConfig
         })
-      : api.post<SurveyApiResponse>("/surveys", { survey, supportRates });
+      : api.post<SurveyApiResponse>("/surveys", { survey, supportRates })
+        .then(response => {
+          toast.success(response.data.message);
+          return response;
+        })
+        .catch(error => {
+          console.error('Error creating/updating survey:', error);
+          if (error.response && error.response.data && error.response.data.message) {
+            toast.error(`エラー: ${error.response.data.message}`);
+          } else {
+            toast.error('調査結果の登録/更新に失敗しました');
+          }
+          throw error;
+        });
   },
 
   getParties: (): Promise<AxiosResponse<PoliticalParty[]>> => {
@@ -70,10 +84,20 @@ export const surveyApi = {
           headers: {},
           config: mockAxiosConfig
         })
-      : api.get<PoliticalParty[]>("/api/parties"); // パスを/api/partiesに修正
+      : api.get<PoliticalParty[]>("/api/parties");
   },
 
   deleteSurvey: (surveyId: string): Promise<AxiosResponse<void>> => {
-    return api.delete(`/surveys/${surveyId}`);
+    return api.delete(`/surveys/${surveyId}`)
+      .then(response => {
+        toast.success('調査データが正常に削除されました');
+        return response;
+      })
+      .catch(error => {
+        console.error('Error deleting survey:', error);
+        toast.error('調査データの削除に失敗しました');
+        throw error;
+      });
   }
 };
+
