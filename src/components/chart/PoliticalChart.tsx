@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -12,16 +14,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from 'react-hot-toast';
 
 interface ChartDataPoint {
   surveyId: string;
   date: string;
+  mediaName: string;
   [key: string]: string | number;
 }
 
 interface SurveyResponseData {
-  surveys: Survey[];
+  surveys: (Survey & { mediaName: string })[];
   supportRates: Array<SupportRate & {
     partyId: {
       _id: string;
@@ -32,45 +36,82 @@ interface SurveyResponseData {
 }
 
 const PoliticalChart = () => {
-  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [chartData, setChartData] = useState<Record<string, ChartDataPoint[]>>({});
+  const [mediaList, setMediaList] = useState<string[]>([]);
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [activeMedia, setActiveMedia] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchSurveyData = async () => {
     try {
+      setIsLoading(true);
       const [surveyResponse, partiesResponse] = await Promise.all([
         surveyApi.getAll(),
         partyApi.getAll()
       ]);
 
+      console.log('Survey Response:', surveyResponse.data);
+      console.log('Parties Response:', partiesResponse.data);
+
       setParties(partiesResponse.data);
 
       const data = surveyResponse.data as unknown as SurveyResponseData;
-      const formattedData = data.surveys.map(survey => {
-        const dataPoint: ChartDataPoint = {
-          surveyId: survey._id,
-          date: new Date(survey.surveyEndDate).toLocaleDateString('ja-JP', {
-            year: 'numeric',
-            month: '2-digit'
-          }).replace('/', '/')
-        };
+      
+      // メディアごとにデータを整理
+      const mediaGroups: Record<string, ChartDataPoint[]> = {};
+      const mediaSet = new Set<string>();
 
-        const surveyRates = data.supportRates.filter(rate => rate.surveyId === survey._id);
-        surveyRates.forEach(rate => {
-          dataPoint[rate.partyId.shortName] = rate.supportRate;
+      if (data.surveys && Array.isArray(data.surveys)) {
+        data.surveys.forEach(survey => {
+          const mediaName = survey.mediaName || '未分類';
+          mediaSet.add(mediaName);
+          
+          const dataPoint: ChartDataPoint = {
+            surveyId: survey._id,
+            date: new Date(survey.surveyEndDate).toLocaleDateString('ja-JP', {
+              year: 'numeric',
+              month: '2-digit'
+            }).replace('/', '/'),
+            mediaName: mediaName
+          };
+
+          const surveyRates = data.supportRates?.filter(rate => rate.surveyId === survey._id) || [];
+          surveyRates.forEach(rate => {
+            if (rate.partyId && rate.partyId.shortName) {
+              dataPoint[rate.partyId.shortName] = rate.supportRate;
+            }
+          });
+
+          if (!mediaGroups[mediaName]) {
+            mediaGroups[mediaName] = [];
+          }
+          mediaGroups[mediaName].push(dataPoint);
         });
 
-        return dataPoint;
-      });
+        // 各メディアのデータを日付順にソート
+        Object.keys(mediaGroups).forEach(media => {
+          mediaGroups[media].sort((a, b) => 
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+        });
 
-      const sortedData = formattedData.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
+        const mediaArray = Array.from(mediaSet);
+        console.log('Processed Media Groups:', mediaGroups);
+        console.log('Media List:', mediaArray);
 
-      setChartData(sortedData);
-    } catch {
+        setMediaList(mediaArray);
+        setChartData(mediaGroups);
+        if (mediaArray.length > 0) {
+          setActiveMedia(mediaArray[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
       toast.error('データの取得に失敗しました');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,46 +137,77 @@ const PoliticalChart = () => {
     }
   };
 
-  const selectedData = chartData.find(data => data.surveyId === selectedSurveyId);
+  const selectedData = Object.values(chartData)
+    .flat()
+    .find(data => data.surveyId === selectedSurveyId);
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-[600px]">データを読み込み中...</div>;
+  }
+
+  if (mediaList.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-[600px]">
+        データがありません。調査結果を登録してください。
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="w-full h-[600px] bg-black p-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-            onClick={(e) => e?.activePayload && handleDataClick(e.activePayload[0].payload as ChartDataPoint)}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-            <XAxis dataKey="date" stroke="#fff" tick={{ fill: '#fff' }} />
-            <YAxis stroke="#fff" tick={{ fill: '#fff' }} domain={[0, 35]} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#333',
-                border: '1px solid #666',
-                color: '#fff'
-              }}
-            />
-            <Legend wrapperStyle={{ color: '#fff' }} />
-            {parties.map(party => (
-              <Line
-                key={party._id}
-                type="monotone"
-                dataKey={party.shortName}
-                stroke={party.colorCode}
-                dot={true}
-                label={{
-                  position: 'top',
-                  fill: party.colorCode,
-                  fontSize: 12,
-                  formatter: (value: number) => `${value}%`
-                }}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="space-y-4">
+      <Tabs defaultValue={activeMedia} value={activeMedia} onValueChange={setActiveMedia}>
+        <TabsList className="bg-black/20">
+          {mediaList.map((media) => (
+            <TabsTrigger
+              key={`trigger-${media}`}
+              value={media}
+              className="data-[state=active]:bg-primary"
+            >
+              {media}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {mediaList.map((media) => (
+          <TabsContent key={`content-${media}`} value={media}>
+            <div className="w-full h-[600px] bg-black p-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={chartData[media] || []}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                  onClick={(e) => e?.activePayload && handleDataClick(e.activePayload[0].payload as ChartDataPoint)}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                  <XAxis dataKey="date" stroke="#fff" tick={{ fill: '#fff' }} />
+                  <YAxis stroke="#fff" tick={{ fill: '#fff' }} domain={[0, 35]} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#333',
+                      border: '1px solid #666',
+                      color: '#fff'
+                    }}
+                  />
+                  <Legend wrapperStyle={{ color: '#fff' }} />
+                  {parties.map(party => (
+                    <Line
+                      key={`line-${party._id}`}
+                      type="monotone"
+                      dataKey={party.shortName}
+                      stroke={party.colorCode}
+                      dot={true}
+                      label={{
+                        position: 'top',
+                        fill: party.colorCode,
+                        fontSize: 12,
+                        formatter: (value: number) => `${value}%`
+                      }}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </TabsContent>
+        ))}
+      </Tabs>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
@@ -144,9 +216,10 @@ const PoliticalChart = () => {
           </DialogHeader>
           {selectedData && (
             <div className="space-y-4">
+              <p>調査メディア: {selectedData.mediaName}</p>
               <p>日付: {selectedData.date}</p>
               {Object.entries(selectedData)
-                .filter(([key]) => !['date', 'surveyId'].includes(key))
+                .filter(([key]) => !['date', 'surveyId', 'mediaName'].includes(key))
                 .map(([party, value]) => (
                   <div key={party} className="flex items-center justify-between">
                     <span>{party}:</span>
@@ -170,3 +243,4 @@ const PoliticalChart = () => {
 };
 
 export default PoliticalChart;
+
