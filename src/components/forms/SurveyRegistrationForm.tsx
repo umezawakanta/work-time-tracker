@@ -1,4 +1,3 @@
-// src/components/forms/SurveyRegistrationForm.tsx
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -8,12 +7,20 @@ import { partyApi } from '@/services/api/partyApi';
 import { toast } from 'react-hot-toast';
 import { Survey, SupportRate, PoliticalParty } from '@/types/survey';
 
+interface SurveyRegistrationFormProps {
+  onSubmitSuccess: () => void;
+}
+
 interface SurveyFormData {
   survey: Omit<Survey, '_id'>;
   supportRates: Omit<SupportRate, '_id' | 'surveyId'>[];
 }
 
-export const SurveyRegistrationForm = () => {
+interface SurveyRegistrationFormProps {
+  onSubmitSuccess: () => void;
+}
+
+export const SurveyRegistrationForm = ({ onSubmitSuccess }: SurveyRegistrationFormProps) => {
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const { register, handleSubmit, reset } = useForm<SurveyFormData>();
 
@@ -30,13 +37,14 @@ export const SurveyRegistrationForm = () => {
       await surveyApi.create(data.survey, data.supportRates);
       toast.success('調査結果を登録しました');
       reset();
+      onSubmitSuccess();
     } catch {
       toast.error('登録に失敗しました');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-black/10 p-4 rounded-lg">
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium">メディア</label>
@@ -86,3 +94,4 @@ export const SurveyRegistrationForm = () => {
     </form>
   );
 };
+
