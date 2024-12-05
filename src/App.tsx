@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { Toaster } from "react-hot-toast";
-import { Provider } from 'react-redux';
-import { store } from './store';
+import { Provider } from "react-redux";
+import { store } from "./store";
 import Layout from "@/components/layout/Layout";
 import Home from "./pages/Home";
 import WorkTimeEntryForm from "./components/forms/WorkTimeEntryForm";
@@ -26,10 +26,11 @@ import BlogPostDetail from "./pages/BlogPostDetail";
 import EditBlogPost from "./pages/EditBlogPost";
 import UserProfile from "./pages/UserProfile";
 import PrivateRoute from "./components/PrivateRoute";
-import WBSCreatorPage from "./pages/WBSCreatorPage"; // Add this import
+import WBSCreatorPage from "./pages/WBSCreatorPage";
 import TwitterPage from "./pages/TwitterPage";
 import PoliticalTrends from "./pages/PoliticalTrends";
 import CalendarPage from "./pages/CalendarPage";
+import DiaryPage from "./pages/DiaryPage"; // 新しく追加
 
 const theme = createTheme({
   palette: {
@@ -57,18 +58,39 @@ export default function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
-                <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
-                <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
+                <Route
+                  path="/election-candidates"
+                  element={<ElectionCandidatesPage />}
+                />
+                <Route
+                  path="/candidate-registration"
+                  element={<CandidateRegistrationPage />}
+                />
+                <Route
+                  path="/district/:prefecture/:district"
+                  element={<DistrictPage />}
+                />
                 <Route path="/political-trends" element={<PoliticalTrends />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/work-time" element={<WorkTimeEntryForm />} />
-                  <Route path="/work-time-reports" element={<WorkTimeReports />} />
-                  <Route path="/asset-liability-report" element={<AssetLiabilityReportPage />} />
-                  <Route path="/subscription-management" element={<SubscriptionManagementPage />} />
-                  <Route path="/asset-calendar" element={<AssetCalendarPage />} />
+                  <Route
+                    path="/work-time-reports"
+                    element={<WorkTimeReports />}
+                  />
+                  <Route
+                    path="/asset-liability-report"
+                    element={<AssetLiabilityReportPage />}
+                  />
+                  <Route
+                    path="/subscription-management"
+                    element={<SubscriptionManagementPage />}
+                  />
+                  <Route
+                    path="/asset-calendar"
+                    element={<AssetCalendarPage />}
+                  />
                   <Route path="/bookshelf" element={<BookShelfPage />} />
                   <Route path="/sleep-tracker" element={<SleepTrackerPage />} />
                   <Route path="/twitter" element={<TwitterPage />} />
@@ -77,7 +99,9 @@ export default function App() {
                   <Route path="/blog/:id" element={<BlogPostDetail />} />
                   <Route path="/blog/edit/:id" element={<EditBlogPost />} />
                   <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/wbs-creator" element={<WBSCreatorPage />} /> {/* Add this route */}
+                  <Route path="/wbs-creator" element={<WBSCreatorPage />} />
+                  <Route path="/diary" element={<DiaryPage />} />{" "}
+                  {/* 新しく追加されたルート */}
                 </Route>
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

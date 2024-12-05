@@ -58,24 +58,53 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   const frequentMenuItems = [
-    { icon: <BarChart2 size={18} />, label: "資産/負債", path: "/asset-liability-report" },
-    { icon: <Calendar size={18} />, label: "資産カレンダー", path: "/asset-calendar" },
-    { icon: <CreditCard size={18} />, label: "サブスク管理", path: "/subscription-management" },
+    {
+      icon: <BarChart2 size={18} />,
+      label: "資産/負債",
+      path: "/asset-liability-report",
+    },
+    {
+      icon: <Calendar size={18} />,
+      label: "資産カレンダー",
+      path: "/asset-calendar",
+    },
+    {
+      icon: <CreditCard size={18} />,
+      label: "サブスク管理",
+      path: "/subscription-management",
+    },
     { icon: <Moon size={18} />, label: "睡眠", path: "/sleep-tracker" },
     { icon: <BookOpen size={18} />, label: "本棚", path: "/bookshelf" },
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog" },
+    { icon: <BookOpen size={18} />, label: "ADHD日記", path: "/diary" },
     { icon: <X size={18} />, label: "Twitter", path: "/twitter" },
-    { icon: <BarChart2 size={18} />, label: "政党支持率", path: "/political-trends" }, // 追加
+    {
+      icon: <BarChart2 size={18} />,
+      label: "政党支持率",
+      path: "/political-trends",
+    }, // 追加
     { icon: <Calendar size={18} />, label: "カレンダー", path: "/calendar" }, // 追加
   ];
 
   const otherMenuItems = [
     { icon: <Home size={18} />, label: "ホーム", path: "/" },
     { icon: <Clock size={18} />, label: "作業時間入力", path: "/work-time" },
-    { icon: <BarChart2 size={18} />, label: "作業時間レポート", path: "/work-time-reports" },
-    { icon: <Vote size={18} />, label: "選挙候補者", path: "/election-candidates" },
+    {
+      icon: <BarChart2 size={18} />,
+      label: "作業時間レポート",
+      path: "/work-time-reports",
+    },
+    {
+      icon: <Vote size={18} />,
+      label: "選挙候補者",
+      path: "/election-candidates",
+    },
     { icon: <User size={18} />, label: "プロフィール", path: "/profile" },
-    { icon: <GitBranch size={18} />, label: "WBS作成ツール", path: "/wbs-creator" },
+    {
+      icon: <GitBranch size={18} />,
+      label: "WBS作成ツール",
+      path: "/wbs-creator",
+    },
   ];
 
   return (
@@ -90,23 +119,32 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </Link>
             <div className="md:hidden">
-              <Button variant="ghost" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              <Button
+                variant="ghost"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </Button>
             </div>
             <nav className="hidden md:flex items-center space-x-2">
               <Button
                 variant="ghost"
-                onClick={() => handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")}
+                onClick={() =>
+                  handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")
+                }
               >
                 {locale === "ja-JP" ? "日本語" : "English"}
               </Button>
               {isAuthenticated ? (
                 <>
                   <span className="text-sm font-medium text-gray-700 mr-4">
-                    ようこそ、{user?.name || '読み込み中...'}さん
+                    ようこそ、{user?.name || "読み込み中..."}さん
                   </span>
-                  <Button variant="ghost" onClick={handleLogout} className="flex items-center px-3 py-2">
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                    className="flex items-center px-3 py-2"
+                  >
                     <LogOut size={18} />
                     <span className="ml-2">ログアウト</span>
                   </Button>
@@ -143,7 +181,10 @@ export default function Layout({ children }: LayoutProps) {
               <DropdownMenuContent>
                 {otherMenuItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
-                    <Link to={item.path} className="flex items-center px-3 py-2">
+                    <Link
+                      to={item.path}
+                      className="flex items-center px-3 py-2"
+                    >
                       {item.icon}
                       <span className="ml-2">{item.label}</span>
                     </Link>
@@ -169,7 +210,9 @@ export default function Layout({ children }: LayoutProps) {
               ))}
               <Button
                 variant="ghost"
-                onClick={() => handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")}
+                onClick={() =>
+                  handleLocaleChange(locale === "ja-JP" ? "en-US" : "ja-JP")
+                }
                 className="w-full justify-start"
               >
                 {locale === "ja-JP" ? "日本語" : "English"}
@@ -177,7 +220,7 @@ export default function Layout({ children }: LayoutProps) {
               {isAuthenticated ? (
                 <>
                   <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700">
-                    ようこそ、{user?.name || '読み込み中...'}さん
+                    ようこそ、{user?.name || "読み込み中..."}さん
                   </span>
                   <Button
                     variant="ghost"
