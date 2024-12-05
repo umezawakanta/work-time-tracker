@@ -136,7 +136,7 @@ const DiaryPage: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>{entry.achievement}</p>
+                    <p className="whitespace-pre-wrap">{entry.achievement}</p>
                   </CardContent>
                   <CardFooter className="justify-end space-x-2">
                     <Button
