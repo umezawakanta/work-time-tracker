@@ -30,7 +30,8 @@ import WBSCreatorPage from "./pages/WBSCreatorPage";
 import TwitterPage from "./pages/TwitterPage";
 import PoliticalTrends from "./pages/PoliticalTrends";
 import CalendarPage from "./pages/CalendarPage";
-import DiaryPage from "./pages/DiaryPage"; // 新しく追加
+import DiaryPage from "./pages/DiaryPage";
+import ImpulseTrackerPage from "./pages/ImpulseTrackerPage"; // 新しく追加
 
 const theme = createTheme({
   palette: {
@@ -100,7 +101,11 @@ export default function App() {
                   <Route path="/blog/edit/:id" element={<EditBlogPost />} />
                   <Route path="/profile" element={<UserProfile />} />
                   <Route path="/wbs-creator" element={<WBSCreatorPage />} />
-                  <Route path="/diary" element={<DiaryPage />} />{" "}
+                  <Route path="/diary" element={<DiaryPage />} />
+                  <Route
+                    path="/impulse-tracker"
+                    element={<ImpulseTrackerPage />}
+                  />{" "}
                   {/* 新しく追加されたルート */}
                 </Route>
                 <Route path="/404" element={<NotFound />} />

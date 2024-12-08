@@ -47,7 +47,7 @@ export default function HabitTracker() {
   const [stats, setStats] = useState<{[key: string]: HabitStats}>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [showCongrats, setShowCongrats] = useState(false)
   const { toast } = useToast()
 

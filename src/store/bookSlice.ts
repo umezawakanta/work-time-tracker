@@ -2,17 +2,19 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { bookApi } from '@/services/api/bookApi';
 
 export interface Book {
-    _id: string;
-    title: string;
-    author: string;
-    isbn: string;
-    publishedYear: number;
-    totalPages: number;
-    readPages: number;
-    category: string;
-    rating: number;
-    createdAt: Date;
-  }
+  _id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  publishedYear: number;
+  totalPages: number;
+  readPages: number;
+  category: string;
+  rating: number;
+  createdAt: string;
+  notes?: string;
+  lentTo?: string;
+}
   
 interface BookState {
   books: Book[];

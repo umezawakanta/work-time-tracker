@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import BookCard from "./BookCard";
 import { toast } from "@/components/ui/use-toast";
 
@@ -38,18 +40,25 @@ const initialBookState: Omit<Book, "_id" | "createdAt"> = {
   readPages: 0,
   category: "",
   rating: 0,
+  notes: "",
+  lentTo: "",
 };
 
 const categories = ["小説", "ノンフィクション", "技術書", "その他"];
 
 export default function BookShelf() {
   const dispatch = useDispatch<AppDispatch>();
-  const { books, status, error } = useSelector((state: RootState) => state.book);
+  const { books, status, error } = useSelector(
+    (state: RootState) => state.book
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [newBook, setNewBook] = useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
+  const [sortBy, setSortBy] = useState("title");
+  const [newBook, setNewBook] =
+    useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
+  const [readingGoal, setReadingGoal] = useState(0);
 
   useEffect(() => {
     if (status === "idle") {
@@ -60,14 +69,9 @@ export default function BookShelf() {
   useEffect(() => {
     if (editingBook) {
       setNewBook({
-        title: editingBook.title,
-        author: editingBook.author,
-        isbn: editingBook.isbn,
-        publishedYear: editingBook.publishedYear,
-        totalPages: editingBook.totalPages,
-        readPages: editingBook.readPages,
-        category: editingBook.category,
-        rating: editingBook.rating,
+        ...editingBook,
+        notes: editingBook.notes || "",
+        lentTo: editingBook.lentTo || "",
       });
     } else {
       setNewBook(initialBookState);
@@ -85,11 +89,13 @@ export default function BookShelf() {
   }, [error]);
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setNewBook((prev) => ({
         ...prev,
-        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(name)
+        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(
+          name
+        )
           ? Math.max(0, parseInt(value, 10) || 0)
           : value,
       }));
@@ -151,14 +157,25 @@ export default function BookShelf() {
     [dispatch]
   );
 
-  const filteredBooks = useMemo(() => {
-    return books.filter(
-      (book) =>
-        (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (selectedCategory === "all" || book.category === selectedCategory)
-    );
-  }, [books, searchTerm, selectedCategory]);
+  const filteredAndSortedBooks = useMemo(() => {
+    return books
+      .filter(
+        (book) =>
+          (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          (selectedCategory === "all" || book.category === selectedCategory)
+      )
+      .sort((a, b) => {
+        if (sortBy === "title") return a.title.localeCompare(b.title);
+        if (sortBy === "author") return a.author.localeCompare(b.author);
+        if (sortBy === "rating") return b.rating - a.rating;
+        return 0;
+      });
+  }, [books, searchTerm, selectedCategory, sortBy]);
+
+  const totalBooksRead = useMemo(() => {
+    return books.filter((book) => book.readPages === book.totalPages).length;
+  }, [books]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -186,10 +203,37 @@ export default function BookShelf() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="並び替え" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="title">タイトル</SelectItem>
+            <SelectItem value="author">著者</SelectItem>
+            <SelectItem value="rating">評価</SelectItem>
+          </SelectContent>
+        </Select>
         <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
       </div>
+      <div className="flex items-center space-x-2">
+        <Label htmlFor="readingGoal">読書目標（冊）:</Label>
+        <Input
+          id="readingGoal"
+          type="number"
+          value={readingGoal}
+          onChange={(e) => setReadingGoal(parseInt(e.target.value, 10))}
+          className="w-20"
+        />
+        <Progress
+          value={(totalBooksRead / readingGoal) * 100}
+          className="w-64"
+        />
+        <span>
+          {totalBooksRead} / {readingGoal}
+        </span>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredBooks.map((book) => (
+        {filteredAndSortedBooks.map((book) => (
           <BookCard
             key={book._id}
             book={book}
@@ -319,6 +363,24 @@ export default function BookShelf() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="notes">メモ</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  value={newBook.notes}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lentTo">貸出先</Label>
+                <Input
+                  id="lentTo"
+                  name="lentTo"
+                  value={newBook.lentTo}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
             <DialogFooter className="mt-4">

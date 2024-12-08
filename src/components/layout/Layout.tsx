@@ -19,6 +19,7 @@ import {
   Pen,
   User,
   GitBranch,
+  AlertCircle,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -77,13 +78,12 @@ export default function Layout({ children }: LayoutProps) {
     { icon: <BookOpen size={18} />, label: "本棚", path: "/bookshelf" },
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog" },
     { icon: <BookOpen size={18} />, label: "ADHD日記", path: "/diary" },
-    { icon: <X size={18} />, label: "Twitter", path: "/twitter" },
     {
-      icon: <BarChart2 size={18} />,
-      label: "政党支持率",
-      path: "/political-trends",
-    }, // 追加
-    { icon: <Calendar size={18} />, label: "カレンダー", path: "/calendar" }, // 追加
+      icon: <AlertCircle size={18} />,
+      label: "衝動トラッカー",
+      path: "/impulse-tracker",
+    },
+    { icon: <X size={18} />, label: "Twitter", path: "/twitter" },
   ];
 
   const otherMenuItems = [
@@ -105,6 +105,12 @@ export default function Layout({ children }: LayoutProps) {
       label: "WBS作成ツール",
       path: "/wbs-creator",
     },
+    {
+      icon: <BarChart2 size={18} />,
+      label: "政党支持率",
+      path: "/political-trends",
+    }, // 追加
+    { icon: <Calendar size={18} />, label: "カレンダー", path: "/calendar" }, // 追加
   ];
 
   return (
