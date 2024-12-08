@@ -155,6 +155,7 @@ const DiaryPage: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Textarea
+                className="min-h-[240px]"
                 placeholder="今日達成できたことを1つ書いてください"
                 value={newAchievement}
                 onChange={(e) => setNewAchievement(e.target.value)}
