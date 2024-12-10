@@ -20,7 +20,6 @@ export function WeekView() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
 
-  // 0:00から23:55までの5分間隔のタイムスロットを生成
   const timeSlots = Array.from({ length: 288 }, (_, i) => {
     const minutes = i * 5;
     const hours = Math.floor(minutes / 60);
@@ -30,7 +29,6 @@ export function WeekView() {
       .padStart(2, "0")}`;
   });
 
-  // 週の日付を生成
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(currentDate);
     date.setDate(currentDate.getDate() - currentDate.getDay() + i);
@@ -50,7 +48,7 @@ export function WeekView() {
   const handleSaveEvent = (event: Omit<Event, "id">) => {
     const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) };
     setEvents(prevEvents => [...prevEvents, newEvent]);
-    console.log("New event added:", newEvent); // デバッグ用
+    console.log("New event added:", newEvent);
   };
 
   const getEventPosition = (event: Event, dayIndex: number) => {
@@ -61,10 +59,11 @@ export function WeekView() {
 
     if (eventDay === dayIndex) {
       const durationInSlots = Math.ceil((eventEndMinutes - eventStartMinutes) / 5);
-      const top = (eventStartMinutes / 5) * 2; // 5分 = 2px
-      const height = durationInSlots * 2; // 5分 = 2px
+      const top = (eventStartMinutes / 5) * 2;
+      const height = durationInSlots * 2;
       return {
-        className: `event top-[${top}px] h-[${height}px]`,
+        top: `${top}px`,
+        height: `${height}px`,
       };
     }
     return null;
@@ -118,7 +117,7 @@ export function WeekView() {
                     key={slotIndex}
                     className={cn(
                       "h-2 border-b border-dashed",
-                      slotIndex % 12 === 0 && "border-solid" // 1時間ごとに実線
+                      slotIndex % 12 === 0 && "border-solid"
                     )}
                     onDoubleClick={() => handleDoubleClick(day.date, time)}
                   />
@@ -129,7 +128,8 @@ export function WeekView() {
                     return (
                       <div
                         key={event.id}
-                        className={eventPosition.className}
+                        className="event absolute left-0 right-0 overflow-hidden text-xs bg-blue-500 text-white rounded px-1"
+                        style={eventPosition}
                       >
                         {event.title}
                       </div>

@@ -1,0 +1,26 @@
+.week-view {
+  display: flex;
+}
+
+.week-day {
+  width: 100%;
+  height: 1000px;
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+.event-item {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: #3b82f6;
+  color: white;
+  padding: 2px 4px;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  top: var(--event-top, 0);
+  height: var(--event-height, 30px);
+}
+

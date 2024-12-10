@@ -1,12 +1,14 @@
 .event {
-    left: 0;
-    right: 0;
-    background-color: rgba(59, 130, 246, 0.5);
-    font-size: 0.75rem;
-    padding: 0.25rem;
-    overflow: hidden;
-    z-index: 10;
-    position: absolute;
-  }
-  
-  
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 2px;
+}
+
