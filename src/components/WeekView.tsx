@@ -25,27 +25,38 @@ export function WeekView() {
   useEffect(() => {
     const savedEvents = localStorage.getItem('calendar-events');
     if (savedEvents) {
-      const parsedEvents = JSON.parse(savedEvents).map((event: { id: string; title: string; start: string; end: string }) => ({
-        ...event,
-        start: new Date(event.start),
-        end: new Date(event.end),
-      }));
-      setEvents(parsedEvents);
+      try {
+        const parsedEvents = JSON.parse(savedEvents).map((event: { id: string; title: string; start: string; end: string }) => ({
+          ...event,
+          start: new Date(event.start),
+          end: new Date(event.end),
+        }));
+        setEvents(parsedEvents);
+      } catch (error) {
+        console.error('Error parsing events:', error);
+        setEvents([]);
+      }
     }
   }, []);
 
   // Save events to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('calendar-events', JSON.stringify(events));
+    try {
+      localStorage.setItem('calendar-events', JSON.stringify(events.map(event => ({
+        ...event,
+        start: event.start.toISOString(),
+        end: event.end.toISOString(),
+      }))));
+    } catch (error) {
+      console.error('Error saving events:', error);
+    }
   }, [events]);
 
   const timeSlots = Array.from({ length: 288 }, (_, i) => {
     const minutes = i * 5;
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${hours.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}`;
+    return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
   });
 
   const weekDays = Array.from({ length: 7 }, (_, i) => {
@@ -64,23 +75,28 @@ export function WeekView() {
     setIsModalOpen(true);
   };
 
-  const handleSaveEvent = (event: Omit<Event, "id">) => {
-    const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) };
+  const handleSaveEvent = (eventData: Omit<Event, "id">) => {
+    const newEvent = {
+      ...eventData,
+      id: Math.random().toString(36).substr(2, 9),
+      start: new Date(eventData.start),
+      end: new Date(eventData.end),
+    };
     setEvents(prevEvents => [...prevEvents, newEvent]);
   };
 
-  const getEventPosition = (event: Event, dayIndex: number) => {
+  const getEventStyle = (event: Event, dayIndex: number) => {
     const eventDate = new Date(event.start);
     const eventDay = eventDate.getDay();
-    const eventStartMinutes = eventDate.getHours() * 60 + eventDate.getMinutes();
-    const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes();
-
+    
     if (eventDay === dayIndex) {
-      const top = Math.floor(eventStartMinutes / 5) * 2;
-      const height = Math.max(Math.ceil((eventEndMinutes - eventStartMinutes) / 5) * 2, 4);
-      const topClass = `event-top-${Math.floor(top / 10) * 10}`;
-      const heightClass = `event-height-${Math.ceil(height / 2) * 2}`;
-      return `${topClass} ${heightClass}`;
+      const startMinutes = eventDate.getHours() * 60 + eventDate.getMinutes();
+      const endMinutes = event.end.getHours() * 60 + event.end.getMinutes();
+      
+      return {
+        top: `${(startMinutes / 5) * 2}px`,
+        height: `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
+      };
     }
     return null;
   };
@@ -139,12 +155,13 @@ export function WeekView() {
                   />
                 ))}
                 {events.map((event) => {
-                  const eventPosition = getEventPosition(event, dayIndex);
-                  if (eventPosition) {
+                  const style = getEventStyle(event, dayIndex);
+                  if (style) {
                     return (
                       <div
                         key={event.id}
-                        className={`event ${eventPosition}`}
+                        className="event"
+                        style={style}
                       >
                         {event.title}
                       </div>
