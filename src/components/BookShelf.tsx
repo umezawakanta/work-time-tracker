@@ -26,9 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BookCard from "./BookCard";
+import StatisticsDashboard from "./StatisticsDashboard";
+import ReadingChallenge from "./ReadingChallenge";
+import BookRecommendations from "./BookRecommendations";
 import { toast } from "@/components/ui/use-toast";
 
 const initialBookState: Omit<Book, "_id" | "createdAt"> = {
@@ -48,17 +51,15 @@ const categories = ["小説", "ノンフィクション", "技術書", "その�
 
 export default function BookShelf() {
   const dispatch = useDispatch<AppDispatch>();
-  const { books, status, error } = useSelector(
-    (state: RootState) => state.book
-  );
+  const { books, status, error } = useSelector((state: RootState) => state.book);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("title");
-  const [newBook, setNewBook] =
-    useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
-  const [readingGoal, setReadingGoal] = useState(0);
+  const [newBook, setNewBook] = useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
+  const tags = useState<string[]>([])[0];
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     if (status === "idle") {
@@ -93,9 +94,7 @@ export default function BookShelf() {
       const { name, value } = e.target;
       setNewBook((prev) => ({
         ...prev,
-        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(
-          name
-        )
+        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(name)
           ? Math.max(0, parseInt(value, 10) || 0)
           : value,
       }));
@@ -157,13 +156,23 @@ export default function BookShelf() {
     [dispatch]
   );
 
+  const handleTagChange = (tag: string) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag)
+        : [...prevTags, tag]
+    );
+  };
+
   const filteredAndSortedBooks = useMemo(() => {
     return books
       .filter(
         (book) =>
           (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (selectedCategory === "all" || book.category === selectedCategory)
+          (selectedCategory === "all" || book.category === selectedCategory) &&
+          (selectedTags.length === 0 ||
+            selectedTags.every((tag) => book.tags?.includes(tag)))
       )
       .sort((a, b) => {
         if (sortBy === "title") return a.title.localeCompare(b.title);
@@ -171,11 +180,8 @@ export default function BookShelf() {
         if (sortBy === "rating") return b.rating - a.rating;
         return 0;
       });
-  }, [books, searchTerm, selectedCategory, sortBy]);
+  }, [books, searchTerm, selectedCategory, selectedTags, sortBy]);
 
-  const totalBooksRead = useMemo(() => {
-    return books.filter((book) => book.readPages === book.totalPages).length;
-  }, [books]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -183,65 +189,78 @@ export default function BookShelf() {
 
   return (
     <div className="space-y-4">
-      <div className="flex space-x-2">
-        <Input
-          placeholder="本を検索..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="カテゴリー" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">全て</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
+      <Tabs defaultValue="books" className="w-full">
+        <TabsList>
+          <TabsTrigger value="books">本棚</TabsTrigger>
+          <TabsTrigger value="stats">統計</TabsTrigger>
+          <TabsTrigger value="challenge">読書チャレンジ</TabsTrigger>
+          <TabsTrigger value="recommendations">おすすめ</TabsTrigger>
+        </TabsList>
+        <TabsContent value="books">
+          <div className="flex space-x-2 mb-4">
+            <Input
+              placeholder="本を検索..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="カテゴリー" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全て</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="並び替え" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">タイトル</SelectItem>
+                <SelectItem value="author">著者</SelectItem>
+                <SelectItem value="rating">評価</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {tags.map((tag) => (
+              <Button
+                key={tag}
+                variant={selectedTags.includes(tag) ? "default" : "outline"}
+                onClick={() => handleTagChange(tag)}
+              >
+                {tag}
+              </Button>
             ))}
-          </SelectContent>
-        </Select>
-        <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="並び替え" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="title">タイトル</SelectItem>
-            <SelectItem value="author">著者</SelectItem>
-            <SelectItem value="rating">評価</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Label htmlFor="readingGoal">読書目標（冊）:</Label>
-        <Input
-          id="readingGoal"
-          type="number"
-          value={readingGoal}
-          onChange={(e) => setReadingGoal(parseInt(e.target.value, 10))}
-          className="w-20"
-        />
-        <Progress
-          value={(totalBooksRead / readingGoal) * 100}
-          className="w-64"
-        />
-        <span>
-          {totalBooksRead} / {readingGoal}
-        </span>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAndSortedBooks.map((book) => (
-          <BookCard
-            key={book._id}
-            book={book}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredAndSortedBooks.map((book) => (
+              <BookCard
+                key={book._id}
+                book={book}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="stats">
+          <StatisticsDashboard books={books} />
+        </TabsContent>
+        <TabsContent value="challenge">
+          <ReadingChallenge books={books} />
+        </TabsContent>
+        <TabsContent value="recommendations">
+          <BookRecommendations books={books} />
+        </TabsContent>
+      </Tabs>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -392,3 +411,4 @@ export default function BookShelf() {
     </div>
   );
 }
+

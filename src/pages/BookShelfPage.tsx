@@ -10,7 +10,7 @@ const BookShelfPage: React.FC = () => {
         <CardHeader>
           <CardTitle>あなたの本棚</CardTitle>
           <CardDescription>
-            所有している本を管理し、整理することができます。
+            所有している本を管理し、整理することができます。統計、読書チャレンジ、おすすめ機能も利用できます。
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -22,3 +22,4 @@ const BookShelfPage: React.FC = () => {
 };
 
 export default BookShelfPage;
+

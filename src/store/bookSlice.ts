@@ -14,8 +14,9 @@ export interface Book {
   createdAt: string;
   notes?: string;
   lentTo?: string;
+  tags?: string[];
 }
-  
+
 interface BookState {
   books: Book[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
