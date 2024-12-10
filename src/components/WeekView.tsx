@@ -23,30 +23,32 @@ export function WeekView() {
 
   // Load events from localStorage on component mount
   useEffect(() => {
-    const savedEvents = localStorage.getItem('calendar-events');
-    if (savedEvents) {
-      try {
-        const parsedEvents = JSON.parse(savedEvents).map((event: { id: string; title: string; start: string; end: string }) => ({
+    try {
+      const savedEvents = localStorage.getItem('calendar-events');
+      if (savedEvents) {
+        const parsedEvents = JSON.parse(savedEvents);
+        const eventsWithDates = parsedEvents.map((event: any) => ({
           ...event,
           start: new Date(event.start),
-          end: new Date(event.end),
+          end: new Date(event.end)
         }));
-        setEvents(parsedEvents);
-      } catch (error) {
-        console.error('Error parsing events:', error);
-        setEvents([]);
+        setEvents(eventsWithDates);
       }
+    } catch (error) {
+      console.error('Error loading events:', error);
+      setEvents([]);
     }
   }, []);
 
   // Save events to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem('calendar-events', JSON.stringify(events.map(event => ({
+      const eventsToSave = events.map(event => ({
         ...event,
         start: event.start.toISOString(),
-        end: event.end.toISOString(),
-      }))));
+        end: event.end.toISOString()
+      }));
+      localStorage.setItem('calendar-events', JSON.stringify(eventsToSave));
     } catch (error) {
       console.error('Error saving events:', error);
     }
@@ -76,13 +78,17 @@ export function WeekView() {
   };
 
   const handleSaveEvent = (eventData: Omit<Event, "id">) => {
-    const newEvent = {
-      ...eventData,
-      id: Math.random().toString(36).substr(2, 9),
-      start: new Date(eventData.start),
-      end: new Date(eventData.end),
-    };
-    setEvents(prevEvents => [...prevEvents, newEvent]);
+    try {
+      const newEvent = {
+        ...eventData,
+        id: Math.random().toString(36).substr(2, 9),
+        start: new Date(eventData.start),
+        end: new Date(eventData.end)
+      };
+      setEvents(prevEvents => [...prevEvents, newEvent]);
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
   };
 
   const getEventStyle = (event: Event, dayIndex: number) => {
