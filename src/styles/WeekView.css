@@ -9,6 +9,41 @@
   position: relative;
 }
 
+.event {
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 2px;
+}
+
+/* Event top positions (in 10px increments) */
+.event-top-0 { top: 0px; }
+.event-top-10 { top: 10px; }
+.event-top-20 { top: 20px; }
+.event-top-30 { top: 30px; }
+.event-top-40 { top: 40px; }
+.event-top-50 { top: 50px; }
+/* ... continue up to 580px (24 hours * 12 5-minute intervals * 2px per interval) */
+.event-top-570 { top: 570px; }
+.event-top-580 { top: 580px; }
+
+/* Event heights (in 2px increments) */
+.event-height-2 { height: 2px; }
+.event-height-4 { height: 4px; }
+.event-height-6 { height: 6px; }
+.event-height-8 { height: 8px; }
+.event-height-10 { height: 10px; }
+/* ... continue as needed */
+.event-height-58 { height: 58px; }
+.event-height-60 { height: 60px; }
+
 .event-item {
   position: absolute;
   left: 0;

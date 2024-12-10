@@ -2,9 +2,10 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EventModal } from "@/components/EventModal";
-import "../styles/event.css";
+import "@/styles/event.css";
+import "@/styles/WeekView.css";
 
 interface Event {
   id: string;
@@ -19,6 +20,24 @@ export function WeekView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
+
+  // Load events from localStorage on component mount
+  useEffect(() => {
+    const savedEvents = localStorage.getItem('calendar-events');
+    if (savedEvents) {
+      const parsedEvents = JSON.parse(savedEvents).map((event: { id: string; title: string; start: string; end: string }) => ({
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end),
+      }));
+      setEvents(parsedEvents);
+    }
+  }, []);
+
+  // Save events to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('calendar-events', JSON.stringify(events));
+  }, [events]);
 
   const timeSlots = Array.from({ length: 288 }, (_, i) => {
     const minutes = i * 5;
@@ -48,7 +67,6 @@ export function WeekView() {
   const handleSaveEvent = (event: Omit<Event, "id">) => {
     const newEvent = { ...event, id: Math.random().toString(36).substr(2, 9) };
     setEvents(prevEvents => [...prevEvents, newEvent]);
-    console.log("New event added:", newEvent);
   };
 
   const getEventPosition = (event: Event, dayIndex: number) => {
@@ -58,13 +76,11 @@ export function WeekView() {
     const eventEndMinutes = event.end.getHours() * 60 + event.end.getMinutes();
 
     if (eventDay === dayIndex) {
-      const durationInSlots = Math.ceil((eventEndMinutes - eventStartMinutes) / 5);
-      const top = (eventStartMinutes / 5) * 2;
-      const height = durationInSlots * 2;
-      return {
-        top: `${top}px`,
-        height: `${height}px`,
-      };
+      const top = Math.floor(eventStartMinutes / 5) * 2;
+      const height = Math.max(Math.ceil((eventEndMinutes - eventStartMinutes) / 5) * 2, 4);
+      const topClass = `event-top-${Math.floor(top / 10) * 10}`;
+      const heightClass = `event-height-${Math.ceil(height / 2) * 2}`;
+      return `${topClass} ${heightClass}`;
     }
     return null;
   };
@@ -128,8 +144,7 @@ export function WeekView() {
                     return (
                       <div
                         key={event.id}
-                        className="event absolute left-0 right-0 overflow-hidden text-xs bg-blue-500 text-white rounded px-1"
-                        style={eventPosition}
+                        className={`event ${eventPosition}`}
                       >
                         {event.title}
                       </div>
