@@ -1,84 +1,123 @@
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+"use client";
 
-interface EventModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSave: (event: { title: string; start: Date; end: Date }) => void
-  selectedDate: Date
-  selectedTime: string
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
+
+interface Event {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
 }
 
-export function EventModal({ isOpen, onClose, onSave, selectedDate, selectedTime }: EventModalProps) {
-  const [title, setTitle] = useState("")
-  const [startTime, setStartTime] = useState(selectedTime)
-  const [endTime, setEndTime] = useState("")
+interface EventModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (event: Omit<Event, "id">) => void;
+  selectedDate: Date;
+  selectedTime: string;
+  event?: Event | null;
+}
 
-  const handleSave = () => {
-    const [startHour, startMinute] = startTime.split(":").map(Number)
-    const [endHour, endMinute] = endTime.split(":").map(Number)
+export function EventModal({
+  isOpen,
+  onClose,
+  onSave,
+  selectedDate,
+  selectedTime,
+  event
+}: EventModalProps) {
+  const [title, setTitle] = useState("");
+  const [startTime, setStartTime] = useState(selectedTime);
+  const [endTime, setEndTime] = useState("");
 
-    const start = new Date(selectedDate)
-    start.setHours(startHour, startMinute)
+  useEffect(() => {
+    if (event) {
+      setTitle(event.title);
+      setStartTime(event.start.toTimeString().slice(0, 5));
+      setEndTime(event.end.toTimeString().slice(0, 5));
+    } else {
+      setTitle("");
+      setStartTime(selectedTime);
+      setEndTime("");
+    }
+  }, [event, selectedTime]);
 
-    const end = new Date(selectedDate)
-    end.setHours(endHour, endMinute)
-
-    onSave({ title, start, end })
-    onClose()
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    const [endHours, endMinutes] = endTime.split(":").map(Number);
+    
+    const startDate = new Date(selectedDate);
+    startDate.setHours(startHours, startMinutes);
+    
+    const endDate = new Date(selectedDate);
+    endDate.setHours(endHours, endMinutes);
+    
+    onSave({
+      title,
+      start: startDate,
+      end: endDate
+    });
+    
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>予定を追加</DialogTitle>
+          <DialogTitle>
+            {event ? "イベントを編集" : "新しいイベント"}
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
-              タイトル
-            </Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="title">タイトル</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="col-span-3"
+              required
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="start-time" className="text-right">
-              開始時間
-            </Label>
-            <Input
-              id="start-time"
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="col-span-3"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="start-time">開始時間</Label>
+              <Input
+                id="start-time"
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="end-time">終了時間</Label>
+              <Input
+                id="end-time"
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="end-time" className="text-right">
-              終了時間
-            </Label>
-            <Input
-              id="end-time"
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="col-span-3"
-            />
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={onClose}>
+              キャンセル
+            </Button>
+            <Button type="submit">
+              {event ? "更新" : "作成"}
+            </Button>
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleSave}>保存</Button>
-        </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 

@@ -20,6 +20,7 @@ export function WeekView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   // Load events from localStorage on component mount
   useEffect(() => {
@@ -45,7 +46,6 @@ export function WeekView() {
 
   // Save events to localStorage whenever they change
   useEffect(() => {
-    // Only save if events array is not empty
     if (events.length > 0) {
       console.log("Saving non-empty events array:", events);
       try {
@@ -83,26 +83,47 @@ export function WeekView() {
     console.log("Double click event:", { date, time });
     setSelectedDate(date);
     setSelectedTime(time);
+    setSelectedEvent(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEventClick = (event: Event) => {
+    console.log("Event clicked:", event);
+    setSelectedEvent(event);
+    setSelectedDate(event.start);
+    setSelectedTime(event.start.toTimeString().slice(0, 5));
     setIsModalOpen(true);
   };
 
   const handleSaveEvent = (eventData: Omit<Event, "id">) => {
     console.log("Handling save event:", eventData);
     try {
-      const newEvent = {
-        ...eventData,
-        id: Math.random().toString(36).substr(2, 9),
-        start: new Date(eventData.start),
-        end: new Date(eventData.end)
-      };
-      console.log("Created new event:", newEvent);
-      setEvents(prevEvents => {
-        const updatedEvents = [...prevEvents, newEvent];
-        console.log("Updated events array:", updatedEvents);
-        return updatedEvents;
-      });
+      if (selectedEvent) {
+        // Update existing event
+        const updatedEvents = events.map(event =>
+          event.id === selectedEvent.id
+            ? { ...eventData, id: selectedEvent.id }
+            : event
+        );
+        setEvents(updatedEvents);
+        console.log("Updated existing event:", updatedEvents);
+      } else {
+        // Create new event
+        const newEvent = {
+          ...eventData,
+          id: Math.random().toString(36).substr(2, 9),
+          start: new Date(eventData.start),
+          end: new Date(eventData.end)
+        };
+        console.log("Created new event:", newEvent);
+        setEvents(prevEvents => {
+          const updatedEvents = [...prevEvents, newEvent];
+          console.log("Updated events array:", updatedEvents);
+          return updatedEvents;
+        });
+      }
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error saving event:', error);
     }
   };
 
@@ -184,8 +205,9 @@ export function WeekView() {
                     return (
                       <div
                         key={event.id}
-                        className="event"
+                        className="event cursor-pointer hover:opacity-75"
                         style={style}
+                        onClick={() => handleEventClick(event)}
                       >
                         {event.title}
                       </div>
@@ -201,10 +223,14 @@ export function WeekView() {
       {selectedDate && (
         <EventModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEvent(null);
+          }}
           onSave={handleSaveEvent}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
+          event={selectedEvent}
         />
       )}
     </div>
