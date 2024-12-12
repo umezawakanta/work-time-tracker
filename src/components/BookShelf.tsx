@@ -33,6 +33,8 @@ import StatisticsDashboard from "./StatisticsDashboard";
 import ReadingChallenge from "./ReadingChallenge";
 import BookRecommendations from "./BookRecommendations";
 import { toast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 const initialBookState: Omit<Book, "_id" | "createdAt"> = {
   title: "",
@@ -60,6 +62,8 @@ export default function BookShelf() {
   const [newBook, setNewBook] = useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
   const tags = useState<string[]>([])[0];
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [readingStatus, setReadingStatus] = useState<"all" | "reading" | "completed">("all");
 
   useEffect(() => {
     if (status === "idle") {
@@ -172,15 +176,19 @@ export default function BookShelf() {
             book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
           (selectedCategory === "all" || book.category === selectedCategory) &&
           (selectedTags.length === 0 ||
-            selectedTags.every((tag) => book.tags?.includes(tag)))
+            selectedTags.every((tag) => book.tags?.includes(tag))) &&
+          (readingStatus === "all" ||
+            (readingStatus === "reading" && book.readPages < book.totalPages) ||
+            (readingStatus === "completed" && book.readPages === book.totalPages))
       )
       .sort((a, b) => {
         if (sortBy === "title") return a.title.localeCompare(b.title);
         if (sortBy === "author") return a.author.localeCompare(b.author);
         if (sortBy === "rating") return b.rating - a.rating;
+        if (sortBy === "progress") return (b.readPages / b.totalPages) - (a.readPages / a.totalPages);
         return 0;
       });
-  }, [books, searchTerm, selectedCategory, selectedTags, sortBy]);
+  }, [books, searchTerm, selectedCategory, selectedTags, sortBy, readingStatus]);
 
 
   if (status === "loading") {
@@ -217,6 +225,16 @@ export default function BookShelf() {
                 ))}
               </SelectContent>
             </Select>
+            <Select value={readingStatus} onValueChange={(value: "all" | "reading" | "completed") => setReadingStatus(value)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="読書状況" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">全て</SelectItem>
+                <SelectItem value="reading">読書中</SelectItem>
+                <SelectItem value="completed">読了</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="並び替え" />
@@ -225,8 +243,12 @@ export default function BookShelf() {
                 <SelectItem value="title">タイトル</SelectItem>
                 <SelectItem value="author">著者</SelectItem>
                 <SelectItem value="rating">評価</SelectItem>
+                <SelectItem value="progress">進捗</SelectItem>
               </SelectContent>
             </Select>
+            <Button onClick={() => setView(view === "grid" ? "list" : "grid")}>
+              {view === "grid" ? "リスト表示" : "グリッド表示"}
+            </Button>
             <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
           </div>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -240,16 +262,35 @@ export default function BookShelf() {
               </Button>
             ))}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAndSortedBooks.map((book) => (
-              <BookCard
-                key={book._id}
-                book={book}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
+          {view === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredAndSortedBooks.map((book) => (
+                <BookCard
+                  key={book._id}
+                  book={book}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filteredAndSortedBooks.map((book) => (
+                <div key={book._id} className="flex items-center justify-between p-2 border rounded">
+                  <div>
+                    <h3 className="font-semibold">{book.title}</h3>
+                    <p className="text-sm text-gray-500">{book.author}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge>{book.category}</Badge>
+                    <Progress value={(book.readPages / book.totalPages) * 100} className="w-24" />
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(book)}>編集</Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDelete(book._id)}>削除</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="stats">
           <StatisticsDashboard books={books} />
@@ -411,4 +452,3 @@ export default function BookShelf() {
     </div>
   );
 }
-
