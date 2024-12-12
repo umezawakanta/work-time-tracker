@@ -12,6 +12,7 @@ interface Event {
   title: string;
   start: Date;
   end: Date;
+  color?: string; // Add color property
 }
 
 export function WeekView() {
@@ -24,19 +25,15 @@ export function WeekView() {
 
   // Load events from localStorage on component mount
   useEffect(() => {
-    console.log("Component mounted, loading events from localStorage");
     try {
       const savedEvents = localStorage.getItem('calendar-events');
-      console.log("Saved events from localStorage:", savedEvents);
       if (savedEvents) {
         const parsedEvents = JSON.parse(savedEvents);
-        console.log("Parsed events:", parsedEvents);
         const eventsWithDates = parsedEvents.map((event: any) => ({
           ...event,
           start: new Date(event.start),
           end: new Date(event.end)
         }));
-        console.log("Events with dates:", eventsWithDates);
         setEvents(eventsWithDates);
       }
     } catch (error) {
@@ -47,7 +44,6 @@ export function WeekView() {
   // Save events to localStorage whenever they change
   useEffect(() => {
     if (events.length > 0) {
-      console.log("Saving non-empty events array:", events);
       try {
         const eventsToSave = events.map(event => ({
           ...event,
@@ -55,7 +51,6 @@ export function WeekView() {
           end: event.end.toISOString()
         }));
         localStorage.setItem('calendar-events', JSON.stringify(eventsToSave));
-        console.log("Events saved successfully");
       } catch (error) {
         console.error('Error saving events:', error);
       }
@@ -80,7 +75,6 @@ export function WeekView() {
   });
 
   const handleDoubleClick = (date: Date, time: string) => {
-    console.log("Double click event:", { date, time });
     setSelectedDate(date);
     setSelectedTime(time);
     setSelectedEvent(null);
@@ -88,7 +82,6 @@ export function WeekView() {
   };
 
   const handleEventClick = (event: Event) => {
-    console.log("Event clicked:", event);
     setSelectedEvent(event);
     setSelectedDate(event.start);
     setSelectedTime(event.start.toTimeString().slice(0, 5));
@@ -96,7 +89,6 @@ export function WeekView() {
   };
 
   const handleSaveEvent = (eventData: Omit<Event, "id">) => {
-    console.log("Handling save event:", eventData);
     try {
       if (selectedEvent) {
         // Update existing event
@@ -106,7 +98,6 @@ export function WeekView() {
             : event
         );
         setEvents(updatedEvents);
-        console.log("Updated existing event:", updatedEvents);
       } else {
         // Create new event
         const newEvent = {
@@ -115,12 +106,7 @@ export function WeekView() {
           start: new Date(eventData.start),
           end: new Date(eventData.end)
         };
-        console.log("Created new event:", newEvent);
-        setEvents(prevEvents => {
-          const updatedEvents = [...prevEvents, newEvent];
-          console.log("Updated events array:", updatedEvents);
-          return updatedEvents;
-        });
+        setEvents(prevEvents => [...prevEvents, newEvent]);
       }
     } catch (error) {
       console.error('Error saving event:', error);
@@ -138,12 +124,11 @@ export function WeekView() {
       return {
         top: `${(startMinutes / 5) * 2}px`,
         height: `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
+        backgroundColor: event.color || '#3b82f6', // Use custom color or default
       };
     }
     return null;
   };
-
-  console.log("Rendering WeekView with events:", events);
 
   return (
     <div className="flex-1 overflow-hidden">
@@ -201,7 +186,6 @@ export function WeekView() {
                 {events.map((event) => {
                   const style = getEventStyle(event, dayIndex);
                   if (style) {
-                    console.log("Rendering event:", event);
                     return (
                       <div
                         key={event.id}

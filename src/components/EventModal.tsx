@@ -11,6 +11,7 @@ interface Event {
   title: string;
   start: Date;
   end: Date;
+  color?: string;
 }
 
 interface EventModalProps {
@@ -33,16 +34,19 @@ export function EventModal({
   const [title, setTitle] = useState("");
   const [startTime, setStartTime] = useState(selectedTime);
   const [endTime, setEndTime] = useState("");
+  const [color, setColor] = useState("#3b82f6"); // Default color
 
   useEffect(() => {
     if (event) {
       setTitle(event.title);
       setStartTime(event.start.toTimeString().slice(0, 5));
       setEndTime(event.end.toTimeString().slice(0, 5));
+      setColor(event.color || "#3b82f6");
     } else {
       setTitle("");
       setStartTime(selectedTime);
       setEndTime("");
+      setColor("#3b82f6");
     }
   }, [event, selectedTime]);
 
@@ -61,7 +65,8 @@ export function EventModal({
     onSave({
       title,
       start: startDate,
-      end: endDate
+      end: endDate,
+      color
     });
     
     onClose();
@@ -106,6 +111,16 @@ export function EventModal({
                 required
               />
             </div>
+          </div>
+          <div>
+            <Label htmlFor="color">色</Label>
+            <Input
+              id="color"
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="h-10 w-full"
+            />
           </div>
           <div className="flex justify-end space-x-2">
             <Button type="button" variant="outline" onClick={onClose}>
