@@ -28,13 +28,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BookCard from "./BookCard";
 import StatisticsDashboard from "./StatisticsDashboard";
 import ReadingChallenge from "./ReadingChallenge";
 import BookRecommendations from "./BookRecommendations";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import '../styles/BookShelf.css';
 
 const initialBookState: Omit<Book, "_id" | "createdAt"> = {
   title: "",
@@ -265,12 +268,41 @@ export default function BookShelf() {
           {view === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAndSortedBooks.map((book) => (
-                <BookCard
-                  key={book._id}
-                  book={book}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
+                <Card key={book._id} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle>{book.title}</CardTitle>
+                    <CardDescription>{book.author}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="circular-progress-container">
+                        <CircularProgressbar
+                          value={(book.readPages / book.totalPages) * 100}
+                          text={`${Math.round((book.readPages / book.totalPages) * 100)}%`}
+                        />
+                      </div>
+                      <div>
+                        <p>ページ: {book.readPages} / {book.totalPages}</p>
+                        <p>評価: {book.rating} / 5</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-2">カテゴリー: {book.category}</p>
+                    {book.notes && (
+                      <div className="mt-2">
+                        <h4 className="font-semibold">メモ:</h4>
+                        <p className="text-sm">{book.notes}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(book)}>
+                      編集
+                    </Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDelete(book._id)}>
+                      削除
+                    </Button>
+                  </CardFooter>
+                </Card>
               ))}
             </div>
           ) : (
@@ -452,3 +484,4 @@ export default function BookShelf() {
     </div>
   );
 }
+

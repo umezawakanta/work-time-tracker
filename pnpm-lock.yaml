@@ -86,6 +86,9 @@ importers:
       '@types/morgan':
         specifier: ^1.9.9
         version: 1.9.9
+      '@types/react-circular-progressbar':
+        specifier: ^1.1.0
+        version: 1.1.0(react@18.3.1)
       axios:
         specifier: ^1.7.7
         version: 1.7.8
@@ -167,6 +170,9 @@ importers:
       react-chartjs-2:
         specifier: ^5.2.0
         version: 5.2.0(chart.js@4.4.6)(react@18.3.1)
+      react-circular-progressbar:
+        specifier: ^2.1.0
+        version: 2.1.0(react@18.3.1)
       react-day-picker:
         specifier: ^8.10.1
         version: 8.10.1(date-fns@2.30.0)(react@18.3.1)
@@ -2382,6 +2388,10 @@ packages:
   '@types/react-chartjs-2@2.5.7':
     resolution: {integrity: sha512-waqYqiNULIVUqaKO7MGUpFmWrVtH7gVPOzqwV4y4zgUyu/JiDwC005PpveO442HKnby9kLgp3t1SB2sld+ACLw==}
     deprecated: This is a stub types definition for react-chartjs-2 (https://github.com/gor181/react-chartjs-2). react-chartjs-2 provides its own type definitions, so you don't need @types/react-chartjs-2 installed!
+
+  '@types/react-circular-progressbar@1.1.0':
+    resolution: {integrity: sha512-2FXFaD8KHF6r80cgwv5giB9rAJa/dwV1DiM9Ha+TLjEk2QTo2fD2v4eRakUD/8eQaepXM+9M45MOyn8kZze43w==}
+    deprecated: This is a stub types definition. react-circular-progressbar provides its own type definitions, so you do not need this installed.
 
   '@types/react-dom@18.3.1':
     resolution: {integrity: sha512-qW1Mfv8taImTthu4KoXgDfLuk4bydU6Q/TkADnDWWHwi4NX4BR+LWfTp2sVmTqRrsHvyDDTelgelxJ+SsejKKQ==}
@@ -4750,6 +4760,11 @@ packages:
     peerDependencies:
       chart.js: ^4.1.1
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
+
+  react-circular-progressbar@2.1.0:
+    resolution: {integrity: sha512-xp4THTrod4aLpGy68FX/k1Q3nzrfHUjUe5v6FsdwXBl3YVMwgeXYQKDrku7n/D6qsJA9CuunarAboC2xCiKs1g==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
   react-day-picker@8.10.1:
     resolution: {integrity: sha512-TMx7fNbhLk15eqcMt+7Z7S2KF7mfTId/XJDjKE8f+IUcFn0l08/kI4FiYTL/0yuOLmEcbR4Fwe3GJf/NiiMnPA==}
@@ -7944,6 +7959,12 @@ snapshots:
       - chart.js
       - react
 
+  '@types/react-circular-progressbar@1.1.0(react@18.3.1)':
+    dependencies:
+      react-circular-progressbar: 2.1.0(react@18.3.1)
+    transitivePeerDependencies:
+      - react
+
   '@types/react-dom@18.3.1':
     dependencies:
       '@types/react': 18.3.12
@@ -10584,6 +10605,10 @@ snapshots:
   react-chartjs-2@5.2.0(chart.js@4.4.6)(react@18.3.1):
     dependencies:
       chart.js: 4.4.6
+      react: 18.3.1
+
+  react-circular-progressbar@2.1.0(react@18.3.1):
+    dependencies:
       react: 18.3.1
 
   react-day-picker@8.10.1(date-fns@2.30.0)(react@18.3.1):
