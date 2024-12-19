@@ -12,7 +12,7 @@ interface Event {
   title: string;
   start: Date;
   end: Date;
-  color?: string; // Add color property
+  color?: string;
 }
 
 export function WeekView() {
@@ -29,7 +29,7 @@ export function WeekView() {
       const savedEvents = localStorage.getItem('calendar-events');
       if (savedEvents) {
         const parsedEvents = JSON.parse(savedEvents);
-        const eventsWithDates = parsedEvents.map((event: any) => ({
+        const eventsWithDates = parsedEvents.map((event: Omit<Event, 'start' | 'end'> & { start: string; end: string }) => ({
           ...event,
           start: new Date(event.start),
           end: new Date(event.end)
@@ -122,10 +122,10 @@ export function WeekView() {
       const endMinutes = event.end.getHours() * 60 + event.end.getMinutes();
       
       return {
-        top: `${(startMinutes / 5) * 2}px`,
-        height: `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
-        backgroundColor: event.color || '#3b82f6', // Use custom color or default
-      };
+        '--event-top': `${(startMinutes / 5) * 2}px`,
+        '--event-height': `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
+        '--event-color': event.color || '#3b82f6',
+      } as React.CSSProperties;
     }
     return null;
   };
@@ -189,7 +189,7 @@ export function WeekView() {
                     return (
                       <div
                         key={event.id}
-                        className="event cursor-pointer hover:opacity-75"
+                        className="event-item cursor-pointer hover:opacity-75"
                         style={style}
                         onClick={() => handleEventClick(event)}
                       >
