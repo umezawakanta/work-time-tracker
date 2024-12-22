@@ -5,8 +5,8 @@ import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from "react"
 
 interface CalendarHeaderProps {
-  view: 'week' | 'month';
-  onViewChange: (view: 'week' | 'month') => void;
+  view: 'day' | 'week' | 'month';
+  onViewChange: (view: 'day' | 'week' | 'month') => void;
 }
 
 export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
@@ -15,7 +15,9 @@ export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
   const goToToday = () => setCurrentDate(new Date())
   const previousPeriod = () => {
     const newDate = new Date(currentDate)
-    if (view === 'week') {
+    if (view === 'day') {
+      newDate.setDate(currentDate.getDate() - 1)
+    } else if (view === 'week') {
       newDate.setDate(currentDate.getDate() - 7)
     } else {
       newDate.setMonth(currentDate.getMonth() - 1)
@@ -24,7 +26,9 @@ export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
   }
   const nextPeriod = () => {
     const newDate = new Date(currentDate)
-    if (view === 'week') {
+    if (view === 'day') {
+      newDate.setDate(currentDate.getDate() + 1)
+    } else if (view === 'week') {
       newDate.setDate(currentDate.getDate() + 7)
     } else {
       newDate.setMonth(currentDate.getMonth() + 1)
@@ -42,18 +46,25 @@ export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={previousPeriod}>
             <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">前の{view === 'week' ? '週' : '月'}</span>
+            <span className="sr-only">前の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}</span>
           </Button>
           <Button variant="ghost" size="icon" onClick={nextPeriod}>
             <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">次の{view === 'week' ? '週' : '月'}</span>
+            <span className="sr-only">次の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}</span>
           </Button>
         </div>
         <h2 className="text-lg font-semibold">
-          {currentDate.toLocaleDateString("ja-JP", { year: "numeric", month: "long" })}
+          {currentDate.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
         </h2>
       </div>
       <div className="flex items-center gap-2">
+        <Button
+          variant={view === 'day' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => onViewChange('day')}
+        >
+          日
+        </Button>
         <Button
           variant={view === 'week' ? 'default' : 'outline'}
           size="sm"
