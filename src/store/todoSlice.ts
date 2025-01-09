@@ -13,14 +13,14 @@ export interface TodoItem {
 
 interface TodoState {
   items: TodoItem[];
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   todoHistory: Record<string, number>;
 }
 
 const initialState: TodoState = {
   items: [],
-  status: 'idle',
+  status: "idle",
   error: null,
   todoHistory: {},
 };
@@ -54,13 +54,12 @@ export const deleteTodoItem = createAsyncThunk(
   }
 );
 
-export const resetTodoList = createAsyncThunk(
-  "todo/resetTodoList",
-  async () => {
-    const response = await todoApi.reset();
-    return response.data;
-  }
-);
+
+
+export const resetTodoList = createAsyncThunk("todo/resetTodoList", async () => {
+  const response = await todoApi.reset();
+  return response.data;
+});
 
 export const reorderTodoItems = createAsyncThunk(
   "todo/reorderTodoItems",
@@ -82,22 +81,26 @@ const todoSlice = createSlice({
   name: "todo",
   initialState,
   reducers: {
-    updateTodoHistory: (state) => {
-      const today = new Date().toISOString().split('T')[0];
-      state.todoHistory[today] = (state.todoHistory[today] || 0) + 1;
+    // 引数を受け取る形に変更
+    updateTodoHistory: (
+      state,
+      action: { payload: { date: string; count: number } }
+    ) => {
+      const { date, count } = action.payload;
+      state.todoHistory[date] = count;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.items = action.payload;
       })
       .addCase(fetchTodoItems.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.error.message || null;
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {

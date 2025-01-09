@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +45,9 @@ export default function DailyTodoReminder() {
 
   useEffect(() => {
     if (todos.length > 0) {
-      dispatch(updateTodoHistory());
+      const completedCount = todos.filter((todo) => todo.completed).length;
+      const today = new Date().toISOString().split("T")[0];
+      dispatch(updateTodoHistory({ date: today, count: completedCount }));
     }
   }, [todos, dispatch]);
 
@@ -60,9 +64,9 @@ export default function DailyTodoReminder() {
         dispatch(
           updateTodoItem({
             _id: id,
-            updates: { 
+            updates: {
               completed: !todoToUpdate.completed,
-              completedDate: !todoToUpdate.completed ? new Date().toISOString() : null
+              completedDate: !todoToUpdate.completed ? new Date().toISOString() : null,
             },
           })
         );
@@ -71,15 +75,11 @@ export default function DailyTodoReminder() {
     [dispatch, todos]
   );
 
-  const handleReset = useCallback(() => {
-    dispatch(resetTodoList());
-  }, [dispatch]);
-
   const handleAddTodo = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       if (newTodo.trim()) {
-        const maxPriority = Math.max(...todos.filter(todo => !todo.completed).map(todo => todo.priority), 0);
+        const maxPriority = Math.max(...todos.map((todo) => todo.priority), 0);
         dispatch(addTodoItem({ task: newTodo.trim(), priority: maxPriority + 1, isPrioritized: false }));
         setNewTodo("");
       }
@@ -118,31 +118,30 @@ export default function DailyTodoReminder() {
   );
 
   const handleMoveTodo = useCallback(
-    (id: string, direction: 'up' | 'down') => {
-      const sortedTodos = [...todos].sort((a, b) => {
-        if (a.completed === b.completed) {
-          if (a.isPrioritized === b.isPrioritized) {
-            return a.priority - b.priority;
-          }
-          return a.isPrioritized ? -1 : 1;
-        }
-        return a.completed ? 1 : -1;
-      });
-      const index = sortedTodos.findIndex(todo => todo._id === id);
-      if ((direction === 'up' && index > 0) || (direction === 'down' && index < sortedTodos.length - 1)) {
-        const newIndex = direction === 'up' ? index - 1 : index + 1;
-        if (sortedTodos[index].completed === sortedTodos[newIndex].completed &&
-            sortedTodos[index].isPrioritized === sortedTodos[newIndex].isPrioritized) {
-          const updatedTodos = sortedTodos.map(todo => ({...todo}));
-          const temp = updatedTodos[index].priority;
-          updatedTodos[index].priority = updatedTodos[newIndex].priority;
-          updatedTodos[newIndex].priority = temp;
-          dispatch(reorderTodoItems(updatedTodos));
-        }
-      }
+    (id: string, direction: "up" | "down") => {
+      const index = todos.findIndex((todo) => todo._id === id);
+      if (index === -1) return;
+  
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= todos.length) return;
+  
+      // タスクの順番を変更
+      const updatedTodos = [...todos];
+      const [movedTodo] = updatedTodos.splice(index, 1); // 対象のタスクを削除
+      updatedTodos.splice(newIndex, 0, movedTodo); // 新しい位置に挿入
+  
+      // 優先度を再計算（順番通りの番号を付ける）
+      const recalculatedTodos = updatedTodos.map((todo, idx) => ({
+        ...todo,
+        priority: idx + 1,
+      }));
+  
+      // 更新したタスクリストをReduxストアに保存
+      dispatch(reorderTodoItems(recalculatedTodos));
     },
     [dispatch, todos]
   );
+  
 
   const handleTogglePriority = useCallback(
     (id: string) => {
@@ -170,10 +169,8 @@ export default function DailyTodoReminder() {
   return (
     <Card className="w-full mb-8">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          本日のToDoリスト
-        </CardTitle>
-        <Button variant="ghost" size="sm" onClick={handleReset}>
+        <CardTitle className="text-sm font-medium">本日のToDoリスト</CardTitle>
+        <Button variant="ghost" size="sm" onClick={() => dispatch(resetTodoList())}>
           <RefreshCcw className="h-4 w-4" />
         </Button>
       </CardHeader>
@@ -185,7 +182,7 @@ export default function DailyTodoReminder() {
             <TabsTrigger value="chart">グラフ</TabsTrigger>
           </TabsList>
           <TabsContent value="list">
-          <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
+            <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
               <Input
                 type="text"
                 value={newTodo}
@@ -209,17 +206,10 @@ export default function DailyTodoReminder() {
                         onChange={(e) => setEditingText(e.target.value)}
                         className="flex-grow"
                       />
-                      <Button
-                        size="sm"
-                        onClick={() => handleEditSave(todo._id)}
-                      >
+                      <Button size="sm" onClick={() => handleEditSave(todo._id)}>
                         <Check className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleEditCancel}
-                      >
+                      <Button size="sm" variant="outline" onClick={handleEditCancel}>
                         <X className="h-4 w-4" />
                       </Button>
                     </>
@@ -227,16 +217,12 @@ export default function DailyTodoReminder() {
                     <>
                       <Label
                         htmlFor={`todo-${todo._id}`}
-                        className={`flex-grow ${
-                          todo.completed
-                            ? "line-through text-gray-500"
-                            : ""
-                        }`}
+                        className={`flex-grow ${todo.completed ? "line-through text-gray-500" : ""}`}
                       >
                         {todo.task}
                       </Label>
                       <span className="text-sm text-gray-500">
-                        {todo.completedDate ? new Date(todo.completedDate).toLocaleDateString() : '未完了'}
+                        {todo.completedDate ? new Date(todo.completedDate).toLocaleDateString() : "未完了"}
                       </span>
                       <Button
                         size="sm"
@@ -249,33 +235,27 @@ export default function DailyTodoReminder() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleMoveTodo(todo._id, 'up')}
-                        disabled={index === 0 || (index > 0 && (todo.completed !== sortedTodos[index - 1].completed || todo.isPrioritized !== sortedTodos[index - 1].isPrioritized))}
+                        onClick={() => handleMoveTodo(todo._id, "up")}
+                        disabled={index === 0}
                       >
                         <ChevronUp className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleMoveTodo(todo._id, 'down')}
-                        disabled={index === sortedTodos.length - 1 || (index < sortedTodos.length - 1 && (todo.completed !== sortedTodos[index + 1].completed || todo.isPrioritized !== sortedTodos[index + 1].isPrioritized))}
+                        onClick={() => handleMoveTodo(todo._id, "down")}
+                        disabled={index === sortedTodos.length - 1}
                       >
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() =>
-                          handleEditStart(todo._id, todo.task)
-                        }
+                        onClick={() => handleEditStart(todo._id, todo.task)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDeleteTodo(todo._id)}
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => handleDeleteTodo(todo._id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </>
