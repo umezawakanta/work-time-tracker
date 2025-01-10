@@ -1,4 +1,3 @@
-// src/server/models/survey.ts
 import mongoose from "mongoose";
 
 const surveySchema = new mongoose.Schema({
@@ -8,7 +7,7 @@ const surveySchema = new mongoose.Schema({
   sampleSize: { type: Number }
 }, { timestamps: true });
 
-// 同じ日付の調査を重複して登録できないように制約を追加
-surveySchema.index({ surveyEndDate: 1 }, { unique: true });
+// 日付 + メディアをユニークに制約
+surveySchema.index({ surveyEndDate: 1, mediaOutlet: 1 }, { unique: true });
 
 export const Survey = mongoose.model("Survey", surveySchema);
