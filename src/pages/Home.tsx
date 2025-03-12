@@ -9,224 +9,267 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Clock, BarChart2, LineChart, Calendar, Database, 
+  FileText, UserCircle, Activity, Eye,
+  Briefcase, Twitter, Moon, PieChart, TrendingUp, Users,
+} from "lucide-react";
 import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import DailyTodoReminder from "@/components/DailyTodoReminder";
 import HabitTracker from "@/components/HabitTracker";
 
+// アニメーション設定は framer-motion がないため削除
+
+// FeatureCardコンポーネント
+const FeatureCard = ({ title, description, icon, path, buttonText, variant = "default" }) => (
+  <div>
+    <Card className="w-full h-full hover:shadow-lg transition-shadow duration-300 border-2 hover:border-primary">
+      <CardHeader className="flex flex-row items-center gap-4">
+        {icon}
+        <div>
+          <CardTitle className="text-xl">{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="mb-4 text-gray-600 dark:text-gray-300">
+          {description}
+        </p>
+        <Link to={path} className="w-full">
+          <Button variant={variant === "default" ? "default" : variant === "outline" ? "outline" : "secondary"} className="w-full flex items-center gap-2">
+            {buttonText} <span className="ml-1">→</span>
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  </div>
+);
 
 export default function Home() {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
 
+  // カテゴリー別の機能カード
+  const productivityTools = [
+    {
+      title: "効率的な時間管理",
+      description: "作業時間を記録し、生産性を向上させましょう。",
+      icon: <Clock className="h-6 w-6 text-primary" />,
+      path: "/work-time",
+      buttonText: "作業時間トラッカーを開始",
+      variant: "default"
+    },
+    {
+      title: "詳細な分析",
+      description: "作業時間のデータを可視化し、インサイトを得る",
+      icon: <BarChart2 className="h-6 w-6 text-indigo-500" />,
+      path: "/work-time-reports",
+      buttonText: "作業時間レポートを見る",
+      variant: "outline"
+    },
+    {
+      title: "WBS作成ツール",
+      description: "プロジェクトの作業分解構造を作成",
+      icon: <Briefcase className="h-6 w-6 text-emerald-500" />,
+      path: "/wbs-creator",
+      buttonText: "WBS作成ツールを開く",
+      variant: "secondary"
+    },
+    {
+      title: "睡眠トラッカー",
+      description: "睡眠パターンを記録・分析",
+      icon: <Moon className="h-6 w-6 text-blue-500" />,
+      path: "/sleep-tracker",
+      buttonText: "睡眠トラッカーを開く",
+      variant: "secondary"
+    },
+  ];
+
+  const financeTools = [
+    {
+      title: "資産/負債レポート",
+      description: "資産と負債の状況を分析",
+      icon: <Database className="h-6 w-6 text-emerald-500" />,
+      path: "/reports",
+      buttonText: "資産/負債レポートを見る",
+      variant: "secondary"
+    },
+    {
+      title: "資産増減カレンダー",
+      description: "日々の資産変動を視覚的に確認",
+      icon: <Calendar className="h-6 w-6 text-amber-500" />,
+      path: "/asset-calendar",
+      buttonText: "資産カレンダーを見る",
+      variant: "secondary"
+    },
+  ];
+
+  const politicalTools = [
+    {
+      title: "政党支持率トレンド",
+      description: "政党支持率の推移を分析",
+      icon: <TrendingUp className="h-6 w-6 text-blue-500" />,
+      path: "/political-trends",
+      buttonText: "政党支持率を見る",
+      variant: "secondary"
+    },
+    {
+      title: "衆議院選挙 候補者擁立状況",
+      description: "選挙候補者の情報を管理・閲覧",
+      icon: <Users className="h-6 w-6 text-red-500" />,
+      path: "/election-candidates",
+      buttonText: "候補者情報を見る",
+      variant: "default"
+    },
+  ];
+
+  const personalTools = [
+    {
+      title: "ブログ",
+      description: "生産性向上のヒントや体験談を共有",
+      icon: <FileText className="h-6 w-6 text-orange-500" />,
+      path: "/blog",
+      buttonText: "ブログを見る",
+      variant: "secondary"
+    },
+    {
+      title: "Twitter投稿",
+      description: "つぶやきを共有・記録",
+      icon: <Twitter className="h-6 w-6 text-sky-500" />,
+      path: "/twitter",
+      buttonText: "Twitter投稿を見る",
+      variant: "secondary"
+    },
+    {
+      title: "ユーザープロフィール",
+      description: "あなたの情報を管理",
+      icon: <UserCircle className="h-6 w-6 text-purple-500" />,
+      path: "/profile",
+      buttonText: "プロフィールを見る",
+      variant: "outline"
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        作業時間トラッカーへようこそ
-      </h1>
-      <div className="mt-8">
-        <HabitTracker />
-      </div>
-      <div className="mb-8">
-        <BalanceUpdateReminder
-          assetEntries={assetEntries}
-          debtEntries={debtEntries}
-        />
-        <DailyTodoReminder />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* ヒーローセクション */}
+      <section className="mb-12 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 shadow-sm">
+        <div className="text-center">
+          <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            作業時間トラッカーへようこそ
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            あなたの時間を最大限に活用し、生産性を向上させるための総合ツールです。
+            作業時間の記録から分析、資産管理、様々なトラッキングまで、すべてを一つのアプリで。
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button size="lg" className="rounded-full gap-2">
+              <Clock className="h-5 w-5" /> 今すぐ始める
+            </Button>
+            <Button size="lg" variant="outline" className="rounded-full gap-2">
+              <Eye className="h-5 w-5" /> ツアーを見る
+            </Button>
+          </div>
+        </div>
+      </section>
 
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>政党支持率トレンド</CardTitle>
-            <CardDescription>政党支持率の推移を分析</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              各政党の支持率推移をリアルタイムで確認できます。
-              トレンドを分析し、政治動向を把握することができます。
-            </p>
-            <Link to="/political-trends" className="w-full">
-              <Button variant="secondary" className="w-full">
-                政党支持率を見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      {/* リマインダーセクション */}
+      <section className="mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Card className="h-full shadow-sm border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  習慣トラッカー
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <HabitTracker />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <BalanceUpdateReminder
+                assetEntries={assetEntries}
+                debtEntries={debtEntries}
+              />
+            </div>
+            <div>
+              <DailyTodoReminder />
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>効率的な時間管理</CardTitle>
-            <CardDescription>
-              作業時間を記録し、生産性を向上させましょう。
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              プロジェクトごとに作業時間を追跡し、効率的に時間を管理することで、
-              生産性を最大化し、目標達成をサポートします。
-            </p>
-            <Link to="/work-time" className="w-full">
-              <Button className="w-full">作業時間トラッカーを開始</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>詳細な分析</CardTitle>
-            <CardDescription>
-              作業時間のデータを可視化し、インサイトを得る
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              記録した作業時間をグラフや表で分析し、時間の使い方を最適化。
-              プロジェクトの進捗状況を把握し、改善点を見つけることができます。
-            </p>
-            <Link to="/work-time-reports" className="w-full">
-              <Button variant="outline" className="w-full">
-                作業時間レポートを見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>資産/負債レポート</CardTitle>
-            <CardDescription>資産と負債の状況を分析</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              資産と負債の推移を確認し、財務状況を把握できます。
-              グラフや表を使って、長期的な傾向を分析することができます。
-            </p>
-            <Link to="/reports" className="w-full">
-              <Button variant="secondary" className="w-full">
-                資産/負債レポートを見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>資産増減カレンダー</CardTitle>
-            <CardDescription>日々の資産変動を視覚的に確認</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              カレンダー形式で資産の増減を確認できます。
-              日々の変動を色分けして表示し、資産管理を視覚的にサポートします。
-            </p>
-            <Link to="/asset-calendar" className="w-full">
-              <Button variant="secondary" className="w-full">
-                資産カレンダーを見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>衆議院選挙 候補者擁立状況</CardTitle>
-            <CardDescription>選挙候補者の情報を管理・閲覧</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              衆議院選挙の候補者情報を登録・管理できます。
-              政党別、選挙区別の候補者一覧を簡単に確認することができます。
-            </p>
-            <Link to="/election-candidates" className="w-full">
-              <Button variant="default" className="w-full">
-                候補者情報を見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>睡眠トラッカー</CardTitle>
-            <CardDescription>睡眠パターンを記録・分析</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              起床時間と就寝時間を記録し、睡眠パターンを可視化します。
-              グラフやカレンダーで睡眠習慣を分析し、より良い睡眠を目指しましょう。
-            </p>
-            <Link to="/sleep-tracker" className="w-full">
-              <Button variant="secondary" className="w-full">
-                睡眠トラッカーを開く
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>ブログ</CardTitle>
-            <CardDescription>生産性向上のヒントや体験談を共有</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              時間管理や生産性向上に関する記事を読んだり、自分の経験を共有したりできます。
-              他のユーザーとアイデアを交換し、互いに学び合いましょう。
-            </p>
-            <Link to="/blog" className="w-full">
-              <Button variant="secondary" className="w-full">
-                ブログを見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>ユーザープロフィール</CardTitle>
-            <CardDescription>あなたの情報を管理</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              ユーザー情報の確認や更新ができます。
-              名前やメールアドレスなど、プロフィール情報を最新の状態に保ちましょう。
-            </p>
-            <Link to="/profile" className="w-full">
-              <Button variant="outline" className="w-full">
-                プロフィールを見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>WBS作成ツール</CardTitle>
-            <CardDescription>プロジェクトの作業分解構造を作成</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              プロジェクトの作業を階層的に分解し、視覚化します。
-              効率的なプロジェクト管理と進捗把握に役立ちます。
-            </p>
-            <Link to="/wbs-creator" className="w-full">
-              <Button variant="secondary" className="w-full">
-                WBS作成ツールを開く
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Twitter投稿</CardTitle>
-            <CardDescription>つぶやきを共有・記録</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4">
-              日々の思いや気づきをTwitter形式で投稿し、記録することができます。
-              自分の成長や変化を振り返るのに役立ちます。
-            </p>
-            <Link to="/twitter" className="w-full">
-              <Button variant="secondary" className="w-full">
-                Twitter投稿を見る
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-      </div>
+      {/* 機能タブセクション */}
+      <section>
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          あなたのためのツール
+        </h2>
+        
+        <Tabs defaultValue="productivity" className="w-full">
+          <div className="flex justify-center mb-8">
+            <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+              <TabsTrigger value="productivity" className="flex items-center gap-2">
+                <Clock className="h-4 w-4" /> 生産性
+              </TabsTrigger>
+              <TabsTrigger value="finance" className="flex items-center gap-2">
+                <LineChart className="h-4 w-4" /> 資産管理
+              </TabsTrigger>
+              <TabsTrigger value="political" className="flex items-center gap-2">
+                <PieChart className="h-4 w-4" /> 政治分析
+              </TabsTrigger>
+              <TabsTrigger value="personal" className="flex items-center gap-2">
+                <UserCircle className="h-4 w-4" /> パーソナル
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          
+          <TabsContent value="productivity">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {productivityTools.map((tool, index) => (
+                <FeatureCard key={`productivity-${index}`} {...tool} />
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="finance">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {financeTools.map((tool, index) => (
+                <FeatureCard key={`finance-${index}`} {...tool} />
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="political">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {politicalTools.map((tool, index) => (
+                <FeatureCard key={`political-${index}`} {...tool} />
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="personal">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {personalTools.map((tool, index) => (
+                <FeatureCard key={`personal-${index}`} {...tool} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+      
+      {/* CTAセクション */}
+      <section className="mt-16 text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8">
+        <h2 className="text-3xl font-bold mb-4">もっと効率的な日々へ</h2>
+        <p className="text-lg mb-6 max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+          ワンクリックであなたの生活を最適化。今すぐ始めて、時間の使い方をコントロールしましょう。
+        </p>
+        <Button size="lg" className="rounded-full">今すぐ始める</Button>
+      </section>
     </div>
   );
 }
