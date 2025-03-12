@@ -6,6 +6,7 @@
     "noImplicitAny": false,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "types": ["node", "vite/client"],
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
