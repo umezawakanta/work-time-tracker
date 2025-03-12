@@ -97,3 +97,4 @@ const userSlice = createSlice({
 
 // アクションをエクスポート
 export const { updateLastReminderDate } = userSlice.actions;
+export default userSlice.reducer;
