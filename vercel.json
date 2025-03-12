@@ -1,8 +1,8 @@
 {
     "version": 2,
+    "framework": "vite",
     "buildCommand": "pnpm run build",
     "outputDirectory": "dist",
-    "framework": "vite",
     "builds": [
       {
         "src": "src/server/server.ts",
@@ -12,8 +12,7 @@
         "src": "package.json",
         "use": "@vercel/static-build",
         "config": {
-          "distDir": "dist",
-          "buildCommand": "pnpm run build"
+          "distDir": "dist"
         }
       }
     ],
@@ -23,18 +22,15 @@
         "dest": "src/server/server.ts"
       },
       {
-        "src": "/(.*)",
-        "dest": "/dist/$1"
-      },
-      {
         "src": "/assets/(.*)",
-        "dest": "/dist/assets/$1"
+        "headers": { "cache-control": "public, max-age=31536000, immutable" },
+        "continue": true
       },
       {
         "handle": "filesystem"
       },
       {
-        "src": "/.*",
+        "src": "/(.*)",
         "dest": "/index.html"
       }
     ]
