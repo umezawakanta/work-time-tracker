@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const USE_MOCK_DATA = false;
+export const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === "true";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api",
 });
 
 // Add a request interceptor
