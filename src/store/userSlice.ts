@@ -1,22 +1,25 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserProfile, updateUserProfile } from '@/services/api/authApi';
 
+// UserState インターフェースに lastReminderDate を追加
 interface UserState {
   id: string | null;
   name: string;
   email: string;
   isLoading: boolean;
   error: string | null;
+  lastReminderDate: string | null; // 追加
 }
 
+// 初期状態に lastReminderDate を追加
 const initialState: UserState = {
   id: null,
   name: '',
   email: '',
   isLoading: false,
   error: null,
+  lastReminderDate: null, // 追加
 };
-
 export const fetchUserProfile = createAsyncThunk(
   'user/fetchProfile',
   async (_, { rejectWithValue }) => {
@@ -47,10 +50,15 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+// reducers に updateLastReminderDate アクションを追加
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    updateLastReminderDate: (state, action) => {
+      state.lastReminderDate = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserProfile.pending, (state) => {
@@ -87,4 +95,5 @@ const userSlice = createSlice({
   },
 });
 
-export default userSlice.reducer;
+// アクションをエクスポート
+export const { updateLastReminderDate } = userSlice.actions;
