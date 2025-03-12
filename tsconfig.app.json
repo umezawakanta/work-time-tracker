@@ -16,6 +16,7 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
+    "noImplicitAny": false,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
