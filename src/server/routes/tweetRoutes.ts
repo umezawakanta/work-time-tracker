@@ -23,8 +23,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/', authMiddleware, upload.single('image'), createTweet);
-router.get('/', authMiddleware, getTweets);
-router.put('/:id', authMiddleware, updateTweet);  // 新しいルートを追加
+router.post('/', authMiddleware, upload.single('image'), createTweet as any);
+router.get('/', authMiddleware, getTweets as any);
+router.put('/:id', authMiddleware, updateTweet as any);
 
 export default router;
