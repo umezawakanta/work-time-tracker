@@ -12,6 +12,10 @@ interface HabitDocument extends mongoose.Document {
   data: Map<string, boolean[]>;
   createdAt: Date;
   updatedAt: Date;
+  
+  // Mongoose Document メソッドを追加
+  markModified(path: string): void;
+  save(): Promise<HabitDocument>;
 }
 
 export const getHabits = async (req: AuthRequest, res: Response) => {
