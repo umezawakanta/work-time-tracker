@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
+    "noImplicitThis": false,
     "noImplicitAny": false,
     "module": "ESNext",
     "moduleResolution": "bundler",

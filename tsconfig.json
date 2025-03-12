@@ -9,6 +9,7 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
+    "noImplicitThis": false,
     "noImplicitAny": false,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,

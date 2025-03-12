@@ -7,7 +7,7 @@ export interface IAssetEntry extends mongoose.Document {
   createdAt: Date;
 
   // save メソッドを追加
-  save(): Promise<IAssetEntry>;
+  save(): Promise<this>;
 }
 
 const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
