@@ -53,13 +53,13 @@ export function MonthView() {
     }
   }, [events]);
 
-  const getDaysInMonth = (date: Date) => {
+  const getDaysInMonth = (date: Date): (Date | null)[] => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     
-    const days = [];
+    const days: (Date | null)[] = [];
     for (let i = 0; i < firstDay.getDay(); i++) {
       days.push(null);
     }

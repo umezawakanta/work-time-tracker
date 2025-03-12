@@ -115,7 +115,7 @@ export function formatDuration(seconds: number): string {
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
 
-  const parts = [];
+  const parts: string[] = []; // 型を明示的に宣言
   if (hours > 0) parts.push(`${hours}時間`);
   if (minutes > 0) parts.push(`${minutes}分`);
   if (remainingSeconds > 0 || parts.length === 0)
