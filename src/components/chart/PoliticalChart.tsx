@@ -55,30 +55,29 @@ interface SurveyResponseData {
   >;
 }
 
-// カスタムツールチップコンポーネント
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip bg-gray-900 bg-opacity-90 p-4 rounded-md shadow-lg border border-gray-700">
-        <p className="label text-gray-200 font-semibold text-base mb-2">
+      <div className="bg-gray-900 bg-opacity-90 p-4 rounded-lg shadow-xl border border-gray-700">
+        <p className="text-lg font-bold text-white mb-3">
           {label}
         </p>
         <div className="flex flex-col gap-2">
           {payload.map((entry, index) => (
             <div
               key={`item-${index}`}
-              className="flex justify-between items-center gap-4"
+              className="flex justify-between items-center gap-4 text-gray-300"
             >
               <div className="flex items-center">
                 <div
-                  className="colorIndicator"
+                  className="w-3 h-3 mr-2 rounded-full"
                   style={{ backgroundColor: entry.stroke }}
                 />
-                <span className="text-gray-200 text-sm font-medium">
+                <span className="font-medium">
                   {entry.name.split("(")[0]}
                 </span>
               </div>
-              <span className="text-gray-200 font-bold text-base">
+              <span className="font-bold text-base text-white">
                 {entry.value ? `${entry.value.toFixed(1)}%` : "-"}
               </span>
             </div>
@@ -287,11 +286,11 @@ const PoliticalChart = () => {
       // 最新の支持率
       const latestValue = latestData[partyKey] as number;
 
-      // 支持率が5%以上の場合にのみラベルを表示
-      const showLabel =
+      // 5%以上の政党にのみラベルを表示
+      const shouldShowLabel =
+        latestValue >= 3 ||
         party.shortName === "自民" ||
-        party.shortName === "立民" ||
-        latestValue >= 5;
+        party.shortName === "立民";
 
       lines.push(
         <Line
@@ -301,10 +300,18 @@ const PoliticalChart = () => {
           name={`${party.name}(${mediaOutlet})`}
           stroke={party.colorCode}
           strokeWidth={3}
-          dot={{ r: 4, strokeWidth: 1 }}
-          activeDot={{ r: 6, strokeWidth: 2 }}
+          dot={{
+            r: 6,
+            strokeWidth: 2,
+            fill: party.colorCode,
+          }}
+          activeDot={{
+            r: 8,
+            strokeWidth: 3,
+            fill: party.colorCode,
+          }}
           label={
-            showLabel
+            shouldShowLabel
               ? {
                   position: "top",
                   fill: party.colorCode,
@@ -352,24 +359,37 @@ const PoliticalChart = () => {
                     strokeOpacity={0.3}
                   />
                   <XAxis
-                    dataKey="monthDate" // fullDateの代わりにmonthDateを使用
-                    stroke="#ddd"
-                    tick={{ fill: "#ddd", fontSize: 14 }}
+                    dataKey="monthDate"
+                    className="text-foreground"
+                    tick={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                    axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                    tickLine={{ stroke: "#666" }}
                     angle={-45}
                     textAnchor="end"
                     tickMargin={15}
                     interval={0}
                   />
                   <YAxis
-                    stroke="#ddd"
-                    tick={{ fill: "#ddd", fontSize: 14 }}
+                    className="text-foreground"
+                    tick={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                    axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                    tickLine={{ stroke: "#666" }}
                     domain={[0, 50]}
                     tickCount={11}
                     label={{
                       value: "支持率 (%)",
                       angle: -90,
                       position: "insideLeft",
-                      style: { fill: "#ddd", fontSize: 14 },
+                      style: {
+                        fontSize: 14,
+                        fontWeight: 600,
+                      },
                     }}
                   />
                   <Tooltip content={<CustomTooltip />} />
