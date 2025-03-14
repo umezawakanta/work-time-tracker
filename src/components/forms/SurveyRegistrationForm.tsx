@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { surveyApi } from '@/services/api/surveyApi';
-import { Survey, SupportRate, PoliticalParty } from '@/types/survey';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Save, PlusCircle, RefreshCw, Trash2 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { surveyApi } from "@/services/api/surveyApi";
+import { Survey, SupportRate, PoliticalParty } from "@/types/survey";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Save, PlusCircle, RefreshCw, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,23 +24,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
+
+// Extend the basic Survey type to include possible API response variations
+type SurveyResponse =
+  | { survey: Survey; supportRates?: SupportRate[] }
+  | (Survey & { supportRates?: SupportRate[] })
+  | { surveys?: Survey[] }
+  | Survey[];
 
 interface SurveyFormData {
-  survey: Omit<Survey, '_id'>;
-  supportRates: Omit<SupportRate, '_id' | 'surveyId'>[];
+  survey: Omit<Survey, "_id">;
+  supportRates: Omit<SupportRate, "_id" | "surveyId">[];
 }
 
 export const SurveyRegistrationForm = () => {
-  const [activeTab, setActiveTab] = useState('create');
+  const [activeTab, setActiveTab] = useState("create");
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
   const [supportRates, setSupportRates] = useState<SupportRate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<SurveyFormData>();
+  const [error, setError] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<SurveyFormData>();
 
   // 政党情報の取得
   useEffect(() => {
@@ -51,7 +64,7 @@ export const SurveyRegistrationForm = () => {
         setParties(response.data);
         setIsLoading(false);
       } catch (err) {
-        setError('政党情報の取得に失敗しました');
+        setError("政党情報の取得に失敗しました");
         setIsLoading(false);
         console.error(err);
       }
@@ -61,60 +74,259 @@ export const SurveyRegistrationForm = () => {
 
   // 既存の調査結果の取得
   useEffect(() => {
-    if (activeTab === 'update') {
+    if (activeTab === "update") {
       const fetchSurveys = async () => {
         try {
           setIsLoading(true);
           const response = await surveyApi.getAll();
-          // 調査データだけをリストに追加
-          const allSurveys = response.data.map(item => item.survey);
+          console.log("Survey API response:", response.data);
+
+          // レスポンスの形式をチェックして適切に処理
+          let allSurveys: Survey[] = [];
+
+          const data = response.data as SurveyResponse;
+
+          const extractSurveys = (input: unknown): Survey[] => {
+            // 直接Surveyオブジェクトかどうかをチェックする型ガード関数
+            const isSurvey = (item: unknown): item is Survey => {
+              return (
+                item !== null &&
+                typeof item === "object" &&
+                "_id" in item &&
+                "mediaOutlet" in item &&
+                "surveyStartDate" in item &&
+                "surveyEndDate" in item
+              );
+            };
+
+            // サーベイアイテムを処理する関数
+            const processItem = (item: unknown): Survey | null => {
+              // 直接Surveyオブジェクトの場合
+              if (isSurvey(item)) {
+                return item;
+              }
+
+              // { survey: Survey } 形式の場合
+              if (item && typeof item === "object" && "survey" in item) {
+                const surveyItem = (item as { survey: unknown }).survey;
+                return isSurvey(surveyItem) ? surveyItem : null;
+              }
+
+              return null;
+            };
+
+            // 配列の場合
+            if (Array.isArray(input)) {
+              // nullでないSurveyのみをフィルタリング
+              return input
+                .map(processItem)
+                .filter((survey): survey is Survey => survey !== null);
+            }
+
+            // オブジェクトの場合
+            if (input && typeof input === "object") {
+              // surveysプロパティがある場合
+              if (
+                "surveys" in input &&
+                Array.isArray((input as { surveys: unknown[] }).surveys)
+              ) {
+                const surveys = (input as { surveys: unknown[] }).surveys;
+                return surveys
+                  .map(processItem)
+                  .filter((survey): survey is Survey => survey !== null);
+              }
+
+              // オブジェクトのキーを探索
+              const keys = Object.keys(input);
+              for (const key of keys) {
+                const value = (input as Record<string, unknown>)[key];
+                if (Array.isArray(value)) {
+                  const processedSurveys = value
+                    .map(processItem)
+                    .filter((survey): survey is Survey => survey !== null);
+
+                  if (processedSurveys.length > 0) {
+                    return processedSurveys;
+                  }
+                }
+              }
+            }
+
+            return [];
+          };
+
+          allSurveys = extractSurveys(data);
+
+          if (allSurveys.length === 0) {
+            console.warn("No surveys found in response", response.data);
+            setError("調査データが見つかりませんでした");
+          }
+
           setSurveys(allSurveys);
           setIsLoading(false);
         } catch (err) {
-          setError('調査結果の取得に失敗しました');
+          setError("調査結果の取得に失敗しました");
           setIsLoading(false);
-          console.error(err);
+          console.error("Error fetching surveys:", err);
         }
       };
       fetchSurveys();
     }
   }, [activeTab]);
 
+  // ヘルパー関数で型ガードを行う
+  const isSurvey = (item: unknown): item is Survey => {
+    return (
+      item !== null &&
+      typeof item === "object" &&
+      "_id" in item &&
+      "mediaOutlet" in item &&
+      "surveyStartDate" in item &&
+      "surveyEndDate" in item
+    );
+  };
+
+  const extractSurveys = (input: unknown): Survey[] => {
+    // 最終的にSurveyの配列を返すための関数
+    const processItem = (item: unknown): Survey | null => {
+      // 直接Surveyオブジェクトの場合
+      if (isSurvey(item)) {
+        return item;
+      }
+
+      // { survey: Survey } 形式の場合
+      if (item && typeof item === "object" && "survey" in item) {
+        const surveyItem = (item as { survey: unknown }).survey;
+        return isSurvey(surveyItem) ? surveyItem : null;
+      }
+
+      return null;
+    };
+
+    // 配列の場合
+    if (Array.isArray(input)) {
+      return input
+        .map(processItem)
+        .filter((survey): survey is Survey => survey !== null);
+    }
+
+    // オブジェクトの場合
+    if (input && typeof input === "object") {
+      // surveysプロパティがある場合
+      if (
+        "surveys" in input &&
+        Array.isArray((input as { surveys: unknown[] }).surveys)
+      ) {
+        const surveys = (input as { surveys: unknown[] }).surveys;
+        return surveys
+          .map(processItem)
+          .filter((survey): survey is Survey => survey !== null);
+      }
+
+      // オブジェクトのキーを探索
+      const keys = Object.keys(input);
+      for (const key of keys) {
+        const value = (input as Record<string, unknown>)[key];
+        if (Array.isArray(value)) {
+          const processedSurveys = value
+            .map(processItem)
+            .filter((survey): survey is Survey => survey !== null);
+          if (processedSurveys.length > 0) {
+            return processedSurveys;
+          }
+        }
+      }
+    }
+
+    return [];
+  };
+
   // 調査詳細の取得
   const fetchSurveyDetails = async (surveyId: string) => {
     try {
       setIsLoading(true);
       const response = await surveyApi.getById(surveyId);
-      setSelectedSurvey(response.data.survey);
-      setSupportRates(response.data.supportRates);
-      
+      console.log("Survey details response:", response.data);
+
+      // レスポンスから適切なデータを抽出
+      let surveyData: Survey | null = null;
+      let ratesData: SupportRate[] = [];
+
+      const processItem = (item: unknown): Survey | null => {
+        // 直接Surveyオブジェクトの場合
+        if (isSurvey(item)) {
+          return item;
+        }
+
+        // { survey: Survey } 形式の場合
+        if (item && typeof item === "object" && "survey" in item) {
+          const surveyItem = (item as { survey: unknown }).survey;
+          return isSurvey(surveyItem) ? surveyItem : null;
+        }
+
+        return null;
+      };
+
+      // データ処理
+      const data = response.data;
+      if (data) {
+        surveyData = processItem(data);
+
+        // supportRatesを取得
+        if (data && typeof data === "object" && "supportRates" in data) {
+          ratesData = Array.isArray(
+            (data as { supportRates: SupportRate[] }).supportRates
+          )
+            ? (data as { supportRates: SupportRate[] }).supportRates
+            : [];
+        }
+      }
+
+      if (!surveyData) {
+        throw new Error("無効な調査データ");
+      }
+
+      setSelectedSurvey(surveyData);
+      setSupportRates(ratesData);
+
       // フォームに値をセット
-      setValue('survey.mediaOutlet', response.data.survey.mediaOutlet);
-      setValue('survey.surveyStartDate', formatDateForInput(response.data.survey.surveyStartDate));
-      setValue('survey.surveyEndDate', formatDateForInput(response.data.survey.surveyEndDate));
+      setValue("survey.mediaOutlet", surveyData.mediaOutlet);
+      setValue(
+        "survey.surveyStartDate",
+        formatDateForInput(surveyData.surveyStartDate)
+      );
+      setValue(
+        "survey.surveyEndDate",
+        formatDateForInput(surveyData.surveyEndDate)
+      );
 
       // 支持率データをセット
-      response.data.supportRates.forEach((rate) => {
-        const index = parties.findIndex(party => party._id === rate.partyId);
+      ratesData.forEach((rate) => {
+        const index = parties.findIndex((party) => party._id === rate.partyId);
         if (index !== -1) {
           setValue(`supportRates.${index}.partyId`, rate.partyId);
           setValue(`supportRates.${index}.supportRate`, rate.supportRate);
           setValue(`supportRates.${index}.rateChange`, rate.rateChange || 0);
         }
       });
-      
+
       setIsLoading(false);
     } catch (err) {
-      setError('調査詳細の取得に失敗しました');
+      setError("調査詳細の取得に失敗しました");
       setIsLoading(false);
-      console.error(err);
+      console.error("Error fetching survey details:", err);
     }
   };
 
   // 日付フォーマット変換（YYYY-MM-DD形式に）
   const formatDateForInput = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    try {
+      const date = new Date(dateString);
+      return date.toISOString().split("T")[0];
+    } catch (err) {
+      console.error("Date formatting error:", err);
+      return "";
+    }
   };
 
   // 新規登録処理
@@ -126,7 +338,7 @@ export const SurveyRegistrationForm = () => {
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
-      console.error(err);
+      console.error("Error creating survey:", err);
       // toast通知はAPI内部で処理
     }
   };
@@ -134,21 +346,30 @@ export const SurveyRegistrationForm = () => {
   // 更新処理
   const handleUpdate = async (data: SurveyFormData) => {
     if (!selectedSurvey) {
-      setError('更新する調査を選択してください');
+      setError("更新する調査を選択してください");
       return;
     }
 
     try {
       setIsLoading(true);
-      await surveyApi.update(selectedSurvey._id, data.survey, data.supportRates);
+      await surveyApi.update(
+        selectedSurvey._id,
+        data.survey,
+        data.supportRates
+      );
       setIsLoading(false);
-      
+
       // 調査一覧を更新
       const response = await surveyApi.getAll();
-      setSurveys(response.data.map(item => item.survey));
+
+      // レスポンスの形式をチェックして適切に処理
+      const apiData = response.data as SurveyResponse;
+      const allSurveys = extractSurveys(apiData);
+
+      setSurveys(allSurveys);
     } catch (err) {
       setIsLoading(false);
-      console.error(err);
+      console.error("Error updating survey:", err);
       // toast通知はAPI内部で処理
     }
   };
@@ -156,34 +377,39 @@ export const SurveyRegistrationForm = () => {
   // 削除処理
   const handleDelete = async () => {
     if (!selectedSurvey) {
-      setError('削除する調査を選択してください');
+      setError("削除する調査を選択してください");
       return;
     }
 
     try {
       setIsLoading(true);
       await surveyApi.deleteSurvey(selectedSurvey._id);
-      
+
       // 削除後はフォームをリセットし、リストを更新
       reset();
       setSelectedSurvey(null);
       setSupportRates([]);
-      
+
       // 調査一覧を更新
       const response = await surveyApi.getAll();
-      setSurveys(response.data.map(item => item.survey));
-      
+
+      // レスポンスの形式をチェックして適切に処理
+      const apiData = response.data as SurveyResponse;
+      const allSurveys = extractSurveys(apiData);
+
+      setSurveys(allSurveys);
+
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
-      console.error(err);
+      console.error("Error deleting survey:", err);
       // toast通知はAPI内部で処理
     }
   };
 
   // タブに応じた送信処理
   const onSubmit = (data: SurveyFormData) => {
-    if (activeTab === 'create') {
+    if (activeTab === "create") {
       handleCreate(data);
     } else {
       handleUpdate(data);
@@ -194,6 +420,8 @@ export const SurveyRegistrationForm = () => {
   const handleSurveySelect = (surveyId: string) => {
     fetchSurveyDetails(surveyId);
   };
+
+  // ... (rest of the component remains the same)
 
   return (
     <div className="space-y-4">
@@ -214,33 +442,49 @@ export const SurveyRegistrationForm = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium">メディア</label>
-                <Input 
-                  {...register('survey.mediaOutlet', { required: 'メディア名は必須です' })} 
+                <Input
+                  {...register("survey.mediaOutlet", {
+                    required: "メディア名は必須です",
+                  })}
                   placeholder="例: NHK、読売新聞"
                 />
                 {errors.survey?.mediaOutlet && (
-                  <p className="text-sm text-red-500 mt-1">{errors.survey.mediaOutlet.message}</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.survey.mediaOutlet.message}
+                  </p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">調査開始日</label>
-                  <Input 
-                    {...register('survey.surveyStartDate', { required: '調査開始日は必須です' })} 
-                    type="date" 
+                  <label className="block text-sm font-medium">
+                    調査開始日
+                  </label>
+                  <Input
+                    {...register("survey.surveyStartDate", {
+                      required: "調査開始日は必須です",
+                    })}
+                    type="date"
                   />
                   {errors.survey?.surveyStartDate && (
-                    <p className="text-sm text-red-500 mt-1">{errors.survey.surveyStartDate.message}</p>
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.survey.surveyStartDate.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">調査終了日</label>
-                  <Input 
-                    {...register('survey.surveyEndDate', { required: '調査終了日は必須です' })} 
-                    type="date" 
+                  <label className="block text-sm font-medium">
+                    調査終了日
+                  </label>
+                  <Input
+                    {...register("survey.surveyEndDate", {
+                      required: "調査終了日は必須です",
+                    })}
+                    type="date"
                   />
                   {errors.survey?.surveyEndDate && (
-                    <p className="text-sm text-red-500 mt-1">{errors.survey.surveyEndDate.message}</p>
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.survey.surveyEndDate.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -249,14 +493,25 @@ export const SurveyRegistrationForm = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-medium">支持率データ</h3>
               {parties.map((party, index) => (
-                <div key={party._id} className="grid grid-cols-2 gap-4 p-2 border rounded hover:bg-gray-50">
+                <div
+                  key={party._id}
+                  className="grid grid-cols-2 gap-4 p-2 border rounded hover:bg-gray-50"
+                >
                   <div>
-                    <label className="block text-sm font-medium">{party.name}</label>
+                    <label className="block text-sm font-medium">
+                      {party.name}
+                    </label>
                     <Input
-                      {...register(`supportRates.${index}.supportRate`, { 
+                      {...register(`supportRates.${index}.supportRate`, {
                         required: `${party.name}の支持率は必須です`,
-                        min: { value: 0, message: '0以上の値を入力してください' },
-                        max: { value: 100, message: '100以下の値を入力してください' }
+                        min: {
+                          value: 0,
+                          message: "0以上の値を入力してください",
+                        },
+                        max: {
+                          value: 100,
+                          message: "100以下の値を入力してください",
+                        },
                       })}
                       type="number"
                       step="0.1"
@@ -267,24 +522,36 @@ export const SurveyRegistrationForm = () => {
                       {...register(`supportRates.${index}.partyId`)}
                       value={party._id}
                     />
-                    {errors.supportRates && errors.supportRates[index]?.supportRate && (
-                      <p className="text-sm text-red-500 mt-1">{errors.supportRates[index]?.supportRate?.message}</p>
-                    )}
+                    {errors.supportRates &&
+                      errors.supportRates[index]?.supportRate && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.supportRates[index]?.supportRate?.message}
+                        </p>
+                      )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium">前回比</label>
                     <Input
                       {...register(`supportRates.${index}.rateChange`, {
-                        min: { value: -100, message: '-100以上の値を入力してください' },
-                        max: { value: 100, message: '100以下の値を入力してください' }
+                        min: {
+                          value: -100,
+                          message: "-100以上の値を入力してください",
+                        },
+                        max: {
+                          value: 100,
+                          message: "100以下の値を入力してください",
+                        },
                       })}
                       type="number"
                       step="0.1"
                       placeholder="±0.0"
                     />
-                    {errors.supportRates && errors.supportRates[index]?.rateChange && (
-                      <p className="text-sm text-red-500 mt-1">{errors.supportRates[index]?.rateChange?.message}</p>
-                    )}
+                    {errors.supportRates &&
+                      errors.supportRates[index]?.rateChange && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.supportRates[index]?.rateChange?.message}
+                        </p>
+                      )}
                   </div>
                 </div>
               ))}
@@ -315,7 +582,9 @@ export const SurveyRegistrationForm = () => {
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">更新する調査を選択</label>
+            <label className="block text-sm font-medium mb-2">
+              更新する調査を選択
+            </label>
             <Select onValueChange={handleSurveySelect} disabled={isLoading}>
               <SelectTrigger>
                 <SelectValue placeholder="調査を選択してください" />
@@ -323,7 +592,8 @@ export const SurveyRegistrationForm = () => {
               <SelectContent>
                 {surveys.map((survey) => (
                   <SelectItem key={survey._id} value={survey._id}>
-                    {survey.mediaOutlet} ({formatDateForInput(survey.surveyEndDate)})
+                    {survey.mediaOutlet} (
+                    {formatDateForInput(survey.surveyEndDate)})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -335,33 +605,51 @@ export const SurveyRegistrationForm = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium">メディア</label>
-                    <Input 
-                      {...register('survey.mediaOutlet', { required: 'メディア名は必須です' })} 
+                    <label className="block text-sm font-medium">
+                      メディア
+                    </label>
+                    <Input
+                      {...register("survey.mediaOutlet", {
+                        required: "メディア名は必須です",
+                      })}
                     />
                     {errors.survey?.mediaOutlet && (
-                      <p className="text-sm text-red-500 mt-1">{errors.survey.mediaOutlet.message}</p>
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.survey.mediaOutlet.message}
+                      </p>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium">調査開始日</label>
-                      <Input 
-                        {...register('survey.surveyStartDate', { required: '調査開始日は必須です' })} 
-                        type="date" 
+                      <label className="block text-sm font-medium">
+                        調査開始日
+                      </label>
+                      <Input
+                        {...register("survey.surveyStartDate", {
+                          required: "調査開始日は必須です",
+                        })}
+                        type="date"
                       />
                       {errors.survey?.surveyStartDate && (
-                        <p className="text-sm text-red-500 mt-1">{errors.survey.surveyStartDate.message}</p>
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.survey.surveyStartDate.message}
+                        </p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium">調査終了日</label>
-                      <Input 
-                        {...register('survey.surveyEndDate', { required: '調査終了日は必須です' })} 
-                        type="date" 
+                      <label className="block text-sm font-medium">
+                        調査終了日
+                      </label>
+                      <Input
+                        {...register("survey.surveyEndDate", {
+                          required: "調査終了日は必須です",
+                        })}
+                        type="date"
                       />
                       {errors.survey?.surveyEndDate && (
-                        <p className="text-sm text-red-500 mt-1">{errors.survey.surveyEndDate.message}</p>
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.survey.surveyEndDate.message}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -370,45 +658,78 @@ export const SurveyRegistrationForm = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">支持率データ</h3>
                   {parties.map((party, index) => {
-                    const supportRate = supportRates.find(rate => rate.partyId === party._id);
+                    const supportRate = supportRates.find(
+                      (rate) => rate.partyId === party._id
+                    );
                     return (
-                      <div key={party._id} className="grid grid-cols-2 gap-4 p-2 border rounded hover:bg-gray-50">
+                      <div
+                        key={party._id}
+                        className="grid grid-cols-2 gap-4 p-2 border rounded hover:bg-gray-50"
+                      >
                         <div>
-                          <label className="block text-sm font-medium">{party.name}</label>
+                          <label className="block text-sm font-medium">
+                            {party.name}
+                          </label>
                           <Input
-                            {...register(`supportRates.${index}.supportRate`, { 
+                            {...register(`supportRates.${index}.supportRate`, {
                               required: `${party.name}の支持率は必須です`,
-                              min: { value: 0, message: '0以上の値を入力してください' },
-                              max: { value: 100, message: '100以下の値を入力してください' }
+                              min: {
+                                value: 0,
+                                message: "0以上の値を入力してください",
+                              },
+                              max: {
+                                value: 100,
+                                message: "100以下の値を入力してください",
+                              },
                             })}
                             type="number"
                             step="0.1"
                             placeholder="支持率 (%)"
-                            defaultValue={supportRate?.supportRate}  // ここで使用
+                            defaultValue={supportRate?.supportRate} // ここで使用
                           />
                           <Input
                             type="hidden"
                             {...register(`supportRates.${index}.partyId`)}
                             value={party._id}
                           />
-                          {errors.supportRates && errors.supportRates[index]?.supportRate && (
-                            <p className="text-sm text-red-500 mt-1">{errors.supportRates[index]?.supportRate?.message}</p>
-                          )}
+                          {errors.supportRates &&
+                            errors.supportRates[index]?.supportRate && (
+                              <p className="text-sm text-red-500 mt-1">
+                                {
+                                  errors.supportRates[index]?.supportRate
+                                    ?.message
+                                }
+                              </p>
+                            )}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium">前回比</label>
+                          <label className="block text-sm font-medium">
+                            前回比
+                          </label>
                           <Input
                             {...register(`supportRates.${index}.rateChange`, {
-                              min: { value: -100, message: '-100以上の値を入力してください' },
-                              max: { value: 100, message: '100以下の値を入力してください' }
+                              min: {
+                                value: -100,
+                                message: "-100以上の値を入力してください",
+                              },
+                              max: {
+                                value: 100,
+                                message: "100以下の値を入力してください",
+                              },
                             })}
                             type="number"
                             step="0.1"
                             placeholder="±0.0"
                           />
-                          {errors.supportRates && errors.supportRates[index]?.rateChange && (
-                            <p className="text-sm text-red-500 mt-1">{errors.supportRates[index]?.rateChange?.message}</p>
-                          )}
+                          {errors.supportRates &&
+                            errors.supportRates[index]?.rateChange && (
+                              <p className="text-sm text-red-500 mt-1">
+                                {
+                                  errors.supportRates[index]?.rateChange
+                                    ?.message
+                                }
+                              </p>
+                            )}
                         </div>
                       </div>
                     );
@@ -429,10 +750,15 @@ export const SurveyRegistrationForm = () => {
                       </>
                     )}
                   </Button>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button type="button" variant="destructive" disabled={isLoading} className="w-32">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={isLoading}
+                        className="w-32"
+                      >
                         <Trash2 className="mr-2 h-4 w-4" />
                         削除
                       </Button>
@@ -446,7 +772,9 @@ export const SurveyRegistrationForm = () => {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete}>削除する</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDelete}>
+                          削除する
+                        </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
