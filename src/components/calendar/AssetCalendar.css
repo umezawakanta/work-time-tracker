@@ -1,234 +1,330 @@
+/* AssetCalendar.css */
+
 .asset-calendar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: "Arial", sans-serif;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
 }
 
-.calendar-title {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 2em;
-  font-weight: 300;
-}
-
-.monthly-summary {
-  background-color: #ffffff;
+/* カレンダー全体のスタイル */
+.fc-theme-standard .fc-scrollgrid {
   border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
 }
 
-.monthly-summary h2 {
-  font-size: 1.2em;
-  margin-bottom: 12px;
-  color: #333;
-  font-weight: 300;
+/* ヘッダーのスタイル */
+.fc .fc-toolbar {
+  margin-bottom: 1.5em;
 }
 
-.summary-content {
+.fc .fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.fc .fc-button {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  box-shadow: none;
+}
+
+.fc .fc-button:hover {
+  background-color: #f3f4f6;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
+
+/* 曜日のヘッダースタイル */
+.fc-col-header-cell {
+  background-color: #f9fafb;
+  padding: 10px 0;
+  font-weight: 600;
+}
+
+/* 土曜日の色 */
+.fc-day-sat .fc-col-header-cell-cushion {
+  color: #3b82f6;
+}
+
+/* 日曜日の色 */
+.fc-day-sun .fc-col-header-cell-cushion {
+  color: #ef4444;
+}
+
+/* セルのスタイリング */
+.fc-daygrid-day {
+  transition: background-color 0.2s;
+}
+
+.fc-daygrid-day:hover {
+  background-color: #f9fafb;
+}
+
+.fc-daygrid-day-number {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px !important;
+}
+
+/* 今日の日付のスタイル */
+.fc-day-today {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+.fc-day-today .fc-daygrid-day-number {
+  background-color: #6366f1;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* イベント内容のスタイリング */
+.event-content {
+  padding: 6px;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 残高表示 */
+.total-amount {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  padding: 2px 4px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 本日の支出表示 */
+.total-expenses-today {
   display: flex;
   justify-content: space-between;
-}
-
-.summary-item {
-  flex: 1;
-  text-align: center;
-}
-
-.summary-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 4px;
-  color: #555;
-}
-
-.summary-value {
-  font-size: 1.2em;
-  font-weight: 500;
-}
-
-.summary-value.income {
-  color: #2e7d32;
-}
-
-.summary-value.expenses {
-  color: #c62828;
-}
-
-.event-content {
-  font-size: 0.8em;
-  padding: 4px;
+  padding: 2px 4px;
+  background-color: #fee2e2;
   border-radius: 4px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
+.expenses-label {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.expenses-value {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+/* 変動表示項目 */
 .change-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 2px 4px;
-  border-radius: 3px;
-  margin-bottom: 2px;
+  border-radius: 4px;
+  font-size: 0.75rem;
 }
 
 .change-label {
-  font-weight: bold;
-  color: #555;
-}
-
-.change-value {
   font-weight: 500;
 }
 
-.daily-change.positive,
-.weekly-change.positive,
-.cumulative-change.positive,
-.total-change.positive {
-  background-color: rgba(76, 175, 80, 0.1);
-  color: #2e7d32;
+.change-value {
+  font-weight: 600;
 }
 
-.daily-change.negative,
-.weekly-change.negative,
-.cumulative-change.negative,
-.total-change.negative {
-  background-color: rgba(244, 67, 54, 0.1);
-  color: #c62828;
+/* ポジティブ/ネガティブの色分け */
+.positive {
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #047857;
 }
 
-.custom-day-cell {
-  text-align: center;
-  padding: 5px;
-  font-weight: bold;
-  color: #333;
+.negative {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
 }
 
-.fc-day-today {
-  background-color: rgba(33, 150, 243, 0.1) !important;
-}
-
-.fc-button-primary {
-  background-color: #1976d2 !important;
-  border-color: #1976d2 !important;
-  transition: background-color 0.3s ease;
-}
-
-.fc-button-primary:hover {
-  background-color: #1565c0 !important;
-}
-
-.fc-toolbar-title {
-  font-size: 1.5em !important;
-  color: #333;
-  font-weight: 300;
-}
-
-.fc th {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.fc td {
-  border-color: #e0e0e0;
-}
-
-.fc-day-other {
-  background-color: #f5f5f5;
-}
-
-.fc-daygrid-day-frame {
-  min-height: 120px;
-  overflow-y: auto;
-}
-
-.fc-daygrid-day-events {
-  min-height: 80px;
-}
-
-.withdrawals-container {
-  background-color: rgba(255, 255, 0, 0.2);
-  padding: 4px;
-  margin: 4px 0;
-  font-size: 0.9em;
-  border-radius: 4px;
-}
-
-.withdrawals-container h4 {
-  margin: 0 0 4px 0;
-  font-size: 1em;
-  color: #333;
-}
-
-.withdrawal-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 4px;
-  border-radius: 4px;
-}
-
-.withdrawal-details {
-  flex-grow: 1;
-}
-
-.withdrawal-bank {
-  font-weight: bold;
-  color: #1976d2;
-}
-
-.withdrawal-amount {
-  color: #c62828;
-}
-
-.delete-button {
-  padding: 2px;
-  color: #c62828;
-}
-
-.delete-button:hover {
-  background-color: rgba(244, 67, 54, 0.1);
-}
-
+/* 引き落としとサブスクリプションのスタイル */
+.withdrawals-container,
 .subscriptions-container {
-  background-color: rgba(255, 255, 0, 0.1);
-  padding: 4px;
-  margin: 4px 0;
-  font-size: 0.9em;
-  border-radius: 4px;
+  margin-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 4px;
 }
 
-.subscriptions-container h4 {
-  margin: 0 0 4px 0;
-  font-size: 1em;
-  color: #333;
+.section-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #6b7280;
 }
 
+.withdrawal-info,
 .subscription-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2px;
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 2px 4px;
-  border-radius: 2px;
+  font-size: 0.75rem;
+  padding: 2px 0;
 }
 
+.withdrawal-bank,
 .subscription-name {
-  font-weight: bold;
-  color: #1976d2;
+  font-weight: 500;
 }
 
+.withdrawal-amount,
 .subscription-amount {
-  color: #c62828;
+  font-weight: 600;
+}
+
+.delete-button {
+  padding: 0;
+  margin-left: 6px;
+  height: 20px;
+  width: 20px;
+  color: #ef4444;
+}
+
+/* 月次サマリースタイル */
+.monthly-summary {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.monthly-summary h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1f2937;
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.summary-value.income {
+  color: #047857;
+}
+
+.summary-value.expenses {
+  color: #b91c1c;
+}
+
+/* タブのアニメーション */
+.tabAnimation-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tabAnimation-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.tabAnimation-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tabAnimation-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* サマリーカードのスタイル */
+.card-container {
+  transition: all 0.3s ease;
+}
+
+.card-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .fc .fc-toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem;
+  }
+  
+  .summary-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .event-content {
+    font-size: 0.75rem;
+  }
+  
+  .change-item, .withdrawal-info, .subscription-info {
+    font-size: 0.7rem;
+  }
+}
+
+/* プリントスタイル */
+@media print {
+  .asset-calendar-container {
+    width: 100%;
+    font-size: 10pt;
+  }
+  
+  .fc-button {
+    display: none !important;
+  }
+  
+  .fc-daygrid-day {
+    page-break-inside: avoid;
+  }
+  
+  .event-content {
+    color: #000 !important;
+    background-color: #fff !important;
+    border: 1px solid #ccc !important;
+  }
 }
