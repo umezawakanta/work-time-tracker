@@ -390,8 +390,8 @@ const PoliticalChart = () => {
     return <Skeleton className="w-full h-[500px] rounded-lg" />;
   }
 
-  // 欠落データ表示のためのコンポーネント
-  const MissingDataAlert = () => {
+  // 欠落データを表示するコンポーネント
+  const renderMissingDataAlert = () => {
     if (Object.keys(missingData).length === 0) return null;
 
     return (
@@ -410,7 +410,8 @@ const PoliticalChart = () => {
   };
 
   return (
-    <div className="w-full bg-black relative height">
+    <div className="w-full bg-black relative">
+      {renderMissingDataAlert()}
       <Tabs value={activeMedia} onValueChange={setActiveMedia}>
         <div className="sticky top-0 z-10 bg-black">
           <TabsList className="mb-4 bg-gray-900 p-2 flex flex-wrap justify-center gap-2">
@@ -427,15 +428,23 @@ const PoliticalChart = () => {
             ))}
           </TabsList>
         </div>
+
         {mediaList.map((media) => (
-          <TabsContent key={media} value={media} className="px-2 w-full pt-4">
+          <TabsContent
+            key={media}
+            value={media}
+            className="px-2 w-full pt-4"
+          >
             {chartData[media] && chartData[media].length > 0 ? (
-              <div className="w-full overflow-x-auto overflow-y-visible h-[700px]">
-                <div className="min-w-[800px] h-[650px]">
-                  <ResponsiveContainer width="100%" height={600}>
+              <div className="w-full overflow-x-auto overflow-y-visible" style={{ height: "800px" }}>
+                <div className="min-w-[800px]" style={{ height: "750px" }}>
+                  <ResponsiveContainer
+                    width="100%"
+                    height={700}
+                  >
                     <LineChart
                       data={chartData[media]}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 180 }}
                       className="bg-black"
                     >
                       <CartesianGrid
@@ -483,10 +492,13 @@ const PoliticalChart = () => {
                         verticalAlign="bottom"
                         align="center"
                         wrapperStyle={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
                           padding: "20px 10px",
                           fontSize: "16px",
                           fontWeight: "bold",
-                          marginTop: "20px",
                         }}
                         formatter={(value) => value.split("(")[0]}
                       />
