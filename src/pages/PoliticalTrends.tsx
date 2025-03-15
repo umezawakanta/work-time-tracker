@@ -1,202 +1,522 @@
-// src/pages/PoliticalTrends.tsx
-import { useState, useEffect } from 'react';
-import PoliticalChart from '@/components/chart/PoliticalChart';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PartyRegistrationForm } from '@/components/forms/PartyRegistrationForm';
-import { SurveyRegistrationForm } from '@/components/forms/SurveyRegistrationForm';
-import { Skeleton } from '@/components/ui/skeleton';
-import { BarChart2, RefreshCw, FileText, BarChart } from 'lucide-react';
-import { surveyApi } from '@/services/api/surveyApi';
-import { toast } from 'react-toastify';
+"use client";
 
-export default function PoliticalTrends() {
-  const [activeTab, setActiveTab] = useState('chart');
+import { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { surveyApi } from "@/services/api/surveyApi";
+import { partyApi } from "@/services/api/partyApi";
+import { SupportRate, PoliticalParty, Survey } from "@/types/survey";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "react-hot-toast";
+import { TooltipProps } from "recharts";
+
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name: string;
+    stroke: string;
+    dataKey: string;
+    color: string;
+  }>;
+  label?: string;
+}
+
+interface ChartDataPoint {
+  surveyId: string;
+  date: string;
+  fullDate: string;
+  monthDate?: string;
+  mediaOutlet: string;
+  [key: string]: string | number | undefined;
+}
+
+interface SurveyResponseData {
+  surveys: (Survey & { mediaOutlet: string })[];
+  supportRates: Array<
+    SupportRate & {
+      partyId: {
+        _id: string;
+        name: string;
+        shortName: string;
+      };
+    }
+  >;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-gray-900 bg-opacity-90 p-4 rounded-lg shadow-xl border border-gray-700">
+        <p className="text-lg font-bold text-white mb-3">{label}</p>
+        <div className="flex flex-col gap-2">
+          {payload.map((entry, index) => (
+            <div
+              key={`item-${index}`}
+              className="flex justify-between items-center gap-4 text-gray-300"
+            >
+              <div className="flex items-center">
+                <div
+                  className="w-3 h-3 mr-2 rounded-full"
+                  style={{ backgroundColor: entry.stroke }}
+                />
+                <span className="font-medium">{entry.name.split("(")[0]}</span>
+              </div>
+              <span className="font-bold text-base text-white">
+                {entry.value ? `${entry.value.toFixed(1)}%` : "-"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+const PoliticalChart = () => {
+  const [chartData, setChartData] = useState<Record<string, ChartDataPoint[]>>(
+    {}
+  );
+  const [mediaList, setMediaList] = useState<string[]>([]);
+  const [parties, setParties] = useState<PoliticalParty[]>([]);
+  const [activeMedia, setActiveMedia] = useState<string>("各社平均");
   const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [missingData, setMissingData] = useState<{
+    [media: string]: string[];
+  }>({});
 
-  // 最新の調査日時を取得
-  useEffect(() => {
-    const fetchLatestSurvey = async () => {
-      try {
-        const response = await surveyApi.getLatest();
-        if (response.data && response.data.survey) {
-          setLastUpdated(new Date(response.data.survey.surveyEndDate).toLocaleDateString('ja-JP'));
-        }
-        setIsLoading(false);
-      } catch (err) {
-        console.error('最新の調査結果取得に失敗しました:', err);
-        setIsLoading(false);
-      }
-    };
-    
-    fetchLatestSurvey();
-  }, []);
-
-  // データ更新後にグラフを更新する
-  const handleDataUpdate = async () => {
+  const fetchSurveyData = async () => {
     try {
       setIsLoading(true);
-      const response = await surveyApi.getLatest();
-      if (response.data && response.data.survey) {
-        setLastUpdated(new Date(response.data.survey.surveyEndDate).toLocaleDateString('ja-JP'));
-        toast.success('データを更新しました');
+      const [surveyResponse, partiesResponse] = await Promise.all([
+        surveyApi.getAll(),
+        partyApi.getAll(),
+      ]);
+
+      setParties(partiesResponse.data);
+
+      const data = surveyResponse.data as unknown as SurveyResponseData;
+
+      const mediaGroups: Record<string, ChartDataPoint[]> = {};
+      const mediaSet = new Set<string>();
+
+      // 月ごとのデータを集計するためのオブジェクト
+      const monthlyAverageData: Record<string, Record<string, number[]>> = {};
+
+      if (data.surveys && Array.isArray(data.surveys)) {
+        data.surveys.forEach((survey) => {
+          const mediaOutlet = survey.mediaOutlet || "未分類";
+          mediaSet.add(mediaOutlet);
+
+          // 調査の終了日から月を抽出
+          const surveyDate = new Date(survey.surveyEndDate);
+          const monthKey = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+          });
+
+          // 月ごとのデータ収集の準備
+          if (!monthlyAverageData[monthKey]) {
+            monthlyAverageData[monthKey] = {};
+          }
+
+          const surveyRates =
+            data.supportRates?.filter((rate) => rate.surveyId === survey._id) ||
+            [];
+
+          surveyRates.forEach((rate) => {
+            if (rate.partyId && rate.partyId.shortName) {
+              const shortName = rate.partyId.shortName;
+              const partyKey = `${shortName}_${mediaOutlet}`;
+
+              // 月ごとのデータ収集
+              if (!monthlyAverageData[monthKey][partyKey]) {
+                monthlyAverageData[monthKey][partyKey] = [];
+              }
+              monthlyAverageData[monthKey][partyKey].push(rate.supportRate);
+            }
+          });
+        });
+
+        // 月ごとの平均値を計算
+        const mediaGroupsWithAverage: Record<string, ChartDataPoint[]> = {
+          各社平均: [],
+        };
+
+        Object.keys(monthlyAverageData)
+          .sort()
+          .forEach((monthKey) => {
+            const monthDate = new Date(monthKey + "-01").toLocaleDateString(
+              "ja-JP",
+              {
+                year: "numeric",
+                month: "long",
+              }
+            );
+            const averagePoint: ChartDataPoint = {
+              surveyId: `avg-${monthKey}`,
+              date: monthKey,
+              fullDate: monthKey,
+              monthDate: monthDate,
+              mediaOutlet: "各社平均",
+            };
+
+            // 各政党の月平均を計算
+            parties.forEach((party) => {
+              const monthData = monthlyAverageData[monthKey];
+              const partyAverages: number[] = [];
+
+              // すべてのメディアの同じ政党の平均を計算
+              mediaList
+                .filter((media) => media !== "各社平均")
+                .forEach((media) => {
+                  const partyKey = `${party.shortName}_${media}`;
+                  const values = monthData[partyKey] || [];
+                  if (values.length > 0) {
+                    const avg =
+                      values.reduce((a, b) => a + b, 0) / values.length;
+                    partyAverages.push(avg);
+                  }
+                });
+
+              // 全メディアの平均を計算
+              if (partyAverages.length > 0) {
+                const finalAvg =
+                  partyAverages.reduce((a, b) => a + b, 0) /
+                  partyAverages.length;
+                averagePoint[party.shortName] = parseFloat(finalAvg.toFixed(1));
+              }
+            });
+
+            mediaGroupsWithAverage["各社平均"].push(averagePoint);
+          });
+
+        // 他のメディアのデータも同様に処理
+        data.surveys.forEach((survey) => {
+          const mediaOutlet = survey.mediaOutlet || "未分類";
+          const surveyDate = new Date(survey.surveyEndDate);
+          const monthKey = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+          });
+
+          if (!mediaGroups[mediaOutlet]) {
+            mediaGroups[mediaOutlet] = [];
+          }
+
+          const monthDate = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "long",
+          });
+
+          const dataPoint: ChartDataPoint = {
+            surveyId: survey._id,
+            date: monthKey,
+            fullDate: monthKey,
+            monthDate: monthDate,
+            mediaOutlet: mediaOutlet,
+          };
+
+          const surveyRates =
+            data.supportRates?.filter((rate) => rate.surveyId === survey._id) ||
+            [];
+
+          surveyRates.forEach((rate) => {
+            if (rate.partyId && rate.partyId.shortName) {
+              const shortName = rate.partyId.shortName;
+              const partyKey = `${shortName}_${mediaOutlet}`;
+              dataPoint[partyKey] = rate.supportRate;
+            }
+          });
+
+          mediaGroups[mediaOutlet].push(dataPoint);
+        });
+
+        // データを月でソート
+        Object.keys(mediaGroups).forEach((media) => {
+          mediaGroups[media].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA.getTime() - dateB.getTime();
+          });
+        });
+
+        const mediaArray = Array.from(mediaSet);
+        setMediaList(["各社平均", ...mediaArray]);
+        setChartData({ ...mediaGroups, ...mediaGroupsWithAverage });
       }
-      
-      // ブラウザリロードでグラフを更新
-      window.location.reload();
-      
-      setIsLoading(false);
-    } catch (err) {
-      console.error('データの更新に失敗しました:', err);
-      toast.error('データの更新に失敗しました');
+
+      // 調査社と月の追跡
+      const allMedias = Array.from(mediaSet);
+      const missingDataMap: { [media: string]: string[] } = {};
+
+      // 2024年9月から現在までの月を生成
+      const startDate = new Date(2024, 8, 1); // 2024年9月
+      const currentDate = new Date();
+      const monthsList: string[] = [];
+
+      while (startDate <= currentDate) {
+        const monthKey = startDate.toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+        });
+        monthsList.push(monthKey);
+        startDate.setMonth(startDate.getMonth() + 1);
+      }
+
+      // 各メディアの調査月を追跡
+      allMedias.forEach((media) => {
+        const surveyMonths = new Set(
+          data.surveys
+            .filter((survey) => survey.mediaOutlet === media)
+            .map((survey) =>
+              new Date(survey.surveyEndDate).toLocaleDateString("ja-JP", {
+                year: "numeric",
+                month: "2-digit",
+              })
+            )
+        );
+
+        // 欠落している月を特定
+        const missingMonths = monthsList.filter(
+          (month) => !surveyMonths.has(month)
+        );
+
+        if (missingMonths.length > 0) {
+          missingDataMap[media] = missingMonths;
+        }
+      });
+
+      setMissingData(missingDataMap);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("データの取得に失敗しました");
+    } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-          <h1 className="text-4xl font-bold">政党支持率トレンド</h1>
-          {lastUpdated && (
-            <p className="text-muted-foreground mt-2">
-              最終更新: {lastUpdated}
-            </p>
-          )}
-        </div>
-        <Button 
-          onClick={handleDataUpdate} 
-          className="mt-4 md:mt-0" 
-          disabled={isLoading}
-          size="lg"
-        >
-          {isLoading ? (
-            <>
-              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              更新中...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              データを更新
-            </>
-          )}
-        </Button>
-      </header>
-      
-      <Tabs defaultValue="chart" value={activeTab} onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid grid-cols-3 mb-6">
-          <TabsTrigger value="chart" className="text-base py-3">
-            <BarChart2 className="mr-2 h-5 w-5" />
-            グラフ
-          </TabsTrigger>
-          <TabsTrigger value="party" className="text-base py-3">
-            <FileText className="mr-2 h-5 w-5" />
-            政党登録
-          </TabsTrigger>
-          <TabsTrigger value="survey" className="text-base py-3">
-            <BarChart className="mr-2 h-5 w-5" />
-            調査結果登録
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="chart">
-          <Card className="overflow-hidden">
-            <CardHeader className="bg-gray-50 dark:bg-gray-800">
-              <CardTitle>政党支持率推移</CardTitle>
-              <CardDescription>
-                各種世論調査における政党支持率の推移を表示しています
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              {isLoading ? (
-                <Skeleton className="w-full h-[600px]" />
-              ) : (
-                <div className="w-full h-[600px] overflow-hidden">
-                  <PoliticalChart />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">グラフの見方</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>各色の線は政党ごとの支持率を表しています</li>
-                  <li>凡例は画面下部に表示されています</li>
-                  <li>マウスを線上に置くと詳細な数値が表示されます</li>
-                  <li>最新の調査結果が右端に表示されています</li>
-                </ul>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">データソース</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-2">このグラフは以下の報道機関の調査を元に作成しています：</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>NHK</li>
-                  <li>読売新聞</li>
-                  <li>朝日新聞</li>
-                  <li>毎日新聞</li>
-                  <li>共同通信</li>
-                  <li>日経新聞</li>
-                  <li>その他主要メディア</li>
-                </ul>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">利用にあたって</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li>調査方法や対象者は各メディアにより異なります</li>
-                  <li>サンプル数や調査期間などの詳細は各メディアの発表を参照してください</li>
-                  <li>このツールは情報を集約するためのものであり、特定の政治的見解を示すものではありません</li>
-                </ul>
-              </CardContent>
-            </Card>
+  useEffect(() => {
+    fetchSurveyData();
+  }, []);
+
+  const generateLines = (mediaOutlet: string) => {
+    if (!chartData[mediaOutlet] || chartData[mediaOutlet].length === 0) {
+      return [];
+    }
+
+    const lines: JSX.Element[] = [];
+    const data = chartData[mediaOutlet];
+
+    // 表示順序を調整（支持率が高い順）
+    const latestData = data[data.length - 1];
+    const sortedParties = [...parties].sort((a, b) => {
+      const aKey =
+        mediaOutlet === "各社平均"
+          ? a.shortName
+          : `${a.shortName}_${mediaOutlet}`;
+      const bKey =
+        mediaOutlet === "各社平均"
+          ? b.shortName
+          : `${b.shortName}_${mediaOutlet}`;
+
+      const aValue = (latestData[aKey] as number) || 0;
+      const bValue = (latestData[bKey] as number) || 0;
+
+      return bValue - aValue; // 降順
+    });
+
+    sortedParties.forEach((party) => {
+      const partyKey =
+        mediaOutlet === "各社平均"
+          ? `${party.shortName}`
+          : `${party.shortName}_${mediaOutlet}`;
+
+      // 最新の支持率
+      const latestValue = latestData[partyKey] as number;
+
+      // 5%以上の政党にのみラベルを表示
+      const shouldShowLabel =
+        latestValue >= 3 ||
+        party.shortName === "自民" ||
+        party.shortName === "立民";
+
+      lines.push(
+        <Line
+          key={`line-${partyKey}`}
+          type="monotone"
+          dataKey={partyKey}
+          name={`${party.name}(${mediaOutlet})`}
+          stroke={party.colorCode}
+          strokeWidth={3}
+          dot={{
+            r: 6,
+            strokeWidth: 2,
+            fill: party.colorCode,
+          }}
+          activeDot={{
+            r: 8,
+            strokeWidth: 3,
+            fill: party.colorCode,
+          }}
+          label={
+            shouldShowLabel
+              ? {
+                  position: "top",
+                  fill: party.colorCode,
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  formatter: (value: number) => `${value?.toFixed(1) || ""}%`,
+                }
+              : false
+          }
+        />
+      );
+    });
+    return lines;
+  };
+
+  if (isLoading) {
+    return <Skeleton className="w-full h-[500px] rounded-lg" />;
+  }
+
+  // 欠落データ表示のためのコンポーネント
+  const MissingDataAlert = () => {
+    if (Object.keys(missingData).length === 0) return null;
+
+    return (
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
+        <h3 className="text-yellow-700 font-bold mb-2">調査データの欠落情報</h3>
+        {Object.entries(missingData).map(([media, months]) => (
+          <div key={media} className="mb-2">
+            <span className="font-semibold text-yellow-800">{media}</span>
+            <span className="text-yellow-700 ml-2">
+              未調査の月: {months.join(", ")}
+            </span>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="party">
-          <Card>
-            <CardHeader>
-              <CardTitle>政党登録</CardTitle>
-              <CardDescription>
-                新しい政党を登録したり、既存の政党情報を編集できます
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PartyRegistrationForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="survey">
-          <Card>
-            <CardHeader>
-              <CardTitle>調査結果登録・更新</CardTitle>
-              <CardDescription>
-                新しい世論調査の結果を登録したり、既存のデータを更新できます
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SurveyRegistrationForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full bg-black relative">
+      <MissingDataAlert />
+      <Tabs value={activeMedia} onValueChange={setActiveMedia}>
+        <div className="sticky top-0 z-10 bg-black">
+          <TabsList className="mb-4 bg-gray-900 p-2 flex flex-wrap justify-center gap-2">
+            {mediaList.map((media) => (
+              <TabsTrigger
+                key={media}
+                value={media}
+                className="px-4 py-2 text-base text-white data-[state=active]:bg-blue-600 
+                           rounded-md flex-shrink-0 
+                           hover:bg-gray-700 transition-colors duration-200"
+              >
+                {media}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+
+        {mediaList.map((media) => (
+          <TabsContent
+            key={media}
+            value={media}
+            className="px-2 w-full pt-4"
+          >
+            {chartData[media] && chartData[media].length > 0 ? (
+              <div className="w-full overflow-x-auto overflow-y-visible h-[900px]">
+                <div className="min-w-[800px] h-[850px]">
+                  <ResponsiveContainer
+                    width="100%"
+                    height={800}
+                  >
+                    <LineChart
+                      data={chartData[media]}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 200 }}
+                      className="bg-black"
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#666"
+                        strokeOpacity={0.3}
+                      />
+                      <XAxis
+                        dataKey="monthDate"
+                        className="text-foreground"
+                        tick={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                        axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                        tickLine={{ stroke: "#666" }}
+                        angle={-45}
+                        textAnchor="end"
+                        tickMargin={25}
+                        interval={0}
+                      />
+                      <YAxis
+                        className="text-foreground"
+                        tick={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                        axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                        tickLine={{ stroke: "#666" }}
+                        domain={[0, 50]}
+                        tickCount={11}
+                        label={{
+                          value: "支持率 (%)",
+                          angle: -90,
+                          position: "insideLeft",
+                          style: {
+                            fontSize: 14,
+                            fontWeight: 600,
+                          },
+                        }}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{
+                          padding: "20px 10px",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          marginTop: "20px",
+                          bottom: "20px"
+                        }}
+                        formatter={(value) => value.split("(")[0]}
+                      />
+                      {generateLines(media)}
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-[450px] bg-black text-white">
+                <p className="text-gray-400 text-lg">
+                  このメディアのデータがありません
+                </p>
+              </div>
+            )}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
-}
+};
+
+export default PoliticalChart;

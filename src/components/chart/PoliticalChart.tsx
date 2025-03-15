@@ -17,10 +17,8 @@ import { SupportRate, PoliticalParty, Survey } from "@/types/survey";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-hot-toast";
-// anyの代わりに具体的な型を定義
 import { TooltipProps } from "recharts";
 
-// カスタムツールチップの型を定義
 interface CustomTooltipProps extends TooltipProps<number, string> {
   active?: boolean;
   payload?: Array<{
@@ -32,12 +30,12 @@ interface CustomTooltipProps extends TooltipProps<number, string> {
   }>;
   label?: string;
 }
-// ChartDataPoint インターフェースにも追加
+
 interface ChartDataPoint {
   surveyId: string;
   date: string;
   fullDate: string;
-  monthDate?: string; // 追加
+  monthDate?: string;
   mediaOutlet: string;
   [key: string]: string | number | undefined;
 }
@@ -93,6 +91,9 @@ const PoliticalChart = () => {
   const [parties, setParties] = useState<PoliticalParty[]>([]);
   const [activeMedia, setActiveMedia] = useState<string>("各社平均");
   const [isLoading, setIsLoading] = useState(true);
+  const [missingData, setMissingData] = useState<{
+    [media: string]: string[];
+  }>({});
 
   const fetchSurveyData = async () => {
     try {
@@ -123,7 +124,7 @@ const PoliticalChart = () => {
             year: "numeric",
             month: "2-digit",
           });
-          
+
           // 月ごとのデータ収集の準備
           if (!monthlyAverageData[monthKey]) {
             monthlyAverageData[monthKey] = {};
@@ -155,15 +156,18 @@ const PoliticalChart = () => {
         Object.keys(monthlyAverageData)
           .sort()
           .forEach((monthKey) => {
-            const monthDate = new Date(monthKey + "-01").toLocaleDateString("ja-JP", {
-              year: "numeric",
-              month: "long",
-            });
+            const monthDate = new Date(monthKey + "-01").toLocaleDateString(
+              "ja-JP",
+              {
+                year: "numeric",
+                month: "long",
+              }
+            );
             const averagePoint: ChartDataPoint = {
               surveyId: `avg-${monthKey}`,
               date: monthKey,
               fullDate: monthKey,
-              monthDate: monthDate, // monthDateを明示的に設定
+              monthDate: monthDate,
               mediaOutlet: "各社平均",
             };
 
@@ -219,7 +223,7 @@ const PoliticalChart = () => {
             surveyId: survey._id,
             date: monthKey,
             fullDate: monthKey,
-            monthDate: monthDate, // monthDateを明示的に設定
+            monthDate: monthDate,
             mediaOutlet: mediaOutlet,
           };
 
@@ -251,6 +255,49 @@ const PoliticalChart = () => {
         setMediaList(["各社平均", ...mediaArray]);
         setChartData({ ...mediaGroups, ...mediaGroupsWithAverage });
       }
+
+      // 調査社と月の追跡
+      const allMedias = Array.from(mediaSet);
+      const missingDataMap: { [media: string]: string[] } = {};
+
+      // 2024年9月から現在までの月を生成
+      const startDate = new Date(2024, 8, 1); // 2024年9月
+      const currentDate = new Date();
+      const monthsList: string[] = [];
+
+      while (startDate <= currentDate) {
+        const monthKey = startDate.toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+        });
+        monthsList.push(monthKey);
+        startDate.setMonth(startDate.getMonth() + 1);
+      }
+
+      // 各メディアの調査月を追跡
+      allMedias.forEach((media) => {
+        const surveyMonths = new Set(
+          data.surveys
+            .filter((survey) => survey.mediaOutlet === media)
+            .map((survey) =>
+              new Date(survey.surveyEndDate).toLocaleDateString("ja-JP", {
+                year: "numeric",
+                month: "2-digit",
+              })
+            )
+        );
+
+        // 欠落している月を特定
+        const missingMonths = monthsList.filter(
+          (month) => !surveyMonths.has(month)
+        );
+
+        if (missingMonths.length > 0) {
+          missingDataMap[media] = missingMonths;
+        }
+      });
+
+      setMissingData(missingDataMap);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("データの取得に失敗しました");
@@ -343,8 +390,27 @@ const PoliticalChart = () => {
     return <Skeleton className="w-full h-[500px] rounded-lg" />;
   }
 
+  // 欠落データ表示のためのコンポーネント
+  const MissingDataAlert = () => {
+    if (Object.keys(missingData).length === 0) return null;
+
+    return (
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
+        <h3 className="text-yellow-700 font-bold mb-2">調査データの欠落情報</h3>
+        {Object.entries(missingData).map(([media, months]) => (
+          <div key={media} className="mb-2">
+            <span className="font-semibold text-yellow-800">{media}</span>
+            <span className="text-yellow-700 ml-2">
+              未調査の月: {months.join(", ")}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="w-full bg-black relative">
+    <div className="w-full bg-black relative height">
       <Tabs value={activeMedia} onValueChange={setActiveMedia}>
         <div className="sticky top-0 z-10 bg-black">
           <TabsList className="mb-4 bg-gray-900 p-2 flex flex-wrap justify-center gap-2">
@@ -361,74 +427,74 @@ const PoliticalChart = () => {
             ))}
           </TabsList>
         </div>
-
         {mediaList.map((media) => (
-          <TabsContent
-            key={media}
-            value={media}
-            className="px-2 w-full pt-14" // タブの高さ分の余白を追加
-          >
+          <TabsContent key={media} value={media} className="px-2 w-full pt-4">
             {chartData[media] && chartData[media].length > 0 ? (
-              <ResponsiveContainer width="100%" height={450}>
-                <LineChart
-                  data={chartData[media]}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-                  className="bg-black"
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#666"
-                    strokeOpacity={0.3}
-                  />
-                  <XAxis
-                    dataKey="monthDate"
-                    className="text-foreground"
-                    tick={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                    }}
-                    axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
-                    tickLine={{ stroke: "#666" }}
-                    angle={-45}
-                    textAnchor="end"
-                    tickMargin={15}
-                    interval={0}
-                  />
-                  <YAxis
-                    className="text-foreground"
-                    tick={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                    }}
-                    axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
-                    tickLine={{ stroke: "#666" }}
-                    domain={[0, 50]}
-                    tickCount={11}
-                    label={{
-                      value: "支持率 (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                      style: {
-                        fontSize: 14,
-                        fontWeight: 600,
-                      },
-                    }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{
-                      padding: "20px 10px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                    formatter={(value) => value.split("(")[0]} // メディア名を除去
-                  />
-                  {generateLines(media)}
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="w-full overflow-x-auto overflow-y-visible h-[700px]">
+                <div className="min-w-[800px] h-[650px]">
+                  <ResponsiveContainer width="100%" height={600}>
+                    <LineChart
+                      data={chartData[media]}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 120 }}
+                      className="bg-black"
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#666"
+                        strokeOpacity={0.3}
+                      />
+                      <XAxis
+                        dataKey="monthDate"
+                        className="text-foreground"
+                        tick={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                        axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                        tickLine={{ stroke: "#666" }}
+                        angle={-45}
+                        textAnchor="end"
+                        tickMargin={25}
+                        interval={0}
+                      />
+                      <YAxis
+                        className="text-foreground"
+                        tick={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                        }}
+                        axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
+                        tickLine={{ stroke: "#666" }}
+                        domain={[0, 50]}
+                        tickCount={11}
+                        label={{
+                          value: "支持率 (%)",
+                          angle: -90,
+                          position: "insideLeft",
+                          style: {
+                            fontSize: 14,
+                            fontWeight: 600,
+                          },
+                        }}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{
+                          padding: "20px 10px",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          marginTop: "20px",
+                        }}
+                        formatter={(value) => value.split("(")[0]}
+                      />
+                      {generateLines(media)}
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-[450px] bg-black text-white">
                 <p className="text-gray-400 text-lg">
