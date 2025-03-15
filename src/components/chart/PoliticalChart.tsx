@@ -59,9 +59,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-gray-900 bg-opacity-90 p-4 rounded-lg shadow-xl border border-gray-700">
-        <p className="text-lg font-bold text-white mb-3">
-          {label}
-        </p>
+        <p className="text-lg font-bold text-white mb-3">{label}</p>
         <div className="flex flex-col gap-2">
           {payload.map((entry, index) => (
             <div
@@ -73,9 +71,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
                   className="w-3 h-3 mr-2 rounded-full"
                   style={{ backgroundColor: entry.stroke }}
                 />
-                <span className="font-medium">
-                  {entry.name.split("(")[0]}
-                </span>
+                <span className="font-medium">{entry.name.split("(")[0]}</span>
               </div>
               <span className="font-bold text-base text-white">
                 {entry.value ? `${entry.value.toFixed(1)}%` : "-"}
@@ -113,61 +109,24 @@ const PoliticalChart = () => {
       const mediaGroups: Record<string, ChartDataPoint[]> = {};
       const mediaSet = new Set<string>();
 
-      // 平均値計算用のデータ構造
-      const averageData: Record<string, Record<string, number[]>> = {};
+      // 月ごとのデータを集計するためのオブジェクト
+      const monthlyAverageData: Record<string, Record<string, number[]>> = {};
 
       if (data.surveys && Array.isArray(data.surveys)) {
-        // 日付ごとのデータを整理
-        const dateMap: Record<string, Record<string, ChartDataPoint>> = {};
-
         data.surveys.forEach((survey) => {
           const mediaOutlet = survey.mediaOutlet || "未分類";
           mediaSet.add(mediaOutlet);
 
-          const surveyDate = new Date(survey.surveyEndDate)
-            .toISOString()
-            .split("T")[0];
-          const fullDate = new Date(survey.surveyEndDate).toLocaleDateString(
-            "ja-JP",
-            {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            }
-          );
-
-          // 日付の月単位での表示（YYY年MM月）
-          const monthDate = new Date(survey.surveyEndDate).toLocaleDateString(
-            "ja-JP",
-            {
-              year: "numeric",
-              month: "long",
-            }
-          );
-
-          // dataPointの定義を変更
-          const dataPoint: ChartDataPoint = {
-            surveyId: survey._id,
-            date: surveyDate,
-            fullDate: fullDate,
-            monthDate: monthDate, // monthDateを追加
-            mediaOutlet: mediaOutlet,
-          };
-
-          // メディア別グループ化
-          if (!mediaGroups[mediaOutlet]) {
-            mediaGroups[mediaOutlet] = [];
-          }
-
-          // 日付ごとのデータマップ作成
-          if (!dateMap[surveyDate]) {
-            dateMap[surveyDate] = {};
-          }
-          dateMap[surveyDate][mediaOutlet] = dataPoint;
-
-          // 平均値計算用データ構造
-          if (!averageData[surveyDate]) {
-            averageData[surveyDate] = {};
+          // 調査の終了日から月を抽出
+          const surveyDate = new Date(survey.surveyEndDate);
+          const monthKey = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+          });
+          
+          // 月ごとのデータ収集の準備
+          if (!monthlyAverageData[monthKey]) {
+            monthlyAverageData[monthKey] = {};
           }
 
           const surveyRates =
@@ -178,66 +137,119 @@ const PoliticalChart = () => {
             if (rate.partyId && rate.partyId.shortName) {
               const shortName = rate.partyId.shortName;
               const partyKey = `${shortName}_${mediaOutlet}`;
-              dataPoint[partyKey] = rate.supportRate;
 
-              // 平均値計算用データ収集
-              if (!averageData[surveyDate][shortName]) {
-                averageData[surveyDate][shortName] = [];
+              // 月ごとのデータ収集
+              if (!monthlyAverageData[monthKey][partyKey]) {
+                monthlyAverageData[monthKey][partyKey] = [];
               }
-              averageData[surveyDate][shortName].push(rate.supportRate);
+              monthlyAverageData[monthKey][partyKey].push(rate.supportRate);
+            }
+          });
+        });
+
+        // 月ごとの平均値を計算
+        const mediaGroupsWithAverage: Record<string, ChartDataPoint[]> = {
+          各社平均: [],
+        };
+
+        Object.keys(monthlyAverageData)
+          .sort()
+          .forEach((monthKey) => {
+            const monthDate = new Date(monthKey + "-01").toLocaleDateString("ja-JP", {
+              year: "numeric",
+              month: "long",
+            });
+            const averagePoint: ChartDataPoint = {
+              surveyId: `avg-${monthKey}`,
+              date: monthKey,
+              fullDate: monthKey,
+              monthDate: monthDate, // monthDateを明示的に設定
+              mediaOutlet: "各社平均",
+            };
+
+            // 各政党の月平均を計算
+            parties.forEach((party) => {
+              const monthData = monthlyAverageData[monthKey];
+              const partyAverages: number[] = [];
+
+              // すべてのメディアの同じ政党の平均を計算
+              mediaList
+                .filter((media) => media !== "各社平均")
+                .forEach((media) => {
+                  const partyKey = `${party.shortName}_${media}`;
+                  const values = monthData[partyKey] || [];
+                  if (values.length > 0) {
+                    const avg =
+                      values.reduce((a, b) => a + b, 0) / values.length;
+                    partyAverages.push(avg);
+                  }
+                });
+
+              // 全メディアの平均を計算
+              if (partyAverages.length > 0) {
+                const finalAvg =
+                  partyAverages.reduce((a, b) => a + b, 0) /
+                  partyAverages.length;
+                averagePoint[party.shortName] = parseFloat(finalAvg.toFixed(1));
+              }
+            });
+
+            mediaGroupsWithAverage["各社平均"].push(averagePoint);
+          });
+
+        // 他のメディアのデータも同様に処理
+        data.surveys.forEach((survey) => {
+          const mediaOutlet = survey.mediaOutlet || "未分類";
+          const surveyDate = new Date(survey.surveyEndDate);
+          const monthKey = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+          });
+
+          if (!mediaGroups[mediaOutlet]) {
+            mediaGroups[mediaOutlet] = [];
+          }
+
+          const monthDate = surveyDate.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "long",
+          });
+
+          const dataPoint: ChartDataPoint = {
+            surveyId: survey._id,
+            date: monthKey,
+            fullDate: monthKey,
+            monthDate: monthDate, // monthDateを明示的に設定
+            mediaOutlet: mediaOutlet,
+          };
+
+          const surveyRates =
+            data.supportRates?.filter((rate) => rate.surveyId === survey._id) ||
+            [];
+
+          surveyRates.forEach((rate) => {
+            if (rate.partyId && rate.partyId.shortName) {
+              const shortName = rate.partyId.shortName;
+              const partyKey = `${shortName}_${mediaOutlet}`;
+              dataPoint[partyKey] = rate.supportRate;
             }
           });
 
           mediaGroups[mediaOutlet].push(dataPoint);
         });
 
-        // 各社平均の計算
-        const averagePoints: ChartDataPoint[] = [];
-        Object.keys(averageData)
-          .sort() // 日付順にソート
-          .forEach((date) => {
-            const partyAverages = averageData[date];
-            const fullDate = new Date(date).toLocaleDateString("ja-JP", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            });
-
-            const avgPoint: ChartDataPoint = {
-              surveyId: `avg-${date}`,
-              date: date,
-              fullDate: fullDate,
-              mediaOutlet: "各社平均",
-            };
-
-            // 各政党の平均値を計算
-            Object.keys(partyAverages).forEach((party) => {
-              const values = partyAverages[party];
-              if (values.length > 0) {
-                const avg = values.reduce((a, b) => a + b, 0) / values.length;
-                avgPoint[party] = parseFloat(avg.toFixed(1)); // 小数点第1位まで
-              }
-            });
-
-            averagePoints.push(avgPoint);
-          });
-
-        // 各社平均を追加
-        if (averagePoints.length > 0) {
-          mediaGroups["各社平均"] = averagePoints;
-        }
-
-        // 日付順に並べ替える
+        // データを月でソート
         Object.keys(mediaGroups).forEach((media) => {
-          mediaGroups[media].sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
+          mediaGroups[media].sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateA.getTime() - dateB.getTime();
+          });
         });
 
         const mediaArray = Array.from(mediaSet);
-        // 各社平均を先頭に配置
         setMediaList(["各社平均", ...mediaArray]);
-        setChartData(mediaGroups);
+        setChartData({ ...mediaGroups, ...mediaGroupsWithAverage });
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -349,11 +361,11 @@ const PoliticalChart = () => {
             ))}
           </TabsList>
         </div>
-        
+
         {mediaList.map((media) => (
-          <TabsContent 
-            key={media} 
-            value={media} 
+          <TabsContent
+            key={media}
+            value={media}
             className="px-2 w-full pt-14" // タブの高さ分の余白を追加
           >
             {chartData[media] && chartData[media].length > 0 ? (
