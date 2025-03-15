@@ -332,26 +332,36 @@ const PoliticalChart = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-black relative">
       <Tabs value={activeMedia} onValueChange={setActiveMedia}>
-        <TabsList className="mb-4 flex flex-wrap gap-1 justify-start">
-          {mediaList.map((media) => (
-            <TabsTrigger
-              key={media}
-              value={media}
-              className="px-4 py-2 text-base"
-            >
-              {media}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="sticky top-0 z-10 bg-black">
+          <TabsList className="mb-4 bg-gray-900 p-2 flex flex-wrap justify-center gap-2">
+            {mediaList.map((media) => (
+              <TabsTrigger
+                key={media}
+                value={media}
+                className="px-4 py-2 text-base text-white data-[state=active]:bg-blue-600 
+                           rounded-md flex-shrink-0 
+                           hover:bg-gray-700 transition-colors duration-200"
+              >
+                {media}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        
         {mediaList.map((media) => (
-          <TabsContent key={media} value={media}>
+          <TabsContent 
+            key={media} 
+            value={media} 
+            className="px-2 w-full pt-14" // タブの高さ分の余白を追加
+          >
             {chartData[media] && chartData[media].length > 0 ? (
-              <ResponsiveContainer width="100%" height={500}>
+              <ResponsiveContainer width="100%" height={450}>
                 <LineChart
                   data={chartData[media]}
                   margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
+                  className="bg-black"
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -408,7 +418,7 @@ const PoliticalChart = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-[500px] bg-gray-800 rounded-lg">
+              <div className="flex items-center justify-center h-[450px] bg-black text-white">
                 <p className="text-gray-400 text-lg">
                   このメディアのデータがありません
                 </p>
