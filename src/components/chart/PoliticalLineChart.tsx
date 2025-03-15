@@ -195,8 +195,8 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
 
   return (
     <div className="w-full overflow-x-auto overflow-y-visible h-[900px]">
-      <div className="min-w-[800px] h-[850px]">
-        <ResponsiveContainer width="100%" height={800}>
+      <div className="w-full overflow-auto h-[850px]">
+        <ResponsiveContainer width="100%" height="100%">
           {chartType === "line" ? (
             <LineChart
               data={data}

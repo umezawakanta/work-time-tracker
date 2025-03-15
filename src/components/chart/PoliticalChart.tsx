@@ -76,15 +76,11 @@ const PoliticalChart = () => {
   // フルスクリーン切替
   const toggleFullscreen = () => {
     if (!chartRef.current) return;
-    
-    if (!isFullscreen) {
-      if (chartRef.current.requestFullscreen) {
-        chartRef.current.requestFullscreen();
-      }
+  
+    if (!document.fullscreenElement) {
+      chartRef.current.requestFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+      document.exitFullscreen();
     }
     setIsFullscreen(!isFullscreen);
   };
