@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -95,7 +95,7 @@ const PoliticalChart = () => {
     [media: string]: string[];
   }>({});
 
-  const fetchSurveyData = async () => {
+  const fetchSurveyData = useCallback(async () => {
     try {
       setIsLoading(true);
       const [surveyResponse, partiesResponse] = await Promise.all([
@@ -304,11 +304,11 @@ const PoliticalChart = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [mediaList, parties]);
 
   useEffect(() => {
     fetchSurveyData();
-  }, []);
+  }, [fetchSurveyData]);
 
   const generateLines = (mediaOutlet: string) => {
     if (!chartData[mediaOutlet] || chartData[mediaOutlet].length === 0) {
@@ -436,8 +436,8 @@ const PoliticalChart = () => {
             className="px-2 w-full pt-4"
           >
             {chartData[media] && chartData[media].length > 0 ? (
-              <div className="w-full overflow-x-auto overflow-y-visible" style={{ height: "800px" }}>
-                <div className="min-w-[800px]" style={{ height: "750px" }}>
+              <div className="w-full overflow-x-auto overflow-y-visible h-[800px]">
+                <div className="min-w-[800px] h-[750px]">
                   <ResponsiveContainer
                     width="100%"
                     height={700}
