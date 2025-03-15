@@ -177,7 +177,7 @@ const PoliticalTrends = () => {
       )}
       
       <CardContent className="p-0">
-        <div className={`w-full transition-all duration-300 ease-in-out ${view === "chart" ? "h-[600px]" : "h-auto"} overflow-hidden`}>
+      <div className={`w-full transition-all duration-300 ease-in-out ${view === "chart" ? "min-h-[600px]" : "h-auto"} overflow-hidden`}>
           {view === "chart" ? (
             <PoliticalChart />
           ) : (

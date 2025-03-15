@@ -32,7 +32,7 @@ const PageSkeleton = () => (
       <Skeleton className="h-12 w-64" />
       <Skeleton className="h-10 w-32" />
     </div>
-    <Skeleton className="h-[600px] w-full" />
+    <Skeleton className="h-[650px] w-full" />
   </div>
 );
 

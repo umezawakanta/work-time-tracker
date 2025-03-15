@@ -204,7 +204,7 @@ const PoliticalChart = () => {
       </CardHeader>
       
       <CardContent className="p-0 relative" ref={chartRef}>
-        <div className="w-full bg-card relative">
+      <div className="w-full bg-card relative">
           <MissingDataAlert missingData={missingData} />
           <Tabs value={activeMedia} onValueChange={setActiveMedia}>
             <ChartControls mediaList={mediaList} activeMedia={activeMedia} />
