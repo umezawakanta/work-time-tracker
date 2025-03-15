@@ -103,7 +103,8 @@ const PoliticalChart = () => {
         partyApi.getAll(),
       ]);
 
-      setParties(partiesResponse.data);
+      const partiesData = partiesResponse.data;
+      setParties(partiesData);
 
       const data = surveyResponse.data as unknown as SurveyResponseData;
 
@@ -153,6 +154,9 @@ const PoliticalChart = () => {
           各社平均: [],
         };
 
+        // 全メディアのリストを作成
+        const allMedias = Array.from(mediaSet);
+
         Object.keys(monthlyAverageData)
           .sort()
           .forEach((monthKey) => {
@@ -172,22 +176,21 @@ const PoliticalChart = () => {
             };
 
             // 各政党の月平均を計算
-            parties.forEach((party) => {
+            partiesData.forEach((party) => {
               const monthData = monthlyAverageData[monthKey];
               const partyAverages: number[] = [];
 
               // すべてのメディアの同じ政党の平均を計算
-              mediaList
-                .filter((media) => media !== "各社平均")
-                .forEach((media) => {
-                  const partyKey = `${party.shortName}_${media}`;
-                  const values = monthData[partyKey] || [];
-                  if (values.length > 0) {
-                    const avg =
-                      values.reduce((a, b) => a + b, 0) / values.length;
-                    partyAverages.push(avg);
-                  }
-                });
+              // mediaListが空の可能性があるため、直接mediaSetから取得したリストを使用
+              allMedias.forEach((media) => {
+                const partyKey = `${party.shortName}_${media}`;
+                const values = monthData[partyKey] || [];
+                if (values.length > 0) {
+                  const avg =
+                    values.reduce((a, b) => a + b, 0) / values.length;
+                  partyAverages.push(avg);
+                }
+              });
 
               // 全メディアの平均を計算
               if (partyAverages.length > 0) {
@@ -304,7 +307,7 @@ const PoliticalChart = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [mediaList, parties]);
+  }, []); // mediaListとpartiesへの依存を削除
 
   useEffect(() => {
     fetchSurveyData();
@@ -436,15 +439,15 @@ const PoliticalChart = () => {
             className="px-2 w-full pt-4"
           >
             {chartData[media] && chartData[media].length > 0 ? (
-              <div className="w-full overflow-x-auto overflow-y-visible h-[800px]">
-                <div className="min-w-[800px] h-[750px]">
+              <div className="w-full overflow-x-auto overflow-y-visible h-[900px]">
+                <div className="min-w-[800px] h-[850px]">
                   <ResponsiveContainer
                     width="100%"
-                    height={700}
+                    height={800}
                   >
                     <LineChart
                       data={chartData[media]}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 180 }}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 200 }}
                       className="bg-black"
                     >
                       <CartesianGrid
@@ -492,13 +495,11 @@ const PoliticalChart = () => {
                         verticalAlign="bottom"
                         align="center"
                         wrapperStyle={{
-                          position: "absolute",
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
                           padding: "20px 10px",
                           fontSize: "16px",
                           fontWeight: "bold",
+                          marginTop: "20px",
+                          bottom: "20px"
                         }}
                         formatter={(value) => value.split("(")[0]}
                       />
