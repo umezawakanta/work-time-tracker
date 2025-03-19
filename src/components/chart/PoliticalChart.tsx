@@ -22,13 +22,15 @@ type DateRange = "1M" | "3M" | "6M" | "1Y" | "MAX";
 const PoliticalChart = () => {
   const { chartData, mediaList, parties, isLoading, missingData, fetchSurveyData } = useSurveyData();
   const [activeMedia, setActiveMedia] = useState<string>("各社平均");
-  const [dateRange, setDateRange] = useState<DateRange>("6M");
+  const [dateRange, setDateRange] = useState<DateRange>("MAX"); // デフォルトを全期間に変更
   const [chartType, setChartType] = useState<"line" | "bar" | "pie">("line");
   const [showCompareMode, setShowCompareMode] = useState(false);
   const [compareTarget, setCompareTarget] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [highlightedParties, setHighlightedParties] = useState<string[]>([]);
   const chartRef = useRef<HTMLDivElement | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState<string>(new Date().toLocaleString());
 
   // データのフィルタリング
   const filteredData = useCallback(() => {
@@ -69,16 +71,50 @@ const PoliticalChart = () => {
     });
   }, [chartData, activeMedia, dateRange]);
 
+  // URLからパラメータを読み取って初期状態を設定
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const mediaParam = url.searchParams.get("media");
+    const rangeParam = url.searchParams.get("range") as DateRange | null;
+    
+    if (mediaParam && mediaList.includes(mediaParam)) {
+      setActiveMedia(mediaParam);
+    }
+    
+    if (rangeParam && ["1M", "3M", "6M", "1Y", "MAX"].includes(rangeParam)) {
+      setDateRange(rangeParam);
+    }
+  }, [mediaList]);
+
   useEffect(() => {
     fetchSurveyData();
+    setLastUpdateTime(new Date().toLocaleString());
   }, [fetchSurveyData]);
+
+  // 自動更新の設定
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    if (autoRefresh) {
+      intervalId = setInterval(() => {
+        fetchSurveyData();
+        setLastUpdateTime(new Date().toLocaleString());
+      }, 300000); // 5分ごとに更新
+    }
+    
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [autoRefresh, fetchSurveyData]);
 
   // フルスクリーン切替
   const toggleFullscreen = () => {
     if (!chartRef.current) return;
   
     if (!document.fullscreenElement) {
-      chartRef.current.requestFullscreen();
+      chartRef.current.requestFullscreen().catch(err => {
+        console.error(`フルスクリーンの切り替えに失敗しました: ${err.message}`);
+      });
     } else {
       document.exitFullscreen();
     }
@@ -90,12 +126,16 @@ const PoliticalChart = () => {
     if (!chartRef.current) return;
     
     try {
-      const canvas = await html2canvas(chartRef.current);
+      const canvas = await html2canvas(chartRef.current, {
+        scale: 2, // 解像度を2倍に
+        backgroundColor: null,
+        logging: false
+      });
       canvas.toBlob((blob) => {
         if (blob) {
           saveAs(blob, `政党支持率_${activeMedia}_${new Date().toISOString().slice(0, 10)}.png`);
         }
-      });
+      }, 'image/png', 1.0);
     } catch (error) {
       console.error("画像の生成に失敗しました", error);
     }
@@ -142,8 +182,39 @@ const PoliticalChart = () => {
     const url = new URL(window.location.href);
     url.searchParams.set("media", activeMedia);
     url.searchParams.set("range", dateRange);
+    
+    // ハイライト中の政党があれば、URLに追加
+    if (highlightedParties.length > 0) {
+      url.searchParams.set("highlight", highlightedParties.join(","));
+    } else {
+      url.searchParams.delete("highlight");
+    }
+    
     navigator.clipboard.writeText(url.toString());
-    alert("URLをクリップボードにコピーしました");
+    
+    // トースト通知用の仮実装
+    const notification = document.createElement("div");
+    notification.textContent = "URLをクリップボードにコピーしました";
+    notification.style.position = "fixed";
+    notification.style.bottom = "20px";
+    notification.style.left = "50%";
+    notification.style.transform = "translateX(-50%)";
+    notification.style.padding = "12px 24px";
+    notification.style.backgroundColor = "rgba(0,0,0,0.8)";
+    notification.style.color = "white";
+    notification.style.borderRadius = "4px";
+    notification.style.zIndex = "9999";
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = "0";
+      notification.style.transition = "opacity 0.5s ease";
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 2000);
   };
 
   // ハイライト切替
@@ -157,24 +228,73 @@ const PoliticalChart = () => {
     });
   };
 
+  // 全政党ハイライトをリセット
+  const resetHighlights = () => {
+    setHighlightedParties([]);
+  };
+
+  // データの統計情報を計算
+  const getPartyStats = (partyShortName: string) => {
+    if (!chartData[activeMedia]) return { current: 0, change: 0, max: 0, min: 0 };
+    
+    const filteredPoints = filteredData();
+    if (filteredPoints.length === 0) return { current: 0, change: 0, max: 0, min: 0 };
+    
+    const key = activeMedia === "各社平均" ? partyShortName : `${partyShortName}_${activeMedia}`;
+    
+    // 現在値（最新）
+    const current = Number(filteredPoints[filteredPoints.length - 1][key] || 0);
+    
+    // 前回からの変化
+    const previous = filteredPoints.length > 1 ? Number(filteredPoints[filteredPoints.length - 2][key] || 0) : current;
+    const change = current - previous;
+    
+    // 期間内の最大・最小値
+    const values = filteredPoints
+    .map(point => {
+      const value = point[key];
+      return typeof value === 'string' ? parseFloat(value) : (value || 0);
+    })
+    .filter(val => val !== 0);
+    
+    const max = values.length > 0 ? Math.max(...values) : 0;
+    const min = values.length > 0 ? Math.min(...values) : 0;
+    
+    return { current, change, max, min };
+  };
+
   if (isLoading) {
     return (
-      <Card>
+      <Card className="w-full shadow-lg border rounded-lg overflow-hidden">
         <CardHeader>
-          <CardTitle>政党支持率データ読み込み中</CardTitle>
+          <CardTitle className="text-xl font-bold">政党支持率データ読み込み中</CardTitle>
         </CardHeader>
         <CardContent>
-          <Skeleton className="w-full h-[500px] rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="w-full h-[60px] rounded-lg" />
+            <Skeleton className="w-full h-[500px] rounded-lg" />
+            <div className="flex gap-2">
+              <Skeleton className="w-1/4 h-[30px] rounded-lg" />
+              <Skeleton className="w-1/4 h-[30px] rounded-lg" />
+              <Skeleton className="w-1/4 h-[30px] rounded-lg" />
+              <Skeleton className="w-1/4 h-[30px] rounded-lg" />
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="w-full bg-card overflow-hidden border">
+    <Card className="w-full bg-card overflow-hidden border shadow-lg rounded-lg transition-all duration-300">
       <CardHeader className="pb-0">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-bold">政党支持率グラフ</CardTitle>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="space-y-1">
+            <CardTitle className="text-2xl font-bold">日本政党支持率トラッカー</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              各社世論調査に基づく政党支持率の推移を可視化
+            </p>
+          </div>
           <ChartToolbar 
             onDownloadImage={downloadAsImage}
             onDownloadCSV={downloadAsCSV}
@@ -186,25 +306,44 @@ const PoliticalChart = () => {
           />
         </div>
         
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
           <TimeRangeSelector 
             selectedRange={dateRange}
             onChange={(range) => setDateRange(range as DateRange)}
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button 
               variant={showCompareMode ? "default" : "outline"} 
               size="sm"
               onClick={() => setShowCompareMode(!showCompareMode)}
+              className="text-sm"
             >
-              比較モード
+              メディア比較
             </Button>
+            <Button 
+              variant={autoRefresh ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className="text-sm"
+            >
+              {autoRefresh ? "自動更新中" : "自動更新"}
+            </Button>
+            {highlightedParties.length > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={resetHighlights}
+                className="text-sm"
+              >
+                ハイライト解除
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
       
       <CardContent className="p-0 relative" ref={chartRef}>
-      <div className="w-full bg-card relative">
+        <div className="w-full bg-card relative">
           <MissingDataAlert missingData={missingData} />
           <Tabs value={activeMedia} onValueChange={setActiveMedia}>
             <ChartControls mediaList={mediaList} activeMedia={activeMedia} />
@@ -225,6 +364,40 @@ const PoliticalChart = () => {
                       highlightedParties={highlightedParties}
                     />
                     
+                    {/* 統計サマリー */}
+                    {highlightedParties.length > 0 && (
+                      <div className="mt-2 p-4 bg-muted/30 rounded-lg">
+                        <h3 className="text-sm font-medium mb-2">ハイライト政党の統計</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {highlightedParties.map(partyId => {
+                            const party = parties.find(p => p.shortName === partyId);
+                            const stats = getPartyStats(partyId);
+                            if (!party) return null;
+                            
+                            return (
+                              <div key={partyId} className="flex items-center gap-2 p-2 rounded-md bg-background">
+                                <div 
+                                  className="w-4 h-4 rounded-full" 
+                                  style={{ backgroundColor: party.colorCode }}
+                                />
+                                <div>
+                                  <div className="font-medium">{party.name}</div>
+                                  <div className="text-sm grid grid-cols-2 gap-x-4">
+                                    <span>現在: {stats.current.toFixed(1)}%</span>
+                                    <span className={stats.change > 0 ? "text-green-500" : stats.change < 0 ? "text-red-500" : ""}>
+                                      {stats.change > 0 ? "+" : ""}{stats.change.toFixed(1)}%
+                                    </span>
+                                    <span>最大: {stats.max.toFixed(1)}%</span>
+                                    <span>最小: {stats.min.toFixed(1)}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
                     {showCompareMode && (
                       <CompareOverlay 
                         mediaList={mediaList.filter(m => m !== media)}
@@ -240,8 +413,8 @@ const PoliticalChart = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-[450px] bg-card text-card-foreground">
-                    <p className="text-gray-400 text-lg mb-4">
-                      このメディアのデータがありません
+                    <p className="text-muted-foreground text-lg mb-4">
+                      {media}のデータがありません
                     </p>
                     <Button variant="outline" onClick={() => setActiveMedia("各社平均")}>
                       各社平均に戻る
@@ -254,17 +427,20 @@ const PoliticalChart = () => {
         </div>
       </CardContent>
       
-      <CardFooter className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-t gap-4">
+      <CardFooter className="flex flex-col gap-4 p-4 border-t">
         <ChartLegend 
           parties={parties}
           onToggleHighlight={togglePartyHighlight}
           highlightedParties={highlightedParties}
         />
         
-        <div className="flex items-center text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full text-sm text-muted-foreground">
           <p>
-            最終更新: {new Date().toLocaleDateString()} / 
-            データ提供: 各メディア世論調査データ
+            最終更新: {lastUpdateTime}
+          </p>
+          <p>
+            データ提供: 各メディア世論調査 | 
+            <a href="#" className="ml-1 underline">データについて</a>
           </p>
         </div>
       </CardFooter>
