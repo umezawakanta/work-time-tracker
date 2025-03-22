@@ -20,6 +20,7 @@ import {
   User,
   GitBranch,
   AlertCircle,
+  Guitar, // ギターアイコンをインポート
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -76,6 +77,7 @@ export default function Layout({ children }: LayoutProps) {
     },
     { icon: <Moon size={18} />, label: "睡眠", path: "/sleep-tracker" },
     { icon: <BookOpen size={18} />, label: "本棚", path: "/bookshelf" },
+    { icon: <Guitar size={18} />, label: "ギター練習", path: "/guitar-practice" }, // ギター練習へのリンクを追加
     { icon: <Pen size={18} />, label: "ブログ", path: "/blog" },
     { icon: <BookOpen size={18} />, label: "ADHD日記", path: "/diary" },
     {

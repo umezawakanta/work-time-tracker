@@ -32,6 +32,7 @@ import PoliticalTrends from "./pages/PoliticalTrends";
 import CalendarPage from "./pages/CalendarPage";
 import DiaryPage from "./pages/DiaryPage";
 import ImpulseTrackerPage from "./pages/ImpulseTrackerPage"; // 新しく追加
+import GuitarPracticePage from "./pages/GuitarPracticePage";
 
 const theme = createTheme({
   palette: {
@@ -93,6 +94,7 @@ export default function App() {
                     element={<AssetCalendarPage />}
                   />
                   <Route path="/bookshelf" element={<BookShelfPage />} />
+                  <Route path="/guitar-practice" element={<GuitarPracticePage />} />
                   <Route path="/sleep-tracker" element={<SleepTrackerPage />} />
                   <Route path="/twitter" element={<TwitterPage />} />
                   <Route path="/blog" element={<BlogPage />} />
