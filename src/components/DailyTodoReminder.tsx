@@ -2,15 +2,30 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  RefreshCcw, Trash2, Edit, Check, X, ChevronUp, 
-  ChevronDown, Star, AlertTriangle, Clock, Award
+import {
+  RefreshCcw,
+  Trash2,
+  Edit,
+  Check,
+  X,
+  ChevronUp,
+  ChevronDown,
+  Star,
+  AlertTriangle,
+  Clock,
+  Award,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
@@ -33,9 +48,31 @@ import { TodoChart } from "@/components/chart/TodoChart";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function DailyTodoReminder({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
@@ -55,40 +92,45 @@ export default function DailyTodoReminder({ isPremium = false }) {
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
-    const sortedDates = Object.keys(todoHistory)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-    
+    const sortedDates = Object.keys(todoHistory).sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime()
+    );
+
     if (sortedDates.length === 0) {
       setStreakCount(0);
       return;
     }
-    
+
     const today = new Date().toISOString().split("T")[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-    
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .split("T")[0];
+
     // 今日か昨日にタスクを完了していない場合はストリークリセット
     if (sortedDates[0] !== today && sortedDates[0] !== yesterday) {
       setStreakCount(0);
       return;
     }
-    
+
     let streak = 1;
     for (let i = 1; i < sortedDates.length; i++) {
-      const currentDate = new Date(sortedDates[i-1]);
+      const currentDate = new Date(sortedDates[i - 1]);
       const prevDate = new Date(sortedDates[i]);
-      
-      const diffDays = Math.floor((currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
-      
+
+      const diffDays = Math.floor(
+        (currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
       if (diffDays === 1) {
         streak++;
       } else {
         break;
       }
     }
-    
+
     setStreakCount(streak);
   }, [todoHistory]);
-  
+
   useEffect(() => {
     dispatch(fetchTodoItems());
   }, [dispatch]);
@@ -98,7 +140,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
       const completedCount = todos.filter((todo) => todo.completed).length;
       const today = new Date().toISOString().split("T")[0];
       dispatch(updateTodoHistory({ date: today, count: completedCount }));
-      
+
       // ストリーク計算
       calculateStreak();
     }
@@ -119,11 +161,13 @@ export default function DailyTodoReminder({ isPremium = false }) {
             _id: id,
             updates: {
               completed: !todoToUpdate.completed,
-              completedDate: !todoToUpdate.completed ? new Date().toISOString() : null,
+              completedDate: !todoToUpdate.completed
+                ? new Date().toISOString()
+                : null,
             },
           })
         );
-        
+
         if (!todoToUpdate.completed) {
           toast.success("お疲れ様でした！タスクを完了しました");
         }
@@ -148,11 +192,13 @@ export default function DailyTodoReminder({ isPremium = false }) {
     if (commitmentText.trim()) {
       const maxPriority = Math.max(...todos.map((todo) => todo.priority), 0);
       // TodoItemの型に合わせて、createdAtとdeadlineは含めない
-      dispatch(addTodoItem({ 
-        task: commitmentText.trim(), 
-        priority: maxPriority + 1, 
-        isPrioritized: false
-      }));
+      dispatch(
+        addTodoItem({
+          task: commitmentText.trim(),
+          priority: maxPriority + 1,
+          isPrioritized: false,
+        })
+      );
       setNewTodo("");
       setShowCommitmentDialog(false);
       toast.success("新しいタスクを追加しました。必ず完了させましょう！");
@@ -165,7 +211,9 @@ export default function DailyTodoReminder({ isPremium = false }) {
       if (todoToDelete && todoToDelete.completed) {
         dispatch(deleteTodoItem(id));
       } else {
-        toast.error("完了していないタスクは削除できません。必ず完了させてください。");
+        toast.error(
+          "完了していないタスクは削除できません。必ず完了させてください。"
+        );
       }
     },
     [dispatch, todos]
@@ -199,21 +247,21 @@ export default function DailyTodoReminder({ isPremium = false }) {
     (id: string, direction: "up" | "down") => {
       const index = todos.findIndex((todo) => todo._id === id);
       if (index === -1) return;
-  
+
       const newIndex = direction === "up" ? index - 1 : index + 1;
       if (newIndex < 0 || newIndex >= todos.length) return;
-  
+
       // タスクの順番を変更
       const updatedTodos = [...todos];
       const [movedTodo] = updatedTodos.splice(index, 1); // 対象のタスクを削除
       updatedTodos.splice(newIndex, 0, movedTodo); // 新しい位置に挿入
-  
+
       // 優先度を再計算（順番通りの番号を付ける）
       const recalculatedTodos = updatedTodos.map((todo, idx) => ({
         ...todo,
         priority: idx + 1,
       }));
-  
+
       // 更新したタスクリストをReduxストアに保存
       dispatch(reorderTodoItems(recalculatedTodos));
     },
@@ -226,54 +274,62 @@ export default function DailyTodoReminder({ isPremium = false }) {
     },
     [dispatch]
   );
-  
+
   const handleDragEnd = useCallback(
     (result) => {
       if (!result.destination) return;
-      
+
       const sourceIndex = result.source.index;
       const destinationIndex = result.destination.index;
-      
+
       if (sourceIndex === destinationIndex) return;
-      
+
       const updatedTodos = [...todos];
       const [movedTodo] = updatedTodos.splice(sourceIndex, 1);
       updatedTodos.splice(destinationIndex, 0, movedTodo);
-      
+
       const recalculatedTodos = updatedTodos.map((todo, idx) => ({
         ...todo,
         priority: idx + 1,
       }));
-      
+
       dispatch(reorderTodoItems(recalculatedTodos));
     },
     [dispatch, todos]
   );
 
   // フィルター処理
-  const filteredTodos = [...todos].filter(todo => {
-    if (filterStatus === "active") return !todo.completed;
-    if (filterStatus === "completed") return todo.completed;
-    return true;
-  }).sort((a, b) => {
-    if (a.completed === b.completed) {
-      if (a.isPrioritized === b.isPrioritized) {
-        return a.priority - b.priority;
+  const filteredTodos = [...todos]
+    .filter((todo) => {
+      if (filterStatus === "active") return !todo.completed;
+      if (filterStatus === "completed") return todo.completed;
+      return true;
+    })
+    .sort((a, b) => {
+      if (a.completed === b.completed) {
+        if (a.isPrioritized === b.isPrioritized) {
+          return a.priority - b.priority;
+        }
+        return a.isPrioritized ? -1 : 1;
       }
-      return a.isPrioritized ? -1 : 1;
-    }
-    return a.completed ? 1 : -1;
-  });
+      return a.completed ? 1 : -1;
+    });
 
-  const todoHistoryArray = Object.entries(todoHistory).map(([date, count]) => ({ date, count }));
+  const todoHistoryArray = Object.entries(todoHistory).map(([date, count]) => ({
+    date,
+    count,
+  }));
 
   // 進捗状況の計算
-  const completedCount = todos.filter(todo => todo.completed).length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
   const totalCount = todos.length;
-  const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const progressPercentage =
+    totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   if (status === "loading") {
-    return <div className="flex items-center justify-center p-8">読み込み中...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">読み込み中...</div>
+    );
   }
 
   return (
@@ -285,7 +341,10 @@ export default function DailyTodoReminder({ isPremium = false }) {
         </div>
         <div className="flex items-center space-x-2">
           {isPremium && (
-            <Badge variant="outline" className="bg-amber-100 text-amber-800 flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="bg-amber-100 text-amber-800 flex items-center gap-1"
+            >
               <Award className="h-3 w-3" />
               <span>プレミアム</span>
             </Badge>
@@ -303,8 +362,24 @@ export default function DailyTodoReminder({ isPremium = false }) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button variant="ghost" size="sm" onClick={() => dispatch(resetTodoList())}>
-            <RefreshCcw className="h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (
+                confirm(
+                  "今日のタスクを締めくくり、新しい日を始めますか？\n完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
+                )
+              ) {
+                dispatch(resetTodoList());
+                toast.success(
+                  "新しい日の準備ができました。今日も頑張りましょう！"
+                );
+              }
+            }}
+          >
+            <RefreshCcw className="h-4 w-4 mr-1" />
+            <span>1日を締める</span>
           </Button>
         </div>
       </CardHeader>
@@ -312,14 +387,21 @@ export default function DailyTodoReminder({ isPremium = false }) {
       {/* 進捗バー */}
       <div className="px-4 pt-0 pb-2">
         <div className="flex justify-between items-center mb-1 text-sm">
-          <span>進捗状況: {completedCount}/{totalCount} タスク完了</span>
+          <span>
+            進捗状況: {completedCount}/{totalCount} タスク完了
+          </span>
           <span>{progressPercentage}%</span>
         </div>
         <Progress value={progressPercentage} className="h-2" />
       </div>
 
       <CardContent>
-        <Tabs defaultValue="list" value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+        <Tabs
+          defaultValue="list"
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="list">リスト</TabsTrigger>
             <TabsTrigger value="calendar">カレンダー</TabsTrigger>
@@ -335,25 +417,25 @@ export default function DailyTodoReminder({ isPremium = false }) {
               />
               <Button type="submit">追加</Button>
             </form>
-            
+
             {/* フィルターボタン */}
             <div className="flex mb-4 gap-2">
-              <Button 
-                variant={filterStatus === "all" ? "default" : "outline"} 
+              <Button
+                variant={filterStatus === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilterStatus("all")}
               >
                 すべて
               </Button>
-              <Button 
-                variant={filterStatus === "active" ? "default" : "outline"} 
+              <Button
+                variant={filterStatus === "active" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilterStatus("active")}
               >
                 未完了
               </Button>
-              <Button 
-                variant={filterStatus === "completed" ? "default" : "outline"} 
+              <Button
+                variant={filterStatus === "completed" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilterStatus("completed")}
               >
@@ -367,22 +449,30 @@ export default function DailyTodoReminder({ isPremium = false }) {
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={snapshot.isDraggingOver ? "droppable-is-dragging-over" : "droppable-is-not-dragging-over"}
+                    className={
+                      snapshot.isDraggingOver
+                        ? "droppable-is-dragging-over"
+                        : "droppable-is-not-dragging-over"
+                    }
                   >
                     <div className="space-y-2">
                       {filteredTodos.map((todo, index) => (
-                        <Draggable key={todo._id} draggableId={todo._id} index={index}>
+                        <Draggable
+                          key={todo._id}
+                          draggableId={todo._id}
+                          index={index}
+                        >
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               className={`flex items-center space-x-2 p-3 rounded-md shadow-sm border ${
-                                todo.completed 
-                                  ? "bg-gray-50 border-gray-200" 
-                                  : todo.isPrioritized 
-                                    ? "bg-amber-50 border-amber-200" 
-                                    : "bg-white border-gray-200"
+                                todo.completed
+                                  ? "bg-gray-50 border-gray-200"
+                                  : todo.isPrioritized
+                                  ? "bg-amber-50 border-amber-200"
+                                  : "bg-white border-gray-200"
                               }`}
                             >
                               <Checkbox
@@ -394,13 +484,22 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                 <>
                                   <Input
                                     value={editingText}
-                                    onChange={(e) => setEditingText(e.target.value)}
+                                    onChange={(e) =>
+                                      setEditingText(e.target.value)
+                                    }
                                     className="flex-grow"
                                   />
-                                  <Button size="sm" onClick={() => handleEditSave(todo._id)}>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleEditSave(todo._id)}
+                                  >
                                     <Check className="h-4 w-4" />
                                   </Button>
-                                  <Button size="sm" variant="outline" onClick={handleEditCancel}>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={handleEditCancel}
+                                  >
                                     <X className="h-4 w-4" />
                                   </Button>
                                 </>
@@ -409,29 +508,40 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                   <div className="flex-grow">
                                     <Label
                                       htmlFor={`todo-${todo._id}`}
-                                      className={`${todo.completed ? "line-through text-gray-500" : "font-medium"}`}
+                                      className={`${
+                                        todo.completed
+                                          ? "line-through text-gray-500"
+                                          : "font-medium"
+                                      }`}
                                     >
                                       {todo.task}
                                     </Label>
                                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                                       <Clock className="h-3 w-3" />
                                       <span>
-                                        追加: {new Date(Date.now()).toLocaleString('ja-JP', { 
-                                          month: 'numeric', 
-                                          day: 'numeric',
-                                          hour: '2-digit',
-                                          minute: '2-digit'
-                                        })}
+                                        追加:{" "}
+                                        {new Date(Date.now()).toLocaleString(
+                                          "ja-JP",
+                                          {
+                                            month: "numeric",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          }
+                                        )}
                                       </span>
                                       {todo.completedDate && (
                                         <>
                                           <Check className="h-3 w-3" />
                                           <span>
-                                            完了: {new Date(todo.completedDate).toLocaleString('ja-JP', { 
-                                              month: 'numeric', 
-                                              day: 'numeric',
-                                              hour: '2-digit',
-                                              minute: '2-digit'
+                                            完了:{" "}
+                                            {new Date(
+                                              todo.completedDate
+                                            ).toLocaleString("ja-JP", {
+                                              month: "numeric",
+                                              day: "numeric",
+                                              hour: "2-digit",
+                                              minute: "2-digit",
                                             })}
                                           </span>
                                         </>
@@ -442,15 +552,23 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() => handleTogglePriority(todo._id)}
-                                      className={todo.isPrioritized ? "text-yellow-500" : ""}
+                                      onClick={() =>
+                                        handleTogglePriority(todo._id)
+                                      }
+                                      className={
+                                        todo.isPrioritized
+                                          ? "text-yellow-500"
+                                          : ""
+                                      }
                                     >
                                       <Star className="h-4 w-4" />
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() => handleMoveTodo(todo._id, "up")}
+                                      onClick={() =>
+                                        handleMoveTodo(todo._id, "up")
+                                      }
                                       disabled={index === 0}
                                     >
                                       <ChevronUp className="h-4 w-4" />
@@ -458,15 +576,21 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() => handleMoveTodo(todo._id, "down")}
-                                      disabled={index === filteredTodos.length - 1}
+                                      onClick={() =>
+                                        handleMoveTodo(todo._id, "down")
+                                      }
+                                      disabled={
+                                        index === filteredTodos.length - 1
+                                      }
                                     >
                                       <ChevronDown className="h-4 w-4" />
                                     </Button>
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() => handleEditStart(todo._id, todo.task)}
+                                      onClick={() =>
+                                        handleEditStart(todo._id, todo.task)
+                                      }
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
@@ -478,17 +602,25 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                       </AlertDialogTrigger>
                                       <AlertDialogContent>
                                         <AlertDialogHeader>
-                                          <AlertDialogTitle>タスクの削除</AlertDialogTitle>
+                                          <AlertDialogTitle>
+                                            タスクの削除
+                                          </AlertDialogTitle>
                                           <AlertDialogDescription>
-                                            {todo.completed 
-                                              ? "このタスクを削除してもよろしいですか？" 
+                                            {todo.completed
+                                              ? "このタスクを削除してもよろしいですか？"
                                               : "完了していないタスクは削除できません。必ず完了させてください。"}
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                          <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                                          <AlertDialogCancel>
+                                            キャンセル
+                                          </AlertDialogCancel>
                                           {todo.completed && (
-                                            <AlertDialogAction onClick={() => handleDeleteTodo(todo._id)}>
+                                            <AlertDialogAction
+                                              onClick={() =>
+                                                handleDeleteTodo(todo._id)
+                                              }
+                                            >
                                               削除する
                                             </AlertDialogAction>
                                           )}
@@ -508,7 +640,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                 )}
               </Droppable>
             </DragDropContext>
-            
+
             {todos.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 <p>タスクがありません。新しいタスクを追加しましょう！</p>
@@ -525,7 +657,10 @@ export default function DailyTodoReminder({ isPremium = false }) {
       </CardContent>
 
       {/* 確約ダイアログ */}
-      <Dialog open={showCommitmentDialog} onOpenChange={setShowCommitmentDialog}>
+      <Dialog
+        open={showCommitmentDialog}
+        onOpenChange={setShowCommitmentDialog}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>タスクへのコミットメント</DialogTitle>
@@ -539,12 +674,13 @@ export default function DailyTodoReminder({ isPremium = false }) {
             <p className="text-sm text-yellow-700">{commitmentText}</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCommitmentDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowCommitmentDialog(false)}
+            >
               キャンセル
             </Button>
-            <Button onClick={confirmAddTodo}>
-              コミットして追加する
-            </Button>
+            <Button onClick={confirmAddTodo}>コミットして追加する</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

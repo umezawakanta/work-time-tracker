@@ -1,6 +1,7 @@
 import express from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
+import { TodoArchive } from '../models/TodoArchive.js';
 
 const router = express.Router();
 
@@ -60,7 +61,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Reset all todos
+// Reset todos but preserve history
 router.post('/reset', async (_req, res) => {
   try {
     // 完了したタスクを見つける
@@ -73,34 +74,53 @@ router.post('/reset', async (_req, res) => {
     if (completedCount > 0) {
       const today = new Date().toISOString().split('T')[0];
       
-      // TodoHistoryコレクションに今日の完了タスク情報を保存
-      await TodoHistory.findOneAndUpdate(
-        { date: today },
-        { 
+      // 今日の日付のデータがすでに存在するか確認
+      const existingHistory = await TodoHistory.findOne({ date: today });
+      
+      if (existingHistory) {
+        // 既存のデータを更新
+        existingHistory.completedCount += completedCount;
+        existingHistory.taskDetails.push(
+          ...completedTodos.map(todo => ({
+            task: todo.task,
+            completedDate: todo.completedDate
+          }))
+        );
+        await existingHistory.save();
+      } else {
+        // 新しい履歴レコードを作成
+        await TodoHistory.create({
           date: today,
           completedCount: completedCount,
           taskDetails: completedTodos.map(todo => ({
             task: todo.task,
             completedDate: todo.completedDate
           }))
-        },
-        { upsert: true, new: true }
-      );
+        });
+      }
+    }
+    
+    // 完了したタスクをアーカイブとしてマーク
+    const todosToArchive = await TodoItem.find({ completed: true });
+    for (const todo of todosToArchive) {
+      // ArchiveCollectionに保存
+      await TodoArchive.create({
+        originalId: todo._id,
+        task: todo.task,
+        completed: true,
+        completedDate: todo.completedDate,
+        priority: todo.priority,
+        isPrioritized: todo.isPrioritized,
+        archivedAt: new Date()
+      });
       
-      // 完了したタスクをアーカイブ状態にする
-      await TodoItem.updateMany(
-        { completed: true }, 
-        { $set: { archived: true } }
-      );
-      
-      // アーカイブされたタスクを削除（オプション）
-      // await TodoItem.deleteMany({ archived: true });
+      // 元のタスクを削除
+      await TodoItem.findByIdAndDelete(todo._id);
     }
     
     // 未完了のタスクはそのまま残す
     const activeTodos = await TodoItem.find({ 
-      completed: false, 
-      archived: { $ne: true } 
+      completed: false
     }).sort({ isPrioritized: -1, priority: 1 });
     
     res.json(activeTodos);
@@ -112,10 +132,57 @@ router.post('/reset', async (_req, res) => {
 // 履歴データ取得のためのエンドポイントを追加
 router.get('/history', async (_req, res) => {
   try {
-    const history = await TodoHistory.find().sort({ date: -1 });
+    // 過去30日分の履歴を取得
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+    
+    const history = await TodoHistory.find({ 
+      date: { $gte: thirtyDaysAgoStr } 
+    }).sort({ date: 1 });
+    
     res.json(history);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching todo history', error });
+  }
+});
+
+// 日別のTodo完了数を取得するエンドポイント（グラフ用）
+router.get('/history/daily', async (_req, res) => {
+  try {
+    // 過去30日分の集計データを取得
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+    
+    const history = await TodoHistory.find({ 
+      date: { $gte: thirtyDaysAgoStr } 
+    }).sort({ date: 1 });
+    
+    // 日付ごとの完了数を集計
+    const dailyCounts = history.reduce((acc, item) => {
+      acc[item.date] = item.completedCount;
+      return acc;
+    }, {});
+    
+    // 日付の配列を生成（過去30日間の全日付）
+    const allDates: string[] = [];
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      allDates.unshift(dateStr);
+    }
+    
+    // 結果フォーマット
+    const result = allDates.map(date => ({
+      date: date,
+      count: dailyCounts[date] || 0
+    }));
+    
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching daily history', error });
   }
 });
 

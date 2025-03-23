@@ -116,7 +116,11 @@ const todoSlice = createSlice({
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
       .addCase(resetTodoList.fulfilled, (state, action) => {
+        // 完了したタスクは履歴に残し、アクティブなタスクだけを表示
         state.items = action.payload;
+        
+        // 履歴データは保持されたまま
+        // state.todoHistoryはそのまま
       })
       .addCase(reorderTodoItems.fulfilled, (state, action) => {
         state.items = action.payload;

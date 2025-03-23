@@ -12,6 +12,18 @@ interface ReorderResponse {
   todos: TodoItem[];
 }
 
+// TodoHistoryのインターフェース
+export interface TodoHistoryItem {
+  date: string;
+  completedCount: number;
+  taskDetails: Array<{
+    task: string;
+    completedDate: string | null;
+  }>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export const todoApi = {
   getAll: (): Promise<AxiosResponse<TodoItem[]>> => {
     return api.get<TodoItem[]>("/todos");
@@ -42,5 +54,9 @@ export const todoApi = {
 
   togglePriority: (_id: string): Promise<AxiosResponse<TodoApiResponse>> => {
     return api.post<TodoApiResponse>(`/todos/${_id}/toggle-priority`);
+  },
+  
+  getHistory: (): Promise<AxiosResponse<TodoHistoryItem[]>> => {
+    return api.get<TodoHistoryItem[]>("/todos/history");
   },
 };
