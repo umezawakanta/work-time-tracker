@@ -1,20 +1,16 @@
+// TodoChart.tsx
 import React, { useMemo } from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-
-export interface TodoHistoryItem {
-  date: string;
-  count: number;
-}
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 interface TodoChartProps {
   todoHistory: Array<{ date: string; count: number }>;
 }
 
-
 export const TodoChart: React.FC<TodoChartProps> = ({ todoHistory }) => {
-  // チャートデータの整形
+  // チャートデータの整形 - 配列をコピーしてからソート
   const chartData = useMemo(() => {
-    return todoHistory.sort((a, b) => {
+    // 配列をコピーしてから操作する
+    return [...todoHistory].sort((a, b) => {
       // 日付順に並べ替え
       return new Date(a.date).getTime() - new Date(b.date).getTime();
     });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 
 export interface TodoHistoryItem {
@@ -11,9 +11,18 @@ interface TodoCalendarProps {
 }
 
 export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
-  const historyMap = new Map(todoHistory.map(item => [item.date, item.count]));
-
-  const selectedDates = todoHistory.map(item => new Date(item.date));
+  // todoHistoryデータをMemoize
+  const { historyMap, selectedDates } = useMemo(() => {
+    // 履歴データからMapを作成（日付をキーに、タスク数を値に）
+    const map = new Map(todoHistory.map(item => [item.date, item.count]));
+    
+    // 完了タスクのある日付だけを選択（count > 0）
+    const dates = todoHistory
+      .filter(item => item.count > 0)
+      .map(item => new Date(item.date));
+    
+    return { historyMap: map, selectedDates: dates };
+  }, [todoHistory]);
 
   return (
     <div className="p-4">
@@ -25,7 +34,7 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
         modifiers={{
           completed: (date) => {
             const dateString = date.toISOString().split('T')[0];
-            return historyMap.has(dateString);
+            return historyMap.has(dateString) && historyMap.get(dateString)! > 0;
           },
         }}
         modifiersClassNames={{

@@ -335,14 +335,22 @@ export default function DailyTodoReminder({ isPremium = false }) {
         "今日のタスクを締めくくり、新しい日を始めますか？\n完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
       )
     ) {
+      console.log("リセット開始...");
       dispatch(resetTodoList())
         .then(() => {
-          // リセット成功後に履歴データを再取得
-          dispatch(fetchTodoHistory());
-          dispatch(fetchDailyTodoHistory());
+          console.log("リセット完了、履歴データを取得中...");
+          // リセット後に履歴データを再取得し、明示的に待機
+          return Promise.all([
+            dispatch(fetchTodoHistory()),
+            dispatch(fetchDailyTodoHistory()),
+          ]);
+        })
+        .then(() => {
+          console.log("履歴データ取得完了");
           toast.success("新しい日の準備ができました。今日も頑張りましょう！");
         })
         .catch((err) => {
+          console.error("エラー発生:", err);
           toast.error("エラーが発生しました: " + err.message);
         });
     }
@@ -661,7 +669,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
             )}
           </TabsContent>
           <TabsContent value="calendar">
-            <TodoCalendar todoHistory={todoHistoryArray} />
+            <TodoCalendar
+              todoHistory={
+                dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
+              }
+            />
           </TabsContent>
           <TabsContent value="chart">
             <TodoChart
