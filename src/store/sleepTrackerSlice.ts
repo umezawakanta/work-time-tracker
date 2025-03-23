@@ -7,6 +7,8 @@ export interface SleepRecord {
   date: string;
   wakeUp: string | null;
   bedtime: string | null;
+  quality?: string; // 'good' | 'neutral' | 'bad'
+  notes?: string;   // 睡眠に関するメモ
 }
 
 interface SleepTrackerState {
