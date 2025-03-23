@@ -1,5 +1,6 @@
 import express from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
+import { TodoHistory } from '../models/TodoHistory.js';
 
 const router = express.Router();
 
@@ -62,11 +63,59 @@ router.delete('/:id', async (req, res) => {
 // Reset all todos
 router.post('/reset', async (_req, res) => {
   try {
-    await TodoItem.updateMany({}, { completed: false, completedDate: null, isPrioritized: false });
-    const todos = await TodoItem.find().sort({ priority: 1 });
-    res.json(todos);
+    // 完了したタスクを見つける
+    const completedTodos = await TodoItem.find({ completed: true });
+    
+    // 完了したタスクの数をカウント
+    const completedCount = completedTodos.length;
+    
+    // 履歴データを保存
+    if (completedCount > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // TodoHistoryコレクションに今日の完了タスク情報を保存
+      await TodoHistory.findOneAndUpdate(
+        { date: today },
+        { 
+          date: today,
+          completedCount: completedCount,
+          taskDetails: completedTodos.map(todo => ({
+            task: todo.task,
+            completedDate: todo.completedDate
+          }))
+        },
+        { upsert: true, new: true }
+      );
+      
+      // 完了したタスクをアーカイブ状態にする
+      await TodoItem.updateMany(
+        { completed: true }, 
+        { $set: { archived: true } }
+      );
+      
+      // アーカイブされたタスクを削除（オプション）
+      // await TodoItem.deleteMany({ archived: true });
+    }
+    
+    // 未完了のタスクはそのまま残す
+    const activeTodos = await TodoItem.find({ 
+      completed: false, 
+      archived: { $ne: true } 
+    }).sort({ isPrioritized: -1, priority: 1 });
+    
+    res.json(activeTodos);
   } catch (error) {
     res.status(500).json({ message: 'Error resetting todos', error });
+  }
+});
+
+// 履歴データ取得のためのエンドポイントを追加
+router.get('/history', async (_req, res) => {
+  try {
+    const history = await TodoHistory.find().sort({ date: -1 });
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching todo history', error });
   }
 });
 
