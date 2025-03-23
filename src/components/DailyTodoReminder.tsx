@@ -73,6 +73,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  fetchTodoHistory,
+  fetchDailyTodoHistory,
+  selectDailyHistory,
+} from "@/store/todoSlice";
 
 export default function DailyTodoReminder({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
@@ -80,7 +85,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const status = useSelector(selectTodoStatus);
   const error = useSelector(selectTodoError);
   const todoHistory = useSelector(selectTodoHistory);
-
+  const dailyHistory = useSelector(selectDailyHistory);
   const [newTodo, setNewTodo] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
@@ -133,6 +138,9 @@ export default function DailyTodoReminder({ isPremium = false }) {
 
   useEffect(() => {
     dispatch(fetchTodoItems());
+    // 履歴データも取得
+    dispatch(fetchTodoHistory());
+    dispatch(fetchDailyTodoHistory());
   }, [dispatch]);
 
   useEffect(() => {
@@ -320,6 +328,26 @@ export default function DailyTodoReminder({ isPremium = false }) {
     count,
   }));
 
+  // resetTodoList実行時の処理を修正
+  const handleResetTodos = () => {
+    if (
+      confirm(
+        "今日のタスクを締めくくり、新しい日を始めますか？\n完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
+      )
+    ) {
+      dispatch(resetTodoList())
+        .then(() => {
+          // リセット成功後に履歴データを再取得
+          dispatch(fetchTodoHistory());
+          dispatch(fetchDailyTodoHistory());
+          toast.success("新しい日の準備ができました。今日も頑張りましょう！");
+        })
+        .catch((err) => {
+          toast.error("エラーが発生しました: " + err.message);
+        });
+    }
+  };
+
   // 進捗状況の計算
   const completedCount = todos.filter((todo) => todo.completed).length;
   const totalCount = todos.length;
@@ -362,22 +390,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              if (
-                confirm(
-                  "今日のタスクを締めくくり、新しい日を始めますか？\n完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
-                )
-              ) {
-                dispatch(resetTodoList());
-                toast.success(
-                  "新しい日の準備ができました。今日も頑張りましょう！"
-                );
-              }
-            }}
-          >
+          <Button variant="outline" size="sm" onClick={handleResetTodos}>
             <RefreshCcw className="h-4 w-4 mr-1" />
             <span>1日を締める</span>
           </Button>
@@ -651,7 +664,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
             <TodoCalendar todoHistory={todoHistoryArray} />
           </TabsContent>
           <TabsContent value="chart">
-            <TodoChart todoHistory={todoHistoryArray} />
+            <TodoChart
+              todoHistory={
+                dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
+              }
+            />
           </TabsContent>
         </Tabs>
       </CardContent>

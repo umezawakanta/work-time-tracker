@@ -16,13 +16,15 @@ interface TodoState {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   todoHistory: Record<string, number>;
+  dailyHistory: Array<{ date: string; count: number }>;
 }
 
 const initialState: TodoState = {
   items: [],
   status: "idle",
   error: null,
-  todoHistory: {},
+  todoHistory: {}, // 既存の履歴データ形式を維持
+  dailyHistory: [], // 日別の履歴データを追加
 };
 
 export const fetchTodoItems = createAsyncThunk("todo/fetchTodoItems", async () => {
@@ -60,6 +62,24 @@ export const resetTodoList = createAsyncThunk("todo/resetTodoList", async () => 
   const response = await todoApi.reset();
   return response.data;
 });
+
+// 履歴データ取得のためのアクションを追加
+export const fetchTodoHistory = createAsyncThunk(
+  "todo/fetchTodoHistory",
+  async () => {
+    const response = await todoApi.getHistory();
+    return response.data;
+  }
+);
+
+// 日別の履歴データを取得するアクションを追加
+export const fetchDailyTodoHistory = createAsyncThunk(
+  "todo/fetchDailyTodoHistory",
+  async () => {
+    const response = await todoApi.getDailyHistory();
+    return response.data;
+  }
+);
 
 export const reorderTodoItems = createAsyncThunk(
   "todo/reorderTodoItems",
@@ -115,12 +135,24 @@ const todoSlice = createSlice({
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
+      .addCase(resetTodoList.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(resetTodoList.fulfilled, (state, action) => {
-        // 完了したタスクは履歴に残し、アクティブなタスクだけを表示
+        state.status = "succeeded";
         state.items = action.payload;
-        
-        // 履歴データは保持されたまま
-        // state.todoHistoryはそのまま
+        // 履歴データはそのまま保持
+      })
+      .addCase(fetchTodoHistory.fulfilled, (state, action) => {
+        // 履歴データを適切な形式に変換
+        const historyData = action.payload.reduce((acc, item) => {
+          acc[item.date] = item.completedCount;
+          return acc;
+        }, {});
+        state.todoHistory = historyData;
+      })
+      .addCase(fetchDailyTodoHistory.fulfilled, (state, action) => {
+        state.dailyHistory = action.payload;
       })
       .addCase(reorderTodoItems.fulfilled, (state, action) => {
         state.items = action.payload;
@@ -140,5 +172,5 @@ export const selectTodos = (state: RootState) => state.todo.items;
 export const selectTodoStatus = (state: RootState) => state.todo.status;
 export const selectTodoError = (state: RootState) => state.todo.error;
 export const selectTodoHistory = (state: RootState) => state.todo.todoHistory;
-
+export const selectDailyHistory = (state: RootState) => state.todo.dailyHistory;
 export default todoSlice.reducer;

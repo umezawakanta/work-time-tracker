@@ -59,4 +59,8 @@ export const todoApi = {
   getHistory: (): Promise<AxiosResponse<TodoHistoryItem[]>> => {
     return api.get<TodoHistoryItem[]>("/todos/history");
   },
+
+  getDailyHistory: (): Promise<AxiosResponse<{date: string, count: number}[]>> => {
+    return api.get<{date: string, count: number}[]>("/todos/history/daily");
+  },
 };
