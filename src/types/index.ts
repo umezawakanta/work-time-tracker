@@ -92,9 +92,46 @@ export interface FinancialData {
     debtToIncomeRatio?: number;
     investmentReturns?: number;
     categories?: {
-      [category: string]: number;
+        [category: string]: number;
     };
     debtCategories?: {     // 追加: 負債カテゴリ
-      [category: string]: number;
+        [category: string]: number;
+    };
+}
+
+// 目標データの型定義
+export interface FinancialGoal {
+    id: string;
+    title: string;
+    type: "asset" | "debt" | "networth";
+    category?: string;
+    startValue: number;
+    currentValue: number;
+    targetValue: number;
+    startDate: string;
+    targetDate: string;
+    period: string;
+    account?: string;
+    autoUpdate: boolean;
+    milestones?: Array<{
+        value: number;
+        date: string;
+        achieved: boolean;
+    }>;
+    history: Array<{
+        date: string;
+        value: number;
+    }>;
+}
+
+// 定義する型
+export interface LongTermDataPoint {
+    date: string;
+    assets: number;
+    debts: number;
+    netWorth: number;
+    savingsRate?: number;
+    categories: {
+      [key: string]: number;
     };
   }

@@ -7,20 +7,22 @@ import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
 import { AssetLiabilityTrendChart } from "@/components/chart/AssetLiabilityTrendChart";
 import { AssetTrendChart } from "@/components/chart/AssetTrendChart";
 import { DebtTrendChart } from "@/components/chart/DebtTrendChart";
-import { AssetCategoryPieChart } from "@/components/chart/AssetCategoryPieChart"; // 新コンポーネント
-import { NetWorthProgressChart } from "@/components/chart/NetWorthProgressChart"; // 新コンポーネント
-import { AssetGrowthForecastChart } from "@/components/chart/AssetGrowthForecastChart"; // 新コンポーネント
-import { MonthlySnapshotTable } from "@/components/tables/MonthlySnapshotTable"; // 新コンポーネント
+import { AssetCategoryPieChart } from "@/components/chart/AssetCategoryPieChart";
+import { NetWorthProgressChart } from "@/components/chart/NetWorthProgressChart";
+import { AssetGrowthForecastChart } from "@/components/chart/AssetGrowthForecastChart";
+import { MonthlySnapshotTable } from "@/components/tables/MonthlySnapshotTable";
 import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
 import { AssetDebtForms } from "@/components/forms/AssetDebtForms";
 import { AssetDebtLists } from "@/components/list/AssetDebtLists";
-import { QuickAddForm } from "@/components/forms/QuickAddForm"; // 新コンポーネント
+import { QuickInput } from "@/components/QuickInput"; // 追加: 新しいクイック入力コンポーネント
+import { GoalTracking } from "@/components/goals/GoalTracking"; // 追加: 目標設定コンポーネント
+import { LongTermTrend } from "@/components/trends/LongTermTrend"; // 追加: 長期トレンド可視化コンポーネント
 import { useReportData } from "@/hooks/useReportData";
 import { useBalanceUpdate } from "@/hooks/useBalanceUpdate";
 import { combineData } from "@/utils/combineData";
-import { calculateFinancialMetrics } from "@/utils/financialMetrics"; // 新ユーティリティ
-import { shareReport } from "@/utils/shareReport"; // 新ユーティリティ
-import { exportToCSV, exportToPDF } from "@/utils/exportData"; // 新ユーティリティ
+import { calculateFinancialMetrics } from "@/utils/financialMetrics";
+import { shareReport } from "@/utils/shareReport";
+import { exportToCSV, exportToPDF } from "@/utils/exportData";
 import {
   ArrowUpCircle,
   ArrowDownCircle,
@@ -42,6 +44,7 @@ import {
   Download,
   Camera,
   Filter,
+  Target, // 追加: 目標のアイコン
 } from "lucide-react";
 import {
   Card,
@@ -85,7 +88,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-hot-toast";
-import { CombinedDataPoint } from "@/types";
+import { CombinedDataPoint, LongTermDataPoint } from "@/types";
+import { FinancialGoal } from "@/types"; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
@@ -115,8 +119,78 @@ export default function AssetLiabilityReportPage() {
     end: new Date(),
   });
 
+  // 目標設定関連の状態 (追加)
+  const [isGoalFormOpen, setIsGoalFormOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<string | null>(null);
+  const [isFullscreenView, setIsFullscreenView] = useState(false);
+
   // このデモでは常にfalseだが、実際には認証状態から取得
   const [isPremium, setIsPremium] = useState(false);
+
+  // デモ用の目標データ (追加)
+  const [goals, setGoals] = useState<FinancialGoal[]>([
+    {
+      id: "goal1",
+      title: "緊急資金の構築",
+      type: "asset",
+      startValue: 200000,
+      currentValue: 350000,
+      targetValue: 600000,
+      startDate: "2023-01-01",
+      targetDate: "2023-12-31",
+      period: "monthly",
+      autoUpdate: true,
+      history: [
+        { date: "2023-01-01", value: 200000 },
+        { date: "2023-02-01", value: 250000 },
+        { date: "2023-03-01", value: 275000 },
+        { date: "2023-04-01", value: 300000 },
+        { date: "2023-05-01", value: 325000 },
+        { date: "2023-06-01", value: 350000 },
+      ],
+    },
+    {
+      id: "goal2",
+      title: "住宅ローンの返済",
+      type: "debt",
+      startValue: 25000000,
+      currentValue: 24000000,
+      targetValue: 0,
+      startDate: "2023-01-01",
+      targetDate: "2033-01-01",
+      period: "monthly",
+      autoUpdate: true,
+      history: [
+        { date: "2023-01-01", value: 25000000 },
+        { date: "2023-02-01", value: 24800000 },
+        { date: "2023-03-01", value: 24600000 },
+        { date: "2023-04-01", value: 24400000 },
+        { date: "2023-05-01", value: 24200000 },
+        { date: "2023-06-01", value: 24000000 },
+      ],
+    },
+    {
+      id: "goal3",
+      title: "純資産1000万円達成",
+      type: "networth",
+      startValue: 5000000,
+      currentValue: 6500000,
+      targetValue: 10000000,
+      startDate: "2023-01-01",
+      targetDate: "2025-01-01",
+      period: "quarterly",
+      autoUpdate: false,
+      history: [
+        { date: "2023-01-01", value: 5000000 },
+        { date: "2023-04-01", value: 5500000 },
+        { date: "2023-07-01", value: 6000000 },
+        { date: "2023-10-01", value: 6500000 },
+      ],
+    },
+  ]);
+
+  // 長期トレンド分析用のデータ (追加)
+  const [longTermData, setLongTermData] = useState<LongTermDataPoint[]>([]);
 
   // 月次データの自動生成 (デモ用)
   const generateMonthlySnapshots = () => {
@@ -151,6 +225,9 @@ export default function AssetLiabilityReportPage() {
         // データ読み込みの遅延をシミュレート
         setTimeout(() => {
           setIsLoading(false);
+
+          // 長期トレンドデータを生成（デモ用）
+          generateLongTermData();
         }, 800);
       } catch (err) {
         console.error("Failed to load report data:", err);
@@ -160,6 +237,51 @@ export default function AssetLiabilityReportPage() {
     };
     loadData();
   }, []);
+
+  // 長期トレンドデータの生成（デモ用）
+  const generateLongTermData = () => {
+    const data: LongTermDataPoint[] = [];
+    const startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 5); // 5年前からのデータ
+
+    // 月次データを生成
+    for (let i = 0; i <= 60; i++) {
+      const date = new Date(startDate);
+      date.setMonth(date.getMonth() + i);
+
+      // 資産は徐々に増加、変動あり
+      const baseAssets = 5000000 + i * 100000;
+      const assets = baseAssets * (0.95 + Math.random() * 0.1);
+
+      // 負債は徐々に減少
+      const baseDebts = 3000000 - i * 30000;
+      const debts = Math.max(0, baseDebts * (0.97 + Math.random() * 0.06));
+
+      // 純資産
+      const netWorth = assets - debts;
+
+      // カテゴリ別の資産を追加
+      const categories = {
+        "現金・預金": assets * 0.2,
+        投資: assets * 0.35,
+        不動産: assets * 0.3,
+        "年金・保険": assets * 0.1,
+        その他: assets * 0.05,
+      };
+
+      // データポイント
+      data.push({
+        date: date.toISOString().split("T")[0],
+        assets,
+        debts,
+        netWorth,
+        savingsRate: 20 + Math.random() * 10,
+        categories: categories,
+      });
+    }
+
+    setLongTermData(data);
+  };
 
   const updateLastBalanceDate = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -177,23 +299,21 @@ export default function AssetLiabilityReportPage() {
   const combinedData = combineData(
     assetEntries.map((entry) => ({
       ...entry,
-      id: entry.account, // または適切なプロパティをIDとして使用
+      id: entry.account,
     })),
     debtEntries.map((entry) => ({
       ...entry,
-      id: entry.account, // または適切なプロパティをIDとして使用
+      id: entry.account,
     }))
   );
 
-  // viewDateRange を使って combinedData をフィルタ（エラー解消のため実装）
+  // viewDateRange を使って combinedData をフィルタ
   const filteredCombinedData = useMemo(() => {
     // viewDateRange.startまたはviewDateRange.endがnullの場合は、フィルタリングを行わずに全データを返す
     if (!viewDateRange.start || !viewDateRange.end) return combinedData;
 
     return combinedData.filter((entry: { date: string }) => {
       const entryDate = new Date(entry.date);
-      // ここでstart!とend!を使うことで、TypeScriptに「nullではない」ことを明示的に伝える
-      // この時点で既にnullチェックを行っているので安全に非nullアサーションを使用できる
       return (
         entryDate >= viewDateRange.start! && entryDate <= viewDateRange.end!
       );
@@ -221,11 +341,11 @@ export default function AssetLiabilityReportPage() {
       calculateFinancialMetrics(
         assetEntries.map((entry) => ({
           ...entry,
-          id: entry.account, // または適切なプロパティをIDとして使用
+          id: entry.account,
         })),
         debtEntries.map((entry) => ({
           ...entry,
-          id: entry.account, // または適切なプロパティをIDとして使用
+          id: entry.account,
         }))
       ),
     [assetEntries, debtEntries]
@@ -306,6 +426,18 @@ export default function AssetLiabilityReportPage() {
     }
 
     toast.success("スクリーンショットがダウンロードされました！");
+  };
+
+  // 目標の追加・編集処理 (追加)
+  const handleAddGoal = (newGoal: FinancialGoal) => {
+    setGoals([...goals, { ...newGoal, id: `goal${goals.length + 1}` }]);
+    setIsGoalFormOpen(false);
+    toast.success("新しい目標を設定しました！");
+  };
+
+  const handleEditGoal = (goalId: string) => {
+    setEditingGoal(goalId);
+    setIsGoalFormOpen(true);
   };
 
   // カテゴリー別資産データ（新機能）
@@ -801,6 +933,20 @@ export default function AssetLiabilityReportPage() {
               トレンド
             </TabsTrigger>
             <TabsTrigger
+              value="goals"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Target className="h-4 w-4 mr-2" />
+              目標設定
+            </TabsTrigger>
+            <TabsTrigger
+              value="longterm"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <LineChart className="h-4 w-4 mr-2" />
+              長期分析
+            </TabsTrigger>
+            <TabsTrigger
               value="details"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
@@ -811,7 +957,7 @@ export default function AssetLiabilityReportPage() {
 
           <div className="flex items-center gap-2">
             {/* フィルターとオプション */}
-            {activeView !== "details" && (
+            {activeView !== "details" && activeView !== "goals" && (
               <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -940,7 +1086,6 @@ export default function AssetLiabilityReportPage() {
                         date: new Date(item.date),
                         account: item.account || "その他",
                       }))}
-                      // displayModeとcompareWithPreviousプロパティを削除
                     />
                   </div>
                 ) : (
@@ -1284,6 +1429,25 @@ export default function AssetLiabilityReportPage() {
           )}
         </TabsContent>
 
+        {/* 新しい目標設定タブ */}
+        <TabsContent value="goals" className="mt-6">
+          <GoalTracking
+            goals={goals}
+            onAddGoal={handleAddGoal}
+            onEditGoal={handleEditGoal}
+          />
+        </TabsContent>
+
+        {/* 新しい長期トレンド分析タブ */}
+        <TabsContent value="longterm" className="mt-6">
+          <LongTermTrend
+            financialData={longTermData}
+            goals={goals}
+            onExportData={handleExportData}
+            onFullscreen={() => setIsFullscreenView(true)}
+          />
+        </TabsContent>
+
         <TabsContent value="details" className="mt-6">
           {/* 詳細タブの内容 */}
           <div className="grid grid-cols-1 gap-8">
@@ -1372,10 +1536,33 @@ export default function AssetLiabilityReportPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <QuickAddForm
+          <QuickInput
             onClose={() => setIsQuickAddOpen(false)}
             updateLastBalanceDate={updateLastBalanceDate}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* 目標設定・編集モーダル (新規追加) */}
+      <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {editingGoal ? "目標を編集" : "新しい目標を設定"}
+            </DialogTitle>
+            <DialogDescription>
+              財務目標を設定して、進捗を追跡しましょう
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* 実際のアプリでは、目標の設定フォームコンポーネントを実装 */}
+          <div className="text-center py-6">
+            <Target className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+            <p className="text-muted-foreground mb-4">
+              ※ デモ版では目標フォーム機能は実装されていません。
+            </p>
+            <Button onClick={() => setIsGoalFormOpen(false)}>閉じる</Button>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -1533,6 +1720,36 @@ export default function AssetLiabilityReportPage() {
               ) : (
                 <>プレミアムを始める ¥980/月</>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 全画面表示モーダル (新規追加) */}
+      <Dialog open={isFullscreenView} onOpenChange={setIsFullscreenView}>
+        <DialogContent className="max-w-7xl w-full">
+          <DialogHeader>
+            <DialogTitle>長期トレンド分析 - 詳細ビュー</DialogTitle>
+            <DialogDescription>
+              財務データの長期的な変化を詳細に確認できます
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="h-[calc(100vh-200px)]">
+            <LongTermTrend
+              financialData={longTermData}
+              goals={goals}
+              onExportData={handleExportData}
+              onFullscreen={() => setIsFullscreenView(false)}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsFullscreenView(false)}
+            >
+              閉じる
             </Button>
           </DialogFooter>
         </DialogContent>

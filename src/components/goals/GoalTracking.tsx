@@ -11,12 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Target,
-  Clock,
-  Calendar,
-  Edit,
-} from "lucide-react";
+import { Target, Clock, Calendar, Edit } from "lucide-react";
+import { FinancialGoal } from "@/types";
 
 // 目標期間の定義
 const TIME_PERIODS = [
@@ -32,31 +28,6 @@ const TIME_PERIODS = [
   { value: "5years", label: "5年", days: 1825 },
   { value: "10years", label: "10年", days: 3650 },
 ];
-
-// 目標データの型定義
-interface FinancialGoal {
-  id: string;
-  title: string;
-  type: "asset" | "debt" | "networth";
-  category?: string;
-  startValue: number;
-  currentValue: number;
-  targetValue: number;
-  startDate: string;
-  targetDate: string;
-  period: string;
-  account?: string;
-  autoUpdate: boolean;
-  milestones?: Array<{
-    value: number;
-    date: string;
-    achieved: boolean;
-  }>;
-  history: Array<{
-    date: string;
-    value: number;
-  }>;
-}
 
 // 進捗率計算用ヘルパー関数
 const calculateProgress = (
@@ -278,7 +249,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit }) => {
 
 interface GoalTrackingProps {
   goals: FinancialGoal[];
-  onAddGoal: () => void;
+  onAddGoal: (newGoal: FinancialGoal) => void; // この行を更新
   onEditGoal: (goalId: string) => void;
 }
 
@@ -346,6 +317,25 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
     return { total, completed, onTrack, atRisk: total - completed - onTrack };
   }, [goals]);
 
+  // ボタンのonClickイベント用のラッパー関数を作成
+  const handleAddGoalClick = () => {
+    // ダミーの空の目標オブジェクトを作成するか、
+    // または目標作成モーダルを開く関数に変更
+    onAddGoal({
+      id: "",
+      title: "",
+      type: "asset",
+      startValue: 0,
+      currentValue: 0,
+      targetValue: 0,
+      startDate: new Date().toISOString(),
+      targetDate: new Date().toISOString(),
+      period: "monthly",
+      autoUpdate: false,
+      history: [],
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -356,7 +346,7 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
           </p>
         </div>
 
-        <Button onClick={onAddGoal}>
+        <Button onClick={handleAddGoalClick}>
           <Target className="mr-2 h-4 w-4" />
           新しい目標を設定
         </Button>
@@ -458,7 +448,7 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
                     ? "目標が設定されていません。新しい財務目標を追加しましょう。"
                     : "この条件に一致する目標はありません。他のフィルターを試すか、新しい目標を追加してください。"}
                 </p>
-                <Button onClick={onAddGoal}>新しい目標を設定</Button>
+                <Button onClick={handleAddGoalClick}>新しい目標を設定</Button>
               </CardContent>
             </Card>
           )}

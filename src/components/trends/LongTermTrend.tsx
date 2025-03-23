@@ -41,7 +41,7 @@ import {
   Calendar,
   Target,
 } from "lucide-react";
-import { FinancialData } from "@/types";
+import { FinancialData, FinancialGoal } from "@/types";
 
 // 期間範囲の定義
 const TIME_RANGES = [
@@ -57,16 +57,6 @@ const TIME_RANGES = [
   { value: "5years", label: "5年", unit: "year" },
   { value: "10years", label: "10年", unit: "year" },
 ];
-
-
-
-// 目標データ型定義
-interface FinancialGoal {
-  id: string;
-  type: "asset" | "debt" | "networth";
-  targetDate: string;
-  targetValue: number;
-}
 
 // フォーマット関数
 const formatCurrency = (value: number): string => {
