@@ -1,12 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { assetApi } from "../services/api";
-
-export interface AssetEntry {
-  _id?: string;
-  date: string;
-  value: number;
-  account: string;
-}
+import { AssetEntry } from "@/types";
 
 interface AssetState {
   entries: AssetEntry[];
@@ -95,8 +89,18 @@ export const deleteAssetEntry = createAsyncThunk<
 const assetSlice = createSlice({
   name: "asset",
   initialState,
-  reducers: {},
+  reducers: {
+    // QuickAddFormのために単純化されたアクションを追加
+    addAsset: (state, action: PayloadAction<Omit<AssetEntry, "_id">>) => {
+      const newEntry = {
+        ...action.payload,
+        _id: `local_${Date.now()}` // 一時的なIDを生成
+      };
+      state.entries.push(newEntry);
+    }
+  },
   extraReducers: (builder) => {
+    // 既存のextraReducersはそのまま
     builder
       .addCase(fetchAssetEntries.pending, (state) => {
         state.status = "loading";
@@ -154,4 +158,5 @@ const assetSlice = createSlice({
   },
 });
 
+export const { addAsset } = assetSlice.actions;
 export default assetSlice.reducer;

@@ -1,13 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { debtApi } from "../services/api";
-
-export interface DebtEntry {
-  _id?: string;
-  date: string;
-  value: number;
-  description: string;
-  account: string;
-}
+import { DebtEntry } from "@/types";
 
 interface DebtState {
   entries: DebtEntry[];
@@ -96,8 +89,18 @@ export const deleteDebtEntry = createAsyncThunk<
 const debtSlice = createSlice({
   name: "debt",
   initialState,
-  reducers: {},
+  reducers: {
+    // QuickAddFormのために単純化されたアクションを追加
+    addDebt: (state, action: PayloadAction<Omit<DebtEntry, "_id">>) => {
+      const newEntry = {
+        ...action.payload,
+        _id: `local_${Date.now()}` // 一時的なIDを生成
+      };
+      state.entries.push(newEntry);
+    }
+  },
   extraReducers: (builder) => {
+    // 既存のextraReducersはそのまま
     builder
       .addCase(fetchDebtEntries.pending, (state) => {
         state.status = "loading";
@@ -155,4 +158,5 @@ const debtSlice = createSlice({
   },
 });
 
+export const { addDebt } = debtSlice.actions;
 export default debtSlice.reducer;

@@ -14,6 +14,7 @@ import { AppDispatch } from "@/store";
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];
   debtEntries: DebtEntry[];
+  onAddNew?: () => void; // オプショナルプロパティとして追加
 }
 
 interface BaseAccountStatus {
@@ -37,6 +38,7 @@ type AccountStatus = AssetAccountStatus | DebtAccountStatus;
 const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
   assetEntries,
   debtEntries,
+  onAddNew, // 新しいプロパティを受け取る
 }) => {
   const { locale } = useLocale();
   const dispatch = useDispatch<AppDispatch>();
@@ -182,6 +184,14 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
         <p className="mb-4">本日の資産・負債の残高を入力してください。</p>
         {renderAccountStatus(assetStatuses, "資産")}
         {renderAccountStatus(debtStatuses, "負債")}
+        
+        {onAddNew && (
+          <div className="mt-4">
+            <Button onClick={onAddNew} variant="outline">
+              新しいアカウントを追加
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
