@@ -135,3 +135,73 @@ export interface LongTermDataPoint {
       [key: string]: number;
     };
   }
+
+  export interface DiaryEntry {
+    id: string;
+    date: string;
+    achievement: string;
+    mood: string;
+    tags: string[];
+    difficulty: number;
+    isImportant: boolean;
+  }
+  
+  export interface Goal {
+    id: string;
+    description: string;
+    completed: boolean;
+    createdAt: string;
+    targetDate?: string;
+    category: string;
+  }
+  
+  export interface Streak {
+    currentStreak: number;
+    longestStreak: number;
+    lastEntryDate: string | null;
+  }
+  
+  export interface Achievement {
+    id: string;
+    name: string;
+    description: string;
+    earned: boolean;
+    date?: string;
+    icon: string;
+  }
+  
+  export interface UserSettings {
+    reminderEnabled: boolean;
+    reminderTime: string;
+    darkMode: boolean;
+    language: string;
+    showTips: boolean;
+  }
+  
+  export interface TagOption {
+    value: string;
+    label: string;
+  }
+  
+  export interface GoalCategory {
+    value: string;
+    label: string;
+  }
+  
+  export interface MotivationDataPoint {
+    date: string;
+    value: number;
+    difficulty: number;
+    hasEntry: boolean;
+  }
+  
+  export interface MonthlyStats {
+    entryCount: number;
+    moodCounts: Record<string, number>;
+    tagCounts: Record<string, number>;
+    avgDifficulty: number;
+    importantCount: number;
+    weeklyAchievements: Record<number, number>;
+    highDifficultyCount: number;
+    completedGoalsThisMonth: number;
+  }

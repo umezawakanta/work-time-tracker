@@ -1,101 +1,54 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  format,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-} from "date-fns";
-import { ja } from "date-fns/locale";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+  Settings,
+  Crown,
+  Sparkles,
+  ListTodo,
+  Trophy,
+  LineChart,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Download, Upload } from "lucide-react";
+
+// 型定義のインポート
 import {
-  Calendar,
-  CheckCircle,
-  Crown,
-  Edit,
-  LineChart,
-  ListTodo,
-  Medal,
-  Sparkles,
-  Star,
-  Trash2,
-  Trophy,
-  Zap,
-} from "lucide-react";
+  DiaryEntry,
+  Goal,
+  Streak,
+  Achievement,
+  UserSettings,
+  TagOption,
+  GoalCategory,
+  MotivationDataPoint,
+  MonthlyStats,
+} from "@/types";
 
-interface DiaryEntry {
-  id: string;
-  date: string;
-  achievement: string;
-  mood: string;
-  tags: string[];
-  difficulty: number;
-  isImportant: boolean;
-}
-
-interface Goal {
-  id: string;
-  description: string;
-  completed: boolean;
-  createdAt: string;
-  targetDate?: string;
-  category: string;
-}
-
-interface Streak {
-  currentStreak: number;
-  longestStreak: number;
-  lastEntryDate: string | null;
-}
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  earned: boolean;
-  date?: string;
-  icon: string;
-}
-
+// コンポーネント
+import DiaryForm from "@/components/forms/DiaryForm";
+import MonthlyCalendar from "@/components/calendar/MonthlyCalendar";
+import MindfulnessSection from "@/components/MindfulnessSection";
+import WeeklyView from "@/components/view/WeeklyView";
+import DiaryHistory from "@/components/history/DiaryHistory";
+import GoalManagement from "@/components/GoalManagement";
+import AchievementsList from "@/components/AchievementsList";
+import StatsView from "@/components/StatsView";
+// 定数
 const moodEmojis: Record<string, string> = {
   great: "😄",
   good: "🙂",
@@ -148,9 +101,31 @@ const defaultAchievements: Achievement[] = [
     earned: false,
     icon: "CheckCircle",
   },
+  // 新しい実績を追加
+  {
+    id: "streak-60",
+    name: "60日継続の達人",
+    description: "60日連続で記録をつけました",
+    earned: false,
+    icon: "Crown",
+  },
+  {
+    id: "goals-15",
+    name: "目標マスター",
+    description: "15個の目標を達成しました",
+    earned: false,
+    icon: "Trophy",
+  },
+  {
+    id: "difficult-5",
+    name: "チャレンジャー",
+    description: "難易度5の達成を3つ記録しました",
+    earned: false,
+    icon: "Star",
+  },
 ];
 
-const tagOptions = [
+const tagOptions: TagOption[] = [
   { value: "work", label: "仕事" },
   { value: "health", label: "健康" },
   { value: "learning", label: "学習" },
@@ -159,16 +134,31 @@ const tagOptions = [
   { value: "hobby", label: "趣味" },
   { value: "small-win", label: "小さな勝利" },
   { value: "overcome", label: "困難克服" },
+  // 新しいタグを追加
+  { value: "creative", label: "創作活動" },
+  { value: "mindfulness", label: "マインドフルネス" },
+  { value: "productivity", label: "生産性向上" },
+  { value: "personal-growth", label: "自己成長" },
 ];
 
-const goalCategories = [
+const goalCategories: GoalCategory[] = [
   { value: "daily", label: "日常習慣" },
   { value: "weekly", label: "週間目標" },
   { value: "monthly", label: "月間目標" },
   { value: "long-term", label: "長期目標" },
 ];
 
+// デフォルトのユーザー設定
+const defaultSettings: UserSettings = {
+  reminderEnabled: false,
+  reminderTime: "20:00",
+  darkMode: false,
+  language: "ja",
+  showTips: true,
+};
+
 const DiaryPage: React.FC = () => {
+  // 状態管理
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [newAchievement, setNewAchievement] = useState("");
   const [newMood, setNewMood] = useState("");
@@ -189,8 +179,32 @@ const DiaryPage: React.FC = () => {
   const [achievements, setAchievements] =
     useState<Achievement[]>(defaultAchievements);
   const [showTips, setShowTips] = useState(true);
-  // const setIsPremium を削除し、代わりに直接既定値を使用
-  const isPremium = false; // 実際のアプリでは認証状態から取得
+  const [isPremium, setIsPremium] = useState(false); // 開発中は切り替え可能に変更
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [userSettings, setUserSettings] =
+    useState<UserSettings>(defaultSettings);
+  const [showMonthlyCalendar, setShowMonthlyCalendar] = useState(false);
+
+  // PCとモバイルで表示を切り替えるためのブレークポイント検出
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // 初期チェック
+    checkScreenSize();
+
+    // リサイズイベントのリスナーを設定
+    window.addEventListener("resize", checkScreenSize);
+
+    // コンポーネントのアンマウント時にリスナーを削除
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
 
   // 励ましのメッセージのリスト
   const encouragementMessages = [
@@ -201,6 +215,9 @@ const DiaryPage: React.FC = () => {
     "今日できたことに注目することで、明日への力になります",
     "どんなに小さなことでも、達成は達成です。自分を認めましょう",
     "困難を乗り越えた自分に、ご褒美をあげましょう",
+    "自分の成長を感じることは、最大の自己肯定感につながります",
+    "毎日の小さな成功を記録することで、自分の成長が見えてきます",
+    "今日一日、あなたは素晴らしい努力をしました",
   ];
 
   // ランダムな励ましメッセージを取得
@@ -214,6 +231,7 @@ const DiaryPage: React.FC = () => {
     const storedGoals = localStorage.getItem("diaryGoals");
     const storedStreak = localStorage.getItem("diaryStreak");
     const storedAchievements = localStorage.getItem("diaryAchievements");
+    const storedSettings = localStorage.getItem("userSettings");
 
     if (storedEntries) {
       setEntries(JSON.parse(storedEntries));
@@ -226,6 +244,10 @@ const DiaryPage: React.FC = () => {
     }
     if (storedAchievements) {
       setAchievements(JSON.parse(storedAchievements));
+    }
+    if (storedSettings) {
+      setUserSettings(JSON.parse(storedSettings));
+      setShowTips(JSON.parse(storedSettings).showTips);
     }
 
     // 初回訪問時のストリーク計算
@@ -258,6 +280,47 @@ const DiaryPage: React.FC = () => {
   const saveAchievements = (data: Achievement[]) => {
     setAchievements(data);
     localStorage.setItem("diaryAchievements", JSON.stringify(data));
+  };
+
+  const saveUserSettings = (settings: UserSettings) => {
+    setUserSettings(settings);
+    localStorage.setItem("userSettings", JSON.stringify(settings));
+  };
+
+  // プログレスバーのアニメーション機能
+  const animateProgress = (selector: string, targetValue: number) => {
+    if (typeof document === "undefined") return; // SSRの場合は何もしない
+
+    const progressElement = document.querySelector(selector) as HTMLElement;
+    if (!progressElement) return;
+
+    let currentValue = 0;
+    const duration = 1000; // アニメーション時間（ミリ秒）
+    const interval = 16; // 更新間隔（ミリ秒）
+    const steps = duration / interval;
+    const increment = targetValue / steps;
+
+    const animation = setInterval(() => {
+      currentValue += increment;
+
+      if (currentValue >= targetValue) {
+        currentValue = targetValue;
+        clearInterval(animation);
+      }
+
+      progressElement.style.width = `${currentValue}%`;
+    }, interval);
+  };
+
+  // タブ切り替え時にプログレスバーをアニメーションさせる
+  const handleTabChange = (value: string) => {
+    if (value === "stats") {
+      // 統計タブが選択されたらアニメーションを開始
+      setTimeout(() => {
+        animateProgress(".record-progress", (stats.entryCount / 30) * 100);
+        animateProgress(".mood-progress", 100);
+      }, 200);
+    }
   };
 
   const calculateStreaks = (entries: DiaryEntry[]) => {
@@ -369,6 +432,7 @@ const DiaryPage: React.FC = () => {
       { id: "streak-3", days: 3 },
       { id: "streak-7", days: 7 },
       { id: "streak-30", days: 30 },
+      { id: "streak-60", days: 60 },
     ];
 
     streakAchievements.forEach(({ id, days }) => {
@@ -410,14 +474,43 @@ const DiaryPage: React.FC = () => {
 
     // 目標達成数のチェック
     const completedGoals = goals.filter((goal) => goal.completed).length;
-    const goalsAchievement = newAchievements.find((a) => a.id === "goals-5");
-    if (goalsAchievement && !goalsAchievement.earned && completedGoals >= 5) {
-      goalsAchievement.earned = true;
-      goalsAchievement.date = new Date().toISOString();
+    const goalAchievements = [
+      { id: "goals-5", count: 5 },
+      { id: "goals-15", count: 15 },
+    ];
+
+    goalAchievements.forEach(({ id, count }) => {
+      const achievement = newAchievements.find((a) => a.id === id);
+      if (achievement && !achievement.earned && completedGoals >= count) {
+        achievement.earned = true;
+        achievement.date = new Date().toISOString();
+        updated = true;
+        toast({
+          title: "新しい実績を獲得しました！",
+          description: achievement.description,
+          duration: 5000,
+        });
+      }
+    });
+
+    // 難しい達成のチェック
+    const difficultAchievements = entries.filter(
+      (entry) => entry.difficulty === 5
+    ).length;
+    const difficultAchievement = newAchievements.find(
+      (a) => a.id === "difficult-5"
+    );
+    if (
+      difficultAchievement &&
+      !difficultAchievement.earned &&
+      difficultAchievements >= 3
+    ) {
+      difficultAchievement.earned = true;
+      difficultAchievement.date = new Date().toISOString();
       updated = true;
       toast({
         title: "新しい実績を獲得しました！",
-        description: goalsAchievement.description,
+        description: difficultAchievement.description,
         duration: 5000,
       });
     }
@@ -512,54 +605,6 @@ const DiaryPage: React.FC = () => {
     });
   };
 
-  const handleAddGoal = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newGoal.trim()) {
-      const newGoalItem: Goal = {
-        id: Date.now().toString(),
-        description: newGoal,
-        completed: false,
-        createdAt: new Date().toISOString(),
-        targetDate: newGoalDate || undefined,
-        category: newGoalCategory,
-      };
-      saveGoals([...goals, newGoalItem]);
-      setNewGoal("");
-      setNewGoalDate("");
-      setNewGoalCategory("daily");
-      toast({
-        title: "新しい目標を追加しました",
-        description: "目標が正常に追加されました。",
-      });
-    }
-  };
-
-  const handleToggleGoal = (id: string) => {
-    const updatedGoals = goals.map((goal) => {
-      if (goal.id === id) {
-        // 未完了から完了への変更の場合
-        if (!goal.completed) {
-          toast({
-            title: "目標を達成しました",
-            description: "おめでとうございます！目標を達成しました。",
-          });
-        }
-        return { ...goal, completed: !goal.completed };
-      }
-      return goal;
-    });
-    saveGoals(updatedGoals);
-  };
-
-  const handleDeleteGoal = (id: string) => {
-    saveGoals(goals.filter((goal) => goal.id !== id));
-    toast({
-      title: "目標を削除しました",
-      description: "目標が正常に削除されました。",
-      variant: "destructive",
-    });
-  };
-
   const handleTagToggle = (tag: string) => {
     setSelectedTags(
       selectedTags.includes(tag)
@@ -568,87 +613,109 @@ const DiaryPage: React.FC = () => {
     );
   };
 
-  // 未使用の関数を削除
-  // getAchievementIcon 関数は削除
+  // エクスポート機能
+  const exportData = () => {
+    const data = {
+      entries,
+      goals,
+      streakData,
+      achievements,
+      userSettings,
+    };
 
-  const renderWeeklyView = () => {
-    if (entries.length === 0) return null;
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `adhd-diary-export-${format(new Date(), "yyyy-MM-dd")}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-    // 今週の日付範囲を取得
-    const today = new Date();
-    const startDay = startOfWeek(today, { locale: ja });
-    const endDay = endOfWeek(today, { locale: ja });
-    const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
-
-    // エントリーを日付ごとにマッピング
-    const entriesByDate: Record<string, DiaryEntry> = {};
-    entries.forEach((entry) => {
-      entriesByDate[entry.date] = entry;
+    toast({
+      title: "データをエクスポートしました",
+      description: "すべてのデータが正常にエクスポートされました。",
     });
+  };
 
-    return (
-      <div className="grid grid-cols-7 gap-2 mt-4">
-        {weekDays.map((day) => {
-          const dateStr = format(day, "yyyy-MM-dd");
-          const entry = entriesByDate[dateStr];
+  // インポート機能
+  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-          return (
-            <Card
-              key={dateStr}
-              className={`relative ${
-                entry ? "border-primary" : "border-gray-200"
-              }`}
-            >
-              <CardHeader className="p-2">
-                <CardTitle className="text-xs text-center">
-                  {format(day, "E", { locale: ja })}
-                </CardTitle>
-                <p className="text-center text-sm">
-                  {format(day, "d", { locale: ja })}
-                </p>
-              </CardHeader>
-              <CardContent className="p-2 text-center">
-                {entry ? (
-                  <>
-                    <div className="text-xl">
-                      {moodEmojis[entry.mood] || "📝"}
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger className="w-full">
-                          <p className="text-xs truncate">
-                            {entry.achievement.substring(0, 20)}
-                            {entry.achievement.length > 20 ? "..." : ""}
-                          </p>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">{entry.achievement}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </>
-                ) : (
-                  <p className="text-xs text-gray-400">記録なし</p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    );
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target?.result as string);
+
+        if (importedData.entries) setEntries(importedData.entries);
+        if (importedData.goals) setGoals(importedData.goals);
+        if (importedData.streakData) setStreakData(importedData.streakData);
+        if (importedData.achievements)
+          setAchievements(importedData.achievements);
+        if (importedData.userSettings) {
+          setUserSettings(importedData.userSettings);
+          setShowTips(importedData.userSettings.showTips);
+        }
+
+        // データを保存
+        localStorage.setItem(
+          "diaryEntries",
+          JSON.stringify(importedData.entries || [])
+        );
+        localStorage.setItem(
+          "diaryGoals",
+          JSON.stringify(importedData.goals || [])
+        );
+        localStorage.setItem(
+          "diaryStreak",
+          JSON.stringify(
+            importedData.streakData || {
+              currentStreak: 0,
+              longestStreak: 0,
+              lastEntryDate: null,
+            }
+          )
+        );
+        localStorage.setItem(
+          "diaryAchievements",
+          JSON.stringify(importedData.achievements || defaultAchievements)
+        );
+        localStorage.setItem(
+          "userSettings",
+          JSON.stringify(importedData.userSettings || defaultSettings)
+        );
+
+        toast({
+          title: "データをインポートしました",
+          description: "すべてのデータが正常にインポートされました。",
+        });
+      } catch (error) {
+        console.error("インポートエラー:", error);
+        toast({
+          title: "インポートエラー",
+          description: `データの読み込み中にエラーが発生しました: ${
+            error instanceof Error ? error.message : "不明なエラー"
+          }`,
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsText(file);
   };
 
   // 月間統計を計算
-  const calculateMonthlyStats = () => {
-    // 今月のエントリーを抽出
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
+  const calculateMonthlyStats = (): MonthlyStats => {
+    // 表示中の月のエントリーを抽出（デフォルトは今月）
+    const selectedMonth = currentMonth.getMonth();
+    const selectedYear = currentMonth.getFullYear();
 
     const monthEntries = entries.filter((entry) => {
       const entryDate = new Date(entry.date);
       return (
-        entryDate.getMonth() === currentMonth &&
-        entryDate.getFullYear() === currentYear
+        entryDate.getMonth() === selectedMonth &&
+        entryDate.getFullYear() === selectedYear
       );
     });
 
@@ -684,32 +751,70 @@ const DiaryPage: React.FC = () => {
           ) / monthEntries.length
         : 0;
 
+    // 週ごとの達成数
+    const weeklyAchievements: Record<number, number> = {};
+
+    monthEntries.forEach((entry) => {
+      const entryDate = new Date(entry.date);
+      // その日の週番号を取得（月の最初の日から何週目か）
+      const weekOfMonth = Math.ceil(entryDate.getDate() / 7);
+      weeklyAchievements[weekOfMonth] =
+        (weeklyAchievements[weekOfMonth] || 0) + 1;
+    });
+
     return {
       entryCount: monthEntries.length,
       moodCounts,
       tagCounts,
       avgDifficulty,
       importantCount: monthEntries.filter((e) => e.isImportant).length,
+      weeklyAchievements,
+      // 追加統計情報
+      highDifficultyCount: monthEntries.filter((e) => e.difficulty >= 4).length,
+      completedGoalsThisMonth: goals.filter((g) => {
+        if (!g.completed || !g.targetDate) return false;
+        const targetDate = new Date(g.targetDate);
+        return (
+          targetDate.getMonth() === selectedMonth &&
+          targetDate.getFullYear() === selectedYear
+        );
+      }).length,
     };
   };
 
-  const stats = calculateMonthlyStats();
+  // モチベーショングラフのデータを準備
+  const prepareMotivationGraphData = (): MotivationDataPoint[] => {
+    // 過去30日間のデータを準備
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
 
-  const renderAchievementIcon = (iconName: string) => {
-    switch (iconName) {
-      case "Zap":
-        return <Zap />;
-      case "Medal":
-        return <Medal />;
-      case "Trophy":
-        return <Trophy />;
-      case "Star":
-        return <Star />;
-      case "CheckCircle":
-        return <CheckCircle />;
-      default:
-        return <Sparkles />;
-    }
+    const dateRange = Array.from({ length: 30 }, (_, i) => {
+      const date = new Date(thirtyDaysAgo);
+      date.setDate(date.getDate() + i);
+      return format(date, "yyyy-MM-dd");
+    });
+
+    // 日々のモチベーション値をマッピング（気分をスコアに変換）
+    const moodScores: Record<string, number> = {
+      great: 5,
+      good: 4,
+      neutral: 3,
+      bad: 2,
+      terrible: 1,
+    };
+
+    return dateRange.map((dateStr) => {
+      const entry = entries.find((e) => e.date === dateStr);
+      const defaultScore = 0; // データがない日は0
+      const score = entry?.mood ? moodScores[entry.mood] : defaultScore;
+
+      return {
+        date: format(new Date(dateStr), "MM/dd"),
+        value: score,
+        difficulty: entry?.difficulty || 0,
+        hasEntry: !!entry,
+      };
+    });
   };
 
   // 重要な達成を強調表示するクラスを取得
@@ -720,11 +825,121 @@ const DiaryPage: React.FC = () => {
     return "";
   };
 
+  const handleAddGoal = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newGoal.trim()) {
+      toast({
+        title: "入力エラー",
+        description: "目標内容を入力してください",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newGoalObj: Goal = {
+      id: Date.now().toString(),
+      description: newGoal,
+      category: newGoalCategory,
+      completed: false,
+      createdAt: new Date().toISOString(),
+      targetDate: newGoalDate || undefined,
+    };
+
+    const updatedGoals = [newGoalObj, ...goals];
+    saveGoals(updatedGoals);
+
+    setNewGoal("");
+    setNewGoalCategory("daily");
+    setNewGoalDate("");
+
+    toast({
+      title: "新しい目標を追加しました",
+      description: "新しい目標が正常に追加されました。",
+    });
+  };
+
+  const handleToggleGoal = (id: string) => {
+    const updatedGoals = goals.map((goal) =>
+      goal.id === id ? { ...goal, completed: !goal.completed } : goal
+    );
+    saveGoals(updatedGoals);
+  };
+
+  const handleDeleteGoal = (id: string) => {
+    const updatedGoals = goals.filter((goal) => goal.id !== id);
+    saveGoals(updatedGoals);
+
+    toast({
+      title: "目標を削除しました",
+      description: "目標が正常に削除されました。",
+      variant: "destructive",
+    });
+  };
+
+  // 統計データの計算
+  const stats = calculateMonthlyStats();
+
+  // 週間ビューをレンダリング
+  const renderWeeklyView = () => {
+    return <WeeklyView entries={entries} moodEmojis={moodEmojis} />;
+  };
+
+  // 月間カレンダーをレンダリング
+  const renderMonthlyCalendar = () => {
+    return (
+      <MonthlyCalendar
+        entries={entries}
+        currentMonth={currentMonth}
+        setCurrentMonth={setCurrentMonth}
+        handleEdit={handleEdit}
+        setEditingEntry={setEditingEntry}
+        moodEmojis={moodEmojis}
+        showDetailed={showMonthlyCalendar}
+      />
+    );
+  };
+
   return (
-    <div className="container mx-auto p-4">
+    <div
+      className={`container mx-auto p-4 ${
+        userSettings.darkMode ? "dark bg-gray-900 text-white" : ""
+      }`}
+    >
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">ADHD改善・自己肯定感向上日記</h1>
+        <h1
+          className={`text-xl md:text-2xl font-bold ${
+            isMobile ? "text-center mb-2" : ""
+          }`}
+        >
+          ADHD改善・自己肯定感向上日記
+        </h1>
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsSettingsOpen(true)}
+            className="rounded-full"
+            aria-label="設定"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+
+          {/* 開発中のプレミアム切り替えボタン */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsPremium(!isPremium)}
+            className="rounded-full"
+            aria-label="プレミアム切り替え"
+          >
+            <Crown
+              className={`h-5 w-5 ${
+                isPremium ? "text-amber-500" : "text-gray-400"
+              }`}
+            />
+          </Button>
+
           {!isPremium && (
             <Button
               variant="outline"
@@ -740,56 +955,123 @@ const DiaryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ストリーク表示 */}
-      <Card className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
-                現在のストリーク: {streakData.currentStreak}日
-              </h2>
-              <p className="text-sm text-gray-600">
-                最長記録: {streakData.longestStreak}日
-              </p>
+      {/* 設定ダイアログ */}
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>設定</DialogTitle>
+            <DialogDescription>アプリの設定を変更します</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="reminder-toggle">リマインダー</Label>
+              <Switch
+                id="reminder-toggle"
+                checked={userSettings.reminderEnabled}
+                onCheckedChange={(checked) => {
+                  saveUserSettings({
+                    ...userSettings,
+                    reminderEnabled: checked,
+                  });
+                }}
+              />
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">
-                達成した目標: {goals.filter((g) => g.completed).length}/
-                {goals.length}
-              </p>
-              <p className="text-sm text-gray-600">
-                獲得した実績: {achievements.filter((a) => a.earned).length}/
-                {achievements.length}
-              </p>
+
+            {userSettings.reminderEnabled && (
+              <div>
+                <Label htmlFor="reminder-time">リマインド時間</Label>
+                <Input
+                  id="reminder-time"
+                  type="time"
+                  value={userSettings.reminderTime}
+                  onChange={(e) => {
+                    saveUserSettings({
+                      ...userSettings,
+                      reminderTime: e.target.value,
+                    });
+                  }}
+                  className="mt-1"
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="tips-toggle">ヒントを表示</Label>
+              <Switch
+                id="tips-toggle"
+                checked={userSettings.showTips}
+                onCheckedChange={(checked) => {
+                  saveUserSettings({
+                    ...userSettings,
+                    showTips: checked,
+                  });
+                  setShowTips(checked);
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="dark-mode-toggle">ダークモード</Label>
+              <Switch
+                id="dark-mode-toggle"
+                checked={userSettings.darkMode}
+                onCheckedChange={(checked) => {
+                  saveUserSettings({
+                    ...userSettings,
+                    darkMode: checked,
+                  });
+                }}
+              />
+            </div>
+
+            <div className="pt-4 border-t">
+              <h4 className="font-medium mb-2">データ管理</h4>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exportData}
+                  className="flex items-center gap-1"
+                >
+                  <Download className="h-4 w-4" />
+                  エクスポート
+                </Button>
+
+                <Label
+                  htmlFor="import-file"
+                  className="cursor-pointer flex items-center gap-1 px-3 py-1 text-sm border rounded-md bg-white hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  インポート
+                </Label>
+                <input
+                  id="import-file"
+                  type="file"
+                  onChange={importData}
+                  accept=".json"
+                  className="hidden"
+                  aria-label="JSONファイルをインポート" // アクセシビリティラベルを追加
+                />
+              </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* 励ましメッセージ */}
-      {showTips && (
-        <Card className="mb-4 bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
-          <CardContent className="p-4 relative">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-2 top-2 h-6 w-6 p-0"
-              onClick={() => setShowTips(false)}
-              aria-label="ヒントを閉じる" // アクセシビリティのためのラベルを追加
-            >
-              ✕
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSettingsOpen(false)}>
+              閉じる
             </Button>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-amber-500" />
-              <p className="italic text-amber-800">{randomEncouragement}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      <Tabs defaultValue="diary" className="mb-4">
-        <TabsList className="mb-4">
+      {/* マインドフルネスセクション */}
+      <MindfulnessSection isPremium={isPremium} />
+
+      <Tabs
+        defaultValue="diary"
+        className="mb-4"
+        onValueChange={handleTabChange}
+      >
+        <TabsList className={`mb-4 ${isMobile ? "flex w-full" : ""}`}>
           <TabsTrigger value="diary" className="flex items-center gap-1">
             <Sparkles className="h-4 w-4" />
             日記
@@ -810,752 +1092,83 @@ const DiaryPage: React.FC = () => {
 
         <TabsContent value="diary">
           <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {editingEntry ? "エントリーを編集" : "今日の達成"}
-                </CardTitle>
-                <CardDescription>
-                  今日達成できたことを記録して、自己肯定感を高めましょう
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="achievement">達成内容</Label>
-                    <Textarea
-                      id="achievement"
-                      className="min-h-[120px]"
-                      placeholder="今日達成できたことを書いてください。小さなことでも大丈夫です。"
-                      value={newAchievement}
-                      onChange={(e) => setNewAchievement(e.target.value)}
-                      required
-                    />
-                  </div>
+            <DiaryForm
+              editingEntry={editingEntry}
+              newAchievement={newAchievement}
+              setNewAchievement={setNewAchievement}
+              newMood={newMood}
+              setNewMood={setNewMood}
+              selectedTags={selectedTags}
+              handleTagToggle={handleTagToggle}
+              difficulty={difficulty}
+              setDifficulty={setDifficulty}
+              isImportant={isImportant}
+              setIsImportant={setIsImportant}
+              handleSubmit={handleSubmit}
+              resetForm={resetForm}
+              setEditingEntry={setEditingEntry}
+              tagOptions={tagOptions}
+              moodEmojis={moodEmojis}
+              moodLabels={moodLabels}
+              showTips={showTips}
+              encouragementMessage={randomEncouragement}
+            />
 
-                  <div>
-                    <Label htmlFor="mood">今日の気分</Label>
-                    <Select value={newMood} onValueChange={setNewMood}>
-                      <SelectTrigger id="mood">
-                        <SelectValue placeholder="今日の気分は？">
-                          {newMood && (
-                            <div className="flex items-center">
-                              <span className="mr-2">
-                                {moodEmojis[newMood]}
-                              </span>
-                              <span>{moodLabels[newMood]}</span>
-                            </div>
-                          )}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="great">
-                          <div className="flex items-center">
-                            <span className="mr-2">😄</span>
-                            <span>とても良い</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="good">
-                          <div className="flex items-center">
-                            <span className="mr-2">🙂</span>
-                            <span>良い</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="neutral">
-                          <div className="flex items-center">
-                            <span className="mr-2">😐</span>
-                            <span>普通</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="bad">
-                          <div className="flex items-center">
-                            <span className="mr-2">😕</span>
-                            <span>悪い</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="terrible">
-                          <div className="flex items-center">
-                            <span className="mr-2">😞</span>
-                            <span>とても悪い</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label>タグ付け</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {tagOptions.map((tag) => (
-                        <Badge
-                          key={tag.value}
-                          variant={
-                            selectedTags.includes(tag.value)
-                              ? "default"
-                              : "outline"
-                          }
-                          className="cursor-pointer"
-                          onClick={() => handleTagToggle(tag.value)}
-                        >
-                          {tag.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="difficulty">難易度</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">簡単</span>
-                      <input
-                        id="difficulty"
-                        type="range"
-                        min="1"
-                        max="5"
-                        value={difficulty}
-                        onChange={(e) =>
-                          setDifficulty(parseInt(e.target.value))
-                        }
-                        className="flex-1"
-                        aria-label="難易度を選択" // アクセシビリティのためのラベルを追加
-                      />
-                      <span className="text-sm">難しい</span>
-                      <span className="ml-2 text-sm font-medium">
-                        {difficulty}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="important-achievement"
-                      checked={isImportant}
-                      onCheckedChange={setIsImportant}
-                    />
-                    <Label htmlFor="important-achievement">
-                      これは重要な達成
-                    </Label>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button type="submit">
-                      {editingEntry ? "更新" : "記録する"}
-                    </Button>
-                    {editingEntry && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setEditingEntry(null);
-                          resetForm();
-                        }}
-                      >
-                        キャンセル
-                      </Button>
-                    )}
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle>過去の記録</CardTitle>
-                  <div className="flex gap-2 mt-2">
-                    <Button
-                      variant={currentView === "day" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentView("day")}
-                    >
-                      リスト表示
-                    </Button>
-                    <Button
-                      variant={currentView === "week" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentView("week")}
-                    >
-                      週表示
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {currentView === "week" ? (
-                    renderWeeklyView()
-                  ) : (
-                    <ScrollArea className="h-[400px] pr-4">
-                      {entries.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <p>
-                            記録がありません。新しいエントリーを追加しましょう！
-                          </p>
-                        </div>
-                      ) : (
-                        entries
-                          .sort(
-                            (a, b) =>
-                              new Date(b.date).getTime() -
-                              new Date(a.date).getTime()
-                          )
-                          .map((entry) => (
-                            <Card key={entry.id} className="mb-4">
-                              <CardHeader className="pb-2">
-                                <div className="flex justify-between items-start">
-                                  <CardTitle className="text-lg">
-                                    {format(
-                                      new Date(entry.date),
-                                      "yyyy年MM月dd日（E）",
-                                      {
-                                        locale: ja,
-                                      }
-                                    )}
-                                    {entry.mood && (
-                                      <span className="ml-2">
-                                        {moodEmojis[entry.mood]}
-                                      </span>
-                                    )}
-                                  </CardTitle>
-                                  {entry.isImportant && (
-                                    <Badge
-                                      variant="secondary"
-                                      className="bg-amber-100 text-amber-800"
-                                    >
-                                      重要な達成
-                                    </Badge>
-                                  )}
-                                </div>
-                              </CardHeader>
-                              <CardContent className="pb-2">
-                                <div className={getEntryClass(entry)}>
-                                  <p className="whitespace-pre-wrap mb-2">
-                                    {entry.achievement}
-                                  </p>
-
-                                  {entry.tags && entry.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {entry.tags.map((tag) => (
-                                        <Badge
-                                          key={tag}
-                                          variant="outline"
-                                          className="text-xs"
-                                        >
-                                          {tagOptions.find(
-                                            (t) => t.value === tag
-                                          )?.label || tag}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                                    <span>難易度: {entry.difficulty || 1}</span>
-                                  </div>
-                                </div>
-                              </CardContent>
-                              <CardFooter className="pt-0 justify-end space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleEdit(entry)}
-                                >
-                                  <Edit className="h-4 w-4 mr-1" />
-                                  編集
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleDelete(entry.id)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-1" />
-                                  削除
-                                </Button>
-                              </CardFooter>
-                            </Card>
-                          ))
-                      )}
-                    </ScrollArea>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            <DiaryHistory
+              entries={entries}
+              currentView={currentView}
+              setCurrentView={setCurrentView}
+              isPremium={isPremium}
+              renderWeeklyView={renderWeeklyView}
+              renderMonthlyCalendar={renderMonthlyCalendar}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+              getEntryClass={getEntryClass}
+              tagOptions={tagOptions}
+              moodEmojis={moodEmojis}
+              showMonthlyCalendar={showMonthlyCalendar}
+              setShowMonthlyCalendar={setShowMonthlyCalendar}
+            />
           </div>
         </TabsContent>
 
+        {/* 他のタブの内容はここに追加 */}
         <TabsContent value="goals">
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>目標設定</CardTitle>
-                <CardDescription>
-                  自己肯定感を高めるために達成可能な目標を設定しましょう
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddGoal} className="space-y-4">
-                  <div>
-                    <Label htmlFor="goal-input">新しい目標</Label>
-                    <Input
-                      id="goal-input"
-                      placeholder="目標を入力"
-                      value={newGoal}
-                      onChange={(e) => setNewGoal(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="goal-category">カテゴリー</Label>
-                      <Select
-                        value={newGoalCategory}
-                        onValueChange={setNewGoalCategory}
-                      >
-                        <SelectTrigger id="goal-category">
-                          <SelectValue placeholder="カテゴリーを選択" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {goalCategories.map((category) => (
-                            <SelectItem
-                              key={category.value}
-                              value={category.value}
-                            >
-                              {category.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="goal-date">目標日（任意）</Label>
-                      <Input
-                        id="goal-date"
-                        type="date"
-                        value={newGoalDate}
-                        onChange={(e) => setNewGoalDate(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <Button type="submit" className="w-full">
-                    目標を追加
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>目標リスト</CardTitle>
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={
-                      goals.filter((g) => !g.completed).length > 0
-                        ? "bg-blue-50"
-                        : ""
-                    }
-                  >
-                    進行中 ({goals.filter((g) => !g.completed).length})
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={
-                      goals.filter((g) => g.completed).length > 0
-                        ? "bg-green-50"
-                        : ""
-                    }
-                  >
-                    完了 ({goals.filter((g) => g.completed).length})
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px]">
-                  <div className="space-y-2">
-                    {goals.length === 0 ? (
-                      <p className="text-center py-8 text-gray-500">
-                        目標がありません。新しい目標を追加しましょう！
-                      </p>
-                    ) : (
-                      goals
-                        .sort((a, b) => {
-                          // 完了していない目標を先に
-                          if (a.completed !== b.completed) {
-                            return a.completed ? 1 : -1;
-                          }
-                          // 目標日のある目標を期限順に
-                          if (a.targetDate && b.targetDate) {
-                            return (
-                              new Date(a.targetDate).getTime() -
-                              new Date(b.targetDate).getTime()
-                            );
-                          }
-                          // それ以外は作成順
-                          return (
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime()
-                          );
-                        })
-                        .map((goal) => (
-                          <div
-                            key={goal.id}
-                            className={`flex items-center justify-between p-3 rounded-md border ${
-                              goal.completed
-                                ? "bg-green-50 border-green-200"
-                                : "border-gray-200"
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <input
-                                type="checkbox"
-                                id={`goal-${goal.id}`}
-                                checked={goal.completed}
-                                onChange={() => handleToggleGoal(goal.id)}
-                                className="form-checkbox h-5 w-5 text-blue-600"
-                                title={`目標を完了としてマーク: ${goal.description}`} // アクセシビリティのためのタイトルを追加
-                                aria-label={`目標を完了としてマーク: ${goal.description}`} // アクセシビリティのためのラベルを追加
-                              />
-                              <div>
-                                <Label
-                                  htmlFor={`goal-${goal.id}`}
-                                  className={`${
-                                    goal.completed
-                                      ? "line-through text-gray-500"
-                                      : ""
-                                  }`}
-                                >
-                                  {goal.description}
-                                </Label>
-                                <div className="flex items-center mt-1 space-x-2">
-                                  <Badge variant="outline" className="text-xs">
-                                    {goalCategories.find(
-                                      (c) => c.value === goal.category
-                                    )?.label || "日常習慣"}
-                                  </Badge>
-                                  {goal.targetDate && (
-                                    <span className="text-xs text-gray-500">
-                                      目標日:{" "}
-                                      {format(
-                                        new Date(goal.targetDate),
-                                        "yyyy/MM/dd"
-                                      )}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteGoal(goal.id)}
-                              aria-label={`目標を削除: ${goal.description}`} // アクセシビリティのためのラベルを追加
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
+          <GoalManagement
+            goals={goals}
+            saveGoals={saveGoals}
+            newGoal={newGoal}
+            setNewGoal={setNewGoal}
+            newGoalCategory={newGoalCategory}
+            setNewGoalCategory={setNewGoalCategory}
+            newGoalDate={newGoalDate}
+            setNewGoalDate={setNewGoalDate}
+            handleAddGoal={handleAddGoal}
+            handleToggleGoal={handleToggleGoal}
+            handleDeleteGoal={handleDeleteGoal}
+            goalCategories={goalCategories}
+          />
         </TabsContent>
 
         <TabsContent value="achievements">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-amber-500" />
-                実績
-              </CardTitle>
-              <CardDescription>
-                継続と達成によって獲得できる実績バッジです
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {achievements.map((achievement) => (
-                  <Card
-                    key={achievement.id}
-                    className={`${
-                      achievement.earned
-                        ? "bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200"
-                        : "bg-gray-50 border-gray-200"
-                    }`}
-                  >
-                    <CardHeader className="p-4 pb-2">
-                      <CardTitle className="text-base flex justify-between items-center">
-                        <span>{achievement.name}</span>
-                        <div
-                          className={`${
-                            achievement.earned
-                              ? "text-amber-500"
-                              : "text-gray-300"
-                          }`}
-                        >
-                          {renderAchievementIcon(achievement.icon)}
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-2">
-                      <p className="text-sm mb-2">{achievement.description}</p>
-                      {achievement.earned && achievement.date && (
-                        <p className="text-xs text-gray-500">
-                          獲得日:{" "}
-                          {format(new Date(achievement.date), "yyyy年MM月dd日")}
-                        </p>
-                      )}
-                      {!achievement.earned && !isPremium && (
-                        <Badge className="mt-2 bg-amber-100 text-amber-800 border-amber-200">
-                          <Crown className="h-3 w-3 mr-1" />
-                          プレミアム
-                        </Badge>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {!isPremium && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 border-dashed cursor-pointer">
-                        <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                          <Crown className="h-8 w-8 text-amber-500 mb-2" />
-                          <p className="text-center font-medium">
-                            もっと実績を解除
-                          </p>
-                          <p className="text-center text-sm text-gray-500">
-                            プレミアムで追加の実績
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>プレミアム実績</DialogTitle>
-                        <DialogDescription>
-                          プレミアム会員になると、より多くの実績と成長の記録が利用できます。
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-md">
-                          <div className="text-amber-500">
-                            <Calendar className="h-8 w-8" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">3ヶ月継続</h3>
-                            <p className="text-sm text-gray-600">
-                              90日間連続で記録をつけましょう
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-md">
-                          <div className="text-amber-500">
-                            <Medal className="h-8 w-8" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">目標達成マスター</h3>
-                            <p className="text-sm text-gray-600">
-                              25個の目標を達成しましょう
-                            </p>
-                          </div>
-                        </div>
-                        <Button className="w-full">
-                          プレミアムにアップグレード
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <AchievementsList
+            achievements={achievements}
+            streakData={streakData}
+          />
         </TabsContent>
 
         <TabsContent value="stats">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LineChart className="h-5 w-5 text-blue-500" />
-                統計情報
-              </CardTitle>
-              <CardDescription>
-                あなたの自己肯定感向上の記録を分析します
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">今月の記録数</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold mb-2">
-                      {stats.entryCount}日
-                    </div>
-                    <Progress
-                      value={(stats.entryCount / 30) * 100}
-                      className="h-2"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">目標: 30日/月</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">気分の傾向</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-2">
-                      {Object.entries(moodLabels).map(([mood, label]) => (
-                        <div key={mood}>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span className="flex items-center">
-                              {moodEmojis[mood]} {label}
-                            </span>
-                            <span>{stats.moodCounts[mood] || 0}日</span>
-                          </div>
-                          <Progress
-                            value={
-                              stats.entryCount > 0
-                                ? ((stats.moodCounts[mood] || 0) /
-                                    stats.entryCount) *
-                                  100
-                                : 0
-                            }
-                            className="h-2"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">達成の種類</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {Object.keys(stats.tagCounts).length > 0 ? (
-                      <div className="space-y-2">
-                        {Object.entries(stats.tagCounts)
-                          .sort(([, a], [, b]) => b - a)
-                          .slice(0, 5)
-                          .map(([tag, count]) => (
-                            <div key={tag}>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>
-                                  {tagOptions.find((t) => t.value === tag)
-                                    ?.label || tag}
-                                </span>
-                                <span>{count}回</span>
-                              </div>
-                              <Progress
-                                value={
-                                  stats.entryCount > 0
-                                    ? (count / stats.entryCount) * 100
-                                    : 0
-                                }
-                                className="h-2"
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    ) : (
-                      <p className="text-center py-4 text-gray-500">
-                        まだデータがありません
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-4">あなたの成長</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">平均難易度</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold mb-2">
-                        {stats.avgDifficulty > 0
-                          ? stats.avgDifficulty.toFixed(1)
-                          : "-"}
-                        <span className="text-sm font-normal text-gray-500 ml-2">
-                          / 5
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-2 w-full rounded-full ${
-                              i < Math.round(stats.avgDifficulty)
-                                ? "bg-blue-500"
-                                : "bg-gray-200"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2">
-                        より難しいことに挑戦しています
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">重要な達成</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold mb-2">
-                        {stats.importantCount}
-                        <span className="text-sm font-normal text-gray-500 ml-2">
-                          件
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          stats.entryCount > 0
-                            ? (stats.importantCount / stats.entryCount) * 100
-                            : 0
-                        }
-                        className="h-2"
-                      />
-                      <p className="text-xs text-gray-500 mt-2">
-                        自分にとって重要な達成の記録
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {!isPremium && (
-                <Card className="mt-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="text-lg font-medium flex items-center gap-2">
-                          <Crown className="h-5 w-5 text-amber-600" />
-                          詳細な分析をアンロック
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          プレミアム会員になると、詳細な統計、長期的な傾向分析、
-                          <br />
-                          AIによる成長レポートなどの機能が利用できます。
-                        </p>
-                      </div>
-                      <Button>プレミアムにアップグレード</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </CardContent>
-          </Card>
+          <StatsView
+            entries={entries}
+            goals={goals}
+            stats={calculateMonthlyStats()}
+            motivationData={prepareMotivationGraphData()}
+            moodEmojis={moodEmojis}
+            moodLabels={moodLabels}
+            currentMonth={currentMonth}
+            setCurrentMonth={setCurrentMonth}
+            tagOptions={tagOptions}
+          />
         </TabsContent>
       </Tabs>
     </div>
