@@ -15,9 +15,9 @@ import {
   Plugin,
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import { Candidate } from "@/store/candidateSlice";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import "./CandidateCharts.css";
+import { Candidate } from "@/types";
 
 ChartJS.register(
   ArcElement,
@@ -86,26 +86,54 @@ const proportionalBlockInfo: Record<ProportionalBlock, { seats: number }> = {
   "九州": { seats: 21 },
 };
 
-const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
+// インターフェースを更新して新しいプロパティを追加
+interface CandidateChartsProps {
+  candidates: Candidate[];
+  selectedPrefecture: string | null;
+  onPrefectureChange: (prefecture: string | null) => void;
+  isPremium: boolean;
+}
+
+// コンポーネントの型定義を更新
+const CandidateCharts: React.FC<CandidateChartsProps> = ({
   candidates,
+  selectedPrefecture,
+  onPrefectureChange,
+  isPremium
 }) => {
   const [chartsPerRow, setChartsPerRow] = useState<1 | 2 | 3>(1);
 
+  // 都道府県選択用の追加UI
+  const handlePrefectureChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    onPrefectureChange(value === "all" ? null : value);
+  };
+
+  // 選択された都道府県でフィルタリングされた候補者
+  const filteredCandidates = useMemo(() => {
+    if (!selectedPrefecture) return candidates;
+    return candidates.filter(c => c.prefecture === selectedPrefecture);
+  }, [candidates, selectedPrefecture]);
+
+  // 以下は既存のuseMemosを更新して、filteredCandidatesを使用するように変更
   const { partyData, prefectureData, proportionalData } = useMemo(() => {
+    // filteredCandidatesを使用するように変更
     const partyCounts = parties.map(
-      (party) => candidates.filter((c) => c.party === party).length
+      (party) => filteredCandidates.filter((c) => c.party === party).length
     );
 
+    // 以下、元のコードと同様...
     const prefectureCounts = prefectures.map(
       (prefecture) =>
-        candidates.filter((c) => c.prefecture === prefecture).length
+        filteredCandidates.filter((c) => c.prefecture === prefecture).length
     );
 
     const proportionalCounts = proportionalBlocks.map(
-      (block) => candidates.filter((c) => c.proportionalBlock === block).length
+      (block) => filteredCandidates.filter((c) => c.proportionalBlock === block).length
     );
 
     return {
+      // 以下、元のコードと同様...
       partyData: {
         labels: parties,
         datasets: [
@@ -156,7 +184,7 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
         ],
       } as ChartData<"bar">,
     };
-  }, [candidates]);
+  }, [filteredCandidates]); // 依存配列を更新
 
   const pieOptions: ChartOptions<"pie"> = {
     responsive: true,
@@ -342,6 +370,34 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
 
   return (
     <div className="space-y-4 mt-8">
+      {/* 都道府県選択UI */}
+      <div className="mb-4">
+        <label htmlFor="prefecture" className="block text-sm font-medium mb-1">
+          都道府県選択
+        </label>
+        <select
+          id="prefecture"
+          className="w-full max-w-xs border rounded p-2"
+          value={selectedPrefecture || "all"}
+          onChange={handlePrefectureChange}
+        >
+          <option value="all">全国</option>
+          {prefectures.map((pref) => (
+            <option key={pref} value={pref}>
+              {pref}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* プレミアム限定機能 */}
+      {!isPremium && (
+        <div className="bg-gray-100 p-4 rounded-md mb-4 text-sm">
+          <p>プレミアム会員になると、より詳細な分析や追加のグラフが利用できます。</p>
+        </div>
+      )}
+      
+      {/* 以下、元のUIと同様... */}
       <div className="flex justify-center space-x-4">
         <Button
           onClick={() => setChartsPerRow(1)}
@@ -362,8 +418,10 @@ const CandidateCharts: React.FC<{ candidates: Candidate[] }> = ({
           3列
         </Button>
       </div>
+
+      {/* チャート表示 */}
       <div className={`grid grid-cols-1 md:grid-cols-${chartsPerRow} gap-8`}>
-        <Card className={chartsPerRow > 1 ?   "col-span-1" : "col-span-full"}>
+      <Card className={chartsPerRow > 1 ?   "col-span-1" : "col-span-full"}>
           <CardHeader>
             <CardTitle>政党別候補者数</CardTitle>
           </CardHeader>

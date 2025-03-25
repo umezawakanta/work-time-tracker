@@ -205,3 +205,33 @@ export interface LongTermDataPoint {
     highDifficultyCount: number;
     completedGoalsThisMonth: number;
   }
+
+  export interface Candidate {
+    _id?: string;
+    name: string;
+    party: string;
+    prefecture: string | null;
+    district: number | null;
+    proportionalBlock: string | null;
+    status?: string;
+    imageUrl?: string;
+    age?: number;
+    gender?: 'male' | 'female' | 'other';
+    lastUpdated?: string;
+    biography?: string;
+    pastExperience?: string[];
+    website?: string;
+    supportRate?: number; // 支持率を追加
+    socialMedia?: {
+      twitter?: string;
+      facebook?: string;
+      instagram?: string;
+    };
+  }
+
+  export interface CandidateState {
+    candidates: Candidate[];
+    status: "idle" | "loading" | "succeeded" | "failed";
+    error: string | null;
+    lastUpdated: string | null; // 最終更新日時を追加
+  }

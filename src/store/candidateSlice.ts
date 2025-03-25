@@ -1,25 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { candidateApi } from "../services/api";
-
-export interface Candidate {
-  _id?: string;
-  name: string;
-  party: string;
-  prefecture: string;
-  district: number | null;
-  proportionalBlock: string | null;
-}
-
-interface CandidateState {
-  candidates: Candidate[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
+import { Candidate, CandidateState } from "@/types";
 
 const initialState: CandidateState = {
   candidates: [],
   status: "idle",
   error: null,
+  lastUpdated: null, // lastUpdatedプロパティを追加
 };
 
 export const fetchCandidates = createAsyncThunk<
@@ -89,6 +76,39 @@ export const deleteCandidate = createAsyncThunk<
   }
 });
 
+// リアルタイム更新のサブスクリプション処理を追加
+let updateInterval: ReturnType<typeof setInterval> | null = null;
+
+// リアルタイム更新を購読する関数
+export const subscribeToUpdates = createAsyncThunk(
+  "candidates/subscribeToUpdates",
+  async (_, { dispatch }) => {
+    // 既存のインターバルがあれば解除
+    if (updateInterval) {
+      clearInterval(updateInterval);
+    }
+
+    // 定期的に候補者データを更新（例：30秒ごと）
+    updateInterval = setInterval(() => {
+      dispatch(fetchCandidates());
+    }, 30000);
+
+    return true;
+  }
+);
+
+// リアルタイム更新の購読を解除する関数
+export const unsubscribeFromUpdates = createAsyncThunk(
+  "candidates/unsubscribeFromUpdates",
+  async () => {
+    if (updateInterval) {
+      clearInterval(updateInterval);
+      updateInterval = null;
+    }
+    return true;
+  }
+);
+
 const candidateSlice = createSlice({
   name: "candidates",
   initialState,
@@ -104,6 +124,7 @@ const candidateSlice = createSlice({
         (state, action: PayloadAction<Candidate[]>) => {
           state.status = "succeeded";
           state.candidates = action.payload;
+          state.lastUpdated = new Date().toISOString(); // 最終更新日時を記録
           state.error = null;
         }
       )
@@ -147,6 +168,15 @@ const candidateSlice = createSlice({
       )
       .addCase(deleteCandidate.rejected, (state, action) => {
         state.error = action.payload || "候補者の削除に失敗しました";
+      })
+      // 以下の2つのケースを追加（必要に応じて）
+      .addCase(subscribeToUpdates.fulfilled, (state) => {
+        // サブスクリプション成功時の処理（必要に応じて状態を更新）
+        console.log(state.lastUpdated); // 最終更新日時を確認
+      })
+      .addCase(unsubscribeFromUpdates.fulfilled, (state) => {
+        // サブスクリプション解除時の処理（必要に応じて状態を更新）
+        console.log(state.lastUpdated); // 最終更新日時を確認
       });
   },
 });

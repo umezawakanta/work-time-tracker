@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -9,15 +8,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Candidate } from "@/store/candidateSlice";
 import { InfoIcon, Edit2Icon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Candidate } from "@/types";
 
+// 型定義を修正して必要なプロパティをすべて含める
 interface DistrictCandidatesListProps {
   candidates: Candidate[];
-  selectedPrefecture: string;
-  onPrefectureChange: (prefecture: string) => void;
+  selectedPrefecture: string | null;
+  selectedDistrict: string;
+  onPrefectureChange: (prefecture: string | null) => void;
+  onDistrictChange: (district: string) => void;
   onEditCandidate: (candidate: Candidate) => void;
+  onViewCandidate: (candidate: Candidate) => void;
+  isPremium: boolean;
 }
 
 const partyColors: { [key: string]: string } = {
@@ -50,21 +54,28 @@ const proportionalBlocks = [
 export default function DistrictCandidatesList({
   candidates,
   selectedPrefecture,
+  selectedDistrict,
   onPrefectureChange,
+  onDistrictChange,
   onEditCandidate,
+  onViewCandidate,
+  isPremium,
 }: DistrictCandidatesListProps) {
   const [selectedProportionalBlock, setSelectedProportionalBlock] = useState(
     proportionalBlocks[0]
   );
 
   const prefectures = useMemo(() => {
+    // 明示的にフィルタリング処理を行い、null/undefinedを除外し、string型の配列を確保
     const uniquePrefectures = Array.from(
-      new Set(candidates.map((c) => c.prefecture))
-    ).filter(Boolean);
+      new Set(candidates.map((c) => c.prefecture).filter((p): p is string => Boolean(p)))
+    );
     return uniquePrefectures.sort();
   }, [candidates]);
 
   const districts = useMemo(() => {
+    if (!selectedPrefecture) return [];
+    
     const uniqueDistricts = Array.from(
       new Set(
         candidates
@@ -76,6 +87,10 @@ export default function DistrictCandidatesList({
     ).filter((district): district is number => district != null);
     return uniqueDistricts.sort((a, b) => a - b);
   }, [candidates, selectedPrefecture]);
+
+  const handleDistrictChange = (district: number) => {
+    onDistrictChange(district.toString());
+  };
 
   const proportionalCandidates = useMemo(
     () =>
@@ -90,7 +105,9 @@ export default function DistrictCandidatesList({
       {candidateList.map((candidate) => (
         <div
           key={candidate._id}
-          className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow"
+          className={`flex items-center space-x-4 bg-white p-4 rounded-lg shadow ${
+            selectedDistrict === candidate.district?.toString() ? 'border-2 border-blue-500' : ''
+          }`}
         >
           <div
             className={`w-6 h-6 rounded-full ${
@@ -101,15 +118,34 @@ export default function DistrictCandidatesList({
             <div className="font-medium">{candidate.name}</div>
             <div className="text-sm text-gray-500">{candidate.party}</div>
           </div>
+          {isPremium ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEditCandidate(candidate)}
+            >
+              <Edit2Icon className="w-4 h-4 mr-2" />
+              編集
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled
+              title="プレミアム会員限定機能"
+            >
+              <Edit2Icon className="w-4 h-4 mr-2" />
+              編集
+            </Button>
+          )}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={() => onEditCandidate(candidate)}
+            className="p-1"
+            onClick={() => onViewCandidate(candidate)}
           >
-            <Edit2Icon className="w-4 h-4 mr-2" />
-            編集
+            <InfoIcon className="w-5 h-5 text-gray-400" />
           </Button>
-          <InfoIcon className="w-5 h-5 text-gray-400" />
         </div>
       ))}
     </div>
@@ -131,8 +167,8 @@ export default function DistrictCandidatesList({
           <TabsContent value="district">
             <div className="flex justify-center items-center space-x-2 mt-4 mb-6">
               <Select
-                value={selectedPrefecture || prefectures[0] || ""}
-                onValueChange={onPrefectureChange}
+                value={selectedPrefecture || ""}
+                onValueChange={(value) => onPrefectureChange(value || null)}
               >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="都道府県を選択" />
@@ -152,14 +188,23 @@ export default function DistrictCandidatesList({
                   c.prefecture === selectedPrefecture && c.district === district
               );
               if (districtCandidates.length === 0) return null;
+              
+              const isSelected = selectedDistrict === district.toString();
 
               return (
-                <div key={district} className="mb-8">
-                  <Link to={`/district/${selectedPrefecture}/${district}`}>
-                    <h3 className="text-xl font-semibold mb-4 hover:text-blue-600 cursor-pointer">
-                      {selectedPrefecture} 第{district}区
-                    </h3>
-                  </Link>
+                <div 
+                  key={district} 
+                  className={`mb-8 ${isSelected ? 'bg-blue-50 p-4 rounded-lg' : ''}`}
+                >
+                  <div 
+                    className={`text-xl font-semibold mb-4 hover:text-blue-600 cursor-pointer ${
+                      isSelected ? 'text-blue-600' : ''
+                    }`}
+                    onClick={() => handleDistrictChange(district)}
+                  >
+                    {selectedPrefecture} 第{district}区
+                    {isSelected && " (選択中)"}
+                  </div>
                   {renderCandidateList(districtCandidates)}
                 </div>
               );
@@ -169,7 +214,7 @@ export default function DistrictCandidatesList({
             <div className="flex justify-center items-center space-x-2 mt-4 mb-6">
               <Select
                 value={selectedProportionalBlock}
-                onValueChange={setSelectedProportionalBlock}
+                onValueChange={(value) => setSelectedProportionalBlock(value)}
               >
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="比例ブロックを選択" />

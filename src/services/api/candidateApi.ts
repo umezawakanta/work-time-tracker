@@ -1,13 +1,11 @@
 import { AxiosResponse } from "axios";
 import { api } from "./apiConfig";
+import { Candidate } from "@/types";
 
-interface Candidate {
-  _id?: string;
-  name: string;
-  party: string;
-  prefecture: string | null;
-  district: number | null;
-  proportionalBlock: string | null;
+interface SupportRatePoint {
+  date: string;
+  rate: number;
+  source: string;
 }
 
 interface CandidateApiResponse {
@@ -52,5 +50,16 @@ export const candidateApi = {
       console.log("Deleted candidate:", _id);
       return response;
     });
+  },
+  getCandidateSupportRate: (
+    candidateId: string
+  ): Promise<AxiosResponse<SupportRatePoint[]>> => {
+    console.log("Fetching support rate data for candidate:", candidateId);
+    return api
+      .get<SupportRatePoint[]>(`/candidates/${candidateId}/support-rate`)
+      .then((response) => {
+        console.log("Received support rate data:", response.data);
+        return response;
+      });
   },
 };
