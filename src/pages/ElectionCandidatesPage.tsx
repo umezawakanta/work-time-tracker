@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
+import { Link } from "react-router-dom"; // Next.jsのLinkを React RouterのLinkに変更
 import { AppDispatch, RootState } from "../store";
-import {
-  fetchCandidates,
-  subscribeToUpdates,
+import { 
+  fetchCandidates, 
+  subscribeToUpdates, 
   unsubscribeFromUpdates,
 } from "../store/candidateSlice";
-import { Candidate } from "@/types"; // Candidateの型をtypesからインポート
 import DistrictCandidatesList from "@/components/list/DistrictCandidatesList";
 import CandidateCharts from "@/components/chart/CandidateCharts";
 import CandidateEditForm from "@/components/forms/CandidateEditForm";
@@ -19,11 +18,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
 import { RefreshCcw, Download } from "lucide-react";
 import { exportCandidatesAsCSV } from "@/utils/export";
-import { useRouter } from "next/router";
+import { useNavigate, useLocation } from "react-router-dom"; // Next.jsのuseRouterの代わりにReact Routerのフックを使用
+import { Candidate } from "@/types";
 
 export default function ElectionCandidatesPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
+  const navigate = useNavigate(); // useRouterの代わりにuseNavigateを使用
+  const location = useLocation(); // クエリパラメータ取得用
   const { user, isSubscribed, isLoading: authLoading } = useAuth();
 
   const candidates = useSelector(
@@ -71,8 +72,10 @@ export default function ElectionCandidatesPage() {
       setSelectedPrefecture(candidates[0].prefecture);
 
       // URLから指定があれば、その都道府県を選択
-      const { prefecture } = router.query;
-      if (prefecture && typeof prefecture === "string") {
+      const searchParams = new URLSearchParams(location.search);
+      const prefecture = searchParams.get('prefecture');
+      
+      if (prefecture) {
         const validPrefecture = candidates.some(
           (c) => c.prefecture === prefecture
         );
@@ -81,11 +84,11 @@ export default function ElectionCandidatesPage() {
         }
       }
     }
-  }, [candidates, selectedPrefecture, router.query]);
+  }, [candidates, selectedPrefecture, location.search]);
 
   const handleEditCandidate = (candidate: Candidate) => {
     if (!isSubscribed && !user?.isAdmin) {
-      router.push("/subscription");
+      navigate("/subscription"); // router.pushの代わりにnavigate
       return;
     }
     setEditingCandidate(candidate);
@@ -118,7 +121,7 @@ export default function ElectionCandidatesPage() {
 
   const handleExportData = () => {
     if (!isSubscribed) {
-      router.push("/subscription");
+      navigate("/subscription"); // router.pushの代わりにnavigate
       return;
     }
 
@@ -183,7 +186,7 @@ export default function ElectionCandidatesPage() {
       <div className="flex flex-wrap justify-between items-center mb-6 gap-2">
         <div className="flex gap-2">
           {(user?.isAdmin || isSubscribed) && (
-            <Link href="/candidate-registration">
+            <Link to="/candidate-registration">
               <Button>候補者登録</Button>
             </Link>
           )}
@@ -210,7 +213,7 @@ export default function ElectionCandidatesPage() {
           </Button>
 
           {!isSubscribed && !user?.isAdmin && (
-            <Link href="/subscription">
+            <Link to="/subscription">
               <Button variant="secondary">プレミアム会員になる</Button>
             </Link>
           )}
@@ -222,7 +225,7 @@ export default function ElectionCandidatesPage() {
           <AlertTitle>一部機能が制限されています</AlertTitle>
           <AlertDescription>
             データの編集、エクスポート、詳細分析機能を利用するには、プレミアム会員にご登録ください。
-            <Link href="/subscription">
+            <Link to="/subscription">
               <Button variant="link" className="p-0 h-auto">
                 詳細を見る
               </Button>
@@ -303,7 +306,7 @@ export default function ElectionCandidatesPage() {
               <p className="mb-6">
                 詳細分析機能を利用するには、プレミアム会員にご登録ください。
               </p>
-              <Link href="/subscription">
+              <Link to="/subscription">
                 <Button>プレミアム会員登録</Button>
               </Link>
             </div>

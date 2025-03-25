@@ -1,19 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserProfile, updateUserProfile } from '@/services/api/authApi';
-
-// UserState インターフェースを拡張
-interface UserState {
-  id: string | null;
-  name: string;
-  email: string;
-  isLoading: boolean;
-  error: string | null;
-  lastReminderDate: string | null;
-  isLoggedIn: boolean; // ログイン状態を追加
-  hasActiveSubscription: boolean; // サブスクリプション状態を追加
-  trialActivated: boolean; // トライアル状態を追加
-  trialExpiryDate: string | null; // トライアル期限を追加
-}
+import { UserState } from '@/types';
 
 // 初期状態を拡張
 const initialState: UserState = {

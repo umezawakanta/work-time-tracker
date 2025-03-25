@@ -1,15 +1,10 @@
 // src/services/auth.ts
+import { User } from "@/types";
 import { api } from "./api";
 
 export interface LoginCredentials {
   email: string;
   password: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
 }
 
 export const authApi = {

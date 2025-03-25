@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react';
 import { checkAuth, getUserProfile } from '@/services/api/authApi';
-
-// ユーザー情報の型定義
-interface User {
-  _id: string;
-  email: string;
-  username: string;
-  isAdmin: boolean;
-  // その他必要なユーザープロパティ
-}
+import { User } from '@/types';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);

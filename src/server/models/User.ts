@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   name: string;
+  isAdmin: boolean; // isAdminフィールドを追加
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -12,6 +13,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false }, // デフォルトはfalse
+}, {
+  timestamps: true, // createdAtとupdatedAtを自動的に追加
 });
 
 userSchema.pre<IUser>('save', async function(next) {

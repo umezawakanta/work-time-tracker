@@ -1,11 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { User } from '@/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;

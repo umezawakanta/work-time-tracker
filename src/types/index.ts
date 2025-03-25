@@ -132,11 +132,11 @@ export interface LongTermDataPoint {
     netWorth: number;
     savingsRate?: number;
     categories: {
-      [key: string]: number;
+        [key: string]: number;
     };
-  }
+}
 
-  export interface DiaryEntry {
+export interface DiaryEntry {
     id: string;
     date: string;
     achievement: string;
@@ -144,58 +144,81 @@ export interface LongTermDataPoint {
     tags: string[];
     difficulty: number;
     isImportant: boolean;
-  }
-  
-  export interface Goal {
+}
+
+export interface Goal {
     id: string;
     description: string;
     completed: boolean;
     createdAt: string;
     targetDate?: string;
     category: string;
-  }
-  
-  export interface Streak {
+}
+
+export interface Streak {
     currentStreak: number;
     longestStreak: number;
     lastEntryDate: string | null;
-  }
-  
-  export interface Achievement {
+}
+
+export interface Achievement {
     id: string;
     name: string;
     description: string;
     earned: boolean;
     date?: string;
     icon: string;
-  }
-  
-  export interface UserSettings {
+}
+
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    _id: string;
+    username: string;
+    isAdmin: boolean;
+    // その他必要なユーザープロパティ
+}
+
+// UserState インターフェースを拡張
+export interface UserState {
+    id: string | null;
+    name: string;
+    email: string;
+    isLoading: boolean;
+    error: string | null;
+    lastReminderDate: string | null;
+    isLoggedIn: boolean; // ログイン状態を追加
+    hasActiveSubscription: boolean; // サブスクリプション状態を追加
+    trialActivated: boolean; // トライアル状態を追加
+    trialExpiryDate: string | null; // トライアル期限を追加
+}
+export interface UserSettings {
     reminderEnabled: boolean;
     reminderTime: string;
     darkMode: boolean;
     language: string;
     showTips: boolean;
-  }
-  
-  export interface TagOption {
+}
+
+export interface TagOption {
     value: string;
     label: string;
-  }
-  
-  export interface GoalCategory {
+}
+
+export interface GoalCategory {
     value: string;
     label: string;
-  }
-  
-  export interface MotivationDataPoint {
+}
+
+export interface MotivationDataPoint {
     date: string;
     value: number;
     difficulty: number;
     hasEntry: boolean;
-  }
-  
-  export interface MonthlyStats {
+}
+
+export interface MonthlyStats {
     entryCount: number;
     moodCounts: Record<string, number>;
     tagCounts: Record<string, number>;
@@ -204,9 +227,9 @@ export interface LongTermDataPoint {
     weeklyAchievements: Record<number, number>;
     highDifficultyCount: number;
     completedGoalsThisMonth: number;
-  }
+}
 
-  export interface Candidate {
+export interface Candidate {
     _id?: string;
     name: string;
     party: string;
@@ -223,15 +246,15 @@ export interface LongTermDataPoint {
     website?: string;
     supportRate?: number; // 支持率を追加
     socialMedia?: {
-      twitter?: string;
-      facebook?: string;
-      instagram?: string;
+        twitter?: string;
+        facebook?: string;
+        instagram?: string;
     };
-  }
+}
 
-  export interface CandidateState {
+export interface CandidateState {
     candidates: Candidate[];
     status: "idle" | "loading" | "succeeded" | "failed";
     error: string | null;
     lastUpdated: string | null; // 最終更新日時を追加
-  }
+}
