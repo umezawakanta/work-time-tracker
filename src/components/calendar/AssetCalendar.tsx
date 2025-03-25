@@ -57,6 +57,7 @@ import { Trash2, PlusCircle, Calendar, TrendingUp, ArrowUpCircle, ArrowDownCircl
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import "./AssetCalendar.css";
+import { Subscription } from "@/types/subscription";
 
 interface DataPoint {
   date: Date;
@@ -71,14 +72,6 @@ interface WithdrawalEntry {
   branch: string;
   amount: number;
   description: string;
-}
-
-interface Subscription {
-  _id: string;
-  name: string;
-  billingDate: string;
-  type: string;
-  amount: number;
 }
 
 interface MonthlySummary {
