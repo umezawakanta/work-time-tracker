@@ -49,7 +49,15 @@ export const login = async (req: Request, res: Response) => {
     const token = generateToken(userId);
     console.log('Login successful for user:', userId);
 
-    res.json({ token, user: { id: userId, name: user.name, email: user.email } });
+    res.json({ 
+      token, 
+      user: { 
+        id: userId, 
+        name: user.name, 
+        email: user.email,
+        isAdmin: user.isAdmin // isAdminフィールドを追加
+      } 
+    });
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof Error) {
@@ -67,11 +75,19 @@ export const register = async (req: Request, res: Response) => {
     if (user) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    user = new User({ name, email, password }) as IUser;
+    user = new User({ name, email, password, isAdmin: false }) as IUser; // 新規ユーザーはデフォルトで非管理者
     await user.save();
     const userId = user._id?.toString() || '';
     const token = generateToken(userId);
-    res.status(201).json({ token, user: { id: userId, name: user.name, email: user.email } });
+    res.status(201).json({ 
+      token, 
+      user: { 
+        id: userId, 
+        name: user.name, 
+        email: user.email,
+        isAdmin: user.isAdmin
+      } 
+    });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Server error during registration' });
@@ -84,7 +100,7 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ isAuthenticated: false });
     }
 
-    const user = await User.findById(req.user.id).select('name email');
+    const user = await User.findById(req.user.id).select('name email isAdmin');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -94,7 +110,8 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        isAdmin: user.isAdmin // isAdminフィールドを追加
       }
     });
   } catch (error) {
@@ -103,46 +120,60 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateProfile = async (req: AuthRequest, res: Response) => {
+export const getUserProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: '認証されていません' });
+    if (!req.user?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-
-    const { name, email } = req.body;
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { name, email },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-
-    res.json({ user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email } });
+    
+    // サブスクリプションデータ - 実際のアプリケーションでは別のモデルから取得するかもしれません
+    const subscription = {
+      isActive: true, // 仮の値
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 例：30日後
+    };
+    
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin
+      },
+      subscription
+    });
   } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({ message: 'プロフィールの更新中にエラーが発生しました' });
+    console.error('Get user profile error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-export const getUserData = async (req: AuthRequest, res: Response) => {
+export const updateUserProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ message: '認証されていません' });
+    if (!req.user?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-
-    const user = await User.findById(userId).select('-password');
+    const { name, email } = req.body;
+    const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+      return res.status(404).json({ message: 'User not found' });
     }
-
-    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+    
+    user.name = name || user.name;
+    user.email = email || user.email;
+    // isAdminは管理者のみが変更できるようにすべきなので、ここでは変更しない
+    
+    await user.save();
+    res.json({ 
+      name: user.name, 
+      email: user.email,
+      isAdmin: user.isAdmin
+    });
   } catch (error) {
-    console.error('Get user data error:', error);
-    res.status(500).json({ message: 'ユーザーデータの取得中にエラーが発生しました' });
+    console.error('Update user profile error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

@@ -258,3 +258,9 @@ export interface CandidateState {
     error: string | null;
     lastUpdated: string | null; // 最終更新日時を追加
 }
+
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+  };
+}
