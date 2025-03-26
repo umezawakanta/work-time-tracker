@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, parseISO, subMonths, subYears, isAfter } from 'date-fns';
-import { AssetEntry } from "@/store/assetSlice";
 import { Card } from '@/components/ui/card';
+import { AssetEntry } from '@/types';
 
 interface AssetTrendChartProps {
   data: AssetEntry[];

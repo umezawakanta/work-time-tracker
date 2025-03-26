@@ -13,71 +13,122 @@ import { AssetEntry, DebtEntry, FinancialMetrics } from "@/types";
   export const calculateFinancialMetrics = (
     assetEntries: AssetEntry[],
     debtEntries: DebtEntry[]
-  ): FinancialMetrics => {
-    // 総資産の計算
-    const totalAssets = assetEntries.reduce((sum, entry) => sum + entry.value, 0);
+  ) => {
+    // 口座ごとに最新の資産情報を取得
+    const latestAssetByAccount = new Map<string, AssetEntry>();
+    assetEntries.forEach((entry) => {
+      const existingEntry = latestAssetByAccount.get(entry.account);
+      if (!existingEntry || new Date(entry.date) > new Date(existingEntry.date)) {
+        latestAssetByAccount.set(entry.account, entry);
+      }
+    });
   
-    // 総負債の計算
-    const totalDebts = debtEntries.reduce((sum, entry) => sum + entry.value, 0);
+    // 口座ごとに最新の負債情報を取得
+    const latestDebtByAccount = new Map<string, DebtEntry>();
+    debtEntries.forEach((entry) => {
+      const existingEntry = latestDebtByAccount.get(entry.account);
+      if (!existingEntry || new Date(entry.date) > new Date(existingEntry.date)) {
+        latestDebtByAccount.set(entry.account, entry);
+      }
+    });
   
-    // 純資産の計算
+    // 最新のエントリを使って総資産を計算
+    const totalAssets = Array.from(latestAssetByAccount.values()).reduce(
+      (sum, entry) => sum + entry.value,
+      0
+    );
+  
+    // 最新のエントリを使って総負債を計算
+    const totalDebts = Array.from(latestDebtByAccount.values()).reduce(
+      (sum, entry) => sum + entry.value,
+      0
+    );
+  
+    // 他の財務指標計算
     const netWorth = totalAssets - totalDebts;
+    const debtToAssetRatio = totalAssets > 0 ? (totalDebts / totalAssets) * 100 : 0;
   
-    // 負債資産比率の計算 (%)
-    const debtToAssetRatio = totalAssets > 0 
-      ? (totalDebts / totalAssets) * 100 
-      : 0;
+    // 過去の資産データを日付でソート（古い順）
+    const sortedAssetEntries = [...assetEntries].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
   
-    // 資産成長率の計算 (デモでは適当な値)
-    // 実際のアプリでは前回の総資産と比較して計算する
-    const assetGrowthRate = totalAssets > 0 
-      ? Math.min(Math.max((Math.random() * 10) - 2, -5), 15) 
-      : 0;
+    // 資産成長率（直近の増減率を計算）
+    let assetGrowthRate = 0;
+    if (sortedAssetEntries.length > 1) {
+      // 各口座の成長率を計算する前に、ポイントインタイムの資産合計を計算する必要がある
+      const assetByDate = new Map<string, Map<string, number>>();
+      
+      sortedAssetEntries.forEach(entry => {
+        if (!assetByDate.has(entry.date)) {
+          assetByDate.set(entry.date, new Map<string, number>());
+        }
+        assetByDate.get(entry.date)!.set(entry.account, entry.value);
+      });
   
-    // 月間純資産変化の計算 (デモでは適当な値)
-    // 実際のアプリでは過去の履歴データを使用して計算する
-    const monthlyNetWorthChange = netWorth > 0 
-      ? netWorth * (Math.random() * 0.03 + 0.005) 
-      : 0;
+      // 日付でソートした資産合計を計算
+      const dateValuePairs: { date: string; totalValue: number }[] = [];
+      
+      assetByDate.forEach((accounts, date) => {
+        let total = 0;
+        accounts.forEach(value => {
+          total += value;
+        });
+        dateValuePairs.push({ date, totalValue: total });
+      });
   
-    // 緊急資金率 (月数) の計算
-    // 現金・預金の合計 ÷ 月間支出(デモでは仮定)
-    const liquidAssets = assetEntries
-      .filter(asset => asset.isLiquid || 
-        asset.account.toLowerCase().includes('現金') || 
-        asset.account.toLowerCase().includes('預金') ||
-        asset.account.toLowerCase().includes('銀行'))
+      // 日付でソート
+      dateValuePairs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  
+      // 少なくとも2つのポイントがある場合、成長率を計算
+      if (dateValuePairs.length >= 2) {
+        const prevPoint = dateValuePairs[dateValuePairs.length - 2];
+        const currPoint = dateValuePairs[dateValuePairs.length - 1];
+        
+        if (prevPoint.totalValue > 0) {
+          assetGrowthRate = ((currPoint.totalValue - prevPoint.totalValue) / prevPoint.totalValue) * 100;
+        }
+      }
+    }
+  
+    // 月次純資産変化（簡易計算）
+    const monthlyNetWorthChange = netWorth * 0.02; // 仮定値（実際には履歴データに基づく計算が必要）
+  
+    // 緊急資金率（現金性資産 / 月間支出の倍率）
+    const cashAssets = Array.from(latestAssetByAccount.values())
+      .filter(asset => {
+        const name = asset.account.toLowerCase();
+        return name.includes('現金') || name.includes('銀行') || name.includes('預金');
+      })
       .reduce((sum, asset) => sum + asset.value, 0);
     
-    // 月間支出は仮に30万円とする
-    const monthlyExpenses = 300000;
-    const emergencyFundRatio = monthlyExpenses > 0 
-      ? liquidAssets / monthlyExpenses 
-      : 0;
+    const monthlyExpenses = 300000; // 仮定値（実際にはデータから計算）
+    const emergencyFundRatio = monthlyExpenses > 0 ? cashAssets / monthlyExpenses : 0;
   
-    // 投資配分比率の計算
-    const investmentAssets = assetEntries
-      .filter(asset => asset.isInvestment || 
-        asset.account.toLowerCase().includes('投資') || 
-        asset.account.toLowerCase().includes('株') ||
-        asset.account.toLowerCase().includes('fund'))
+    // 投資配分比率（投資資産 / 総資産）
+    const investmentAssets = Array.from(latestAssetByAccount.values())
+      .filter(asset => {
+        const name = asset.account.toLowerCase();
+        return name.includes('株') || name.includes('投資') || name.includes('fund');
+      })
       .reduce((sum, asset) => sum + asset.value, 0);
+    
+    const investmentAllocation = totalAssets > 0 ? (investmentAssets / totalAssets) * 100 : 0;
   
-    const investmentAllocation = totalAssets > 0 
-      ? (investmentAssets / totalAssets) * 100 
-      : 0;
+    // 流動比率（流動資産 / 流動負債）
+    const liquidAssets = cashAssets; // 簡易的に現金性資産を流動資産とみなす
+    const currentDebts = Array.from(latestDebtByAccount.values())
+      .filter(debt => {
+        const name = debt.account.toLowerCase();
+        return !name.includes('住宅') && !name.includes('ローン');
+      })
+      .reduce((sum, debt) => sum + debt.value, 0);
+    
+    const liquidityRatio = currentDebts > 0 ? liquidAssets / currentDebts : liquidAssets > 0 ? 999 : 0;
   
-    // 1年後の予測純資産
-    const annualGrowthRate = assetGrowthRate > 0 ? assetGrowthRate : 3; // デフォルト3%
-    const projectedNetWorth = netWorth * (1 + annualGrowthRate / 100);
-  
-    // 流動比率の計算 (流動資産 / 流動負債)
-    // 実際のアプリでは流動負債の情報も必要
-    // ここでは仮に負債の30%を流動負債とする
-    const shortTermDebt = totalDebts * 0.3;
-    const liquidityRatio = shortTermDebt > 0 
-      ? liquidAssets / shortTermDebt 
-      : liquidAssets > 0 ? 999 : 0; // 流動負債がなければ比率は高い(または0)
+    // 将来純資産予測（年間成長率5%と仮定）
+    const projectedGrowthRate = Math.max(1, assetGrowthRate > 0 ? 1 + (assetGrowthRate / 100) : 1.05);
+    const projectedNetWorth = netWorth * projectedGrowthRate;
   
     return {
       totalAssets,
@@ -89,59 +140,8 @@ import { AssetEntry, DebtEntry, FinancialMetrics } from "@/types";
       emergencyFundRatio,
       projectedNetWorth,
       investmentAllocation,
-      liquidityRatio
+      liquidityRatio,
     };
-  };
-  
-  /**
-   * 資産・負債データの一貫性チェック
-   * @param assetEntries 資産エントリの配列
-   * @param debtEntries 負債エントリの配列
-   * @returns 問題があれば警告メッセージの配列、なければ空配列
-   */
-  export const validateFinancialData = (
-    assetEntries: AssetEntry[],
-    debtEntries: DebtEntry[]
-  ): string[] => {
-    const warnings: string[] = [];
-    
-    // データの整合性チェック
-    if (assetEntries.length === 0) {
-      warnings.push('資産データが登録されていません。');
-    }
-    
-    // 更新日のチェック
-    const now = new Date();
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(now.getMonth() - 3);
-    
-    const outdatedAssets = assetEntries.filter(asset => {
-      if (!asset.lastUpdated) return true;
-      const updateDate = new Date(asset.lastUpdated);
-      return updateDate < threeMonthsAgo;
-    });
-    
-    if (outdatedAssets.length > 0) {
-      warnings.push(`${outdatedAssets.length}件の資産データが3ヶ月以上更新されていません。`);
-    }
-    
-    // 負債の利率チェック
-    const highInterestDebts = debtEntries.filter(debt => 
-      debt.interestRate !== undefined && debt.interestRate > 15
-    );
-    
-    if (highInterestDebts.length > 0) {
-      warnings.push(`${highInterestDebts.length}件の負債が高金利（15%超）です。`);
-    }
-    
-    // 資産/負債比率のチェック
-    const { debtToAssetRatio } = calculateFinancialMetrics(assetEntries, debtEntries);
-    
-    if (debtToAssetRatio > 80) {
-      warnings.push('負債資産比率が80%を超えています。財務バランスの見直しをおすすめします。');
-    }
-    
-    return warnings;
   };
   
   /**

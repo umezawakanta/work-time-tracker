@@ -15,7 +15,7 @@ import {
   MinusIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { CombinedDataPoint } from "@/utils/combineData";
+import { CombinedDataPoint } from "@/types";
 
 interface DataPoint {
   date: string;
