@@ -307,6 +307,25 @@ export default function AssetLiabilityReportPage() {
     }))
   );
 
+  // AssetLiabilityTrendChart 用のデータを生成
+  const chartData = useMemo(() => {
+    const assetChartData = assetEntries.map(entry => ({
+      date: new Date(entry.date),
+      account: entry.account,
+      value: entry.value,
+      type: 'asset' as const
+    }));
+
+    const debtChartData = debtEntries.map(entry => ({
+      date: new Date(entry.date),
+      account: entry.account,
+      value: entry.value,
+      type: 'debt' as const
+    }));
+
+    return [...assetChartData, ...debtChartData];
+  }, [assetEntries, debtEntries]);
+
   // viewDateRange を使って combinedData をフィルタ
   const filteredCombinedData = useMemo(() => {
     // viewDateRange.startまたはviewDateRange.endがnullの場合は、フィルタリングを行わずに全データを返す
@@ -1078,14 +1097,10 @@ export default function AssetLiabilityReportPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                {filteredCombinedData.length > 0 ? (
+                {chartData.length > 0 ? (
                   <div className="h-80">
                     <AssetLiabilityTrendChart
-                      data={filteredCombinedData.map((item) => ({
-                        ...item,
-                        date: new Date(item.date),
-                        account: item.account || "その他",
-                      }))}
+                      data={chartData}
                     />
                   </div>
                 ) : (
@@ -1106,7 +1121,7 @@ export default function AssetLiabilityReportPage() {
                   <Calendar className="h-4 w-4 mr-1" />
                   <span>
                     最終更新:{" "}
-                    {filteredCombinedData.length > 0
+                    {chartData.length > 0
                       ? new Date().toLocaleDateString()
                       : "なし"}
                   </span>
@@ -1467,293 +1482,292 @@ export default function AssetLiabilityReportPage() {
                     editingAsset={editingAsset}
                     setEditingAsset={setEditingAsset}
                     editingDebt={editingDebt}
-                    setEditingDebt={setEditingDebt}
-                    updateLastBalanceDate={updateLastBalanceDate}
-                  />
-
-                  <AssetDebtLists
-                    assetEntries={assetEntries}
-                    debtEntries={debtEntries}
-                    onBalanceUpdate={handleBalanceUpdateWrapper}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* 資産・負債の管理ヒント */}
-      <Card className="bg-muted/20 border-dashed mb-6">
-        <CardHeader>
-          <CardTitle className="text-lg">資産管理のヒント</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>
-              定期的に資産と負債の残高を更新して、正確な財務状況を把握しましょう。
-            </li>
-            <li>資産の成長率を観察し、投資戦略の有効性を評価しましょう。</li>
-            <li>
-              負債の返済計画を立て、高金利の負債から優先的に返済することを検討しましょう。
-            </li>
-            <li>
-              <strong>新機能:</strong>{" "}
-              資産負債率が50%を超える場合は、新たな負債を増やす前に慎重に検討しましょう。
-            </li>
-            <li>
-              <strong>新機能:</strong>{" "}
-              毎月の純資産の増加額を追跡し、長期的な資産形成の進捗を確認しましょう。
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* フッター */}
-      <div className="border-t pt-4 text-center text-sm text-muted-foreground">
-        <div className="flex items-center justify-center">
-          <Clock className="h-4 w-4 mr-1" />
-          <p>最終更新: {new Date().toLocaleString()}</p>
-        </div>
-      </div>
-
-      {/* 残高更新モーダル */}
-      <BalanceUpdateModal
-        isOpen={isBalanceModalOpen}
-        onClose={() => setIsBalanceModalOpen(false)}
-        onSubmit={handleBalanceUpdateSubmit}
-        currentBalance={selectedAccount?.value || 0}
-        accountName={selectedAccount?.account || ""}
-      />
-
-      {/* クイック追加モーダル - 新機能 */}
-      <Dialog open={isQuickAddOpen} onOpenChange={setIsQuickAddOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>クイック追加</DialogTitle>
-            <DialogDescription>
-              資産・負債を素早く追加できます
-            </DialogDescription>
-          </DialogHeader>
-
-          <QuickInput
-            onClose={() => setIsQuickAddOpen(false)}
-            updateLastBalanceDate={updateLastBalanceDate}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* 目標設定・編集モーダル (新規追加) */}
-      <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editingGoal ? "目標を編集" : "新しい目標を設定"}
-            </DialogTitle>
-            <DialogDescription>
-              財務目標を設定して、進捗を追跡しましょう
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* 実際のアプリでは、目標の設定フォームコンポーネントを実装 */}
-          <div className="text-center py-6">
-            <Target className="h-16 w-16 text-blue-500 mx-auto mb-4" />
-            <p className="text-muted-foreground mb-4">
-              ※ デモ版では目標フォーム機能は実装されていません。
-            </p>
-            <Button onClick={() => setIsGoalFormOpen(false)}>閉じる</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* エクスポートダイアログ */}
-      <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>データエクスポート</DialogTitle>
-            <DialogDescription>
-              資産・負債データをエクスポートします
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="export-format">エクスポート形式</Label>
-              <Select value={exportFormat} onValueChange={setExportFormat}>
-                <SelectTrigger id="export-format">
-                  <SelectValue placeholder="形式を選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="csv">CSV形式</SelectItem>
-                  <SelectItem value="pdf">PDF形式</SelectItem>
-                </SelectContent>
-              </Select>
+                    setEditingDebt={setEditingDebt}updateLastBalanceDate={updateLastBalanceDate}
+                    />
+  
+                    <AssetDebtLists
+                      assetEntries={assetEntries}
+                      debtEntries={debtEntries}
+                      onBalanceUpdate={handleBalanceUpdateWrapper}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-
-            {!isPremium && (
-              <div className="bg-amber-50 p-4 rounded-md text-sm text-amber-800 flex items-start space-x-2">
-                <Crown className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+          </TabsContent>
+        </Tabs>
+  
+        {/* 資産・負債の管理ヒント */}
+        <Card className="bg-muted/20 border-dashed mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">資産管理のヒント</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                定期的に資産と負債の残高を更新して、正確な財務状況を把握しましょう。
+              </li>
+              <li>資産の成長率を観察し、投資戦略の有効性を評価しましょう。</li>
+              <li>
+                負債の返済計画を立て、高金利の負債から優先的に返済することを検討しましょう。
+              </li>
+              <li>
+                <strong>新機能:</strong>{" "}
+                資産負債率が50%を超える場合は、新たな負債を増やす前に慎重に検討しましょう。
+              </li>
+              <li>
+                <strong>新機能:</strong>{" "}
+                毎月の純資産の増加額を追跡し、長期的な資産形成の進捗を確認しましょう。
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+  
+        {/* フッター */}
+        <div className="border-t pt-4 text-center text-sm text-muted-foreground">
+          <div className="flex items-center justify-center">
+            <Clock className="h-4 w-4 mr-1" />
+            <p>最終更新: {new Date().toLocaleString()}</p>
+          </div>
+        </div>
+  
+        {/* 残高更新モーダル */}
+        <BalanceUpdateModal
+          isOpen={isBalanceModalOpen}
+          onClose={() => setIsBalanceModalOpen(false)}
+          onSubmit={handleBalanceUpdateSubmit}
+          currentBalance={selectedAccount?.value || 0}
+          accountName={selectedAccount?.account || ""}
+        />
+  
+        {/* クイック追加モーダル - 新機能 */}
+        <Dialog open={isQuickAddOpen} onOpenChange={setIsQuickAddOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>クイック追加</DialogTitle>
+              <DialogDescription>
+                資産・負債を素早く追加できます
+              </DialogDescription>
+            </DialogHeader>
+  
+            <QuickInput
+              onClose={() => setIsQuickAddOpen(false)}
+              updateLastBalanceDate={updateLastBalanceDate}
+            />
+          </DialogContent>
+        </Dialog>
+  
+        {/* 目標設定・編集モーダル (新規追加) */}
+        <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                {editingGoal ? "目標を編集" : "新しい目標を設定"}
+              </DialogTitle>
+              <DialogDescription>
+                財務目標を設定して、進捗を追跡しましょう
+              </DialogDescription>
+            </DialogHeader>
+  
+            {/* 実際のアプリでは、目標の設定フォームコンポーネントを実装 */}
+            <div className="text-center py-6">
+              <Target className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+              <p className="text-muted-foreground mb-4">
+                ※ デモ版では目標フォーム機能は実装されていません。
+              </p>
+              <Button onClick={() => setIsGoalFormOpen(false)}>閉じる</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+  
+        {/* エクスポートダイアログ */}
+        <Dialog open={exportDialogOpen} onOpenChange={setExportDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>データエクスポート</DialogTitle>
+              <DialogDescription>
+                資産・負債データをエクスポートします
+              </DialogDescription>
+            </DialogHeader>
+  
+            <div className="space-y-4 py-4">
+              <div>
+                <Label htmlFor="export-format">エクスポート形式</Label>
+                <Select value={exportFormat} onValueChange={setExportFormat}>
+                  <SelectTrigger id="export-format">
+                    <SelectValue placeholder="形式を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="csv">CSV形式</SelectItem>
+                    <SelectItem value="pdf">PDF形式</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+  
+              {!isPremium && (
+                <div className="bg-amber-50 p-4 rounded-md text-sm text-amber-800 flex items-start space-x-2">
+                  <Crown className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium mb-1">プレミアム限定機能</p>
+                    <p>
+                      データエクスポート機能はプレミアム会員専用です。プレミアムにアップグレードしてご利用ください。
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+  
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setExportDialogOpen(false)}
+              >
+                キャンセル
+              </Button>
+              <Button
+                onClick={handleExportData}
+                disabled={!isPremium || isExportingData}
+              >
+                {isExportingData ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    処理中...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    エクスポート
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+  
+        {/* プレミアム案内ダイアログ */}
+        <Dialog open={isPremiumDialogOpen} onOpenChange={setIsPremiumDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <Crown className="h-5 w-5 text-amber-500" />
+                プレミアム資産管理
+              </DialogTitle>
+              <DialogDescription>
+                あなたの資産管理をより効果的に
+              </DialogDescription>
+            </DialogHeader>
+  
+            <div className="space-y-4 py-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <LineChart className="h-5 w-5 text-amber-600" />
+                </div>
                 <div>
-                  <p className="font-medium mb-1">プレミアム限定機能</p>
-                  <p>
-                    データエクスポート機能はプレミアム会員専用です。プレミアムにアップグレードしてご利用ください。
+                  <h4 className="font-medium">詳細な資産分析</h4>
+                  <p className="text-sm text-muted-foreground">
+                    あなたの資産ポートフォリオの深い分析と最適化提案
                   </p>
                 </div>
               </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setExportDialogOpen(false)}
-            >
-              キャンセル
-            </Button>
-            <Button
-              onClick={handleExportData}
-              disabled={!isPremium || isExportingData}
-            >
-              {isExportingData ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  処理中...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  エクスポート
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* プレミアム案内ダイアログ */}
-      <Dialog open={isPremiumDialogOpen} onOpenChange={setIsPremiumDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Crown className="h-5 w-5 text-amber-500" />
-              プレミアム資産管理
-            </DialogTitle>
-            <DialogDescription>
-              あなたの資産管理をより効果的に
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <LineChart className="h-5 w-5 text-amber-600" />
+  
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <PieChart className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium">資産配分の最適化</h4>
+                  <p className="text-sm text-muted-foreground">
+                    リスクとリターンのバランスを考慮した最適な資産配分を提案
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium">詳細な資産分析</h4>
-                <p className="text-sm text-muted-foreground">
-                  あなたの資産ポートフォリオの深い分析と最適化提案
+  
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <TrendingUp className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium">将来予測と目標設定</h4>
+                  <p className="text-sm text-muted-foreground">
+                    現在の資産状況から将来の予測を立て、目標達成をサポート
+                  </p>
+                </div>
+              </div>
+  
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <FileDown className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium">高度なエクスポート機能</h4>
+                  <p className="text-sm text-muted-foreground">
+                    CSV/PDF形式でのデータエクスポートと専用レポート生成
+                  </p>
+                </div>
+              </div>
+  
+              <div className="bg-amber-50 p-4 rounded-md mt-4">
+                <p className="text-center text-amber-800 text-sm">
+                  プレミアムプランで資産管理の効率を最大化し、より賢明な財務判断を行いましょう
                 </p>
               </div>
             </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <PieChart className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">資産配分の最適化</h4>
-                <p className="text-sm text-muted-foreground">
-                  リスクとリターンのバランスを考慮した最適な資産配分を提案
-                </p>
-              </div>
+  
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsPremiumDialogOpen(false)}
+                className="sm:flex-1"
+              >
+                また後で
+              </Button>
+              <Button
+                className="bg-amber-600 hover:bg-amber-700 sm:flex-1"
+                onClick={handlePremiumUpgrade}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    処理中...
+                  </>
+                ) : (
+                  <>プレミアムを始める ¥980/月</>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+  
+        {/* 全画面表示モーダル (新規追加) */}
+        <Dialog open={isFullscreenView} onOpenChange={setIsFullscreenView}>
+          <DialogContent className="max-w-7xl w-full">
+            <DialogHeader>
+              <DialogTitle>長期トレンド分析 - 詳細ビュー</DialogTitle>
+              <DialogDescription>
+                財務データの長期的な変化を詳細に確認できます
+              </DialogDescription>
+            </DialogHeader>
+  
+            <div className="h-[calc(100vh-200px)]">
+              <LongTermTrend
+                financialData={longTermData}
+                goals={goals}
+                onExportData={handleExportData}
+                onFullscreen={() => setIsFullscreenView(false)}
+              />
             </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <TrendingUp className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">将来予測と目標設定</h4>
-                <p className="text-sm text-muted-foreground">
-                  現在の資産状況から将来の予測を立て、目標達成をサポート
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-amber-100 rounded-full">
-                <FileDown className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">高度なエクスポート機能</h4>
-                <p className="text-sm text-muted-foreground">
-                  CSV/PDF形式でのデータエクスポートと専用レポート生成
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-amber-50 p-4 rounded-md mt-4">
-              <p className="text-center text-amber-800 text-sm">
-                プレミアムプランで資産管理の効率を最大化し、より賢明な財務判断を行いましょう
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsPremiumDialogOpen(false)}
-              className="sm:flex-1"
-            >
-              また後で
-            </Button>
-            <Button
-              className="bg-amber-600 hover:bg-amber-700 sm:flex-1"
-              onClick={handlePremiumUpgrade}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  処理中...
-                </>
-              ) : (
-                <>プレミアムを始める ¥980/月</>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* 全画面表示モーダル (新規追加) */}
-      <Dialog open={isFullscreenView} onOpenChange={setIsFullscreenView}>
-        <DialogContent className="max-w-7xl w-full">
-          <DialogHeader>
-            <DialogTitle>長期トレンド分析 - 詳細ビュー</DialogTitle>
-            <DialogDescription>
-              財務データの長期的な変化を詳細に確認できます
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="h-[calc(100vh-200px)]">
-            <LongTermTrend
-              financialData={longTermData}
-              goals={goals}
-              onExportData={handleExportData}
-              onFullscreen={() => setIsFullscreenView(false)}
-            />
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsFullscreenView(false)}
-            >
-              閉じる
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
+  
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsFullscreenView(false)}
+              >
+                閉じる
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
