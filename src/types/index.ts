@@ -29,12 +29,15 @@ export interface AssetEntry {
     type?: string;         // 資産タイプ
     isLiquid?: boolean;    // 流動性のある資産かどうか
     isInvestment?: boolean;// 投資資産かどうか
+    interestRate?: number;  // 金利などを保存するプロパティの追加
+    notes?: string;         // メモや備考を保存するプロパティの追加
 }
 
 /**
  * 負債エントリーの型定義
  */
 export interface DebtEntry {
+    description: string;
     _id?: string;        // MongoDBなどのデータベースID
     id?: string;         // クライアント側で使用されるID
     date: string;        // 日付 - ISO文字列形式
@@ -50,6 +53,7 @@ export interface DebtEntry {
     interestRate?: number;  // 金利
     minimumPayment?: number;// 最低返済額
     dueDate?: string;       // 返済期日
+    notes?: string;         // メモや備考
 }
 
 /**
@@ -134,6 +138,7 @@ export interface LongTermDataPoint {
     categories: {
         [key: string]: number;
     };
+    isProjected?: boolean; // 予測データかどうかを示すフラグを追加
 }
 
 export interface DiaryEntry {

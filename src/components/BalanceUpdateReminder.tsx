@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AssetEntry } from "@/store/assetSlice";
-import { DebtEntry } from "@/store/debtSlice";
 import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { formatDateAndTime } from "@/utils/dateUtils";
 import { useLocale } from "@/hooks/useLocale";
@@ -10,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { addAssetEntry } from "@/store/assetSlice";
 import { addDebtEntry } from "@/store/debtSlice";
 import { AppDispatch } from "@/store";
+import { AssetEntry, DebtEntry } from "@/types";
 
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];

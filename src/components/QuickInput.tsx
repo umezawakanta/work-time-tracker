@@ -109,6 +109,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
           date: currentDate,
           category,
           targetSettings,
+          description: ''
         }));
       }
 
