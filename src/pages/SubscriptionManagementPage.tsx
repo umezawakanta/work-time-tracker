@@ -365,6 +365,8 @@ export default function SubscriptionManagementPage() {
     paymentMethod: "credit", // 新規フィールド: "credit", "bank", "paypal", "apple", "google"
     bankAccount: null, // 新規フィールド: 銀行口座ID
     checkedMonths: [], // 新規フィールド: 確認済み月のリスト ["2024/01", "2024/02", ...]
+    isActive: true,
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   });
 
   // サブスクリプション登録時に選択した支払い方法を設定
@@ -418,6 +420,8 @@ export default function SubscriptionManagementPage() {
         billingDate: "",
         type: "",
         amount: 0,
+        isActive: true,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
     } catch (err) {
       console.error("Failed to save the subscription: ", err);
@@ -431,6 +435,8 @@ export default function SubscriptionManagementPage() {
       billingDate: subscription.billingDate,
       type: subscription.type,
       amount: subscription.amount,
+      isActive: true,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     });
   };
 
@@ -1183,6 +1189,8 @@ export default function SubscriptionManagementPage() {
                                 paymentMethod: "credit",
                                 bankAccount: null,
                                 checkedMonths: [],
+                                isActive: true,
+                                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                               });
                             }}
                           >

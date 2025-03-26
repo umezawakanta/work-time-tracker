@@ -9,6 +9,8 @@ const mockSubscriptionData: Subscription[] = [
     billingDate: "2024/01/01",
     type: "エンターテイメント",
     amount: 1490,
+    isActive: true,
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
     _id: "2",
@@ -16,6 +18,8 @@ const mockSubscriptionData: Subscription[] = [
     billingDate: "2024/01/15",
     type: "音楽",
     amount: 980,
+    isActive: true,
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
 ];
 

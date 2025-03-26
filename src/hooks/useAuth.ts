@@ -1,3 +1,5 @@
+// @/hooks/useAuth.ts
+
 import { useState, useEffect } from 'react';
 import { checkAuth, getUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
@@ -19,7 +21,10 @@ export function useAuth() {
         if (authStatus) {
           const profile = await getUserProfile();
           setUser(profile.user);
-          setIsSubscribed(profile.subscription?.isActive || false);
+          
+          // 管理者は常にサブスクリプション有効として扱う
+          // または、サブスクリプションが実際に有効なユーザー
+          setIsSubscribed(profile.user.isAdmin || profile.subscription?.isActive || false);
         }
       } catch (error) {
         console.error('Error checking authentication:', error);

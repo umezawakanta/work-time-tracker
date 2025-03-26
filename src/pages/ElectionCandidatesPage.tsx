@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom"; // Next.jsのLinkを React RouterのLinkに変更
 import { AppDispatch, RootState } from "../store";
-import { 
-  fetchCandidates, 
-  subscribeToUpdates, 
+import {
+  fetchCandidates,
+  subscribeToUpdates,
   unsubscribeFromUpdates,
 } from "../store/candidateSlice";
 import DistrictCandidatesList from "@/components/list/DistrictCandidatesList";
@@ -73,8 +73,8 @@ export default function ElectionCandidatesPage() {
 
       // URLから指定があれば、その都道府県を選択
       const searchParams = new URLSearchParams(location.search);
-      const prefecture = searchParams.get('prefecture');
-      
+      const prefecture = searchParams.get("prefecture");
+
       if (prefecture) {
         const validPrefecture = candidates.some(
           (c) => c.prefecture === prefecture
@@ -185,11 +185,9 @@ export default function ElectionCandidatesPage() {
 
       <div className="flex flex-wrap justify-between items-center mb-6 gap-2">
         <div className="flex gap-2">
-          {(user?.isAdmin || isSubscribed) && (
-            <Link to="/candidate-registration">
-              <Button>候補者登録</Button>
-            </Link>
-          )}
+          <Link to="/candidate-registration">
+            <Button>候補者登録</Button>
+          </Link>
 
           <Button
             variant="outline"
