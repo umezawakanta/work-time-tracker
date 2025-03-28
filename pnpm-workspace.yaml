@@ -1,2 +1,3 @@
-packages:
-  - '.'
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - protobufjs

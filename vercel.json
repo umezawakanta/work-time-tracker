@@ -1,7 +1,8 @@
 {
   "version": 2,
   "framework": "vite",
-  "buildCommand": "pnpm run build",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "outputDirectory": "dist",
   "builds": [
     {

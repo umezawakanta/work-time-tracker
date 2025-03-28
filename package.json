@@ -12,12 +12,6 @@
     "server": "node --loader ts-node/esm src/server/server.ts",
     "dev": "concurrently \"npm run start\" \"npm run server\""
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@firebase/util",
-      "protobufjs"
-    ]
-  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
