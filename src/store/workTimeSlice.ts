@@ -2,6 +2,18 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import { workTimeApi } from "../services/api";
 
+// 入力用のペイロード型を定義
+interface AddWorkTimeEntryPayload {
+  projectId: string;
+  projectName: string;
+  description: string;
+  startTime: string; // DateからStringに変更
+  endTime: string; // DateからStringに変更
+  duration: number;
+  date: string;
+  presetId?: string;
+}
+
 interface WorkTimeApiResponse {
   message: string;
   workTime: WorkTimeEntry;
@@ -24,20 +36,35 @@ export const fetchWorkTimeEntries = createAsyncThunk<
 });
 
 export const addWorkTimeEntry = createAsyncThunk<
-  WorkTimeEntry,
-  Omit<WorkTimeEntry, "_id">,
+  WorkTimeEntry, // 戻り値の型
+  AddWorkTimeEntryPayload, // 引数の型
   { rejectValue: string }
->("workTime/addEntry", async (entry, { rejectWithValue }) => {
-  try {
-    const response = await workTimeApi.create(entry);
-    return (response.data as WorkTimeApiResponse).workTime;
-  } catch (error) {
-    console.error("エントリーの追加中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "エントリーの追加に失敗しました"
-    );
+>(
+  'workTime/addEntry',
+  async (payload: AddWorkTimeEntryPayload, { rejectWithValue }) => {
+    try {
+      // ペイロードをWorkTimeEntryの形式に変換（_idは除外）
+      const entryData = {
+        projectId: payload.projectId,
+        projectName: payload.projectName,
+        description: payload.description,
+        startTime: payload.startTime,
+        endTime: payload.endTime,
+        duration: payload.duration,
+        date: payload.date,
+        presetId: payload.presetId
+      };
+
+      const response = await workTimeApi.create(entryData);
+      return response.data.workTime;
+    } catch (error) {
+      console.error("エントリーの追加中にエラーが発生しました:", error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : "エントリーの追加に失敗しました"
+      );
+    }
   }
-});
+);
 
 export const updateWorkTimeEntry = createAsyncThunk<
   WorkTimeEntry,
@@ -106,13 +133,22 @@ const workTimeSlice = createSlice({
         state.error = action.payload || "エントリーの取得に失敗しました";
       })
       .addCase(
+        addWorkTimeEntry.pending,
+        (state) => {
+          state.status = "loading";
+          state.error = null;
+        }
+      )
+      .addCase(
         addWorkTimeEntry.fulfilled,
         (state, action: PayloadAction<WorkTimeEntry>) => {
           state.entries.push(action.payload);
+          state.status = "succeeded";
           state.error = null;
         }
       )
       .addCase(addWorkTimeEntry.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload || "エントリーの追加に失敗しました";
       })
       .addCase(
@@ -125,9 +161,11 @@ const workTimeSlice = createSlice({
             state.entries[index] = action.payload;
           }
           state.error = null;
+          state.status = "succeeded";
         }
       )
       .addCase(updateWorkTimeEntry.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload || "エントリーの更新に失敗しました";
       })
       .addCase(
@@ -137,9 +175,11 @@ const workTimeSlice = createSlice({
             (entry) => entry._id !== action.payload
           );
           state.error = null;
+          state.status = "succeeded";
         }
       )
       .addCase(deleteWorkTimeEntry.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload || "エントリーの削除に失敗しました";
       });
   },
