@@ -182,6 +182,7 @@ export interface User {
     _id: string;
     username: string;
     isAdmin: boolean;
+    avatar?: string; // オプショナルプロパティとして avatar を追加
     // その他必要なユーザープロパティ
 }
 
@@ -263,3 +264,14 @@ export interface CandidateState {
     error: string | null;
     lastUpdated: string | null; // 最終更新日時を追加
 }
+
+export interface UserNotification {
+    id: number;
+    title: string;
+    message: string;
+    read: boolean;
+    type: string;
+    timestamp: string;
+    actionUrl?: string;
+    actionText?: string;
+  }
