@@ -8,19 +8,12 @@ import { useDispatch } from "react-redux";
 import { addAssetEntry } from "@/store/assetSlice";
 import { addDebtEntry } from "@/store/debtSlice";
 import { AppDispatch } from "@/store";
-import { AssetEntry, DebtEntry } from "@/types";
+import { AssetEntry, BaseAccountStatus, DebtEntry } from "@/types";
 
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];
   debtEntries: DebtEntry[];
   onAddNew?: () => void; // オプショナルプロパティとして追加
-}
-
-interface BaseAccountStatus {
-  account: string;
-  isUpdated: boolean;
-  lastUpdateDate: string;
-  balance: number;
 }
 
 interface AssetAccountStatus extends BaseAccountStatus {
