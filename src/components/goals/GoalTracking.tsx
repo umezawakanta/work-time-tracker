@@ -504,14 +504,21 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
                                 <div className="flex items-center">
                                   <div className="w-20 h-2 bg-slate-200 rounded-full mr-2">
                                     <div
-                                      className={`h-2 rounded-full ${
+                                      className={`h-2 rounded-full progress-bar ${
                                         goal.type === "asset"
                                           ? "bg-blue-500"
                                           : goal.type === "debt"
                                           ? "bg-amber-500"
                                           : "bg-emerald-500"
                                       }`}
-                                      style={{ width: `${progress}%` }}
+                                      ref={(el) => {
+                                        if (el) {
+                                          el.style.setProperty(
+                                            "--progress-width",
+                                            `${progress}%`
+                                          );
+                                        }
+                                      }}
                                     />
                                   </div>
                                   <span className="text-sm font-medium">
