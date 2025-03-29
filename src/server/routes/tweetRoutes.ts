@@ -1,22 +1,21 @@
-import express, { Response } from 'express';
+import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createTweet, getTweets, updateTweet } from '../controllers/tweetController';
-import { authMiddleware } from '../middleware/authMiddleware';
-import { CustomRequest } from '../types/express';
+import { createTweet, getTweets, updateTweet } from '../controllers/tweetController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// ファイルアップロードのためのmulter設定
+// Configure multer for handling file uploads
 const storage = multer.diskStorage({
-  destination: (_req: CustomRequest, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+  destination: (_req, _file, cb) => {
     cb(null, path.join(__dirname, '../../../uploads/'));
   },
-  filename: (_req: CustomRequest, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
@@ -24,18 +23,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// コントローラーの型が2引数であることを前提とした場合
-const createTweetHandler = (req: CustomRequest, res: Response) => 
-  createTweet(req, res);
-
-const getTweetsHandler = (req: CustomRequest, res: Response) => 
-  getTweets(req, res);
-
-const updateTweetHandler = (req: CustomRequest, res: Response) => 
-  updateTweet(req, res);
-
-router.post('/', authMiddleware, upload.single('image'), createTweetHandler);
-router.get('/', authMiddleware, getTweetsHandler);
-router.put('/:id', authMiddleware, updateTweetHandler);
+router.post('/', authMiddleware, upload.single('image'), createTweet as any);
+router.get('/', authMiddleware, getTweets as any);
+router.put('/:id', authMiddleware, updateTweet as any);
 
 export default router;

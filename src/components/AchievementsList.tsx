@@ -1,22 +1,14 @@
+// AchievementsList.tsx
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Star, Zap, Crown, CheckCircle } from "lucide-react";
-
-// Achievement型を定義
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  earned: boolean;
-  date?: string;
-}
+import { Achievement } from "@/types";
 
 interface AchievementsListProps {
-  achievements?: Achievement[];
-  streakData?: {
+  achievements: Achievement[];
+  streakData: {
     currentStreak: number;
     longestStreak: number;
     lastEntryDate: string | null;
@@ -24,12 +16,8 @@ interface AchievementsListProps {
 }
 
 const AchievementsList: React.FC<AchievementsListProps> = ({
-  achievements = [], // デフォルト値として空の配列を設定
-  streakData = { // デフォルト値としてゼロ値のストリークデータを設定
-    currentStreak: 0,
-    longestStreak: 0,
-    lastEntryDate: null
-  },
+  achievements,
+  streakData,
 }) => {
   // アイコンのマッピング
   const getIcon = (iconName: string) => {
@@ -53,18 +41,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
 
   // 取得した実績数と取得率
   const earnedCount = achievements.filter((a) => a.earned).length;
-  const earnedPercentage = achievements.length > 0 
-    ? Math.round((earnedCount / achievements.length) * 100) 
-    : 0;
-
-  // パーセンテージに基づいたTailwindクラスを生成
-  const getWidthClass = () => {
-    switch (earnedPercentage) {
-      case 0: return 'w-0';
-      case 100: return 'w-full';
-      default: return `w-[${earnedPercentage}%]`;
-    }
-  };
+  const earnedPercentage = Math.round((earnedCount / achievements.length) * 100);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -102,7 +79,8 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                 <div
-                  className={`bg-green-600 h-2.5 rounded-full ${getWidthClass()}`}
+                  className="bg-green-600 h-2.5 rounded-full"
+                  style={{ width: `${earnedPercentage}%` }}
                 ></div>
               </div>
               <div className="text-center text-sm text-gray-500 mb-4">

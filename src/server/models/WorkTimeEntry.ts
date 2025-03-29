@@ -1,5 +1,14 @@
-import { IWorkTimeEntry } from "@/types";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export interface IWorkTimeEntry extends Document {
+  projectName: string;
+  startTime: Date;
+  endTime: Date;
+  description?: string;
+  duration: number;
+  date: Date;
+  createdAt: Date;
+}
 
 const WorkTimeSchema = new Schema<IWorkTimeEntry>({
   projectName: { type: String, required: true },
