@@ -103,15 +103,15 @@ export function DayView() {
     }
   };
 
-  const getEventStyle = (event: Event) => {
+  const calculateEventProperties = (event: Event) => {
     const startMinutes = event.start.getHours() * 60 + event.start.getMinutes();
     const endMinutes = event.end.getHours() * 60 + event.end.getMinutes();
     
     return {
-      '--event-top': `${(startMinutes / 5) * 2}px`,
-      '--event-height': `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
-      '--event-color': event.color || '#3b82f6',
-    } as React.CSSProperties;
+      top: `${(startMinutes / 5) * 2}px`,
+      height: `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
+      color: event.color || '#3b82f6',
+    };
   };
 
   const dayEvents = events.filter(event => 
@@ -153,16 +153,25 @@ export function DayView() {
                 onDoubleClick={() => handleDoubleClick(currentDate, time)}
               />
             ))}
-            {dayEvents.map((event) => (
-              <div
-                key={event.id}
-                className="event-item cursor-pointer hover:opacity-75"
-                style={getEventStyle(event)}
-                onClick={() => handleEventClick(event)}
-              >
-                {event.title}
-              </div>
-            ))}
+            {dayEvents.map((event) => {
+              const eventProps = calculateEventProperties(event);
+              return (
+                <div
+                  key={event.id}
+                  className="event-item cursor-pointer hover:opacity-75"
+                  ref={(el) => {
+                    if (el) {
+                      el.style.setProperty('--event-top', eventProps.top);
+                      el.style.setProperty('--event-height', eventProps.height);
+                      el.style.setProperty('--event-color', eventProps.color);
+                    }
+                  }}
+                  onClick={() => handleEventClick(event)}
+                >
+                  {event.title}
+                </div>
+              );
+            })}
           </div>
         </div>
       </ScrollArea>
@@ -182,4 +191,3 @@ export function DayView() {
     </div>
   );
 }
-

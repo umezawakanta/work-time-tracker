@@ -1,4 +1,5 @@
 import { TooltipProps } from "recharts";
+import "./CustomTooltip.css"; // CSSファイルのインポート
 
 interface CustomTooltipProps extends TooltipProps<number, string> {
   active?: boolean;
@@ -25,8 +26,12 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
             >
               <div className="flex items-center">
                 <div
-                  className="w-3 h-3 mr-2 rounded-full"
-                  style={{ backgroundColor: entry.stroke }}
+                  className="tooltip-color-indicator"
+                  ref={(el) => {
+                    if (el) {
+                      el.style.setProperty('--indicator-color', entry.stroke);
+                    }
+                  }}
                 />
                 <span className="font-medium">{entry.name.split("(")[0]}</span>
               </div>
