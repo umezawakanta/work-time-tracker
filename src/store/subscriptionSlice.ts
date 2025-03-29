@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Subscription } from '@/types/subscription';
 import subscriptionApi from '@/services/api/subscriptionApi';
+import { SubscriptionService } from '@/types';
 
 // 初期状態の型定義
 interface SubscriptionState {
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionService[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -28,7 +28,7 @@ export const fetchSubscriptions = createAsyncThunk(
 // 新しいサブスクリプションを追加する非同期アクション
 export const addSubscription = createAsyncThunk(
   'subscription/addSubscription',
-  async (subscription: Omit<Subscription, '_id'>) => {
+  async (subscription: Omit<SubscriptionService, '_id'>) => {
     const response = await subscriptionApi.addSubscription(subscription);
     return response;
   }
@@ -37,7 +37,7 @@ export const addSubscription = createAsyncThunk(
 // サブスクリプションを更新する非同期アクション
 export const updateSubscription = createAsyncThunk(
   'subscription/updateSubscription',
-  async ({ _id, subscription }: { _id: string; subscription: Partial<Omit<Subscription, '_id'>> }) => {
+  async ({ _id, subscription }: { _id: string; subscription: Partial<Omit<SubscriptionService, '_id'>> }) => {
     const response = await subscriptionApi.updateSubscription(_id, subscription);
     return response;
   }
@@ -78,7 +78,7 @@ const subscriptionSlice = createSlice({
       .addCase(fetchSubscriptions.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchSubscriptions.fulfilled, (state, action: PayloadAction<Subscription[]>) => {
+      .addCase(fetchSubscriptions.fulfilled, (state, action: PayloadAction<SubscriptionService[]>) => {
         state.status = 'succeeded';
         state.subscriptions = action.payload;
       })
@@ -91,7 +91,7 @@ const subscriptionSlice = createSlice({
       .addCase(addSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(addSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
+      .addCase(addSubscription.fulfilled, (state, action: PayloadAction<SubscriptionService>) => {
         state.status = 'succeeded';
         state.subscriptions.push(action.payload);
       })
@@ -104,7 +104,7 @@ const subscriptionSlice = createSlice({
       .addCase(updateSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(updateSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
+      .addCase(updateSubscription.fulfilled, (state, action: PayloadAction<SubscriptionService>) => {
         state.status = 'succeeded';
         const index = state.subscriptions.findIndex(sub => sub._id === action.payload._id);
         if (index !== -1) {
@@ -130,7 +130,7 @@ const subscriptionSlice = createSlice({
       })
       
       // updateSubscriptionCheckStatus
-      .addCase(updateSubscriptionCheckStatus.fulfilled, (state, action: PayloadAction<Subscription>) => {
+      .addCase(updateSubscriptionCheckStatus.fulfilled, (state, action: PayloadAction<SubscriptionService>) => {
         const index = state.subscriptions.findIndex(sub => sub._id === action.payload._id);
         if (index !== -1) {
           state.subscriptions[index] = action.payload;

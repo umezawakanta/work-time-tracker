@@ -12,7 +12,7 @@ import {
   Title,
 } from "chart.js";
 import { Pie, Bar } from "react-chartjs-2";
-import { Subscription } from "@/types/subscription";
+import { SubscriptionService } from "@/types";
 
 ChartJS.register(
   ArcElement,
@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 interface SubscriptionChartsProps {
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionService[];
 }
 
 const COLORS = [

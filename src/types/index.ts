@@ -276,17 +276,81 @@ export interface UserNotification {
     actionText?: string;
   }
 
-  export interface Subscription {
+  // 通常のサブスクリプション（例：Netflix, Spotifyなど）
+export interface SubscriptionService {
     _id: string;
     name: string;
     billingDate: string;
     type: string;
     amount: number;
+    // 列挙型としてpaymentMethodを厳密に定義
     paymentMethod?: 'credit' | 'bank' | 'paypal' | 'apple' | 'google';
     bankAccount?: string | null;
     checkedMonths?: string[];
-    isActive?: boolean;
-    expiresAt?: string;
+    isActive: boolean; // 必須にする
+    expiresAt: string;
     createdAt?: string;
     updatedAt?: string;
+    // 追加のプロパティ
+    billingCycle?: string;
+    currency?: string;
+    autoRenew?: boolean;
+    notificationEnabled?: boolean;
+    notificationDays?: number;
+    category?: string;
+    notes?: string;
+    url?: string;
+    startDate?: string;
+  }
+  
+  // ユーザーのプラン契約情報（プレミアム機能へのアクセス権など）
+  export interface UserSubscription {
+    _id: string;
+    userId: string;
+    planId: string;
+    status: 'active' | 'canceled' | 'expired';
+    currentPeriodEnd: Date | string;
+    cancelAtPeriodEnd: boolean;
+    paymentMethod?: {
+      type: string;
+      lastFour?: string;
+      expiryDate?: string;
+      cardholderName?: string;
+      isDefault?: boolean;
+    };
+    cancelReason?: string | null;
+    canceledAt?: Date | null;
+    scheduledChanges?: {
+      newPlanId: string;
+      effectiveDate: Date | string;
+    };
+    createdAt: Date | string;
+    updatedAt: Date | string;
+  }
+  
+  // 請求書/インボイスの型定義
+  export interface Invoice {
+    id: string;
+    userId: string;
+    amount: number;
+    currency: string;
+    status: 'paid' | 'unpaid' | 'failed';
+    periodStart: Date | string;
+    periodEnd: Date | string;
+    paymentMethod: {
+      type: string;
+      lastFour: string;
+    };
+    createdAt: Date | string;
+  }
+
+  // 支払い方法のカスタム型定義
+export interface CustomPaymentMethodData {
+    type: 'credit_card' | 'bank_transfer';
+    cardNumber?: string;
+    cardholderName?: string;
+    expiryDate?: string;
+    cvc?: string;
+    lastFour?: string;
+    isDefault?: boolean;
   }

@@ -49,7 +49,6 @@ import {
   updateSubscription,
   deleteSubscription,
 } from "@/store/subscriptionSlice";
-import { Subscription } from "@/types/subscription";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -82,6 +81,7 @@ import {
 } from "lucide-react";
 import { SubscriptionCharts } from "@/components/chart/SubscriptionCharts";
 import { MonthlySubscriptionChart } from "@/components/chart/MonthlySubscriptionChart";
+import { SubscriptionService } from "@/types";
 // サブスクリプション管理ガイドコンポーネント
 const SubscriptionManagementGuide = () => {
   return (
@@ -356,7 +356,7 @@ export default function SubscriptionManagementPage() {
   const [checkStatus, setCheckStatus] = useState("all"); // "all", "checked", "unchecked"
 
   const [newSubscription, setNewSubscription] = useState<
-    Omit<Subscription, "_id">
+    Omit<SubscriptionService, "_id">
   >({
     name: "",
     billingDate: "",
@@ -388,7 +388,7 @@ export default function SubscriptionManagementPage() {
   ];
 
   const [editingSubscription, setEditingSubscription] =
-    useState<Subscription | null>(null);
+    useState<SubscriptionService | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [filterMonth, setFilterMonth] = useState<string>("all");
   const [filterType, setFilterType] = useState<string>("all");
@@ -430,7 +430,7 @@ export default function SubscriptionManagementPage() {
     }
   };
 
-  const handleEdit = (subscription: Subscription) => {
+  const handleEdit = (subscription: SubscriptionService) => {
     setEditingSubscription(subscription);
     setNewSubscription({
       name: subscription.name,

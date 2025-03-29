@@ -57,7 +57,7 @@ import { Trash2, PlusCircle, Calendar, TrendingUp, ArrowUpCircle, ArrowDownCircl
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import "./AssetCalendar.css";
-import { Subscription } from "@/types/subscription";
+import { SubscriptionService } from "@/types";
 
 interface DataPoint {
   date: Date;
@@ -87,7 +87,7 @@ interface MonthlySummary {
 interface AssetCalendarProps {
   data: DataPoint[];
   withdrawals: WithdrawalEntry[];
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionService[];
   onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
   onDeleteWithdrawal: (withdrawalId: string) => void;
   onMonthChange: (newMonth: Date) => void;
@@ -363,7 +363,7 @@ export function AssetCalendar({
       totalChange: number;
       currentTotal: number;
       withdrawals: WithdrawalEntry[];
-      subscriptions: Subscription[];
+      subscriptions: SubscriptionService[];
       hasAggregatedData: boolean;
       totalExpensesToday: number;
     };

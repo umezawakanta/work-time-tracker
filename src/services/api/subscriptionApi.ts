@@ -1,5 +1,5 @@
+import { SubscriptionService } from '@/types';
 import axios from 'axios';
-import { Subscription } from '@/types/subscription';
 
 // APIのベースURL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -14,42 +14,6 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-// すべてのサブスクリプションを取得
-export const fetchSubscriptions = async (): Promise<Subscription[]> => {
-  try {
-    const response = await apiClient.get(SUBSCRIPTION_ENDPOINT);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching subscriptions:', error);
-    throw error;
-  }
-};
-
-// サブスクリプションを新規追加
-export const addSubscription = async (subscription: Omit<Subscription, '_id'>): Promise<Subscription> => {
-  try {
-    const response = await apiClient.post(SUBSCRIPTION_ENDPOINT, subscription);
-    return response.data;
-  } catch (error) {
-    console.error('Error adding subscription:', error);
-    throw error;
-  }
-};
-
-// サブスクリプションを更新
-export const updateSubscription = async (
-  id: string,
-  subscription: Partial<Omit<Subscription, '_id'>>
-): Promise<Subscription> => {
-  try {
-    const response = await apiClient.put(`${SUBSCRIPTION_ENDPOINT}/${id}`, subscription);
-    return response.data;
-  } catch (error) {
-    console.error('Error updating subscription:', error);
-    throw error;
-  }
-};
 
 // サブスクリプションを削除
 export const deleteSubscription = async (id: string): Promise<void> => {
@@ -66,7 +30,7 @@ export const updateSubscriptionCheckStatus = async (
   id: string,
   month: string,
   checked: boolean
-): Promise<Subscription> => {
+): Promise<SubscriptionService> => {
   try {
     const response = await apiClient.patch(`${SUBSCRIPTION_ENDPOINT}/${id}/check-status`, {
       month,
@@ -80,7 +44,7 @@ export const updateSubscriptionCheckStatus = async (
 };
 
 // 特定の月のサブスクリプションを取得
-export const fetchSubscriptionsByMonth = async (yearMonth: string): Promise<Subscription[]> => {
+export const fetchSubscriptionsByMonth = async (yearMonth: string): Promise<SubscriptionService[]> => {
   try {
     const response = await apiClient.get(`${SUBSCRIPTION_ENDPOINT}/month/${yearMonth}`);
     return response.data;
@@ -91,7 +55,7 @@ export const fetchSubscriptionsByMonth = async (yearMonth: string): Promise<Subs
 };
 
 // 特定の種別のサブスクリプションを取得
-export const fetchSubscriptionsByType = async (type: string): Promise<Subscription[]> => {
+export const fetchSubscriptionsByType = async (type: string): Promise<SubscriptionService[]> => {
   try {
     const response = await apiClient.get(`${SUBSCRIPTION_ENDPOINT}/type/${type}`);
     return response.data;
@@ -102,7 +66,7 @@ export const fetchSubscriptionsByType = async (type: string): Promise<Subscripti
 };
 
 // 支払い方法でサブスクリプションをフィルタリング
-export const fetchSubscriptionsByPaymentMethod = async (paymentMethod: string): Promise<Subscription[]> => {
+export const fetchSubscriptionsByPaymentMethod = async (paymentMethod: string): Promise<SubscriptionService[]> => {
   try {
     const response = await apiClient.get(`${SUBSCRIPTION_ENDPOINT}/payment-method/${paymentMethod}`);
     return response.data;
@@ -134,6 +98,53 @@ export const fetchMonthlyTotalAmount = async (): Promise<{ month: string; amount
   }
 };
 
+// すべてのサブスクリプションを取得
+export const fetchSubscriptions = async (): Promise<SubscriptionService[]> => {
+  try {
+    const response = await apiClient.get(SUBSCRIPTION_ENDPOINT);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching subscriptions:', error);
+    throw error;
+  }
+};
+
+// すべてのサブスクリプションを取得する別名メソッド
+export const getAll = async () => {
+  try {
+    const subscriptions = await fetchSubscriptions();
+    return { data: { subscriptions } };
+  } catch (error) {
+    console.error('Error fetching all subscriptions:', error);
+    throw error;
+  }
+};
+
+// サブスクリプションを新規追加
+export const addSubscription = async (subscription: Omit<SubscriptionService, '_id'>): Promise<SubscriptionService> => {
+  try {
+    const response = await apiClient.post(SUBSCRIPTION_ENDPOINT, subscription);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding subscription:', error);
+    throw error;
+  }
+};
+
+// サブスクリプションを更新
+export const updateSubscription = async (
+  id: string,
+  subscription: Partial<Omit<SubscriptionService, '_id'>>
+): Promise<SubscriptionService> => {
+  try {
+    const response = await apiClient.put(`${SUBSCRIPTION_ENDPOINT}/${id}`, subscription);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    throw error;
+  }
+};
+
 // デフォルトエクスポート
 const subscriptionApi = {
   fetchSubscriptions,
@@ -146,6 +157,10 @@ const subscriptionApi = {
   fetchSubscriptionsByPaymentMethod,
   fetchTotalSubscriptionAmount,
   fetchMonthlyTotalAmount,
+  getAll,
+  create: addSubscription,
+  update: updateSubscription,
+  delete: deleteSubscription,
 };
 
 export default subscriptionApi;

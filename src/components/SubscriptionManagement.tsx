@@ -67,9 +67,9 @@ import {
   AlertCircle,
   Info,
 } from "lucide-react";
-import { subscriptionApi } from "@/services/api/subscriptionApi";
-import { Subscription } from "@/types/subscription";
 import { useAuth } from "@/context/useAuth";
+import { SubscriptionService } from "@/types";
+import subscriptionApi from "@/services/api/subscriptionApi";
 
 // サブスクリプション追加・編集フォーム用の型
 interface SubscriptionFormData {
@@ -77,7 +77,7 @@ interface SubscriptionFormData {
   billingDate: string;
   type: string;
   amount: string;
-  paymentMethod?: string;
+  paymentMethod?: "credit" | "bank" | "paypal" | "apple" | "google"; // 列挙型に修正
   bankAccount?: string;
   isActive: boolean;
 }
@@ -88,7 +88,7 @@ const emptyFormData: SubscriptionFormData = {
   billingDate: "",
   amount: "",
   type: "",
-  paymentMethod: "credit",
+  paymentMethod: "credit", // 明示的に設定
   bankAccount: "",
   isActive: true,
 };
@@ -121,7 +121,7 @@ const SubscriptionManagement: React.FC = () => {
   const navigate = useNavigate();
 
   // ステート
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionService[]>([]);
   const [totalMonthly, setTotalMonthly] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<SubscriptionFormData>(emptyFormData);
@@ -129,7 +129,7 @@ const SubscriptionManagement: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredSubscriptions, setFilteredSubscriptions] = useState<
-    Subscription[]
+    SubscriptionService[]
   >([]);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -241,12 +241,17 @@ const SubscriptionManagement: React.FC = () => {
       const subscriptionData = {
         name: formData.name,
         billingDate: formData.billingDate,
-        type: formData.type,
+        type: formData.type || "その他", // デフォルト値を設定
         amount: Number(formData.amount),
-        paymentMethod: formData.paymentMethod,
+        paymentMethod: formData.paymentMethod as
+          | "credit"
+          | "bank"
+          | "paypal"
+          | "apple"
+          | "google", // 型アサーション
         bankAccount:
           formData.paymentMethod === "bank" ? formData.bankAccount : null,
-        isActive: formData.isActive,
+        isActive: Boolean(formData.isActive), // Booleanで確実に変換
         expiresAt: new Date(
           new Date().setMonth(new Date().getMonth() + 1)
         ).toISOString(),
@@ -291,7 +296,7 @@ const SubscriptionManagement: React.FC = () => {
   };
 
   // 編集開始
-  const handleEdit = (subscription: Subscription) => {
+  const handleEdit = (subscription: SubscriptionService) => {
     setFormData({
       name: subscription.name,
       billingDate: subscription.billingDate,
@@ -335,8 +340,10 @@ const SubscriptionManagement: React.FC = () => {
     }
   };
 
-  // 支払い方法が変更されたときの処理
-  const handlePaymentMethodChange = (value: string) => {
+  // 支払い方法の変更処理
+  const handlePaymentMethodChange = (
+    value: "credit" | "bank" | "paypal" | "apple" | "google"
+  ) => {
     setFormData((prev) => ({
       ...prev,
       paymentMethod: value,

@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { IUserSubscription, UserSubscription } from "../models/UserSubscription.js";
+import { IUserSubscription, UserSubscription } from "../models/userSubscription";
 
 const router = express.Router();
 
@@ -221,6 +221,217 @@ router.delete(
       res.json({
         message: "ユーザーサブスクリプションが正常に削除されました",
         userSubscription: deletedUserSubscription,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 支払い方法の更新
+router.post(
+  "/payment-method",
+  body("userId").notEmpty().withMessage("ユーザーIDは必須です"),
+  body("paymentMethod").isObject().withMessage("支払い方法情報は必須です"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const { userId, paymentMethod } = req.body;
+      
+      // 保存する支払い方法のデータから機密情報を削除
+      // 実際の実装では、決済代行サービスのトークンなどを利用するべき
+      const sanitizedPaymentMethod = {
+        type: paymentMethod.type,
+        lastFour: paymentMethod.cardNumber ? paymentMethod.cardNumber.slice(-4) : null,
+        expiryDate: paymentMethod.expiryDate,
+        cardholderName: paymentMethod.cardholderName,
+        isDefault: true,
+      };
+
+      // 既存の支払い方法情報があれば更新
+      const subscription = await UserSubscription.findOne({ userId });
+      if (!subscription) {
+        return res.status(404).json({ message: "ユーザーのサブスクリプション情報が見つかりません" });
+      }
+
+      // 実際の実装では、決済情報は別のテーブルで管理するべき
+      // 未使用変数の警告を解消するため、変数宣言を変更
+      await UserSubscription.findByIdAndUpdate(
+        subscription._id,
+        {
+          $set: { paymentMethod: sanitizedPaymentMethod, updatedAt: new Date() }
+        },
+        { new: true }
+      );
+
+      res.json({
+        message: "支払い方法が正常に更新されました",
+        paymentMethod: sanitizedPaymentMethod
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 請求履歴の取得
+router.get(
+  "/invoices/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = req.params;
+      
+      // 実際の実装では、請求履歴は別のテーブルで管理するべき
+      // ここではモックデータを返す
+      const mockInvoices = [
+        {
+          id: "inv_123456",
+          userId,
+          amount: 980,
+          currency: "jpy",
+          status: "paid",
+          periodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          periodEnd: new Date(),
+          paymentMethod: {
+            type: "credit_card",
+            lastFour: "4242"
+          },
+          createdAt: new Date(Date.now() - 29 * 24 * 60 * 60 * 1000)
+        }
+      ];
+
+      res.json(mockInvoices);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// プラン変更の予約
+router.post(
+  "/:id/schedule-change",
+  body("newPlanId").notEmpty().withMessage("新しいプランIDは必須です"),
+  body("changeDate").isISO8601().withMessage("変更日は有効な日付である必要があります"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const { id } = req.params;
+      const { newPlanId, changeDate } = req.body;
+      
+      const subscription = await UserSubscription.findById(id);
+      if (!subscription) {
+        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      }
+
+      // プラン変更を予約する情報を追加
+      // 実際の実装では、バックグラウンドジョブで指定日に処理する
+      const updatedSubscription = await UserSubscription.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            scheduledChanges: {
+              newPlanId,
+              effectiveDate: new Date(changeDate)
+            },
+            updatedAt: new Date()
+          }
+        },
+        { new: true }
+      );
+      
+      res.json({
+        message: "プラン変更が予約されました",
+        subscription: updatedSubscription
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 即時解約
+router.post(
+  "/:id/cancel-immediately",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+      
+      const subscription = await UserSubscription.findById(id);
+      if (!subscription) {
+        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      }
+
+      // サブスクリプションを即時解約
+      const updatedSubscription = await UserSubscription.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            status: "canceled",
+            cancelReason: reason || null,
+            canceledAt: new Date(),
+            updatedAt: new Date()
+          }
+        },
+        { new: true }
+      );
+      
+      res.json({
+        message: "サブスクリプションが解約されました",
+        subscription: updatedSubscription
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 解約後の復活
+router.post(
+  "/:id/reactivate",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      
+      const subscription = await UserSubscription.findById(id);
+      if (!subscription) {
+        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      }
+
+      if (subscription.status !== "canceled") {
+        return res.status(400).json({ message: "解約されていないサブスクリプションは復活できません" });
+      }
+
+      // サブスクリプションを復活
+      const now = new Date();
+      const newPeriodEnd = new Date(now.setDate(now.getDate() + 30)); // 30日後
+      
+      const updatedSubscription = await UserSubscription.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            status: "active",
+            cancelAtPeriodEnd: false,
+            cancelReason: null,
+            canceledAt: null,
+            currentPeriodEnd: newPeriodEnd,
+            updatedAt: new Date()
+          }
+        },
+        { new: true }
+      );
+      
+      res.json({
+        message: "サブスクリプションが復活しました",
+        subscription: updatedSubscription
       });
     } catch (error) {
       next(error);
