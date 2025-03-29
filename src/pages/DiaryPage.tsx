@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
@@ -47,7 +47,10 @@ import WeeklyView from "@/components/view/WeeklyView";
 import DiaryHistory from "@/components/history/DiaryHistory";
 import GoalManagement from "@/components/GoalManagement";
 import AchievementsList from "@/components/AchievementsList";
-import StatsView from "@/components/StatsView";
+
+// 遅延ロードするコンポーネント
+const StatsView = lazy(() => import("@/components/StatsView"));
+
 // 定数
 const moodEmojis: Record<string, string> = {
   great: "😄",
@@ -1158,17 +1161,19 @@ const DiaryPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="stats">
-          <StatsView
-            entries={entries}
-            goals={goals}
-            stats={calculateMonthlyStats()}
-            motivationData={prepareMotivationGraphData()}
-            moodEmojis={moodEmojis}
-            moodLabels={moodLabels}
-            currentMonth={currentMonth}
-            setCurrentMonth={setCurrentMonth}
-            tagOptions={tagOptions}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <StatsView
+              entries={entries}
+              goals={goals}
+              stats={calculateMonthlyStats()}
+              motivationData={prepareMotivationGraphData()}
+              moodEmojis={moodEmojis}
+              moodLabels={moodLabels}
+              currentMonth={currentMonth}
+              setCurrentMonth={setCurrentMonth}
+              tagOptions={tagOptions}
+            />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>
