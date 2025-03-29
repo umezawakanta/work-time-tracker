@@ -1,448 +1,177 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Trash2, Plus, ChevronRight, ChevronDown, Edit2, UserPlus } from 'lucide-react'
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
-import { DatePicker } from '@/components/ui/date-picker'
-import { Progress } from '@/components/ui/progress'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { EventModal } from "@/components/EventModal";
+import "@/styles/event.css";
 
-interface WBSItem {
-  id: string
-  wbsNumber: string
-  name: string
-  assignee: string
-  startDate: Date | null
-  endDate: Date | null
-  duration: number
-  progress: number
-  children: WBSItem[]
+interface Event {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  color?: string;
 }
 
-interface ProjectMember {
-  id: string
-  name: string
-}
-
-export default function WBSCreator() {
-  const [wbs, setWbs] = useState<WBSItem[]>([])
-  const [newItemName, setNewItemName] = useState('')
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
-  const [editingItem, setEditingItem] = useState<WBSItem | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [projectMembers, setProjectMembers] = useState<ProjectMember[]>([
-    { id: '1', name: '山田太郎' },
-    { id: '2', name: '鈴木花子' },
-  ])
-  const [newMemberName, setNewMemberName] = useState('')
-  const [isMemberDialogOpen, setIsMemberDialogOpen] = useState(false)
+export function MonthView() {
+  const [currentDate] = useState(new Date());
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
-    if (wbs.length === 0) {
-      setWbs([
-        {
-          id: uuidv4(),
-          wbsNumber: '1',
-          name: 'シェルスクリプト作成',
-          assignee: '山田太郎',
-          startDate: new Date(2024, 9, 23),
-          endDate: new Date(2024, 9, 24),
-          duration: 1,
-          progress: 50,
-          children: []
-        },
-        {
-          id: uuidv4(),
-          wbsNumber: '2',
-          name: 'WBS作成',
-          assignee: '鈴木花子',
-          startDate: new Date(2024, 9, 24),
-          endDate: new Date(2024, 9, 25),
-          duration: 1,
-          progress: 25,
-          children: []
-        }
-      ])
-    }
-  }, [])
-
-  const addItem = (parentId: string | null = null) => {
-    const newItem: WBSItem = {
-      id: uuidv4(),
-      wbsNumber: `${wbs.length + 1}`,
-      name: newItemName,
-      assignee: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      duration: 1,
-      progress: 0,
-      children: [],
-    }
-    if (parentId === null) {
-      setWbs([...wbs, newItem])
-    } else {
-      setWbs(updateWbsItem(wbs, parentId, (item) => ({
-        ...item,
-        children: [...item.children, { ...newItem, wbsNumber: `${item.wbsNumber}.${item.children.length + 1}` }],
-      })))
-    }
-    setNewItemName('')
-  }
-
-  const updateWbsItem = (items: WBSItem[], id: string, updateFn: (item: WBSItem) => WBSItem): WBSItem[] => {
-    return items.map((item) => {
-      if (item.id === id) {
-        return updateFn(item)
+    try {
+      const savedEvents = localStorage.getItem('calendar-events');
+      if (savedEvents) {
+        const parsedEvents = JSON.parse(savedEvents);
+        const eventsWithDates = parsedEvents.map((event: Omit<Event, 'start' | 'end'> & { start: string; end: string }) => ({
+          ...event,
+          start: new Date(event.start),
+          end: new Date(event.end)
+        }));
+        setEvents(eventsWithDates);
       }
-      if (item.children.length > 0) {
-        return { ...item, children: updateWbsItem(item.children, id, updateFn) }
-      }
-      return item
-    })
-  }
-
-  const deleteItem = (id: string) => {
-    const deleteWbsItem = (items: WBSItem[]): WBSItem[] => {
-      return items.filter((item) => item.id !== id).map((item) => ({
-        ...item,
-        children: deleteWbsItem(item.children),
-      }))
+    } catch (error) {
+      console.error('Error loading events:', error);
     }
-    setWbs(deleteWbsItem(wbs))
-  }
+  }, []);
 
-  const toggleExpand = (id: string) => {
-    setExpandedItems((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
+  useEffect(() => {
+    if (events.length > 0) {
+      try {
+        const eventsToSave = events.map(event => ({
+          ...event,
+          start: event.start.toISOString(),
+          end: event.end.toISOString()
+        }));
+        localStorage.setItem('calendar-events', JSON.stringify(eventsToSave));
+      } catch (error) {
+        console.error('Error saving events:', error);
+      }
+    }
+  }, [events]);
+
+  const getDaysInMonth = (date: Date): (Date | null)[] => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      days.push(null);
+    }
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push(new Date(year, month, i));
+    }
+    return days;
+  };
+
+  const handleDayClick = (date: Date) => {
+    setSelectedDate(date);
+    setSelectedEvent(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEventClick = (event: Event) => {
+    setSelectedEvent(event);
+    setSelectedDate(event.start);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveEvent = (eventData: Omit<Event, "id">) => {
+    try {
+      if (selectedEvent) {
+        const updatedEvents = events.map(event =>
+          event.id === selectedEvent.id
+            ? { ...eventData, id: selectedEvent.id }
+            : event
+        );
+        setEvents(updatedEvents);
       } else {
-        next.add(id)
+        const newEvent = {
+          ...eventData,
+          id: Math.random().toString(36).substr(2, 9),
+          start: new Date(eventData.start),
+          end: new Date(eventData.end)
+        };
+        setEvents(prevEvents => [...prevEvents, newEvent]);
       }
-      return next
-    })
-  }
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return
+    } catch (error) {
+      console.error('Error saving event:', error);
     }
+  };
 
-    const reorder = (list: WBSItem[], startIndex: number, endIndex: number) => {
-      const result = Array.from(list)
-      const [removed] = result.splice(startIndex, 1)
-      result.splice(endIndex, 0, removed)
-      return result
-    }
-
-    setWbs(reorder(wbs, result.source.index, result.destination.index))
-  }
-
-  const handleEditSave = (editedItem: WBSItem) => {
-    setWbs(updateWbsItem(wbs, editedItem.id, () => editedItem))
-    setEditingItem(null)
-    setIsDialogOpen(false)
-  }
-
-  const addProjectMember = () => {
-    if (newMemberName.trim()) {
-      setProjectMembers([...projectMembers, { id: uuidv4(), name: newMemberName.trim() }])
-      setNewMemberName('')
-      setIsMemberDialogOpen(false)
-    }
-  }
-
-  const renderWbsItem = (item: WBSItem, depth: number = 0) => {
-    const isExpanded = expandedItems.has(item.id)
-
-    return (
-      <Draggable key={item.id} draggableId={item.id} index={depth}>
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            <TableRow className="hover:bg-gray-50">
-              <TableCell className="font-medium">
-                {item.children.length > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-0 h-6 w-6 mr-2"
-                    onClick={() => toggleExpand(item.id)}
-                    aria-label={isExpanded ? "折りたたむ" : "展開する"}
-                  >
-                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </Button>
-                )}
-                {item.wbsNumber}
-              </TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.assignee}</TableCell>
-              <TableCell>{item.startDate?.toLocaleDateString()}</TableCell>
-              <TableCell>{item.endDate?.toLocaleDateString()}</TableCell>
-              <TableCell>{item.duration}</TableCell>
-              <TableCell>
-                <div className="flex items-center">
-                  <Progress value={item.progress} className="w-[60px] mr-2" />
-                  <span className="text-sm text-gray-500">{item.progress}%</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex space-x-2">
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" onClick={() => {
-                        setEditingItem(item)
-                        setIsDialogOpen(true)
-                      }} aria-label="タスクを編集">
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>タスク編集</DialogTitle>
-                        <DialogDescription>
-                          タスクの詳細を編集します。変更後、保存ボタンをクリックしてください。
-                        </DialogDescription>
-                      </DialogHeader>
-                      {editingItem && (
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
-                              タスク名
-                            </Label>
-                            <Input
-                              id="name"
-                              value={editingItem.name}
-                              onChange={(e) => setEditingItem(prev => prev ? {...prev, name: e.target.value} : null)}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="assignee" className="text-right">
-                              担当者
-                            </Label>
-                            <Select
-                              value={editingItem.assignee}
-                              onValueChange={(value) => setEditingItem(prev => prev ? {...prev, assignee: value} : null)}
-                            >
-                              <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="担当者を選択" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {projectMembers.map((member) => (
-                                  <SelectItem key={member.id} value={member.name}>
-                                    {member.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="startDate" className="text-right">
-                              開始日
-                            </Label>
-                            <DatePicker
-                              date={editingItem.startDate || undefined}
-                              setDate={(date) => setEditingItem(prev => prev ? {...prev, startDate: date || null} : null)}
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="endDate" className="text-right">
-                              終了日
-                            </Label>
-                            <DatePicker
-                              date={editingItem.endDate || undefined}
-                              setDate={(date) => setEditingItem(prev => prev ? {...prev, endDate: date || null} : null)}
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="progress" className="text-right">
-                              進捗
-                            </Label>
-                            <Input
-                              id="progress"
-                              type="number"
-                              value={editingItem.progress}
-                              onChange={(e) => setEditingItem(prev => prev ? {...prev, progress: Number(e.target.value)} : null)}
-                              className="col-span-3"
-                              min={0}
-                              max={100}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      <Button onClick={() => editingItem && handleEditSave(editingItem)}>保存</Button>
-                    </DialogContent>
-                  </Dialog>
-                  <Button variant="ghost" size="sm" onClick={() => deleteItem(item.id)} aria-label="タスクを削除">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-            {isExpanded && (
-              <Droppable droppableId={item.id}>
-                {(provided) => (
-                  <TableBody ref={provided.innerRef} {...provided.droppableProps}>
-                    {item.children.map((child) => renderWbsItem(child, depth + 1))}
-                    {provided.placeholder}
-                  </TableBody>
-                )}
-              </Droppable>
-            )}
-          </div>
-        )}
-      </Draggable>
-    )
-  }
-
-  const renderGanttChart = () => {
-    const allDates = wbs.flatMap(item => [
-      item.startDate,
-      item.endDate,
-      ...item.children.flatMap(child => [child.startDate, child.endDate])
-    ]).filter((date): date is Date => date !== null)
-
-    if (allDates.length === 0) {
-      return null
-    }
-
-    const startDate = new Date(Math.min(...allDates.map(d => d.getTime())))
-    const endDate = new Date(Math.max(...allDates.map(d => d.getTime())))
-    const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-
-    return (
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">ガントチャート</h3>
-        <div className="relative" style={{ height: `${wbs.length * 40 + 40}px` }}>
-          <div className="absolute top-0 left-0 right-0 h-8 flex">
-            {Array.from({ length: totalDays + 1 }).map((_, index) => {
-              const date = new Date(startDate.getTime() + index * 24 * 60 * 60 * 1000)
-              return (
-                <div
-                  key={index}
-                  className="flex-1 border-r border-gray-200 text-xs text-gray-500 flex items-end justify-center pb-1"
-                >
-                  {date.getDate()}
-                </div>
-              )
-            })}
-          </div>
-          {wbs.map((item, index) => {
-            if (!item.startDate || !item.endDate) return null
-
-            const left = ((item.startDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100
-            
-            const width = ((item.endDate.getTime() - item.startDate.getTime()) / (1000 * 60 * 60 * 24)) / totalDays * 100
-
-            return (
-              <div
-                key={item.id}
-                className="absolute h-8 bg-blue-500 rounded-md flex items-center px-2 text-white text-sm"
-                style={{
-                  top: `${index * 40 + 40}px`,
-                  left: `${left}%`,
-                  width: `${width}%`,
-                }}
-              >
-                {item.name}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
+  const daysInMonth = getDaysInMonth(currentDate);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>WBS作成</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 flex space-x-2">
-          <Input
-            placeholder="新しいタスク"
-            value={newItemName}
-            onChange={(e) => setNewItemName(e.target.value)}
-            className="flex-grow"
-          />
-          <Button onClick={() => addItem()}>
-            <Plus className="h-4 w-4 mr-2" /> タスク追加
-          </Button>
-          <Dialog open={isMemberDialogOpen} onOpenChange={setIsMemberDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <UserPlus className="h-4 w-4 mr-2" /> メンバー追加
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>プロジェクトメンバー追加</DialogTitle>
-                <DialogDescription>
-                  新しいプロジェクトメンバーを追加します。
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="memberName" className="text-right">
-                    名前
-                  </Label>
-                  <Input
-                    id="memberName"
-                    value={newMemberName}
-                    onChange={(e) => setNewMemberName(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <Button onClick={addProjectMember}>追加</Button>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">WBS番号</TableHead>
-                <TableHead>タスク名</TableHead>
-                <TableHead>担当者</TableHead>
-                <TableHead>開始日</TableHead>
-                <TableHead>終了日</TableHead>
-                <TableHead className="w-[80px]">期間</TableHead>
-                <TableHead className="w-[120px]">進捗</TableHead>
-                <TableHead className="w-[100px]">アクション</TableHead>
-              </TableRow>
-            </TableHeader>
-            <Droppable droppableId="root">
-              {(provided) => (
-                <TableBody {...provided.droppableProps} ref={provided.innerRef}>
-                  {wbs.map((item) => renderWbsItem(item))}
-                  {provided.placeholder}
-                </TableBody>
+    <div className="flex-1 overflow-hidden">
+      <ScrollArea className="h-[calc(100vh-8rem)]">
+        <div className="grid grid-cols-7 gap-1 p-4">
+          {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
+            <div key={index} className="text-center font-semibold">
+              {day}
+            </div>
+          ))}
+          {daysInMonth.map((day, index) => (
+            <div
+              key={index}
+              className={cn(
+                "h-32 border p-1 relative",
+                day && day.getMonth() !== currentDate.getMonth() && "bg-gray-100",
+                day && day.getDate() === new Date().getDate() && day.getMonth() === new Date().getMonth() && "bg-blue-100"
               )}
-            </Droppable>
-          </Table>
-        </DragDropContext>
-        {renderGanttChart()}
-      </CardContent>
-    </Card>
-  )
+              onClick={() => day && handleDayClick(day)}
+            >
+              {day && (
+                <>
+                  <div className="text-right">{day.getDate()}</div>
+                  <div className="mt-1">
+                    {events
+                      .filter(event => event.start.toDateString() === day.toDateString())
+                      .slice(0, 3)
+                      .map(event => (
+                        <div
+                          key={event.id}
+                          className="event-item text-xs"
+                          ref={(el) => {
+                            if (el) {
+                              el.style.setProperty('--event-color', event.color || '#3b82f6');
+                            }
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEventClick(event);
+                          }}
+                        >
+                          {event.title}
+                        </div>
+                      ))}
+                    {events.filter(event => event.start.toDateString() === day.toDateString()).length > 3 && (
+                      <div className="text-xs text-gray-500">+ more</div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      {selectedDate && (
+        <EventModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedEvent(null);
+          }}
+          onSave={handleSaveEvent}
+          selectedDate={selectedDate}
+          selectedTime=""
+          event={selectedEvent}
+        />
+      )}
+    </div>
+  );
 }

@@ -135,8 +135,12 @@ export function MonthView() {
                       .map(event => (
                         <div
                           key={event.id}
-                          className={`event-item text-xs`}
-                          style={{ backgroundColor: event.color || '#3b82f6' }}
+                          className="event-item text-xs"
+                          ref={(el) => {
+                            if (el) {
+                              el.style.setProperty('--event-color', event.color || '#3b82f6');
+                            }
+                          }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleEventClick(event);
@@ -171,4 +175,3 @@ export function MonthView() {
     </div>
   );
 }
-
