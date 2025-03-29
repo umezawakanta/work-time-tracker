@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { IUserSubscription, UserSubscription } from "../models/userSubscription";
+import { IUserSubscription, UserSubscription } from "../models/userSubscription.js";
 
 const router = express.Router();
 
