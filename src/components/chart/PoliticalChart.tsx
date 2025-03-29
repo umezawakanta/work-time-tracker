@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
+import "./PoliticalChart.css"; // CSSファイルをインポート
 
 // 日付範囲の型
 type DateRange = "1M" | "3M" | "6M" | "1Y" | "MAX";
@@ -192,24 +193,15 @@ const PoliticalChart = () => {
     
     navigator.clipboard.writeText(url.toString());
     
-    // トースト通知用の仮実装
+    // トースト通知用の実装
     const notification = document.createElement("div");
     notification.textContent = "URLをクリップボードにコピーしました";
-    notification.style.position = "fixed";
-    notification.style.bottom = "20px";
-    notification.style.left = "50%";
-    notification.style.transform = "translateX(-50%)";
-    notification.style.padding = "12px 24px";
-    notification.style.backgroundColor = "rgba(0,0,0,0.8)";
-    notification.style.color = "white";
-    notification.style.borderRadius = "4px";
-    notification.style.zIndex = "9999";
+    notification.className = "notification";
     
     document.body.appendChild(notification);
     
     setTimeout(() => {
-      notification.style.opacity = "0";
-      notification.style.transition = "opacity 0.5s ease";
+      notification.classList.add("fade-out");
       
       setTimeout(() => {
         document.body.removeChild(notification);
@@ -377,8 +369,12 @@ const PoliticalChart = () => {
                             return (
                               <div key={partyId} className="flex items-center gap-2 p-2 rounded-md bg-background">
                                 <div 
-                                  className="w-4 h-4 rounded-full" 
-                                  style={{ backgroundColor: party.colorCode }}
+                                  className="party-color-indicator"
+                                  ref={(el) => {
+                                    if (el) {
+                                      el.style.setProperty('--party-color', party.colorCode);
+                                    }
+                                  }}
                                 />
                                 <div>
                                   <div className="font-medium">{party.name}</div>

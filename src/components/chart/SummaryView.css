@@ -1,0 +1,11 @@
+/* src/components/chart/SummaryView.css */
+.party-color-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: var(--party-color, #cccccc);
+}
+
+.trend-badge-up {
+  background-color: #16a34a; /* green-600 */
+}

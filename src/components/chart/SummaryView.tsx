@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import "./SummaryView.css"; // CSSファイルをインポート
 
 interface SummaryViewProps {
   data: {
@@ -47,8 +48,12 @@ const SummaryView: React.FC<SummaryViewProps> = ({ data }) => {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: party.colorCode }}
+                    className="party-color-dot"
+                    ref={(el) => {
+                      if (el) {
+                        el.style.setProperty('--party-color', party.colorCode);
+                      }
+                    }}
                   />
                   <span>{party.party}</span>
                 </div>
@@ -79,7 +84,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({ data }) => {
                       ? "destructive"
                       : "outline"
                   }
-                  className={`ml-auto ${party.trend === "up" ? "bg-green-600" : ""}`}
+                  className={`ml-auto ${party.trend === "up" ? "trend-badge-up" : ""}`}
                 >
                   {party.trend === "up" ? (
                     <ArrowUp className="h-3 w-3 mr-1" />
