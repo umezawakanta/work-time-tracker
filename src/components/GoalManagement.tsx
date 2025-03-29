@@ -1,5 +1,5 @@
 // GoalManagement.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Edit, Trash2, Plus, Filter, ArrowUp, ArrowDown, CheckCircle2 } from "lucide-react";
 import { Goal, GoalCategory } from "@/types";
+import "./GoalManagement.css"; // CSSファイルをインポート
 
 interface GoalManagementProps {
   goals: Goal[];
@@ -44,6 +45,10 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  
+  // プログレスバーへの参照
+  const totalProgressRef = useRef<HTMLDivElement>(null);
+  const categoryProgressRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
 
   // 目標の更新
   const handleUpdateGoal = (e: React.FormEvent) => {
@@ -161,6 +166,22 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
       total: total
     };
   });
+  
+  // プログレスバーの幅を更新
+  useEffect(() => {
+    // メインプログレスバーの更新
+    if (totalProgressRef.current) {
+      totalProgressRef.current.style.setProperty('--progress-width', `${completionRate}%`);
+    }
+    
+    // カテゴリー別プログレスバーの更新
+    categoryCompletionRates.forEach(item => {
+      const ref = categoryProgressRefs.current[item.category.value];
+      if (ref) {
+        ref.style.setProperty('--progress-width', `${item.rate}%`);
+      }
+    });
+  }, [completionRate, categoryCompletionRates]);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -258,10 +279,10 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
               <span>全体の達成率</span>
               <span>{completionRate}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="progress-container">
               <div 
-                className="bg-blue-600 h-2.5 rounded-full" 
-                style={{ width: `${completionRate}%` }}
+                ref={totalProgressRef}
+                className="progress-bar"
               ></div>
             </div>
             
@@ -275,10 +296,10 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                     <span>{item.category.label}</span>
                     <span>{item.completed}/{item.total} ({item.rate}%)</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="progress-container">
                     <div 
-                      className="bg-green-500 h-1.5 rounded-full" 
-                      style={{ width: `${item.rate}%` }}
+                      ref={el => categoryProgressRefs.current[item.category.value] = el}
+                      className="category-progress-bar"
                     ></div>
                   </div>
                 </div>

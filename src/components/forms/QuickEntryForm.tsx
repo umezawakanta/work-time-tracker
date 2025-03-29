@@ -8,6 +8,7 @@ import { PoliticalParty } from '@/types/survey';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import './QuickEntryForm.css'; // CSSファイルをインポート
 
 // 送信データの型定義
 interface SurveySubmitData {
@@ -136,8 +137,12 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
           {parties.map(party => (
             <div key={party._id} className="flex items-center space-x-2">
               <div 
-                className="w-3 h-3 rounded-full" 
-                style={{ backgroundColor: party.colorCode }}
+                className="party-color-indicator"
+                ref={(el) => {
+                  if (el) {
+                    el.style.setProperty('--party-color', party.colorCode);
+                  }
+                }}
               ></div>
               <Label htmlFor={`party-${party._id}`} className="w-full">{party.name}</Label>
               <Input
