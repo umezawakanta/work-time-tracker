@@ -1,6 +1,12 @@
 // AchievementsList.tsx
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Star, Zap, Crown, CheckCircle } from "lucide-react";
@@ -41,16 +47,20 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
 
   // 取得した実績数と取得率
   const earnedCount = achievements.filter((a) => a.earned).length;
-  const earnedPercentage = Math.round((earnedCount / achievements.length) * 100);
+  const earnedPercentage = Math.round(
+    (earnedCount / achievements.length) * 100
+  );
+
+  function getDynamicWidthClass(percentage: number) {
+    return `w-[${percentage}%]`;
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>実績ステータス</CardTitle>
-          <CardDescription>
-            あなたの成長を示す実績とストリーク
-          </CardDescription>
+          <CardDescription>あなたの成長を示す実績とストリーク</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
@@ -59,13 +69,18 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Zap className="h-8 w-8 text-amber-500 mr-2" />
-                  <span className="text-2xl font-bold">{streakData.currentStreak}</span>
+                  <span className="text-2xl font-bold">
+                    {streakData.currentStreak}
+                  </span>
                   <span className="ml-1 text-gray-500">日</span>
                 </div>
                 <div className="text-right text-sm text-gray-500">
                   <div>最長記録: {streakData.longestStreak}日</div>
                   {streakData.lastEntryDate && (
-                    <div>最終記録日: {new Date(streakData.lastEntryDate).toLocaleDateString()}</div>
+                    <div>
+                      最終記録日:{" "}
+                      {new Date(streakData.lastEntryDate).toLocaleDateString()}
+                    </div>
                   )}
                 </div>
               </div>
@@ -79,8 +94,9 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                 <div
-                  className="bg-green-600 h-2.5 rounded-full"
-                  style={{ width: `${earnedPercentage}%` }}
+                  className={`bg-green-600 h-2.5 rounded-full ${getDynamicWidthClass(
+                    earnedPercentage
+                  )}`}
                 ></div>
               </div>
               <div className="text-center text-sm text-gray-500 mb-4">
@@ -93,20 +109,21 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                 <Crown className="h-5 w-5 inline mr-1 text-amber-500" />
                 次に挑戦するべき実績
               </h3>
-              {achievements.filter(a => !a.earned).length > 0 ? (
+              {achievements.filter((a) => !a.earned).length > 0 ? (
                 <ul className="space-y-2">
                   {achievements
-                    .filter(a => !a.earned)
+                    .filter((a) => !a.earned)
                     .slice(0, 3)
-                    .map(achievement => (
+                    .map((achievement) => (
                       <li key={achievement.id} className="text-sm">
                         • {achievement.description}
                       </li>
-                    ))
-                  }
+                    ))}
                 </ul>
               ) : (
-                <p className="text-sm">すべての実績を獲得しました！おめでとうございます！</p>
+                <p className="text-sm">
+                  すべての実績を獲得しました！おめでとうございます！
+                </p>
               )}
             </div>
           </div>
@@ -117,9 +134,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
         <CardHeader>
           <CardTitle>実績一覧</CardTitle>
           <div className="flex mt-2">
-            <Badge className="mr-2">
-              獲得済み: {earnedCount}
-            </Badge>
+            <Badge className="mr-2">獲得済み: {earnedCount}</Badge>
             <Badge variant="outline">
               未獲得: {achievements.length - earnedCount}
             </Badge>
@@ -159,7 +174,8 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                     </p>
                     {achievement.earned && achievement.date && (
                       <div className="text-xs text-green-600 mt-1">
-                        獲得日: {new Date(achievement.date).toLocaleDateString()}
+                        獲得日:{" "}
+                        {new Date(achievement.date).toLocaleDateString()}
                       </div>
                     )}
                   </div>

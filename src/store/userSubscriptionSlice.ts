@@ -1,69 +1,69 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Subscription } from '@/types/subscription';
-import subscriptionApi from '@/services/api/subscriptionApi';
+import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 
 // 初期状態の型定義
-interface SubscriptionState {
+interface UserSubscriptionState {
   subscriptions: Subscription[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 // 初期状態
-const initialState: SubscriptionState = {
+const initialState: UserSubscriptionState = {
   subscriptions: [],
   status: 'idle',
   error: null,
 };
 
 // サブスクリプション一覧を取得する非同期アクション
-export const fetchSubscriptions = createAsyncThunk(
-  'subscription/fetchSubscriptions',
+export const fetchUserSubscriptions = createAsyncThunk(
+  'userSubscription/fetchUserSubscriptions',
   async () => {
-    const response = await subscriptionApi.fetchSubscriptions();
+    const response = await userSubscriptionApi.fetchUserSubscriptions();
     return response;
   }
 );
 
 // 新しいサブスクリプションを追加する非同期アクション
-export const addSubscription = createAsyncThunk(
-  'subscription/addSubscription',
+export const addUserSubscription = createAsyncThunk(
+  'userSubscription/addUserSubscription',
   async (subscription: Omit<Subscription, '_id'>) => {
-    const response = await subscriptionApi.addSubscription(subscription);
+    const response = await userSubscriptionApi.addUserSubscription(subscription);
     return response;
   }
 );
 
 // サブスクリプションを更新する非同期アクション
-export const updateSubscription = createAsyncThunk(
-  'subscription/updateSubscription',
+export const updateUserSubscription = createAsyncThunk(
+  'userSubscription/updateUserSubscription',
   async ({ _id, subscription }: { _id: string; subscription: Partial<Omit<Subscription, '_id'>> }) => {
-    const response = await subscriptionApi.updateSubscription(_id, subscription);
+    const response = await userSubscriptionApi.updateUserSubscription(_id, subscription);
     return response;
   }
 );
 
 // サブスクリプションを削除する非同期アクション
-export const deleteSubscription = createAsyncThunk(
-  'subscription/deleteSubscription',
+export const deleteUserSubscription = createAsyncThunk(
+  'userSubscription/deleteUserSubscription',
   async (id: string) => {
-    await subscriptionApi.deleteSubscription(id);
+    await userSubscriptionApi.deleteUserSubscription(id);
     return id;
   }
 );
 
 // サブスクリプションの確認ステータスを更新する非同期アクション
 export const updateSubscriptionCheckStatus = createAsyncThunk(
-  'subscription/updateSubscriptionCheckStatus',
+  'userSubscription/updateSubscriptionCheckStatus',
   async ({ id, month, checked }: { id: string; month: string; checked: boolean }) => {
-    const response = await subscriptionApi.updateSubscriptionCheckStatus(id, month, checked);
+    const response = await userSubscriptionApi.updateSubscriptionCheckStatus(id, month, checked);
     return response;
   }
 );
 
-// subscriptionスライスの作成
-const subscriptionSlice = createSlice({
-  name: 'subscription',
+// userSubscriptionスライスの作成
+const userSubscriptionSlice = createSlice({
+  name: 'userSubscription',
   initialState,
   reducers: {
     // ローカルの状態リセット用のリデューサー
@@ -74,57 +74,57 @@ const subscriptionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // fetchSubscriptions
-      .addCase(fetchSubscriptions.pending, (state) => {
+      // fetchUserSubscriptions
+      .addCase(fetchUserSubscriptions.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchSubscriptions.fulfilled, (state, action: PayloadAction<Subscription[]>) => {
+      .addCase(fetchUserSubscriptions.fulfilled, (state, action: PayloadAction<Subscription[]>) => {
         state.status = 'succeeded';
         state.subscriptions = action.payload;
       })
-      .addCase(fetchSubscriptions.rejected, (state, action) => {
+      .addCase(fetchUserSubscriptions.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの取得に失敗しました。';
       })
       
-      // addSubscription
-      .addCase(addSubscription.pending, (state) => {
+      // addUserSubscription
+      .addCase(addUserSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(addSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
+      .addCase(addUserSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
         state.status = 'succeeded';
         state.subscriptions.push(action.payload);
       })
-      .addCase(addSubscription.rejected, (state, action) => {
+      .addCase(addUserSubscription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの追加に失敗しました。';
       })
       
-      // updateSubscription
-      .addCase(updateSubscription.pending, (state) => {
+      // updateUserSubscription
+      .addCase(updateUserSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(updateSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
+      .addCase(updateUserSubscription.fulfilled, (state, action: PayloadAction<Subscription>) => {
         state.status = 'succeeded';
         const index = state.subscriptions.findIndex(sub => sub._id === action.payload._id);
         if (index !== -1) {
           state.subscriptions[index] = action.payload;
         }
       })
-      .addCase(updateSubscription.rejected, (state, action) => {
+      .addCase(updateUserSubscription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの更新に失敗しました。';
       })
       
-      // deleteSubscription
-      .addCase(deleteSubscription.pending, (state) => {
+      // deleteUserSubscription
+      .addCase(deleteUserSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(deleteSubscription.fulfilled, (state, action: PayloadAction<string>) => {
+      .addCase(deleteUserSubscription.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = 'succeeded';
         state.subscriptions = state.subscriptions.filter(sub => sub._id !== action.payload);
       })
-      .addCase(deleteSubscription.rejected, (state, action) => {
+      .addCase(deleteUserSubscription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの削除に失敗しました。';
       })
@@ -140,5 +140,5 @@ const subscriptionSlice = createSlice({
 });
 
 // アクションとリデューサーのエクスポート
-export const { resetStatus } = subscriptionSlice.actions;
-export default subscriptionSlice.reducer;
+export const { resetStatus } = userSubscriptionSlice.actions;
+export default userSubscriptionSlice.reducer;

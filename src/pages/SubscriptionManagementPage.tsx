@@ -421,7 +421,9 @@ export default function SubscriptionManagementPage() {
         type: "",
         amount: 0,
         isActive: true,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        expiresAt: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ).toISOString(),
       });
     } catch (err) {
       console.error("Failed to save the subscription: ", err);
@@ -847,6 +849,37 @@ export default function SubscriptionManagementPage() {
       },
     ];
 
+    // 色をTailwindの定義済みカラークラスにマッピングする関数
+    function getColorClass(color, opacity = 20) {
+      // よく使われる色のマッピング
+      const colorMap = {
+        "#FF9900": "bg-amber-500",
+        "#E50914": "bg-red-600",
+        "#1DB954": "bg-green-500",
+        "#4285F4": "bg-blue-500",
+        "#EA4335": "bg-red-500",
+        "#FBBC05": "bg-yellow-500",
+        "#34A853": "bg-green-500",
+        // 他の色を必要に応じて追加
+      };
+
+      // 透明度のマッピング
+      const opacityClass = {
+        10: "bg-opacity-10",
+        20: "bg-opacity-20",
+        30: "bg-opacity-30",
+        40: "bg-opacity-40",
+        50: "bg-opacity-50",
+        // 他の透明度を必要に応じて追加
+      };
+
+      // マッピングされた色があればそれを使用、なければデフォルトの色を使用
+      const bgClass = colorMap[color] || "bg-gray-500";
+      const opacityValue = opacityClass[opacity] || "bg-opacity-20";
+
+      return `${bgClass} ${opacityValue}`;
+    }
+
     return (
       <Card className="border-blue-200 mb-6">
         <CardHeader className="bg-blue-50">
@@ -866,8 +899,10 @@ export default function SubscriptionManagementPage() {
                 className="flex items-center p-3 border rounded-lg hover:bg-blue-50/30 hover:border-blue-200 cursor-pointer"
               >
                 <div
-                  className="w-10 h-10 rounded-full mr-4 flex items-center justify-center"
-                  style={{ backgroundColor: `${service.color}20` }}
+                  className={`w-10 h-10 rounded-full mr-4 flex items-center justify-center ${getColorClass(
+                    service.color,
+                    20
+                  )}`}
                 >
                   {service.logo ? (
                     <img
@@ -877,8 +912,9 @@ export default function SubscriptionManagementPage() {
                     />
                   ) : (
                     <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: service.color }}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClass(
+                        service.color
+                      )}`}
                     >
                       <span className="text-white font-bold">
                         {service.name.charAt(0)}
@@ -1190,7 +1226,9 @@ export default function SubscriptionManagementPage() {
                                 bankAccount: null,
                                 checkedMonths: [],
                                 isActive: true,
-                                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                                expiresAt: new Date(
+                                  Date.now() + 30 * 24 * 60 * 60 * 1000
+                                ).toISOString(),
                               });
                             }}
                           >

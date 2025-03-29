@@ -8,7 +8,7 @@ import assetRoutes from "./routes/assetRoutes.js";
 import debtRoutes from "./routes/debtRoutes.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import candidateRoutes from "./routes/candidateRoutes.js";
-import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import userSubscriptionRoutes from "./routes/userSubscriptionRoutes.js"; // 名称変更
 import withdrawalRoutes from "./routes/withdrawalRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
@@ -52,7 +52,7 @@ app.use("/api/asset", assetRoutes);
 app.use("/api/debt", debtRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/candidates", candidateRoutes);
-app.use("/api/subscription", subscriptionRoutes);
+app.use("/api/userSubscription", userSubscriptionRoutes); // ここを変更
 app.use("/api/withdrawal", withdrawalRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/sleep-records", sleepTrackerRoutes);

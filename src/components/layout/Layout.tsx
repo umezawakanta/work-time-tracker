@@ -29,7 +29,6 @@ import {
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/context/useAuth";
-import { subscriptionApi } from "@/services/api/subscriptionApi";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +55,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { UserNotification } from "@/types";
+import userSubscriptionApi from "@/services/api/userSubscriptionApi";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -95,7 +95,7 @@ export default function Layout({ children }: LayoutProps) {
       if (isAuthenticated && user) {
         try {
           setIsSubscriptionChecking(true);
-          const response = await subscriptionApi.getUserSubscription(user.id);
+          const response = await userSubscriptionApi.getUserSubscription(user.id);
           const subscription = response.data; // Axiosレスポンスからデータを取得
 
           // subscriptionがnullでない場合のみ比較を行う

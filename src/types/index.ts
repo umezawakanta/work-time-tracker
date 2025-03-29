@@ -275,3 +275,18 @@ export interface UserNotification {
     actionUrl?: string;
     actionText?: string;
   }
+
+  export interface Subscription {
+    _id: string;
+    name: string;
+    billingDate: string;
+    type: string;
+    amount: number;
+    paymentMethod?: 'credit' | 'bank' | 'paypal' | 'apple' | 'google';
+    bankAccount?: string | null;
+    checkedMonths?: string[];
+    isActive?: boolean;
+    expiresAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }
