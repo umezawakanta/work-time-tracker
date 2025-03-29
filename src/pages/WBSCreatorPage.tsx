@@ -1,4 +1,4 @@
-import WBSCreator from '@/components/WBSCreator';
+import { WBSCreator } from '@/components/WBSCreator';
 
 export default function WBSCreatorPage() {
   return (

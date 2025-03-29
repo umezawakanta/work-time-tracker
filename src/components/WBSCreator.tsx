@@ -175,3 +175,12 @@ export function MonthView() {
     </div>
   );
 }
+
+export function WBSCreator() {
+  return (
+    <div className="w-full p-4 bg-white rounded shadow">
+      <h2 className="text-xl font-bold mb-4">WBSCreator Component</h2>
+      {/* ここにWBS作成機能を追加 */}
+    </div>
+  );
+}
