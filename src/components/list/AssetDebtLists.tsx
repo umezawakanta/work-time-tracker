@@ -1,8 +1,7 @@
 import React from "react";
 import { AssetList } from "@/components/list/AssetList";
 import { DebtList } from "@/components/list/DebtList";
-import { AssetEntry } from "@/store/assetSlice";
-import { DebtEntry } from "@/store/debtSlice";
+import { AssetEntry, DebtEntry } from "@/types";
 
 interface AssetDebtListsProps {
   assetEntries: AssetEntry[];

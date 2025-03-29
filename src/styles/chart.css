@@ -1,0 +1,13 @@
+/* src/styles/chart.css */
+.tooltip-indicator {
+  --color-bg: attr(data-color);
+  --color-border: attr(data-color);
+}
+
+.legend-indicator {
+  background-color: var(--indicator-color);
+}
+
+.legend-indicator[data-color] {
+  --indicator-color: attr(data-color);
+}

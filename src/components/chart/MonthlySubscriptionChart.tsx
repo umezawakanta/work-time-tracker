@@ -12,7 +12,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { Subscription } from "@/types/subscription";
+import { SubscriptionService } from "@/types";
 
 ChartJS.register(
   CategoryScale,
@@ -24,12 +24,12 @@ ChartJS.register(
 );
 
 interface MonthlySubscriptionChartProps {
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionService[];
 }
 
 interface MonthData {
   month: string;
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionService[];
   totalAmount: number;
 }
 

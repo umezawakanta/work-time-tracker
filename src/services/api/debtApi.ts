@@ -1,7 +1,7 @@
 // src/api/debtApi.ts
 import { AxiosResponse } from "axios";
-import { DebtEntry } from "../../types/debtEntry";
 import { api, USE_MOCK_DATA } from "./apiConfig";
+import { DebtEntry } from "@/types";
 
 const mockDebtData: DebtEntry[] = [
   {

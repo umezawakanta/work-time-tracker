@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, parseISO, subMonths, subYears, isAfter } from 'date-fns';
-import { DebtEntry } from "@/store/debtSlice";
 import { Card } from '@/components/ui/card';
+import { DebtEntry } from '@/types';
 
 interface DebtTrendChartProps {
   data: DebtEntry[];

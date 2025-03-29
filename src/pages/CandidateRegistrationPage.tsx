@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store";
-import {
-  addCandidate,
-  Candidate,
-  fetchCandidates,
-} from "../store/candidateSlice";
+import { addCandidate, fetchCandidates } from "../store/candidateSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -55,6 +51,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Candidate } from "@/types";
 
 const parties = [
   "自民党",
@@ -281,7 +278,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     party: "",
     prefecture: "",
     district: null,
-    proportionalBlock: null,
+    proportionalBlock: "", // null の代わりに空文字列を使用
   });
 
   const [isProportionalOnly, setIsProportionalOnly] = useState(false);
@@ -328,7 +325,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     if (checked) {
       setNewCandidate((prev) => ({ ...prev, district: null, prefecture: "" }));
     } else {
-      setNewCandidate((prev) => ({ ...prev, proportionalBlock: null }));
+      setNewCandidate((prev) => ({ ...prev, proportionalBlock: "" })); // null の代わりに空文字列
     }
   };
 
@@ -346,7 +343,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
         district: null,
         proportionalBlock: isProportionalOnly
           ? newCandidate.proportionalBlock
-          : null,
+          : "",
       });
 
       // 候補者リストを更新
@@ -370,7 +367,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
       ...newCandidate,
       prefecture,
       district,
-      proportionalBlock: null,
+      proportionalBlock: "", // null の代わりに空文字列
     });
     setIsProportionalOnly(false);
     setSelectedDistrict(district);
@@ -671,7 +668,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                             都道府県
                           </label>
                           <Select
-                            value={newCandidate.prefecture}
+                            value={newCandidate.prefecture || ""}
                             onValueChange={handleSelectChange("prefecture")}
                           >
                             <SelectTrigger className="w-full">
@@ -1132,7 +1129,8 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-                                      title={`選挙ウォッチで確認`}>
+                                      title={`選挙ウォッチで確認`}
+                                    >
                                       <ExternalLink className="h-3 w-3" />
                                     </a>
                                   </TooltipTrigger>

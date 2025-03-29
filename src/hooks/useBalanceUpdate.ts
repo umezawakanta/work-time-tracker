@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
-import { updateAssetEntry, AssetEntry } from "@/store/assetSlice";
-import { updateDebtEntry, DebtEntry } from "@/store/debtSlice";
+import { updateAssetEntry } from "@/store/assetSlice";
+import { updateDebtEntry } from "@/store/debtSlice";
 import { toast } from "@/components/ui/use-toast";
+import { AssetEntry, DebtEntry } from "@/types";
 
 export const useBalanceUpdate = (updateLastBalanceDate: () => void) => {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/useAuth";
 import userSubscriptionApi from "@/services/api/userSubscriptionApi";
 import { toast } from "react-hot-toast";
@@ -24,11 +24,42 @@ interface Invoice {
   createdAt: Date;
 }
 
+interface PaymentMethod {
+  type: string;
+  lastFour?: string;
+}
+
+interface Subscription {
+  id: string;
+  userId: string;
+  planId: string;
+  status: string;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+  paymentMethod?: PaymentMethod;
+}
+
+interface RawInvoice {
+  id: string;
+  userId: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'unpaid' | 'failed';
+  periodStart: string;
+  periodEnd: string;
+  paymentMethod: {
+    type: string;
+    lastFour: string;
+  };
+  createdAt: string;
+}
+
 export default function BillingHistoryPage() {
   const { user, isAuthenticated } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [subscription, setSubscription] = useState<any | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<any | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,7 +80,7 @@ export default function BillingHistoryPage() {
           // 請求履歴を取得
           const invoiceResponse = await userSubscriptionApi.getInvoiceHistory(user.id);
           // 日付をDate型に変換
-          const formattedInvoices = invoiceResponse.map((invoice: any) => ({
+          const formattedInvoices = invoiceResponse.map((invoice: RawInvoice) => ({
             ...invoice,
             periodStart: new Date(invoice.periodStart),
             periodEnd: new Date(invoice.periodEnd),

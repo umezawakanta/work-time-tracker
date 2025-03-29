@@ -1,5 +1,5 @@
 // StatsView.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
@@ -7,6 +7,7 @@ import { Calendar, LineChart as LineChartIcon, BarChart3, ArrowUp, Users, Award,
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DiaryEntry, Goal, MonthlyStats, MotivationDataPoint, TagOption } from "@/types";
+import "./StatsView.css"; // スタイルを外部ファイルに移動
 
 interface StatsViewProps {
   entries: DiaryEntry[];
@@ -33,6 +34,15 @@ const StatsView: React.FC<StatsViewProps> = ({
 }) => {
   // 目標分析のタブ
   const [goalAnalysisTab, setGoalAnalysisTab] = useState<string>("category");
+  const progressBarRef = useRef<HTMLDivElement>(null);
+
+  // 進捗バーの幅を設定
+  useEffect(() => {
+    if (progressBarRef.current) {
+      const percentage = (stats.entryCount / 30) * 100;
+      progressBarRef.current.style.setProperty('--progress-width', `${percentage}%`);
+    }
+  }, [stats.entryCount]);
 
   // 月の選択肢を生成（過去6ヶ月）
   const monthOptions = Array.from({ length: 6 }, (_, i) => {
@@ -217,10 +227,10 @@ const StatsView: React.FC<StatsViewProps> = ({
               <div className="text-2xl font-bold">{stats.entryCount}</div>
               <div className="text-xs text-gray-500">/ 30日</div>
             </div>
-            <div className="mt-2 h-2 w-full bg-gray-100 rounded-full">
+            <div className="progress-bar-container">
               <div 
-                className="record-progress h-2 bg-blue-500 rounded-full" 
-                style={{ width: `${(stats.entryCount / 30) * 100}%` }}
+                ref={progressBarRef}
+                className="record-progress progress-bar"
               ></div>
             </div>
           </CardContent>
@@ -297,7 +307,7 @@ const StatsView: React.FC<StatsViewProps> = ({
                       nameKey="name"
                       label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
                     >
-                      {goalCategoryChartData.map((entry, index) => (
+                      {goalCategoryChartData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>

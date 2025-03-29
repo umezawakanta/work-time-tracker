@@ -14,6 +14,10 @@ export interface TargetSettings {
  * 資産エントリーの型定義
  * アプリケーション全体で共通して使用する
  */
+/**
+ * 資産エントリーの型定義
+ * アプリケーション全体で共通して使用する
+ */
 export interface AssetEntry {
     _id?: string;        // MongoDBなどのデータベースID
     id?: string;         // クライアント側で使用されるID
@@ -31,13 +35,14 @@ export interface AssetEntry {
     isInvestment?: boolean;// 投資資産かどうか
     interestRate?: number;  // 金利などを保存するプロパティの追加
     notes?: string;         // メモや備考を保存するプロパティの追加
+    name?: string;          // コンポーネントが参照している可能性のあるフィールド
+    amount?: number;        // コンポーネントが参照している可能性のあるフィールド
 }
 
 /**
  * 負債エントリーの型定義
  */
 export interface DebtEntry {
-    description: string;
     _id?: string;        // MongoDBなどのデータベースID
     id?: string;         // クライアント側で使用されるID
     date: string;        // 日付 - ISO文字列形式
@@ -45,6 +50,7 @@ export interface DebtEntry {
     account: string;     // 負債名
     category?: string;   // 負債カテゴリ
     targetSettings?: TargetSettings; // 目標設定
+    description: string;
 
     // 追加のオプショナルフィールド
     lastUpdated?: string;   // 最終更新日
@@ -54,6 +60,8 @@ export interface DebtEntry {
     minimumPayment?: number;// 最低返済額
     dueDate?: string;       // 返済期日
     notes?: string;         // メモや備考
+    name?: string;          // コンポーネントが参照している可能性のあるフィールド
+    amount?: number;        // コンポーネントが参照している可能性のあるフィールド
 }
 
 /**
@@ -239,9 +247,9 @@ export interface Candidate {
     _id?: string;
     name: string;
     party: string;
-    prefecture: string | null;
+    prefecture: string;  // null ではなく空文字列を使用
     district: number | null;
-    proportionalBlock: string | null;
+    proportionalBlock: string;  // null ではなく空文字列を使用
     status?: string;
     imageUrl?: string;
     age?: number;
@@ -250,7 +258,7 @@ export interface Candidate {
     biography?: string;
     pastExperience?: string[];
     website?: string;
-    supportRate?: number; // 支持率を追加
+    supportRate?: number;
     socialMedia?: {
         twitter?: string;
         facebook?: string;
@@ -274,9 +282,9 @@ export interface UserNotification {
     timestamp: string;
     actionUrl?: string;
     actionText?: string;
-  }
+}
 
-  // 通常のサブスクリプション（例：Netflix, Spotifyなど）
+// 通常のサブスクリプション（例：Netflix, Spotifyなど）
 export interface SubscriptionService {
     _id: string;
     name: string;
@@ -295,16 +303,19 @@ export interface SubscriptionService {
     billingCycle?: string;
     currency?: string;
     autoRenew?: boolean;
-    notificationEnabled?: boolean;
     notificationDays?: number;
-    category?: string;
-    notes?: string;
     url?: string;
+    // 列挙型としてpaymentMethodを厳密に定義
+    price?: number;
     startDate?: string;
-  }
-  
-  // ユーザーのプラン契約情報（プレミアム機能へのアクセス権など）
-  export interface UserSubscription {
+    category?: string;
+    nextBillingDate?: string;
+    notificationEnabled?: boolean;
+    notes?: string;
+}
+
+// ユーザーのプラン契約情報（プレミアム機能へのアクセス権など）
+export interface UserSubscription {
     _id: string;
     userId: string;
     planId: string;
@@ -312,24 +323,24 @@ export interface SubscriptionService {
     currentPeriodEnd: Date | string;
     cancelAtPeriodEnd: boolean;
     paymentMethod?: {
-      type: string;
-      lastFour?: string;
-      expiryDate?: string;
-      cardholderName?: string;
-      isDefault?: boolean;
+        type: string;
+        lastFour?: string;
+        expiryDate?: string;
+        cardholderName?: string;
+        isDefault?: boolean;
     };
     cancelReason?: string | null;
     canceledAt?: Date | null;
     scheduledChanges?: {
-      newPlanId: string;
-      effectiveDate: Date | string;
+        newPlanId: string;
+        effectiveDate: Date | string;
     };
     createdAt: Date | string;
     updatedAt: Date | string;
-  }
-  
-  // 請求書/インボイスの型定義
-  export interface Invoice {
+}
+
+// 請求書/インボイスの型定義
+export interface Invoice {
     id: string;
     userId: string;
     amount: number;
@@ -338,13 +349,13 @@ export interface SubscriptionService {
     periodStart: Date | string;
     periodEnd: Date | string;
     paymentMethod: {
-      type: string;
-      lastFour: string;
+        type: string;
+        lastFour: string;
     };
     createdAt: Date | string;
-  }
+}
 
-  // 支払い方法のカスタム型定義
+// 支払い方法のカスタム型定義
 export interface CustomPaymentMethodData {
     type: 'credit_card' | 'bank_transfer';
     cardNumber?: string;
@@ -353,4 +364,4 @@ export interface CustomPaymentMethodData {
     cvc?: string;
     lastFour?: string;
     isDefault?: boolean;
-  }
+}

@@ -1,13 +1,14 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
-import { AssetEntry, deleteAssetEntry } from "@/store/assetSlice";
+import { deleteAssetEntry } from "@/store/assetSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Trash2Icon, PencilIcon } from "lucide-react";
 import { useLocale } from "@/hooks/useLocale";
 import { formatDateAndTime } from "@/utils/dateUtils";
+import { AssetEntry } from "@/types";
 
 interface AssetListProps {
   assetEntries: AssetEntry[];

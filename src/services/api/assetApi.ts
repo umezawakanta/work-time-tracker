@@ -1,7 +1,7 @@
 // src/api/assetApi.ts
 import { AxiosResponse } from "axios";
-import { AssetEntry } from "../../types/assetEntry";
 import { api, USE_MOCK_DATA } from "./apiConfig";
+import { AssetEntry } from "@/types";
 
 const mockAssetData: AssetEntry[] = [
   {
