@@ -19,6 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/context/useAuth";
+import "@/styles/ImpulseTracker.css";
 
 interface ImpulseAction {
   id: string;
@@ -831,29 +832,30 @@ const ImpulseTrackerPage: React.FC = () => {
                 <h3 className="text-lg font-medium">カテゴリー別統計</h3>
                 <div className="mt-2 space-y-2">
                   {Object.entries(statsData.categoryBreakdown).map(
-                    ([category, count]) => (
-                      <div key={category} className="flex items-center">
-                        <div className="w-1/3 text-sm">
-                          {CATEGORIES.find((c) => c.value === category)
-                            ?.label || category}
-                        </div>
-                        <div className="w-2/3">
-                          <div className="relative h-4 bg-gray-200 rounded-full">
-                            <div
-                              className="absolute top-0 left-0 h-4 bg-blue-500 rounded-full"
-                              style={{
-                                width: `${
-                                  (count / statsData.totalCount) * 100
-                                }%`,
-                              }}
-                            ></div>
+                    ([category, count]) => {
+                      const percent = Math.round(
+                        (count / statsData.totalCount) * 100
+                      );
+                      return (
+                        <div key={category} className="flex items-center">
+                          <div className="w-1/3 text-sm">
+                            {CATEGORIES.find((c) => c.value === category)
+                              ?.label || category}
                           </div>
-                          <div className="text-xs text-right mt-1">
-                            {count}件
+                          <div className="w-2/3">
+                            <div className="relative h-4 bg-gray-200 rounded-full">
+                              <div
+                                className="progress-bar progress-bar-blue"
+                                data-percent={percent}
+                              ></div>
+                            </div>
+                            <div className="text-xs text-right mt-1">
+                              {count}件
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
+                      );
+                    }
                   )}
                 </div>
               </div>
@@ -862,29 +864,30 @@ const ImpulseTrackerPage: React.FC = () => {
                 <h3 className="text-lg font-medium">感情別統計</h3>
                 <div className="mt-2 space-y-2">
                   {Object.entries(statsData.emotionBreakdown).map(
-                    ([emotion, count]) => (
-                      <div key={emotion} className="flex items-center">
-                        <div className="w-1/3 text-sm">
-                          {EMOTIONS.find((e) => e.value === emotion)?.label ||
-                            emotion}
-                        </div>
-                        <div className="w-2/3">
-                          <div className="relative h-4 bg-gray-200 rounded-full">
-                            <div
-                              className="absolute top-0 left-0 h-4 bg-green-500 rounded-full"
-                              style={{
-                                width: `${
-                                  (count / statsData.totalCount) * 100
-                                }%`,
-                              }}
-                            ></div>
+                    ([emotion, count]) => {
+                      const percent = Math.round(
+                        (count / statsData.totalCount) * 100
+                      );
+                      return (
+                        <div key={emotion} className="flex items-center">
+                          <div className="w-1/3 text-sm">
+                            {EMOTIONS.find((e) => e.value === emotion)?.label ||
+                              emotion}
                           </div>
-                          <div className="text-xs text-right mt-1">
-                            {count}件
+                          <div className="w-2/3">
+                            <div className="relative h-4 bg-gray-200 rounded-full">
+                              <div
+                                className="progress-bar progress-bar-green"
+                                data-percent={percent}
+                              ></div>
+                            </div>
+                            <div className="text-xs text-right mt-1">
+                              {count}件
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
+                      );
+                    }
                   )}
                 </div>
               </div>
