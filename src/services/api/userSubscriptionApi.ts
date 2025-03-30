@@ -2,7 +2,7 @@ import axios from 'axios';
 import { CustomPaymentMethodData, UserSubscription } from '@/types';
 
 // APIのベースURL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 // userSubscriptionエンドポイント
 const USER_SUBSCRIPTION_ENDPOINT = `${API_BASE_URL}/userSubscription`;

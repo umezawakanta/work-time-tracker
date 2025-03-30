@@ -2,7 +2,7 @@ import { SubscriptionService } from '@/types';
 import axios from 'axios';
 
 // APIのベースURL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 // userSubscriptionエンドポイント - ここを変更
 const SUBSCRIPTION_ENDPOINT = `${API_BASE_URL}/userSubscription`;

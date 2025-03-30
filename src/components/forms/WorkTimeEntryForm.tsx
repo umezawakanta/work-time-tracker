@@ -27,7 +27,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +40,6 @@ import {
   PlusIcon,
   CheckIcon,
   TimerIcon,
-  DesktopIcon,
   ReloadIcon,
   CalendarIcon,
   ClockIcon,
@@ -53,36 +51,56 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format, isToday, subDays } from "date-fns";
+import { format, isToday } from "date-fns";
 import { ja } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/useAuth";
+import userSubscriptionApi from "@/services/api/userSubscriptionApi";
+import projectApi from "@/services/api/projectApi";
+import presetApi from "@/services/api/presetApi";
 
-// プロジェクトのタイプ定義
+// プロジェクトのインターフェース定義
 interface Project {
-  id: string;
+  _id: string;
   name: string;
   color: string;
   lastUsed?: Date;
+  userId: string;
 }
 
-// プリセットのタイプ定義
+// プリセットのインターフェース定義
 interface WorkPreset {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   projectId: string;
   duration: number; // 分単位
+  userId: string;
+}
+
+// サブスクリプション情報のインターフェース
+interface UserSubscription {
+  _id: string;
+  userId: string;
+  planId: string;
+  status: "active" | "inactive" | "canceled";
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
 }
 
 export default function WorkTimeEntryForm() {
-  // Redux状態
+  // コンテキストフック
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+
+  // Redux
   const dispatch = useDispatch<AppDispatch>();
   const recentEntries = useSelector((state: RootState) =>
     state.workTime.entries.slice(0, 5)
   );
 
   // ローカル状態
-  const [projectName, setProjectName] = useState("仕事（Mighty-Link）");
+  const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -98,72 +116,87 @@ export default function WorkTimeEntryForm() {
   );
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // 通知用
-  const { toast } = useToast();
+  // データ状態
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [presets, setPresets] = useState<WorkPreset[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [subscription, setSubscription] = useState<UserSubscription | null>(
+    null
+  );
+  const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectColor, setNewProjectColor] = useState("bg-blue-500");
+  const [isNewPresetDialogOpen, setIsNewPresetDialogOpen] = useState(false);
+  const [newPresetName, setNewPresetName] = useState("");
+  const [newPresetDescription, setNewPresetDescription] = useState("");
+  const [newPresetProjectId, setNewPresetProjectId] = useState("");
+  const [newPresetDuration, setNewPresetDuration] = useState(30);
+
+  // ルーティング
   const navigate = useNavigate();
 
   // タイマー用のref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 最近使用されたプロジェクト (実際のアプリではAPIやReduxから取得)
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "1",
-      name: "仕事（Mighty-Link）",
-      color: "bg-blue-500",
-      lastUsed: new Date(),
-    },
-    {
-      id: "2",
-      name: "自己開発",
-      color: "bg-green-500",
-      lastUsed: subDays(new Date(), 1),
-    },
-    {
-      id: "3",
-      name: "勉強",
-      color: "bg-purple-500",
-      lastUsed: subDays(new Date(), 2),
-    },
-    {
-      id: "4",
-      name: "副業",
-      color: "bg-amber-500",
-      lastUsed: subDays(new Date(), 3),
-    },
-  ]);
+  // データの取得
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated || !user) {
+        setIsLoading(false);
+        return;
+      }
 
-  // プリセット (実際のアプリではAPIやReduxから取得)
-  const [presets, setPresets] = useState<WorkPreset[]>([
-    {
-      id: "1",
-      name: "Daily MTG",
-      description: "デイリースクラムミーティング",
-      projectId: "1",
-      duration: 15,
-    },
-    {
-      id: "2",
-      name: "コーディング",
-      description: "実装作業",
-      projectId: "1",
-      duration: 60,
-    },
-    {
-      id: "3",
-      name: "レビュー",
-      description: "コードレビュー",
-      projectId: "1",
-      duration: 30,
-    },
-    {
-      id: "4",
-      name: "勉強会",
-      description: "技術勉強会",
-      projectId: "3",
-      duration: 90,
-    },
-  ]);
+      try {
+        setIsLoading(true);
+
+        // プロジェクト情報の取得
+        const projectResponse = await projectApi.getUserProjects(user.id);
+        if (projectResponse.data.length > 0) {
+          setProjects(projectResponse.data);
+          // 最後に使用したプロジェクトを初期値に設定
+          const sortedProjects = [...projectResponse.data].sort(
+            (a, b) =>
+              new Date(b.lastUsed || 0).getTime() -
+              new Date(a.lastUsed || 0).getTime()
+          );
+          if (sortedProjects.length > 0) {
+            setProjectName(sortedProjects[0].name);
+          }
+        } else {
+          // デフォルトプロジェクトの作成
+          const defaultProject = await projectApi.createProject({
+            name: "マイプロジェクト",
+            color: "bg-blue-500",
+            userId: user.id,
+            lastUsed: new Date(),
+          });
+          setProjects([defaultProject.data]);
+          setProjectName(defaultProject.data.name);
+        }
+
+        // プリセット情報の取得
+        const presetResponse = await presetApi.getUserPresets(user.id);
+        setPresets(presetResponse.data);
+
+        // サブスクリプション情報の取得
+        const subscriptionResponse =
+          await userSubscriptionApi.getUserSubscription(user.id);
+        setSubscription(subscriptionResponse.data);
+      } catch (error) {
+        console.error("データ取得エラー:", error);
+        toast({
+          title: "エラー",
+          description:
+            "データの取得に失敗しました。後でもう一度お試しください。",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isAuthenticated, user, toast]);
 
   // 作業状態の復元 (アプリが閉じられても作業状態を保持)
   useEffect(() => {
@@ -243,10 +276,16 @@ export default function WorkTimeEntryForm() {
 
   // 作業開始
   const handleStartWork = () => {
+    if (!projectName) {
+      setError("プロジェクト名を入力してください。");
+      return;
+    }
+
     const now = new Date();
     setWorkStartTime(now);
     setStartTime(now.toISOString().slice(0, 16));
     setIsWorking(true);
+    setError(null);
 
     // 作業開始通知
     toast({
@@ -299,7 +338,7 @@ export default function WorkTimeEntryForm() {
 
   // プリセット適用
   const handlePresetSubmit = async (preset: WorkPreset) => {
-    const project = projects.find((p) => p.id === preset.projectId);
+    const project = projects.find((p) => p._id === preset.projectId);
     if (!project) return;
 
     const now = new Date();
@@ -326,6 +365,26 @@ export default function WorkTimeEntryForm() {
 
   // 作業記録の送信
   const submitWorkTimeEntry = async (start: Date, end: Date) => {
+    // サブスクリプションチェック（特定の機能が有料プランのみの場合）
+    const isPremium =
+      subscription &&
+      subscription.status === "active" &&
+      subscription.planId !== "free";
+
+    // 制限チェック
+    if (!isPremium && recentEntries.length >= 10) {
+      setError(
+        "フリープランでは10件までの記録しか保存できません。プレミアムプランにアップグレードしてください。"
+      );
+      toast({
+        title: "制限に達しました",
+        description:
+          "フリープランの制限に達しました。プレミアムプランへのアップグレードをご検討ください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
 
     const newEntry: Omit<WorkTimeEntry, "_id"> = {
@@ -335,6 +394,7 @@ export default function WorkTimeEntryForm() {
       endTime: end.toISOString(),
       duration,
       date: start.toISOString().split("T")[0],
+      userId: user?.id || "",
     };
 
     setIsSubmitting(true);
@@ -371,20 +431,24 @@ export default function WorkTimeEntryForm() {
   };
 
   // 最終使用プロジェクトの更新
-  const updateLastUsedProject = (name: string) => {
-    setProjects((prev) => {
-      const updatedProjects = [...prev];
-      const index = updatedProjects.findIndex((p) => p.name === name);
-
-      if (index !== -1) {
-        updatedProjects[index] = {
-          ...updatedProjects[index],
+  const updateLastUsedProject = async (name: string) => {
+    try {
+      const project = projects.find((p) => p.name === name);
+      if (project) {
+        const updatedProject = await projectApi.updateProject(project._id, {
+          ...project,
           lastUsed: new Date(),
-        };
-      }
+        });
 
-      return updatedProjects;
-    });
+        setProjects((prev) =>
+          prev.map((p) =>
+            p._id === updatedProject.data._id ? updatedProject.data : p
+          )
+        );
+      }
+    } catch (error) {
+      console.error("プロジェクト更新エラー:", error);
+    }
   };
 
   // クイック時間設定（+15分、+30分、+1時間など）
@@ -398,30 +462,157 @@ export default function WorkTimeEntryForm() {
   };
 
   // 最近使ったプロジェクトの選択
-  const handleSelectProject = (project: Project) => {
+  const handleSelectProject = async (project: Project) => {
     setProjectName(project.name);
-    updateLastUsedProject(project.name);
+    await updateLastUsedProject(project.name);
   };
 
-  // プリセット作成
-  const handleCreatePreset = () => {
-    // プリセット作成ロジックを実装
-    // 実際のアプリでは、入力フォームを表示してユーザーにプリセット情報を入力してもらう
-    const newPreset: WorkPreset = {
-      id: `preset-${Date.now()}`,
-      name: description || "新しいプリセット",
-      description: description || "",
-      projectId: projects.find((p) => p.name === projectName)?.id || "1",
-      duration: presetDuration,
-    };
+  // 新規プロジェクト作成
+  const handleCreateProject = async () => {
+    if (!newProjectName.trim()) {
+      toast({
+        title: "エラー",
+        description: "プロジェクト名を入力してください。",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setPresets((prev) => [...prev, newPreset]);
+    try {
+      setIsSubmitting(true);
 
-    toast({
-      title: "プリセット作成",
-      description: `「${newPreset.name}」(${presetDuration}分)のプリセットを作成しました。`,
-    });
+      const newProject = await projectApi.createProject({
+        name: newProjectName,
+        color: newProjectColor,
+        userId: user?.id || "",
+        lastUsed: new Date(),
+      });
+
+      setProjects((prev) => [...prev, newProject.data]);
+      setProjectName(newProject.data.name);
+      setIsNewProjectDialogOpen(false);
+      setNewProjectName("");
+
+      toast({
+        title: "プロジェクト作成",
+        description: `「${newProject.data.name}」プロジェクトを作成しました。`,
+      });
+    } catch (error) {
+      console.error("プロジェクト作成エラー:", error);
+      toast({
+        title: "エラー",
+        description: "プロジェクトの作成に失敗しました。",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // 新規プリセット作成
+  const handleCreatePreset = async () => {
+    if (activeTab === "manual") {
+      // 手動入力モードからプリセット作成開始時は現在の値を設定
+      setNewPresetName(description || "新しいプリセット");
+      setNewPresetDescription(description || "");
+      const selectedProject = projects.find((p) => p.name === projectName);
+      if (selectedProject) {
+        setNewPresetProjectId(selectedProject._id);
+      }
+      setNewPresetDuration(presetDuration);
+    }
+
+    setIsNewPresetDialogOpen(true);
+  };
+
+  // プリセットの保存
+  const handleSavePreset = async () => {
+    if (!newPresetName.trim() || !newPresetProjectId) {
+      toast({
+        title: "エラー",
+        description: "プリセット名とプロジェクトを入力してください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const newPreset = await presetApi.createPreset({
+        name: newPresetName,
+        description: newPresetDescription,
+        projectId: newPresetProjectId,
+        duration: newPresetDuration,
+        userId: user?.id || "",
+      });
+
+      setPresets((prev) => [...prev, newPreset.data]);
+      setIsNewPresetDialogOpen(false);
+
+      toast({
+        title: "プリセット作成",
+        description: `「${newPreset.data.name}」(${newPresetDuration}分)のプリセットを作成しました。`,
+      });
+    } catch (error) {
+      console.error("プリセット作成エラー:", error);
+      toast({
+        title: "エラー",
+        description: "プリセットの作成に失敗しました。",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // プレミアムプラン確認
+  const isPremium =
+    subscription &&
+    subscription.status === "active" &&
+    subscription.planId !== "free";
+
+  // プレミアム機能へのアクセス確認
+  const checkPremiumAccess = (featureName: string) => {
+    if (!isPremium) {
+      toast({
+        title: "プレミアム機能",
+        description: `${featureName}はプレミアムプラン限定の機能です。アップグレードしてご利用ください。`,
+        variant: "default",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // プレミアムプランへのアップグレード
+  const handleUpgradeToPremium = () => {
+    navigate("/subscription");
+  };
+
+  // ローディング表示
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center h-[70vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">データを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // カラーオプションの定義
+  const colorOptions = [
+    { id: "bg-blue-500", name: "青", color: "blue-500" },
+    { id: "bg-green-500", name: "緑", color: "green-500" },
+    { id: "bg-red-500", name: "赤", color: "red-500" },
+    { id: "bg-yellow-500", name: "黄", color: "yellow-500" },
+    { id: "bg-purple-500", name: "紫", color: "purple-500" },
+    { id: "bg-pink-500", name: "ピンク", color: "pink-500" },
+    { id: "bg-indigo-500", name: "藍", color: "indigo-500" },
+    { id: "bg-gray-500", name: "灰色", color: "gray-500" },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -462,7 +653,7 @@ export default function WorkTimeEntryForm() {
                 )
                 .map((project) => (
                   <button
-                    key={project.id}
+                    key={project._id}
                     onClick={() => handleSelectProject(project)}
                     className={cn(
                       "px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
@@ -481,53 +672,13 @@ export default function WorkTimeEntryForm() {
                   </button>
                 ))}
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="px-3 py-1.5 rounded-full text-xs font-medium border hover:bg-muted transition-colors flex items-center gap-1.5">
-                    <PlusIcon className="h-3 w-3" />
-                    <span>新規作成</span>
-                  </button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>新しいプロジェクトを作成</DialogTitle>
-                    <DialogDescription>
-                      新しいプロジェクトの名前と色を設定してください。
-                    </DialogDescription>
-                  </DialogHeader>
-                  {/* プロジェクト作成フォーム */}
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="newProjectName">プロジェクト名</Label>
-                      <Input
-                        id="newProjectName"
-                        placeholder="新しいプロジェクト名"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>色</Label>
-                      <div className="flex gap-2">
-                        {[
-                          "bg-blue-500",
-                          "bg-green-500",
-                          "bg-red-500",
-                          "bg-yellow-500",
-                          "bg-purple-500",
-                          "bg-pink-500",
-                        ].map((color) => (
-                          <div
-                            key={color}
-                            className={`w-8 h-8 rounded-full ${color} cursor-pointer border-2 border-transparent hover:border-gray-400`}
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button>作成</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <button
+                className="px-3 py-1.5 rounded-full text-xs font-medium border hover:bg-muted transition-colors flex items-center gap-1.5"
+                onClick={() => setIsNewProjectDialogOpen(true)}
+              >
+                <PlusIcon className="h-3 w-3" />
+                <span>新規作成</span>
+              </button>
             </div>
           </div>
 
@@ -576,7 +727,16 @@ export default function WorkTimeEntryForm() {
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="auto">タイマー</TabsTrigger>
               <TabsTrigger value="manual">手動入力</TabsTrigger>
-              <TabsTrigger value="presets">プリセット</TabsTrigger>
+              <TabsTrigger
+                value="presets"
+                onClick={() => {
+                  if (!isPremium && presets.length >= 3) {
+                    checkPremiumAccess("3つ以上のプリセット");
+                  }
+                }}
+              >
+                プリセット
+              </TabsTrigger>
             </TabsList>
 
             {/* タイマーモード */}
@@ -584,12 +744,35 @@ export default function WorkTimeEntryForm() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="autoProjectName">プロジェクト名</Label>
-                  <Input
-                    id="autoProjectName"
+                  <Select
                     value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
+                    onValueChange={(value) => {
+                      setProjectName(value);
+                      const selectedProject = projects.find(
+                        (p) => p.name === value
+                      );
+                      if (selectedProject) {
+                        updateLastUsedProject(selectedProject.name);
+                      }
+                    }}
                     disabled={isWorking}
-                  />
+                  >
+                    <SelectTrigger id="autoProjectName">
+                      <SelectValue placeholder="プロジェクトを選択" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((project) => (
+                        <SelectItem key={project._id} value={project.name}>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${project.color}`}
+                            ></div>
+                            <span>{project.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -670,71 +853,6 @@ export default function WorkTimeEntryForm() {
               </div>
             </TabsContent>
 
-            {/* 手動入力モード */}
-            <TabsContent value="manual" className="pt-4">
-              <form onSubmit={handleManualSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="manualProjectName">プロジェクト名</Label>
-                  <Input
-                    id="manualProjectName"
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="manualDescription">作業内容</Label>
-                  <Textarea
-                    id="manualDescription"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="作業内容を記入してください"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="manualStartTime">開始時間</Label>
-                    <Input
-                      id="manualStartTime"
-                      type="datetime-local"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="manualEndTime">終了時間</Label>
-                    <Input
-                      id="manualEndTime"
-                      type="datetime-local"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCreatePreset}
-                    className="gap-1"
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                    プリセット化
-                  </Button>
-
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "送信中..." : "記録を保存"}
-                  </Button>
-                </div>
-              </form>
-            </TabsContent>
-
             {/* プリセットモード */}
             <TabsContent value="presets" className="pt-4">
               <div className="space-y-4">
@@ -783,231 +901,438 @@ export default function WorkTimeEntryForm() {
                   </div>
 
                   <div className="space-y-2">
-                    {presets.map((preset) => {
-                      const project = projects.find(
-                        (p) => p.id === preset.projectId
-                      );
+                    {presets.length === 0 ? (
+                      <div className="text-center py-6 text-muted-foreground">
+                        <p>プリセットがまだありません</p>
+                        <p className="text-sm mt-1">
+                          よく使う作業内容をプリセットとして保存できます
+                        </p>
+                      </div>
+                    ) : (
+                      presets.map((preset) => {
+                        const project = projects.find(
+                          (p) => p._id === preset.projectId
+                        );
 
-                      return showPresets ? (
-                        <Card key={preset.id} className="p-3">
-                          <div className="flex justify-between">
-                            <div>
-                              <div className="font-medium flex items-center gap-2">
-                                {project && (
-                                  <div
-                                    className={`w-2 h-2 rounded-full ${project.color}`}
-                                  ></div>
-                                )}
-                                {preset.name}
+                        return showPresets ? (
+                          <Card key={preset._id} className="p-3">
+                            <div className="flex justify-between">
+                              <div>
+                                <div className="font-medium flex items-center gap-2">
+                                  {project && (
+                                    <div
+                                      className={`w-2 h-2 rounded-full ${project.color}`}
+                                    ></div>
+                                  )}
+                                  {preset.name}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {preset.description}
+                                </div>
                               </div>
-                              <div className="text-sm text-muted-foreground">
-                                {preset.description}
+
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">
+                                  {preset.duration}分
+                                </Badge>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handlePresetSubmit(preset)}
+                                >
+                                  適用
+                                </Button>
                               </div>
                             </div>
-
+                          </Card>
+                        ) : (
+                          <button
+                            key={preset._id}
+                            onClick={() => handlePresetSubmit(preset)}
+                            className="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors"
+                          >
                             <div className="flex items-center gap-2">
-                              <Badge variant="outline">
-                                {preset.duration}分
-                              </Badge>
-                              <Button
-                                size="sm"
-                                onClick={() => handlePresetSubmit(preset)}
-                              >
-                                適用
-                              </Button>
+                              {project && (
+                                <div
+                                  className={`w-2 h-2 rounded-full ${project.color}`}
+                                ></div>
+                              )}
+                              <span>{preset.name}</span>
                             </div>
-                          </div>
-                        </Card>
-                      ) : (
-                        <button
-                          key={preset.id}
-                          onClick={() => handlePresetSubmit(preset)}
-                          className="w-full flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30 transition-colors"
-                        >
-                          <div className="flex items-center gap-2">
-                            {project && (
-                              <div
-                                className={`w-2 h-2 rounded-full ${project.color}`}
-                              ></div>
-                            )}
-                            <span>{preset.name}</span>
-                          </div>
-                          <Badge variant="outline">{preset.duration}分</Badge>
-                        </button>
-                      );
-                    })}
+                            <Badge variant="outline">{preset.duration}分</Badge>
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
 
                 <div className="pt-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full gap-1">
-                        <PlusIcon className="h-4 w-4" />
-                        新しいプリセットを作成
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>新しいプリセットを作成</DialogTitle>
-                        <DialogDescription>
-                          繰り返し使う作業パターンをプリセットとして保存できます。
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="presetName">プリセット名</Label>
-                          <Input
-                            id="presetName"
-                            placeholder="例: デイリーミーティング"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="presetDescription">説明</Label>
-                          <Textarea
-                            id="presetDescription"
-                            placeholder="作業内容の説明"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="presetProject">プロジェクト</Label>
-                          <Select defaultValue={projects[0]?.id}>
-                            <SelectTrigger id="presetProject">
-                              <SelectValue placeholder="プロジェクトを選択" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {projects.map((project) => (
-                                <SelectItem key={project.id} value={project.id}>
-                                  <div className="flex items-center gap-2">
-                                    <div
-                                      className={`w-2 h-2 rounded-full ${project.color}`}
-                                    ></div>
-                                    <span>{project.name}</span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="presetDuration">所要時間（分）</Label>
-                          <Input
-                            id="presetDuration"
-                            type="number"
-                            defaultValue="30"
-                            min="1"
-                            onChange={(e) =>
-                              setPresetDuration(parseInt(e.target.value) || 30)
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <DialogFooter>
-                        <Button type="submit">プリセットを保存</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                  <Button
+                    variant="outline"
+                    className="w-full gap-1"
+                    onClick={() => {
+                      setNewPresetName("");
+                      setNewPresetDescription("");
+                      setNewPresetProjectId(projects[0]?._id || "");
+                      setNewPresetDuration(30);
+                      setIsNewPresetDialogOpen(true);
+                    }}
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                    新しいプリセットを作成
+                  </Button>
                 </div>
               </div>
             </TabsContent>
-          </Tabs>
-        </CardContent>
 
-        {error && (
-          <CardFooter>
-            <Alert variant="destructive">
+            {/* 手動入力モード */}
+            <TabsContent value="manual" className="pt-4">
+              <form onSubmit={handleManualSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="manualProjectName">プロジェクト名</Label>
+                  <Select
+                    value={projectName}
+                    onValueChange={(value) => {
+                      setProjectName(value);
+                      const selectedProject = projects.find(
+                        (p) => p.name === value
+                      );
+                      if (selectedProject) {
+                        updateLastUsedProject(selectedProject.name);
+                      }
+                    }}
+                  >
+                    <SelectTrigger id="manualProjectName">
+                      <SelectValue placeholder="プロジェクトを選択" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((project) => (
+                        <SelectItem key={project._id} value={project.name}>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${project.color}`}
+                            ></div>
+                            <span>{project.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="manualDescription">作業内容</Label>
+                  <Textarea
+                    id="manualDescription"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="作業内容を記入してください"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="manualStartTime">開始時間</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const now = new Date();
+                          setStartTime(now.toISOString().slice(0, 16));
+                        }}
+                        className="h-6 px-2 text-xs"
+                      >
+                        現在時刻
+                      </Button>
+                    </div>
+                    <Input
+                      id="manualStartTime"
+                      type="datetime-local"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="manualEndTime">終了時間</Label>
+                      <div className="space-y-2 mt-4">
+                        <Label htmlFor="presetDuration">
+                          プリセット用の期間（分）
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="presetDuration"
+                            type="range"
+                            min="5"
+                            max="180"
+                            step="5"
+                            value={presetDuration}
+                            onChange={(e) =>
+                              setPresetDuration(parseInt(e.target.value))
+                            }
+                            className="flex-1"
+                          />
+                          <span className="w-16 text-center">
+                            {presetDuration}分
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const now = new Date();
+                          setEndTime(now.toISOString().slice(0, 16));
+                        }}
+                        className="h-6 px-2 text-xs"
+                      >
+                        現在時刻
+                      </Button>
+                    </div>
+                    <Input
+                      id="manualEndTime"
+                      type="datetime-local"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCreatePreset}
+                    className="gap-1"
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                    プリセット化
+                  </Button>
+
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <span className="animate-spin mr-2">⏳</span>
+                        送信中...
+                      </>
+                    ) : (
+                      "記録を保存"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </TabsContent>
+          </Tabs>
+
+          {error && (
+            <Alert variant="destructive" className="mt-4">
               <ExclamationTriangleIcon className="h-4 w-4" />
               <AlertTitle>エラー</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
-          </CardFooter>
-        )}
+          )}
 
-        {/* プレミアム機能の案内（将来のサブスクリプションサービス用） */}
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="w-full bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4 border border-amber-200">
-            <div className="flex items-start space-x-4">
-              <div className="bg-amber-200 rounded-full p-2">
-                <InfoCircledIcon className="h-5 w-5 text-amber-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-medium text-amber-800">
-                  プレミアム機能を使って生産性をさらに向上
-                </h3>
-                <p className="text-sm text-amber-700 mt-1">
-                  作業時間のAI分析、カレンダー連携、自動ポモドーロタイマーなどのプレミアム機能で時間管理を最適化しましょう。
+          {/* フリープラン制限の警告 */}
+          {!isPremium && recentEntries.length >= 5 && (
+            <Alert className="mt-4 bg-amber-50">
+              <InfoCircledIcon className="h-4 w-4" />
+              <AlertTitle>フリープラン制限</AlertTitle>
+              <AlertDescription className="flex flex-col gap-2">
+                <p>
+                  フリープランでは10件までの作業記録が保存できます。 あと
+                  {10 - recentEntries.length}件です。
                 </p>
-                <div className="mt-2 flex space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-amber-800 hover:bg-amber-200"
-                  >
-                    詳細を見る
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-amber-600 hover:bg-amber-700 text-white"
-                  >
-                    プレミアムを試す
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleUpgradeToPremium}
+                  className="self-start"
+                >
+                  プレミアムプランにアップグレード
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+
+        <CardFooter className="flex justify-center border-t pt-6">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/work-time-reports")}
+            className="gap-2"
+          >
+            <ClockIcon className="h-4 w-4" />
+            すべての作業記録を表示
+          </Button>
         </CardFooter>
       </Card>
 
-      {/* 生産性ヒント */}
-      <Card className="max-w-4xl mx-auto mt-6 bg-muted/30">
-        <CardHeader>
-          <CardTitle className="text-lg">生産性向上のヒント</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="flex space-x-2">
-              <div className="text-green-600">
-                <ClockIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">ポモドーロテクニック</p>
-                <p className="text-muted-foreground">
-                  25分の集中作業と5分の休憩を繰り返す
-                </p>
-              </div>
+      {/* 新規プロジェクト作成ダイアログ */}
+      <Dialog
+        open={isNewProjectDialogOpen}
+        onOpenChange={setIsNewProjectDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>新しいプロジェクトを作成</DialogTitle>
+            <DialogDescription>
+              作業を整理するための新しいプロジェクトを作成します。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newProjectName">プロジェクト名</Label>
+              <Input
+                id="newProjectName"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="新しいプロジェクト名"
+                autoFocus
+              />
             </div>
 
-            <div className="flex space-x-2">
-              <div className="text-blue-600">
-                <DesktopIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">タスク整理</p>
-                <p className="text-muted-foreground">
-                  重要なタスクから優先的に取り組む
-                </p>
-              </div>
-            </div>
-
-            <div className="flex space-x-2">
-              <div className="text-purple-600">
-                <ReloadIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">定期的な休憩</p>
-                <p className="text-muted-foreground">
-                  集中力維持のため90分ごとに休憩を
-                </p>
+            <div className="space-y-2">
+              <Label>カラー</Label>
+              <div className="flex flex-wrap gap-2">
+                {colorOptions.map((colorOption) => (
+                  <button
+                    key={colorOption.id}
+                    type="button"
+                    aria-label={`${colorOption.name}色を選択`}
+                    className={cn(
+                      "w-8 h-8 rounded-full",
+                      colorOption.id,
+                      newProjectColor === colorOption.id
+                        ? "ring-2 ring-offset-2 ring-primary"
+                        : ""
+                    )}
+                    onClick={() => setNewProjectColor(colorOption.id)}
+                  />
+                ))}
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsNewProjectDialogOpen(false)}
+            >
+              キャンセル
+            </Button>
+            <Button onClick={handleCreateProject} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  作成中...
+                </>
+              ) : (
+                "作成"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 新規プリセット作成ダイアログ */}
+      <Dialog
+        open={isNewPresetDialogOpen}
+        onOpenChange={setIsNewPresetDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>新しいプリセットを作成</DialogTitle>
+            <DialogDescription>
+              よく使う作業内容をプリセットとして保存できます。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPresetName">プリセット名</Label>
+              <Input
+                id="newPresetName"
+                value={newPresetName}
+                onChange={(e) => setNewPresetName(e.target.value)}
+                placeholder="プリセット名"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newPresetDescription">説明（オプション）</Label>
+              <Textarea
+                id="newPresetDescription"
+                value={newPresetDescription}
+                onChange={(e) => setNewPresetDescription(e.target.value)}
+                placeholder="この作業の詳細"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newPresetProjectId">プロジェクト</Label>
+              <Select
+                value={newPresetProjectId}
+                onValueChange={setNewPresetProjectId}
+              >
+                <SelectTrigger id="newPresetProjectId">
+                  <SelectValue placeholder="プロジェクトを選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((project) => (
+                    <SelectItem key={project._id} value={project._id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-2 h-2 rounded-full ${project.color}`}
+                        ></div>
+                        <span>{project.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newPresetDuration">所要時間（分）</Label>
+              <Input
+                id="newPresetDuration"
+                type="number"
+                min="1"
+                max="1440"
+                value={newPresetDuration}
+                onChange={(e) => setNewPresetDuration(parseInt(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsNewPresetDialogOpen(false)}
+            >
+              キャンセル
+            </Button>
+            <Button onClick={handleSavePreset} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  保存中...
+                </>
+              ) : (
+                "保存"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
