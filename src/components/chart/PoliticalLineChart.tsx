@@ -13,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  // Label を削除（未使用）
 } from "recharts";
 import { PoliticalParty } from "@/types/survey";
 import CustomTooltip from "../CustomTooltip";
@@ -110,6 +111,10 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
   };
 
   const generateBars = () => {
+    if (!data || data.length === 0) {
+      return null;
+    }
+
     const latestData = data[data.length - 1];
     const sortedParties = [...parties].sort((a, b) => {
       const aKey =
@@ -155,6 +160,10 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
   };
 
   const generatePie = () => {
+    if (!data || data.length === 0) {
+      return null;
+    }
+
     const latestData = data[data.length - 1];
     const pieData = parties
       .map((party) => {
@@ -173,6 +182,26 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
 
+    // renderCustomizedLabel の修正
+    const renderCustomizedLabel = (props) => {
+      const { cx, cy, midAngle, innerRadius, outerRadius, name, value } = props;
+      const RADIAN = Math.PI / 180;
+      const radius = 25 + innerRadius + (outerRadius - innerRadius);
+      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+      return (
+        <text 
+          x={x} 
+          y={y} 
+          textAnchor={x > cx ? 'start' : 'end'} 
+          dominantBaseline="central"
+        >
+          {`${name}: ${value.toFixed(1)}%`}
+        </text>
+      );
+    };
+
     return (
       <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 200 }}>
         <Pie
@@ -182,7 +211,7 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
           cx="50%"
           cy="50%"
           outerRadius={200}
-          label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+          label={renderCustomizedLabel}
         >
           {pieData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
@@ -259,9 +288,17 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
               {generateLines()}
             </LineChart>
           ) : chartType === "bar" ? (
-            generateBars()
+            generateBars() || (
+              <div className="flex items-center justify-center h-full">
+                <p>表示できるデータがありません</p>
+              </div>
+            )
           ) : (
-            generatePie()
+            generatePie() || (
+              <div className="flex items-center justify-center h-full">
+                <p>表示できるデータがありません</p>
+              </div>
+            )
           )}
         </ResponsiveContainer>
       </div>
