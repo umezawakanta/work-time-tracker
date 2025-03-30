@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";  // useCallbackをインポート
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { AssetCalendar } from "@/components/calendar/AssetCalendar";
@@ -124,17 +124,18 @@ export function AssetCalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [incomeGoal] = useState(1000000); // 仮の収入目標額
 
-  // すべてのデータをロード
-  const loadAllData = () => {
+  // useCallbackを使ってloadAllData関数をメモ化
+  const loadAllData = useCallback(() => {
     if (assetStatus === "idle" || assetStatus === "failed") dispatch(fetchAssetEntries());
     if (debtStatus === "idle" || debtStatus === "failed") dispatch(fetchDebtEntries());
     if (withdrawalStatus === "idle" || withdrawalStatus === "failed") dispatch(fetchWithdrawalEntries());
     if (subscriptionStatus === "idle" || subscriptionStatus === "failed") dispatch(fetchSubscriptions());
-  };
+  }, [dispatch, assetStatus, debtStatus, withdrawalStatus, subscriptionStatus]);
+  // 依存配列にdispatchと各ステータス変数を含める
 
   useEffect(() => {
     loadAllData();
-  }, [dispatch]);
+  }, [loadAllData]);
 
   const combinedData: DataPoint[] = [
     ...assetEntries.map((entry) => ({ ...entry, date: new Date(entry.date) })),

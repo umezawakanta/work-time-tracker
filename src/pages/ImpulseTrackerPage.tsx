@@ -19,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/context/useAuth";
-import "@/styles/ImpulseTracker.css";
+import "@/styles/ImpulseTrackerPage.css";
 
 interface ImpulseAction {
   id: string;

@@ -259,7 +259,7 @@ export default function Layout({ children }: LayoutProps) {
         icon: <Moon size={18} />,
         label: "睡眠",
         path: "/sleep-tracker",
-        isPremium: true,
+        isPremium: false,
         description: "睡眠の質を記録・分析します",
       },
       {

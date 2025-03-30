@@ -100,6 +100,7 @@ export const fetchMonthlyTotalAmount = async (): Promise<{ month: string; amount
 
 // すべてのサブスクリプションを取得
 export const fetchSubscriptions = async (): Promise<SubscriptionService[]> => {
+  console.log('Fetching all subscriptions...');
   try {
     const response = await apiClient.get(SUBSCRIPTION_ENDPOINT);
     return response.data;
