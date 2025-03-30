@@ -1099,9 +1099,7 @@ export default function AssetLiabilityReportPage() {
               </CardHeader>
               <CardContent className="p-0">
                 {chartData.length > 0 ? (
-                  <div className="h-auto" style={{ minHeight: "600px" }}>
-                    {" "}
-                    {/* 高さを調整 */}
+                  <div className="chart-container">
                     <AssetLiabilityTrendChart data={chartData} />
                   </div>
                 ) : (
