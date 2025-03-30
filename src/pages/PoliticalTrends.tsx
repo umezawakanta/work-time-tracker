@@ -467,6 +467,9 @@ export default function PoliticalTrends() {
     </Dialog>
   );
 
+  const getPartyColorClass = (partyId) =>
+    `party-color-${partyId.replace(/[^a-zA-Z0-9]/g, "")}`;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {renderExportDialog()}
@@ -767,8 +770,9 @@ export default function PoliticalTrends() {
                           .map((party) => (
                             <th
                               key={party._id}
-                              className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                              style={{ color: party.colorCode }}
+                              className={`party-header ${getPartyColorClass(
+                                party._id
+                              )}`}
                             >
                               {party.name}
                             </th>
@@ -800,8 +804,7 @@ export default function PoliticalTrends() {
                               return (
                                 <td
                                   key={party._id}
-                                  className="px-6 py-4 whitespace-nowrap text-sm font-semibold"
-                                  style={{ color: party.colorCode }}
+                                  className={`px-6 py-4 whitespace-nowrap text-sm font-semibold party-cell-${party._id}`}
                                 >
                                   {typeof value === "number"
                                     ? `${value.toFixed(1)}%`
