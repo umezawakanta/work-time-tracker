@@ -359,12 +359,13 @@ export default function SubscriptionManagementPage() {
     Omit<SubscriptionService, "_id">
   >({
     name: "",
-    billingDate: "",
+    billingDate: 0,
     type: "",
     amount: 0,
-    paymentMethod: "credit", // 新規フィールド: "credit", "bank", "paypal", "apple", "google"
-    bankAccount: null, // 新規フィールド: 銀行口座ID
-    checkedMonths: [], // 新規フィールド: 確認済み月のリスト ["2024/01", "2024/02", ...]
+    paymentMethod: {
+      type: "credit",
+      isDefault: true,
+    },
     isActive: true,
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
   });
@@ -373,8 +374,11 @@ export default function SubscriptionManagementPage() {
   const handlePaymentMethodChange = (method) => {
     setNewSubscription({
       ...newSubscription,
-      paymentMethod: method,
-      bankAccount: method === "bank" ? selectedBankAccount : null,
+      paymentMethod: {
+        type: method,
+        isDefault: true,
+      },
+      bankAccount: method === "bank" ? selectedBankAccount : undefined, // nullの代わりにundefinedを使用
     });
   };
 
@@ -417,7 +421,9 @@ export default function SubscriptionManagementPage() {
       }
       setNewSubscription({
         name: "",
-        billingDate: "",
+        billingDate: 0, // 数値型に変更
+        // または現在の日付をフォーマットした数値に
+        // billingDate: Number(format(new Date(), "yyyyMMdd")),
         type: "",
         amount: 0,
         isActive: true,
@@ -459,7 +465,7 @@ export default function SubscriptionManagementPage() {
       const monthFilter =
         filterMonth === "all" ||
         (() => {
-          const [year, month] = sub.billingDate.split("/");
+          const [year, month] = String(sub.billingDate).split("/");
           return `${year}/${month}` === filterMonth;
         })();
       const typeFilter = filterType === "all" || sub.type === filterType;
@@ -472,15 +478,29 @@ export default function SubscriptionManagementPage() {
           (!sub.checkedMonths || sub.checkedMonths?.length === 0));
 
       // 支払い方法フィルター
+      const paymentMethodType =
+        typeof sub.paymentMethod === "object"
+          ? sub.paymentMethod?.type
+          : sub.paymentMethod;
+
       const paymentFilter =
-        paymentSource === "all" || sub.paymentMethod === paymentSource;
+        paymentSource === "all" || paymentMethodType === paymentSource;
 
       // 最終的なフィルター適用
       return monthFilter && typeFilter && checkFilter && paymentFilter;
     })
     .sort((a, b) => {
-      const dateA = new Date(a.billingDate.replace(/\//g, "-"));
-      const dateB = new Date(b.billingDate.replace(/\//g, "-"));
+      // billingDate プロパティが存在しない場合のデフォルト値を設定
+      const dateStrA = a.billingDate
+        ? String(a.billingDate).replace(/\//g, "-")
+        : "1970-01-01";
+      const dateStrB = b.billingDate
+        ? String(b.billingDate).replace(/\//g, "-")
+        : "1970-01-01";
+
+      const dateA = new Date(dateStrA);
+      const dateB = new Date(dateStrB);
+
       return sortOrder === "asc"
         ? dateA.getTime() - dateB.getTime()
         : dateB.getTime() - dateA.getTime();
@@ -494,7 +514,7 @@ export default function SubscriptionManagementPage() {
   const uniqueMonths = Array.from(
     new Set(
       subscriptions.map((sub) => {
-        const [year, month] = sub.billingDate.split("/");
+        const [year, month] = String(sub.billingDate).split("/");
         return `${year}/${month}`;
       })
     )
@@ -1052,7 +1072,7 @@ export default function SubscriptionManagementPage() {
                             onChange={(e) =>
                               setNewSubscription({
                                 ...newSubscription,
-                                billingDate: e.target.value,
+                                billingDate: Number(e.target.value), // 文字列を数値に変換
                               })
                             }
                             pattern="\d{4}/\d{2}/\d{2}"
@@ -1105,7 +1125,9 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              newSubscription.paymentMethod === "credit"
+                              (typeof newSubscription.paymentMethod === "object"
+                                ? newSubscription.paymentMethod?.type
+                                : newSubscription.paymentMethod) === "credit"
                                 ? "default"
                                 : "outline"
                             }
@@ -1119,7 +1141,9 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              newSubscription.paymentMethod === "bank"
+                              (typeof newSubscription.paymentMethod === "object"
+                                ? newSubscription.paymentMethod?.type
+                                : newSubscription.paymentMethod) === "bank"
                                 ? "default"
                                 : "outline"
                             }
@@ -1133,7 +1157,9 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              newSubscription.paymentMethod === "paypal"
+                              (typeof newSubscription.paymentMethod === "object"
+                                ? newSubscription.paymentMethod?.type
+                                : newSubscription.paymentMethod) === "paypal"
                                 ? "default"
                                 : "outline"
                             }
@@ -1147,7 +1173,9 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              newSubscription.paymentMethod === "apple"
+                              (typeof newSubscription.paymentMethod === "object"
+                                ? newSubscription.paymentMethod?.type
+                                : newSubscription.paymentMethod) === "apple"
                                 ? "default"
                                 : "outline"
                             }
@@ -1161,7 +1189,9 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              newSubscription.paymentMethod === "google"
+                              (typeof newSubscription.paymentMethod === "object"
+                                ? newSubscription.paymentMethod?.type
+                                : newSubscription.paymentMethod) === "google"
                                 ? "default"
                                 : "outline"
                             }
@@ -1176,7 +1206,9 @@ export default function SubscriptionManagementPage() {
                       </div>
 
                       {/* 銀行口座選択（銀行振替の場合のみ表示） */}
-                      {newSubscription.paymentMethod === "bank" && (
+                      {(typeof newSubscription.paymentMethod === "object"
+                        ? newSubscription.paymentMethod?.type
+                        : newSubscription.paymentMethod) === "bank" && (
                         <div>
                           <Label className="mb-2 block">引き落とし口座</Label>
                           <Select
@@ -1219,11 +1251,15 @@ export default function SubscriptionManagementPage() {
                               setEditingSubscription(null);
                               setNewSubscription({
                                 name: "",
-                                billingDate: "",
+                                billingDate: 0, // 空文字列ではなく、数値型の初期値
                                 type: "",
                                 amount: 0,
-                                paymentMethod: "credit",
-                                bankAccount: null,
+                                paymentMethod: {
+                                  // 文字列ではなく、オブジェクト型
+                                  type: "credit",
+                                  isDefault: true,
+                                },
+                                bankAccount: undefined, // nullではなく、undefined
                                 checkedMonths: [],
                                 isActive: true,
                                 expiresAt: new Date(

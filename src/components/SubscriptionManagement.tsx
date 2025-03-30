@@ -259,11 +259,16 @@ const SubscriptionManagement: React.FC = () => {
 
       if (editingId) {
         // 更新
-        await subscriptionApi.update(editingId, subscriptionData);
+        await subscriptionApi.update(
+          editingId,
+          convertSubscriptionDataForApi(subscriptionData)
+        );
         toast.success("サブスクリプション情報を更新しました");
       } else {
         // 新規作成
-        await subscriptionApi.create(subscriptionData);
+        await subscriptionApi.create(
+          convertSubscriptionDataForApi(subscriptionData)
+        );
         toast.success("サブスクリプションを追加しました");
       }
 
@@ -295,14 +300,40 @@ const SubscriptionManagement: React.FC = () => {
     }
   };
 
+  // paymentMethodの型アサーション関数を定義
+  function ensureValidPaymentMethod(
+    method: string
+  ): "credit" | "bank" | "paypal" | "apple" | "google" {
+    // 有効な支払い方法の型
+    type ValidPaymentMethod = "credit" | "bank" | "paypal" | "apple" | "google";
+
+    // 有効な支払い方法の配列
+    const validMethods: ValidPaymentMethod[] = [
+      "credit",
+      "bank",
+      "paypal",
+      "apple",
+      "google",
+    ];
+
+    // 値が有効なリストに含まれるかチェック
+    return validMethods.includes(method as ValidPaymentMethod)
+      ? (method as ValidPaymentMethod)
+      : "credit";
+  }
+
   // 編集開始
   const handleEdit = (subscription: SubscriptionService) => {
+    // フォームデータの設定
     setFormData({
       name: subscription.name,
-      billingDate: subscription.billingDate,
+      billingDate: String(subscription.billingDate),
       type: subscription.type,
       amount: subscription.amount.toString(),
-      paymentMethod: subscription.paymentMethod || "credit",
+      paymentMethod:
+        typeof subscription.paymentMethod === "object"
+          ? ensureValidPaymentMethod(subscription.paymentMethod.type)
+          : ensureValidPaymentMethod(subscription.paymentMethod || "credit"),
       bankAccount: subscription.bankAccount || "",
       isActive: subscription.isActive,
     });
@@ -310,7 +341,12 @@ const SubscriptionManagement: React.FC = () => {
     setEditingId(subscription._id);
     setIsFormOpen(true);
 
-    if (subscription.paymentMethod === "bank") {
+    const paymentType =
+      typeof subscription.paymentMethod === "object"
+        ? subscription.paymentMethod?.type
+        : subscription.paymentMethod;
+
+    if (paymentType === "bank") {
       setShowBankAccount(true);
     }
   };
@@ -357,6 +393,19 @@ const SubscriptionManagement: React.FC = () => {
     const types = new Set(subscriptions.map((sub) => sub.type));
     return Array.from(types);
   };
+
+  function convertSubscriptionDataForApi(data) {
+    return {
+      ...data,
+      billingDate: Number(data.billingDate),
+      paymentMethod: {
+        type: data.paymentMethod,
+        isDefault: true,
+      },
+      bankAccount: data.bankAccount === null ? undefined : data.bankAccount,
+      // 他の必要な変換もここに追加
+    };
+  }
 
   return (
     <div className="container mx-auto py-6">
@@ -555,12 +604,20 @@ const SubscriptionManagement: React.FC = () => {
                       ¥{subscription.amount.toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      {subscription.paymentMethod
-                        ? paymentMethodOptions.find(
-                            (option) =>
-                              option.value === subscription.paymentMethod
-                          )?.label || subscription.paymentMethod
-                        : "クレジットカード"}
+                      {(() => {
+                        // 支払い方法の型を抽出
+                        const paymentType =
+                          typeof subscription.paymentMethod === "object"
+                            ? subscription.paymentMethod.type
+                            : subscription.paymentMethod;
+
+                        // 対応するラベルを取得
+                        return paymentType
+                          ? paymentMethodOptions.find(
+                              (option) => option.value === paymentType
+                            )?.label || paymentType
+                          : "クレジットカード";
+                      })()}
                     </TableCell>
                     <TableCell>
                       <Badge

@@ -1,3 +1,4 @@
+// 一般サブスクリプション（外部サービス）用のReduxスライス
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import subscriptionApi from '@/services/api/subscriptionApi';
 import { SubscriptionService } from '@/types';

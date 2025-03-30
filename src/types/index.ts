@@ -284,59 +284,64 @@ export interface UserNotification {
     actionText?: string;
 }
 
-// 通常のサブスクリプション（例：Netflix, Spotifyなど）
+// 一般サブスクリプション（外部サービス）の型定義
 export interface SubscriptionService {
     _id: string;
     name: string;
-    billingDate: string;
-    type: string;
-    amount: number;
-    // 列挙型としてpaymentMethodを厳密に定義
-    paymentMethod?: 'credit' | 'bank' | 'paypal' | 'apple' | 'google';
-    bankAccount?: string | null;
-    checkedMonths?: string[];
-    isActive: boolean; // 必須にする
-    expiresAt: string;
-    createdAt?: string;
-    updatedAt?: string;
-    // 追加のプロパティ
-    billingCycle?: string;
-    currency?: string;
-    autoRenew?: boolean;
-    notificationDays?: number;
-    url?: string;
-    // 列挙型としてpaymentMethodを厳密に定義
-    price?: number;
-    startDate?: string;
-    category?: string;
-    nextBillingDate?: string;
-    notificationEnabled?: boolean;
-    notes?: string;
+    billingDate: number; // 毎月の引き落とし日
+    type: string; // サブスクリプションの種別（'streaming', 'software', 'other' など）
+    amount: number; // 金額
+    userId?: string; // 所有ユーザーID
+    checkStatuses?: Record<string, boolean>; // 月ごとのチェック状態（例: { "2024-01": true, "2024-02": false }）
+    paymentMethod?: {
+        type: string; // 'credit_card', 'bank_transfer', 'other' など
+        lastFour?: string; // カード番号の下4桁（カードの場合）
+        expiryDate?: string; // 有効期限（カードの場合）
+        cardholderName?: string; // カード所有者名（カードの場合）
+        isDefault: boolean; // デフォルトの支払い方法かどうか
+    };
+    createdAt?: Date;
+    updatedAt?: Date;
+    isActive: boolean; // これを追加
+    expiresAt: string; // これも追加（SubscriptionManagement.tsx で使用されているため）
+    bankAccount?: string; // これも追加
+    checkedMonths?: string[]; // 追加
 }
 
-// ユーザーのプラン契約情報（プレミアム機能へのアクセス権など）
+// ユーザーサブスクリプション（当サイトの有料プラン）の型定義
 export interface UserSubscription {
     _id: string;
-    userId: string;
-    planId: string;
-    status: 'active' | 'canceled' | 'expired';
-    currentPeriodEnd: Date | string;
-    cancelAtPeriodEnd: boolean;
+    userId: string; // サブスクリプションの所有者ID
+    planId: string; // プランID
+    status: 'active' | 'canceled' | 'expired'; // サブスクリプションの状態
+    currentPeriodEnd: Date; // 現在の期間の終了日
+    cancelAtPeriodEnd?: boolean; // 期間終了時に自動更新を停止するかどうか
+    canceledAt?: Date; // 解約日時
+    cancelReason?: string; // 解約理由
+    createdAt?: Date; // 作成日時
+    updatedAt?: Date; // 更新日時
     paymentMethod?: {
-        type: string;
-        lastFour?: string;
-        expiryDate?: string;
-        cardholderName?: string;
-        isDefault?: boolean;
+        type: string; // 支払い方法の種類
+        lastFour?: string; // カード番号の下4桁（カードの場合）
+        expiryDate?: string; // 有効期限
+        cardholderName?: string; // カード所有者名
+        isDefault: boolean; // デフォルト支払い方法かどうか
     };
-    cancelReason?: string | null;
-    canceledAt?: Date | null;
     scheduledChanges?: {
-        newPlanId: string;
-        effectiveDate: Date | string;
+        newPlanId: string; // 変更予定のプランID
+        effectiveDate: Date; // 変更適用日
     };
-    createdAt: Date | string;
-    updatedAt: Date | string;
+}
+
+// 支払い方法のカスタム型定義
+export interface CustomPaymentMethodData {
+    type: 'credit_card' | 'bank_transfer';
+    cardNumber?: string;
+    cardholderName?: string;
+    expiryDate?: string;
+    cvc?: string;
+    lastFour?: string;
+    isDefault?: boolean;
 }
 
 // 請求書/インボイスの型定義
@@ -353,15 +358,4 @@ export interface Invoice {
         lastFour: string;
     };
     createdAt: Date | string;
-}
-
-// 支払い方法のカスタム型定義
-export interface CustomPaymentMethodData {
-    type: 'credit_card' | 'bank_transfer';
-    cardNumber?: string;
-    cardholderName?: string;
-    expiryDate?: string;
-    cvc?: string;
-    lastFour?: string;
-    isDefault?: boolean;
 }

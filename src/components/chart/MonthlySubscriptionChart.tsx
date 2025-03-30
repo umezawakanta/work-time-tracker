@@ -53,7 +53,7 @@ export const MonthlySubscriptionChart: React.FC<
 
   const monthlyData: MonthData[] = monthNames.map((month, index) => {
     const monthSubscriptions = subscriptions.filter((sub) => {
-      const [, monthStr] = sub.billingDate.split("/");
+      const [, monthStr] = String(sub.billingDate).split("/");
       return parseInt(monthStr) === index + 1;
     });
 

@@ -56,6 +56,7 @@ import {
 import { cn } from "@/lib/utils";
 import { UserNotification } from "@/types";
 import userSubscriptionApi from "@/services/api/userSubscriptionApi";
+import axios, { AxiosError } from "axios";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -95,19 +96,75 @@ export default function Layout({ children }: LayoutProps) {
       if (isAuthenticated && user) {
         try {
           setIsSubscriptionChecking(true);
-          const response = await userSubscriptionApi.getUserSubscription(user.id);
-          const subscription = response.data; // Axiosレスポンスからデータを取得
+          try {
+            // サブスクリプション情報の取得を試みる
+            const response = await userSubscriptionApi.getUserSubscription(
+              user.id
+            );
+            const subscription = response.data;
 
-          // subscriptionがnullでない場合のみ比較を行う
-          setIsPremium(
-            subscription !== null &&
-              subscription.status === "active" &&
-              subscription.planId !== "free"
-          );
-        } catch (error) {
-          console.error("サブスクリプション確認エラー:", error);
-          // エラー時はプレミアム機能を無効化
-          setIsPremium(false);
+            setIsPremium(
+              subscription !== null &&
+                subscription.status === "active" &&
+                subscription.planId !== "free"
+            );
+          } catch (unknownError) {
+            // エラーをタイプセーフに処理
+            const error = unknownError as AxiosError;
+
+            // 404エラーの場合、デフォルトのサブスクリプション情報を作成
+            if (error.response?.status === 404) {
+              console.log(
+                "サブスクリプション情報がないため、デフォルト情報を作成します"
+              );
+
+              try {
+                // デフォルトのフリープランを作成
+                const subscriptionData = {
+                  userId: user.id,
+                  planId: "free",
+                  status: "active" as const, // const assertionを使用
+                  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
+                  cancelAtPeriodEnd: false,
+                };
+
+                console.log(
+                  "作成するサブスクリプションデータ:",
+                  subscriptionData
+                );
+                const createResponse =
+                  await userSubscriptionApi.createUserSubscription(
+                    subscriptionData
+                  );
+                console.log("サブスクリプション作成成功:", createResponse);
+
+                // プレミアムではない状態に設定
+                setIsPremium(false);
+              } catch (unknownCreateError) {
+                // 型ガードを使用してAxiosErrorかどうかを確認
+                if (axios.isAxiosError(unknownCreateError)) {
+                  const createError = unknownCreateError; // 自動的にAxiosError型になる
+                  console.error("サブスクリプション作成エラー:", createError);
+                  
+                  // エラーメッセージをより詳細に表示
+                  if (createError.response) {
+                    console.error("エラーレスポンス:", createError.response.data);
+                  }
+                } else {
+                  // AxiosError以外のエラー
+                  console.error("サブスクリプション作成エラー:", unknownCreateError);
+                }
+                
+                setIsPremium(false);
+              }
+            } else {
+              console.error("サブスクリプション確認エラー:", error);
+              if (error.response) {
+                console.error("エラーレスポンス:", error.response.data);
+              }
+              setIsPremium(false);
+            }
+          }
         } finally {
           setIsSubscriptionChecking(false);
         }

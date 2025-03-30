@@ -21,6 +21,7 @@ import fs from 'fs';
 import surveyRoutes from "./routes/surveyRoutes.js";
 import partyRoutes from "./routes/partyRoutes.js";
 import habitRoutes from "./routes/habitRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +53,8 @@ app.use("/api/asset", assetRoutes);
 app.use("/api/debt", debtRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/candidates", candidateRoutes);
-app.use("/api/userSubscription", userSubscriptionRoutes); // ここを変更
+app.use("/api/subscription", subscriptionRoutes); // 追加
+app.use("/api/userSubscription", userSubscriptionRoutes); // 既存
 app.use("/api/withdrawal", withdrawalRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/sleep-records", sleepTrackerRoutes);

@@ -1,6 +1,7 @@
+// ユーザーサブスクリプション（サイト内プラン管理）用のルーター
 import express, { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { IUserSubscription, UserSubscription } from "../models/userSubscription.js";
+import { UserSubscription, IUserSubscription } from "../models/userSubscription.js";
 
 const router = express.Router();
 
@@ -228,6 +229,42 @@ router.delete(
   }
 );
 
+// サブスクリプションの確認ステータスを更新
+router.patch(
+  "/:id/check-status",
+  body("month").notEmpty().withMessage("月の指定は必須です"),
+  body("checked").isBoolean().withMessage("checkedはブール値である必要があります"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const { month, checked } = req.body;
+      
+      const userSubscription = await UserSubscription.findById(req.params.id);
+      if (!userSubscription) {
+        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      }
+
+      // サブスクリプションを更新
+      userSubscription.checkStatuses = userSubscription.checkStatuses || {};
+      userSubscription.checkStatuses[month] = checked;
+      userSubscription.updatedAt = new Date();
+      
+      await userSubscription.save();
+      
+      res.json({
+        message: `チェックステータスが更新されました`,
+        userSubscription
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // 支払い方法の更新
 router.post(
   "/payment-method",
@@ -258,9 +295,7 @@ router.post(
         return res.status(404).json({ message: "ユーザーのサブスクリプション情報が見つかりません" });
       }
 
-      // 実際の実装では、決済情報は別のテーブルで管理するべき
-      // 未使用変数の警告を解消するため、変数宣言を変更
-      await UserSubscription.findByIdAndUpdate(
+      const updatedSubscription = await UserSubscription.findByIdAndUpdate(
         subscription._id,
         {
           $set: { paymentMethod: sanitizedPaymentMethod, updatedAt: new Date() }
@@ -270,7 +305,8 @@ router.post(
 
       res.json({
         message: "支払い方法が正常に更新されました",
-        paymentMethod: sanitizedPaymentMethod
+        paymentMethod: sanitizedPaymentMethod,
+        userSubscription: updatedSubscription
       });
     } catch (error) {
       next(error);
