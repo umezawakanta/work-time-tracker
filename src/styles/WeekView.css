@@ -1,3 +1,5 @@
+/* WeekView.css */
+
 .week-view {
   display: flex;
 }
@@ -9,34 +11,87 @@
   position: relative;
 }
 
-.event {
-  position: absolute;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  padding: 2px 4px;
-  color: white;
-  border-radius: 2px;
-}
-
+/* イベント基本スタイル */
 .event-item {
   position: absolute;
   left: 0;
   right: 0;
+  color: white;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.75rem;
   padding: 2px 4px;
-  color: white;
-  border-radius: 2px;
-  top: var(--event-top, 0);
-  height: var(--event-height, 30px);
-  background-color: var(--event-color, #3b82f6);
+  border-radius: 3px;
+  font-size: 12px;
+  margin: 0 2px;
+  z-index: 10;
 }
 
+/* イベントの色に基づいたクラス */
+.event-blue {
+  background-color: #3b82f6;
+}
+.event-red {
+  background-color: #ef4444;
+}
+.event-green {
+  background-color: #10b981;
+}
+.event-purple {
+  background-color: #8b5cf6;
+}
+.event-yellow {
+  background-color: #f59e0b;
+}
+.event-pink {
+  background-color: #ec4899;
+}
+.event-indigo {
+  background-color: #6366f1;
+}
+.event-gray {
+  background-color: #6b7280;
+}
 
+/* トップポジション用のクラス (100px単位、5分=2px換算) */
+.event-top-0 { top: 0; }
+.event-top-1 { top: 2px; }
+.event-top-2 { top: 4px; }
+.event-top-3 { top: 6px; }
+.event-top-4 { top: 8px; }
+.event-top-5 { top: 10px; }
+.event-top-6 { top: 12px; }
+/* 以下同様に続く、必要に応じて追加 */
+.event-top-10 { top: 20px; }
+.event-top-15 { top: 30px; }
+.event-top-20 { top: 40px; }
+.event-top-30 { top: 60px; }
+.event-top-40 { top: 80px; }
+.event-top-50 { top: 100px; }
+.event-top-60 { top: 120px; }
+.event-top-90 { top: 180px; }
+.event-top-120 { top: 240px; }
+.event-top-150 { top: 300px; }
+.event-top-180 { top: 360px; }
+/* 必要に応じて追加 */
 
+/* 高さのためのクラス (5分=2px換算) */
+.event-height-1 { height: 2px; }
+.event-height-2 { height: 4px; }
+.event-height-3 { height: 6px; }
+.event-height-4 { height: 8px; }
+.event-height-5 { height: 10px; }
+.event-height-6 { height: 12px; }
+/* 以下同様に続く、必要に応じて追加 */
+.event-height-10 { height: 20px; }
+.event-height-15 { height: 30px; }
+.event-height-20 { height: 40px; }
+.event-height-30 { height: 60px; }
+.event-height-40 { height: 80px; }
+.event-height-50 { height: 100px; }
+.event-height-60 { height: 120px; }
+.event-height-90 { height: 180px; }
+.event-height-120 { height: 240px; }
+.event-height-150 { height: 300px; }
+.event-height-180 { height: 360px; }
+/* 必要に応じて追加 */

@@ -239,14 +239,14 @@ export default function Layout({ children }: LayoutProps) {
         icon: <BarChart2 size={18} />,
         label: "資産/負債",
         path: "/asset-liability-report",
-        isPremium: true,
+        isPremium: false,
         description: "資産と負債の状況を管理します",
       },
       {
         icon: <Calendar size={18} />,
         label: "資産カレンダー",
         path: "/asset-calendar",
-        isPremium: true,
+        isPremium: false,
         description: "資産の増減をカレンダーで管理します",
       },
       {

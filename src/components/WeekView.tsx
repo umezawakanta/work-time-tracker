@@ -15,6 +15,45 @@ interface Event {
   color?: string;
 }
 
+// 色からCSSクラス名に変換する関数
+const getColorClass = (color: string | undefined): string => {
+  const colorMap: Record<string, string> = {
+    '#3b82f6': 'event-blue',
+    '#ef4444': 'event-red',
+    '#10b981': 'event-green',
+    '#8b5cf6': 'event-purple',
+    '#f59e0b': 'event-yellow',
+    '#ec4899': 'event-pink',
+    '#6366f1': 'event-indigo',
+    '#6b7280': 'event-gray',
+  };
+  
+  return colorMap[color || '#3b82f6'] || 'event-blue';
+};
+
+// 時間からトップポジションのクラスを計算する関数
+const getTopPositionClass = (time: Date): string => {
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+  
+  // 5分間隔を計算
+  const intervalsOf5Minutes = hours * 12 + Math.floor(minutes / 5);
+  
+  // イベントの位置は5分 = 2pxとして計算
+  return `event-top-${intervalsOf5Minutes}`;
+};
+
+// 期間から高さクラスを計算する関数
+const getHeightClass = (start: Date, end: Date): string => {
+  // 期間を分で計算
+  const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+  
+  // 5分間隔に変換
+  const intervalsOf5Minutes = Math.max(Math.ceil(durationMinutes / 5), 1);
+  
+  return `event-height-${intervalsOf5Minutes}`;
+};
+
 export function WeekView() {
   const [currentDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
@@ -113,21 +152,44 @@ export function WeekView() {
     }
   };
 
-  const getEventStyle = (event: Event, dayIndex: number) => {
+  // イベントクラス名を取得する関数
+  const getEventClasses = (event: Event, dayIndex: number) => {
     const eventDate = new Date(event.start);
     const eventDay = eventDate.getDay();
     
     if (eventDay === dayIndex) {
-      const startMinutes = eventDate.getHours() * 60 + eventDate.getMinutes();
-      const endMinutes = event.end.getHours() * 60 + event.end.getMinutes();
+      const colorClass = getColorClass(event.color);
       
-      return {
-        '--event-top': `${(startMinutes / 5) * 2}px`,
-        '--event-height': `${Math.max(((endMinutes - startMinutes) / 5) * 2, 4)}px`,
-        '--event-color': event.color || '#3b82f6',
-      } as React.CSSProperties;
+      // CSSクラスでのポジショニングが動作しない場合のフォールバック
+      // ポジショニングクラスが多すぎる場合、この関数を修正する必要があります
+      try {
+        const topClass = getTopPositionClass(event.start);
+        const heightClass = getHeightClass(event.start, event.end);
+        
+        return {
+          classes: cn("event-item", colorClass, topClass, heightClass),
+          isVisible: true
+        };
+      } catch (error) {
+        console.error('イベント位置の計算エラー:', error);
+        
+        // 最小限のクラスでフォールバック
+        return {
+          classes: cn("event-item", colorClass),
+          isVisible: true,
+          // カスタムスタイルをインラインで用意（エラー時のフォールバック）
+          fallbackStyles: {
+            top: `${(eventDate.getHours() * 60 + eventDate.getMinutes()) / 5 * 2}px`,
+            height: `${Math.max(((event.end.getHours() * 60 + event.end.getMinutes()) - (eventDate.getHours() * 60 + eventDate.getMinutes())) / 5 * 2, 4)}px`
+          }
+        };
+      }
     }
-    return null;
+    
+    return {
+      classes: "",
+      isVisible: false
+    };
   };
 
   return (
@@ -184,13 +246,15 @@ export function WeekView() {
                   />
                 ))}
                 {events.map((event) => {
-                  const style = getEventStyle(event, dayIndex);
-                  if (style) {
+                  const { classes, isVisible, fallbackStyles } = getEventClasses(event, dayIndex);
+                  if (isVisible) {
                     return (
                       <div
                         key={event.id}
-                        className="event-item cursor-pointer hover:opacity-75"
-                        style={style}
+                        className={classes}
+                        // スタイルプロパティは使用しないようにする
+                        // fallbackStylesがある場合のみ使用（緊急時のフォールバック）
+                        {...(fallbackStyles ? { style: fallbackStyles } : {})}
                         onClick={() => handleEventClick(event)}
                       >
                         {event.title}
@@ -220,4 +284,3 @@ export function WeekView() {
     </div>
   );
 }
-
