@@ -309,11 +309,34 @@ export function AssetCalendar({
     const firstDataTotal = aggregatedData[firstDataDate]?.["合計"] || 0;
 
     return sortedDates.map((date) => {
-      const currentDate = utcToZonedTime(new Date(date), "Asia/Tokyo");
-      const prevDate = subDays(currentDate, 1);
-      const prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", {
-        timeZone: "Asia/Tokyo",
-      });
+      let currentDate;
+      let prevDate;
+      let prevDateStr;
+
+      try {
+        // date が有効な日付文字列かチェック
+        const dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) {
+          console.warn(`無効な日付値: ${date}`);
+          // エラー時のデフォルト値を設定
+          currentDate = new Date();
+        } else {
+          currentDate = utcToZonedTime(dateObj, "Asia/Tokyo");
+        }
+
+        prevDate = subDays(currentDate, 1);
+        prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", {
+          timeZone: "Asia/Tokyo",
+        });
+      } catch (error) {
+        console.error(`日付処理エラー: ${error}`);
+        // エラー発生時のフォールバック
+        currentDate = new Date();
+        prevDate = subDays(currentDate, 1);
+        prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", {
+          timeZone: "Asia/Tokyo",
+        });
+      }
 
       const dailyChange =
         (aggregatedData[date]?.["合計"] || 0) -

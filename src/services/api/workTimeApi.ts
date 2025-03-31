@@ -2,6 +2,7 @@
 import { AxiosResponse } from "axios";
 import { WorkTimeEntry } from "../../types/workTimeEntry";
 import { api, USE_MOCK_DATA } from "./apiConfig";
+import { WorkState, WorkStateApiResponse, WorkTimeApiResponse } from "@/types";
 
 const mockWorkTimeData: WorkTimeEntry[] = [
   {
@@ -25,11 +26,6 @@ const mockWorkTimeData: WorkTimeEntry[] = [
     userId: "mock-user-id", // ここにユーザーIDを追加
   },
 ];
-
-interface WorkTimeApiResponse {
-  message: string;
-  workTime: WorkTimeEntry;
-}
 
 export const workTimeApi = {
   getAll: (): Promise<AxiosResponse<WorkTimeEntry[]>> => {
@@ -91,4 +87,39 @@ export const workTimeApi = {
           return response;
         });
   },
+    // 以下の関数を追加
+    saveWorkState: (workState: WorkState): Promise<AxiosResponse<WorkStateApiResponse>> => {
+      console.log("Saving work state:", workState);
+      return USE_MOCK_DATA
+        ? Promise.resolve({ 
+            data: { 
+              message: "作業状態が保存されました",
+              workState 
+            } 
+          } as AxiosResponse<WorkStateApiResponse>)
+        : api.post<WorkStateApiResponse>("/worktime/state", workState).then((response) => {
+            console.log("Saved work state:", response.data);
+            return response;
+          });
+    },
+    
+    getWorkState: (userId: string): Promise<AxiosResponse<WorkState | null>> => {
+      console.log("Getting work state for user:", userId);
+      return USE_MOCK_DATA
+        ? Promise.resolve({ 
+            data: mockWorkTimeData.length > 0 
+              ? {
+                  isWorking: true,
+                  startTime: new Date().toISOString(),
+                  projectName: mockWorkTimeData[0].projectName,
+                  description: mockWorkTimeData[0].description,
+                  userId
+                }
+              : null
+          } as AxiosResponse<WorkState | null>)
+        : api.get<WorkState | null>(`/worktime/state/${userId}`).then((response) => {
+            console.log("Retrieved work state:", response.data);
+            return response;
+          });
+    }
 };

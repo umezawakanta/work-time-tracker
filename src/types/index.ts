@@ -1,5 +1,7 @@
 // types.ts - 共通型定義ファイル
 
+import { WorkTimeEntry } from "./workTimeEntry";
+
 /**
  * 目標設定の型定義
  */
@@ -363,4 +365,24 @@ export interface Invoice {
 export interface PaymentMethodType {
     type: string;
     isDefault?: boolean;
+}
+
+// 作業状態のインターフェース
+export interface WorkState {
+    isWorking: boolean;
+    startTime: string;
+    projectName: string;
+    description: string;
+    userId: string;
   }
+
+// WorkStateレスポンス用のインターフェース
+export interface WorkStateApiResponse {
+    message?: string;
+    workState: WorkState;
+}
+
+export interface WorkTimeApiResponse {
+  message: string;
+  workTime: WorkTimeEntry;
+}

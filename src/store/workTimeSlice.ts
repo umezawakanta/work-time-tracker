@@ -1,11 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { WorkTimeEntry } from "../types/workTimeEntry";
 import { workTimeApi } from "../services/api";
-
-interface WorkTimeApiResponse {
-  message: string;
-  workTime: WorkTimeEntry;
-}
+import { WorkTimeApiResponse, WorkState } from "@/types";
 
 export const fetchWorkTimeEntries = createAsyncThunk<
   WorkTimeEntry[],
@@ -71,16 +67,52 @@ export const deleteWorkTimeEntry = createAsyncThunk<
   }
 });
 
+// 状態を取得するThunk
+export const fetchWorkState = createAsyncThunk<
+  WorkState | null,
+  string, // userId
+  { rejectValue: string }
+>("workTime/fetchWorkState", async (userId, { rejectWithValue }) => {
+  try {
+    const response = await workTimeApi.getWorkState(userId);
+    return response.data;
+  } catch (error) {
+    console.error("作業状態の取得中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error ? error.message : "作業状態の取得に失敗しました"
+    );
+  }
+});
+
+// 状態を保存するThunk
+export const saveWorkState = createAsyncThunk<
+  WorkState,
+  WorkState,
+  { rejectValue: string }
+>("workTime/saveWorkState", async (workState, { rejectWithValue }) => {
+  try {
+    const response = await workTimeApi.saveWorkState(workState);
+    return response.data.workState;
+  } catch (error) {
+    console.error("作業状態の保存中にエラーが発生しました:", error);
+    return rejectWithValue(
+      error instanceof Error ? error.message : "作業状態の保存に失敗しました"
+    );
+  }
+});
+
 interface WorkTimeState {
   entries: WorkTimeEntry[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  workState: WorkState | null; // 追加
 }
 
 const initialState: WorkTimeState = {
   entries: [],
   status: "idle",
   error: null,
+  workState: null, // 初期値を追加
 };
 
 const workTimeSlice = createSlice({
@@ -141,6 +173,21 @@ const workTimeSlice = createSlice({
       )
       .addCase(deleteWorkTimeEntry.rejected, (state, action) => {
         state.error = action.payload || "エントリーの削除に失敗しました";
+      });
+      builder
+      .addCase(fetchWorkState.fulfilled, (state, action) => {
+        state.workState = action.payload;
+      })
+      .addCase(fetchWorkState.rejected, (state) => {
+        state.workState = null;
+      })
+      
+      // 作業状態の保存に関するReducer
+      .addCase(saveWorkState.fulfilled, (state, action) => {
+        state.workState = action.payload;
+      })
+      .addCase(saveWorkState.rejected, (state, action) => {
+        state.error = action.payload || "作業状態の保存に失敗しました";
       });
   },
 });

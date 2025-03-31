@@ -151,18 +151,10 @@ export default function WorkTimeEntryForm() {
 
         // プロジェクト情報の取得
         const projectResponse = await projectApi.getUserProjects(user.id);
-        if (projectResponse.data.length > 0) {
-          setProjects(projectResponse.data);
-          // 最後に使用したプロジェクトを初期値に設定
-          const sortedProjects = [...projectResponse.data].sort(
-            (a, b) =>
-              new Date(b.lastUsed || 0).getTime() -
-              new Date(a.lastUsed || 0).getTime()
-          );
-          if (sortedProjects.length > 0) {
-            setProjectName(sortedProjects[0].name);
-          }
-        } else {
+        setProjects(projectResponse?.data || []);
+
+        // プロジェクトが存在しない場合、デフォルトプロジェクトを作成
+        if (!projectResponse.data || projectResponse.data.length === 0) {
           // デフォルトプロジェクトの作成
           const defaultProject = await projectApi.createProject({
             name: "マイプロジェクト",
@@ -172,24 +164,48 @@ export default function WorkTimeEntryForm() {
           });
           setProjects([defaultProject.data]);
           setProjectName(defaultProject.data.name);
+        } else {
+          // 最後に使用したプロジェクトを初期値に設定
+          const sortedProjects = [...projectResponse.data].sort(
+            (a, b) =>
+              new Date(b.lastUsed || 0).getTime() -
+              new Date(a.lastUsed || 0).getTime()
+          );
+          if (sortedProjects.length > 0) {
+            setProjectName(sortedProjects[0].name);
+          }
         }
-
-        // プリセット情報の取得
-        const presetResponse = await presetApi.getUserPresets(user.id);
-        setPresets(presetResponse.data);
-
         // サブスクリプション情報の取得
-        const subscriptionResponse =
-          await userSubscriptionApi.getUserSubscription(user.id);
-        setSubscription(subscriptionResponse.data);
+        try {
+          const subscriptionResponse =
+            await userSubscriptionApi.getUserSubscription(user.id);
+          setSubscription(subscriptionResponse.data);
+        } catch (subscriptionError) {
+          console.warn("サブスクリプション情報取得エラー:", subscriptionError);
+          // サブスクリプション情報がなくても主要機能に影響しないため、エラーを表示せず続行
+        }
       } catch (error) {
-        console.error("データ取得エラー:", error);
-        toast({
-          title: "エラー",
-          description:
-            "データの取得に失敗しました。後でもう一度お試しください。",
-          variant: "destructive",
-        });
+        // エラーハンドリングを改善
+        console.error("プロジェクト取得エラー:", error);
+
+        // APIエラーの場合は、デフォルトプロジェクトを作成
+        try {
+          const defaultProject = await projectApi.createProject({
+            name: "マイプロジェクト",
+            color: "bg-blue-500",
+            userId: user.id,
+            lastUsed: new Date(),
+          });
+          setProjects([defaultProject.data]);
+          setProjectName(defaultProject.data.name);
+        } catch (e) {
+          console.error("デフォルトプロジェクト作成エラー:", e);
+          toast({
+            title: "エラー",
+            description: "プロジェクト情報の取得と作成に失敗しました。",
+            variant: "destructive",
+          });
+        }
       } finally {
         setIsLoading(false);
       }
