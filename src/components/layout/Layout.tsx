@@ -25,6 +25,9 @@ import {
   Bell,
   Settings,
   HelpCircle,
+  CheckCircle,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { logout } from "@/services/api/authApi";
 import { toast } from "react-hot-toast";
@@ -53,9 +56,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { UserNotification } from "@/types";
 import userSubscriptionApi from "@/services/api/userSubscriptionApi";
+import notificationApi from "@/services/api/notificationApi";
+import NotificationItem from "@/components/notifications/NotificationItem";
 import axios, { AxiosError } from "axios";
 
 interface LayoutProps {
@@ -82,6 +94,7 @@ export default function Layout({ children }: LayoutProps) {
   const [notifications, setNotifications] = useState<UserNotification[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
   // ユーザー情報の取得
   useEffect(() => {
@@ -104,9 +117,9 @@ export default function Layout({ children }: LayoutProps) {
             const subscription = response.data;
 
             setIsPremium(
-              subscription && 
-              subscription.status === "active" &&
-              subscription.planId !== "free"
+              subscription &&
+                subscription.status === "active" &&
+                subscription.planId !== "free"
             );
           } catch (unknownError) {
             // エラーをタイプセーフに処理
@@ -124,7 +137,9 @@ export default function Layout({ children }: LayoutProps) {
                   userId: user.id,
                   planId: "free",
                   status: "active" as const, // const assertionを使用
-                  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
+                  currentPeriodEnd: new Date(
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
+                  ), // 30日後
                   cancelAtPeriodEnd: false,
                 };
 
@@ -145,16 +160,22 @@ export default function Layout({ children }: LayoutProps) {
                 if (axios.isAxiosError(unknownCreateError)) {
                   const createError = unknownCreateError; // 自動的にAxiosError型になる
                   console.error("サブスクリプション作成エラー:", createError);
-                  
+
                   // エラーメッセージをより詳細に表示
                   if (createError.response) {
-                    console.error("エラーレスポンス:", createError.response.data);
+                    console.error(
+                      "エラーレスポンス:",
+                      createError.response.data
+                    );
                   }
                 } else {
                   // AxiosError以外のエラー
-                  console.error("サブスクリプション作成エラー:", unknownCreateError);
+                  console.error(
+                    "サブスクリプション作成エラー:",
+                    unknownCreateError
+                  );
                 }
-                
+
                 setIsPremium(false);
               }
             } else {
@@ -177,58 +198,264 @@ export default function Layout({ children }: LayoutProps) {
     checkSubscription();
   }, [isAuthenticated, user]);
 
-  // 通知の取得
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (isAuthenticated && user) {
-        try {
-          // 本番環境ではAPIから通知を取得
-          // const response = await getNotifications(user.id);
-          // setNotifications(response.data);
+  // 通知取得の関数
+  const fetchNotifications = async () => {
+    if (isAuthenticated && user) {
+      try {
+        setIsLoadingNotifications(true);
 
-          // モックデータ（本番環境では削除）
-          const mockNotifications = [
-            {
-              id: 1,
-              title: "作業時間の記録を忘れています",
-              message:
-                "昨日の作業時間が記録されていません。記録を忘れていませんか？",
-              read: false,
-              type: "reminder",
-              timestamp: new Date().toISOString(),
-            },
-            {
-              id: 2,
-              title: "週間レポートが生成されました",
-              message:
-                "先週の作業時間レポートが生成されました。確認してみましょう。",
-              read: true,
-              type: "report",
-              timestamp: new Date(Date.now() - 86400000).toISOString(),
-            },
-          ];
-          setNotifications(mockNotifications);
-          setUnreadNotifications(
-            mockNotifications.filter((n) => !n.read).length
-          );
-        } catch (error) {
-          console.error("通知取得エラー:", error);
+        // 通知一覧を取得
+        const response = await notificationApi.getUserNotifications(user.id);
+        setNotifications(response.data);
+
+        // 未読通知数を取得
+        const unreadResponse =
+          await notificationApi.getUnreadNotificationsCount(user.id);
+        setUnreadNotifications(unreadResponse.data.count);
+      } catch (error) {
+        console.error("通知取得エラー:", error);
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          // 通知がまだ存在しない場合は空の配列を設定
           setNotifications([]);
           setUnreadNotifications(0);
+        } else {
+          // その他のエラーの場合はトースト表示
+          toast.error("通知の取得に失敗しました");
         }
-      } else {
-        setNotifications([]);
-        setUnreadNotifications(0);
+      } finally {
+        setIsLoadingNotifications(false);
       }
-    };
+    } else {
+      setNotifications([]);
+      setUnreadNotifications(0);
+    }
+  };
 
+  // 通知の取得
+  useEffect(() => {
     fetchNotifications();
 
-    // 定期的に通知を更新（本番環境では実装）
+    // WebSocketを使用したリアルタイム通知の実装
+    let ws: WebSocket | null = null;
+
+    if (isAuthenticated && user) {
+      try {
+        // 環境変数からWebSocketのURLを取得
+        const wsUrl = process.env.REACT_APP_WS_URL || "wss://api.example.com";
+
+        // WebSocketの接続
+        ws = new WebSocket(`${wsUrl}/notifications`);
+        // 型ガードの一環として、wsがnullでないことを確認
+        if (ws) {
+          ws.onopen = () => {
+            console.log("WebSocket接続が確立されました");
+            if (ws) {
+              // 認証情報を送信
+              ws.send(
+                JSON.stringify({
+                  type: "auth",
+                  userId: user.id,
+                  token: localStorage.getItem("token"),
+                })
+              );
+            }
+          };
+
+          ws.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+
+              if (data.type === "notification") {
+                // 新しい通知を受信した場合
+                const newNotification = data.notification;
+
+                // 通知リストに追加
+                setNotifications((prev) => [newNotification, ...prev]);
+
+                // 未読通知数を更新
+                setUnreadNotifications((prev) => prev + 1);
+
+                // トースト通知を表示
+                toast.custom(
+                  (t) => (
+                    <div
+                      className={`${
+                        t.visible ? "animate-enter" : "animate-leave"
+                      } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+                    >
+                      <div className="flex-1 p-4">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 pt-0.5">
+                            {getNotificationTypeIcon(newNotification.type)}
+                          </div>
+                          <div className="ml-3 flex-1">
+                            <p className="text-sm font-medium text-gray-900">
+                              {newNotification.title}
+                            </p>
+                            <p className="mt-1 text-sm text-gray-500">
+                              {newNotification.message}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex border-l border-gray-200">
+                        <button
+                          onClick={() => {
+                            toast.dismiss(t.id);
+                            handleNotificationRead(newNotification.id);
+                          }}
+                          className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                          既読にする
+                        </button>
+                      </div>
+                    </div>
+                  ),
+                  { duration: 5000 }
+                );
+              }
+            } catch (error) {
+              console.error("WebSocketメッセージの処理エラー:", error);
+            }
+          };
+
+          ws.onerror = (error) => {
+            console.error("WebSocketエラー:", error);
+          };
+
+          ws.onclose = (event) => {
+            console.log(
+              "WebSocket接続が閉じられました:",
+              event.code,
+              event.reason
+            );
+          };
+        }
+      } catch (error) {
+        console.error("WebSocket接続エラー:", error);
+      }
+    }
+
+    // 定期的に通知を更新
     const intervalId = setInterval(fetchNotifications, 300000); // 5分ごとに更新
 
-    return () => clearInterval(intervalId);
+    // クリーンアップ関数
+    return () => {
+      clearInterval(intervalId);
+      // nullチェックをより明示的に行う
+      if (ws !== null) {
+        console.log("WebSocket接続をクローズします");
+        ws.close();
+      }
+    };
   }, [isAuthenticated, user]);
+
+  // 通知タイプに応じたアイコンを取得する関数
+  const getNotificationTypeIcon = (type: string) => {
+    switch (type) {
+      case "reminder":
+        return <Clock size={16} className="text-amber-500" />;
+      case "report":
+        return <BarChart2 size={16} className="text-blue-500" />;
+      case "alert":
+        return <AlertCircle size={16} className="text-red-500" />;
+      case "success":
+        return <CheckCircle size={16} className="text-green-500" />;
+      default:
+        return <Bell size={16} className="text-gray-500" />;
+    }
+  };
+
+  // 通知を既読にする処理
+  const handleNotificationRead = async (notificationId: number) => {
+    try {
+      // 通知を既読にするAPIを呼び出し
+      await notificationApi.markNotificationAsRead(notificationId);
+
+      // ローカルの状態を更新
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
+      );
+
+      // 未読通知数を減らす
+      setUnreadNotifications((prev) => Math.max(0, prev - 1));
+
+      toast.success("通知を既読にしました", { id: `read-${notificationId}` });
+    } catch (error) {
+      console.error("通知既読エラー:", error);
+      toast.error("通知の既読処理に失敗しました");
+    }
+  };
+
+  // すべての通知を既読にする処理
+  const handleAllNotificationsRead = async () => {
+    try {
+      if (!user) return;
+
+      // すべての通知を既読にするAPIを呼び出し
+      await notificationApi.markAllNotificationsAsRead(user.id);
+
+      // ローカルの状態を更新
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+
+      // 未読通知数をゼロにする
+      setUnreadNotifications(0);
+
+      toast.success("すべての通知を既読にしました");
+    } catch (error) {
+      console.error("全通知既読エラー:", error);
+      toast.error("通知の一括既読処理に失敗しました");
+    }
+  };
+
+  // 通知を削除する処理
+  const handleNotificationDelete = async (notificationId: number) => {
+    try {
+      // 通知を削除するAPIを呼び出し
+      await notificationApi.deleteNotification(notificationId);
+
+      // 通知リストから削除された通知を除外
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+
+      // 未読通知だった場合は未読カウントを減らす
+      const notification = notifications.find((n) => n.id === notificationId);
+      if (notification && !notification.read) {
+        setUnreadNotifications((prev) => Math.max(0, prev - 1));
+      }
+
+      toast.success("通知を削除しました");
+    } catch (error) {
+      console.error("通知削除エラー:", error);
+      toast.error("通知の削除に失敗しました");
+    }
+  };
+
+  // 通知の全削除処理
+  const handleDeleteAllNotifications = async () => {
+    try {
+      if (!user) return;
+
+      // 確認ダイアログを表示
+      if (!window.confirm("すべての通知を削除してもよろしいですか？")) {
+        return;
+      }
+
+      // すべての通知を削除するAPIを呼び出し
+      await notificationApi.deleteAllNotifications(user.id);
+
+      // ローカルの状態を更新
+      setNotifications([]);
+      setUnreadNotifications(0);
+
+      toast.success("すべての通知を削除しました");
+
+      // 通知パネルを閉じる
+      setIsNotificationOpen(false);
+    } catch (error) {
+      console.error("全通知削除エラー:", error);
+      toast.error("通知の一括削除に失敗しました");
+    }
+  };
 
   const handleLocaleChange = (value: string) => {
     setLocale(value as Locale);
@@ -246,34 +473,6 @@ export default function Layout({ children }: LayoutProps) {
     } catch (error) {
       console.error("ログアウトエラー:", error);
       toast.error("ログアウトに失敗しました");
-    }
-  };
-
-  const handleNotificationRead = async (notificationId: number) => {
-    try {
-      // 本番環境ではAPI呼び出し
-      // await markNotificationAsRead(notificationId);
-
-      // モックの処理（本番環境では削除）
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
-      );
-      setUnreadNotifications((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("通知既読エラー:", error);
-    }
-  };
-
-  const handleAllNotificationsRead = async () => {
-    try {
-      // 本番環境ではAPI呼び出し
-      // await markAllNotificationsAsRead(user.id);
-
-      // モックの処理（本番環境では削除）
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      setUnreadNotifications(0);
-    } catch (error) {
-      console.error("全通知既読エラー:", error);
     }
   };
 
@@ -537,64 +736,126 @@ export default function Layout({ children }: LayoutProps) {
                       )}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right">
+                  <SheetContent side="right" className="w-full sm:max-w-md">
                     <SheetHeader className="border-b pb-4 mb-4">
                       <SheetTitle className="text-left flex justify-between items-center">
-                        <span>通知</span>
-                        {notifications.length > 0 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleAllNotificationsRead}
-                          >
-                            すべて既読
-                          </Button>
-                        )}
-                      </SheetTitle>
-                    </SheetHeader>
-                    <div className="space-y-4">
-                      {notifications.length === 0 ? (
-                        <p className="text-center text-gray-500 py-4">
-                          通知はありません
-                        </p>
-                      ) : (
-                        notifications.map((notification) => (
-                          <div
-                            key={notification.id}
-                            className={cn(
-                              "p-3 rounded-lg border",
-                              notification.read
-                                ? "bg-white"
-                                : "bg-blue-50 border-blue-200"
-                            )}
-                          >
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium">
-                                {notification.title}
-                              </h4>
-                              <p className="text-xs text-gray-500">
-                                {new Date(
-                                  notification.timestamp
-                                ).toLocaleDateString("ja-JP")}
-                              </p>
-                            </div>
-                            <p className="text-sm mt-1">
-                              {notification.message}
-                            </p>
-                            {!notification.read && (
+                        <span className="flex items-center">
+                          <Bell className="mr-2 h-5 w-5" />
+                          通知
+                          {unreadNotifications > 0 && (
+                            <Badge variant="destructive" className="ml-2">
+                              {unreadNotifications}
+                            </Badge>
+                          )}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          {notifications.length > 0 && (
+                            <>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="mt-2"
-                                onClick={() =>
-                                  handleNotificationRead(notification.id)
+                                onClick={handleAllNotificationsRead}
+                                disabled={
+                                  unreadNotifications === 0 ||
+                                  isLoadingNotifications
                                 }
                               >
-                                既読にする
+                                すべて既読
                               </Button>
-                            )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleDeleteAllNotifications}
+                                disabled={
+                                  notifications.length === 0 ||
+                                  isLoadingNotifications
+                                }
+                              >
+                                すべて削除
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-10rem)]">
+                      {isLoadingNotifications ? (
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                          <p className="text-gray-500">通知を読み込み中...</p>
+                        </div>
+                      ) : notifications.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                          <div className="bg-gray-100 rounded-full p-3 mb-4">
+                            <Bell className="h-8 w-8 text-gray-400" />
                           </div>
-                        ))
+                          <h3 className="text-lg font-medium mb-1">
+                            通知はありません
+                          </h3>
+                          <p className="text-sm text-gray-500 text-center max-w-xs">
+                            新しい通知が届くとここに表示されます。
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* 通知フィルターや検索 */}
+                          <div className="flex items-center justify-between mb-2">
+                            <Select defaultValue="all">
+                              <SelectTrigger className="w-[140px] h-8 text-xs">
+                                <SelectValue placeholder="すべての通知" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">
+                                  すべての通知
+                                </SelectItem>
+                                <SelectItem value="unread">未読のみ</SelectItem>
+                                <SelectItem value="reminder">
+                                  リマインダー
+                                </SelectItem>
+                                <SelectItem value="report">レポート</SelectItem>
+                                <SelectItem value="alert">アラート</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 text-xs"
+                              onClick={() => {
+                                // 通知を再取得
+                                fetchNotifications();
+                              }}
+                            >
+                              <RefreshCw size={14} className="mr-1" />
+                              更新
+                            </Button>
+                          </div>
+
+                          {/* 通知リスト */}
+                          {notifications.map((notification) => (
+                            <NotificationItem
+                              key={notification.id}
+                              notification={notification}
+                              onMarkAsRead={handleNotificationRead}
+                              onDelete={handleNotificationDelete}
+                            />
+                          ))}
+
+                          {/* 通知設定へのリンク */}
+                          <div className="border-t pt-4 mt-6 text-center">
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="text-xs"
+                              onClick={() => {
+                                setIsNotificationOpen(false);
+                                navigate("/settings/notifications");
+                              }}
+                            >
+                              <Settings size={14} className="mr-1" />
+                              通知設定を管理
+                            </Button>
+                          </div>
+                        </>
                       )}
                     </div>
                   </SheetContent>
@@ -782,61 +1043,128 @@ export default function Layout({ children }: LayoutProps) {
                     <SheetContent side="right">
                       <SheetHeader className="border-b pb-4 mb-4">
                         <SheetTitle className="text-left flex justify-between items-center">
-                          <span>通知</span>
-                          {notifications.length > 0 && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={handleAllNotificationsRead}
-                            >
-                              すべて既読
-                            </Button>
-                          )}
-                        </SheetTitle>
-                      </SheetHeader>
-                      <div className="space-y-4">
-                        {notifications.length === 0 ? (
-                          <p className="text-center text-gray-500 py-4">
-                            通知はありません
-                          </p>
-                        ) : (
-                          notifications.map((notification) => (
-                            <div
-                              key={notification.id}
-                              className={cn(
-                                "p-3 rounded-lg border",
-                                notification.read
-                                  ? "bg-white"
-                                  : "bg-blue-50 border-blue-200"
-                              )}
-                            >
-                              <div className="flex justify-between items-start">
-                                <h4 className="font-medium">
-                                  {notification.title}
-                                </h4>
-                                <p className="text-xs text-gray-500">
-                                  {new Date(
-                                    notification.timestamp
-                                  ).toLocaleDateString("ja-JP")}
-                                </p>
-                              </div>
-                              <p className="text-sm mt-1">
-                                {notification.message}
-                              </p>
-                              {!notification.read && (
+                          <span className="flex items-center">
+                            <Bell className="mr-2 h-5 w-5" />
+                            通知
+                            {unreadNotifications > 0 && (
+                              <Badge variant="destructive" className="ml-2">
+                                {unreadNotifications}
+                              </Badge>
+                            )}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {notifications.length > 0 && (
+                              <>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="mt-2"
-                                  onClick={() =>
-                                    handleNotificationRead(notification.id)
+                                  onClick={handleAllNotificationsRead}
+                                  disabled={
+                                    unreadNotifications === 0 ||
+                                    isLoadingNotifications
                                   }
                                 >
-                                  既読にする
+                                  すべて既読
                                 </Button>
-                              )}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleDeleteAllNotifications}
+                                  disabled={
+                                    notifications.length === 0 ||
+                                    isLoadingNotifications
+                                  }
+                                >
+                                  すべて削除
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </SheetTitle>
+                      </SheetHeader>
+                      <div className="space-y-4 overflow-y-auto max-h-[calc(100vh-10rem)]">
+                        {isLoadingNotifications ? (
+                          <div className="flex flex-col items-center justify-center py-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                            <p className="text-gray-500">通知を読み込み中...</p>
+                          </div>
+                        ) : notifications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-12">
+                            <div className="bg-gray-100 rounded-full p-3 mb-4">
+                              <Bell className="h-8 w-8 text-gray-400" />
                             </div>
-                          ))
+                            <h3 className="text-lg font-medium mb-1">
+                              通知はありません
+                            </h3>
+                            <p className="text-sm text-gray-500 text-center max-w-xs">
+                              新しい通知が届くとここに表示されます。
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            {/* 通知フィルターや検索 */}
+                            <div className="flex items-center justify-between mb-2">
+                              <Select defaultValue="all">
+                                <SelectTrigger className="w-[140px] h-8 text-xs">
+                                  <SelectValue placeholder="すべての通知" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="all">
+                                    すべての通知
+                                  </SelectItem>
+                                  <SelectItem value="unread">
+                                    未読のみ
+                                  </SelectItem>
+                                  <SelectItem value="reminder">
+                                    リマインダー
+                                  </SelectItem>
+                                  <SelectItem value="report">
+                                    レポート
+                                  </SelectItem>
+                                  <SelectItem value="alert">
+                                    アラート
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs"
+                                onClick={() => {
+                                  // 通知を再取得
+                                  fetchNotifications();
+                                }}
+                              >
+                                <RefreshCw size={14} className="mr-1" />
+                                更新
+                              </Button>
+                            </div>
+
+                            {/* 通知リスト */}
+                            {notifications.map((notification) => (
+                              <NotificationItem
+                                key={notification.id}
+                                notification={notification}
+                                onMarkAsRead={handleNotificationRead}
+                                onDelete={handleNotificationDelete}
+                              />
+                            ))}
+
+                            {/* 通知設定へのリンク */}
+                            <div className="border-t pt-4 mt-6 text-center">
+                              <Button
+                                variant="link"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() => {
+                                  navigate("/settings/notifications");
+                                }}
+                              >
+                                <Settings size={14} className="mr-1" />
+                                通知設定を管理
+                              </Button>
+                            </div>
+                          </>
                         )}
                       </div>
                     </SheetContent>
