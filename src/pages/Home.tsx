@@ -12,11 +12,27 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Clock, BarChart2, LineChart, Calendar, Database, 
-  FileText, UserCircle, Activity, Eye,
-  Briefcase, Twitter, Moon, PieChart, TrendingUp, Users,
-  CheckCircle, Crown, Lock, Sparkles, Star
+import {
+  Clock,
+  BarChart2,
+  LineChart,
+  Calendar,
+  Database,
+  FileText,
+  UserCircle,
+  Activity,
+  Eye,
+  Briefcase,
+  Twitter,
+  Moon,
+  PieChart,
+  TrendingUp,
+  Users,
+  CheckCircle,
+  Crown,
+  Lock,
+  Sparkles,
+  Star,
 } from "lucide-react";
 import {
   Dialog,
@@ -40,9 +56,21 @@ import DailyTodoReminder from "@/components/DailyTodoReminder";
 import HabitTracker from "@/components/HabitTracker";
 
 // FeatureCardコンポーネント
-const FeatureCard = ({ title, description, icon, path, buttonText, variant = "default", isPremium = false }) => (
+const FeatureCard = ({
+  title,
+  description,
+  icon,
+  path,
+  buttonText,
+  variant = "default",
+  isPremium = false,
+}) => (
   <div>
-    <Card className={`w-full h-full hover:shadow-lg transition-shadow duration-300 border-2 hover:border-primary ${isPremium ? 'border-amber-200 bg-amber-50/30' : ''}`}>
+    <Card
+      className={`w-full h-full hover:shadow-lg transition-shadow duration-300 border-2 hover:border-primary ${
+        isPremium ? "border-amber-200 bg-amber-50/30" : ""
+      }`}
+    >
       <CardHeader className="flex flex-row items-center gap-4">
         {icon}
         <div className="flex-1">
@@ -52,10 +80,15 @@ const FeatureCard = ({ title, description, icon, path, buttonText, variant = "de
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge variant="outline" className="bg-amber-100 text-amber-800 flex items-center gap-1 ml-2">
-                      <Crown className="h-3 w-3" />
-                      <span>プレミアム</span>
-                    </Badge>
+                    <div>
+                      <Badge
+                        variant="outline"
+                        className="bg-amber-100 text-amber-800 flex items-center gap-1 ml-2"
+                      >
+                        <Crown className="h-3 w-3" />
+                        <span>プレミアム</span>
+                      </Badge>
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>プレミアムプラン限定機能</p>
@@ -68,11 +101,18 @@ const FeatureCard = ({ title, description, icon, path, buttonText, variant = "de
         </div>
       </CardHeader>
       <CardContent>
-        <p className="mb-4 text-gray-600 dark:text-gray-300">
-          {description}
-        </p>
+        <p className="mb-4 text-gray-600 dark:text-gray-300">{description}</p>
         <Link to={path} className="w-full">
-          <Button variant={variant === "default" ? "default" : variant === "outline" ? "outline" : "secondary"} className="w-full flex items-center gap-2">
+          <Button
+            variant={
+              variant === "default"
+                ? "default"
+                : variant === "outline"
+                ? "outline"
+                : "secondary"
+            }
+            className="w-full flex items-center gap-2"
+          >
             {isPremium && <Lock className="h-4 w-4" />}
             {buttonText} <span className="ml-1">→</span>
           </Button>
@@ -102,7 +142,9 @@ const PlanComparisonTable = () => (
       </thead>
       <tbody>
         <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">作業時間トラッキング</td>
+          <td className="p-3 border-b border-gray-200 font-medium">
+            作業時間トラッキング
+          </td>
           <td className="text-center p-3 border-b border-gray-200">
             <CheckCircle className="inline h-5 w-5 text-green-500" />
             <span className="ml-2">基本機能</span>
@@ -168,7 +210,9 @@ const PlanComparisonTable = () => (
           </td>
         </tr>
         <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">レポート出力</td>
+          <td className="p-3 border-b border-gray-200 font-medium">
+            レポート出力
+          </td>
           <td className="text-center p-3 border-b border-gray-200">
             <span className="text-gray-600">PDF基本形式のみ</span>
           </td>
@@ -192,7 +236,9 @@ const PlanComparisonTable = () => (
 
 // 料金プランカードコンポーネント
 const PricingCard = ({ plan, price, features, isPopular, onSelect }) => (
-  <Card className={`w-full ${isPopular ? 'border-primary shadow-lg relative' : ''}`}>
+  <Card
+    className={`w-full ${isPopular ? "border-primary shadow-lg relative" : ""}`}
+  >
     {isPopular && (
       <Badge className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/2 bg-primary px-3 py-1">
         おすすめ
@@ -205,7 +251,9 @@ const PricingCard = ({ plan, price, features, isPopular, onSelect }) => (
           "無料でご利用いただけます"
         ) : (
           <>
-            <span className="text-3xl font-bold">¥{price.toLocaleString()}</span>
+            <span className="text-3xl font-bold">
+              ¥{price.toLocaleString()}
+            </span>
             <span className="text-sm">/月</span>
           </>
         )}
@@ -222,8 +270,10 @@ const PricingCard = ({ plan, price, features, isPopular, onSelect }) => (
       </ul>
     </CardContent>
     <CardFooter>
-      <Button 
-        className={`w-full ${isPopular ? 'bg-primary hover:bg-primary/90' : ''}`}
+      <Button
+        className={`w-full ${
+          isPopular ? "bg-primary hover:bg-primary/90" : ""
+        }`}
         variant={isPopular ? "default" : "outline"}
         onClick={() => onSelect(plan)}
       >
@@ -238,13 +288,19 @@ export default function Home() {
   const navigate = useNavigate();
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
   const debtEntries = useSelector((state: RootState) => state.debt.entries);
-  const isUserLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
-  const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
-  const trialActivated = useSelector((state: RootState) => state.user.trialActivated);
+  const isUserLoggedIn = useSelector(
+    (state: RootState) => state.user.isLoggedIn
+  );
+  const hasActiveSubscription = useSelector(
+    (state: RootState) => state.user.hasActiveSubscription
+  );
+  const trialActivated = useSelector(
+    (state: RootState) => state.user.trialActivated
+  );
 
   const [showGetStartedDialog, setShowGetStartedDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [currentDialogStep, setCurrentDialogStep] = useState('intro'); // intro, plans, trial, signup
+  const [currentDialogStep, setCurrentDialogStep] = useState("intro"); // intro, plans, trial, signup
 
   // カテゴリー別の機能カード
   const productivityTools = [
@@ -254,7 +310,7 @@ export default function Home() {
       icon: <Clock className="h-6 w-6 text-primary" />,
       path: "/work-time",
       buttonText: "作業時間トラッカーを開始",
-      variant: "default"
+      variant: "default",
     },
     {
       title: "詳細な分析",
@@ -262,7 +318,7 @@ export default function Home() {
       icon: <BarChart2 className="h-6 w-6 text-indigo-500" />,
       path: "/work-time-reports",
       buttonText: "作業時間レポートを見る",
-      variant: "outline"
+      variant: "outline",
     },
     {
       title: "WBS作成ツール",
@@ -271,7 +327,7 @@ export default function Home() {
       path: "/wbs-creator",
       buttonText: "WBS作成ツールを開く",
       variant: "secondary",
-      isPremium: true
+      isPremium: true,
     },
     {
       title: "睡眠トラッカー",
@@ -279,7 +335,7 @@ export default function Home() {
       icon: <Moon className="h-6 w-6 text-blue-500" />,
       path: "/sleep-tracker",
       buttonText: "睡眠トラッカーを開く",
-      variant: "secondary"
+      variant: "secondary",
     },
   ];
 
@@ -290,7 +346,7 @@ export default function Home() {
       icon: <Database className="h-6 w-6 text-emerald-500" />,
       path: "/reports",
       buttonText: "資産/負債レポートを見る",
-      variant: "secondary"
+      variant: "secondary",
     },
     {
       title: "資産増減カレンダー",
@@ -299,7 +355,7 @@ export default function Home() {
       path: "/asset-calendar",
       buttonText: "資産カレンダーを見る",
       variant: "secondary",
-      isPremium: true
+      isPremium: true,
     },
   ];
 
@@ -311,7 +367,7 @@ export default function Home() {
       path: "/political-trends",
       buttonText: "政党支持率を見る",
       variant: "secondary",
-      isPremium: true
+      isPremium: true,
     },
     {
       title: "衆議院選挙 候補者擁立状況",
@@ -320,7 +376,7 @@ export default function Home() {
       path: "/election-candidates",
       buttonText: "候補者情報を見る",
       variant: "default",
-      isPremium: true
+      isPremium: true,
     },
   ];
 
@@ -331,7 +387,7 @@ export default function Home() {
       icon: <FileText className="h-6 w-6 text-orange-500" />,
       path: "/blog",
       buttonText: "ブログを見る",
-      variant: "secondary"
+      variant: "secondary",
     },
     {
       title: "Twitter投稿",
@@ -339,7 +395,7 @@ export default function Home() {
       icon: <Twitter className="h-6 w-6 text-sky-500" />,
       path: "/twitter",
       buttonText: "Twitter投稿を見る",
-      variant: "secondary"
+      variant: "secondary",
     },
     {
       title: "ユーザープロフィール",
@@ -347,7 +403,7 @@ export default function Home() {
       icon: <UserCircle className="h-6 w-6 text-purple-500" />,
       path: "/profile",
       buttonText: "プロフィールを見る",
-      variant: "outline"
+      variant: "outline",
     },
   ];
 
@@ -361,9 +417,9 @@ export default function Home() {
         "ToDo管理（最大10件）",
         "基本的な資産管理",
         "メールサポート",
-        "広告あり"
+        "広告あり",
       ],
-      isPopular: false
+      isPopular: false,
     },
     {
       plan: "プレミアムプラン",
@@ -374,9 +430,9 @@ export default function Home() {
         "詳細な資産分析とポートフォリオ管理",
         "選挙分析ツール完全アクセス",
         "広告なし",
-        "優先サポート"
+        "優先サポート",
       ],
-      isPopular: true
+      isPopular: true,
     },
     {
       plan: "チームプラン",
@@ -387,10 +443,10 @@ export default function Home() {
         "チーム連携ツール",
         "管理者ダッシュボード",
         "APIアクセス",
-        "専任サポート担当者"
+        "専任サポート担当者",
       ],
-      isPopular: false
-    }
+      isPopular: false,
+    },
   ];
 
   // 「今すぐ始める」ボタンのハンドラー
@@ -398,40 +454,40 @@ export default function Home() {
     if (!isUserLoggedIn) {
       // 未ログインの場合はダイアログを表示
       setShowGetStartedDialog(true);
-      setCurrentDialogStep('intro');
+      setCurrentDialogStep("intro");
     } else if (hasActiveSubscription) {
       // プレミアム会員の場合はメインツールへ誘導
-      navigate('/work-time');
+      navigate("/work-time");
     } else if (trialActivated) {
       // 無料トライアル中ユーザーはプラン選択へ
       setShowGetStartedDialog(true);
-      setCurrentDialogStep('plans');
+      setCurrentDialogStep("plans");
     } else {
       // 無料会員はトライアル案内へ
       setShowGetStartedDialog(true);
-      setCurrentDialogStep('trial');
+      setCurrentDialogStep("trial");
     }
   };
 
   // プラン選択ハンドラー
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan);
-    
+
     if (plan === "無料プラン") {
       if (isUserLoggedIn) {
         // すでにログイン済みの場合はダイアログを閉じて無料プランのメイン機能へ
         setShowGetStartedDialog(false);
-        navigate('/work-time');
+        navigate("/work-time");
       } else {
         // 未ログインの場合はサインアップへ誘導
-        setCurrentDialogStep('signup');
+        setCurrentDialogStep("signup");
       }
     } else {
       // プレミアムプランやチームプランの場合は支払い情報入力へ
       if (isUserLoggedIn) {
-        navigate('/subscription/checkout?plan=' + encodeURIComponent(plan));
+        navigate("/subscription/checkout?plan=" + encodeURIComponent(plan));
       } else {
-        setCurrentDialogStep('signup');
+        setCurrentDialogStep("signup");
       }
     }
   };
@@ -440,18 +496,20 @@ export default function Home() {
   const handleStartTrial = () => {
     dispatch(setTrialActivated(true));
     setShowGetStartedDialog(false);
-    navigate('/work-time');
+    navigate("/work-time");
     // トースト通知などで「14日間の無料トライアルが開始されました」などを表示するとよい
   };
 
   // ダイアログコンテンツ
   const getDialogContent = () => {
     switch (currentDialogStep) {
-      case 'intro':
+      case "intro":
         return (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">作業時間トラッカーへようこそ</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">
+                作業時間トラッカーへようこそ
+              </DialogTitle>
               <DialogDescription className="text-center pt-2">
                 あなたの生産性と効率性を最大限に引き出す最高のツールです
               </DialogDescription>
@@ -487,21 +545,30 @@ export default function Home() {
               </p>
             </div>
             <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" className="sm:flex-1" onClick={() => setCurrentDialogStep('plans')}>
+              <Button
+                variant="outline"
+                className="sm:flex-1"
+                onClick={() => setCurrentDialogStep("plans")}
+              >
                 プランを比較
               </Button>
-              <Button className="sm:flex-1" onClick={() => setCurrentDialogStep('trial')}>
+              <Button
+                className="sm:flex-1"
+                onClick={() => setCurrentDialogStep("trial")}
+              >
                 14日間無料トライアル
               </Button>
             </DialogFooter>
           </>
         );
-      
-      case 'plans':
+
+      case "plans":
         return (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">利用プランを選択</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">
+                利用プランを選択
+              </DialogTitle>
               <DialogDescription>
                 あなたのニーズに合ったプランをお選びください
               </DialogDescription>
@@ -509,7 +576,7 @@ export default function Home() {
             <div className="py-4 overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {pricingPlans.map((plan, index) => (
-                  <PricingCard 
+                  <PricingCard
                     key={index}
                     {...plan}
                     onSelect={handleSelectPlan}
@@ -517,24 +584,33 @@ export default function Home() {
                 ))}
               </div>
               <div className="mt-4">
-                <Button variant="link" className="text-sm" onClick={() => setCurrentDialogStep('comparison')}>
+                <Button
+                  variant="link"
+                  className="text-sm"
+                  onClick={() => setCurrentDialogStep("comparison")}
+                >
                   プランの詳細比較を見る →
                 </Button>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setCurrentDialogStep('intro')}>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentDialogStep("intro")}
+              >
                 戻る
               </Button>
             </DialogFooter>
           </>
         );
-      
-      case 'comparison':
+
+      case "comparison":
         return (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">プラン比較</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">
+                プラン比較
+              </DialogTitle>
               <DialogDescription>
                 各プランの機能を詳しく比較してください
               </DialogDescription>
@@ -543,18 +619,23 @@ export default function Home() {
               <PlanComparisonTable />
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setCurrentDialogStep('plans')}>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentDialogStep("plans")}
+              >
                 戻る
               </Button>
             </DialogFooter>
           </>
         );
-      
-      case 'trial':
+
+      case "trial":
         return (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">14日間の無料トライアル</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">
+                14日間の無料トライアル
+              </DialogTitle>
               <DialogDescription className="text-center pt-2">
                 プレミアム機能をすべて無料でお試しいただけます
               </DialogDescription>
@@ -568,30 +649,42 @@ export default function Home() {
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                   <div>
                     <h3 className="font-medium">すべてのプレミアム機能</h3>
-                    <p className="text-sm text-gray-600">14日間、すべての機能を制限なく利用可能</p>
+                    <p className="text-sm text-gray-600">
+                      14日間、すべての機能を制限なく利用可能
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                   <div>
                     <h3 className="font-medium">クレジットカード不要</h3>
-                    <p className="text-sm text-gray-600">トライアル開始時にお支払い情報は必要ありません</p>
+                    <p className="text-sm text-gray-600">
+                      トライアル開始時にお支払い情報は必要ありません
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
                   <div>
                     <h3 className="font-medium">自動更新なし</h3>
-                    <p className="text-sm text-gray-600">トライアル終了後に自動課金されることはありません</p>
+                    <p className="text-sm text-gray-600">
+                      トライアル終了後に自動課金されることはありません
+                    </p>
                   </div>
                 </div>
               </div>
               <div className="text-center text-sm text-gray-500 mb-4">
-                トライアル終了後はいつでもアップグレードできます。<br />トライアル期間中のデータはそのまま保持されます。
+                トライアル終了後はいつでもアップグレードできます。
+                <br />
+                トライアル期間中のデータはそのまま保持されます。
               </div>
             </div>
             <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" className="sm:flex-1" onClick={() => setCurrentDialogStep('plans')}>
+              <Button
+                variant="outline"
+                className="sm:flex-1"
+                onClick={() => setCurrentDialogStep("plans")}
+              >
                 プランを比較する
               </Button>
               <Button className="sm:flex-1" onClick={handleStartTrial}>
@@ -600,14 +693,18 @@ export default function Home() {
             </DialogFooter>
           </>
         );
-      
-      case 'signup':
+
+      case "signup":
         return (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">アカウント作成</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center">
+                アカウント作成
+              </DialogTitle>
               <DialogDescription className="text-center pt-2">
-                {selectedPlan ? `${selectedPlan}をご利用になるには、アカウント作成が必要です` : 'サービスを利用するにはアカウントが必要です'}
+                {selectedPlan
+                  ? `${selectedPlan}をご利用になるには、アカウント作成が必要です`
+                  : "サービスを利用するにはアカウントが必要です"}
               </DialogDescription>
             </DialogHeader>
             <div className="py-6">
@@ -619,19 +716,24 @@ export default function Home() {
               </div>
             </div>
             <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" onClick={() => setCurrentDialogStep('plans')}>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentDialogStep("plans")}
+              >
                 キャンセル
               </Button>
-              <Button onClick={() => {
-                setShowGetStartedDialog(false);
-                navigate('/signup', { state: { selectedPlan } });
-              }}>
+              <Button
+                onClick={() => {
+                  setShowGetStartedDialog(false);
+                  navigate("/signup", { state: { selectedPlan } });
+                }}
+              >
                 アカウント作成へ進む
               </Button>
             </DialogFooter>
           </>
         );
-      
+
       default:
         return null;
     }
@@ -650,7 +752,11 @@ export default function Home() {
             作業時間の記録から分析、資産管理、様々なトラッキングまで、すべてを一つのアプリで。
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="rounded-full gap-2" onClick={handleGetStarted}>
+            <Button
+              size="lg"
+              className="rounded-full gap-2"
+              onClick={handleGetStarted}
+            >
               <Clock className="h-5 w-5" /> 今すぐ始める
             </Button>
             <Button size="lg" variant="outline" className="rounded-full gap-2">
@@ -684,7 +790,9 @@ export default function Home() {
               />
             </div>
             <div>
-              <DailyTodoReminder isPremium={hasActiveSubscription || trialActivated} />
+              <DailyTodoReminder
+                isPremium={hasActiveSubscription || trialActivated}
+              />
             </div>
           </div>
         </div>
@@ -695,17 +803,23 @@ export default function Home() {
         <h2 className="text-3xl font-bold mb-6 text-center">
           あなたのためのツール
         </h2>
-        
+
         <Tabs defaultValue="productivity" className="w-full">
           <div className="flex justify-center mb-8">
             <TabsList className="grid grid-cols-4 w-full max-w-2xl">
-              <TabsTrigger value="productivity" className="flex items-center gap-2">
+              <TabsTrigger
+                value="productivity"
+                className="flex items-center gap-2"
+              >
                 <Clock className="h-4 w-4" /> 生産性
               </TabsTrigger>
               <TabsTrigger value="finance" className="flex items-center gap-2">
                 <LineChart className="h-4 w-4" /> 資産管理
               </TabsTrigger>
-              <TabsTrigger value="political" className="flex items-center gap-2">
+              <TabsTrigger
+                value="political"
+                className="flex items-center gap-2"
+              >
                 <PieChart className="h-4 w-4" /> 政治分析
               </TabsTrigger>
               <TabsTrigger value="personal" className="flex items-center gap-2">
@@ -713,7 +827,7 @@ export default function Home() {
               </TabsTrigger>
             </TabsList>
           </div>
-          
+
           <TabsContent value="productivity">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {productivityTools.map((tool, index) => (
@@ -721,7 +835,7 @@ export default function Home() {
               ))}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="finance">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {financeTools.map((tool, index) => (
@@ -729,7 +843,7 @@ export default function Home() {
               ))}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="political">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {politicalTools.map((tool, index) => (
@@ -737,7 +851,7 @@ export default function Home() {
               ))}
             </div>
           </TabsContent>
-          
+
           <TabsContent value="personal">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {personalTools.map((tool, index) => (
@@ -747,18 +861,23 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </section>
-      
+
       {/* CTAセクション */}
       <section className="mt-16 text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8">
         <h2 className="text-3xl font-bold mb-4">もっと効率的な日々へ</h2>
         <p className="text-lg mb-6 max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
           ワンクリックであなたの生活を最適化。今すぐ始めて、時間の使い方をコントロールしましょう。
         </p>
-        <Button size="lg" className="rounded-full" onClick={handleGetStarted}>今すぐ始める</Button>
+        <Button size="lg" className="rounded-full" onClick={handleGetStarted}>
+          今すぐ始める
+        </Button>
       </section>
 
       {/* プレミアムプラン案内ダイアログ */}
-      <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>
+      <Dialog
+        open={showGetStartedDialog}
+        onOpenChange={setShowGetStartedDialog}
+      >
         <DialogContent className="sm:max-w-md md:max-w-2xl">
           {getDialogContent()}
         </DialogContent>

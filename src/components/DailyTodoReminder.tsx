@@ -45,7 +45,7 @@ import {
 import { AppDispatch } from "@/store";
 import { TodoCalendar } from "@/components/calendar/TodoCalendar";
 import { TodoChart } from "@/components/chart/TodoChart";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
