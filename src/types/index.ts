@@ -359,3 +359,8 @@ export interface Invoice {
     };
     createdAt: Date | string;
 }
+
+export interface PaymentMethodType {
+    type: string;
+    isDefault?: boolean;
+  }

@@ -1399,7 +1399,11 @@ export default function SubscriptionManagementPage() {
                                   <TableCell>{sub.billingDate}</TableCell>
                                   <TableCell>
                                     <PaymentMethodTag
-                                      method={sub.paymentMethod || "credit"}
+                                      method={
+                                        typeof sub.paymentMethod === "object"
+                                          ? sub.paymentMethod.type // オブジェクトの場合はtype属性を抽出
+                                          : sub.paymentMethod || "credit"
+                                      }
                                     />
                                   </TableCell>
                                   <TableCell>

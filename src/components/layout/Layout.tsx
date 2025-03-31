@@ -104,9 +104,9 @@ export default function Layout({ children }: LayoutProps) {
             const subscription = response.data;
 
             setIsPremium(
-              subscription !== null &&
-                subscription.status === "active" &&
-                subscription.planId !== "free"
+              subscription && 
+              subscription.status === "active" &&
+              subscription.planId !== "free"
             );
           } catch (unknownError) {
             // エラーをタイプセーフに処理

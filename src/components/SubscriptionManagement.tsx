@@ -68,7 +68,7 @@ import {
   Info,
 } from "lucide-react";
 import { useAuth } from "@/context/useAuth";
-import { SubscriptionService } from "@/types";
+import { PaymentMethodType, SubscriptionService } from "@/types";
 import subscriptionApi from "@/services/api/subscriptionApi";
 
 // サブスクリプション追加・編集フォーム用の型
@@ -612,11 +612,17 @@ const SubscriptionManagement: React.FC = () => {
                             : subscription.paymentMethod;
 
                         // 対応するラベルを取得
-                        return paymentType
-                          ? paymentMethodOptions.find(
-                              (option) => option.value === paymentType
-                            )?.label || paymentType
-                          : "クレジットカード";
+                        const foundOption = paymentMethodOptions.find(
+                          (option) => option.value === paymentType
+                        );
+
+                        // 型アサーションを使用して、TypeScriptに型を明示的に伝える
+                        return (
+                          foundOption?.label ||
+                          (typeof paymentType === "object"
+                            ? (paymentType as PaymentMethodType).type || "不明な支払い方法"
+                            : paymentType || "クレジットカード")
+                        );
                       })()}
                     </TableCell>
                     <TableCell>
