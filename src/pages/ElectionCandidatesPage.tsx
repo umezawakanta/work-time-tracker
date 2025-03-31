@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStatus } from "@/hooks/useAuthStatus";
 import { RefreshCcw, Download } from "lucide-react";
 import { exportCandidatesAsCSV } from "@/utils/export";
 import { useNavigate, useLocation } from "react-router-dom"; // Next.jsのuseRouterの代わりにReact Routerのフックを使用
@@ -25,7 +25,7 @@ export default function ElectionCandidatesPage() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate(); // useRouterの代わりにuseNavigateを使用
   const location = useLocation(); // クエリパラメータ取得用
-  const { user, isSubscribed, isLoading: authLoading } = useAuth();
+  const { user, isSubscribed, isLoading: authLoading } = useAuthStatus();
 
   const candidates = useSelector(
     (state: RootState) => state.candidate.candidates

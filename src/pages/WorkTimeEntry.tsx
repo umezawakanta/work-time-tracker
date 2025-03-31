@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { WorkTimeEntry } from "@/types/workTimeEntry";
 import { AppDispatch } from "@/store";
+import { useAuth } from "@/context/useAuth";
 
 const WorkTimeEntryForm: React.FC = () => {
   const [projectName, setProjectName] = useState("");
@@ -23,9 +24,18 @@ const WorkTimeEntryForm: React.FC = () => {
   const [endTime, setEndTime] = useState<Date>(new Date());
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useAuth(); // コンポーネントのトップレベルで呼び出す
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // ユーザーが認証されていない場合の処理
+    if (!user) {
+      // エラーハンドリングや通知を表示するなど
+      console.error("ユーザーが認証されていません");
+      return;
+    }
+    
     const newEntry: Omit<WorkTimeEntry, "_id"> = {
       projectName,
       description,
@@ -33,7 +43,9 @@ const WorkTimeEntryForm: React.FC = () => {
       endTime: endTime.toISOString(),
       duration: (endTime.getTime() - startTime.getTime()) / 1000, // 秒単位で計算
       date: startTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
+      userId: user.id, // 認証されたユーザーのID
     };
+    
     dispatch(addWorkTimeEntry(newEntry));
     navigate("/reports");
   };
@@ -46,7 +58,7 @@ const WorkTimeEntryForm: React.FC = () => {
             <CardTitle className="text-2xl">作業時間の記録</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
+          <div className="space-y-2">
               <Label htmlFor="projectName">プロジェクト名</Label>
               <Input
                 id="projectName"

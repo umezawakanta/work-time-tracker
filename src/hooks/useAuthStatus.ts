@@ -1,10 +1,8 @@
-// @/hooks/useAuth.ts
-
 import { useState, useEffect } from 'react';
 import { checkAuth, getUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
 
-export function useAuth() {
+export function useAuthStatus() {  // 関数名も変更
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);

@@ -12,6 +12,7 @@ const mockWorkTimeData: WorkTimeEntry[] = [
     duration: 28800,
     projectName: "Project A",
     description: "Worked on feature X",
+    userId: "mock-user-id", // ここにユーザーIDを追加
   },
   {
     _id: "2",
@@ -21,6 +22,7 @@ const mockWorkTimeData: WorkTimeEntry[] = [
     duration: 28800,
     projectName: "Project B",
     description: "Fixed bug Y",
+    userId: "mock-user-id", // ここにユーザーIDを追加
   },
 ];
 
