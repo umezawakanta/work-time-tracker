@@ -24,12 +24,12 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // クエリパラメータからユーザーIDを取得（オプション）
     const userId = req.query.userId as string;
-    
+
     let query = {};
     if (userId) {
       query = { userId };
     }
-    
+
     const subscriptions = await Subscription.find(query).sort({ name: 1 });
     res.json(subscriptions);
   } catch (error) {
@@ -41,11 +41,11 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const subscription = await Subscription.findById(req.params.id);
-    
+
     if (!subscription) {
       return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
     }
-    
+
     res.json(subscription);
   } catch (error) {
     next(error);
@@ -107,11 +107,11 @@ router.put(
         updateData,
         { new: true }
       );
-      
+
       if (!updatedSubscription) {
         return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
       }
-      
+
       res.json({
         message: "サブスクリプション情報が正常に更新されました",
         subscription: updatedSubscription,
@@ -130,11 +130,11 @@ router.delete(
       const deletedSubscription = await Subscription.findByIdAndDelete(
         req.params.id
       );
-      
+
       if (!deletedSubscription) {
         return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
       }
-      
+
       res.json({
         message: "サブスクリプションが正常に削除されました",
         subscription: deletedSubscription,
@@ -174,8 +174,8 @@ router.get("/type/:type", async (req: Request, res: Response, next: NextFunction
 // 支払い方法でサブスクリプションをフィルタリング
 router.get("/payment-method/:method", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const subscriptions = await Subscription.find({ 
-      'paymentMethod.type': req.params.method 
+    const subscriptions = await Subscription.find({
+      'paymentMethod.type': req.params.method
     });
     res.json(subscriptions);
   } catch (error) {
@@ -189,7 +189,7 @@ router.get("/total-amount", async (_req: Request, res: Response, next: NextFunct
     const result = await Subscription.aggregate([
       { $group: { _id: null, totalAmount: { $sum: "$amount" } } }
     ]);
-    
+
     const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
     res.json({ totalAmount });
   } catch (error) {
@@ -206,7 +206,7 @@ router.get("/monthly-totals", async (_req: Request, res: Response, next: NextFun
       { month: "2024-02", amount: 9800 },
       { month: "2024-03", amount: 10500 }
     ];
-    
+
     res.json(monthlySummary);
   } catch (error) {
     next(error);
@@ -226,7 +226,7 @@ router.patch(
 
     try {
       const { month, checked } = req.body;
-      
+
       const subscription = await Subscription.findById(req.params.id);
       if (!subscription) {
         return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
@@ -236,13 +236,15 @@ router.patch(
       if (!subscription.checkStatuses) {
         subscription.checkStatuses = {};
       }
-      
+
       // 月ごとのチェックステータスを更新
-      subscription.checkStatuses[month] = checked;
+      if (typeof month === 'string' && typeof checked === 'boolean') {
+        (subscription.checkStatuses as Record<string, boolean>)[month] = checked;
+      }
       subscription.updatedAt = new Date();
-      
+
       await subscription.save();
-      
+
       res.json({
         message: `チェックステータスが更新されました`,
         subscription
