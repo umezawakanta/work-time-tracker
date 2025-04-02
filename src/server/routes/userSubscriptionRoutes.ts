@@ -5,6 +5,11 @@ import { UserSubscription, IUserSubscription } from "../models/userSubscription.
 
 const router = express.Router();
 
+interface ScheduleChangeRequestBody {
+  newPlanId: string;
+  changeDate: string; // ISO8601形式の日付文字列
+}
+
 // ユーザーサブスクリプションのバリデーション
 const validateUserSubscription = [
   body("userId").notEmpty().withMessage("ユーザーIDは必須です"),
@@ -250,7 +255,9 @@ router.patch(
 
       // サブスクリプションを更新
       userSubscription.checkStatuses = userSubscription.checkStatuses || {};
-      userSubscription.checkStatuses[month] = checked;
+      if (typeof month === 'string' && typeof checked === 'boolean') {
+        (userSubscription.checkStatuses as Record<string, boolean>)[month] = checked;
+      }
       userSubscription.updatedAt = new Date();
       
       await userSubscription.save();
@@ -277,15 +284,30 @@ router.post(
     }
 
     try {
-      const { userId, paymentMethod } = req.body;
+      // Type assertion を使って型を特定
+      const body = req.body as unknown;
+      if (
+        !body || 
+        typeof body !== 'object' || 
+        !('userId' in body) || 
+        !('paymentMethod' in body) || 
+        typeof body.paymentMethod !== 'object'
+      ) {
+        return res.status(400).json({
+          message: "無効なリクエスト形式です。'userId'と'paymentMethod'が必要です。"
+        });
+      }
+
+      const { userId } = body as { userId: string };
+      const paymentMethod = body.paymentMethod as Record<string, unknown>;
       
       // 保存する支払い方法のデータから機密情報を削除
       // 実際の実装では、決済代行サービスのトークンなどを利用するべき
       const sanitizedPaymentMethod = {
-        type: paymentMethod.type,
-        lastFour: paymentMethod.cardNumber ? paymentMethod.cardNumber.slice(-4) : null,
-        expiryDate: paymentMethod.expiryDate,
-        cardholderName: paymentMethod.cardholderName,
+        type: typeof paymentMethod.type === 'string' ? paymentMethod.type : 'unknown',
+        lastFour: typeof paymentMethod.cardNumber === 'string' ? paymentMethod.cardNumber.slice(-4) : null,
+        expiryDate: typeof paymentMethod.expiryDate === 'string' ? paymentMethod.expiryDate : null,
+        cardholderName: typeof paymentMethod.cardholderName === 'string' ? paymentMethod.cardholderName : null,
         isDefault: true,
       };
 
@@ -360,7 +382,23 @@ router.post(
 
     try {
       const { id } = req.params;
-      const { newPlanId, changeDate } = req.body;
+      
+      // Type safety check
+      const body = req.body as unknown;
+      if (
+        !body || 
+        typeof body !== 'object' || 
+        !('newPlanId' in body) || 
+        !('changeDate' in body) || 
+        typeof body.newPlanId !== 'string' ||
+        typeof body.changeDate !== 'string'
+      ) {
+        return res.status(400).json({
+          message: "無効なリクエスト形式です。'newPlanId'と'changeDate'が必要です。"
+        });
+      }
+
+      const { newPlanId, changeDate } = body as ScheduleChangeRequestBody;
       
       const subscription = await UserSubscription.findById(id);
       if (!subscription) {
@@ -399,7 +437,7 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const { reason } = req.body;
+      const reason = typeof req.body.reason === 'string' ? req.body.reason : null;
       
       const subscription = await UserSubscription.findById(id);
       if (!subscription) {
@@ -412,7 +450,7 @@ router.post(
         {
           $set: {
             status: "canceled",
-            cancelReason: reason || null,
+            cancelReason: reason,
             canceledAt: new Date(),
             updatedAt: new Date()
           }

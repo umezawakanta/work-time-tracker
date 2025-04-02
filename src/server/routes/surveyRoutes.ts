@@ -10,15 +10,36 @@ interface SupportRateData {
   rateChange?: number;
 }
 
-interface SurveyRequestBody {
-  survey: {
-    mediaOutlet: string;
-    surveyStartDate: string;
-    surveyEndDate: string;
-    sampleSize?: number;
-  };
-  supportRates: SupportRateData[];
+interface SurveyData {
+  mediaOutlet: string;
+  surveyStartDate: string;
+  surveyEndDate: string;
+  sampleSize?: number;
 }
+
+// 最新の調査を取得するルートを追加
+// 注意: この特定のルートはパラメータ付きルート (/:id) より前に定義する必要があります
+router.get("/latest", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const latestSurvey = await Survey.findOne().sort({ surveyEndDate: -1 });
+    if (!latestSurvey) {
+      return res.status(404).json({ message: "最新の調査が見つかりません" });
+    }
+
+    const supportRates = await SupportRate.find({ surveyId: latestSurvey._id })
+      .populate('partyId')
+      .sort({ partyId: 1 });
+
+    res.json({
+      message: "取得成功",
+      survey: latestSurvey,
+      supportRates: supportRates
+    });
+  } catch (error) {
+    console.error('Error fetching latest survey:', error);
+    next(error);
+  }
+});
 
 router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -35,12 +56,22 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/", async (
-  req: Request<never, unknown, SurveyRequestBody>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { survey, supportRates } = req.body;
+    // Type safety check
+    if (!req.body || typeof req.body !== 'object' || !('survey' in req.body) || !('supportRates' in req.body)) {
+      return res.status(400).json({
+        message: "無効なリクエスト形式です。'survey'と'supportRates'が必要です。"
+      });
+    }
+
+    const { survey, supportRates } = req.body as { 
+      survey: SurveyData; 
+      supportRates: SupportRateData[] 
+    };
 
     // 同じ日付とメディアの調査が既に存在するか確認
     let existingSurvey = await Survey.findOne({
@@ -143,13 +174,24 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.put("/:id", async (
-  req: Request<{ id: string }, unknown, SurveyRequestBody>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const surveyId = req.params.id;
-    const { survey, supportRates } = req.body;
+    
+    // Type safety check
+    if (!req.body || typeof req.body !== 'object' || !('survey' in req.body) || !('supportRates' in req.body)) {
+      return res.status(400).json({
+        message: "無効なリクエスト形式です。'survey'と'supportRates'が必要です。"
+      });
+    }
+
+    const { survey, supportRates } = req.body as { 
+      survey: SurveyData; 
+      supportRates: SupportRateData[] 
+    };
 
     // 指定されたIDの調査が存在するか確認
     const existingSurvey = await Survey.findById(surveyId);
@@ -190,28 +232,4 @@ router.put("/:id", async (
   }
 });
 
-// 最新の調査を取得するルートも追加
-router.get("/latest", async (_req: Request, res: Response, next: NextFunction) => {
-  try {
-    const latestSurvey = await Survey.findOne().sort({ surveyEndDate: -1 });
-    if (!latestSurvey) {
-      return res.status(404).json({ message: "最新の調査が見つかりません" });
-    }
-
-    const supportRates = await SupportRate.find({ surveyId: latestSurvey._id })
-      .populate('partyId')
-      .sort({ partyId: 1 });
-
-    res.json({
-      message: "取得成功",
-      survey: latestSurvey,
-      supportRates: supportRates
-    });
-  } catch (error) {
-    console.error('Error fetching latest survey:', error);
-    next(error);
-  }
-});
-
 export default router;
-
