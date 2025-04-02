@@ -21,7 +21,10 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
       return res.status(400).json({ message: 'ツイートの内容または画像は必須です' });
     }
 
-    if (content && content.length > 10000) {
+    // content が文字列であることを確実にする
+    const contentStr = typeof content === 'string' ? content : '';
+
+    if (contentStr.length > 10000) {
       return res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
     }
 
@@ -29,8 +32,8 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
       user: new mongoose.Types.ObjectId(userId),
     };
 
-    if (content) {
-      tweetData.content = content.trim();
+    if (contentStr) {
+      tweetData.content = contentStr.trim();
     }
 
     if (req.file) {
@@ -99,11 +102,14 @@ export const updateTweet = async (req: MulterRequest, res: Response) => {
       return res.status(401).json({ message: 'ユーザーが認証されていません' });
     }
 
-    if (!content) {
+    // content が文字列であることを確実にする
+    const contentStr = typeof content === 'string' ? content : '';
+
+    if (!contentStr) {
       return res.status(400).json({ message: 'ツイートの内容は必須です' });
     }
 
-    if (content.length > 10000) {
+    if (contentStr.length > 10000) {
       return res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
     }
 
@@ -113,7 +119,7 @@ export const updateTweet = async (req: MulterRequest, res: Response) => {
       return res.status(404).json({ message: 'ツイートが見つかりません' });
     }
 
-    tweet.content = content.trim();
+    tweet.content = contentStr.trim();
     await tweet.save();
 
     res.json(tweet);

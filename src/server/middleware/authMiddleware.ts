@@ -10,10 +10,16 @@ declare module 'express' {
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
+  
   if (!authHeader) {
     return res.status(401).json({ message: '認証トークンがありません' });
   }
-
+  
+  // authHeaderが文字列であることを確認
+  if (Array.isArray(authHeader)) {
+    return res.status(401).json({ message: '不正な認証ヘッダー形式です' });
+  }
+  
   const token = authHeader.split(' ')[1];
   if (!token) {
     return res.status(401).json({ message: '無効な認証トークンです' });

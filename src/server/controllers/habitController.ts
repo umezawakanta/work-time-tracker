@@ -92,7 +92,15 @@ export const updateHabit = async (req: AuthRequest, res: Response) => {
     const { habitId } = req.params;
     const { monthKey, data } = req.body;
 
-    console.log('Update request:', { userId, habitId, monthKey, dataLength: data?.length });
+    // dataがundefinedか空オブジェクトの場合に対応
+    const dataArray = Array.isArray(data) ? data : [];
+    
+    console.log('Update request:', { 
+      userId, 
+      habitId, 
+      monthKey, 
+      dataLength: dataArray.length // 安全にlengthにアクセス
+    });
 
     if (!userId) {
       return res.status(401).json({ message: 'ユーザーが認証されていません' });

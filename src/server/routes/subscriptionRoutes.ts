@@ -68,9 +68,8 @@ router.post(
         billingDate: req.body.billingDate,
         type: req.body.type,
         amount: req.body.amount,
-        // 追加パラメータがあれば含める
-        ...(req.body.userId && { userId: req.body.userId }),
-        ...(req.body.paymentMethod && { paymentMethod: req.body.paymentMethod }),
+        ...(req.body.userId ? { userId: req.body.userId } : {}),
+        ...(req.body.paymentMethod ? { paymentMethod: req.body.paymentMethod } : {}),
         createdAt: new Date(),
         updatedAt: new Date(),
       });

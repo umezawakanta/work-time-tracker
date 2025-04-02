@@ -3,6 +3,8 @@ import { body, validationResult } from "express-validator";
 import { Notification, INotification } from "../models/Notification.js";
 import { NotificationSettings } from "../models/NotificationSettings.js";
 import { isAuthenticated } from "../middleware/auth.js";
+import { NotificationFilter } from "@/types/index.js";
+import { AuthUser } from "@/types/express.js";
 
 const router = express.Router();
 
@@ -16,10 +18,13 @@ const validateNotification = [
         .withMessage("タイプは有効な値である必要があります"),
 ];
 
-// 認証後のユーザーチェック関数を追加
+// 認証後のユーザーチェック関数を修正
 const checkUserAccess = (req: Request, userId: string): boolean => {
-    // req.userが存在するか確認し、IDが一致するまたは管理者権限があるかチェック
-    return req.user !== undefined && (req.user.id === userId || req.user.isAdmin === true);
+    if (!req.user) return false;
+
+    // req.userをAuthUser型にキャスト
+    const user = req.user as AuthUser;
+    return user.id === userId || user.isAdmin === true;
 };
 
 // ユーザーの通知一覧を取得
@@ -40,12 +45,13 @@ router.get(
             const { limit = 20, skip = 0, read, type } = req.query;
 
             // フィルタ条件を構築
-            const filter: any = { userId };
+            const filter: NotificationFilter = { userId };
             if (read !== undefined) {
                 filter.read = read === 'true';
             }
             if (type) {
-                filter.type = type;
+                // typeパラメータが配列の場合は最初の要素を使用、文字列の場合はそのまま使用
+                filter.type = Array.isArray(type) ? type[0] : type;
             }
 
             // 通知の取得（最新順）
@@ -105,8 +111,9 @@ router.patch(
                 return res.status(404).json({ message: "通知が見つかりません" });
             }
 
-            // アクセス権の確認
-            if (req.user.id !== notification.userId && !req.user.isAdmin) {
+            // アクセス権の確認（AuthUser型へのキャスト）
+            const user = req.user as AuthUser;
+            if (user.id !== notification.userId && !user.isAdmin) {
                 return res.status(403).json({ message: "アクセス権限がありません" });
             }
 
@@ -183,7 +190,8 @@ router.delete(
             }
 
             // アクセス権の確認
-            if (req.user.id !== notification.userId && !req.user.isAdmin) {
+            const user = req.user as AuthUser;
+            if (user.id !== notification.userId && !user.isAdmin) {
                 return res.status(403).json({ message: "アクセス権限がありません" });
             }
 
@@ -229,7 +237,8 @@ router.delete(
 // 新しい通知を作成する（管理者用/システム用）
 router.post(
     "/",
-    [isAuthenticated, validateNotification],
+    isAuthenticated,
+    validateNotification,  // 配列ではなく展開する
     async (req: Request, res: Response, next: NextFunction) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -243,7 +252,8 @@ router.post(
             }
 
             // 管理者またはシステム通知の場合のみ許可
-            if (!req.user.isAdmin && req.user.id !== 'system') {
+            const user = req.user as AuthUser;
+            if (!user.isAdmin && req.user.id !== 'system') {
                 return res.status(403).json({ message: "通知の作成権限がありません" });
             }
 
@@ -266,18 +276,27 @@ router.post(
 
             // 新しい通知を作成
             const notificationData: Partial<INotification> = {
-                userId: req.body.userId,
-                title: req.body.title,
-                message: req.body.message,
-                type: req.body.type,
+                userId: typeof req.body.userId === 'string' ? req.body.userId : String(req.body.userId),
+                title: typeof req.body.title === 'string' ? req.body.title : String(req.body.title),
+                message: typeof req.body.message === 'string' ? req.body.message : String(req.body.message),
+                type: req.body.type as "reminder" | "report" | "alert" | "success" | "info",
                 read: false,
                 timestamp: new Date(),
             };
 
             // オプションフィールドの追加
-            if (req.body.link) notificationData.link = req.body.link;
-            if (req.body.expiresAt) notificationData.expiresAt = new Date(req.body.expiresAt);
-            if (req.body.metadata) notificationData.metadata = req.body.metadata;
+            if (req.body.link) notificationData.link = String(req.body.link);
+            if (req.body.expiresAt) {
+                const expiresAt = req.body.expiresAt;
+
+                // 日付文字列、タイムスタンプ、または日付オブジェクトの場合に対応
+                if (typeof expiresAt === 'string' || typeof expiresAt === 'number') {
+                    notificationData.expiresAt = new Date(expiresAt);
+                } else if (expiresAt instanceof Date) {
+                    notificationData.expiresAt = expiresAt;
+                }
+            }
+            if (req.body.metadata) notificationData.metadata = req.body.metadata; // objectの場合はそのまま
 
             const notification = new Notification(notificationData);
             await notification.save();
@@ -339,7 +358,9 @@ router.patch(
                 "alerts", "marketing", "emailFrequency"
             ];
 
-            const updateData: any = {};
+            type ValidField = typeof validFields[number];
+
+            const updateData: Partial<Record<ValidField, unknown>> = {};
             validFields.forEach(field => {
                 if (req.body[field] !== undefined) {
                     updateData[field] = req.body[field];

@@ -374,7 +374,7 @@ export interface WorkState {
     projectName: string;
     description: string;
     userId: string;
-  }
+}
 
 // WorkStateレスポンス用のインターフェース
 export interface WorkStateApiResponse {
@@ -383,6 +383,13 @@ export interface WorkStateApiResponse {
 }
 
 export interface WorkTimeApiResponse {
-  message: string;
-  workTime: WorkTimeEntry;
+    message: string;
+    workTime: WorkTimeEntry;
+}
+
+// 型定義を改善したフィルター条件の構築
+export interface NotificationFilter {
+    userId: string;
+    read?: boolean;
+    type?: string;
 }

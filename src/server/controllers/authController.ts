@@ -29,6 +29,9 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
+    // パスワードが文字列であることを確認
+    const passwordStr = String(password);
+
     const user = await User.findOne({ email }) as IUser | null;
     console.log('User found:', user ? 'Yes' : 'No');
 
@@ -37,7 +40,8 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    // 修正: 文字列に変換したパスワードを使用
+    const isMatch = await user.comparePassword(passwordStr);
     console.log('Password match:', isMatch);
 
     if (!isMatch) {
