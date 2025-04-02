@@ -1,24 +1,55 @@
+import { Server as HttpServer } from 'http';
+import { WebSocketServer } from 'ws';
 import WebSocket from 'ws';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Notification } from '../models/Notification.js';
 import { NotificationSettings } from '../models/NotificationSettings.js';
 
+// カスタムペイロード型を定義
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+}
+
+// WebSocketサービスの戻り値型
+interface WebSocketService {
+  sendNotification: (userId: string, notification: NotificationDocument) => Promise<boolean>;
+  broadcastNotification: (message: string) => void;
+}
+
+// 通知データ型の定義
+interface NotificationData {
+  userId: string;
+  type: 'reminder' | 'report' | 'alert' | string;
+  title?: string;
+  message?: string;
+  link?: string;
+  [key: string]: unknown;
+}
+
+// 通知ドキュメント型の定義
+interface NotificationDocument extends NotificationData {
+  _id?: string;
+  timestamp: Date;
+  read: boolean;
+  save: () => Promise<NotificationDocument>;
+}
+
 // WebSocketサーバーの設定
-export const setupWebSocketServer = (server) => {
+export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
   // WebSocketサーバーの作成
-  const wss = new WebSocket.Server({ server });
+  const wss = new WebSocketServer({ server });
   
   // クライアント接続を保持するマップ
-  const clients = new Map();
+  const clients = new Map<string, WebSocket>();
 
   // 接続イベントのハンドリング
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws: WebSocket) => {
     console.log('WebSocket接続が確立されました');
     
     // メッセージ受信時の処理
-    ws.on('message', async (message) => {
+    ws.on('message', async (message: WebSocket.Data) => {
       try {
-        const data = JSON.parse(message);
+        const data = JSON.parse(typeof message === 'string' ? message : message.toString());
         
         // 認証処理
         if (data.type === 'auth') {
@@ -31,7 +62,7 @@ export const setupWebSocketServer = (server) => {
           
           try {
             // トークンの検証（実際の実装ではシークレットキーは環境変数から取得）
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret') as CustomJwtPayload;
             const userId = decoded.id;
             
             // ユーザーIDを確認
@@ -80,7 +111,7 @@ export const setupWebSocketServer = (server) => {
   
   return {
     // 特定のユーザーに通知を送信する関数
-    sendNotification: async (userId, notification) => {
+    sendNotification: async (userId: string, notification: NotificationDocument): Promise<boolean> => {
       try {
         // ユーザーの通知設定を確認
         const settings = await NotificationSettings.findOne({ userId });
@@ -124,7 +155,7 @@ export const setupWebSocketServer = (server) => {
     },
     
     // すべてのユーザーにブロードキャストする関数（システム全体通知用）
-    broadcastNotification: (message) => {
+    broadcastNotification: (message: string): void => {
       clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify({
@@ -138,7 +169,10 @@ export const setupWebSocketServer = (server) => {
 };
 
 // 通知を作成し、WebSocketで送信する関数
-export const createAndSendNotification = async (wsService, notificationData) => {
+export const createAndSendNotification = async (
+  wsService: WebSocketService | null, 
+  notificationData: NotificationData
+): Promise<NotificationDocument | null> => {
   try {
     // 通知設定を確認
     const userId = notificationData.userId;
@@ -157,17 +191,24 @@ export const createAndSendNotification = async (wsService, notificationData) => 
     }
     
     // データベースに通知を保存
-    const notification = new Notification({
+    const notificationObj = {
       ...notificationData,
       timestamp: new Date(),
       read: false
-    });
+    };
     
+    // 新しい通知ドキュメントを作成
+    const notificationDoc = new Notification(notificationObj);
+    
+    // Mongooseドキュメントを NotificationDocument 型にキャスト
+    const notification = notificationDoc as unknown as NotificationDocument;
+    
+    // 保存
     await notification.save();
     
     // WebSocketで通知を送信
     if (wsService) {
-      wsService.sendNotification(userId, notification);
+      await wsService.sendNotification(userId, notification);
     }
     
     return notification;
