@@ -354,10 +354,19 @@ export default function PoliticalTrends() {
       return null;
     }
 
+    // ここを修正します
     const missingMonths = missingData[currentMedia]
       .map((month) => {
-        const [year, monthNum] = month.split("-");
-        return `${year}年${parseInt(monthNum)}月`;
+        console.log("Missing month:", month);
+        // month が "2025/04" のような形式で来ることを想定
+        const [year, monthNum] = month.split("/");
+        // parseInt の後にエラーチェックを追加
+        const monthInt = parseInt(monthNum);
+        console.log("Parsed month:", monthInt);
+        if (isNaN(monthInt)) {
+          return `${year}年不明月`;
+        }
+        return `${year}年${monthInt}月`;
       })
       .join("、");
 
