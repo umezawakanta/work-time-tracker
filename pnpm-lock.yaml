@@ -257,6 +257,9 @@ importers:
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+      ws:
+        specifier: ^8.18.1
+        version: 8.18.1
       zod:
         specifier: ^3.24.2
         version: 3.24.2
