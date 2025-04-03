@@ -1,0 +1,49 @@
+/* styles/EventModal.css */
+
+.color-option {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 9999px;
+    border-width: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .color-option.selected {
+    border-color: black;
+  }
+  
+  .color-option.not-selected {
+    border-color: transparent;
+  }
+  
+  .color-option.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  /* 基本カラーオプション */
+  .color-blue { background-color: #3b82f6; }
+  .color-red { background-color: #ef4444; }
+  .color-green { background-color: #22c55e; }
+  .color-orange { background-color: #f59e0b; }
+  .color-purple { background-color: #8b5cf6; }
+  .color-pink { background-color: #ec4899; }
+  .color-gray { background-color: #64748b; }
+  
+  /* プレミアムカラーオプション */
+  .color-cyan { background-color: #06b6d4; }
+  .color-teal { background-color: #14b8a6; }
+  .color-lime { background-color: #84cc16; }
+  .color-violet { background-color: #a855f7; }
+  .color-rose { background-color: #f43f5e; }
+  
+  .premium-badge {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.75rem;
+  }
