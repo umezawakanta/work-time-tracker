@@ -123,3 +123,101 @@ export function formatDuration(seconds: number): string {
 
   return parts.join(" ");
 }
+
+/**
+ * 数値型の日付を "YYYY/MM/DD" 形式の文字列に変換します
+ */
+export const convertNumericToDateString = (numericDate: number): string => {
+  const dateStr = String(numericDate);
+  if (dateStr.length === 8) {
+    return `${dateStr.slice(0, 4)}/${dateStr.slice(4, 6)}/${dateStr.slice(6, 8)}`;
+  }
+  return dateStr;
+};
+
+/**
+ * 日付から年月のフォーマット（YYYY/MM）を取得
+ */
+export const getYearMonth = (date: number): string => {
+  const dateStr = String(date);
+  if (dateStr.length === 8) {
+    return `${dateStr.slice(0, 4)}/${dateStr.slice(4, 6)}`;
+  }
+  return '';
+};
+
+/**
+ * 引き落とし日のフォーマット関数
+ * 数値型や文字列型の日付を "YYYY/MM/DD" 形式に変換します
+ */
+export const formatBillingDate = (date: number | string | null | undefined): string => {
+  if (date == null) return "";
+  
+  // 数値または文字列を文字列に変換
+  const dateStr = String(date);
+  
+  // 日付形式の判定
+  if (dateStr.length === 8 && !dateStr.includes('/')) {
+    // YYYYMMDDフォーマットの場合 (例: 20240115)
+    return `${dateStr.slice(0, 4)}/${dateStr.slice(4, 6)}/${dateStr.slice(6, 8)}`;
+  } else if (dateStr.includes('/')) {
+    // 既にスラッシュが含まれている場合はそのまま返す
+    return dateStr;
+  }
+
+  // その他の場合は単純に文字列化
+  return dateStr;
+};
+
+/**
+ * 文字列形式の日付を数値型に変換します
+ * 例: "2024/01/15" → 20240115
+ */
+export const convertDateStringToNumber = (dateStr: string): number => {
+  // スラッシュや他の区切り文字を削除して数値に変換
+  return parseInt(dateStr.replace(/[/-]/g, ''), 10);
+};
+
+/**
+ * 日付が "YYYY/MM/DD" 形式かどうかを検証します
+ */
+export const isValidDateFormat = (date: string): boolean => {
+  const datePattern = /^\d{4}\/\d{2}\/\d{2}$/;
+  return datePattern.test(date);
+};
+
+/**
+ * 数値またはフォーマットされた日付文字列かをチェックします
+ */
+export const isValidBillingDate = (date: string | number): boolean => {
+  if (typeof date === 'number') {
+    // 数値型の場合、8桁であればOK
+    return String(date).length === 8;
+  }
+  
+  // 文字列の場合、YYYY/MM/DD形式かチェック
+  return isValidDateFormat(date);
+};
+
+/**
+ * 日付文字列をフォーマットして表示用の文字列に変換します
+ */
+export const formatDisplayDate = (dateStr: string): string => {
+  // YYYY/MM/DD形式の場合はそのまま返す
+  if (isValidDateFormat(dateStr)) {
+    return dateStr;
+  }
+  
+  // 数値文字列の場合（例：20240115）
+  if (/^\d{8}$/.test(dateStr)) {
+    return `${dateStr.slice(0, 4)}/${dateStr.slice(4, 6)}/${dateStr.slice(6, 8)}`;
+  }
+  
+  // 他の形式（例：2024-01-15）
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return dateStr.replace(/-/g, '/');
+  }
+  
+  // その他の場合はそのまま返す
+  return dateStr;
+};

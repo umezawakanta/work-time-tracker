@@ -231,6 +231,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
 
     // サブスクリプションデータから登録状況を更新
     subscriptions.forEach((sub) => {
+      console.log("sub.billingDate = " + sub.billingDate)
       if (sub.billingDate) {
         const [subYear, subMonth] = sub.billingDate.split("/");
 
