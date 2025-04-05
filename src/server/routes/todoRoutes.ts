@@ -18,8 +18,15 @@ router.get('/', async (_req, res) => {
 // POST new todo
 router.post('/', async (req, res) => {
   try {
-    const { task, priority, isPrioritized } = req.body;
-    const newTodo = new TodoItem({ task, completed: false, completedDate: null, priority, isPrioritized });
+    const { task, priority, isPrioritized, type } = req.body;
+    const newTodo = new TodoItem({ 
+      task, 
+      completed: false, 
+      completedDate: null, 
+      priority, 
+      isPrioritized,
+      type: type || 'input' // typeパラメータがない場合はデフォルト値を使用
+    });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {

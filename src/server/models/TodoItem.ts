@@ -6,6 +6,7 @@ export interface ITodoItem extends Document {
   completedDate: Date | null;
   priority: number;
   isPrioritized: boolean;
+  type: 'input' | 'output'; // タイプフィールドを追加
 }
 
 const todoItemSchema = new Schema({
@@ -29,6 +30,11 @@ const todoItemSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  type: {
+    type: String,
+    enum: ['input', 'output'], // 許容値を制限
+    default: 'input', // デフォルト値
+  }
 }, { timestamps: true });
 
 export const TodoItem = mongoose.model<ITodoItem>('TodoItem', todoItemSchema);
