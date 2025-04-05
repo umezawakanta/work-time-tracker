@@ -393,3 +393,15 @@ export interface NotificationFilter {
     read?: boolean;
     type?: string;
 }
+
+export interface TodoItem {
+    _id: string;
+    task: string;
+    completed: boolean;
+    priority: number;
+    isPrioritized: boolean;
+    completedDate: string | null;
+    type?: "input" | "output";
+    createdAt?: string; // createdAtプロパティを追加
+  }
+  

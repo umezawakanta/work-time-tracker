@@ -26,6 +26,9 @@ import {
   AlertTriangle,
   Clock,
   Award,
+  Download,
+  Upload,
+  BarChart2,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
@@ -74,10 +77,23 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   fetchTodoHistory,
   fetchDailyTodoHistory,
   selectDailyHistory,
 } from "@/store/todoSlice";
+
+// CSS をインポート
+import "./DailyTodoReminder.css";
+
+// TaskType型を定義
+type TaskType = "input" | "output";
 
 export default function DailyTodoReminder({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
@@ -87,13 +103,17 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const todoHistory = useSelector(selectTodoHistory);
   const dailyHistory = useSelector(selectDailyHistory);
   const [newTodo, setNewTodo] = useState("");
+  const [taskType, setTaskType] = useState<TaskType>("input"); // 型を明示的に指定
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [editingType, setEditingType] = useState<TaskType>("input"); // 型を明示的に指定
   const [selectedTab, setSelectedTab] = useState("list");
   const [showCommitmentDialog, setShowCommitmentDialog] = useState(false);
   const [commitmentText, setCommitmentText] = useState("");
+  const [commitmentType, setCommitmentType] = useState<TaskType>("input"); // 型を明示的に指定
   const [streakCount, setStreakCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", "completed"
+  const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output"
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
@@ -190,10 +210,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
       if (newTodo.trim()) {
         // 新規タスク追加時には確約ダイアログを表示
         setCommitmentText(newTodo.trim());
+        setCommitmentType(taskType);
         setShowCommitmentDialog(true);
       }
     },
-    [newTodo]
+    [newTodo, taskType]
   );
 
   const confirmAddTodo = useCallback(() => {
@@ -205,13 +226,18 @@ export default function DailyTodoReminder({ isPremium = false }) {
           task: commitmentText.trim(),
           priority: maxPriority + 1,
           isPrioritized: false,
+          type: commitmentType, // タイプは明示的にリテラル型 "input" | "output"
         })
       );
       setNewTodo("");
       setShowCommitmentDialog(false);
-      toast.success("新しいタスクを追加しました。必ず完了させましょう！");
+      toast.success(
+        `新しい${
+          commitmentType === "input" ? "インプット" : "アウトプット"
+        }タスクを追加しました。必ず完了させましょう！`
+      );
     }
-  }, [dispatch, commitmentText, todos]);
+  }, [dispatch, commitmentText, commitmentType, todos]);
 
   const handleDeleteTodo = useCallback(
     (id: string) => {
@@ -227,28 +253,40 @@ export default function DailyTodoReminder({ isPremium = false }) {
     [dispatch, todos]
   );
 
-  const handleEditStart = useCallback((id: string, task: string) => {
-    setEditingId(id);
-    setEditingText(task);
-  }, []);
+  const handleEditStart = useCallback(
+    (id: string, task: string, type: TaskType | undefined) => {
+      setEditingId(id);
+      setEditingText(task);
+      setEditingType(type || "input");
+    },
+    []
+  );
 
   const handleEditCancel = useCallback(() => {
     setEditingId(null);
     setEditingText("");
+    setEditingType("input");
   }, []);
 
   const handleEditSave = useCallback(
     (id: string) => {
       if (editingText.trim()) {
         dispatch(
-          updateTodoItem({ _id: id, updates: { task: editingText.trim() } })
+          updateTodoItem({
+            _id: id,
+            updates: {
+              task: editingText.trim(),
+              type: editingType,
+            },
+          })
         );
         setEditingId(null);
         setEditingText("");
+        setEditingType("input");
         toast.success("タスクを更新しました");
       }
     },
-    [dispatch, editingText]
+    [dispatch, editingText, editingType]
   );
 
   const handleMoveTodo = useCallback(
@@ -309,8 +347,14 @@ export default function DailyTodoReminder({ isPremium = false }) {
   // フィルター処理
   const filteredTodos = [...todos]
     .filter((todo) => {
-      if (filterStatus === "active") return !todo.completed;
-      if (filterStatus === "completed") return todo.completed;
+      // Status filter
+      if (filterStatus === "active" && todo.completed) return false;
+      if (filterStatus === "completed" && !todo.completed) return false;
+
+      // Category filter
+      if (categoryFilter === "input" && todo.type !== "input") return false;
+      if (categoryFilter === "output" && todo.type !== "output") return false;
+
       return true;
     })
     .sort((a, b) => {
@@ -362,11 +406,41 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const progressPercentage =
     totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+  // インプット/アウトプットのバランス計算
+  const inputCount = todos.filter((todo) => todo.type === "input").length;
+  const outputCount = todos.filter((todo) => todo.type === "output").length;
+  const totalTypeCount = inputCount + outputCount;
+  const inputPercentage =
+    totalTypeCount > 0 ? Math.round((inputCount / totalTypeCount) * 100) : 50;
+  const outputPercentage =
+    totalTypeCount > 0 ? Math.round((outputCount / totalTypeCount) * 100) : 50;
+
+  const getTaskTypeIcon = (type: TaskType | undefined) => {
+    if (type === "input") return <Download className="h-3 w-3 text-blue-500" />;
+    if (type === "output") return <Upload className="h-3 w-3 text-green-500" />;
+    return null;
+  };
+
+  const getTaskTypeColor = (type: TaskType | undefined) => {
+    if (type === "input") return "bg-blue-50 text-blue-700 border-blue-200";
+    if (type === "output") return "bg-green-50 text-green-700 border-green-200";
+    return "bg-gray-50 text-gray-700 border-gray-200";
+  };
+
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center p-8">読み込み中...</div>
     );
   }
+
+  // 動的な幅を最も近いCSSクラスに変換する関数
+  const getWidthClass = (percentage: number): string => {
+    // 0から100までの値を5刻みで丸める
+    const roundedPercentage = Math.round(percentage / 5) * 5;
+
+    // 対応するクラス名を返す
+    return `w-${roundedPercentage}`;
+  };
 
   return (
     <Card className="w-full mb-8">
@@ -416,6 +490,28 @@ export default function DailyTodoReminder({ isPremium = false }) {
         <Progress value={progressPercentage} className="h-2" />
       </div>
 
+      {/* インプット/アウトプットバランス */}
+      <div className="px-4 pt-0 pb-3">
+        <div className="flex justify-between items-center mb-1 text-sm">
+          <span>
+            インプット/アウトプットバランス: {inputCount}/{outputCount} タスク
+          </span>
+          <div className="flex items-center space-x-2">
+            <span className="text-blue-600">{inputPercentage}%</span>
+            <span>:</span>
+            <span className="text-green-600">{outputPercentage}%</span>
+          </div>
+        </div>
+        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className={`progress-bar-input ${getWidthClass(inputPercentage)}`}
+          ></div>
+          <div
+            className={`progress-bar-output ${getWidthClass(outputPercentage)}`}
+          ></div>
+        </div>
+      </div>
+
       <CardContent>
         <Tabs
           defaultValue="list"
@@ -429,39 +525,93 @@ export default function DailyTodoReminder({ isPremium = false }) {
             <TabsTrigger value="chart">グラフ</TabsTrigger>
           </TabsList>
           <TabsContent value="list">
-            <form onSubmit={handleAddTodo} className="flex space-x-2 mb-4">
-              <Input
-                type="text"
-                value={newTodo}
-                onChange={(e) => setNewTodo(e.target.value)}
-                placeholder="新しいタスクを追加"
-              />
-              <Button type="submit">追加</Button>
+            <form onSubmit={handleAddTodo} className="space-y-2 mb-4">
+              <div className="flex space-x-2">
+                <Input
+                  type="text"
+                  value={newTodo}
+                  onChange={(e) => setNewTodo(e.target.value)}
+                  placeholder="新しいタスクを追加"
+                  className="flex-1"
+                />
+                <Select
+                  value={taskType}
+                  onValueChange={(value: TaskType) => setTaskType(value)}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="タイプを選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="input">
+                      <div className="flex items-center">
+                        <Download className="h-4 w-4 mr-2 text-blue-500" />
+                        <span>インプット</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="output">
+                      <div className="flex items-center">
+                        <Upload className="h-4 w-4 mr-2 text-green-500" />
+                        <span>アウトプット</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button type="submit">追加</Button>
+              </div>
             </form>
 
             {/* フィルターボタン */}
-            <div className="flex mb-4 gap-2">
-              <Button
-                variant={filterStatus === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilterStatus("all")}
-              >
-                すべて
-              </Button>
-              <Button
-                variant={filterStatus === "active" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilterStatus("active")}
-              >
-                未完了
-              </Button>
-              <Button
-                variant={filterStatus === "completed" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilterStatus("completed")}
-              >
-                完了済み
-              </Button>
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
+              <div className="flex gap-2">
+                <Button
+                  variant={filterStatus === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterStatus("all")}
+                >
+                  すべて
+                </Button>
+                <Button
+                  variant={filterStatus === "active" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterStatus("active")}
+                >
+                  未完了
+                </Button>
+                <Button
+                  variant={filterStatus === "completed" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilterStatus("completed")}
+                >
+                  完了済み
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant={categoryFilter === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCategoryFilter("all")}
+                >
+                  全種別
+                </Button>
+                <Button
+                  variant={categoryFilter === "input" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCategoryFilter("input")}
+                  className="flex items-center gap-1"
+                >
+                  <Download className="h-4 w-4" />
+                  インプット
+                </Button>
+                <Button
+                  variant={categoryFilter === "output" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCategoryFilter("output")}
+                  className="flex items-center gap-1"
+                >
+                  <Upload className="h-4 w-4" />
+                  アウトプット
+                </Button>
+              </div>
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
@@ -493,7 +643,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                   ? "bg-gray-50 border-gray-200"
                                   : todo.isPrioritized
                                   ? "bg-amber-50 border-amber-200"
-                                  : "bg-white border-gray-200"
+                                  : getTaskTypeColor(todo.type)
                               }`}
                             >
                               <Checkbox
@@ -503,13 +653,39 @@ export default function DailyTodoReminder({ isPremium = false }) {
                               />
                               {editingId === todo._id ? (
                                 <>
-                                  <Input
-                                    value={editingText}
-                                    onChange={(e) =>
-                                      setEditingText(e.target.value)
-                                    }
-                                    className="flex-grow"
-                                  />
+                                  <div className="flex-grow flex gap-2">
+                                    <Input
+                                      value={editingText}
+                                      onChange={(e) =>
+                                        setEditingText(e.target.value)
+                                      }
+                                      className="flex-grow"
+                                    />
+                                    <Select
+                                      value={editingType}
+                                      onValueChange={(value: TaskType) =>
+                                        setEditingType(value)
+                                      }
+                                    >
+                                      <SelectTrigger className="w-40">
+                                        <SelectValue placeholder="タイプを選択" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="input">
+                                          <div className="flex items-center">
+                                            <Download className="h-4 w-4 mr-2 text-blue-500" />
+                                            <span>インプット</span>
+                                          </div>
+                                        </SelectItem>
+                                        <SelectItem value="output">
+                                          <div className="flex items-center">
+                                            <Upload className="h-4 w-4 mr-2 text-green-500" />
+                                            <span>アウトプット</span>
+                                          </div>
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
                                   <Button
                                     size="sm"
                                     onClick={() => handleEditSave(todo._id)}
@@ -527,29 +703,45 @@ export default function DailyTodoReminder({ isPremium = false }) {
                               ) : (
                                 <>
                                   <div className="flex-grow">
-                                    <Label
-                                      htmlFor={`todo-${todo._id}`}
-                                      className={`${
-                                        todo.completed
-                                          ? "line-through text-gray-500"
-                                          : "font-medium"
-                                      }`}
-                                    >
-                                      {todo.task}
-                                    </Label>
+                                    <div className="flex items-center gap-2">
+                                      <Label
+                                        htmlFor={`todo-${todo._id}`}
+                                        className={`${
+                                          todo.completed
+                                            ? "line-through text-gray-500"
+                                            : "font-medium"
+                                        }`}
+                                      >
+                                        {todo.task}
+                                      </Label>
+                                      <Badge
+                                        variant="outline"
+                                        className={`flex items-center gap-1 text-xs ${
+                                          todo.type === "input"
+                                            ? "bg-blue-50 text-blue-700 border-blue-200"
+                                            : "bg-green-50 text-green-700 border-green-200"
+                                        }`}
+                                      >
+                                        {getTaskTypeIcon(todo.type)}
+                                        <span>
+                                          {todo.type === "input"
+                                            ? "インプット"
+                                            : "アウトプット"}
+                                        </span>
+                                      </Badge>
+                                    </div>
                                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                                       <Clock className="h-3 w-3" />
                                       <span>
                                         追加:{" "}
-                                        {new Date(Date.now()).toLocaleString(
-                                          "ja-JP",
-                                          {
-                                            month: "numeric",
-                                            day: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                          }
-                                        )}
+                                        {new Date(
+                                          todo.createdAt || Date.now()
+                                        ).toLocaleString("ja-JP", {
+                                          month: "numeric",
+                                          day: "numeric",
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
                                       </span>
                                       {todo.completedDate && (
                                         <>
@@ -610,7 +802,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() =>
-                                        handleEditStart(todo._id, todo.task)
+                                        handleEditStart(
+                                          todo._id,
+                                          todo.task,
+                                          todo.type
+                                        )
                                       }
                                     >
                                       <Edit className="h-4 w-4" />
@@ -662,9 +858,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
               </Droppable>
             </DragDropContext>
 
-            {todos.length === 0 && (
+            {filteredTodos.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <p>タスクがありません。新しいタスクを追加しましょう！</p>
+                <p>
+                  表示できるタスクがありません。条件を変更するか、新しいタスクを追加しましょう！
+                </p>
               </div>
             )}
           </TabsContent>
@@ -676,11 +874,52 @@ export default function DailyTodoReminder({ isPremium = false }) {
             />
           </TabsContent>
           <TabsContent value="chart">
-            <TodoChart
-              todoHistory={
-                dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
-              }
-            />
+            <div className="space-y-6">
+              <TodoChart
+                todoHistory={
+                  dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
+                }
+              />
+              {/* インプット/アウトプット比率グラフ */}
+              <Card className="p-4">
+                <CardTitle className="text-md mb-4">
+                  <div className="flex items-center gap-2">
+                    <BarChart2 className="h-5 w-5" />
+                    <span>インプット/アウトプット比率</span>
+                  </div>
+                </CardTitle>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm">
+                      インプット: {inputCount}タスク ({inputPercentage}%)
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm">
+                      アウトプット: {outputCount}タスク ({outputPercentage}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden mt-2">
+                    <div
+                      className={`progress-bar-input progress-bar-label ${getWidthClass(
+                        inputPercentage
+                      )}`}
+                    >
+                      {inputPercentage > 15 ? `${inputPercentage}%` : ""}
+                    </div>
+                    <div
+                      className={`progress-bar-output progress-bar-label ${getWidthClass(
+                        outputPercentage
+                      )}`}
+                    >
+                      {outputPercentage > 15 ? `${outputPercentage}%` : ""}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>
@@ -700,7 +939,28 @@ export default function DailyTodoReminder({ isPremium = false }) {
           </DialogHeader>
           <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-md">
             <AlertTriangle className="h-6 w-6 text-yellow-500 mr-2" />
-            <p className="text-sm text-yellow-700">{commitmentText}</p>
+            <div className="flex flex-col">
+              <p className="text-sm text-yellow-700">{commitmentText}</p>
+              <div className="flex items-center mt-1">
+                <Badge
+                  variant="outline"
+                  className={`flex items-center gap-1 text-xs ${
+                    commitmentType === "input"
+                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      : "bg-green-50 text-green-700 border-green-200"
+                  }`}
+                >
+                  {commitmentType === "input" ? (
+                    <Download className="h-3 w-3 text-blue-500" />
+                  ) : (
+                    <Upload className="h-3 w-3 text-green-500" />
+                  )}
+                  <span>
+                    {commitmentType === "input" ? "インプット" : "アウトプット"}
+                  </span>
+                </Badge>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <Button

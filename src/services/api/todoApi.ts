@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
-import { TodoItem } from "@/store/todoSlice";
 import { api } from "./apiConfig";
+import { TodoItem } from "@/types";
 
 export interface TodoApiResponse {
   message: string;
@@ -29,8 +29,14 @@ export const todoApi = {
     return api.get<TodoItem[]>("/todos");
   },
 
-  create: (task: string, priority: number, isPrioritized: boolean): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.post<TodoApiResponse>("/todos", { task, priority, isPrioritized });
+  // タイプパラメータを追加
+  create: (
+    task: string, 
+    priority: number, 
+    isPrioritized: boolean,
+    type: "input" | "output" = "input" // 新しいタイプパラメータ
+  ): Promise<AxiosResponse<TodoApiResponse>> => {
+    return api.post<TodoApiResponse>("/todos", { task, priority, isPrioritized, type });
   },
 
   update: (

@@ -1,15 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./index";
 import { todoApi } from "@/services/api/todoApi";
-
-export interface TodoItem {
-  _id: string;
-  task: string;
-  completed: boolean;
-  priority: number;
-  isPrioritized: boolean;
-  completedDate: string | null;
-}
+import { TodoItem } from "@/types";
 
 interface TodoState {
   items: TodoItem[];
@@ -32,10 +24,21 @@ export const fetchTodoItems = createAsyncThunk("todo/fetchTodoItems", async () =
   return response.data;
 });
 
+// タイプパラメータを追加
 export const addTodoItem = createAsyncThunk(
   "todo/addTodoItem",
-  async (todo: { task: string; priority: number; isPrioritized: boolean }) => {
-    const response = await todoApi.create(todo.task, todo.priority, todo.isPrioritized);
+  async (todo: { 
+    task: string; 
+    priority: number; 
+    isPrioritized: boolean;
+    type?: "input" | "output"; // タイプパラメータを追加
+  }) => {
+    const response = await todoApi.create(
+      todo.task, 
+      todo.priority, 
+      todo.isPrioritized,
+      todo.type || "input" // デフォルト値として "input" を設定
+    );
     return response.data.todo;
   }
 );
@@ -55,8 +58,6 @@ export const deleteTodoItem = createAsyncThunk(
     return id;
   }
 );
-
-
 
 export const resetTodoList = createAsyncThunk("todo/resetTodoList", async () => {
   const response = await todoApi.reset();
