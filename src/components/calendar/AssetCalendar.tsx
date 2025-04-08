@@ -299,10 +299,19 @@ export function AssetCalendar({
   const events = useMemo(() => {
     const allDates = new Set([
       ...Object.keys(aggregatedData),
-      ...withdrawals.map((w) => w.date),
-      ...subscriptions.map((s) => String(s.billingDate).replace(/\//g, "-")),
+      ...withdrawals
+        .filter((w) => w && w.date) // undefined/null や date のない要素を除外
+        .map((w) => w.date),
+      ...subscriptions
+        .filter((s) => s && s.billingDate) // undefined/null や billingDate のない要素を除外
+        .map((s) => String(s.billingDate).replace(/\//g, "-")),
     ]);
-    const sortedDates = Array.from(allDates).sort();
+
+    // undefined や null や空文字を除外する
+    const sortedDates = Array.from(allDates)
+      .filter((date) => date !== undefined && date !== null && date !== "")
+      .sort();
+
     if (sortedDates.length === 0) return [];
 
     const firstDataDate = sortedDates[0];
@@ -312,16 +321,31 @@ export function AssetCalendar({
       let currentDate;
       let prevDate;
       let prevDateStr;
+      console.log(`Processing date: ${date}`);
 
       try {
-        // date が有効な日付文字列かチェック
-        const dateObj = new Date(date);
-        if (isNaN(dateObj.getTime())) {
+        // date が undefined または null でないことを確認
+        if (date === undefined || date === null) {
           console.warn(`無効な日付値: ${date}`);
           // エラー時のデフォルト値を設定
           currentDate = new Date();
         } else {
-          currentDate = utcToZonedTime(dateObj, "Asia/Tokyo");
+          // date が有効な日付文字列かチェック
+          const dateObj = new Date(date);
+
+          if (isNaN(dateObj.getTime())) {
+            console.warn(`無効な日付値: ${date}`);
+            // エラー時のデフォルト値を設定
+            currentDate = new Date();
+          } else {
+            // ここで例外が発生する可能性がある
+            try {
+              currentDate = utcToZonedTime(dateObj, "Asia/Tokyo");
+            } catch (tzError) {
+              console.error("タイムゾーン変換エラー:", tzError);
+              currentDate = new Date(date); // フォールバック
+            }
+          }
         }
 
         prevDate = subDays(currentDate, 1);

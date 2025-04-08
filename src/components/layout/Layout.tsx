@@ -264,7 +264,7 @@ export default function Layout({ children }: LayoutProps) {
           ws.onmessage = (event) => {
             try {
               const data = JSON.parse(event.data);
-
+              console.log("WebSocketメッセージ:", data);
               if (data.type === "notification") {
                 // 新しい通知を受信した場合
                 const newNotification = data.notification;
