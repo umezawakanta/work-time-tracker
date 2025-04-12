@@ -31,13 +31,15 @@ export const addTodoItem = createAsyncThunk(
     task: string; 
     priority: number; 
     isPrioritized: boolean;
-    type?: "input" | "output"; // タイプパラメータを追加
+    type?: "input" | "output";
+    deadline?: string; // deadline プロパティを追加
   }) => {
     const response = await todoApi.create(
       todo.task, 
       todo.priority, 
       todo.isPrioritized,
-      todo.type || "input" // デフォルト値として "input" を設定
+      todo.type || "input",
+      todo.deadline // deadline を API に渡す
     );
     return response.data.todo;
   }

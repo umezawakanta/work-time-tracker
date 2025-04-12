@@ -402,6 +402,7 @@ export interface TodoItem {
     isPrioritized: boolean;
     completedDate: string | null;
     type?: "input" | "output";
-    createdAt?: string; // createdAtプロパティを追加
+    createdAt?: string;
+    deadline?: string; // deadline プロパティを追加
   }
   

@@ -29,14 +29,21 @@ export const todoApi = {
     return api.get<TodoItem[]>("/todos");
   },
 
-  // タイプパラメータを追加
+  // deadline パラメータを追加
   create: (
     task: string, 
     priority: number, 
     isPrioritized: boolean,
-    type: "input" | "output" = "input" // 新しいタイプパラメータ
+    type: "input" | "output" = "input",
+    deadline?: string // 期限パラメータを追加
   ): Promise<AxiosResponse<TodoApiResponse>> => {
-    return api.post<TodoApiResponse>("/todos", { task, priority, isPrioritized, type });
+    return api.post<TodoApiResponse>("/todos", { 
+      task, 
+      priority, 
+      isPrioritized, 
+      type,
+      deadline // APIリクエストに期限を含める
+    });
   },
 
   update: (

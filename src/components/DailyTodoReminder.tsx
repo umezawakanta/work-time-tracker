@@ -1,7 +1,7 @@
-// src/components/DailyTodoReminderWithGemini.tsx
-// 元のDailyTodoReminderコンポーネントを拡張したバージョン
+// src/components/DailyTodoReminderWithRateLimit.tsx
+// レート制限を考慮したDailyTodoReminderコンポーネント
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
@@ -30,7 +30,10 @@ import {
   Download,
   Upload,
   BarChart2,
-  Sparkles, // AIアシスト用のアイコンを追加
+  Sparkles,
+  Calendar,
+  Zap,
+  ArrowUp,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
@@ -93,6 +96,10 @@ import {
 
 // GeminiServiceをインポート
 import GeminiService, { TaskClassification } from "@/services/GeminiService";
+// TaskPriorityServiceをインポート
+import TaskPriorityService, {
+  PriorityAnalysis,
+} from "@/services/TaskPriorityService";
 
 // CSS をインポート
 import "./DailyTodoReminder.css";
@@ -100,7 +107,11 @@ import "./DailyTodoReminder.css";
 // TaskType型を定義
 type TaskType = "input" | "output";
 
-export default function DailyTodoReminderWithGemini({ isPremium = false }) {
+// APIレート制限管理
+const API_COOLDOWN = 5000; // 5秒間隔
+let lastApiCallTime = 0;
+
+export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const status = useSelector(selectTodoStatus);
@@ -119,11 +130,26 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
   const [streakCount, setStreakCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", "completed"
   const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output"
-  
+
   // Gemini関連の状態を追加
   const [isClassifying, setIsClassifying] = useState(false);
-  const [classification, setClassification] = useState<TaskClassification | null>(null);
+  const [classification, setClassification] =
+    useState<TaskClassification | null>(null);
   const [showAiSuggestion, setShowAiSuggestion] = useState(false);
+
+  // 優先度分析関連の状態を追加
+  const [priorityAnalysis, setPriorityAnalysis] =
+    useState<PriorityAnalysis | null>(null);
+  const [isAnalyzingPriority, setIsAnalyzingPriority] = useState(false);
+  const [showPrioritySuggestion, setShowPrioritySuggestion] = useState(false);
+  const [suggestedDeadline, setSuggestedDeadline] = useState<
+    string | undefined
+  >(undefined);
+  const [priorityEnabled, setPriorityEnabled] = useState(false);
+
+  // 手動分析用の状態
+  const [analysisButtonEnabled, setAnalysisButtonEnabled] = useState(true);
+  const [isManualAnalysis, setIsManualAnalysis] = useState(false);
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
@@ -190,43 +216,135 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
     }
   }, [error]);
 
-  // タスク入力時にGemini APIを使って自動分類する関数
-  const handleTaskInputChange = useCallback(async (value: string) => {
+  // タスク入力ハンドラー（自動分析なし）
+  const handleTaskInput = useCallback((value: string) => {
     setNewTodo(value);
-    
-    // テキストが入力されたとき、以前の分類をリセット
+
+    // 入力時は分析を行わず、UIの状態のみクリア（必要に応じて）
     if (value.trim() === "") {
       setClassification(null);
       setShowAiSuggestion(false);
-      return;
+      setPriorityAnalysis(null);
+      setShowPrioritySuggestion(false);
     }
-    
-    // 短すぎるテキストは分類しない
-    if (value.trim().length < 3) {
-      return;
-    }
-    
-    // 入力が停止してから分類を開始（デバウンス処理）
-    const debounceTimeout = setTimeout(async () => {
-      setIsClassifying(true);
-      try {
-        const result = await GeminiService.classifyTaskType(value);
-        setClassification(result);
-        setTaskType(result.type); // 自動的にタイプを設定
-        
-        // 確信度が高い場合のみ提案を表示
-        if (result.confidence > 0.7) {
-          setShowAiSuggestion(true);
-        }
-      } catch (error) {
-        console.error("タスク分類エラー:", error);
-      } finally {
-        setIsClassifying(false);
-      }
-    }, 500); // 500ms待機
-    
-    return () => clearTimeout(debounceTimeout);
   }, []);
+
+  // 手動分析ボタンのハンドラー
+  const handleManualAnalysis = useCallback(async () => {
+    if (!newTodo.trim() || newTodo.trim().length < 5) {
+      toast.error("分析するには、より詳細なタスク内容を入力してください");
+      return;
+    }
+
+    if (isClassifying || isAnalyzingPriority) {
+      return; // 既に分析中なら実行しない
+    }
+
+    // レート制限チェック
+    const now = Date.now();
+    if (now - lastApiCallTime < API_COOLDOWN) {
+      toast.error(
+        `APIリクエストの間隔が短すぎます。あと${Math.ceil(
+          (API_COOLDOWN - (now - lastApiCallTime)) / 1000
+        )}秒お待ちください`
+      );
+      return;
+    }
+
+    setIsManualAnalysis(true);
+    setIsClassifying(true);
+    setIsAnalyzingPriority(true);
+    setAnalysisButtonEnabled(false);
+    lastApiCallTime = now;
+
+    try {
+      // タスクタイプの分類
+      const typeResult = await GeminiService.classifyTaskType(newTodo);
+      setClassification(typeResult);
+      setTaskType(typeResult.type);
+
+      if (typeResult.confidence > 0.65) {
+        setShowAiSuggestion(true);
+      }
+
+      // タスク優先度の分析（少し遅延させて連続リクエストを避ける）
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const priorityResult = await TaskPriorityService.analyzePriority(newTodo);
+      setPriorityAnalysis(priorityResult);
+      setSuggestedDeadline(priorityResult.suggestedDeadline);
+      setPriorityEnabled(priorityResult.isPrioritized);
+
+      if (priorityResult.isPrioritized) {
+        setShowPrioritySuggestion(true);
+      }
+
+      toast.success("タスク分析が完了しました");
+    } catch (error) {
+      console.error("タスク分析エラー:", error);
+      toast.error("分析中にエラーが発生しました");
+
+      // エラー時はローカル分析を試行
+      try {
+        // タイプの簡易判定
+        const lowerText = newTodo.toLowerCase();
+        let detectedType: TaskType = "input";
+
+        // 単純なキーワードベースで判定
+        const outputKeywords = [
+          "作る",
+          "書く",
+          "開発",
+          "コード",
+          "投稿",
+          "実践",
+          "発表",
+        ];
+        if (outputKeywords.some((keyword) => lowerText.includes(keyword))) {
+          detectedType = "output";
+        }
+
+        setTaskType(detectedType);
+        setClassification({
+          type: detectedType,
+          confidence: 0.6,
+          explanation: `キーワード分析により${
+            detectedType === "input" ? "インプット" : "アウトプット"
+          }タスクと判断しました（ローカル分析）`,
+        });
+        setShowAiSuggestion(true);
+
+        // 優先度の簡易判定
+        const isPriority =
+          lowerText.includes("重要") ||
+          lowerText.includes("緊急") ||
+          lowerText.includes("今日") ||
+          lowerText.includes("明日");
+        setPriorityEnabled(isPriority);
+
+        if (isPriority) {
+          setPriorityAnalysis({
+            isPrioritized: true,
+            importance: 7,
+            urgency: 7,
+            explanation:
+              "キーワード分析により優先タスクと判断しました（ローカル分析）",
+          });
+          setShowPrioritySuggestion(true);
+        }
+      } catch (localError) {
+        console.error("ローカル分析エラー:", localError);
+      }
+    } finally {
+      setIsManualAnalysis(false);
+      setIsClassifying(false);
+      setIsAnalyzingPriority(false);
+
+      // 一定時間後にボタンを再有効化
+      setTimeout(() => {
+        setAnalysisButtonEnabled(true);
+      }, API_COOLDOWN); // クールダウン時間後
+    }
+  }, [newTodo]);
 
   const handleToggle = useCallback(
     (id: string) => {
@@ -267,27 +385,39 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
 
   const confirmAddTodo = useCallback(() => {
     if (commitmentText.trim()) {
+      // 最大の優先度を取得して、新しいタスクにはそれよりも大きな値を設定
       const maxPriority = Math.max(...todos.map((todo) => todo.priority), 0);
-      // TodoItemの型に合わせて、createdAtとdeadlineは含めない
+      
       dispatch(
         addTodoItem({
           task: commitmentText.trim(),
           priority: maxPriority + 1,
-          isPrioritized: false,
-          type: commitmentType, // タイプは明示的にリテラル型 "input" | "output"
+          isPrioritized: priorityEnabled,
+          type: commitmentType,
+          deadline: suggestedDeadline // deadline プロパティを正しく渡す
         })
       );
+      
       setNewTodo("");
       setShowAiSuggestion(false);
+      setShowPrioritySuggestion(false);
       setClassification(null);
+      setPriorityAnalysis(null);
+      setSuggestedDeadline(undefined);
+      setPriorityEnabled(false);
       setShowCommitmentDialog(false);
+      
       toast.success(
         `新しい${
           commitmentType === "input" ? "インプット" : "アウトプット"
-        }タスクを追加しました。必ず完了させましょう！`
+        }タスクを追加しました。必ず完了させましょう！${
+          priorityEnabled ? "（優先タスク）" : ""
+        }${
+          suggestedDeadline ? `（期限: ${suggestedDeadline}）` : "" // 期限情報をトーストにも表示
+        }`
       );
     }
-  }, [dispatch, commitmentText, commitmentType, todos]);
+  }, [dispatch, commitmentText, commitmentType, todos, priorityEnabled, suggestedDeadline]);
 
   const handleDeleteTodo = useCallback(
     (id: string) => {
@@ -408,19 +538,20 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
       return true;
     })
     .sort((a, b) => {
-      if (a.completed === b.completed) {
-        if (a.isPrioritized === b.isPrioritized) {
-          return a.priority - b.priority;
-        }
-        return a.isPrioritized ? -1 : 1;
+      // まず完了状態でソート
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1; // 未完了タスクを上に
       }
-      return a.completed ? 1 : -1;
-    });
 
-  const todoHistoryArray = Object.entries(todoHistory).map(([date, count]) => ({
-    date,
-    count,
-  }));
+      // 次に優先状態でソート
+      if (a.isPrioritized !== b.isPrioritized) {
+        return a.isPrioritized ? -1 : 1; // 優先タスクを上に
+      }
+
+      // 最後に優先度の逆順（大きい数値が新しいタスク）でソート
+      // より大きな優先度（新しいタスク）が上に来るようにする
+      return b.priority - a.priority;
+    });
 
   // resetTodoList実行時の処理を修正
   const handleResetTodos = () => {
@@ -480,7 +611,7 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
   // AIの提案を表示するコンポーネント
   const AiSuggestionBadge = () => {
     if (!showAiSuggestion || !classification) return null;
-    
+
     return (
       <div className="flex items-center mt-1 mb-2 bg-purple-50 p-2 rounded-md border border-purple-200">
         <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
@@ -492,13 +623,65 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
             </span>
             タスクです
           </p>
-          <p className="text-xs text-purple-600">{classification.explanation}</p>
+          <p className="text-xs text-purple-600">
+            {classification.explanation}
+          </p>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="ml-2" 
+        <Button
+          variant="ghost"
+          size="sm"
+          className="ml-2"
           onClick={() => setShowAiSuggestion(false)}
+        >
+          <X className="h-3 w-3" />
+        </Button>
+      </div>
+    );
+  };
+
+  // 優先度提案を表示するコンポーネント
+  const PrioritySuggestionBadge = () => {
+    if (!showPrioritySuggestion || !priorityAnalysis) return null;
+
+    const { importance, urgency, explanation, suggestedDeadline } =
+      priorityAnalysis;
+
+    return (
+      <div className="flex items-start mt-1 mb-2 bg-amber-50 p-2 rounded-md border border-amber-200">
+        <ArrowUp className="h-4 w-4 text-amber-500 mr-2 mt-1 flex-shrink-0" />
+        <div className="flex-grow">
+          <p className="text-sm text-amber-700 font-medium">
+            優先タスク候補として検出しました
+          </p>
+          <p className="text-xs text-amber-600 mt-1">{explanation}</p>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <div className="flex items-center">
+              <Zap className="h-3 w-3 text-amber-500 mr-1" />
+              <span className="text-xs text-amber-700">
+                重要度: {importance}/10
+              </span>
+            </div>
+            <div className="flex items-center">
+              <AlertTriangle className="h-3 w-3 text-amber-500 mr-1" />
+              <span className="text-xs text-amber-700">
+                緊急度: {urgency}/10
+              </span>
+            </div>
+            {suggestedDeadline && (
+              <div className="flex items-center">
+                <Calendar className="h-3 w-3 text-amber-500 mr-1" />
+                <span className="text-xs text-amber-700">
+                  推奨期限: {suggestedDeadline}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="ml-2 flex-shrink-0"
+          onClick={() => setShowPrioritySuggestion(false)}
         >
           <X className="h-3 w-3" />
         </Button>
@@ -610,7 +793,7 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
                 <Input
                   type="text"
                   value={newTodo}
-                  onChange={(e) => handleTaskInputChange(e.target.value)}
+                  onChange={(e) => handleTaskInput(e.target.value)}
                   placeholder="新しいタスクを追加"
                   className="flex-1"
                 />
@@ -638,17 +821,54 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
                 </Select>
                 <Button type="submit">追加</Button>
               </div>
-              
+
+              {/* AI分析ボタン */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleManualAnalysis}
+                disabled={
+                  !analysisButtonEnabled ||
+                  isClassifying ||
+                  isAnalyzingPriority ||
+                  newTodo.trim().length < 5
+                }
+                className="w-full mt-2"
+              >
+                {isClassifying || isAnalyzingPriority ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin mr-2">
+                      <RefreshCcw className="h-3 w-3" />
+                    </div>
+                    <span>タスク分析中...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    <span>AIでタスクを分析する</span>
+                  </div>
+                )}
+              </Button>
+
               {/* AI提案バッジを表示 */}
               <AiSuggestionBadge />
-              
-              {/* 分類中の表示 */}
-              {isClassifying && (
-                <div className="flex items-center mt-1">
+
+              {/* 優先度の提案 */}
+              <PrioritySuggestionBadge />
+
+              {/* 分析中の表示 */}
+              {(isClassifying || isAnalyzingPriority) && isManualAnalysis && (
+                <div className="flex items-center mt-1 justify-center">
                   <div className="animate-spin mr-2">
                     <RefreshCcw className="h-3 w-3 text-gray-400" />
                   </div>
-                  <span className="text-xs text-gray-500">AI分析中...</span>
+                  <span className="text-xs text-gray-500">
+                    {isClassifying && isAnalyzingPriority
+                      ? "タスクを総合的に分析中..."
+                      : isClassifying
+                      ? "タイプを分析中..."
+                      : "優先度を分析中..."}
+                  </span>
                 </div>
               )}
             </form>
@@ -807,21 +1027,41 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
                                       >
                                         {todo.task}
                                       </Label>
-                                      <Badge
-                                        variant="outline"
-                                        className={`flex items-center gap-1 text-xs ${
-                                          todo.type === "input"
-                                            ? "bg-blue-50 text-blue-700 border-blue-200"
-                                            : "bg-green-50 text-green-700 border-green-200"
-                                        }`}
-                                      >
-                                        {getTaskTypeIcon(todo.type)}
-                                        <span>
-                                          {todo.type === "input"
-                                            ? "インプット"
-                                            : "アウトプット"}
-                                        </span>
-                                      </Badge>
+                                      <div className="flex items-center gap-1">
+                                        <Badge
+                                          variant="outline"
+                                          className={`flex items-center gap-1 text-xs ${
+                                            todo.type === "input"
+                                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                                              : "bg-green-50 text-green-700 border-green-200"
+                                          }`}
+                                        >
+                                          {getTaskTypeIcon(todo.type)}
+                                          <span>
+                                            {todo.type === "input"
+                                              ? "インプット"
+                                              : "アウトプット"}
+                                          </span>
+                                        </Badge>
+                                        {todo.isPrioritized && (
+                                          <Badge
+                                            variant="outline"
+                                            className="priority-badge flex items-center gap-1"
+                                          >
+                                            <Star className="h-3 w-3" />
+                                            <span>優先</span>
+                                          </Badge>
+                                        )}
+                                        {todo.deadline && (
+                                          <Badge
+                                            variant="outline"
+                                            className="deadline-badge"
+                                          >
+                                            <Calendar className="h-3 w-3" />
+                                            <span>{todo.deadline}</span>
+                                          </Badge>
+                                        )}
+                                      </div>
                                     </div>
                                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                                       <Clock className="h-3 w-3" />
@@ -962,7 +1202,7 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
           <TabsContent value="calendar">
             <TodoCalendar
               todoHistory={
-                dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
+                dailyHistory.length > 0 ? dailyHistory : todoHistory
               }
             />
           </TabsContent>
@@ -970,7 +1210,7 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
             <div className="space-y-6">
               <TodoChart
                 todoHistory={
-                  dailyHistory.length > 0 ? dailyHistory : todoHistoryArray
+                  dailyHistory.length > 0 ? dailyHistory : todoHistory
                 }
               />
               {/* インプット/アウトプット比率グラフ */}
@@ -1055,16 +1295,76 @@ export default function DailyTodoReminderWithGemini({ isPremium = false }) {
               </div>
             </div>
           </div>
+
           {/* AI分析結果を表示 */}
           {classification && (
             <div className="bg-purple-50 p-3 rounded-md border border-purple-200 mt-2">
               <div className="flex items-center">
                 <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-                <span className="text-sm font-medium text-purple-700">AIによる分析</span>
+                <span className="text-sm font-medium text-purple-700">
+                  AIによる分析
+                </span>
               </div>
-              <p className="text-xs text-purple-600 mt-1">{classification.explanation}</p>
+              <p className="text-xs text-purple-600 mt-1">
+                {classification.explanation}
+              </p>
             </div>
           )}
+
+          {/* 優先度情報の表示 */}
+          {priorityAnalysis && priorityAnalysis.isPrioritized && (
+            <div className="bg-amber-50 p-3 rounded-md border border-amber-200 mt-2">
+              <div className="flex items-center">
+                <ArrowUp className="h-4 w-4 text-amber-500 mr-2" />
+                <span className="text-sm font-medium text-amber-700">
+                  優先タスクとして検出
+                </span>
+              </div>
+              <p className="text-xs text-amber-600 mt-1">
+                {priorityAnalysis.explanation}
+              </p>
+
+              <div className="flex flex-wrap gap-3 mt-2">
+                <div className="flex items-center">
+                  <Zap className="h-3 w-3 text-amber-500 mr-1" />
+                  <span className="text-xs">
+                    重要度: {priorityAnalysis.importance}/10
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <AlertTriangle className="h-3 w-3 text-amber-500 mr-1" />
+                  <span className="text-xs">
+                    緊急度: {priorityAnalysis.urgency}/10
+                  </span>
+                </div>
+                {priorityAnalysis.suggestedDeadline && (
+                  <div className="flex items-center">
+                    <Calendar className="h-3 w-3 text-amber-500 mr-1" />
+                    <span className="text-xs">
+                      推奨期限: {priorityAnalysis.suggestedDeadline}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end mt-2">
+                <div className="flex items-center">
+                  <Checkbox
+                    id="priority-checkbox"
+                    checked={priorityEnabled}
+                    onCheckedChange={(checked) => setPriorityEnabled(!!checked)}
+                  />
+                  <label
+                    htmlFor="priority-checkbox"
+                    className="ml-2 text-xs text-amber-700"
+                  >
+                    優先タスクとして登録
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
           <DialogFooter>
             <Button
               variant="outline"

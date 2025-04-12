@@ -56,3 +56,126 @@
   .w-90 { width: 90%; }
   .w-95 { width: 95%; }
   .w-100 { width: 100%; }
+
+  /* src/components/PriorityStyles.css */
+/* タスク優先度の表示に関わるスタイル定義 */
+
+/* 優先タスクの背景スタイル */
+.priority-task {
+  background-color: rgba(254, 243, 199, 0.5) !important;
+  border-color: rgba(252, 211, 77, 0.6) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.priority-task:hover {
+  background-color: rgba(254, 243, 199, 0.7) !important;
+  border-color: rgba(252, 211, 77, 0.8) !important;
+}
+
+/* 重要度・緊急度メーター */
+.importance-meter,
+.urgency-meter {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.importance-meter > div {
+  height: 100%;
+  background: linear-gradient(to right, #34d399, #10b981, #059669);
+}
+
+.urgency-meter > div {
+  height: 100%;
+  background: linear-gradient(to right, #93c5fd, #60a5fa, #3b82f6);
+}
+
+/* 期限の表示 */
+.deadline-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  background-color: rgba(252, 231, 243, 0.5);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  color: rgb(219, 39, 119);
+}
+
+.deadline-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* 優先度提案カード */
+.priority-suggestion-card {
+  background-color: rgba(254, 243, 199, 0.3);
+  border: 1px solid rgba(252, 211, 77, 0.4);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.priority-suggestion-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #f59e0b, #d97706);
+}
+
+/* 分析中のローディングアニメーション */
+.analysis-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+.analysis-loading .spinner {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 重要度・緊急度のアイコン */
+.importance-icon {
+  color: #10b981;
+}
+
+.urgency-icon {
+  color: #3b82f6;
+}
+
+.deadline-icon {
+  color: #ec4899;
+}
+
+/* タスクカード内の優先バッジ */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  background-color: rgba(251, 191, 36, 0.2);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: rgb(217, 119, 6);
+}
