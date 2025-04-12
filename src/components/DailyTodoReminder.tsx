@@ -1,4 +1,5 @@
-"use client";
+// src/components/DailyTodoReminderWithGemini.tsx
+// 元のDailyTodoReminderコンポーネントを拡張したバージョン
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,7 @@ import {
   Download,
   Upload,
   BarChart2,
+  Sparkles, // AIアシスト用のアイコンを追加
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
@@ -89,13 +91,16 @@ import {
   selectDailyHistory,
 } from "@/store/todoSlice";
 
+// GeminiServiceをインポート
+import GeminiService, { TaskClassification } from "@/services/GeminiService";
+
 // CSS をインポート
 import "./DailyTodoReminder.css";
 
 // TaskType型を定義
 type TaskType = "input" | "output";
 
-export default function DailyTodoReminder({ isPremium = false }) {
+export default function DailyTodoReminderWithGemini({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const status = useSelector(selectTodoStatus);
@@ -103,17 +108,22 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const todoHistory = useSelector(selectTodoHistory);
   const dailyHistory = useSelector(selectDailyHistory);
   const [newTodo, setNewTodo] = useState("");
-  const [taskType, setTaskType] = useState<TaskType>("input"); // 型を明示的に指定
+  const [taskType, setTaskType] = useState<TaskType>("input");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
-  const [editingType, setEditingType] = useState<TaskType>("input"); // 型を明示的に指定
+  const [editingType, setEditingType] = useState<TaskType>("input");
   const [selectedTab, setSelectedTab] = useState("list");
   const [showCommitmentDialog, setShowCommitmentDialog] = useState(false);
   const [commitmentText, setCommitmentText] = useState("");
-  const [commitmentType, setCommitmentType] = useState<TaskType>("input"); // 型を明示的に指定
+  const [commitmentType, setCommitmentType] = useState<TaskType>("input");
   const [streakCount, setStreakCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", "completed"
   const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output"
+  
+  // Gemini関連の状態を追加
+  const [isClassifying, setIsClassifying] = useState(false);
+  const [classification, setClassification] = useState<TaskClassification | null>(null);
+  const [showAiSuggestion, setShowAiSuggestion] = useState(false);
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
@@ -180,6 +190,44 @@ export default function DailyTodoReminder({ isPremium = false }) {
     }
   }, [error]);
 
+  // タスク入力時にGemini APIを使って自動分類する関数
+  const handleTaskInputChange = useCallback(async (value: string) => {
+    setNewTodo(value);
+    
+    // テキストが入力されたとき、以前の分類をリセット
+    if (value.trim() === "") {
+      setClassification(null);
+      setShowAiSuggestion(false);
+      return;
+    }
+    
+    // 短すぎるテキストは分類しない
+    if (value.trim().length < 3) {
+      return;
+    }
+    
+    // 入力が停止してから分類を開始（デバウンス処理）
+    const debounceTimeout = setTimeout(async () => {
+      setIsClassifying(true);
+      try {
+        const result = await GeminiService.classifyTaskType(value);
+        setClassification(result);
+        setTaskType(result.type); // 自動的にタイプを設定
+        
+        // 確信度が高い場合のみ提案を表示
+        if (result.confidence > 0.7) {
+          setShowAiSuggestion(true);
+        }
+      } catch (error) {
+        console.error("タスク分類エラー:", error);
+      } finally {
+        setIsClassifying(false);
+      }
+    }, 500); // 500ms待機
+    
+    return () => clearTimeout(debounceTimeout);
+  }, []);
+
   const handleToggle = useCallback(
     (id: string) => {
       const todoToUpdate = todos.find((todo) => todo._id === id);
@@ -230,6 +278,8 @@ export default function DailyTodoReminder({ isPremium = false }) {
         })
       );
       setNewTodo("");
+      setShowAiSuggestion(false);
+      setClassification(null);
       setShowCommitmentDialog(false);
       toast.success(
         `新しい${
@@ -427,6 +477,36 @@ export default function DailyTodoReminder({ isPremium = false }) {
     return "bg-gray-50 text-gray-700 border-gray-200";
   };
 
+  // AIの提案を表示するコンポーネント
+  const AiSuggestionBadge = () => {
+    if (!showAiSuggestion || !classification) return null;
+    
+    return (
+      <div className="flex items-center mt-1 mb-2 bg-purple-50 p-2 rounded-md border border-purple-200">
+        <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
+        <div>
+          <p className="text-sm text-purple-700">
+            AIによる提案: この内容は
+            <span className="font-medium">
+              {classification.type === "input" ? "インプット" : "アウトプット"}
+            </span>
+            タスクです
+          </p>
+          <p className="text-xs text-purple-600">{classification.explanation}</p>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="ml-2" 
+          onClick={() => setShowAiSuggestion(false)}
+        >
+          <X className="h-3 w-3" />
+        </Button>
+      </div>
+    );
+  };
+
+  // 以下はUIの返却部分（既存コードを流用して一部を修正）
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center p-8">読み込み中...</div>
@@ -530,7 +610,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                 <Input
                   type="text"
                   value={newTodo}
-                  onChange={(e) => setNewTodo(e.target.value)}
+                  onChange={(e) => handleTaskInputChange(e.target.value)}
                   placeholder="新しいタスクを追加"
                   className="flex-1"
                 />
@@ -558,6 +638,19 @@ export default function DailyTodoReminder({ isPremium = false }) {
                 </Select>
                 <Button type="submit">追加</Button>
               </div>
+              
+              {/* AI提案バッジを表示 */}
+              <AiSuggestionBadge />
+              
+              {/* 分類中の表示 */}
+              {isClassifying && (
+                <div className="flex items-center mt-1">
+                  <div className="animate-spin mr-2">
+                    <RefreshCcw className="h-3 w-3 text-gray-400" />
+                  </div>
+                  <span className="text-xs text-gray-500">AI分析中...</span>
+                </div>
+              )}
             </form>
 
             {/* フィルターボタン */}
@@ -962,6 +1055,16 @@ export default function DailyTodoReminder({ isPremium = false }) {
               </div>
             </div>
           </div>
+          {/* AI分析結果を表示 */}
+          {classification && (
+            <div className="bg-purple-50 p-3 rounded-md border border-purple-200 mt-2">
+              <div className="flex items-center">
+                <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
+                <span className="text-sm font-medium text-purple-700">AIによる分析</span>
+              </div>
+              <p className="text-xs text-purple-600 mt-1">{classification.explanation}</p>
+            </div>
+          )}
           <DialogFooter>
             <Button
               variant="outline"
