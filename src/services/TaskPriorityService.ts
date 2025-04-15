@@ -33,27 +33,23 @@ export const TaskPriorityService = {
                 return localPriorityAnalysis(taskText);
             }
 
-            const prompt = `
-あなたはタスク管理の専門家です。以下のタスクの重要度と緊急度を分析し、優先すべきかどうかを判断してください。
-
-タスク: "${taskText}"
-
-以下の点を考慮して分析してください：
-1. 重要度：タスクの価値や影響度（1-10のスケール）
-2. 緊急度：タスクの時間的制約（1-10のスケール）
-3. このタスクを優先的に行うべきかどうか
-4. 適切なデッドラインがあれば提案する
-
-次の形式のJSONで回答してください：
-{
-  "isPrioritized": true または false,
-  "importance": 重要度を表す1-10の数値,
-  "urgency": 緊急度を表す1-10の数値,
-  "explanation": "分析理由の簡潔な説明",
-  "suggestedDeadline": "YYYY-MM-DD形式の提案される期限（任意）"
-}
-
-JSONのみを返してください。余分なテキストや説明は含めないでください。`;
+            const prompt = 
+                "あなたはタスク管理の専門家です。以下のタスクの重要度と緊急度を分析し、優先すべきかどうかを判断してください。\n\n" +
+                `タスク: "${taskText}"\n\n` +
+                "以下の点を考慮して分析してください：\n" +
+                "1. 重要度：タスクの価値や影響度（1-10のスケール）\n" +
+                "2. 緊急度：タスクの時間的制約（1-10のスケール）\n" +
+                "3. このタスクを優先的に行うべきかどうか\n" +
+                "4. 適切なデッドラインがあれば提案する\n\n" +
+                "次の形式のJSONで回答してください：\n" +
+                "{\n" +
+                '  "isPrioritized": true または false,\n' +
+                '  "importance": 重要度を表す1-10の数値,\n' +
+                '  "urgency": 緊急度を表す1-10の数値,\n' +
+                '  "explanation": "分析理由の簡潔な説明",\n' +
+                '  "suggestedDeadline": "YYYY-MM-DD形式の提案される期限（任意）"\n' +
+                "}\n\n" +
+                "JSONのみを返してください。余分なテキストや説明は含めないでください。コードブロックも使用しないでください。";
 
             // Gemini APIリクエスト
             const response = await axios.post(
@@ -85,10 +81,15 @@ JSONのみを返してください。余分なテキストや説明は含めな�
             // Geminiからの応答を解析
             const generatedText = response.data.candidates[0].content.parts[0].text;
 
-            // 改良されたJSON抽出処理
+            // コードブロックとマークダウン記法に対応したJSON抽出処理
             try {
-                // 最初に単純なJSONパース試行
-                const cleanedText = generatedText.trim();
+                // マークダウンコードブロックを取り除く
+                let cleanedText = generatedText.trim();
+                // ```json や ``` のコードブロック記法を削除
+                cleanedText = cleanedText.replace(/^```(json)?\s*/, '');
+                cleanedText = cleanedText.replace(/\s*```$/, '');
+                
+                // JSONをパース
                 const jsonResponse = JSON.parse(cleanedText);
                 return {
                     isPrioritized: !!jsonResponse.isPrioritized,
@@ -97,18 +98,37 @@ JSONのみを返してください。余分なテキストや説明は含めな�
                     explanation: jsonResponse.explanation || '優先度を分析しました',
                     suggestedDeadline: jsonResponse.suggestedDeadline
                 };
-            } catch (error) { // parseErrorをerrorにリネーム
-                // エラーを使用して警告を消す
+            } catch (error) {
                 console.error('JSON解析エラー:', error);
-                // JSON部分を正規表現で抽出する代替手段
-                console.log('最初のJSON解析に失敗、正規表現で再試行します');
+                console.log('元のテキスト:', generatedText);
+                
+                // コードブロックのパターンに対応した正規表現
+                const jsonBlockRegex = /```(?:json)?\s*([\s\S]*?)\s*```/;
+                const jsonMatch = generatedText.match(jsonBlockRegex);
+                
+                if (jsonMatch && jsonMatch[1]) {
+                    try {
+                        const extractedJson = jsonMatch[1];
+                        const jsonResponse = JSON.parse(extractedJson);
+                        return {
+                            isPrioritized: !!jsonResponse.isPrioritized,
+                            importance: Number(jsonResponse.importance) || 5,
+                            urgency: Number(jsonResponse.urgency) || 5,
+                            explanation: jsonResponse.explanation || '優先度を分析しました',
+                            suggestedDeadline: jsonResponse.suggestedDeadline
+                        };
+                    } catch (nestedError) {
+                        console.error('コードブロック抽出からのJSON解析に失敗:', nestedError);
+                    }
+                }
+                
+                // 従来の正規表現による抽出方法も維持
                 const jsonRegex = /\{[\s\S]*\}/;
                 const match = generatedText.match(jsonRegex);
-
+                
                 if (match) {
                     try {
                         const extractedJson = match[0];
-                        // 取得したJSONテキストを加工して解析
                         const jsonResponse = JSON.parse(extractedJson);
                         return {
                             isPrioritized: !!jsonResponse.isPrioritized,
@@ -120,10 +140,9 @@ JSONのみを返してください。余分なテキストや説明は含めな�
                     } catch (nestedError) {
                         console.error('JSON抽出に失敗しました:', nestedError);
                         console.log('生のテキスト:', generatedText);
-                        throw nestedError;
                     }
                 }
-
+                
                 // 手動解析を試みる
                 console.log('正規表現でのJSON抽出に失敗、手動解析を試みます');
                 return manualJsonParsing(generatedText);
