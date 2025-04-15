@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/hooks/useLocale";
@@ -199,7 +199,8 @@ export default function Layout({ children }: LayoutProps) {
   }, [isAuthenticated, user]);
 
   // 通知取得の関数
-  const fetchNotifications = async () => {
+  // 通知取得の関数
+  const fetchNotifications = useCallback(async () => {
     if (isAuthenticated && user) {
       try {
         setIsLoadingNotifications(true);
@@ -229,7 +230,7 @@ export default function Layout({ children }: LayoutProps) {
       setNotifications([]);
       setUnreadNotifications(0);
     }
-  };
+  }, [isAuthenticated, user]);
 
   // 通知の取得
   useEffect(() => {
@@ -348,7 +349,7 @@ export default function Layout({ children }: LayoutProps) {
         ws.close();
       }
     };
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, fetchNotifications]); // fetchNotificationsを依存配列に追加
 
   // 通知タイプに応じたアイコンを取得する関数
   const getNotificationTypeIcon = (type: string) => {

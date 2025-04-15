@@ -344,7 +344,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
         setAnalysisButtonEnabled(true);
       }, API_COOLDOWN); // クールダウン時間後
     }
-  }, [newTodo]);
+  }, [newTodo, isClassifying, isAnalyzingPriority]); // 依存配列に状態変数を追加
 
   const handleToggle = useCallback(
     (id: string) => {
