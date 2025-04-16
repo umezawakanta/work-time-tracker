@@ -31,10 +31,11 @@ const validateCandidate = [
 router.post(
   "/",
   validateCandidate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -57,7 +58,7 @@ router.post(
   }
 );
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const candidates = await Candidate.find().sort({ name: 1 });
     res.json(candidates);
@@ -69,10 +70,11 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
 router.put(
   "/:id",
   validateCandidate,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -82,9 +84,8 @@ router.put(
         { new: true }
       );
       if (!updatedCandidate) {
-        return res
-          .status(404)
-          .json({ message: "指定された候補者が見つかりません" });
+        res.status(404).json({ message: "指定された候補者が見つかりません" });
+        return;
       }
       res.json({
         message: "候補者情報が正常に更新されました",
@@ -98,13 +99,12 @@ router.put(
 
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id);
       if (!deletedCandidate) {
-        return res
-          .status(404)
-          .json({ message: "指定された候補者が見つかりません" });
+        res.status(404).json({ message: "指定された候補者が見つかりません" });
+        return;
       }
       res.json({
         message: "候補者が正常に削除されました",
