@@ -38,7 +38,7 @@ const validateUserId = [
 router.get(
     "/user/:userId",
     validateUserId,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
       try {
         const userId = req.params.userId;
         const projects = await Project.find({ userId }).sort({ lastUsed: -1, name: 1 });
@@ -55,10 +55,11 @@ router.get(
 router.post(
   "/",
   validateProject,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -69,9 +70,10 @@ router.post(
       });
 
       if (existingProject) {
-        return res.status(400).json({
+        res.status(400).json({
           message: "同じ名前のプロジェクトが既に存在します",
         });
+        return;
       }
 
       const projectData: IProject = new Project({
@@ -101,10 +103,11 @@ router.put(
     body("color").optional().isString(),
     body("lastUsed").optional().isISO8601().toDate(),
   ],
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -115,7 +118,8 @@ router.put(
       if (updateData.name) {
         const project = await Project.findById(projectId);
         if (!project) {
-          return res.status(404).json({ message: "プロジェクトが見つかりません" });
+          res.status(404).json({ message: "プロジェクトが見つかりません" });
+          return;
         }
 
         if (updateData.name !== project.name) {
@@ -126,9 +130,10 @@ router.put(
           });
 
           if (existingProject) {
-            return res.status(400).json({
+            res.status(400).json({
               message: "同じ名前のプロジェクトが既に存在します",
             });
+            return;
           }
         }
       }
@@ -140,7 +145,8 @@ router.put(
       );
 
       if (!updatedProject) {
-        return res.status(404).json({ message: "プロジェクトが見つかりません" });
+        res.status(404).json({ message: "プロジェクトが見つかりません" });
+        return;
       }
 
       res.json({
@@ -157,10 +163,11 @@ router.put(
 router.delete(
   "/:id",
   param("id").isMongoId().withMessage("有効なプロジェクトIDが必要です"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -168,7 +175,8 @@ router.delete(
       const deletedProject = await Project.findByIdAndDelete(projectId);
 
       if (!deletedProject) {
-        return res.status(404).json({ message: "プロジェクトが見つかりません" });
+        res.status(404).json({ message: "プロジェクトが見つかりません" });
+        return;
       }
 
       res.json({
@@ -185,10 +193,11 @@ router.delete(
 router.get(
   "/:id",
   param("id").isMongoId().withMessage("有効なプロジェクトIDが必要です"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -196,7 +205,8 @@ router.get(
       const project = await Project.findById(projectId);
 
       if (!project) {
-        return res.status(404).json({ message: "プロジェクトが見つかりません" });
+        res.status(404).json({ message: "プロジェクトが見つかりません" });
+        return;
       }
 
       res.json(project);
@@ -210,10 +220,11 @@ router.get(
 router.patch(
   "/:id/update-last-used",
   param("id").isMongoId().withMessage("有効なプロジェクトIDが必要です"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -225,7 +236,8 @@ router.patch(
       );
 
       if (!updatedProject) {
-        return res.status(404).json({ message: "プロジェクトが見つかりません" });
+        res.status(404).json({ message: "プロジェクトが見つかりません" });
+        return;
       }
 
       res.json({
