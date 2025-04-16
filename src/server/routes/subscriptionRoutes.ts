@@ -21,7 +21,7 @@ const validateSubscription = [
 // -----------------------------------------------------
 
 // サブスクリプション一覧の取得
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // クエリパラメータからユーザーIDを取得（オプション）
     const userId = req.query.userId as string;
@@ -39,12 +39,13 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // 特定のサブスクリプション情報を取得
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const subscription = await Subscription.findById(req.params.id);
 
     if (!subscription) {
-      return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      return;
     }
 
     res.json(subscription);
@@ -57,10 +58,11 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
 router.post(
   "/",
   validateSubscription,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -90,10 +92,11 @@ router.post(
 router.put(
   "/:id",
   validateSubscription,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -110,7 +113,8 @@ router.put(
       );
 
       if (!updatedSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       res.json({
@@ -126,14 +130,15 @@ router.put(
 // サブスクリプション削除
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedSubscription = await Subscription.findByIdAndDelete(
         req.params.id
       );
 
       if (!deletedSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       res.json({
@@ -150,7 +155,7 @@ router.delete(
 // -----------------------------------------------------
 
 // 特定の月のサブスクリプションを取得
-router.get("/month/:yearMonth", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/month/:yearMonth", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // この実装は簡易的なものです。実際には日付の比較ロジックが必要になります
     const subscriptions = await Subscription.find({
@@ -163,7 +168,7 @@ router.get("/month/:yearMonth", async (_req: Request, res: Response, next: NextF
 });
 
 // 特定の種別のサブスクリプションを取得
-router.get("/type/:type", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/type/:type", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const subscriptions = await Subscription.find({ type: req.params.type });
     res.json(subscriptions);
@@ -173,7 +178,7 @@ router.get("/type/:type", async (req: Request, res: Response, next: NextFunction
 });
 
 // 支払い方法でサブスクリプションをフィルタリング
-router.get("/payment-method/:method", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/payment-method/:method", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const subscriptions = await Subscription.find({
       'paymentMethod.type': req.params.method
@@ -185,7 +190,7 @@ router.get("/payment-method/:method", async (req: Request, res: Response, next: 
 });
 
 // サブスクリプションの合計金額を取得
-router.get("/total-amount", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/total-amount", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const result = await Subscription.aggregate([
       { $group: { _id: null, totalAmount: { $sum: "$amount" } } }
@@ -199,7 +204,7 @@ router.get("/total-amount", async (_req: Request, res: Response, next: NextFunct
 });
 
 // 月ごとのサブスクリプション合計金額を取得
-router.get("/monthly-totals", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/monthly-totals", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // この実装は簡易的なものです。実際には日付ごとの集計ロジックが必要になります
     const monthlySummary = [
@@ -219,10 +224,11 @@ router.patch(
   "/:id/check-status",
   body("month").notEmpty().withMessage("月の指定は必須です"),
   body("checked").isBoolean().withMessage("checkedはブール値である必要があります"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -230,7 +236,8 @@ router.patch(
 
       const subscription = await Subscription.findById(req.params.id);
       if (!subscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       // checkStatusesフィールドがない場合は初期化
