@@ -19,10 +19,11 @@ const validateWithdrawalEntry = [
 router.post(
   "/",
   validateWithdrawalEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -45,7 +46,7 @@ router.post(
   }
 );
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const withdrawals = await WithdrawalEntry.find().sort({ date: -1 });
     res.json(withdrawals);
@@ -57,10 +58,11 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
 router.put(
   "/:id",
   validateWithdrawalEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -70,9 +72,8 @@ router.put(
         { new: true }
       );
       if (!updatedWithdrawal) {
-        return res
-          .status(404)
-          .json({ message: "指定された口座引き落とし情報が見つかりません" });
+        res.status(404).json({ message: "指定された口座引き落とし情報が見つかりません" });
+        return;
       }
       res.json({
         message: "口座引き落とし情報が正常に更新されました",
@@ -86,15 +87,14 @@ router.put(
 
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedWithdrawal = await WithdrawalEntry.findByIdAndDelete(
         req.params.id
       );
       if (!deletedWithdrawal) {
-        return res
-          .status(404)
-          .json({ message: "指定された口座引き落とし情報が見つかりません" });
+        res.status(404).json({ message: "指定された口座引き落とし情報が見つかりません" });
+        return;
       }
       res.json({
         message: "口座引き落とし情報が正常に削除されました",
