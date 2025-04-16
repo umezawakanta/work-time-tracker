@@ -32,14 +32,15 @@ const checkUserAccess = (req: Request, userId: string): boolean => {
 router.get(
     "/user/:userId",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // ユーザーIDの取得とアクセス権の確認
             const userId = req.params.userId;
 
             // リクエストしているユーザーとターゲットユーザーが一致するか確認（または管理者権限）
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // クエリパラメータでフィルタリング
@@ -72,13 +73,14 @@ router.get(
 router.get(
     "/user/:userId/unread-count",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.userId;
 
             // リクエストしているユーザーとターゲットユーザーが一致するか確認
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             const count = await Notification.countDocuments({
@@ -97,11 +99,12 @@ router.get(
 router.patch(
     "/:id/read",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // userの存在確認
             if (!req.user) {
-                return res.status(401).json({ message: "認証が必要です" });
+                res.status(401).json({ message: "認証が必要です" });
+                return;
             }
 
             const notificationId = req.params.id;
@@ -109,21 +112,24 @@ router.patch(
             // 通知の取得
             const notification = await Notification.findById(notificationId);
             if (!notification) {
-                return res.status(404).json({ message: "通知が見つかりません" });
+                res.status(404).json({ message: "通知が見つかりません" });
+                return;
             }
 
             // アクセス権の確認（AuthUser型へのキャスト）
             const user = req.user as AuthUser;
             if (user.id !== notification.userId && !user.isAdmin) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // 既に既読の場合は何もしない
             if (notification.read) {
-                return res.json({
+                res.json({
                     message: "通知は既に既読です",
                     notification,
                 });
+                return;
             }
 
             // 既読に更新
@@ -144,13 +150,14 @@ router.patch(
 router.patch(
     "/user/:userId/read-all",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.userId;
 
             // アクセス権の確認
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // 一括で既読に更新
@@ -176,24 +183,27 @@ router.patch(
 router.delete(
     "/:id",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             // userの存在確認
             if (!req.user) {
-                return res.status(401).json({ message: "認証が必要です" });
+                res.status(401).json({ message: "認証が必要です" });
+                return;
             }
             const notificationId = req.params.id;
 
             // 通知の取得
             const notification = await Notification.findById(notificationId);
             if (!notification) {
-                return res.status(404).json({ message: "通知が見つかりません" });
+                res.status(404).json({ message: "通知が見つかりません" });
+                return;
             }
 
             // アクセス権の確認
             const user = req.user as AuthUser;
             if (user.id !== notification.userId && !user.isAdmin) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // 通知を削除
@@ -213,13 +223,14 @@ router.delete(
 router.delete(
     "/user/:userId",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.userId;
 
             // アクセス権の確認
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // すべての通知を削除
@@ -240,22 +251,25 @@ router.post(
     "/",
     isAuthenticated,
     validateNotification,  // 配列ではなく展開する
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            res.status(400).json({ errors: errors.array() });
+            return;
         }
 
         try {
             // userの存在確認
             if (!req.user) {
-                return res.status(401).json({ message: "認証が必要です" });
+                res.status(401).json({ message: "認証が必要です" });
+                return;
             }
 
             // 管理者またはシステム通知の場合のみ許可
             const user = req.user as AuthUser;
             if (!user.isAdmin && req.user.id !== 'system') {
-                return res.status(403).json({ message: "通知の作成権限がありません" });
+                res.status(403).json({ message: "通知の作成権限がありません" });
+                return;
             }
 
             // 通知設定のチェック
@@ -268,10 +282,11 @@ router.post(
                     (notificationType === 'report' && !settings.reports) ||
                     (notificationType === 'alert' && !settings.alerts) ||
                     (!settings.inApp)) {
-                    return res.status(200).json({
+                    res.status(200).json({
                         message: "ユーザーの通知設定により通知はスキップされました",
                         skipped: true
                     });
+                    return;
                 }
             }
 
@@ -316,13 +331,14 @@ router.post(
 router.get(
     "/settings/:userId",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.userId;
 
             // アクセス権の確認
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // 設定を取得、存在しない場合はデフォルト設定を作成
@@ -344,13 +360,14 @@ router.get(
 router.patch(
     "/settings/:userId",
     isAuthenticated,
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.userId;
 
             // アクセス権の確認
             if (!checkUserAccess(req, userId)) {
-                return res.status(403).json({ message: "アクセス権限がありません" });
+                res.status(403).json({ message: "アクセス権限がありません" });
+                return;
             }
 
             // 有効なフィールドのみを抽出

@@ -12,14 +12,15 @@ export const isAuthenticated = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     // Authorizationヘッダーからトークンを取得
     const authHeader = req.headers.authorization;
     
     // authHeaderが文字列であることを確認
     if (!authHeader || typeof authHeader !== 'string' || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "認証トークンがありません" });
+      res.status(401).json({ message: "認証トークンがありません" });
+      return;
     }
 
     const token = authHeader.split(" ")[1];
@@ -37,10 +38,12 @@ export const isAuthenticated = async (
       next();
     } catch (jwtError) {
       console.error("JWT検証エラー:", jwtError);
-      return res.status(401).json({ message: "無効な認証トークンです" });
+      res.status(401).json({ message: "無効な認証トークンです" });
+      return;
     }
   } catch (error) {
     console.error("認証エラー:", error);
-    return res.status(500).json({ message: "認証処理中にエラーが発生しました" });
+    res.status(500).json({ message: "認証処理中にエラーが発生しました" });
+    return;
   }
 };
