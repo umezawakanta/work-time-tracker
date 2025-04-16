@@ -12,10 +12,11 @@ const validateParty = [
   body("colorCode").matches(/^#[0-9A-F]{6}$/i).withMessage("有効なカラーコードを入力してください"),
 ];
 
-router.post("/", validateParty, async (req: Request, res: Response, next: NextFunction) => {
+router.post("/", validateParty, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    res.status(400).json({ errors: errors.array() });
+    return;
   }
 
   try {
@@ -29,7 +30,7 @@ router.post("/", validateParty, async (req: Request, res: Response, next: NextFu
   }
 });
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const parties = await PoliticalParty.find().sort({ name: 1 });
     res.json(parties);
@@ -38,10 +39,11 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-router.put("/:id", validateParty, async (req: Request, res: Response, next: NextFunction) => {
+router.put("/:id", validateParty, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    res.status(400).json({ errors: errors.array() });
+    return;
   }
 
   try {
@@ -51,7 +53,8 @@ router.put("/:id", validateParty, async (req: Request, res: Response, next: Next
       { new: true }
     );
     if (!updatedParty) {
-      return res.status(404).json({ message: "指定された政党が見つかりません" });
+      res.status(404).json({ message: "指定された政党が見つかりません" });
+      return;
     }
     res.json({
       message: "政党情報が正常に更新されました",
@@ -62,11 +65,12 @@ router.put("/:id", validateParty, async (req: Request, res: Response, next: Next
   }
 });
 
-router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const deletedParty = await PoliticalParty.findByIdAndDelete(req.params.id);
     if (!deletedParty) {
-      return res.status(404).json({ message: "指定された政党が見つかりません" });
+      res.status(404).json({ message: "指定された政党が見つかりません" });
+      return;
     }
     res.json({
       message: "政党情報が正常に削除されました",
