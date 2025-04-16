@@ -1,5 +1,7 @@
-
-import * as express from "express";
+// ESM用のCommonJSモジュールのインポート
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const express = require('express');
 import { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -80,12 +82,12 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/notifications", notificationRoutes); // 通知APIルートを追加
 
 // Not Found middleware
-app.use((_req: Request, res: Response) => {
+app.use((_req: Request, res: Response): void => {
   res.status(404).json({ message: "Resource not found" });
 });
 
 // Error handling middleware
-app.use((err: Error, _req: Request, res: Response) => {
+app.use((err: Error, _req: Request, res: Response): void => {
   console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!", error: err.message });
 });
