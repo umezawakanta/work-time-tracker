@@ -19,14 +19,15 @@ const generateToken = (userId: string) => {
   return jwt.sign({ id: userId }, secret, { expiresIn: '1d' });
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log('Login attempt:', req.body);
     const { email, password } = req.body;
 
     if (!email || !password) {
       console.error('Login error: Missing email or password');
-      return res.status(400).json({ message: 'Email and password are required' });
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
     }
 
     // パスワードが文字列であることを確認
@@ -37,7 +38,8 @@ export const login = async (req: Request, res: Response) => {
 
     if (!user) {
       console.error('Login error: User not found');
-      return res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
     }
 
     // 修正: 文字列に変換したパスワードを使用
@@ -46,7 +48,8 @@ export const login = async (req: Request, res: Response) => {
 
     if (!isMatch) {
       console.error('Login error: Invalid password');
-      return res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
     }
 
     const userId = user._id?.toString() || '';
@@ -64,12 +67,13 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<void> => { // 戻り値の型を追加
   try {
     const { name, email, password } = req.body;
     let user = await User.findOne({ email }) as IUser | null;
     if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+      res.status(400).json({ message: 'User already exists' });
+      return; // return文を修正
     }
     user = new User({ name, email, password }) as IUser;
     await user.save();
@@ -82,15 +86,17 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const checkAuth = async (req: AuthRequest, res: Response) => {
+export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
   try {
     if (!req.user) {
-      return res.status(401).json({ isAuthenticated: false });
+      res.status(401).json({ isAuthenticated: false });
+      return; // return文を修正
     }
 
     const user = await User.findById(req.user.id).select('name email');
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found' });
+      return; // return文を修正
     }
 
     res.json({
@@ -107,11 +113,12 @@ export const checkAuth = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateProfile = async (req: AuthRequest, res: Response) => {
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: '認証されていません' });
+      res.status(401).json({ message: '認証されていません' });
+      return; // return文を修正
     }
 
     const { name, email } = req.body;
@@ -122,7 +129,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+      res.status(404).json({ message: 'ユーザーが見つかりません' });
+      return; // return文を修正
     }
 
     res.json({ user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email } });
@@ -132,16 +140,18 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getUserData = async (req: AuthRequest, res: Response) => {
+export const getUserData = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: '認証されていません' });
+      res.status(401).json({ message: '認証されていません' });
+      return; // return文を修正
     }
 
     const user = await User.findById(userId).select('-password');
     if (!user) {
-      return res.status(404).json({ message: 'ユーザーが見つかりません' });
+      res.status(404).json({ message: 'ユーザーが見つかりません' });
+      return; // return文を修正
     }
 
     res.json({ user: { id: user._id, name: user.name, email: user.email } });

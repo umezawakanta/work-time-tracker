@@ -387,17 +387,17 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
     if (commitmentText.trim()) {
       // 最大の優先度を取得して、新しいタスクにはそれよりも大きな値を設定
       const maxPriority = Math.max(...todos.map((todo) => todo.priority), 0);
-      
+
       dispatch(
         addTodoItem({
           task: commitmentText.trim(),
           priority: maxPriority + 1,
           isPrioritized: priorityEnabled,
           type: commitmentType,
-          deadline: suggestedDeadline // deadline プロパティを正しく渡す
+          deadline: suggestedDeadline, // deadline プロパティを正しく渡す
         })
       );
-      
+
       setNewTodo("");
       setShowAiSuggestion(false);
       setShowPrioritySuggestion(false);
@@ -406,7 +406,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
       setSuggestedDeadline(undefined);
       setPriorityEnabled(false);
       setShowCommitmentDialog(false);
-      
+
       toast.success(
         `新しい${
           commitmentType === "input" ? "インプット" : "アウトプット"
@@ -417,7 +417,14 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
         }`
       );
     }
-  }, [dispatch, commitmentText, commitmentType, todos, priorityEnabled, suggestedDeadline]);
+  }, [
+    dispatch,
+    commitmentText,
+    commitmentType,
+    todos,
+    priorityEnabled,
+    suggestedDeadline,
+  ]);
 
   const handleDeleteTodo = useCallback(
     (id: string) => {
@@ -703,6 +710,16 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
 
     // 対応するクラス名を返す
     return `w-${roundedPercentage}`;
+  };
+
+  // todoHistoryを配列形式に変換するヘルパー関数を追加
+  const convertTodoHistoryToArray = (
+    history: Record<string, number>
+  ): { date: string; count: number }[] => {
+    return Object.entries(history).map(([date, count]) => ({
+      date,
+      count,
+    }));
   };
 
   return (
@@ -1200,9 +1217,12 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
             )}
           </TabsContent>
           <TabsContent value="calendar">
+            // TodoCalendarコンポーネントを使用する部分
             <TodoCalendar
               todoHistory={
-                dailyHistory.length > 0 ? dailyHistory : todoHistory
+                dailyHistory.length > 0
+                  ? dailyHistory
+                  : convertTodoHistoryToArray(todoHistory)
               }
             />
           </TabsContent>
@@ -1210,7 +1230,9 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
             <div className="space-y-6">
               <TodoChart
                 todoHistory={
-                  dailyHistory.length > 0 ? dailyHistory : todoHistory
+                  dailyHistory.length > 0
+                    ? dailyHistory
+                    : convertTodoHistoryToArray(todoHistory)
                 }
               />
               {/* インプット/アウトプット比率グラフ */}

@@ -241,9 +241,9 @@ export default function Layout({ children }: LayoutProps) {
 
     if (isAuthenticated && user) {
       try {
-        // 環境変数からWebSocketのURLを取得
-        const wsUrl = process.env.REACT_APP_WS_URL || "wss://api.example.com";
-
+        // 環境変数からWebSocketのURLを取得（Vite用）
+        const wsUrl = import.meta.env.VITE_WS_URL || "wss://api.example.com";
+        console.log("WebSocket URL:", wsUrl);
         // WebSocketの接続
         ws = new WebSocket(`${wsUrl}/notifications`);
         // 型ガードの一環として、wsがnullでないことを確認

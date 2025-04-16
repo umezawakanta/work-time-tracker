@@ -1,5 +1,6 @@
 // src/server/routes/partyRoutes.ts
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { PoliticalParty } from "../models/PoliticalParty.js";
 

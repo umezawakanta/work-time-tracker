@@ -1,5 +1,6 @@
 // 一般サブスクリプション（外部サービス）用のルーター
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { Subscription, ISubscription } from "../models/Subscription.js";
 

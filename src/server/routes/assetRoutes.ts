@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { AssetEntry, IAssetEntry } from "../models/AssetEntry.js";
 
@@ -53,10 +54,11 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
 router.put(
   "/:id",
   validateAssetEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {  // 戻り値の型をPromise<void>に変更
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -66,9 +68,8 @@ router.put(
         { new: true }
       );
       if (!updatedAsset) {
-        return res
-          .status(404)
-          .json({ message: "指定された資産情報が見つかりません" });
+        res.status(404).json({ message: "指定された資産情報が見つかりません" });
+        return;  // return文を追加して明示的に関数を終了
       }
       res.json({
         message: "資産情報が正常に更新されました",
@@ -82,13 +83,12 @@ router.put(
 
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {  // 戻り値の型をPromise<void>に変更
     try {
       const deletedAsset = await AssetEntry.findByIdAndDelete(req.params.id);
       if (!deletedAsset) {
-        return res
-          .status(404)
-          .json({ message: "指定された資産情報が見つかりません" });
+        res.status(404).json({ message: "指定された資産情報が見つかりません" });
+        return;  // return文を追加して明示的に関数を終了
       }
       res.json({
         message: "資産情報が正常に削除されました",

@@ -1,5 +1,5 @@
 // src/routes/habitRoutes.ts
-import express from 'express';
+import * as express from "express";
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { 
   getHabits,

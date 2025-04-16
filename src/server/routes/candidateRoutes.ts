@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { Candidate, ICandidate } from "../models/Candidate.js";
 

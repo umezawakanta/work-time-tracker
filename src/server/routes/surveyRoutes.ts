@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { Survey } from "../models/survey.js";
 import { SupportRate } from "../models/SupportRate.js";
 

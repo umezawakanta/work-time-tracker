@@ -19,7 +19,8 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "esModuleInterop": true  // この行を追加
   },
   "include": [
     "vite.config.ts"

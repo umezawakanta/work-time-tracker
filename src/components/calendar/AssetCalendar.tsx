@@ -19,7 +19,7 @@ import {
   isWithinInterval,
   subMonths,
 } from "date-fns";
-import { utcToZonedTime, format as formatTZ } from "date-fns-tz";
+import { toZonedTime, format as formatTZ } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import {
   Dialog,
@@ -340,7 +340,7 @@ export function AssetCalendar({
           } else {
             // ここで例外が発生する可能性がある
             try {
-              currentDate = utcToZonedTime(dateObj, "Asia/Tokyo");
+              currentDate = toZonedTime(dateObj, "Asia/Tokyo");
             } catch (tzError) {
               console.error("タイムゾーン変換エラー:", tzError);
               currentDate = new Date(date); // フォールバック
@@ -386,7 +386,7 @@ export function AssetCalendar({
         (aggregatedData[date]?.["合計"] || 0) - firstDataTotal;
 
       const dateWithdrawals = withdrawals.filter((w) => {
-        const withdrawalDate = utcToZonedTime(parseISO(w.date), "Asia/Tokyo");
+        const withdrawalDate = toZonedTime(parseISO(w.date), "Asia/Tokyo");
         return isSameDay(withdrawalDate, currentDate);
       });
 
@@ -713,7 +713,7 @@ export function AssetCalendar({
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
-      const tokyoDate = utcToZonedTime(selectedDate, "Asia/Tokyo");
+      const tokyoDate = toZonedTime(selectedDate, "Asia/Tokyo");
       const newWithdrawalEntry = {
         ...newWithdrawal,
         date: formatTZ(tokyoDate, "yyyy-MM-dd", { timeZone: "Asia/Tokyo" }),

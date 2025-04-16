@@ -1,4 +1,6 @@
-import express, { Request, Response } from "express";
+
+import * as express from "express";
+import { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";

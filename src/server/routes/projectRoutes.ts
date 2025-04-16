@@ -1,4 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
+import * as express from "express";
+import { Request, Response, NextFunction } from "express";
 import { body, param, validationResult } from "express-validator";
 import { Project, IProject } from "../models/Project.js";
 

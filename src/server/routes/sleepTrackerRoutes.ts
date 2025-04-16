@@ -1,4 +1,4 @@
-import express from 'express';
+import * as express from "express";
 import { SleepRecord } from '../models/SleepRecord.js';
 
 const router = express.Router();
