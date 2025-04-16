@@ -1,3 +1,5 @@
+// src/controllers/habitController.js
+
 import { Request, Response } from 'express';
 import { Habit } from '../models/Habit.js';
 import mongoose from 'mongoose';
@@ -18,11 +20,12 @@ interface HabitDocument extends mongoose.Document {
   save(): Promise<this>;
 }
 
-export const getHabits = async (req: AuthRequest, res: Response) => {
+export const getHabits = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     const habits = await Habit.find({ userId });
@@ -33,13 +36,14 @@ export const getHabits = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const createHabit = async (req: AuthRequest, res: Response) => {
+export const createHabit = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { name } = req.body;
 
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     const habit = new Habit({
@@ -56,16 +60,18 @@ export const createHabit = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const initializeHabits = async (req: AuthRequest, res: Response) => {
+export const initializeHabits = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     const { habits } = req.body;
     if (!Array.isArray(habits)) {
-      return res.status(400).json({ message: '習慣リストが無効です' });
+      res.status(400).json({ message: '習慣リストが無効です' });
+      return;
     }
 
     // 既存の習慣を削除
@@ -86,7 +92,7 @@ export const initializeHabits = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateHabit = async (req: AuthRequest, res: Response) => {
+export const updateHabit = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { habitId } = req.params;
@@ -103,19 +109,23 @@ export const updateHabit = async (req: AuthRequest, res: Response) => {
     });
 
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     if (!mongoose.Types.ObjectId.isValid(habitId)) {
-      return res.status(400).json({ message: '無効なhabitIdです' });
+      res.status(400).json({ message: '無効なhabitIdです' });
+      return;
     }
 
     if (!monthKey || typeof monthKey !== 'string') {
-      return res.status(400).json({ message: '無効なmonthKeyです' });
+      res.status(400).json({ message: '無効なmonthKeyです' });
+      return;
     }
 
     if (!Array.isArray(data)) {
-      return res.status(400).json({ message: 'データは配列である必要があります' });
+      res.status(400).json({ message: 'データは配列である必要があります' });
+      return;
     }
 
     const habit = await Habit.findOne({ 
@@ -126,12 +136,14 @@ export const updateHabit = async (req: AuthRequest, res: Response) => {
     console.log('Found habit:', habit);
 
     if (!habit) {
-      return res.status(404).json({ message: '習慣が見つかりません' });
+      res.status(404).json({ message: '習慣が見つかりません' });
+      return;
     }
 
     // データの型チェック
     if (!data.every(item => typeof item === 'boolean')) {
-      return res.status(400).json({ message: 'データには真偽値のみを含める必要があります' });
+      res.status(400).json({ message: 'データには真偽値のみを含める必要があります' });
+      return;
     }
 
     try {
