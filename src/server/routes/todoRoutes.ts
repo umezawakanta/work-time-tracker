@@ -1,4 +1,5 @@
 import * as express from "express";
+import { Request, Response } from "express";
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
 import { TodoArchive } from '../models/TodoArchive.js';
@@ -6,7 +7,7 @@ import { TodoArchive } from '../models/TodoArchive.js';
 const router = express.Router();
 
 // GET all todos
-router.get('/', async (_req, res) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
     const todos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
     res.json(todos);
@@ -16,7 +17,7 @@ router.get('/', async (_req, res) => {
 });
 
 // POST new todo
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { task, priority, isPrioritized, type } = req.body;
     const newTodo = new TodoItem({ 
@@ -35,7 +36,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update todo
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -46,7 +47,8 @@ router.put('/:id', async (req, res) => {
     }
     const updatedTodo = await TodoItem.findByIdAndUpdate(id, updates, { new: true });
     if (!updatedTodo) {
-      return res.status(404).json({ message: 'Todo not found' });
+      res.status(404).json({ message: 'Todo not found' });
+      return;
     }
     res.json({ message: 'Todo updated successfully', todo: updatedTodo });
   } catch (error) {
@@ -55,12 +57,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE todo
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedTodo = await TodoItem.findByIdAndDelete(id);
     if (!deletedTodo) {
-      return res.status(404).json({ message: 'Todo not found' });
+      res.status(404).json({ message: 'Todo not found' });
+      return;
     }
     res.json({ message: 'Todo deleted successfully' });
   } catch (error) {
@@ -69,7 +72,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Reset todos but preserve history
-router.post('/reset', async (_req, res) => {
+router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
   try {
     // 完了したタスクを見つける
     const completedTodos = await TodoItem.find({ completed: true });
@@ -137,7 +140,7 @@ router.post('/reset', async (_req, res) => {
 });
 
 // 履歴データ取得のためのエンドポイントを追加
-router.get('/history', async (_req, res) => {
+router.get('/history', async (_req: Request, res: Response): Promise<void> => {
   try {
     // 過去30日分の履歴を取得
     const thirtyDaysAgo = new Date();
@@ -155,7 +158,7 @@ router.get('/history', async (_req, res) => {
 });
 
 // 日別のTodo完了数を取得するエンドポイント（グラフ用）
-router.get('/history/daily', async (_req, res) => {
+router.get('/history/daily', async (_req: Request, res: Response): Promise<void> => {
   try {
     // 過去30日分の集計データを取得
     const thirtyDaysAgo = new Date();
@@ -194,7 +197,7 @@ router.get('/history/daily', async (_req, res) => {
 });
 
 // Reorder todos
-router.post('/reorder', async (req, res) => {
+router.post('/reorder', async (req: Request, res: Response): Promise<void> => {
   try {
     const { items } = req.body as { items: Array<ITodoItem> };
     const bulkOps = items.map((item) => ({
@@ -212,12 +215,13 @@ router.post('/reorder', async (req, res) => {
 });
 
 // Toggle priority
-router.post('/:id/toggle-priority', async (req, res) => {
+router.post('/:id/toggle-priority', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const todo = await TodoItem.findById(id);
     if (!todo) {
-      return res.status(404).json({ message: 'Todo not found' });
+      res.status(404).json({ message: 'Todo not found' });
+      return;
     }
     todo.isPrioritized = !todo.isPrioritized;
     const updatedTodo = await todo.save();
