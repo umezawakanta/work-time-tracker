@@ -20,7 +20,7 @@ const validateUserSubscription = [
 ];
 
 // ユーザーサブスクリプション情報の取得
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     // クエリパラメータからユーザーIDを取得（オプション）
     const userId = req.query.userId as string;
@@ -38,12 +38,13 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // 特定のユーザーのサブスクリプション情報を取得
-router.get("/user/:userId", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/user/:userId", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userSubscription = await UserSubscription.findOne({ userId: req.params.userId });
     
     if (!userSubscription) {
-      return res.status(404).json({ message: "指定されたユーザーのサブスクリプション情報が見つかりません" });
+      res.status(404).json({ message: "指定されたユーザーのサブスクリプション情報が見つかりません" });
+      return;
     }
     
     res.json(userSubscription);
@@ -53,12 +54,13 @@ router.get("/user/:userId", async (req: Request, res: Response, next: NextFuncti
 });
 
 // 特定のサブスクリプション情報を取得
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const userSubscription = await UserSubscription.findById(req.params.id);
     
     if (!userSubscription) {
-      return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+      return;
     }
     
     res.json(userSubscription);
@@ -71,17 +73,19 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
 router.post(
   "/",
   validateUserSubscription,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
       // すでに登録済みのユーザーがいないかチェック
       const existingSubscription = await UserSubscription.findOne({ userId: req.body.userId });
       if (existingSubscription) {
-        return res.status(400).json({ message: "このユーザーは既にサブスクリプションに登録されています" });
+        res.status(400).json({ message: "このユーザーは既にサブスクリプションに登録されています" });
+        return;
       }
 
       const userSubscriptionData: IUserSubscription = new UserSubscription({
@@ -109,10 +113,11 @@ router.post(
 router.put(
   "/:id",
   validateUserSubscription,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -129,7 +134,8 @@ router.put(
       );
       
       if (!updatedUserSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
       
       res.json({
@@ -146,10 +152,11 @@ router.put(
 router.patch(
   "/:id/cancel",
   body("cancelAtPeriodEnd").isBoolean().withMessage("cancelAtPeriodEndはブール値である必要があります"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -163,7 +170,8 @@ router.patch(
       );
       
       if (!updatedUserSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
       
       res.json({
@@ -182,10 +190,11 @@ router.patch(
 router.patch(
   "/:id/status",
   body("status").isIn(['active', 'canceled', 'expired']).withMessage("ステータスは 'active', 'canceled', 'expired' のいずれかである必要があります"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -199,7 +208,8 @@ router.patch(
       );
       
       if (!updatedUserSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
       
       res.json({
@@ -215,14 +225,15 @@ router.patch(
 // サブスクリプション削除
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedUserSubscription = await UserSubscription.findByIdAndDelete(
         req.params.id
       );
       
       if (!deletedUserSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
       
       res.json({
@@ -240,10 +251,11 @@ router.patch(
   "/:id/check-status",
   body("month").notEmpty().withMessage("月の指定は必須です"),
   body("checked").isBoolean().withMessage("checkedはブール値である必要があります"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -251,7 +263,8 @@ router.patch(
       
       const userSubscription = await UserSubscription.findById(req.params.id);
       if (!userSubscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       // サブスクリプションを更新
@@ -278,10 +291,11 @@ router.post(
   "/payment-method",
   body("userId").notEmpty().withMessage("ユーザーIDは必須です"),
   body("paymentMethod").isObject().withMessage("支払い方法情報は必須です"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -294,9 +308,10 @@ router.post(
         !('paymentMethod' in body) || 
         typeof body.paymentMethod !== 'object'
       ) {
-        return res.status(400).json({
+        res.status(400).json({
           message: "無効なリクエスト形式です。'userId'と'paymentMethod'が必要です。"
         });
+        return;
       }
 
       const { userId } = body as { userId: string };
@@ -315,7 +330,8 @@ router.post(
       // 既存の支払い方法情報があれば更新
       const subscription = await UserSubscription.findOne({ userId });
       if (!subscription) {
-        return res.status(404).json({ message: "ユーザーのサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "ユーザーのサブスクリプション情報が見つかりません" });
+        return;
       }
 
       const updatedSubscription = await UserSubscription.findByIdAndUpdate(
@@ -340,7 +356,7 @@ router.post(
 // 請求履歴の取得
 router.get(
   "/invoices/:userId",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { userId } = req.params;
       
@@ -375,10 +391,11 @@ router.post(
   "/:id/schedule-change",
   body("newPlanId").notEmpty().withMessage("新しいプランIDは必須です"),
   body("changeDate").isISO8601().withMessage("変更日は有効な日付である必要があります"),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -394,16 +411,18 @@ router.post(
         typeof body.newPlanId !== 'string' ||
         typeof body.changeDate !== 'string'
       ) {
-        return res.status(400).json({
+        res.status(400).json({
           message: "無効なリクエスト形式です。'newPlanId'と'changeDate'が必要です。"
         });
+        return;
       }
 
       const { newPlanId, changeDate } = body as ScheduleChangeRequestBody;
       
       const subscription = await UserSubscription.findById(id);
       if (!subscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       // プラン変更を予約する情報を追加
@@ -435,14 +454,15 @@ router.post(
 // 即時解約
 router.post(
   "/:id/cancel-immediately",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const reason = typeof req.body.reason === 'string' ? req.body.reason : null;
       
       const subscription = await UserSubscription.findById(id);
       if (!subscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       // サブスクリプションを即時解約
@@ -472,17 +492,19 @@ router.post(
 // 解約後の復活
 router.post(
   "/:id/reactivate",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       
       const subscription = await UserSubscription.findById(id);
       if (!subscription) {
-        return res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        res.status(404).json({ message: "指定されたサブスクリプション情報が見つかりません" });
+        return;
       }
 
       if (subscription.status !== "canceled") {
-        return res.status(400).json({ message: "解約されていないサブスクリプションは復活できません" });
+        res.status(400).json({ message: "解約されていないサブスクリプションは復活できません" });
+        return;
       }
 
       // サブスクリプションを復活
