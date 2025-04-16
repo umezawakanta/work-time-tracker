@@ -26,15 +26,14 @@ const validateWorkTimeEntry = [
 router.post(
   "/",
   validateWorkTimeEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log("Received request body:", req.body);
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.error("Validation errors:", errors.array());
-      return res
-        .status(400)
-        .json({ message: "入力データが無効です", errors: errors.array() });
+      res.status(400).json({ message: "入力データが無効です", errors: errors.array() });
+      return;
     }
 
     try {
@@ -59,7 +58,7 @@ router.post(
   }
 );
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const workTimes = await WorkTimeEntry.find().sort({ createdAt: -1 });
     res.json(workTimes);
@@ -68,13 +67,12 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const workTime = await WorkTimeEntry.findById(req.params.id);
     if (!workTime) {
-      return res
-        .status(404)
-        .json({ message: "指定された作業時間が見つかりません" });
+      res.status(404).json({ message: "指定された作業時間が見つかりません" });
+      return;
     }
     res.json(workTime);
   } catch (error) {
@@ -85,12 +83,11 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
 router.put(
   "/:id",
   validateWorkTimeEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: "入力データが無効です", errors: errors.array() });
+      res.status(400).json({ message: "入力データが無効です", errors: errors.array() });
+      return;
     }
 
     try {
@@ -100,9 +97,8 @@ router.put(
         { new: true }
       );
       if (!updatedWorkTime) {
-        return res
-          .status(404)
-          .json({ message: "指定された作業時間が見つかりません" });
+        res.status(404).json({ message: "指定された作業時間が見つかりません" });
+        return;
       }
       res.json({
         message: "作業時間が正常に更新されました",
@@ -116,15 +112,14 @@ router.put(
 
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedWorkTime = await WorkTimeEntry.findByIdAndDelete(
         req.params.id
       );
       if (!deletedWorkTime) {
-        return res
-          .status(404)
-          .json({ message: "指定された作業時間が見つかりません" });
+        res.status(404).json({ message: "指定された作業時間が見つかりません" });
+        return;
       }
       res.json({
         message: "作業時間が正常に削除されました",
