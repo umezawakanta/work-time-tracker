@@ -18,10 +18,11 @@ const validateDebtEntry = [
 router.post(
   "/",
   validateDebtEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -43,7 +44,7 @@ router.post(
   }
 );
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const debts = await DebtEntry.find().sort({ date: -1 });
     res.json(debts);
@@ -55,10 +56,11 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
 router.put(
   "/:id",
   validateDebtEntry,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
@@ -68,9 +70,8 @@ router.put(
         { new: true }
       );
       if (!updatedDebt) {
-        return res
-          .status(404)
-          .json({ message: "指定された負債情報が見つかりません" });
+        res.status(404).json({ message: "指定された負債情報が見つかりません" });
+        return;
       }
       res.json({
         message: "負債情報が正常に更新されました",
@@ -84,13 +85,12 @@ router.put(
 
 router.delete(
   "/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deletedDebt = await DebtEntry.findByIdAndDelete(req.params.id);
       if (!deletedDebt) {
-        return res
-          .status(404)
-          .json({ message: "指定された負債情報が見つかりません" });
+        res.status(404).json({ message: "指定された負債情報が見つかりません" });
+        return;
       }
       res.json({
         message: "負債情報が正常に削除されました",
