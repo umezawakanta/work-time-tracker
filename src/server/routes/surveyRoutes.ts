@@ -20,11 +20,12 @@ interface SurveyData {
 
 // 最新の調査を取得するルートを追加
 // 注意: この特定のルートはパラメータ付きルート (/:id) より前に定義する必要があります
-router.get("/latest", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/latest", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const latestSurvey = await Survey.findOne().sort({ surveyEndDate: -1 });
     if (!latestSurvey) {
-      return res.status(404).json({ message: "最新の調査が見つかりません" });
+      res.status(404).json({ message: "最新の調査が見つかりません" });
+      return;
     }
 
     const supportRates = await SupportRate.find({ surveyId: latestSurvey._id })
@@ -42,7 +43,7 @@ router.get("/latest", async (_req: Request, res: Response, next: NextFunction) =
   }
 });
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const surveys = await Survey.find().sort({ surveyEndDate: -1 });
     const supportRates = await SupportRate.find()
@@ -60,13 +61,14 @@ router.post("/", async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     // Type safety check
     if (!req.body || typeof req.body !== 'object' || !('survey' in req.body) || !('supportRates' in req.body)) {
-      return res.status(400).json({
+      res.status(400).json({
         message: "無効なリクエスト形式です。'survey'と'supportRates'が必要です。"
       });
+      return;
     }
 
     const { survey, supportRates } = req.body as { 
@@ -113,11 +115,12 @@ router.post("/", async (
   }
 });
 
-router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const survey = await Survey.findById(req.params.id);
     if (!survey) {
-      return res.status(404).json({ message: "調査が見つかりません" });
+      res.status(404).json({ message: "調査が見つかりません" });
+      return;
     }
 
     // Delete associated support rates first
@@ -133,7 +136,7 @@ router.delete("/:id", async (req: Request, res: Response, next: NextFunction) =>
   }
 });
 
-router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     console.log('Received survey ID:', req.params.id);
     console.log('Request URL:', req.url);
@@ -151,11 +154,12 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
     const survey = await Survey.findById(req.params.id);
     if (!survey) {
       console.warn(`Survey with ID ${req.params.id} not found`);
-      return res.status(404).json({ 
+      res.status(404).json({ 
         message: "調査が見つかりません",
         searchedId: req.params.id,
         availableIds: allSurveyIds.map(s => s._id.toString())
       });
+      return;
     }
 
     // 対応する支持率データを取得
@@ -178,15 +182,16 @@ router.put("/:id", async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const surveyId = req.params.id;
     
     // Type safety check
     if (!req.body || typeof req.body !== 'object' || !('survey' in req.body) || !('supportRates' in req.body)) {
-      return res.status(400).json({
+      res.status(400).json({
         message: "無効なリクエスト形式です。'survey'と'supportRates'が必要です。"
       });
+      return;
     }
 
     const { survey, supportRates } = req.body as { 
@@ -197,7 +202,8 @@ router.put("/:id", async (
     // 指定されたIDの調査が存在するか確認
     const existingSurvey = await Survey.findById(surveyId);
     if (!existingSurvey) {
-      return res.status(404).json({ message: "更新対象の調査が見つかりません" });
+      res.status(404).json({ message: "更新対象の調査が見つかりません" });
+      return;
     }
 
     // 調査情報を更新
