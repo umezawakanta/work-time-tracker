@@ -8,24 +8,27 @@ interface MulterRequest extends Request {
   user?: { id: string };
 }
 
-export const createTweet = async (req: MulterRequest, res: Response) => {
+export const createTweet = async (req: MulterRequest, res: Response): Promise<void> => {
   try {
     const { content } = req.body;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     if (!content && !req.file) {
-      return res.status(400).json({ message: 'ツイートの内容または画像は必須です' });
+      res.status(400).json({ message: 'ツイートの内容または画像は必須です' });
+      return;
     }
 
     // content が文字列であることを確実にする
     const contentStr = typeof content === 'string' ? content : '';
 
     if (contentStr.length > 10000) {
-      return res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
+      res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
+      return;
     }
 
     const tweetData: Partial<ITweet> = {
@@ -54,13 +57,14 @@ export const createTweet = async (req: MulterRequest, res: Response) => {
   }
 };
 
-export const getTweets = async (req: MulterRequest, res: Response) => {
+export const getTweets = async (req: MulterRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { search } = req.query;
 
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     // 基本的なクエリ条件（ユーザーIDでフィルタリング）
@@ -92,31 +96,35 @@ export const getTweets = async (req: MulterRequest, res: Response) => {
   }
 };
 
-export const updateTweet = async (req: MulterRequest, res: Response) => {
+export const updateTweet = async (req: MulterRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { content } = req.body;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ message: 'ユーザーが認証されていません' });
+      res.status(401).json({ message: 'ユーザーが認証されていません' });
+      return;
     }
 
     // content が文字列であることを確実にする
     const contentStr = typeof content === 'string' ? content : '';
 
     if (!contentStr) {
-      return res.status(400).json({ message: 'ツイートの内容は必須です' });
+      res.status(400).json({ message: 'ツイートの内容は必須です' });
+      return;
     }
 
     if (contentStr.length > 10000) {
-      return res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
+      res.status(400).json({ message: 'ツイートは10000文字以内で入力してください' });
+      return;
     }
 
     const tweet = await Tweet.findOne({ _id: id, user: userId });
 
     if (!tweet) {
-      return res.status(404).json({ message: 'ツイートが見つかりません' });
+      res.status(404).json({ message: 'ツイートが見つかりません' });
+      return;
     }
 
     tweet.content = contentStr.trim();
