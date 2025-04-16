@@ -1,10 +1,11 @@
 import * as express from "express";
+import { Request, Response } from "express";
 import { SleepRecord } from '../models/SleepRecord.js';
 
 const router = express.Router();
 
 // GET all sleep records
-router.get('/', async (_req, res) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
     const records = await SleepRecord.find().sort({ date: -1 });
     res.json(records);
@@ -14,7 +15,7 @@ router.get('/', async (_req, res) => {
 });
 
 // POST new sleep record
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { date, wakeUp, bedtime } = req.body;
     const newRecord = new SleepRecord({ date, wakeUp, bedtime });
@@ -26,13 +27,14 @@ router.post('/', async (req, res) => {
 });
 
 // PUT update sleep record
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const updates = req.body;
     const updatedRecord = await SleepRecord.findByIdAndUpdate(id, updates, { new: true });
     if (!updatedRecord) {
-      return res.status(404).json({ message: 'Sleep record not found' });
+      res.status(404).json({ message: 'Sleep record not found' });
+      return;
     }
     res.json({ message: 'Sleep record updated successfully', sleepRecord: updatedRecord });
   } catch (error) {
@@ -41,12 +43,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE sleep record
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const deletedRecord = await SleepRecord.findByIdAndDelete(id);
     if (!deletedRecord) {
-      return res.status(404).json({ message: 'Sleep record not found' });
+      res.status(404).json({ message: 'Sleep record not found' });
+      return;
     }
     res.json({ message: 'Sleep record deleted successfully' });
   } catch (error) {
