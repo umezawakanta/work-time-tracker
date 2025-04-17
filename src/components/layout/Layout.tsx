@@ -276,7 +276,7 @@ export default function Layout({ children }: LayoutProps) {
           wsUrl = "ws://localhost:3001";
         } else {
           // Vercel上で動作している場合、同じドメインでWebSocketも提供
-          wsUrl = `ws://${apiDomain}`;
+          wsUrl = `wss://${apiDomain}`;
         }
 
         console.log("[WebSocket] 接続試行:", wsUrl);
