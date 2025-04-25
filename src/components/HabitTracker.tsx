@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ChevronDown, ChevronUp, Trophy, Flame, Target } from 'lucide-react'
-import * as habitApi from '@/services/api/habitApi'
-import { useToast } from "@/components/ui/use-toast"
+import { ChevronDown, ChevronUp, Trophy, Flame, Target, Info } from 'lucide-react'
+import { useHabitTracker } from '@/hooks/useHabitTracker'
 
+// 避けたい習慣のリスト
 const habits = [
   "酒", "たばこ", "風俗", "パチンコ", "姿勢が悪い",
   "睡眠不足", "嘘をつく", "すぐ否定する", "謎のプライド", "ネガティブ",
@@ -18,230 +18,62 @@ const habits = [
   "髪をさわる", "顔をさわる"
 ]
 
-interface HabitStats {
-  currentStreak: number;
-  longestStreak: number;
-  monthlyProgress: number;
-  lastChecked: string | null;
-}
-
-interface ServerHabit {
-  _id: string;
-  name: string;
-  data: {
-    [key: string]: boolean[];
-  };
-}
-
-const getDaysInMonth = (year: number, month: number) => {
-  return new Date(year, month + 1, 0).getDate()
-}
-
-const getMonthKey = (date: Date) => {
-  return `${date.getFullYear()}-${date.getMonth() + 1}`
-}
-
 export default function HabitTracker() {
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [trackedData, setTrackedData] = useState<{[key: string]: ServerHabit}>({})
-  const [stats, setStats] = useState<{[key: string]: HabitStats}>({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [showCongrats, setShowCongrats] = useState(false)
-  const { toast } = useToast()
-
-  const showCongratsMessage = () => {
-    setShowCongrats(true)
-    setTimeout(() => setShowCongrats(false), 3000)
-  }
-
-  const calculateStats = useCallback(() => {
-    const monthKey = getMonthKey(currentDate)
-    const newStats: {[key: string]: HabitStats} = {}
-
-    habits.forEach(habit => {
-      const habitData = trackedData[habit]?.data[monthKey] || []
-      const today = new Date().getDate() - 1
-      
-      // 現在の継続日数を計算
-      let currentStreak = 0
-      for (let i = today; i >= 0; i--) {
-        if (habitData[i]) currentStreak++
-        else break
-      }
-
-      // 最長継続日数を計算
-      let longestStreak = 0
-      let tempStreak = 0
-      habitData.forEach(day => {
-        if (day) {
-          tempStreak++
-          longestStreak = Math.max(longestStreak, tempStreak)
-        } else {
-          tempStreak = 0
-        }
-      })
-
-      // 月間達成率を計算
-      const totalDays = today + 1
-      const achievedDays = habitData.slice(0, totalDays).filter(Boolean).length
-      const monthlyProgress = totalDays > 0 ? Math.round((achievedDays / totalDays) * 100) : 0
-
-      newStats[habit] = {
-        currentStreak,
-        longestStreak,
-        monthlyProgress,
-        lastChecked: habitData[today] ? new Date().toISOString() : null
-      }
-    })
-
-    setStats(newStats)
-  }, [currentDate, trackedData])
-
-  // 初期データの読み込み
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const serverHabits = await habitApi.getHabits()
-        if (serverHabits.length === 0) {
-          // 初回のみ初期化
-          await habitApi.initializeHabits(habits)
-          const initializedHabits = await habitApi.getHabits()
-          const habitMap = initializedHabits.reduce((acc: {[key: string]: ServerHabit}, habit: ServerHabit) => {
-            acc[habit.name] = habit
-            return acc
-          }, {})
-          setTrackedData(habitMap)
-        } else {
-          const habitMap = serverHabits.reduce((acc: {[key: string]: ServerHabit}, habit: ServerHabit) => {
-            acc[habit.name] = habit
-            return acc
-          }, {})
-          setTrackedData(habitMap)
-        }
-      } catch (err) {
-        console.error("Error loading data:", err)
-        setError("データの読み込み中にエラーが発生しました。")
-        toast({
-          variant: "destructive",
-          title: "エラー",
-          description: "データの読み込みに失敗しました。",
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadData()
-  }, [toast])
-
-  // 月が変更されたときのデータ初期化
-  useEffect(() => {
-    const monthKey = getMonthKey(currentDate)
-    const daysInMonth = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())
-
-    const initializeMonthData = async () => {
-      try {
-        for (const habit of habits) {
-          const serverHabit = trackedData[habit]
-          if (serverHabit && !serverHabit.data[monthKey]) {
-            await habitApi.updateHabit(
-              serverHabit._id,
-              monthKey,
-              Array(daysInMonth).fill(false)
-            )
-          }
-        }
-      } catch (error) {
-        console.error('Error initializing month data:', error)
-        toast({
-          variant: "destructive",
-          title: "エラー",
-          description: "月初期化の処理に失敗しました。",
-        })
-      }
-    }
-
-    if (Object.keys(trackedData).length > 0) {
-      initializeMonthData()
-    }
-  }, [currentDate, trackedData, toast])
-
-  // 統計情報の更新
-  useEffect(() => {
-    calculateStats()
-  }, [calculateStats])
-
-  const toggleHabit = async (habit: string, day: number) => {
-    const monthKey = getMonthKey(currentDate)
-    const serverHabit = trackedData[habit]
-    
-    if (!serverHabit) return
-
-    try {
-      const currentData = serverHabit.data[monthKey] || Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
-      const newData = [...currentData]
-      newData[day] = !newData[day]
-
-      const updatedHabit = await habitApi.updateHabit(
-        serverHabit._id,
-        monthKey,
-        newData
-      )
-
-      setTrackedData(prevData => ({
-        ...prevData,
-        [habit]: updatedHabit
-      }))
-
-      if (newData[day] && day === new Date().getDate() - 1) {
-        const currentStreak = stats[habit]?.currentStreak || 0
-        if (currentStreak + 1 >= 7) {
-          showCongratsMessage()
-        }
-      }
-    } catch (error) {
-      console.error('Error updating habit:', error)
-      toast({
-        variant: "destructive",
-        title: "エラー",
-        description: "データの更新に失敗しました。",
-      })
-    }
-  }
+  
+  const {
+    currentDate,
+    stats,
+    isLoading,
+    error,
+    showCongrats,
+    toggleHabit,
+    handleMonthChange,
+    getHabitData
+  } = useHabitTracker(habits)
 
   const renderHeatmap = (habit: string) => {
-    const monthKey = getMonthKey(currentDate)
-    const habitData = trackedData[habit]?.data[monthKey] || Array(getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth())).fill(false)
+    const habitData = getHabitData(habit)
     
     return habitData.map((avoided, index) => (
       <div
         key={index}
         className={`w-4 h-4 ${avoided ? 'bg-green-500' : 'bg-red-500'} 
-                   hover:opacity-75 transition-opacity cursor-pointer rounded`}
+                  hover:opacity-75 transition-opacity cursor-pointer rounded`}
         title={`${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月${index + 1}日: ${avoided ? '達成' : '未達成'}`}
         onClick={() => toggleHabit(habit, index)}
+        aria-label={`${avoided ? '達成' : '未達成'}: ${index + 1}日目`}
       />
     ))
   }
 
-  const handleMonthChange = (increment: number) => {
-    setCurrentDate(prevDate => {
-      const newDate = new Date(prevDate)
-      newDate.setMonth(prevDate.getMonth() + increment)
-      return newDate
-    })
-  }
-
   if (isLoading) {
-    return <div className="flex justify-center items-center h-32">データを読み込んでいます...</div>
+    return (
+      <Card className="w-full">
+        <CardContent className="flex justify-center items-center h-32">
+          <div className="animate-pulse flex space-x-4">
+            <div className="flex-1 space-y-4 py-1">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (error) {
-    return <div className="text-red-500 p-4">{error}</div>
+    return (
+      <Alert variant="destructive">
+        <AlertDescription className="flex items-center gap-2">
+          <Info className="h-4 w-4" />
+          {error}
+        </AlertDescription>
+      </Alert>
+    )
   }
 
   return (
@@ -251,13 +83,18 @@ export default function HabitTracker() {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <CardTitle className="flex justify-between items-center">
-          やらないこと トラッカー
-          {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+          <span className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-primary" aria-hidden="true" />
+            やらないこと トラッカー
+          </span>
+          <Button variant="ghost" size="sm" className="p-1 h-auto">
+            {isExpanded ? <ChevronUp size={24} aria-label="折りたたむ" /> : <ChevronDown size={24} aria-label="展開する" />}
+          </Button>
         </CardTitle>
       </CardHeader>
       {showCongrats && (
         <Alert className="mx-4 mb-4 bg-green-50">
-          <Trophy className="h-4 w-4 text-green-500" />
+          <Trophy className="h-4 w-4 text-green-500" aria-hidden="true" />
           <AlertDescription>
             素晴らしい！1週間継続達成です！この調子で頑張りましょう！
           </AlertDescription>
@@ -269,6 +106,7 @@ export default function HabitTracker() {
             <Button 
               onClick={() => handleMonthChange(-1)}
               variant="outline"
+              aria-label="前月へ移動"
             >
               前月
             </Button>
@@ -278,79 +116,83 @@ export default function HabitTracker() {
             <Button 
               onClick={() => handleMonthChange(1)}
               variant="outline"
+              aria-label="次月へ移動"
             >
               次月
             </Button>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-32">やらないこと</TableHead>
-                <TableHead className="w-24">今日</TableHead>
-                <TableHead>継続状況（クリックで変更可能）</TableHead>
-                <TableHead className="w-48">統計</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {habits.map((habit, index) => {
-                const monthKey = getMonthKey(currentDate)
-                const habitStats = stats[habit] || {
-                  currentStreak: 0,
-                  longestStreak: 0,
-                  monthlyProgress: 0
-                }
-                
-                return (
-                  <TableRow key={index} className="hover:bg-gray-50">
-                    <TableCell>{habit}</TableCell>
-                    <TableCell>
-                      <Checkbox
-                        checked={trackedData[habit]?.data[monthKey]?.[currentDate.getDate() - 1] || false}
-                        onCheckedChange={() => toggleHabit(habit, currentDate.getDate() - 1)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {renderHeatmap(habit)}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Flame className="h-4 w-4 text-orange-500" />
-                          <span className="text-sm">現在: {habitStats.currentStreak}日継続中</span>
-                          {habitStats.currentStreak >= 7 && (
-                            <Badge variant="outline" className="bg-yellow-50">
-                              🔥 7日達成
-                            </Badge>
-                          )}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-32">やらないこと</TableHead>
+                  <TableHead className="w-24">今日</TableHead>
+                  <TableHead>継続状況（クリックで変更可能）</TableHead>
+                  <TableHead className="w-48">統計</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {habits.map((habit, index) => {
+                  const habitStats = stats[habit] || {
+                    currentStreak: 0,
+                    longestStreak: 0,
+                    monthlyProgress: 0
+                  }
+                  
+                  return (
+                    <TableRow key={index} className="hover:bg-gray-50">
+                      <TableCell className="font-medium">{habit}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={getHabitData(habit)[currentDate.getDate() - 1] || false}
+                          onCheckedChange={() => toggleHabit(habit, currentDate.getDate() - 1)}
+                          aria-label={`${habit}を今日達成したかどうか`}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {renderHeatmap(habit)}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Trophy className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm">最長: {habitStats.longestStreak}日</span>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <Target className="h-4 w-4 text-blue-500" />
-                            <span className="text-sm">月間達成率</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Flame className="h-4 w-4 text-orange-500" aria-hidden="true" />
+                            <span className="text-sm">現在: {habitStats.currentStreak}日継続中</span>
+                            {habitStats.currentStreak >= 7 && (
+                              <Badge variant="outline" className="bg-yellow-50">
+                                🔥 7日達成
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <Progress 
-                              value={habitStats.monthlyProgress} 
-                              className="h-2 w-full"
-                            />
-                            <span className="text-xs text-gray-500 min-w-[3ch]">
-                              {habitStats.monthlyProgress}%
-                            </span>
+                            <Trophy className="h-4 w-4 text-yellow-500" aria-hidden="true" />
+                            <span className="text-sm">最長: {habitStats.longestStreak}日</span>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Target className="h-4 w-4 text-blue-500" aria-hidden="true" />
+                              <span className="text-sm">月間達成率</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Progress 
+                                value={habitStats.monthlyProgress} 
+                                className="h-2 w-full"
+                                aria-label={`${habit}の月間達成率: ${habitStats.monthlyProgress}%`}
+                              />
+                              <span className="text-xs text-gray-500 min-w-[3ch]">
+                                {habitStats.monthlyProgress}%
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       )}
     </Card>
