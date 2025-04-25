@@ -1,7 +1,7 @@
 // src/components/DailyTodoReminderWithRateLimit.tsx
 // レート制限を考慮したDailyTodoReminderコンポーネント
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
@@ -49,6 +49,8 @@ import {
   selectTodoError,
   selectTodoHistory,
   updateTodoHistory,
+  DeadlineUtils,
+  adjustDeadlinePriorities,
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
 import { TodoCalendar } from "@/components/calendar/TodoCalendar";
@@ -129,7 +131,14 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
   const [commitmentType, setCommitmentType] = useState<TaskType>("input");
   const [streakCount, setStreakCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", "completed"
-  const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output"
+  const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output", "deadline"
+
+  // 期限関連の状態
+  const [deadline, setDeadline] = useState<string | undefined>(undefined);
+  const [editingDeadline, setEditingDeadline] = useState<string | undefined>(
+    undefined
+  );
+  const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(true);
 
   // Gemini関連の状態を追加
   const [isClassifying, setIsClassifying] = useState(false);
@@ -150,6 +159,32 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
   // 手動分析用の状態
   const [analysisButtonEnabled, setAnalysisButtonEnabled] = useState(true);
   const [isManualAnalysis, setIsManualAnalysis] = useState(false);
+
+  const initialAdjustmentDone = useRef(false);
+
+// 自動優先度調整のためのeffect
+useEffect(() => {
+  if (!autoAdjustEnabled) return;
+
+  // 初回読み込み完了時のみ優先度調整を実行（条件を厳密に）
+  if (todos.length > 0 && status === "succeeded" && !initialAdjustmentDone.current) {
+    initialAdjustmentDone.current = true;
+    dispatch(adjustDeadlinePriorities());
+  }
+
+  // 4時間おきに優先度を再調整
+  const intervalId = setInterval(() => {
+    if (todos.length > 0) {
+      dispatch(adjustDeadlinePriorities());
+
+      toast.success("タスクの優先度を期限に基づいて自動調整しました", {
+        duration: 3000,
+      });
+    }
+  }, 4 * 60 * 60 * 1000);
+
+  return () => clearInterval(intervalId);
+}, [dispatch, autoAdjustEnabled, todos, status]); // 依存配列に追加
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
@@ -394,7 +429,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
           priority: maxPriority + 1,
           isPrioritized: priorityEnabled,
           type: commitmentType,
-          deadline: suggestedDeadline, // deadline プロパティを正しく渡す
+          deadline: deadline || suggestedDeadline, // 手動で設定した期限または推奨期限
         })
       );
 
@@ -405,6 +440,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
       setPriorityAnalysis(null);
       setSuggestedDeadline(undefined);
       setPriorityEnabled(false);
+      setDeadline(undefined); // 期限をリセット
       setShowCommitmentDialog(false);
 
       toast.success(
@@ -413,7 +449,9 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
         }タスクを追加しました。必ず完了させましょう！${
           priorityEnabled ? "（優先タスク）" : ""
         }${
-          suggestedDeadline ? `（期限: ${suggestedDeadline}）` : "" // 期限情報をトーストにも表示
+          deadline || suggestedDeadline
+            ? `（期限: ${deadline || suggestedDeadline}）`
+            : "" // 期限情報をトーストにも表示
         }`
       );
     }
@@ -424,6 +462,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
     todos,
     priorityEnabled,
     suggestedDeadline,
+    deadline, // 依存配列に追加
   ]);
 
   const handleDeleteTodo = useCallback(
@@ -441,10 +480,16 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
   );
 
   const handleEditStart = useCallback(
-    (id: string, task: string, type: TaskType | undefined) => {
+    (
+      id: string,
+      task: string,
+      type: TaskType | undefined,
+      deadline: string | undefined
+    ) => {
       setEditingId(id);
       setEditingText(task);
       setEditingType(type || "input");
+      setEditingDeadline(deadline); // 期限も設定
     },
     []
   );
@@ -453,6 +498,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
     setEditingId(null);
     setEditingText("");
     setEditingType("input");
+    setEditingDeadline(undefined); // 期限をリセット
   }, []);
 
   const handleEditSave = useCallback(
@@ -464,16 +510,18 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
             updates: {
               task: editingText.trim(),
               type: editingType,
+              deadline: editingDeadline, // 期限を更新に含める
             },
           })
         );
         setEditingId(null);
         setEditingText("");
         setEditingType("input");
+        setEditingDeadline(undefined); // 期限をリセット
         toast.success("タスクを更新しました");
       }
     },
-    [dispatch, editingText, editingType]
+    [dispatch, editingText, editingType, editingDeadline] // 依存配列に追加
   );
 
   const handleMoveTodo = useCallback(
@@ -531,6 +579,24 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
     [dispatch, todos]
   );
 
+  // 期限表示のレンダリング関数
+  const renderDeadlineBadge = (deadlineDate) => {
+    if (!deadlineDate) return null;
+
+    const daysRemaining = DeadlineUtils.getDaysRemaining(deadlineDate);
+    const deadlineClassName = DeadlineUtils.getDeadlineClassName(daysRemaining);
+
+    return (
+      <Badge
+        variant="outline"
+        className={`deadline-badge ${deadlineClassName}`}
+      >
+        <Calendar className="h-3 w-3" />
+        <span>{DeadlineUtils.getDeadlineText(deadlineDate)}</span>
+      </Badge>
+    );
+  };
+
   // フィルター処理
   const filteredTodos = [...todos]
     .filter((todo) => {
@@ -541,6 +607,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
       // Category filter
       if (categoryFilter === "input" && todo.type !== "input") return false;
       if (categoryFilter === "output" && todo.type !== "output") return false;
+      if (categoryFilter === "deadline" && !todo.deadline) return false; // 期限フィルターを追加
 
       return true;
     })
@@ -839,6 +906,34 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                 <Button type="submit">追加</Button>
               </div>
 
+              {/* 期限入力フィールド */}
+              <div className="flex items-center mt-2">
+                <label
+                  htmlFor="task-deadline"
+                  className="text-sm mr-2 whitespace-nowrap"
+                >
+                  期限:
+                </label>
+                <input
+                  type="date"
+                  id="task-deadline"
+                  value={deadline || ""}
+                  min={new Date().toISOString().split("T")[0]} // 今日以降のみ選択可能
+                  onChange={(e) => setDeadline(e.target.value)}
+                  className="flex-1 p-1 text-sm border rounded"
+                />
+                {deadline && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto"
+                    onClick={() => setDeadline("")}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+
               {/* AI分析ボタン */}
               <Button
                 type="button"
@@ -941,7 +1036,47 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                   <Upload className="h-4 w-4" />
                   アウトプット
                 </Button>
+                <Button
+                  variant={
+                    categoryFilter === "deadline" ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => setCategoryFilter("deadline")}
+                  className="flex items-center gap-1"
+                >
+                  <Calendar className="h-4 w-4" />
+                  期限あり
+                </Button>
               </div>
+            </div>
+
+            {/* 自動優先度調整設定 */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <Checkbox
+                  id="auto-adjust-toggle"
+                  checked={autoAdjustEnabled}
+                  onCheckedChange={(checked) => setAutoAdjustEnabled(!!checked)}
+                />
+                <label
+                  htmlFor="auto-adjust-toggle"
+                  className="ml-2 text-xs text-gray-600"
+                >
+                  期限に基づいて優先度を自動調整する
+                </label>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  dispatch(adjustDeadlinePriorities());
+                  toast.success("タスクの優先度を期限に基づいて調整しました");
+                }}
+                className="flex items-center gap-1"
+              >
+                <RefreshCcw className="h-4 w-4" />
+                <span>優先度を再計算</span>
+              </Button>
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
@@ -1016,6 +1151,31 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                                       </SelectContent>
                                     </Select>
                                   </div>
+
+                                  {/* 編集時の期限入力フィールド */}
+                                  <div className="flex items-center mt-2">
+                                    <label
+                                      htmlFor="edit-task-deadline"
+                                      className="text-sm mr-2"
+                                    >
+                                      期限:
+                                    </label>
+                                    <input
+                                      id="edit-task-deadline"
+                                      type="date"
+                                      value={editingDeadline || ""}
+                                      min={
+                                        new Date().toISOString().split("T")[0]
+                                      }
+                                      onChange={(e) =>
+                                        setEditingDeadline(e.target.value)
+                                      }
+                                      className="flex-1 p-1 text-sm border rounded"
+                                      aria-label="タスクの期限"
+                                      placeholder="期限日を選択"
+                                    />
+                                  </div>
+
                                   <Button
                                     size="sm"
                                     onClick={() => handleEditSave(todo._id)}
@@ -1069,15 +1229,8 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                                             <span>優先</span>
                                           </Badge>
                                         )}
-                                        {todo.deadline && (
-                                          <Badge
-                                            variant="outline"
-                                            className="deadline-badge"
-                                          >
-                                            <Calendar className="h-3 w-3" />
-                                            <span>{todo.deadline}</span>
-                                          </Badge>
-                                        )}
+                                        {todo.deadline &&
+                                          renderDeadlineBadge(todo.deadline)}
                                       </div>
                                     </div>
                                     <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
@@ -1155,7 +1308,8 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                                         handleEditStart(
                                           todo._id,
                                           todo.task,
-                                          todo.type
+                                          todo.type,
+                                          todo.deadline
                                         )
                                       }
                                     >
@@ -1217,7 +1371,7 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
             )}
           </TabsContent>
           <TabsContent value="calendar">
-            // TodoCalendarコンポーネントを使用する部分
+            {/* TodoCalendarコンポーネントを使用する部分 */}
             <TodoCalendar
               todoHistory={
                 dailyHistory.length > 0
@@ -1384,6 +1538,23 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
                   </label>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* 期限表示 */}
+          {(deadline || suggestedDeadline) && (
+            <div className="bg-blue-50 p-3 rounded-md border border-blue-200 mt-2">
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+                <span className="text-sm font-medium text-blue-700">
+                  タスクの期限
+                </span>
+              </div>
+              <p className="text-xs text-blue-600 mt-1">
+                {deadline
+                  ? `手動で設定された期限: ${deadline}`
+                  : `AIが提案した期限: ${suggestedDeadline}`}
+              </p>
             </div>
           )}
 
