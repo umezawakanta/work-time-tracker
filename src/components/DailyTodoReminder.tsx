@@ -1,4 +1,4 @@
-// src/components/DailyTodoReminderWithRateLimit.tsx
+// src/components/DailyTodoReminder.tsx
 // レート制限を考慮したDailyTodoReminderコンポーネント
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -113,7 +113,7 @@ type TaskType = "input" | "output";
 const API_COOLDOWN = 5000; // 5秒間隔
 let lastApiCallTime = 0;
 
-export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
+export default function DailyTodoReminder({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const status = useSelector(selectTodoStatus);
@@ -162,29 +162,33 @@ export default function DailyTodoReminderWithRateLimit({ isPremium = false }) {
 
   const initialAdjustmentDone = useRef(false);
 
-// 自動優先度調整のためのeffect
-useEffect(() => {
-  if (!autoAdjustEnabled) return;
+  // 自動優先度調整のためのeffect
+  useEffect(() => {
+    if (!autoAdjustEnabled) return;
 
-  // 初回読み込み完了時のみ優先度調整を実行（条件を厳密に）
-  if (todos.length > 0 && status === "succeeded" && !initialAdjustmentDone.current) {
-    initialAdjustmentDone.current = true;
-    dispatch(adjustDeadlinePriorities());
-  }
-
-  // 4時間おきに優先度を再調整
-  const intervalId = setInterval(() => {
-    if (todos.length > 0) {
+    // 初回読み込み完了時のみ優先度調整を実行（条件を厳密に）
+    if (
+      todos.length > 0 &&
+      status === "succeeded" &&
+      !initialAdjustmentDone.current
+    ) {
+      initialAdjustmentDone.current = true;
       dispatch(adjustDeadlinePriorities());
-
-      toast.success("タスクの優先度を期限に基づいて自動調整しました", {
-        duration: 3000,
-      });
     }
-  }, 4 * 60 * 60 * 1000);
 
-  return () => clearInterval(intervalId);
-}, [dispatch, autoAdjustEnabled, todos, status]); // 依存配列に追加
+    // 4時間おきに優先度を再調整
+    const intervalId = setInterval(() => {
+      if (todos.length > 0) {
+        dispatch(adjustDeadlinePriorities());
+
+        toast.success("タスクの優先度を期限に基づいて自動調整しました", {
+          duration: 3000,
+        });
+      }
+    }, 4 * 60 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, autoAdjustEnabled, todos, status]); // 依存配列に追加
 
   // ストリーク計算関数を先に定義
   const calculateStreak = useCallback(() => {
@@ -379,7 +383,7 @@ useEffect(() => {
         setAnalysisButtonEnabled(true);
       }, API_COOLDOWN); // クールダウン時間後
     }
-  }, [newTodo, isClassifying, isAnalyzingPriority]); // 依存配列に状態変数を追加
+  }, [newTodo, isClassifying, isAnalyzingPriority]);
 
   const handleToggle = useCallback(
     (id: string) => {
@@ -462,7 +466,7 @@ useEffect(() => {
     todos,
     priorityEnabled,
     suggestedDeadline,
-    deadline, // 依存配列に追加
+    deadline,
   ]);
 
   const handleDeleteTodo = useCallback(
@@ -521,7 +525,7 @@ useEffect(() => {
         toast.success("タスクを更新しました");
       }
     },
-    [dispatch, editingText, editingType, editingDeadline] // 依存配列に追加
+    [dispatch, editingText, editingType, editingDeadline]
   );
 
   const handleMoveTodo = useCallback(
@@ -1204,6 +1208,16 @@ useEffect(() => {
                                       >
                                         {todo.task}
                                       </Label>
+                                      {todo.deadline && (
+                                        <div className="text-xs flex items-center">
+                                          <Calendar className="h-3 w-3 mr-1" />
+                                          <span>
+                                            {DeadlineUtils.formatDate(
+                                              todo.deadline
+                                            )}
+                                          </span>
+                                        </div>
+                                      )}
                                       <div className="flex items-center gap-1">
                                         <Badge
                                           variant="outline"
@@ -1233,7 +1247,7 @@ useEffect(() => {
                                           renderDeadlineBadge(todo.deadline)}
                                       </div>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-2 flex-wrap">
                                       <Clock className="h-3 w-3" />
                                       <span>
                                         追加:{" "}
@@ -1246,22 +1260,34 @@ useEffect(() => {
                                           minute: "2-digit",
                                         })}
                                       </span>
-                                      {todo.completedDate && (
-                                        <>
-                                          <Check className="h-3 w-3" />
-                                          <span>
-                                            完了:{" "}
-                                            {new Date(
+
+                                      <Calendar className="h-3 w-3" />
+                                      <span>
+                                        期限:{" "}
+                                        {todo.deadline
+                                          ? new Date(
+                                              todo.deadline
+                                            ).toLocaleString("ja-JP", {
+                                              month: "numeric",
+                                              day: "numeric",
+                                            })
+                                          : "未設定"}
+                                      </span>
+
+                                      <Check className="h-3 w-3" />
+                                      <span>
+                                        完了:{" "}
+                                        {todo.completedDate
+                                          ? new Date(
                                               todo.completedDate
                                             ).toLocaleString("ja-JP", {
                                               month: "numeric",
                                               day: "numeric",
                                               hour: "2-digit",
                                               minute: "2-digit",
-                                            })}
-                                          </span>
-                                        </>
-                                      )}
+                                            })
+                                          : "未完了"}
+                                      </span>
                                     </div>
                                   </div>
                                   <div className="flex items-center space-x-1">
