@@ -1,37 +1,34 @@
 // FeatureCard.tsx
-import React, { memo } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { Badge } from "./ui/badge";
-import { CheckCircle, Crown, Lock } from "lucide-react";
-import { Button } from "./ui/button";
+import { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Crown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// バリアントの型定義
+// 型定義
 export type FeatureCardVariant = "default" | "outline" | "secondary";
 
-// FeatureCardの型定義
 export interface FeatureCardProps {
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   path: string;
   buttonText: string;
   variant?: FeatureCardVariant;
   isPremium?: boolean;
 }
 
-// PricingCardの型定義
 export interface PricingCardProps {
   plan: string;
   price: number;
   features: string[];
-  isPopular: boolean;
+  isPopular?: boolean;
   onSelect: (plan: string) => void;
 }
 
-// メモ化したFeatureCardコンポーネント
-const FeatureCard = memo(({
+// 機能カードコンポーネント
+export const FeatureCard = ({
   title,
   description,
   icon,
@@ -39,128 +36,101 @@ const FeatureCard = memo(({
   buttonText,
   variant = "default",
   isPremium = false,
-}: FeatureCardProps) => (
-  <div>
-    <Card
-      className={`w-full h-full hover:shadow-lg transition-shadow duration-300 border-2 hover:border-primary ${
-        isPremium ? "border-amber-200 bg-amber-50/30" : ""
-      }`}
-    >
-      <CardHeader className="flex flex-row items-center gap-4">
-        {icon}
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">{title}</CardTitle>
-            {isPremium && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Badge
-                        variant="outline"
-                        className="bg-amber-100 text-amber-800 flex items-center gap-1 ml-2"
-                        aria-label="プレミアム機能"
-                      >
-                        <Crown className="h-3 w-3" aria-hidden="true" />
-                        <span>プレミアム</span>
-                      </Badge>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>プレミアムプラン限定機能</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-          <CardDescription>{description}</CardDescription>
+}: FeatureCardProps) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card className={`overflow-hidden transition-all duration-200 hover:shadow-md ${
+      isPremium ? "border-amber-200" : ""
+    }`}>
+      <CardHeader className={`pb-2 ${
+        isPremium ? "bg-gradient-to-r from-amber-50 to-amber-100" : ""
+      }`}>
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-md font-semibold flex items-center">
+            {icon && <span className="mr-2">{icon}</span>}
+            {title}
+          </CardTitle>
+          {isPremium && (
+            <Badge variant="outline" className="bg-amber-100 text-amber-800 flex items-center gap-1">
+              <Crown className="h-3 w-3" />
+              <span>プレミアム</span>
+            </Badge>
+          )}
         </div>
       </CardHeader>
-      <CardContent>
-        <p className="mb-4 text-gray-600 dark:text-gray-300">{description}</p>
-        <Link to={path} className="w-full">
-          <Button
-            variant={
-              variant === "default"
-                ? "default"
-                : variant === "outline"
-                ? "outline"
-                : "secondary"
-            }
-            className="w-full flex items-center gap-2"
-            aria-label={`${buttonText}へ移動`}
-          >
-            {isPremium && <Lock className="h-4 w-4" aria-hidden="true" />}
-            {buttonText} <span className="ml-1" aria-hidden="true">→</span>
-          </Button>
-        </Link>
+      <CardContent className="pt-3">
+        <p className="text-sm text-gray-600 dark:text-gray-300 min-h-[2.5rem]">{description}</p>
       </CardContent>
+      <CardFooter className="pt-0">
+        <Button 
+          variant={variant} 
+          size="sm" 
+          className="w-full"
+          onClick={() => navigate(path)}
+        >
+          {buttonText}
+        </Button>
+      </CardFooter>
     </Card>
-  </div>
-));
+  );
+};
 
-// パフォーマンス向上のため表示名を設定
-FeatureCard.displayName = "FeatureCard";
-
-// 料金プランカードコンポーネント - メモ化と改善済み
-const PricingCard = memo(({ 
-  plan, 
-  price, 
-  features, 
-  isPopular, 
-  onSelect 
-}: PricingCardProps) => (
-  <Card
-    className={`w-full ${isPopular ? "border-primary shadow-lg relative" : ""}`}
-  >
-    {isPopular && (
-      <Badge 
-        className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/2 bg-primary px-3 py-1"
-        aria-label="おすすめプラン"
-      >
-        おすすめ
-      </Badge>
-    )}
-    <CardHeader>
-      <CardTitle>{plan}</CardTitle>
-      <CardDescription>
-        {price === 0 ? (
-          "無料でご利用いただけます"
-        ) : (
-          <>
-            <span className="text-3xl font-bold">
-              ¥{price.toLocaleString()}
-            </span>
-            <span className="text-sm">/月</span>
-          </>
-        )}
-      </CardDescription>
-    </CardHeader>
-    <CardContent>
-      <ul className="space-y-2" aria-label={`${plan}の特徴`}>
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start">
-            <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" aria-hidden="true" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-    </CardContent>
-    <CardFooter>
-      <Button
-        className={`w-full ${
-          isPopular ? "bg-primary hover:bg-primary/90" : ""
-        }`}
-        variant={isPopular ? "default" : "outline"}
-        onClick={() => onSelect(plan)}
-        aria-label={`${plan}を選択`}
-      >
-        {price === 0 ? "無料で始める" : "プランを選択"}
-      </Button>
-    </CardFooter>
-  </Card>
-));
-
-PricingCard.displayName = "PricingCard";
-
-export { FeatureCard, PricingCard };
+// 料金プランカードコンポーネント
+export const PricingCard = ({
+  plan,
+  price,
+  features,
+  isPopular = false,
+  onSelect,
+}: PricingCardProps) => {
+  return (
+    <Card className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${
+      isPopular ? "border-amber-200 shadow-sm" : ""
+    }`}>
+      {isPopular && (
+        <div className="bg-amber-500 py-1 px-4 text-white text-xs font-medium text-center">
+          おすすめプラン
+        </div>
+      )}
+      <CardHeader className={`pb-3 ${
+        isPopular ? "bg-gradient-to-r from-amber-50 to-amber-100" : ""
+      }`}>
+        <CardTitle className="text-center font-bold">
+          {plan}
+        </CardTitle>
+        <div className="text-center pt-2">
+          <span className="text-3xl font-bold">¥{price.toLocaleString()}</span>
+          <span className="text-sm text-gray-500 ml-1">/月</span>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-4">
+        <ul className="space-y-2">
+          {features.map((feature, index) => (
+            <li key={index} className="flex items-start">
+              <svg
+                className="h-5 w-5 text-green-500 mr-2 flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+      <CardFooter className="pt-0 pb-4">
+        <Button 
+          variant={isPopular ? "default" : "outline"} 
+          className="w-full"
+          onClick={() => onSelect(plan)}
+        >
+          {isPopular ? "このプランを選択" : "選択する"}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};

@@ -1,6 +1,3 @@
-// src/components/DailyTodoReminder.tsx
-// レート制限を考慮したDailyTodoReminderコンポーネント
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,21 +16,20 @@ import {
   RefreshCcw,
   Trash2,
   Edit,
-  Check,
   X,
-  ChevronUp,
-  ChevronDown,
+
   Star,
   AlertTriangle,
   Clock,
   Award,
   Download,
   Upload,
-  BarChart2,
   Sparkles,
   Calendar,
   Zap,
   ArrowUp,
+  Filter,
+  PlusCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
@@ -103,7 +99,7 @@ import TaskPriorityService, {
   PriorityAnalysis,
 } from "@/services/TaskPriorityService";
 
-// CSS をインポート
+// CSSクラス
 import "./DailyTodoReminder.css";
 
 // TaskType型を定義
@@ -120,6 +116,8 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const error = useSelector(selectTodoError);
   const todoHistory = useSelector(selectTodoHistory);
   const dailyHistory = useSelector(selectDailyHistory);
+  
+  // 状態管理
   const [newTodo, setNewTodo] = useState("");
   const [taskType, setTaskType] = useState<TaskType>("input");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -132,41 +130,39 @@ export default function DailyTodoReminder({ isPremium = false }) {
   const [streakCount, setStreakCount] = useState(0);
   const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", "completed"
   const [categoryFilter, setCategoryFilter] = useState("all"); // "all", "input", "output", "deadline"
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // 期限関連の状態
   const [deadline, setDeadline] = useState<string | undefined>(undefined);
-  const [editingDeadline, setEditingDeadline] = useState<string | undefined>(
-    undefined
-  );
+  const [editingDeadline, setEditingDeadline] = useState<string | undefined>(undefined);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(true);
 
-  // Gemini関連の状態を追加
+  // AI分析関連の状態
   const [isClassifying, setIsClassifying] = useState(false);
-  const [classification, setClassification] =
-    useState<TaskClassification | null>(null);
+  const [classification, setClassification] = useState<TaskClassification | null>(null);
   const [showAiSuggestion, setShowAiSuggestion] = useState(false);
-
-  // 優先度分析関連の状態を追加
-  const [priorityAnalysis, setPriorityAnalysis] =
-    useState<PriorityAnalysis | null>(null);
+  const [priorityAnalysis, setPriorityAnalysis] = useState<PriorityAnalysis | null>(null);
   const [isAnalyzingPriority, setIsAnalyzingPriority] = useState(false);
   const [showPrioritySuggestion, setShowPrioritySuggestion] = useState(false);
-  const [suggestedDeadline, setSuggestedDeadline] = useState<
-    string | undefined
-  >(undefined);
+  const [suggestedDeadline, setSuggestedDeadline] = useState<string | undefined>(undefined);
   const [priorityEnabled, setPriorityEnabled] = useState(false);
-
-  // 手動分析用の状態
   const [analysisButtonEnabled, setAnalysisButtonEnabled] = useState(true);
-  const [isManualAnalysis, setIsManualAnalysis] = useState(false);
 
   const initialAdjustmentDone = useRef(false);
+
+  // 副作用
+  useEffect(() => {
+    dispatch(fetchTodoItems());
+    dispatch(fetchTodoHistory());
+    dispatch(fetchDailyTodoHistory());
+  }, [dispatch]);
 
   // 自動優先度調整のためのeffect
   useEffect(() => {
     if (!autoAdjustEnabled) return;
 
-    // 初回読み込み完了時のみ優先度調整を実行（条件を厳密に）
+    // 初回読み込み完了時のみ優先度調整を実行
     if (
       todos.length > 0 &&
       status === "succeeded" &&
@@ -180,7 +176,6 @@ export default function DailyTodoReminder({ isPremium = false }) {
     const intervalId = setInterval(() => {
       if (todos.length > 0) {
         dispatch(adjustDeadlinePriorities());
-
         toast.success("タスクの優先度を期限に基づいて自動調整しました", {
           duration: 3000,
         });
@@ -188,9 +183,9 @@ export default function DailyTodoReminder({ isPremium = false }) {
     }, 4 * 60 * 60 * 1000);
 
     return () => clearInterval(intervalId);
-  }, [dispatch, autoAdjustEnabled, todos, status]); // 依存配列に追加
+  }, [dispatch, autoAdjustEnabled, todos, status]);
 
-  // ストリーク計算関数を先に定義
+  // ストリーク計算関数
   const calculateStreak = useCallback(() => {
     const sortedDates = Object.keys(todoHistory).sort(
       (a, b) => new Date(b).getTime() - new Date(a).getTime()
@@ -232,13 +227,6 @@ export default function DailyTodoReminder({ isPremium = false }) {
   }, [todoHistory]);
 
   useEffect(() => {
-    dispatch(fetchTodoItems());
-    // 履歴データも取得
-    dispatch(fetchTodoHistory());
-    dispatch(fetchDailyTodoHistory());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (todos.length > 0) {
       const completedCount = todos.filter((todo) => todo.completed).length;
       const today = new Date().toISOString().split("T")[0];
@@ -255,11 +243,11 @@ export default function DailyTodoReminder({ isPremium = false }) {
     }
   }, [error]);
 
-  // タスク入力ハンドラー（自動分析なし）
+  // タスク入力ハンドラー
   const handleTaskInput = useCallback((value: string) => {
     setNewTodo(value);
 
-    // 入力時は分析を行わず、UIの状態のみクリア（必要に応じて）
+    // 入力時は分析を行わず、UIの状態のみクリア
     if (value.trim() === "") {
       setClassification(null);
       setShowAiSuggestion(false);
@@ -290,7 +278,6 @@ export default function DailyTodoReminder({ isPremium = false }) {
       return;
     }
 
-    setIsManualAnalysis(true);
     setIsClassifying(true);
     setIsAnalyzingPriority(true);
     setAnalysisButtonEnabled(false);
@@ -367,6 +354,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
             urgency: 7,
             explanation:
               "キーワード分析により優先タスクと判断しました（ローカル分析）",
+            suggestedDeadline: undefined
           });
           setShowPrioritySuggestion(true);
         }
@@ -374,14 +362,13 @@ export default function DailyTodoReminder({ isPremium = false }) {
         console.error("ローカル分析エラー:", localError);
       }
     } finally {
-      setIsManualAnalysis(false);
       setIsClassifying(false);
       setIsAnalyzingPriority(false);
 
       // 一定時間後にボタンを再有効化
       setTimeout(() => {
         setAnalysisButtonEnabled(true);
-      }, API_COOLDOWN); // クールダウン時間後
+      }, API_COOLDOWN);
     }
   }, [newTodo, isClassifying, isAnalyzingPriority]);
 
@@ -437,6 +424,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
         })
       );
 
+      // 状態のリセット
       setNewTodo("");
       setShowAiSuggestion(false);
       setShowPrioritySuggestion(false);
@@ -444,19 +432,14 @@ export default function DailyTodoReminder({ isPremium = false }) {
       setPriorityAnalysis(null);
       setSuggestedDeadline(undefined);
       setPriorityEnabled(false);
-      setDeadline(undefined); // 期限をリセット
+      setDeadline(undefined);
       setShowCommitmentDialog(false);
+      setShowAddForm(false);
 
       toast.success(
         `新しい${
           commitmentType === "input" ? "インプット" : "アウトプット"
-        }タスクを追加しました。必ず完了させましょう！${
-          priorityEnabled ? "（優先タスク）" : ""
-        }${
-          deadline || suggestedDeadline
-            ? `（期限: ${deadline || suggestedDeadline}）`
-            : "" // 期限情報をトーストにも表示
-        }`
+        }タスクを追加しました`
       );
     }
   }, [
@@ -493,7 +476,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
       setEditingId(id);
       setEditingText(task);
       setEditingType(type || "input");
-      setEditingDeadline(deadline); // 期限も設定
+      setEditingDeadline(deadline);
     },
     []
   );
@@ -502,7 +485,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
     setEditingId(null);
     setEditingText("");
     setEditingType("input");
-    setEditingDeadline(undefined); // 期限をリセット
+    setEditingDeadline(undefined);
   }, []);
 
   const handleEditSave = useCallback(
@@ -514,44 +497,21 @@ export default function DailyTodoReminder({ isPremium = false }) {
             updates: {
               task: editingText.trim(),
               type: editingType,
-              deadline: editingDeadline, // 期限を更新に含める
+              deadline: editingDeadline,
             },
           })
         );
         setEditingId(null);
         setEditingText("");
         setEditingType("input");
-        setEditingDeadline(undefined); // 期限をリセット
+        setEditingDeadline(undefined);
         toast.success("タスクを更新しました");
       }
     },
     [dispatch, editingText, editingType, editingDeadline]
   );
 
-  const handleMoveTodo = useCallback(
-    (id: string, direction: "up" | "down") => {
-      const index = todos.findIndex((todo) => todo._id === id);
-      if (index === -1) return;
 
-      const newIndex = direction === "up" ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= todos.length) return;
-
-      // タスクの順番を変更
-      const updatedTodos = [...todos];
-      const [movedTodo] = updatedTodos.splice(index, 1); // 対象のタスクを削除
-      updatedTodos.splice(newIndex, 0, movedTodo); // 新しい位置に挿入
-
-      // 優先度を再計算（順番通りの番号を付ける）
-      const recalculatedTodos = updatedTodos.map((todo, idx) => ({
-        ...todo,
-        priority: idx + 1,
-      }));
-
-      // 更新したタスクリストをReduxストアに保存
-      dispatch(reorderTodoItems(recalculatedTodos));
-    },
-    [dispatch, todos]
-  );
 
   const handleTogglePriority = useCallback(
     (id: string) => {
@@ -611,7 +571,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
       // Category filter
       if (categoryFilter === "input" && todo.type !== "input") return false;
       if (categoryFilter === "output" && todo.type !== "output") return false;
-      if (categoryFilter === "deadline" && !todo.deadline) return false; // 期限フィルターを追加
+      if (categoryFilter === "deadline" && !todo.deadline) return false;
 
       return true;
     })
@@ -626,30 +586,25 @@ export default function DailyTodoReminder({ isPremium = false }) {
         return a.isPrioritized ? -1 : 1; // 優先タスクを上に
       }
 
-      // 最後に優先度の逆順（大きい数値が新しいタスク）でソート
-      // より大きな優先度（新しいタスク）が上に来るようにする
+      // 最後に優先度の逆順でソート
       return b.priority - a.priority;
     });
 
-  // resetTodoList実行時の処理を修正
+  // タスクリスト リセット
   const handleResetTodos = () => {
     if (
       confirm(
         "今日のタスクを締めくくり、新しい日を始めますか？\n完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
       )
     ) {
-      console.log("リセット開始...");
       dispatch(resetTodoList())
         .then(() => {
-          console.log("リセット完了、履歴データを取得中...");
-          // リセット後に履歴データを再取得し、明示的に待機
           return Promise.all([
             dispatch(fetchTodoHistory()),
             dispatch(fetchDailyTodoHistory()),
           ]);
         })
         .then(() => {
-          console.log("履歴データ取得完了");
           toast.success("新しい日の準備ができました。今日も頑張りましょう！");
         })
         .catch((err) => {
@@ -767,23 +722,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
     );
   };
 
-  // 以下はUIの返却部分（既存コードを流用して一部を修正）
-  if (status === "loading") {
-    return (
-      <div className="flex items-center justify-center p-8">読み込み中...</div>
-    );
-  }
-
-  // 動的な幅を最も近いCSSクラスに変換する関数
-  const getWidthClass = (percentage: number): string => {
-    // 0から100までの値を5刻みで丸める
-    const roundedPercentage = Math.round(percentage / 5) * 5;
-
-    // 対応するクラス名を返す
-    return `w-${roundedPercentage}`;
-  };
-
-  // todoHistoryを配列形式に変換するヘルパー関数を追加
+  // todoHistoryを配列形式に変換するヘルパー関数
   const convertTodoHistoryToArray = (
     history: Record<string, number>
   ): { date: string; count: number }[] => {
@@ -793,52 +732,59 @@ export default function DailyTodoReminder({ isPremium = false }) {
     }));
   };
 
-  // コンポーネントのレンダリング関数内（return文の直前）に追加
-  console.log("Rendering todos:", todos);
-  console.log("Current filtered todos:", filteredTodos);
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <RefreshCcw className="h-6 w-6 animate-spin mr-2" />
+        <span>読み込み中...</span>
+      </div>
+    );
+  }
 
   return (
-    <Card className="w-full mb-8">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div>
-          <CardTitle className="text-lg font-bold">本日のToDoリスト</CardTitle>
-          <CardDescription>登録したことは必ずやり遂げましょう</CardDescription>
-        </div>
-        <div className="flex items-center space-x-2">
-          {isPremium && (
-            <Badge
-              variant="outline"
-              className="bg-amber-100 text-amber-800 flex items-center gap-1"
-            >
-              <Award className="h-3 w-3" />
-              <span>プレミアム</span>
-            </Badge>
-          )}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                  <Award className="h-4 w-4" />
-                  <span>{streakCount}日連続</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>連続{streakCount}日間タスクを完了しています！</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <Button variant="outline" size="sm" onClick={handleResetTodos}>
-            <RefreshCcw className="h-4 w-4 mr-1" />
-            <span>1日を締める</span>
-          </Button>
+    <Card className="w-full shadow-sm border border-gray-200">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg font-bold">本日のToDoリスト</CardTitle>
+            <CardDescription>登録したことは必ずやり遂げましょう</CardDescription>
+          </div>
+          <div className="flex items-center space-x-2">
+            {isPremium && (
+              <Badge
+                variant="outline"
+                className="bg-amber-100 text-amber-800 flex items-center gap-1"
+              >
+                <Award className="h-3 w-3" />
+                <span>プレミアム</span>
+              </Badge>
+            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    <Award className="h-4 w-4" />
+                    <span>{streakCount}日連続</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>連続{streakCount}日間タスクを完了しています！</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Button variant="outline" size="sm" onClick={handleResetTodos}>
+              <RefreshCcw className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">1日を締める</span>
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
       {/* 進捗バー */}
-      <div className="px-4 pt-0 pb-2">
+      <div className="px-4 pb-2">
         <div className="flex justify-between items-center mb-1 text-sm">
           <span>
-            進捗状況: {completedCount}/{totalCount} タスク完了
+            進捗状況: {completedCount}/{totalCount} タスク
           </span>
           <span>{progressPercentage}%</span>
         </div>
@@ -846,258 +792,288 @@ export default function DailyTodoReminder({ isPremium = false }) {
       </div>
 
       {/* インプット/アウトプットバランス */}
-      <div className="px-4 pt-0 pb-3">
+      <div className="px-4 pb-3">
         <div className="flex justify-between items-center mb-1 text-sm">
           <span>
-            インプット/アウトプットバランス: {inputCount}/{outputCount} タスク
+            インプット/アウトプット:
           </span>
           <div className="flex items-center space-x-2">
-            <span className="text-blue-600">{inputPercentage}%</span>
+            <span className="text-blue-600 text-xs">{inputPercentage}%</span>
             <span>:</span>
-            <span className="text-green-600">{outputPercentage}%</span>
+            <span className="text-green-600 text-xs">{outputPercentage}%</span>
           </div>
         </div>
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className={`progress-bar-input ${getWidthClass(inputPercentage)}`}
+            className="float-left h-full bg-blue-500"
+            style={{ width: `${inputPercentage}%` }}
           ></div>
           <div
-            className={`progress-bar-output ${getWidthClass(outputPercentage)}`}
+            className="float-left h-full bg-green-500"
+            style={{ width: `${outputPercentage}%` }}
           ></div>
         </div>
       </div>
 
-      <CardContent>
+      <CardContent className="pb-2 pt-0">
         <Tabs
           defaultValue="list"
           value={selectedTab}
           onValueChange={setSelectedTab}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 mb-4">
             <TabsTrigger value="list">リスト</TabsTrigger>
             <TabsTrigger value="calendar">カレンダー</TabsTrigger>
             <TabsTrigger value="chart">グラフ</TabsTrigger>
           </TabsList>
-          <TabsContent value="list">
-            <form onSubmit={handleAddTodo} className="space-y-2 mb-4">
-              <div className="flex space-x-2">
-                <Input
-                  type="text"
-                  value={newTodo}
-                  onChange={(e) => handleTaskInput(e.target.value)}
-                  placeholder="新しいタスクを追加"
-                  className="flex-1"
-                />
-                <Select
-                  value={taskType}
-                  onValueChange={(value: TaskType) => setTaskType(value)}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="タイプを選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="input">
-                      <div className="flex items-center">
-                        <Download className="h-4 w-4 mr-2 text-blue-500" />
-                        <span>インプット</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="output">
-                      <div className="flex items-center">
-                        <Upload className="h-4 w-4 mr-2 text-green-500" />
-                        <span>アウトプット</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button type="submit">追加</Button>
-              </div>
-
-              {/* 期限入力フィールド */}
-              <div className="flex items-center mt-2">
-                <label
-                  htmlFor="task-deadline"
-                  className="text-sm mr-2 whitespace-nowrap"
-                >
-                  期限:
-                </label>
-                <input
-                  type="date"
-                  id="task-deadline"
-                  value={deadline || ""}
-                  min={new Date().toISOString().split("T")[0]} // 今日以降のみ選択可能
-                  onChange={(e) => setDeadline(e.target.value)}
-                  className="flex-1 p-1 text-sm border rounded"
-                />
-                {deadline && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1 h-auto"
-                    onClick={() => setDeadline("")}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-
-              {/* AI分析ボタン */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleManualAnalysis}
-                disabled={
-                  !analysisButtonEnabled ||
-                  isClassifying ||
-                  isAnalyzingPriority ||
-                  newTodo.trim().length < 5
-                }
-                className="w-full mt-2"
-              >
-                {isClassifying || isAnalyzingPriority ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin mr-2">
-                      <RefreshCcw className="h-3 w-3" />
-                    </div>
-                    <span>タスク分析中...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    <span>AIでタスクを分析する</span>
-                  </div>
-                )}
-              </Button>
-
-              {/* AI提案バッジを表示 */}
-              <AiSuggestionBadge />
-
-              {/* 優先度の提案 */}
-              <PrioritySuggestionBadge />
-
-              {/* 分析中の表示 */}
-              {(isClassifying || isAnalyzingPriority) && isManualAnalysis && (
-                <div className="flex items-center mt-1 justify-center">
-                  <div className="animate-spin mr-2">
-                    <RefreshCcw className="h-3 w-3 text-gray-400" />
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    {isClassifying && isAnalyzingPriority
-                      ? "タスクを総合的に分析中..."
-                      : isClassifying
-                      ? "タイプを分析中..."
-                      : "優先度を分析中..."}
-                  </span>
-                </div>
-              )}
-            </form>
-
-            {/* フィルターボタン */}
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
-              <div className="flex gap-2">
-                <Button
-                  variant={filterStatus === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setFilterStatus("all")}
-                >
-                  すべて
-                </Button>
-                <Button
-                  variant={filterStatus === "active" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setFilterStatus("active")}
-                >
-                  未完了
-                </Button>
-                <Button
-                  variant={filterStatus === "completed" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setFilterStatus("completed")}
-                >
-                  完了済み
-                </Button>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant={categoryFilter === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCategoryFilter("all")}
-                >
-                  全種別
-                </Button>
-                <Button
-                  variant={categoryFilter === "input" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCategoryFilter("input")}
-                  className="flex items-center gap-1"
-                >
-                  <Download className="h-4 w-4" />
-                  インプット
-                </Button>
-                <Button
-                  variant={categoryFilter === "output" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCategoryFilter("output")}
-                  className="flex items-center gap-1"
-                >
-                  <Upload className="h-4 w-4" />
-                  アウトプット
-                </Button>
-                <Button
-                  variant={
-                    categoryFilter === "deadline" ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => setCategoryFilter("deadline")}
-                  className="flex items-center gap-1"
-                >
-                  <Calendar className="h-4 w-4" />
-                  期限あり
-                </Button>
-              </div>
-            </div>
-
-            {/* 自動優先度調整設定 */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <Checkbox
-                  id="auto-adjust-toggle"
-                  checked={autoAdjustEnabled}
-                  onCheckedChange={(checked) => setAutoAdjustEnabled(!!checked)}
-                />
-                <label
-                  htmlFor="auto-adjust-toggle"
-                  className="ml-2 text-xs text-gray-600"
-                >
-                  期限に基づいて優先度を自動調整する
-                </label>
-              </div>
-              <Button
-                variant="outline"
+          
+          <TabsContent value="list" className="m-0">
+            {/* クイック追加ボタン */}
+            <div className="flex justify-between items-center mb-4">
+              <Button 
+                variant="outline" 
                 size="sm"
-                onClick={() => {
-                  dispatch(adjustDeadlinePriorities());
-                  toast.success("タスクの優先度を期限に基づいて調整しました");
-                }}
+                onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-1"
               >
-                <RefreshCcw className="h-4 w-4" />
-                <span>優先度を再計算</span>
+                <Filter className="h-4 w-4" />
+                <span className="hidden sm:inline">フィルター</span>
+              </Button>
+              
+              <Button 
+                size="sm"
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="flex items-center gap-1"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span>新しいタスク</span>
               </Button>
             </div>
+            
+            {/* フィルターエリア（トグル式） */}
+            {showFilters && (
+              <div className="p-3 bg-gray-50 rounded-md mb-4 border border-gray-200">
+                <h4 className="font-medium text-sm mb-2">フィルター</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-500">状態</p>
+                    <div className="flex flex-wrap gap-1">
+                      <Button
+                        variant={filterStatus === "all" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setFilterStatus("all")}
+                        className="h-7 text-xs px-2"
+                      >
+                        すべて
+                      </Button>
+                      <Button
+                        variant={filterStatus === "active" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setFilterStatus("active")}
+                        className="h-7 text-xs px-2"
+                      >
+                        未完了
+                      </Button>
+                      <Button
+                        variant={filterStatus === "completed" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setFilterStatus("completed")}
+                        className="h-7 text-xs px-2"
+                      >
+                        完了済み
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-500">種別</p>
+                    <div className="flex flex-wrap gap-1">
+                      <Button
+                        variant={categoryFilter === "all" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("all")}
+                        className="h-7 text-xs px-2"
+                      >
+                        全種別
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "input" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("input")}
+                        className="h-7 text-xs px-2 flex items-center gap-1"
+                      >
+                        <Download className="h-3 w-3" />
+                        <span>インプット</span>
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "output" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("output")}
+                        className="h-7 text-xs px-2 flex items-center gap-1"
+                      >
+                        <Upload className="h-3 w-3" />
+                        <span>アウトプット</span>
+                      </Button>
+                      <Button
+                        variant={categoryFilter === "deadline" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCategoryFilter("deadline")}
+                        className="h-7 text-xs px-2 flex items-center gap-1"
+                      >
+                        <Calendar className="h-3 w-3" />
+                        <span>期限あり</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* 自動優先度調整設定 */}
+                <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-200">
+                  <div className="flex items-center">
+                    <Checkbox
+                      id="auto-adjust-toggle"
+                      checked={autoAdjustEnabled}
+                      onCheckedChange={(checked) => setAutoAdjustEnabled(!!checked)}
+                    />
+                    <label
+                      htmlFor="auto-adjust-toggle"
+                      className="ml-2 text-xs text-gray-600"
+                    >
+                      期限に基づいて優先度を自動調整する
+                    </label>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      dispatch(adjustDeadlinePriorities());
+                      toast.success("タスクの優先度を調整しました");
+                    }}
+                    className="h-7 text-xs"
+                  >
+                    <RefreshCcw className="h-3 w-3 mr-1" />
+                    <span>再計算</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            {/* タスク追加フォーム（トグル式） */}
+            {showAddForm && (
+              <div className="p-3 bg-gray-50 rounded-md mb-4 border border-gray-200">
+                <form onSubmit={handleAddTodo} className="space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex space-x-2">
+                      <Input
+                        type="text"
+                        value={newTodo}
+                        onChange={(e) => handleTaskInput(e.target.value)}
+                        placeholder="新しいタスクを追加"
+                        className="flex-1"
+                      />
+                      <Select
+                        value={taskType}
+                        onValueChange={(value: TaskType) => setTaskType(value)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="タイプを選択" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="input">
+                            <div className="flex items-center">
+                              <Download className="h-4 w-4 mr-2 text-blue-500" />
+                              <span>インプット</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="output">
+                            <div className="flex items-center">
+                              <Upload className="h-4 w-4 mr-2 text-green-500" />
+                              <span>アウトプット</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
+                    {/* 期限入力フィールド */}
+                    <div className="flex items-center">
+                      <label
+                        htmlFor="task-deadline"
+                        className="text-sm mr-2 whitespace-nowrap"
+                      >
+                        期限:
+                      </label>
+                      <input
+                        type="date"
+                        id="task-deadline"
+                        value={deadline || ""}
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => setDeadline(e.target.value)}
+                        className="flex-1 p-1 text-sm border rounded"
+                      />
+                      {deadline && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-1 h-auto"
+                          onClick={() => setDeadline("")}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" className="flex-1">タスクを追加</Button>
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleManualAnalysis}
+                      disabled={
+                        !analysisButtonEnabled ||
+                        isClassifying ||
+                        isAnalyzingPriority ||
+                        newTodo.trim().length < 5
+                      }
+                    >
+                      {isClassifying || isAnalyzingPriority ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin mr-2">
+                            <RefreshCcw className="h-3 w-3" />
+                          </div>
+                          <span>分析中...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          <span>AI分析</span>
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* AI提案バッジを表示 */}
+                  <AiSuggestionBadge />
+
+                  {/* 優先度の提案 */}
+                  <PrioritySuggestionBadge />
+                </form>
+              </div>
+            )}
+
+            {/* タスクリスト */}
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="todos">
                 {(provided, snapshot) => (
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={
-                      snapshot.isDraggingOver
-                        ? "droppable-is-dragging-over"
-                        : "droppable-is-not-dragging-over"
-                    }
+                    className={`rounded-md ${
+                      snapshot.isDraggingOver ? "bg-blue-50" : "bg-transparent"
+                    }`}
                   >
                     <div className="space-y-2">
                       {filteredTodos.map((todo, index) => (
@@ -1111,7 +1087,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`flex items-center space-x-2 p-3 rounded-md shadow-sm border ${
+                              className={`flex items-start p-3 rounded-md shadow-sm border ${
                                 todo.completed
                                   ? "bg-gray-50 border-gray-200"
                                   : todo.isPrioritized
@@ -1123,85 +1099,74 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                 id={`todo-${todo._id}`}
                                 checked={todo.completed}
                                 onCheckedChange={() => handleToggle(todo._id)}
+                                className="mt-1"
                               />
                               {editingId === todo._id ? (
-                                <>
-                                  <div className="flex-grow flex gap-2">
+                                // 編集モード
+                                <div className="flex-grow pl-3">
+                                  <div className="space-y-2">
                                     <Input
                                       value={editingText}
-                                      onChange={(e) =>
-                                        setEditingText(e.target.value)
-                                      }
-                                      className="flex-grow"
+                                      onChange={(e) => setEditingText(e.target.value)}
+                                      className="w-full"
                                     />
-                                    <Select
-                                      value={editingType}
-                                      onValueChange={(value: TaskType) =>
-                                        setEditingType(value)
-                                      }
-                                    >
-                                      <SelectTrigger className="w-40">
-                                        <SelectValue placeholder="タイプを選択" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="input">
-                                          <div className="flex items-center">
-                                            <Download className="h-4 w-4 mr-2 text-blue-500" />
-                                            <span>インプット</span>
-                                          </div>
-                                        </SelectItem>
-                                        <SelectItem value="output">
-                                          <div className="flex items-center">
-                                            <Upload className="h-4 w-4 mr-2 text-green-500" />
-                                            <span>アウトプット</span>
-                                          </div>
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
+                                    
+                                    <div className="flex gap-2">
+                                      <Select
+                                        value={editingType}
+                                        onValueChange={(value: TaskType) => setEditingType(value)}
+                                      >
+                                        <SelectTrigger className="w-full">
+                                          <SelectValue placeholder="タイプを選択" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="input">
+                                            <div className="flex items-center">
+                                              <Download className="h-4 w-4 mr-2 text-blue-500" />
+                                              <span>インプット</span>
+                                            </div>
+                                          </SelectItem>
+                                          <SelectItem value="output">
+                                            <div className="flex items-center">
+                                              <Upload className="h-4 w-4 mr-2 text-green-500" />
+                                              <span>アウトプット</span>
+                                            </div>
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      
+                                      <input
+                                        type="date"
+                                        value={editingDeadline || ""}
+                                        min={new Date().toISOString().split("T")[0]}
+                                        onChange={(e) => setEditingDeadline(e.target.value)}
+                                        className="p-2 text-sm border rounded flex-1"
+                                        placeholder="期限日を選択"
+                                      />
+                                    </div>
+                                    
+                                    <div className="flex justify-end space-x-2">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleEditCancel}
+                                      >
+                                        キャンセル
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleEditSave(todo._id)}
+                                      >
+                                        保存
+                                      </Button>
+                                    </div>
                                   </div>
-
-                                  {/* 編集時の期限入力フィールド */}
-                                  <div className="flex items-center mt-2">
-                                    <label
-                                      htmlFor="edit-task-deadline"
-                                      className="text-sm mr-2"
-                                    >
-                                      期限:
-                                    </label>
-                                    <input
-                                      id="edit-task-deadline"
-                                      type="date"
-                                      value={editingDeadline || ""}
-                                      min={
-                                        new Date().toISOString().split("T")[0]
-                                      }
-                                      onChange={(e) =>
-                                        setEditingDeadline(e.target.value)
-                                      }
-                                      className="flex-1 p-1 text-sm border rounded"
-                                      aria-label="タスクの期限"
-                                      placeholder="期限日を選択"
-                                    />
-                                  </div>
-
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleEditSave(todo._id)}
-                                  >
-                                    <Check className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={handleEditCancel}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </>
+                                </div>
                               ) : (
+                                // 表示モード
                                 <>
-                                  <div className="flex-grow">
-                                    <div className="flex items-center gap-2">
+                                  <div className="flex-grow pl-3">
+                                    <div className="flex flex-col">
                                       <Label
                                         htmlFor={`todo-${todo._id}`}
                                         className={`${
@@ -1212,17 +1177,8 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                       >
                                         {todo.task}
                                       </Label>
-                                      {todo.deadline && (
-                                        <div className="text-xs flex items-center">
-                                          <Calendar className="h-3 w-3 mr-1" />
-                                          <span>
-                                            {DeadlineUtils.formatDate(
-                                              todo.deadline
-                                            )}
-                                          </span>
-                                        </div>
-                                      )}
-                                      <div className="flex items-center gap-1">
+                                      
+                                      <div className="flex flex-wrap gap-1 mt-1">
                                         <Badge
                                           variant="outline"
                                           className={`flex items-center gap-1 text-xs ${
@@ -1238,6 +1194,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                               : "アウトプット"}
                                           </span>
                                         </Badge>
+                                        
                                         {todo.isPrioritized && (
                                           <Badge
                                             variant="outline"
@@ -1247,60 +1204,33 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                             <span>優先</span>
                                           </Badge>
                                         )}
-                                        {todo.deadline &&
-                                          renderDeadlineBadge(todo.deadline)}
+                                        
+                                        {todo.deadline && renderDeadlineBadge(todo.deadline)}
                                       </div>
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1 flex items-center gap-2 flex-wrap">
-                                      <Clock className="h-3 w-3" />
-                                      <span>
-                                        追加:{" "}
-                                        {new Date(
-                                          todo.createdAt || Date.now()
-                                        ).toLocaleString("ja-JP", {
-                                          month: "numeric",
-                                          day: "numeric",
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })}
-                                      </span>
-
-                                      <Calendar className="h-3 w-3" />
-                                      <span>
-                                        期限:{" "}
-                                        {todo.deadline
-                                          ? new Date(
-                                              todo.deadline
-                                            ).toLocaleString("ja-JP", {
-                                              month: "numeric",
-                                              day: "numeric",
-                                            })
-                                          : "未設定"}
-                                      </span>
-
-                                      <Check className="h-3 w-3" />
-                                      <span>
-                                        完了:{" "}
-                                        {todo.completedDate
-                                          ? new Date(
-                                              todo.completedDate
-                                            ).toLocaleString("ja-JP", {
+                                      
+                                      <div className="text-xs text-gray-500 mt-1">
+                                        <span className="flex items-center gap-1">
+                                          <Clock className="h-3 w-3" />
+                                          {new Date(todo.createdAt || Date.now()).toLocaleString(
+                                            "ja-JP",
+                                            {
                                               month: "numeric",
                                               day: "numeric",
                                               hour: "2-digit",
                                               minute: "2-digit",
-                                            })
-                                          : "未完了"}
-                                      </span>
+                                            }
+                                          )}
+                                          追加
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="flex items-center space-x-1">
+                                  
+                                  <div className="flex items-start space-x-1 ml-1">
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() =>
-                                        handleTogglePriority(todo._id)
-                                      }
+                                      onClick={() => handleTogglePriority(todo._id)}
                                       className={
                                         todo.isPrioritized
                                           ? "text-yellow-500"
@@ -1312,36 +1242,12 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      onClick={() =>
-                                        handleMoveTodo(todo._id, "down")
-                                      }
-                                      disabled={index === 0}
-                                    >
-                                      <ChevronUp className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() =>
-                                        handleMoveTodo(todo._id, "up")
-                                      }
-                                      disabled={
-                                        index === filteredTodos.length - 1
-                                      }
-                                    >
-                                      <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      onClick={() =>
-                                        handleEditStart(
-                                          todo._id,
-                                          todo.task,
-                                          todo.type,
-                                          todo.deadline
-                                        )
-                                      }
+                                      onClick={() => handleEditStart(
+                                        todo._id,
+                                        todo.task,
+                                        todo.type,
+                                        todo.deadline
+                                      )}
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
@@ -1393,15 +1299,18 @@ export default function DailyTodoReminder({ isPremium = false }) {
             </DragDropContext>
 
             {filteredTodos.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-md border border-dashed border-gray-300">
+                <div className="mb-2">
+                  <PlusCircle className="h-10 w-10 mx-auto text-gray-400" />
+                </div>
                 <p>
-                  表示できるタスクがありません。条件を変更するか、新しいタスクを追加しましょう！
+                  タスクがありません。新しいタスクを追加しましょう！
                 </p>
               </div>
             )}
           </TabsContent>
+          
           <TabsContent value="calendar">
-            {/* TodoCalendarコンポーネントを使用する部分 */}
             <TodoCalendar
               todoHistory={
                 dailyHistory.length > 0
@@ -1410,55 +1319,15 @@ export default function DailyTodoReminder({ isPremium = false }) {
               }
             />
           </TabsContent>
+          
           <TabsContent value="chart">
-            <div className="space-y-6">
-              <TodoChart
-                todoHistory={
-                  dailyHistory.length > 0
-                    ? dailyHistory
-                    : convertTodoHistoryToArray(todoHistory)
-                }
-              />
-              {/* インプット/アウトプット比率グラフ */}
-              <Card className="p-4">
-                <CardTitle className="text-md mb-4">
-                  <div className="flex items-center gap-2">
-                    <BarChart2 className="h-5 w-5" />
-                    <span>インプット/アウトプット比率</span>
-                  </div>
-                </CardTitle>
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm">
-                      インプット: {inputCount}タスク ({inputPercentage}%)
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">
-                      アウトプット: {outputCount}タスク ({outputPercentage}%)
-                    </span>
-                  </div>
-                  <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden mt-2">
-                    <div
-                      className={`progress-bar-input progress-bar-label ${getWidthClass(
-                        inputPercentage
-                      )}`}
-                    >
-                      {inputPercentage > 15 ? `${inputPercentage}%` : ""}
-                    </div>
-                    <div
-                      className={`progress-bar-output progress-bar-label ${getWidthClass(
-                        outputPercentage
-                      )}`}
-                    >
-                      {outputPercentage > 15 ? `${outputPercentage}%` : ""}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
+            <TodoChart
+              todoHistory={
+                dailyHistory.length > 0
+                  ? dailyHistory
+                  : convertTodoHistoryToArray(todoHistory)
+              }
+            />
           </TabsContent>
         </Tabs>
       </CardContent>
@@ -1473,7 +1342,6 @@ export default function DailyTodoReminder({ isPremium = false }) {
             <DialogTitle>タスクへのコミットメント</DialogTitle>
             <DialogDescription>
               このタスクを追加すると、必ず完了させる必要があります。削除はできません。
-              本当にこのタスクを追加しますか？
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-md">

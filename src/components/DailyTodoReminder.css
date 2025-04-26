@@ -1,115 +1,58 @@
-/* components/DailyTodoReminder.css */
+/* DailyTodoReminder.css - 改良版 */
 
+/* ドラッグアンドドロップ関連 */
 .droppable-is-dragging-over {
-  background-color: lightblue;
-  padding: 8px;
-  min-height: 100px;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 0.5rem;
+  padding: 4px;
+  min-height: 50px;
+  transition: all 0.2s ease;
 }
 
 .droppable-is-not-dragging-over {
-  background-color: white;
-  padding: 8px;
-  min-height: 100px;
+  background-color: transparent;
+  padding: 4px;
+  min-height: 50px;
+  transition: all 0.2s ease;
 }
 
-/* インラインスタイルを置き換えるためのクラス */
-.progress-bar-input {
-  height: 100%;
-  background-color: #3b82f6; /* bg-blue-500 */
-  float: left;
+/* タスクカードスタイル */
+.todo-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
 }
 
-.progress-bar-output {
-  height: 100%;
-  background-color: #22c55e; /* bg-green-500 */
-  float: left;
+.todo-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.progress-bar-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  font-size: 0.75rem;
-  color: white;
-}
-
-/* パーセント幅用のユーティリティクラス */
-.w-0 { width: 0%; }
-.w-5 { width: 5%; }
-.w-10 { width: 10%; }
-.w-15 { width: 15%; }
-.w-20 { width: 20%; }
-.w-25 { width: 25%; }
-.w-30 { width: 30%; }
-.w-35 { width: 35%; }
-.w-40 { width: 40%; }
-.w-45 { width: 45%; }
-.w-50 { width: 50%; }
-.w-55 { width: 55%; }
-.w-60 { width: 60%; }
-.w-65 { width: 65%; }
-.w-70 { width: 70%; }
-.w-75 { width: 75%; }
-.w-80 { width: 80%; }
-.w-85 { width: 85%; }
-.w-90 { width: 90%; }
-.w-95 { width: 95%; }
-.w-100 { width: 100%; }
-
-/* タスク優先度の表示に関わるスタイル定義 */
-
-/* 優先タスクの背景スタイル */
+/* タスクの優先度カラー */
 .priority-task {
-  background-color: rgba(254, 243, 199, 0.5) !important;
-  border-color: rgba(252, 211, 77, 0.6) !important;
-  transition: all 0.2s ease-in-out;
+  background-color: rgba(254, 243, 199, 0.5);
+  border-color: rgba(252, 211, 77, 0.6);
 }
 
 .priority-task:hover {
-  background-color: rgba(254, 243, 199, 0.7) !important;
-  border-color: rgba(252, 211, 77, 0.8) !important;
+  background-color: rgba(254, 243, 199, 0.7);
 }
 
-/* 重要度・緊急度メーター */
-.importance-meter,
-.urgency-meter {
-  height: 6px;
-  border-radius: 3px;
-  overflow: hidden;
-  background-color: #f3f4f6;
-  width: 100%;
-  margin-top: 4px;
-}
-
-.importance-meter > div {
-  height: 100%;
-  background: linear-gradient(to right, #34d399, #10b981, #059669);
-}
-
-.urgency-meter > div {
-  height: 100%;
-  background: linear-gradient(to right, #93c5fd, #60a5fa, #3b82f6);
-}
-
-/* 期限の表示 - 既存と新規の統合 */
+/* 期限バッジのスタイル */
 .deadline-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.75rem;
-  padding: 2px 6px;
-  border-radius: 12px;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
 }
 
-/* 期限切れタスク */
 .deadline-expired {
   background-color: rgba(239, 68, 68, 0.1);
   color: rgb(185, 28, 28);
   border-color: rgba(239, 68, 68, 0.2);
 }
 
-/* 今日が期限のタスク - 点滅効果付き */
 .deadline-today {
   background-color: rgba(245, 158, 11, 0.1);
   color: rgb(180, 83, 9);
@@ -117,97 +60,25 @@
   animation: pulse 2s infinite;
 }
 
-/* 明日が期限のタスク */
 .deadline-tomorrow {
   background-color: rgba(245, 158, 11, 0.1);
   color: rgb(180, 83, 9);
   border-color: rgba(245, 158, 11, 0.2);
 }
 
-/* 3日以内が期限のタスク */
 .deadline-soon {
   background-color: rgba(59, 130, 246, 0.1);
   color: rgb(29, 78, 216);
   border-color: rgba(59, 130, 246, 0.2);
 }
 
-/* その他の期限付きタスク */
 .deadline-future {
   background-color: rgba(75, 85, 99, 0.1);
   color: rgb(55, 65, 81);
   border-color: rgba(75, 85, 99, 0.2);
 }
 
-/* 優先度提案カード */
-.priority-suggestion-card {
-  background-color: rgba(254, 243, 199, 0.3);
-  border: 1px solid rgba(252, 211, 77, 0.4);
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.priority-suggestion-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(to bottom, #f59e0b, #d97706);
-}
-
-/* 分析中のローディングアニメーション */
-.analysis-loading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  opacity: 0.7;
-}
-
-.analysis-loading .spinner {
-  animation: spin 1.5s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 点滅アニメーション */
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* 重要度・緊急度のアイコン */
-.importance-icon {
-  color: #10b981;
-}
-
-.urgency-icon {
-  color: #3b82f6;
-}
-
-.deadline-icon {
-  color: #ec4899;
-}
-
-/* タスクカード内の優先バッジ */
+/* 優先バッジ */
 .priority-badge {
   display: inline-flex;
   align-items: center;
@@ -220,71 +91,150 @@
   color: rgb(217, 119, 6);
 }
 
-/* 期限が迫っているタスクを強調するスタイル */
-.deadline-highlight {
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
-  transition: box-shadow 0.3s ease;
+/* アニメーション */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.deadline-highlight:hover {
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.6);
-}
-
-/* 自動優先度調整のトグルスタイル */
-.auto-adjust-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  background-color: rgba(243, 244, 246, 0.5);
-}
-
-.auto-adjust-toggle:hover {
-  background-color: rgba(243, 244, 246, 0.8);
-}
-
-/* 再計算ボタンのアニメーション */
-.recalculate-button {
-  position: relative;
+/* プログレスバー改良 */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
   overflow: hidden;
+  margin: 8px 0;
 }
 
-.recalculate-button::after {
+.progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* タイプごとのカラー */
+.input-type {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.output-type {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* AI分析関連 */
+.ai-suggestion {
+  background-color: rgba(124, 58, 237, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  position: relative;
+}
+
+.ai-suggestion::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 4px;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  background: linear-gradient(to bottom, #8b5cf6, #6d28d9);
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 }
 
-.recalculate-button:hover::after {
-  transform: translateX(0);
-}
-
-/* 期限入力フィールドのスタイル */
-.deadline-input-field {
+/* フォームレイアウト */
+.task-form {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-row {
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
-  margin-top: 0.5rem;
 }
 
-.deadline-input-field label {
-  font-size: 0.875rem;
-  margin-right: 0.5rem;
-  white-space: nowrap;
-}
-
-.deadline-input-field input {
-  flex: 1;
-  padding: 0.25rem;
-  font-size: 0.875rem;
+/* フィルターエリア */
+.filter-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
-  border-radius: 0.25rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filter-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* 空の状態 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.5rem;
+  color: #6b7280;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #9ca3af;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 640px) {
+  .filter-area {
+    flex-direction: column;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .task-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
 }
