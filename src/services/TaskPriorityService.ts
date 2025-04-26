@@ -33,6 +33,8 @@ export const TaskPriorityService = {
                 return localPriorityAnalysis(taskText);
             }
 
+            const today = new Date().toISOString().split('T')[0]; // 現在の日付(YYYY-MM-DD形式)
+
             const prompt = 
                 "あなたはタスク管理の専門家です。以下のタスクの重要度と緊急度を分析し、優先すべきかどうかを判断してください。\n\n" +
                 `タスク: "${taskText}"\n\n` +
@@ -40,14 +42,14 @@ export const TaskPriorityService = {
                 "1. 重要度：タスクの価値や影響度（1-10のスケール）\n" +
                 "2. 緊急度：タスクの時間的制約（1-10のスケール）\n" +
                 "3. このタスクを優先的に行うべきかどうか\n" +
-                "4. 適切なデッドラインがあれば提案する\n\n" +
+                `4. 適切なデッドラインを提案する（今日の日付は${today}です。必ず今日以降の日付を提案してください）\n\n` +
                 "次の形式のJSONで回答してください：\n" +
                 "{\n" +
                 '  "isPrioritized": true または false,\n' +
                 '  "importance": 重要度を表す1-10の数値,\n' +
                 '  "urgency": 緊急度を表す1-10の数値,\n' +
                 '  "explanation": "分析理由の簡潔な説明",\n' +
-                '  "suggestedDeadline": "YYYY-MM-DD形式の提案される期限（任意）"\n' +
+                '  "suggestedDeadline": "YYYY-MM-DD形式の提案される期限（今日以降の日付）"\n' +
                 "}\n\n" +
                 "JSONのみを返してください。余分なテキストや説明は含めないでください。コードブロックも使用しないでください。";
 
@@ -91,12 +93,16 @@ export const TaskPriorityService = {
                 
                 // JSONをパース
                 const jsonResponse = JSON.parse(cleanedText);
+                
+                // 期限が現在日以降かどうかを確認
+                const suggestedDeadline = ensureFutureDate(jsonResponse.suggestedDeadline);
+                
                 return {
                     isPrioritized: !!jsonResponse.isPrioritized,
                     importance: Number(jsonResponse.importance) || 5,
                     urgency: Number(jsonResponse.urgency) || 5,
                     explanation: jsonResponse.explanation || '優先度を分析しました',
-                    suggestedDeadline: jsonResponse.suggestedDeadline
+                    suggestedDeadline
                 };
             } catch (error) {
                 console.error('JSON解析エラー:', error);
@@ -110,12 +116,16 @@ export const TaskPriorityService = {
                     try {
                         const extractedJson = jsonMatch[1];
                         const jsonResponse = JSON.parse(extractedJson);
+                        
+                        // 期限が現在日以降かどうかを確認
+                        const suggestedDeadline = ensureFutureDate(jsonResponse.suggestedDeadline);
+                        
                         return {
                             isPrioritized: !!jsonResponse.isPrioritized,
                             importance: Number(jsonResponse.importance) || 5,
                             urgency: Number(jsonResponse.urgency) || 5,
                             explanation: jsonResponse.explanation || '優先度を分析しました',
-                            suggestedDeadline: jsonResponse.suggestedDeadline
+                            suggestedDeadline
                         };
                     } catch (nestedError) {
                         console.error('コードブロック抽出からのJSON解析に失敗:', nestedError);
@@ -130,12 +140,16 @@ export const TaskPriorityService = {
                     try {
                         const extractedJson = match[0];
                         const jsonResponse = JSON.parse(extractedJson);
+                        
+                        // 期限が現在日以降かどうかを確認
+                        const suggestedDeadline = ensureFutureDate(jsonResponse.suggestedDeadline);
+                        
                         return {
                             isPrioritized: !!jsonResponse.isPrioritized,
                             importance: Number(jsonResponse.importance) || 5,
                             urgency: Number(jsonResponse.urgency) || 5,
                             explanation: jsonResponse.explanation || '優先度を分析しました',
-                            suggestedDeadline: jsonResponse.suggestedDeadline
+                            suggestedDeadline
                         };
                     } catch (nestedError) {
                         console.error('JSON抽出に失敗しました:', nestedError);
@@ -145,7 +159,12 @@ export const TaskPriorityService = {
                 
                 // 手動解析を試みる
                 console.log('正規表現でのJSON抽出に失敗、手動解析を試みます');
-                return manualJsonParsing(generatedText);
+                const manualResult = manualJsonParsing(generatedText);
+                
+                // 期限が現在日以降かどうかを確認
+                manualResult.suggestedDeadline = ensureFutureDate(manualResult.suggestedDeadline);
+                
+                return manualResult;
             }
         } catch (error) {
             console.error('タスク優先度分析中にエラーが発生しました:', error);
@@ -169,6 +188,41 @@ export const TaskPriorityService = {
     // TaskPriorityService オブジェクトにローカル分析メソッドを公開
     localPriorityAnalysis
 };
+
+/**
+ * 日付が現在日以降であることを確認し、過去の日付の場合は修正する
+ * @param dateStr 日付文字列（YYYY-MM-DD形式）
+ * @returns 現在日以降に修正された日付（YYYY-MM-DD形式）
+ */
+function ensureFutureDate(dateStr?: string): string | undefined {
+    if (!dateStr) return undefined;
+    
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const suggestedDate = new Date(dateStr);
+        suggestedDate.setHours(0, 0, 0, 0);
+        
+        // 日付が無効な場合
+        if (isNaN(suggestedDate.getTime())) {
+            return today.toISOString().split('T')[0];
+        }
+        
+        // 過去の日付の場合、今日の日付を返す
+        if (suggestedDate < today) {
+            console.log(`過去の日付(${dateStr})が検出されました。今日の日付に修正します。`);
+            return today.toISOString().split('T')[0];
+        }
+        
+        return dateStr;
+    } catch (error) {
+        console.error('日付の検証中にエラーが発生しました:', error);
+        // エラーが発生した場合は今日の日付を返す
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    }
+}
 
 // 手動でJSONの値を抽出する関数
 function manualJsonParsing(text: string): PriorityAnalysis {
@@ -281,21 +335,27 @@ export function localPriorityAnalysis(taskText: string): PriorityAnalysis {
     // 期限の推測（簡易版）
     let suggestedDeadline: string | undefined = undefined;
 
-    const today = new Date();
+    // タスクテキストから日付を抽出
+    suggestedDeadline = extractDateFromTaskText(taskText);
+    
+    // 抽出できなかった場合は緊急度に基づいて設定
+    if (!suggestedDeadline) {
+        const today = new Date();
 
-    if (urgencyScore >= 9) {
-        // 今日の日付を設定
-        suggestedDeadline = today.toISOString().split('T')[0];
-    } else if (urgencyScore >= 7) {
-        // 明日の日付を設定
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-        suggestedDeadline = tomorrow.toISOString().split('T')[0];
-    } else if (urgencyScore >= 5) {
-        // 3日後を設定
-        const threeDaysLater = new Date(today);
-        threeDaysLater.setDate(today.getDate() + 3);
-        suggestedDeadline = threeDaysLater.toISOString().split('T')[0];
+        if (urgencyScore >= 9) {
+            // 今日の日付を設定
+            suggestedDeadline = today.toISOString().split('T')[0];
+        } else if (urgencyScore >= 7) {
+            // 明日の日付を設定
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            suggestedDeadline = tomorrow.toISOString().split('T')[0];
+        } else if (urgencyScore >= 5) {
+            // 3日後を設定
+            const threeDaysLater = new Date(today);
+            threeDaysLater.setDate(today.getDate() + 3);
+            suggestedDeadline = threeDaysLater.toISOString().split('T')[0];
+        }
     }
 
     // 総合判断
@@ -324,6 +384,53 @@ export function localPriorityAnalysis(taskText: string): PriorityAnalysis {
         explanation,
         suggestedDeadline
     };
+}
+
+// タスクから日付を抽出する関数
+function extractDateFromTaskText(taskText: string): string | undefined {
+    // 正規表現でYYYY-MM-DD形式の日付を検索
+    const dateRegex = /(\d{4}[-/]\d{1,2}[-/]\d{1,2})/;
+    const match = taskText.match(dateRegex);
+    
+    if (match) {
+        const extractedDate = new Date(match[1]);
+        // 有効な日付かチェック
+        if (!isNaN(extractedDate.getTime())) {
+            return extractedDate.toISOString().split('T')[0];
+        }
+    }
+    
+    // キーワードから日付を推測
+    const today = new Date();
+    const lowerText = taskText.toLowerCase();
+    
+    if (lowerText.includes('今日中') || lowerText.includes('本日中')) {
+        return today.toISOString().split('T')[0];
+    } else if (lowerText.includes('明日') || lowerText.includes('あした')) {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    } else if (lowerText.includes('明後日') || lowerText.includes('あさって')) {
+        const dayAfterTomorrow = new Date(today);
+        dayAfterTomorrow.setDate(today.getDate() + 2);
+        return dayAfterTomorrow.toISOString().split('T')[0];
+    } else if (lowerText.includes('今週中') || lowerText.includes('今週末')) {
+        // 今週の金曜日
+        const friday = new Date(today);
+        const dayOfWeek = today.getDay(); // 0: 日曜日, 6: 土曜日
+        const daysToFriday = (5 - dayOfWeek + 7) % 7; // 金曜日までの日数
+        friday.setDate(today.getDate() + daysToFriday);
+        return friday.toISOString().split('T')[0];
+    } else if (lowerText.includes('来週')) {
+        // 来週の金曜日
+        const nextFriday = new Date(today);
+        const dayOfWeek = today.getDay();
+        const daysToNextFriday = (5 - dayOfWeek + 7) % 7 + 7;
+        nextFriday.setDate(today.getDate() + daysToNextFriday);
+        return nextFriday.toISOString().split('T')[0];
+    }
+    
+    return undefined;
 }
 
 export default TaskPriorityService;
