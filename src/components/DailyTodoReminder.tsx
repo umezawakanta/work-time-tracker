@@ -1309,7 +1309,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() =>
-                                        handleMoveTodo(todo._id, "up")
+                                        handleMoveTodo(todo._id, "down")
                                       }
                                       disabled={index === 0}
                                     >
@@ -1319,7 +1319,7 @@ export default function DailyTodoReminder({ isPremium = false }) {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() =>
-                                        handleMoveTodo(todo._id, "down")
+                                        handleMoveTodo(todo._id, "up")
                                       }
                                       disabled={
                                         index === filteredTodos.length - 1
