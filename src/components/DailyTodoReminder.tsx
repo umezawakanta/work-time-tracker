@@ -793,6 +793,10 @@ export default function DailyTodoReminder({ isPremium = false }) {
     }));
   };
 
+  // コンポーネントのレンダリング関数内（return文の直前）に追加
+  console.log("Rendering todos:", todos);
+  console.log("Current filtered todos:", filteredTodos);
+
   return (
     <Card className="w-full mb-8">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

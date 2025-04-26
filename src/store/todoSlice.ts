@@ -252,7 +252,11 @@ const todoSlice = createSlice({
       .addCase(updateTodoItem.fulfilled, (state, action) => {
         const index = state.items.findIndex((item) => item._id === action.payload._id);
         if (index !== -1) {
+          // この行が重要です - 古いオブジェクトを新しいオブジェクトで完全に置き換える
           state.items[index] = action.payload;
+          
+          // デバッグ用にログを追加
+          console.log("Todo updated in Redux store:", action.payload);
         }
       })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {

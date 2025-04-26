@@ -19,14 +19,15 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
 // POST new todo
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { task, priority, isPrioritized, type } = req.body;
+    const { task, priority, isPrioritized, type, deadline } = req.body;
     const newTodo = new TodoItem({ 
       task, 
       completed: false, 
       completedDate: null, 
       priority, 
       isPrioritized,
-      type: type || 'input' // typeパラメータがない場合はデフォルト値を使用
+      type: type || 'input',
+      deadline: deadline || null // 期限パラメータを追加
     });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
@@ -121,6 +122,8 @@ router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
         completedDate: todo.completedDate,
         priority: todo.priority,
         isPrioritized: todo.isPrioritized,
+        type: todo.type,
+        deadline: todo.deadline, // 期限フィールドを追加
         archivedAt: new Date()
       });
       
