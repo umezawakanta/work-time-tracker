@@ -1,4 +1,4 @@
-/* DailyTodoReminder.css - 改良版 */
+/* DailyTodoReminder.css - 最適化版 */
 
 /* ドラッグアンドドロップ関連 */
 .droppable-is-dragging-over {
@@ -18,13 +18,37 @@
 
 /* タスクカードスタイル */
 .todo-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   position: relative;
+  overflow: hidden;
 }
 
 .todo-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.todo-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  opacity: 0.6;
+}
+
+.todo-card.input-type:before {
+  background-color: #3b82f6; /* blue-500 */
+}
+
+.todo-card.output-type:before {
+  background-color: #10b981; /* emerald-500 */
+}
+
+.todo-card.priority-task:before {
+  background-color: #f59e0b; /* amber-500 */
 }
 
 /* タスクの優先度カラー */
@@ -35,6 +59,25 @@
 
 .priority-task:hover {
   background-color: rgba(254, 243, 199, 0.7);
+}
+
+/* タイプごとのカラー */
+.input-type {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.input-type:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.output-type {
+  background-color: rgba(16, 185, 129, 0.05);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.output-type:hover {
+  background-color: rgba(16, 185, 129, 0.1);
 }
 
 /* 期限バッジのスタイル */
@@ -51,6 +94,7 @@
   background-color: rgba(239, 68, 68, 0.1);
   color: rgb(185, 28, 28);
   border-color: rgba(239, 68, 68, 0.2);
+  animation: pulse 2s infinite;
 }
 
 .deadline-today {
@@ -104,31 +148,22 @@
   }
 }
 
-/* プログレスバー改良 */
-.progress-bar-container {
-  width: 100%;
-  height: 8px;
-  background-color: #f3f4f6;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 8px 0;
+/* フォームレイアウト */
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(229, 231, 235, 1);
+  transition: border-color 0.2s ease;
 }
 
-.progress-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease-in-out;
-}
-
-/* タイプごとのカラー */
-.input-type {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.2);
-}
-
-.output-type {
-  background-color: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
+.task-form:focus-within {
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 /* AI分析関連 */
@@ -153,34 +188,21 @@
   border-bottom-left-radius: 0.5rem;
 }
 
-/* フォームレイアウト */
-.task-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background-color: #f9fafb;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.form-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
 /* フィルターエリア */
 .filter-area {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-bottom: 1rem;
   background-color: #f9fafb;
   padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+  transition: border-color 0.2s ease;
+}
+
+.filter-area:focus-within {
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .filter-group {
@@ -213,12 +235,12 @@
   border: 1px dashed #d1d5db;
   border-radius: 0.5rem;
   color: #6b7280;
+  transition: all 0.3s ease;
 }
 
-.empty-state-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #9ca3af;
+.empty-state:hover {
+  border-color: #9ca3af;
+  background-color: #f3f4f6;
 }
 
 /* レスポンシブ調整 */
@@ -227,14 +249,11 @@
     flex-direction: column;
   }
   
-  .form-row {
-    flex-direction: column;
-    align-items: stretch;
+  .task-form {
+    padding: 0.75rem;
   }
   
-  .task-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
+  .todo-card {
+    padding: 0.75rem;
   }
 }

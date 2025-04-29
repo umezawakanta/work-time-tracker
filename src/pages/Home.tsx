@@ -38,8 +38,8 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { setTrialActivated } from "@/store/userSlice";
 import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
-import DailyTodoReminder from "@/components/DailyTodoReminder";
-import HabitTracker from "@/components/HabitTracker";
+import DailyTodoReminder from "@/components/dailyToDoReminder/DailyTodoReminder";
+import HabitTracker from "@/components/habitTracker/HabitTracker";
 import {
   FeatureCard,
   FeatureCardVariant,
