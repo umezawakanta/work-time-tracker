@@ -3,48 +3,70 @@
  */
 
 /**
- * リクエスト設定
+ * キャッシュポリシーの列挙型
  */
-export interface RequestConfig {
+export enum CachePolicy {
+    Default = 'default',
+    NoCache = 'no-cache',
+    NoStore = 'no-store',
+    ForceCache = 'force-cache',
+    OnlyIfCached = 'only-if-cached',
+    Reload = 'reload'
+  }
+  
+  /**
+   * APIリクエスト設定
+   */
+  export interface RequestConfig {
     timeout?: number;
     retry?: number;
     retryDelay?: number;
     withCredentials?: boolean;
-    cache?: boolean | 'force-cache' | 'no-cache' | 'only-if-cached' | 'reload';
+    cachePolicy?: CachePolicy;
+    cacheMaxAge?: number;
     priority?: 'high' | 'normal' | 'low';
-    responseType?: 'json' | 'text' | 'blob' | 'arraybuffer';
     signal?: AbortSignal;
-    [key: string]: unknown;
-  }
-  
-  /**
-   * APIレスポンスの型
-   */
-  export interface ApiResponse<T> {
-    success: boolean;
-    data?: T;
-    error?: string;
-    statusCode?: number;
-    meta: ApiResponseMeta;
+    headers?: Record<string, string>;
   }
   
   /**
    * APIレスポンスのメタデータ
    */
   export interface ApiResponseMeta {
-    requestId?: string;
     timestamp: number;
     processingTime?: number;
+    requestId?: string;
+    errorCode?: string;
+    endpoint?: string;
+    batchFailed?: boolean;
     cache?: {
       hit: boolean;
       stale: boolean;
       age?: number;
     };
-    errorCode?: string;
-    [key: string]: unknown;
   }
   
   /**
-   * HTTPリクエストメソッド
+   * API成功レスポンス
    */
-  export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+  export interface ApiSuccessResponse<T> {
+    success: true;
+    data: T;
+    statusCode?: number;
+    meta: ApiResponseMeta;
+  }
+  
+  /**
+   * APIエラーレスポンス
+   */
+  export interface ApiErrorResponse {
+    success: false;
+    error: string;
+    statusCode?: number;
+    meta: ApiResponseMeta;
+  }
+  
+  /**
+   * APIレスポンス（成功またはエラー）
+   */
+  export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;

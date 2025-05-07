@@ -1,28 +1,39 @@
 /**
  * APIクライアント
- * バックエンドAPIとの通信を担当するクラス
+ * バックエンドAPIとの通信を担当する高性能なクラス
  */
-import { ApiResponse, RequestConfig, ApiResponseMeta } from './ApiTypes';
+import { ApiResponse, RequestConfig, CachePolicy } from './ApiTypes';
 import Logger from './Logger';
 import ApiRequestQueue from './ApiRequestQueue';
 import NetworkMonitor from './NetworkMonitor';
 import ApiClientConfig from './ApiClientConfig';
 import ApiError from './ApiError';
+import ApiRequestExecutor from './ApiRequestExecutor';
+import ApiCache from './ApiCache';
+import ApiMetricsCollector from './ApiMetricsCollector';
 
 class ApiClient {
   private static instance: ApiClient;
   private config: ApiClientConfig;
   private requestQueue: ApiRequestQueue;
   private networkMonitor: NetworkMonitor;
-  private pendingRequests: Map<string, Promise<ApiResponse<unknown>>>;
+  private cache: ApiCache;
+  private metrics: ApiMetricsCollector;
   private logger: Logger;
+  private requestExecutor: ApiRequestExecutor;
   
   private constructor() {
     this.config = new ApiClientConfig();
     this.requestQueue = new ApiRequestQueue();
     this.networkMonitor = new NetworkMonitor();
-    this.pendingRequests = new Map();
+    this.cache = new ApiCache();
+    this.metrics = new ApiMetricsCollector();
     this.logger = Logger.getInstance();
+    this.requestExecutor = new ApiRequestExecutor(
+      this.config,
+      this.logger,
+      this.metrics
+    );
     
     // ネットワーク状態の監視を開始
     this.networkMonitor.startMonitoring();
@@ -64,36 +75,6 @@ class ApiClient {
   }
 
   /**
-   * リクエストキーの生成（重複リクエスト防止用）
-   */
-  private generateRequestKey(
-    method: string,
-    endpoint: string,
-    data?: unknown
-  ): string {
-    // data引数の型を修正し、JSON.stringify時に安全に処理
-    let dataString = '';
-    
-    if (data !== undefined && data !== null) {
-      try {
-        if (typeof data === 'object') {
-          dataString = JSON.stringify(data);
-        } else {
-          dataString = String(data);
-        }
-      } catch (error) {
-        this.logger.warn(
-          'リクエストデータのキャッシュ用文字列化に失敗しました',
-          { method, endpoint, error }
-        );
-        dataString = 'unstringifiable-data';
-      }
-    }
-    
-    return `${method}-${endpoint}-${dataString}`;
-  }
-
-  /**
    * APIリクエストの実行
    */
   public async fetch<T>(
@@ -103,213 +84,68 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const method = options.method || 'GET';
     const url = this.config.buildUrl(endpoint);
-    const startTime = Date.now();
     
-    // リクエストキャンセル用コントローラー
-    const controller = config.signal 
-      ? undefined 
-      : new AbortController();
-    
-    // タイムアウト設定
-    const timeoutMs = config.timeout || this.config.requestTimeoutMs;
-    let timeoutId: NodeJS.Timeout | undefined;
-    
-    if (controller) {
-      timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-    }
-    
-    // ヘッダーのマージ
-    const headers = {
-      ...this.config.getHeaders(),
-      ...options.headers
-    };
-    
-    // リトライ処理を含む実際のリクエスト関数
-    const executeRequest = async (retryCount = 0): Promise<ApiResponse<T>> => {
+    // GETリクエストの場合、キャッシュをチェック
+    if (method === 'GET' && config.cachePolicy !== CachePolicy.NoCache) {
+      const cacheKey = this.requestExecutor.generateRequestKey(method, endpoint, options.body);
+      const cachedResponse = this.cache.get<T>(cacheKey);
+      
+      if (cachedResponse) {
+        this.metrics.recordCacheHit(endpoint);
+        return cachedResponse;
+      }
+      
+      // キャッシュミスの記録
+      this.metrics.recordCacheMiss(endpoint);
+      
       try {
-        // オフライン時はキューに追加
-        if (!this.networkMonitor.isOnline()) {
-          this.logger.warn('オフライン状態でリクエストが実行されました。キューに追加します。', {
-            method,
-            endpoint
-          });
-          
-          return new Promise((resolve, reject) => {
-            this.requestQueue.enqueue({
-              execute: () => executeRequest().then(resolve).catch(reject),
-              priority: config.priority || 'normal'
-            });
-          });
+        const response = await this.requestExecutor.execute<T>(
+          url, 
+          options, 
+          config, 
+          this.networkMonitor.isOnline(),
+          (req) => this.requestQueue.enqueue(req)
+        );
+        
+        // 成功した場合のみキャッシュに保存
+        if (response.success && config.cachePolicy !== CachePolicy.NoStore) {
+          this.cache.set(cacheKey, response, config.cacheMaxAge);
         }
         
-        const signal = config.signal || (controller ? controller.signal : undefined);
-        
-        const fetchOptions: RequestInit = {
-          ...options,
-          headers,
-          signal,
-          credentials: config.withCredentials ? 'include' : 'same-origin',
-          cache: config.cache as RequestCache
-        };
-        
-        const response = await fetch(url, fetchOptions);
-        
-        // レスポンスのパース
-        let data: unknown;
-        const contentType = response.headers.get('Content-Type') || '';
-        
-        if (contentType.includes('application/json')) {
-          data = await response.json();
-        } else {
-          const text = await response.text();
-          try {
-            data = JSON.parse(text);
-          } catch {
-            data = { message: text };
-          }
-        }
-        
-        // 処理時間の計算
-        const processingTime = Date.now() - startTime;
-        
-        // レスポンスメタデータの作成
-        const meta: ApiResponseMeta = {
-          requestId: response.headers.get('X-Request-ID') || undefined,
-          timestamp: startTime,
-          processingTime
-        };
-        
-        // キャッシュ情報を追加
-        const cacheControl = response.headers.get('Cache-Control') || '';
-        const age = response.headers.get('Age');
-        
-        if (cacheControl || age) {
-          meta.cache = {
-            hit: !!response.headers.get('X-Cache')?.includes('HIT'),
-            stale: cacheControl.includes('must-revalidate') && !!age,
-            age: age ? parseInt(age, 10) : undefined
-          };
-        }
-        
-        // エラーレスポンスの処理
-        if (!response.ok) {
-          const errorMessage = 
-            typeof data === 'object' && data !== null && 'message' in data 
-              ? String(data.message) 
-              : `Error: ${response.status}`;
-          
-          // 再試行が必要なステータスコードの場合（5xx系など）
-          if (
-            response.status >= 500 && 
-            retryCount < (config.retry || this.config.maxRetries)
-          ) {
-            this.logger.warn(
-              `サーバーエラーのためリクエストを再試行します: ${errorMessage}`,
-              { statusCode: response.status, retryCount }
-            );
-            
-            return await this.retryRequest<T>(executeRequest, retryCount, config);
-          }
-          
-          return {
-            success: false,
-            error: errorMessage,
-            statusCode: response.status,
-            meta
-          };
-        }
-        
-        // 成功レスポンスの処理
-        return { 
-          success: true, 
-          data: data as T,
-          statusCode: response.status,
-          meta
-        };
+        return response;
       } catch (error) {
-        // API専用のエラークラスに変換
-        const apiError = error instanceof Error 
-          ? new ApiError(error.message, { cause: error }) 
-          : new ApiError('不明なエラーが発生しました');
+        // エラーをログに記録
+        this.logger.error('APIリクエスト実行中にエラーが発生しました', { endpoint, error });
         
-        // AbortErrorの場合（タイムアウトなど）
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          this.logger.error(`APIリクエストタイムアウト [${endpoint}]`);
-          
-          if (retryCount < (config.retry || this.config.maxRetries)) {
-            return await this.retryRequest<T>(executeRequest, retryCount, config);
-          }
-          
-          apiError.code = 'TIMEOUT';
-          apiError.message = 'リクエストがタイムアウトしました。インターネット接続を確認してください。';
-        }
-        
-        // ネットワークエラー
-        if (error instanceof TypeError && error.message === 'Failed to fetch') {
-          apiError.code = 'NETWORK_ERROR';
-          apiError.message = 'ネットワークエラーが発生しました。インターネット接続を確認してください。';
-        }
-        
-        return {
-          success: false,
-          error: apiError.message,
-          statusCode: apiError.statusCode,
-          meta: {
-            timestamp: startTime,
-            processingTime: Date.now() - startTime,
-            errorCode: apiError.code
-          }
-        };
+        // エラーレスポンスの生成
+        return this.createErrorResponse<T>(error, endpoint);
       }
-    };
-    
-    try {
-      // GETリクエストの場合、pendingRequestsに追加
-      const requestKey = this.generateRequestKey(method, endpoint, options.body);
-      
-      if (method === 'GET' && config.cache !== 'no-cache') {
-        const pendingRequest = this.pendingRequests.get(requestKey);
-        
-        if (pendingRequest) {
-          return pendingRequest as Promise<ApiResponse<T>>;
-        }
-        
-        const requestPromise = executeRequest();
-        this.pendingRequests.set(requestKey, requestPromise);
-        
-        // リクエスト完了後にpendingRequestsから削除
-        requestPromise.finally(() => {
-          this.pendingRequests.delete(requestKey);
-        });
-        
-        return requestPromise;
-      }
-      
-      return await executeRequest();
-    } finally {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+    } else {
+      // 非GET（POST/PUT/DELETEなど）またはキャッシュなしの場合
+      return this.requestExecutor.execute<T>(
+        url, 
+        options, 
+        config, 
+        this.networkMonitor.isOnline(),
+        (req) => this.requestQueue.enqueue(req)
+      );
     }
   }
 
   /**
-   * リクエストの再試行
+   * エラーレスポンスの生成
    */
-  private async retryRequest<T>(
-    executeRequest: (retryCount: number) => Promise<ApiResponse<T>>,
-    currentRetry: number,
-    config: RequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    // 指数バックオフでリトライ間隔を計算
-    const retryDelay = config.retryDelay || this.config.retryDelay;
-    const delay = retryDelay * Math.pow(2, currentRetry);
-    
-    // リトライ前に待機
-    await new Promise(resolve => setTimeout(resolve, delay));
-    
-    // リクエストを再実行
-    return executeRequest(currentRetry + 1);
+  private createErrorResponse<T>(error: unknown, endpoint: string): ApiResponse<T> {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '不明なエラーが発生しました',
+      statusCode: error instanceof ApiError ? error.statusCode : undefined,
+      meta: {
+        timestamp: Date.now(),
+        errorCode: error instanceof ApiError ? error.code : 'UNKNOWN_ERROR',
+        endpoint
+      }
+    };
   }
 
   /**
@@ -324,6 +160,65 @@ class ApiClient {
    */
   public updateConfig(configUpdates: Partial<ApiClientConfig>): void {
     this.config.update(configUpdates);
+  }
+  
+  /**
+   * メトリクスの取得
+   */
+  public getMetrics(): Record<string, unknown> {
+    return this.metrics.getMetrics();
+  }
+  
+  /**
+   * キャッシュのクリア
+   */
+  public clearCache(): void {
+    this.cache.clear();
+  }
+
+  /**
+   * GraphQLクエリの実行
+   */
+  public async query<T>(
+    query: string,
+    variables?: Record<string, unknown>,
+    config: RequestConfig = {}
+  ): Promise<ApiResponse<T>> {
+    return this.fetch<T>(
+      this.config.graphqlEndpoint,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query,
+          variables
+        })
+      },
+      config
+    );
+  }
+
+  /**
+   * 複数のリクエストを並列実行
+   */
+  public async batchFetch<T>(
+    requests: Array<{
+      endpoint: string;
+      options?: RequestInit;
+      config?: RequestConfig;
+    }>
+  ): Promise<ApiResponse<T>[]> {
+    return Promise.all(
+      requests.map(request => 
+        this.fetch<T>(
+          request.endpoint,
+          request.options || {},
+          request.config || {}
+        )
+      )
+    );
   }
 }
 

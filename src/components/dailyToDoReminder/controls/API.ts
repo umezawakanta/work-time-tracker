@@ -4,19 +4,17 @@
  */
 import ApiClient from './ApiClient';
 import ApiClientHttpMethods from './ApiClientHttpMethods';
-import { ApiResponse, RequestConfig } from './ApiTypes';
-import ApiClientConfig from './ApiClientConfig';
+import { ApiErrorResponse, ApiResponse, RequestConfig } from './ApiTypes';
+import { ApiClientConfig } from './ApiClientConfig';
 import NetworkMonitor from './NetworkMonitor';
-import SubscriptionService, { SubscriptionInfo, SubscriptionPlan } from './SubscriptionService';
+import SubscriptionService from './SubscriptionService';
+import { EventSourceManager } from './EventSourceManager';
+import { OfflineRequestManager } from './OfflineRequestManager';
+import { ApiLogger } from './ApiLogger';
 
-/**
- * バッチリクエストのアイテム定義
- */
-export interface BatchRequestItem {
-  method: string;
-  endpoint: string;
-  data?: Record<string, unknown> | unknown[] | null;
-}
+// 型定義のインポート
+import type { BatchRequestItem } from './BatchTypes';
+import type { SubscriptionInfo, SubscriptionPlan } from './SubscriptionTypes';
 
 /**
  * APIクラス
@@ -27,7 +25,9 @@ class API {
   private static httpMethods = new ApiClientHttpMethods(API.apiClient);
   private static networkMonitor = new NetworkMonitor();
   private static subscriptionService = new SubscriptionService();
-  private static activeEventSources: Set<EventSource> = new Set();
+  private static eventSourceManager = new EventSourceManager();
+  private static offlineManager = new OfflineRequestManager();
+  private static logger = new ApiLogger();
   private static initialized = false;
 
   /**
@@ -39,12 +39,24 @@ class API {
     // ネットワーク監視を開始
     API.networkMonitor.startMonitoring();
     
+    // オフラインリクエスト管理を初期化
+    API.offlineManager.initialize();
+    
     // ページ離脱時の処理
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', API.cleanup);
     }
     
+    // ネットワーク状態の変化を監視
+    API.networkMonitor.onStatusChange((isOnline) => {
+      if (isOnline) {
+        // オンラインに戻ったら保留中のリクエストを処理
+        API.offlineManager.processPendingRequests();
+      }
+    });
+    
     API.initialized = true;
+    API.logger.info('API initialized successfully');
   }
 
   /**
@@ -56,7 +68,9 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.get<T>(endpoint, params, config);
+    return API.executeRequest(() => 
+      API.httpMethods.get<T>(endpoint, params, config)
+    );
   }
 
   /**
@@ -68,7 +82,9 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.post<T>(endpoint, data, config);
+    return API.executeRequest(() => 
+      API.httpMethods.post<T>(endpoint, data, config)
+    );
   }
 
   /**
@@ -80,7 +96,9 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.put<T>(endpoint, data, config);
+    return API.executeRequest(() => 
+      API.httpMethods.put<T>(endpoint, data, config)
+    );
   }
 
   /**
@@ -91,7 +109,9 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.delete<T>(endpoint, config);
+    return API.executeRequest(() => 
+      API.httpMethods.delete<T>(endpoint, config)
+    );
   }
 
   /**
@@ -103,7 +123,9 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.patch<T>(endpoint, data, config);
+    return API.executeRequest(() => 
+      API.httpMethods.patch<T>(endpoint, data, config)
+    );
   }
 
   /**
@@ -112,17 +134,19 @@ class API {
   public static async uploadFile<T>(
     endpoint: string,
     file: File,
-    fieldName?: string,
+    fieldName = 'file',
     additionalData?: Record<string, string>,
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.httpMethods.uploadFile<T>(
-      endpoint,
-      file,
-      fieldName,
-      additionalData,
-      config
+    return API.executeRequest(() => 
+      API.httpMethods.uploadFile<T>(
+        endpoint,
+        file,
+        fieldName,
+        additionalData,
+        config
+      )
     );
   }
 
@@ -136,7 +160,7 @@ class API {
   /**
    * クライアント設定の更新
    */
-  public static updateConfig(config: Partial<ApiClientConfig>): void {
+  public static updateConfig(config: Partial<typeof ApiClientConfig>): void {
     API.apiClient.updateConfig(config);
   }
 
@@ -149,92 +173,33 @@ class API {
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
-    return API.post<T>(
-      'graphql',
-      { query, variables },
-      config
+    return API.executeRequest(() => 
+      API.post<T>(
+        'graphql',
+        { query, variables },
+        config
+      )
     );
   }
 
   /**
-   * 一括リクエストの実行
+   * リクエストを実行し、オフライン時は適切に処理
    */
-  public static async batch<T>(
-    requests: BatchRequestItem[],
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>[]> {
-    API.ensureInitialized();
-    
-    // バッチエンドポイントを使用
-    const batchResponse = await API.post<{
-      results: ApiResponse<T>[];
-    }>(
-      'batch',
-      { requests },
-      config
-    );
-    
-    // レスポンスの変換
-    if (!batchResponse.success || !batchResponse.data) {
-      // バッチリクエスト自体が失敗した場合は、すべてのリクエストに同じエラーを設定
-      return requests.map(() => ({
-        success: false,
-        error: batchResponse.error || 'バッチリクエストの処理に失敗しました',
-        meta: {
-          timestamp: Date.now(),
-          batchFailed: true
-        }
-      }));
+  private static async executeRequest<T>(
+    requestFn: () => Promise<ApiResponse<T>>
+  ): Promise<ApiResponse<T>> {
+    // オンライン状態をチェック
+    if (!API.isOnline()) {
+      // オフラインの場合、設定に基づいて処理
+      return API.offlineManager.handleOfflineRequest(requestFn);
     }
-    
-    return batchResponse.data.results;
-  }
 
-  /**
-   * リソースの取得（RESTful API）
-   */
-  public static async getResource<T>(
-    resourceType: string,
-    id?: string,
-    params?: Record<string, string>,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    const endpoint = id ? `${resourceType}/${id}` : resourceType;
-    return API.get<T>(endpoint, params, config);
-  }
-
-  /**
-   * リソースの作成（RESTful API）
-   */
-  public static async createResource<T>(
-    resourceType: string,
-    data: Record<string, unknown>,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return API.post<T>(resourceType, data, config);
-  }
-
-  /**
-   * リソースの更新（RESTful API）
-   */
-  public static async updateResource<T>(
-    resourceType: string,
-    id: string,
-    data: Record<string, unknown>,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return API.put<T>(`${resourceType}/${id}`, data, config);
-  }
-
-  /**
-   * リソースの削除（RESTful API）
-   */
-  public static async deleteResource<T>(
-    resourceType: string,
-    id: string,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return API.delete<T>(`${resourceType}/${id}`, config);
+    try {
+      return await requestFn();
+    } catch (error) {
+      API.logger.error('Request execution failed', error);
+      throw error;
+    }
   }
 
   /**
@@ -246,34 +211,11 @@ class API {
     withCredentials = false
   ): EventSource {
     API.ensureInitialized();
-    
-    const url = new URL(API.apiClient.getConfig().buildUrl(endpoint));
-    
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
-        }
-      });
-    }
-    
-    // 認証トークンをURLに追加（代替手段として）
-    const authToken = API.getAuthToken();
-    if (authToken) {
-      url.searchParams.append('auth_token', authToken);
-    }
-    
-    const eventSource = new EventSource(url.toString(), { withCredentials });
-    
-    // イベントソースの接続を管理対象に登録
-    API.activeEventSources.add(eventSource);
-    
-    // 接続終了時に管理対象から削除
-    eventSource.addEventListener('close', () => {
-      API.activeEventSources.delete(eventSource);
-    });
-    
-    return eventSource;
+    return API.eventSourceManager.createEventSource(
+      endpoint, 
+      params, 
+      withCredentials
+    );
   }
 
   /**
@@ -292,9 +234,10 @@ class API {
       apiBaseUrl: API.apiClient.getConfig().baseUrl,
       apiVersion: API.apiClient.getConfig().apiVersion,
       isOnline: API.networkMonitor.isOnline(),
-      pendingRequests: API.getPendingRequestsCount(),
-      activeEventSources: API.activeEventSources.size,
-      subscriptionStatus: API.subscriptionService.getStatus()
+      pendingRequests: API.offlineManager.getPendingCount(),
+      activeEventSources: API.eventSourceManager.getActiveCount(),
+      subscriptionStatus: API.subscriptionService.getStatus(),
+      lastSyncTime: API.offlineManager.getLastSyncTime()
     };
   }
 
@@ -308,74 +251,50 @@ class API {
   }
 
   /**
-   * 保留中のリクエスト数を取得
-   */
-  private static getPendingRequestsCount(): number {
-    // 保留中のリクエスト数は現在のイベントソース数で代用
-    return API.activeEventSources.size;
-  }
-
-  /**
    * リソースのクリーンアップ
    */
   private static cleanup = (): void => {
-    // すべてのイベントソース接続を閉じる
-    API.activeEventSources.forEach((eventSource) => {
-      try {
-        eventSource.close();
-      } catch {
-        // エラーは無視
-      }
-    });
-    
-    API.activeEventSources.clear();
-    
-    // ネットワーク監視を停止
+    API.eventSourceManager.closeAll();
     API.networkMonitor.stopMonitoring();
+    API.offlineManager.saveState();
+    API.logger.info('API resources cleaned up');
   };
 
   /**
    * 認証トークンの取得
    */
-  private static getAuthToken(): string | null {
+  public static getAuthToken(): string | null {
     try {
       const authHeader = API.apiClient.getConfig().getHeaders().Authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         return authHeader.substring(7);
       }
-    } catch {
-      // エラーは無視
+    } catch (error) {
+      API.logger.warn('Failed to get auth token', error);
     }
     
     return null;
   }
-
-  /**
-   * サブスクリプション情報を取得
-   */
-  public static async getSubscriptionInfo(): Promise<SubscriptionInfo> {
-    return API.subscriptionService.getSubscriptionInfo();
-  }
-
-  /**
-   * サブスクリプションのアップグレード
-   */
-  public static async upgradeSubscription(
-    plan: SubscriptionPlan,
-    paymentMethod?: string
-  ): Promise<ApiResponse<SubscriptionInfo>> {
-    return API.subscriptionService.upgrade(plan, paymentMethod);
-  }
-
-  /**
-   * サブスクリプションのダウングレード
-   */
-  public static async downgradeSubscription(
-    reason?: string
-  ): Promise<ApiResponse<SubscriptionInfo>> {
-    return API.subscriptionService.downgrade(reason);
-  }
 }
+
+// サブコンポーネントのメソッドをAPIに追加
+import { batchMethods } from './ApiBatchMethods';
+import { resourceMethods } from './ApiResourceMethods';
+import { subscriptionMethods } from './ApiSubscriptionMethods';
+
+// バッチ関連メソッド
+API.batch = batchMethods.batch;
+
+// リソース関連メソッド
+API.getResource = resourceMethods.getResource;
+API.createResource = resourceMethods.createResource;
+API.updateResource = resourceMethods.updateResource;
+API.deleteResource = resourceMethods.deleteResource;
+
+// サブスクリプション関連メソッド
+API.getSubscriptionInfo = subscriptionMethods.getSubscriptionInfo;
+API.upgradeSubscription = subscriptionMethods.upgradeSubscription;
+API.downgradeSubscription = subscriptionMethods.downgradeSubscription;
 
 // 自動初期化
 if (typeof window !== 'undefined') {
@@ -384,3 +303,6 @@ if (typeof window !== 'undefined') {
 }
 
 export default API;
+
+// 型定義のエクスポート
+export type { BatchRequestItem, SubscriptionInfo, SubscriptionPlan };

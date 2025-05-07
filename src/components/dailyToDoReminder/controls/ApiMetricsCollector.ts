@@ -1,261 +1,158 @@
 /**
- * APIメトリクスコレクター
- * APIリクエストのパフォーマンスと利用状況を収集・分析するクラス
+ * APIメトリクス収集クラス
+ * APIパフォーマンスとエラー率を測定
  */
-import { HttpMethod } from './ApiTypes';
-
-/**
- * メトリクスデータ型
- */
-interface MetricsData {
-  timestamp: number;
-  value: number;
-}
-
-/**
- * APIメトリクスコレクタークラス
- */
-export class ApiMetricsCollector {
-  private static instance: ApiMetricsCollector | null = null;
-  private counters: Map<string, number>;
-  private durations: Map<string, number[]>;
-  private timeSeriesData: Map<string, MetricsData[]>;
-  private readonly MAX_SAMPLES = 1000;
-  private readonly MAX_TIME_SERIES = 10000;
-  private readonly RETENTION_PERIOD_MS = 7 * 24 * 60 * 60 * 1000; // 7日間
-  private lastCleanup: number;
-
-  constructor() {
-    this.counters = new Map();
-    this.durations = new Map();
-    this.timeSeriesData = new Map();
-    this.lastCleanup = Date.now();
-  }
-
-  /**
-   * シングルトンインスタンスの取得
-   */
-  public static getInstance(): ApiMetricsCollector {
-    if (!ApiMetricsCollector.instance) {
-      ApiMetricsCollector.instance = new ApiMetricsCollector();
-    }
-    return ApiMetricsCollector.instance;
-  }
-
-  /**
-   * カウンターを増加
-   */
-  public incrementCounter(key: string, value = 1): void {
-    const currentValue = this.counters.get(key) || 0;
-    this.counters.set(key, currentValue + value);
+class ApiMetricsCollector {
+    private requestCounts: Record<string, number> = {};
+    private errorCounts: Record<string, number> = {};
+    private responseTimesMs: Record<string, number[]> = {};
+    private cacheHits: Record<string, number> = {};
+    private cacheMisses: Record<string, number> = {};
+    private activeRequests: Map<string, number> = new Map();
     
-    // 時系列データも記録
-    this.recordTimeSeriesData(`counter:${key}`, value);
-    
-    this.checkAndCleanup();
-  }
-
-  /**
-   * カウンターを取得
-   */
-  public getCounter(key: string): number {
-    return this.counters.get(key) || 0;
-  }
-
-  /**
-   * すべてのカウンターを取得
-   */
-  public getAllCounters(): Record<string, number> {
-    return Object.fromEntries(this.counters);
-  }
-
-  /**
-   * リクエスト実行時間を記録
-   */
-  public recordRequestDuration(
-    service: string,
-    method: HttpMethod | string,
-    endpoint: string,
-    durationMs: number
-  ): void {
-    const key = `${service}:${method}:${endpoint}`;
-    const durations = this.durations.get(key) || [];
-    
-    // 配列のサイズ制限を適用
-    if (durations.length >= this.MAX_SAMPLES) {
-      durations.shift(); // 最も古いサンプルを削除
-    }
-    
-    durations.push(durationMs);
-    this.durations.set(key, durations);
-    
-    // 時系列データも記録
-    this.recordTimeSeriesData(`duration:${key}`, durationMs);
-    
-    this.checkAndCleanup();
-  }
-
-  /**
-   * サービスの平均応答時間を取得
-   */
-  public getAverageResponseTime(service: string): number {
-    let totalDuration = 0;
-    let sampleCount = 0;
-    
-    // 指定サービスに関連するすべてのエンドポイントを集計
-    for (const [key, durations] of this.durations.entries()) {
-      if (key.startsWith(`${service}:`)) {
-        for (const duration of durations) {
-          totalDuration += duration;
-          sampleCount++;
-        }
-      }
-    }
-    
-    return sampleCount > 0 ? Math.round(totalDuration / sampleCount) : 0;
-  }
-
-  /**
-   * エンドポイントの平均応答時間を取得
-   */
-  public getEndpointAverageResponseTime(
-    service: string,
-    method: HttpMethod | string,
-    endpoint: string
-  ): number {
-    const key = `${service}:${method}:${endpoint}`;
-    const durations = this.durations.get(key) || [];
-    
-    if (durations.length === 0) {
-      return 0;
-    }
-    
-    const sum = durations.reduce((acc, val) => acc + val, 0);
-    return Math.round(sum / durations.length);
-  }
-
-  /**
-   * 時系列データを記録
-   */
-  private recordTimeSeriesData(key: string, value: number): void {
-    const currentData = this.timeSeriesData.get(key) || [];
-    currentData.push({
-      timestamp: Date.now(),
-      value
-    });
-    
-    // 配列のサイズ制限を適用
-    if (currentData.length > this.MAX_TIME_SERIES) {
-      currentData.shift();
-    }
-    
-    this.timeSeriesData.set(key, currentData);
-  }
-
-  /**
-   * 時系列データを取得
-   */
-  public getTimeSeriesData(
-    key: string,
-    startTime?: number,
-    endTime?: number
-  ): MetricsData[] {
-    const data = this.timeSeriesData.get(key) || [];
-    
-    if (!startTime && !endTime) {
-      return [...data];
-    }
-    
-    const now = Date.now();
-    const filteredData = data.filter((item) => {
-      const isAfterStart = !startTime || item.timestamp >= startTime;
-      const isBeforeEnd = !endTime || item.timestamp <= (endTime || now);
-      return isAfterStart && isBeforeEnd;
-    });
-    
-    return filteredData;
-  }
-
-  /**
-   * すべてのメトリクスをエクスポート
-   */
-  public exportMetrics(): Record<string, unknown> {
-    return {
-      timestamp: Date.now(),
-      counters: Object.fromEntries(this.counters),
-      averageDurations: this.calculateAverageDurations(),
-      samplesCount: this.calculateSamplesCounts()
-    };
-  }
-
-  /**
-   * すべてのエンドポイントの平均応答時間を計算
-   */
-  private calculateAverageDurations(): Record<string, number> {
-    const result: Record<string, number> = {};
-    
-    for (const [key, durations] of this.durations.entries()) {
-      if (durations.length > 0) {
-        const sum = durations.reduce((acc, val) => acc + val, 0);
-        result[key] = Math.round(sum / durations.length);
-      }
-    }
-    
-    return result;
-  }
-
-  /**
-   * サンプル数を計算
-   */
-  private calculateSamplesCounts(): Record<string, number> {
-    const result: Record<string, number> = {};
-    
-    for (const [key, durations] of this.durations.entries()) {
-      result[key] = durations.length;
-    }
-    
-    return result;
-  }
-
-  /**
-   * 定期的なクリーンアップを実行
-   */
-  private checkAndCleanup(): void {
-    const now = Date.now();
-    
-    // 設定間隔ごとにクリーンアップを実行
-    if (now - this.lastCleanup > this.RETENTION_PERIOD_MS / 7) {
-      this.cleanup();
-      this.lastCleanup = now;
-    }
-  }
-
-  /**
-   * 古いメトリクスデータをクリーンアップ
-   */
-  private cleanup(): void {
-    const cutoffTime = Date.now() - this.RETENTION_PERIOD_MS;
-    
-    // 時系列データのクリーンアップ
-    for (const [key, dataArray] of this.timeSeriesData.entries()) {
-      const newData = dataArray.filter(item => item.timestamp >= cutoffTime);
+    /**
+     * リクエスト開始時の記録
+     */
+    public startRequest(url: string, method: string): void {
+      const key = this.getMetricKey(url, method);
+      this.activeRequests.set(key, Date.now());
       
-      if (newData.length === 0) {
-        // データが空になった場合はキーを削除
-        this.timeSeriesData.delete(key);
-      } else if (newData.length < dataArray.length) {
-        // 一部のデータが削除された場合は更新
-        this.timeSeriesData.set(key, newData);
+      if (!this.requestCounts[key]) {
+        this.requestCounts[key] = 0;
+      }
+      
+      this.requestCounts[key]++;
+    }
+    
+    /**
+     * リクエスト終了時の記録
+     */
+    public endRequest(
+      url: string, 
+      method: string, 
+      statusCode: number, 
+      processingTimeMs: number
+    ): void {
+      const key = this.getMetricKey(url, method);
+      this.activeRequests.delete(key);
+      
+      if (!this.responseTimesMs[key]) {
+        this.responseTimesMs[key] = [];
+      }
+      
+      this.responseTimesMs[key].push(processingTimeMs);
+      
+      // レスポンス時間履歴を最大100件に制限
+      if (this.responseTimesMs[key].length > 100) {
+        this.responseTimesMs[key].shift();
       }
     }
+    
+    /**
+     * エラーの記録
+     */
+    public recordError(url: string, errorMessage: string): void {
+      const key = new URL(url).pathname;
+      
+      if (!this.errorCounts[key]) {
+        this.errorCounts[key] = 0;
+      }
+      
+      this.errorCounts[key]++;
+    }
+    
+    /**
+     * キャッシュヒットの記録
+     */
+    public recordCacheHit(endpoint: string): void {
+      if (!this.cacheHits[endpoint]) {
+        this.cacheHits[endpoint] = 0;
+      }
+      
+      this.cacheHits[endpoint]++;
+    }
+    
+    /**
+     * キャッシュミスの記録
+     */
+    public recordCacheMiss(endpoint: string): void {
+      if (!this.cacheMisses[endpoint]) {
+        this.cacheMisses[endpoint] = 0;
+      }
+      
+      this.cacheMisses[endpoint]++;
+    }
+    
+    /**
+     * メトリック用のキーを生成
+     */
+    private getMetricKey(url: string, method: string): string {
+      const pathname = new URL(url).pathname;
+      return `${method}:${pathname}`;
+    }
+    
+    /**
+     * 平均応答時間を計算
+     */
+    private calculateAverageResponseTime(endpoint: string): number | null {
+      const times = this.responseTimesMs[endpoint];
+      
+      if (!times || times.length === 0) {
+        return null;
+      }
+      
+      const sum = times.reduce((acc, time) => acc + time, 0);
+      return Math.round(sum / times.length);
+    }
+    
+    /**
+     * キャッシュヒット率を計算
+     */
+    private calculateCacheHitRate(endpoint: string): number | null {
+      const hits = this.cacheHits[endpoint] || 0;
+      const misses = this.cacheMisses[endpoint] || 0;
+      const total = hits + misses;
+      
+      if (total === 0) {
+        return null;
+      }
+      
+      return Number((hits / total * 100).toFixed(1));
+    }
+    
+    /**
+     * すべてのメトリクスを取得
+     */
+    public getMetrics(): Record<string, unknown> {
+      const endpoints = new Set([
+        ...Object.keys(this.requestCounts),
+        ...Object.keys(this.errorCounts),
+        ...Object.keys(this.responseTimesMs)
+      ]);
+      
+      const endpointMetrics: Record<string, unknown> = {};
+      
+      for (const endpoint of endpoints) {
+        const requests = this.requestCounts[endpoint] || 0;
+        const errors = this.errorCounts[endpoint] || 0;
+        const errorRate = requests ? Number((errors / requests * 100).toFixed(1)) : 0;
+        
+        endpointMetrics[endpoint] = {
+          requests,
+          errors,
+          errorRate,
+          averageResponseTimeMs: this.calculateAverageResponseTime(endpoint),
+          cacheHitRate: this.calculateCacheHitRate(endpoint)
+        };
+      }
+      
+      return {
+        endpoints: endpointMetrics,
+        activeRequests: this.activeRequests.size,
+        totalRequests: Object.values(this.requestCounts).reduce((sum, count) => sum + count, 0),
+        totalErrors: Object.values(this.errorCounts).reduce((sum, count) => sum + count, 0)
+      };
+    }
   }
-
-  /**
-   * すべてのメトリクスをリセット
-   */
-  public resetAllMetrics(): void {
-    this.counters.clear();
-    this.durations.clear();
-    this.timeSeriesData.clear();
-  }
-}
+  
+  export default ApiMetricsCollector;

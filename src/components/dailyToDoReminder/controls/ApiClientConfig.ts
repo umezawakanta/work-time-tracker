@@ -1,144 +1,211 @@
 /**
- * APIクライアント設定
- * APIクライアントの設定を管理するクラス
+ * APIクライアント設定インターフェース
+ * APIクライアントの設定値を定義します
  */
-import Logger from './Logger';
+export interface IApiClientConfig {
+  baseUrl: string;
+  apiVersion: string;
+  requestTimeoutMs: number;
+  maxRetries: number;
+  retryDelay: number;
+  graphqlEndpoint: string;
+  headers: Record<string, string>;
+}
 
-class ApiClientConfig {
+/**
+ * 部分的なAPIクライアント設定型
+ * 設定更新時に使用する部分的な設定型です
+ */
+export type PartialApiClientConfig = Partial<IApiClientConfig>;
+
+/**
+ * リトライ戦略のオプション
+ */
+export interface RetryStrategyOptions {
+  maxRetries: number;
+  initialDelay: number;
+  maxDelay?: number;
+  backoffFactor?: number;
+}
+
+/**
+ * APIクライアント設定
+ * APIクライアントの動作を設定するクラス
+ */
+export class ApiClientConfig implements IApiClientConfig {
   public baseUrl: string;
   public apiVersion: string;
   public requestTimeoutMs: number;
   public maxRetries: number;
   public retryDelay: number;
-  private defaultHeaders: Record<string, string>;
-  private logger: Logger;
+  public graphqlEndpoint: string;
+  public headers: Record<string, string>;
+  
+  private static instance: ApiClientConfig | null = null;
 
-  constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_ENDPOINT || '/api';
-    this.apiVersion = process.env.NEXT_PUBLIC_API_VERSION || 'v1';
-    this.requestTimeoutMs = 30000; // 30秒
-    this.maxRetries = 3; // 最大リトライ回数
-    this.retryDelay = 1000; // リトライ間隔（ミリ秒）
-    this.logger = Logger.getInstance();
-    
-    this.defaultHeaders = this.initDefaultHeaders();
+  /**
+   * シングルトンインスタンスを取得
+   */
+  public static getInstance(): ApiClientConfig {
+    if (!ApiClientConfig.instance) {
+      ApiClientConfig.instance = new ApiClientConfig();
+    }
+    return ApiClientConfig.instance;
   }
 
   /**
-   * デフォルトヘッダーの初期化
+   * コンストラクタ
+   * プライベートコンストラクタでシングルトンパターンを実現
    */
-  private initDefaultHeaders(): Record<string, string> {
-    return {
+  private constructor() {
+    // デフォルト設定
+    this.baseUrl = this.getEnvVariable('NEXT_PUBLIC_API_BASE_URL', 'https://api.example.com');
+    this.apiVersion = this.getEnvVariable('NEXT_PUBLIC_API_VERSION', 'v1');
+    this.requestTimeoutMs = 30000; // 30秒
+    this.maxRetries = 3;
+    this.retryDelay = 1000; // 1秒（指数バックオフの基準値）
+    this.graphqlEndpoint = 'graphql';
+    this.headers = {
       'Content-Type': 'application/json',
-      'X-Client-Version': process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-      'Accept-Language': this.getBrowserLanguage(),
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-Client-Platform': this.getClientPlatform()
+      'Accept': 'application/json',
+      'X-Client-Version': this.getEnvVariable('NEXT_PUBLIC_APP_VERSION', '1.0.0')
     };
   }
 
   /**
-   * ブラウザの言語設定を取得
+   * 環境変数を安全に取得
+   * @param key 環境変数のキー
+   * @param defaultValue デフォルト値
+   * @returns 環境変数の値またはデフォルト値
    */
-  private getBrowserLanguage(): string {
-    if (typeof navigator === 'undefined') return 'ja-JP';
-    return navigator.language || 'ja-JP';
+  private getEnvVariable(key: string, defaultValue: string): string {
+    // process.env がブラウザで undefined になる場合に対応
+    const processEnv = typeof process !== 'undefined' && process.env ? process.env : {};
+    return (processEnv[key] as string) || defaultValue;
   }
 
   /**
-   * クライアントプラットフォームの取得
+   * ヘッダーの取得
+   * @returns 現在のヘッダーのコピー
    */
-  private getClientPlatform(): string {
-    if (typeof navigator === 'undefined') return 'server';
-    
-    const userAgent = navigator.userAgent.toLowerCase();
-    
-    if (/android/i.test(userAgent)) return 'android';
-    if (/iphone|ipad|ipod/i.test(userAgent)) return 'ios';
-    if (/windows/i.test(userAgent)) return 'windows';
-    if (/macintosh/i.test(userAgent)) return 'mac';
-    if (/linux/i.test(userAgent)) return 'linux';
-    
-    return 'unknown';
+  public getHeaders(): Record<string, string> {
+    return { ...this.headers };
   }
 
   /**
-   * 完全なURLを構築
+   * 認証トークンの更新
+   * @param token 認証トークン
+   */
+  public updateAuthToken(token: string | null): void {
+    if (token) {
+      this.headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete this.headers['Authorization'];
+    }
+  }
+
+  /**
+   * エンドポイントからURLを構築
+   * @param endpoint APIエンドポイント
+   * @returns 完全なURL
    */
   public buildUrl(endpoint: string): string {
-    // 既に絶対URLの場合はそのまま返す
+    // エンドポイントが完全なURLの場合はそのまま返す
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
       return endpoint;
     }
     
-    // 相対パスの場合は、baseUrlとapiVersionを結合
+    // ベースURLとバージョンを結合
     let url = this.baseUrl;
     
-    // APIバージョンを追加
-    if (this.apiVersion && !endpoint.startsWith(this.apiVersion)) {
-      url = url.endsWith('/') ? `${url}${this.apiVersion}` : `${url}/${this.apiVersion}`;
+    // APIバージョンが含まれていない場合は追加
+    if (!endpoint.startsWith(`/${this.apiVersion}/`) && !endpoint.startsWith(this.apiVersion + '/')) {
+      url += `/${this.apiVersion}`;
     }
     
-    // エンドポイントを追加
+    // エンドポイントが/で始まる場合は調整
     if (endpoint.startsWith('/')) {
-      url = url.endsWith('/') ? `${url}${endpoint.substring(1)}` : `${url}${endpoint}`;
+      url += endpoint;
     } else {
-      url = url.endsWith('/') ? `${url}${endpoint}` : `${url}/${endpoint}`;
+      url += `/${endpoint}`;
     }
     
     return url;
   }
 
   /**
-   * 認証トークンの更新
+   * GraphQL URLの構築
+   * @returns GraphQL エンドポイントURL
    */
-  public updateAuthToken(token: string | null): void {
-    if (token) {
-      this.defaultHeaders['Authorization'] = `Bearer ${token}`;
-    } else {
-      delete this.defaultHeaders['Authorization'];
-    }
+  public buildGraphQLUrl(): string {
+    return this.buildUrl(this.graphqlEndpoint);
+  }
+
+  /**
+   * リトライ遅延時間の計算
+   * @param attempt 現在の試行回数
+   * @returns 遅延時間（ミリ秒）
+   */
+  public calculateRetryDelay(attempt: number): number {
+    const backoffFactor = 2;
+    const maxDelay = 30000; // 最大30秒
     
-    this.logger.info('認証トークンが更新されました');
-  }
-
-  /**
-   * 現在のヘッダーを取得
-   */
-  public getHeaders(): Record<string, string> {
-    return { ...this.defaultHeaders };
-  }
-
-  /**
-   * カスタムヘッダーの追加
-   */
-  public addCustomHeader(key: string, value: string): void {
-    this.defaultHeaders[key] = value;
-  }
-
-  /**
-   * カスタムヘッダーの削除
-   */
-  public removeCustomHeader(key: string): void {
-    delete this.defaultHeaders[key];
+    // 指数バックオフ: retryDelay * (backoffFactor ^ attempt)
+    const delay = this.retryDelay * Math.pow(backoffFactor, attempt);
+    
+    // 最大遅延時間を超えないようにする
+    return Math.min(delay, maxDelay);
   }
 
   /**
    * 設定の更新
+   * @param configUpdates 更新する設定値
    */
-  public update(configUpdates: Partial<ApiClientConfig>): void {
-    // 基本設定の更新
-    if (configUpdates.baseUrl) this.baseUrl = configUpdates.baseUrl;
-    if (configUpdates.apiVersion) this.apiVersion = configUpdates.apiVersion;
-    if (configUpdates.requestTimeoutMs) this.requestTimeoutMs = configUpdates.requestTimeoutMs;
-    if (configUpdates.maxRetries) this.maxRetries = configUpdates.maxRetries;
-    if (configUpdates.retryDelay) this.retryDelay = configUpdates.retryDelay;
+  public update(configUpdates: PartialApiClientConfig): void {
+    // 入力検証
+    if (!configUpdates) {
+      return;
+    }
+
+    // 各プロパティを型安全に更新
+    if (configUpdates.baseUrl !== undefined) this.baseUrl = configUpdates.baseUrl;
+    if (configUpdates.apiVersion !== undefined) this.apiVersion = configUpdates.apiVersion;
+    if (configUpdates.graphqlEndpoint !== undefined) this.graphqlEndpoint = configUpdates.graphqlEndpoint;
+    if (configUpdates.requestTimeoutMs !== undefined) this.requestTimeoutMs = configUpdates.requestTimeoutMs;
+    if (configUpdates.maxRetries !== undefined) this.maxRetries = configUpdates.maxRetries;
+    if (configUpdates.retryDelay !== undefined) this.retryDelay = configUpdates.retryDelay;
     
-    this.logger.info('APIクライアント設定が更新されました', {
+    // ヘッダーのマージ（既存のヘッダーは残す）
+    if (configUpdates.headers) {
+      this.headers = {
+        ...this.headers,
+        ...configUpdates.headers
+      };
+    }
+  }
+
+  /**
+   * 設定の複製
+   * @returns 現在の設定のコピー
+   */
+  public clone(): IApiClientConfig {
+    return {
       baseUrl: this.baseUrl,
-      apiVersion: this.apiVersion
-    });
+      apiVersion: this.apiVersion,
+      requestTimeoutMs: this.requestTimeoutMs,
+      maxRetries: this.maxRetries,
+      retryDelay: this.retryDelay,
+      graphqlEndpoint: this.graphqlEndpoint,
+      headers: { ...this.headers }
+    };
+  }
+
+  /**
+   * 設定の完全リセット
+   */
+  public reset(): void {
+    ApiClientConfig.instance = null;
   }
 }
 
-export default ApiClientConfig;
+export default ApiClientConfig.getInstance();
