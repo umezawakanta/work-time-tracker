@@ -4,30 +4,39 @@
  */
 import ApiClient from './ApiClient';
 import ApiClientHttpMethods from './ApiClientHttpMethods';
-import { ApiErrorResponse, ApiResponse, RequestConfig } from './ApiTypes';
+import { ApiResponse, RequestConfig } from './ApiTypes';
 import { ApiClientConfig } from './ApiClientConfig';
 import NetworkMonitor from './NetworkMonitor';
 import SubscriptionService from './SubscriptionService';
 import { EventSourceManager } from './EventSourceManager';
 import { OfflineRequestManager } from './OfflineRequestManager';
 import { ApiLogger } from './ApiLogger';
+import { PerformanceTracker } from './PerformanceTracker';
+import { AIFeatureManager } from './AIFeatureManager';
+import { AnalyticsManager } from './AnalyticsManager';
+import { SecurityManager } from './SecurityManager';
 
 // 型定義のインポート
 import type { BatchRequestItem } from './BatchTypes';
 import type { SubscriptionInfo, SubscriptionPlan } from './SubscriptionTypes';
+import type { AIFeatureOptions } from './AITypes';
 
 /**
  * APIクラス
- * アプリケーション全体で使用するシンプルなAPIファサード
+ * アプリケーション全体で使用するAPIファサード
  */
 class API {
   private static apiClient = ApiClient.getInstance();
   private static httpMethods = new ApiClientHttpMethods(API.apiClient);
-  private static networkMonitor = new NetworkMonitor();
-  private static subscriptionService = new SubscriptionService();
+  private static networkMonitor = NetworkMonitor.getInstance();
+  private static subscriptionService = SubscriptionService.getInstance();
   private static eventSourceManager = new EventSourceManager();
   private static offlineManager = new OfflineRequestManager();
-  private static logger = new ApiLogger();
+  private static logger = ApiLogger.getInstance();
+  private static performanceTracker = PerformanceTracker.getInstance();
+  private static aiManager = AIFeatureManager.getInstance();
+  private static analyticsManager = AnalyticsManager.getInstance();
+  private static securityManager = SecurityManager.getInstance();
   private static initialized = false;
 
   /**
@@ -36,11 +45,12 @@ class API {
   public static initialize(): void {
     if (API.initialized) return;
     
-    // ネットワーク監視を開始
-    API.networkMonitor.startMonitoring();
+    // ロガーを最初に初期化
+    API.logger.setContext('APICore');
+    API.logger.info('APIの初期化を開始します');
     
-    // オフラインリクエスト管理を初期化
-    API.offlineManager.initialize();
+    // 各マネージャーを初期化
+    API.initializeManagers();
     
     // ページ離脱時の処理
     if (typeof window !== 'undefined') {
@@ -56,11 +66,24 @@ class API {
     });
     
     API.initialized = true;
-    API.logger.info('API initialized successfully');
+    API.logger.info('APIが正常に初期化されました');
   }
 
   /**
-   * GETリクエスト
+   * 各マネージャーを初期化
+   */
+  private static initializeManagers(): void {
+    // 初期化順序を制御
+    API.securityManager.initialize();
+    API.networkMonitor.startMonitoring();
+    API.offlineManager.initialize();
+    API.performanceTracker.initialize();
+    API.aiManager.initialize();
+    API.analyticsManager.initialize();
+  }
+
+  /**
+   * HTTPリクエストメソッド
    */
   public static async get<T>(
     endpoint: string,
@@ -73,9 +96,6 @@ class API {
     );
   }
 
-  /**
-   * POSTリクエスト
-   */
   public static async post<T>(
     endpoint: string,
     data?: Record<string, unknown> | unknown[] | null,
@@ -87,9 +107,6 @@ class API {
     );
   }
 
-  /**
-   * PUTリクエスト
-   */
   public static async put<T>(
     endpoint: string,
     data?: Record<string, unknown> | unknown[] | null,
@@ -101,9 +118,6 @@ class API {
     );
   }
 
-  /**
-   * DELETEリクエスト
-   */
   public static async delete<T>(
     endpoint: string,
     config?: RequestConfig
@@ -114,9 +128,6 @@ class API {
     );
   }
 
-  /**
-   * PATCHリクエスト
-   */
   public static async patch<T>(
     endpoint: string,
     data?: Record<string, unknown> | unknown[] | null,
@@ -128,9 +139,6 @@ class API {
     );
   }
 
-  /**
-   * ファイルアップロード
-   */
   public static async uploadFile<T>(
     endpoint: string,
     file: File,
@@ -151,10 +159,76 @@ class API {
   }
 
   /**
+   * リクエストを実行し、オフライン時は適切に処理
+   */
+  private static async executeRequest<T>(
+    requestFn: () => Promise<ApiResponse<T>>
+  ): Promise<ApiResponse<T>> {
+    const trackingId = API.performanceTracker.startTracking();
+    
+    try {
+      // セキュリティチェック
+      const securityCheck = API.securityManager.checkRequestSecurity();
+      if (!securityCheck.allowed) {
+        return API.createErrorResponse('RATE_LIMIT_EXCEEDED', securityCheck.reason, 429);
+      }
+      
+      // オンライン状態をチェック
+      if (!API.isOnline()) {
+        return API.offlineManager.handleOfflineRequest(requestFn);
+      }
+
+      const response = await requestFn();
+      
+      // 測定終了と分析記録
+      API.performanceTracker.stopTracking(trackingId, {
+        success: response.success,
+        statusCode: response.status
+      });
+      API.analyticsManager.trackRequest(response);
+      
+      return response;
+    } catch (error) {
+      API.performanceTracker.stopTracking(trackingId, {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      API.logger.error('リクエスト実行に失敗しました', error);
+      throw error;
+    }
+  }
+
+  /**
+   * エラーレスポンスを作成
+   */
+  private static createErrorResponse<T>(
+    code: string,
+    message: string | undefined,
+    statusCode: number
+  ): ApiResponse<T> {
+    return {
+      success: false,
+      data: null,
+      status: statusCode,
+      error: {
+        code,
+        message: message || 'エラーが発生しました',
+        statusCode
+      }
+    };
+  }
+
+  /**
    * 認証トークンの更新
    */
   public static updateAuthToken(token: string | null): void {
+    const securityResult = API.securityManager.validateToken(token);
+    if (!securityResult.valid && token !== null) {
+      API.logger.warn(`無効なトークンが提供されました: ${securityResult.reason}`);
+    }
+    
     API.apiClient.updateAuthToken(token);
+    API.analyticsManager.trackEvent('auth_token_updated');
   }
 
   /**
@@ -174,32 +248,39 @@ class API {
   ): Promise<ApiResponse<T>> {
     API.ensureInitialized();
     return API.executeRequest(() => 
-      API.post<T>(
-        'graphql',
-        { query, variables },
-        config
-      )
+      API.post<T>('graphql', { query, variables }, config)
     );
   }
 
   /**
-   * リクエストを実行し、オフライン時は適切に処理
+   * AI支援クエリの実行
    */
-  private static async executeRequest<T>(
-    requestFn: () => Promise<ApiResponse<T>>
+  public static async aiEnhancedQuery<T>(
+    endpoint: string,
+    queryData: unknown,
+    options: AIFeatureOptions
   ): Promise<ApiResponse<T>> {
-    // オンライン状態をチェック
-    if (!API.isOnline()) {
-      // オフラインの場合、設定に基づいて処理
-      return API.offlineManager.handleOfflineRequest(requestFn);
+    API.ensureInitialized();
+    
+    const hasAccess = await API.hasFeature('aiAssistant');
+    if (!hasAccess && options.required) {
+      return API.createErrorResponse(
+        'AI_FEATURE_NOT_AVAILABLE', 
+        'AI機能はプレミアムサブスクリプションでのみ利用可能です', 
+        403
+      );
     }
-
-    try {
-      return await requestFn();
-    } catch (error) {
-      API.logger.error('Request execution failed', error);
-      throw error;
-    }
+    
+    const enhancedQuery = await API.aiManager.enhanceQuery(queryData, options);
+    
+    return API.post<T>(endpoint, enhancedQuery.data, {
+      ...options.requestConfig,
+      meta: {
+        ...options.requestConfig?.meta,
+        aiEnhanced: true,
+        enhancementType: enhancedQuery.type
+      }
+    });
   }
 
   /**
@@ -211,11 +292,7 @@ class API {
     withCredentials = false
   ): EventSource {
     API.ensureInitialized();
-    return API.eventSourceManager.createEventSource(
-      endpoint, 
-      params, 
-      withCredentials
-    );
+    return API.eventSourceManager.createEventSource(endpoint, params, withCredentials);
   }
 
   /**
@@ -223,22 +300,6 @@ class API {
    */
   public static isOnline(): boolean {
     return API.networkMonitor.isOnline();
-  }
-
-  /**
-   * デバッグ情報の取得
-   */
-  public static getDebugInfo(): Record<string, unknown> {
-    return {
-      version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-      apiBaseUrl: API.apiClient.getConfig().baseUrl,
-      apiVersion: API.apiClient.getConfig().apiVersion,
-      isOnline: API.networkMonitor.isOnline(),
-      pendingRequests: API.offlineManager.getPendingCount(),
-      activeEventSources: API.eventSourceManager.getActiveCount(),
-      subscriptionStatus: API.subscriptionService.getStatus(),
-      lastSyncTime: API.offlineManager.getLastSyncTime()
-    };
   }
 
   /**
@@ -257,52 +318,39 @@ class API {
     API.eventSourceManager.closeAll();
     API.networkMonitor.stopMonitoring();
     API.offlineManager.saveState();
-    API.logger.info('API resources cleaned up');
+    API.performanceTracker.saveMetrics();
+    API.analyticsManager.saveData();
+    API.logger.info('APIリソースがクリーンアップされました');
   };
 
   /**
-   * 認証トークンの取得
+   * 機能利用可能かをチェック
    */
-  public static getAuthToken(): string | null {
-    try {
-      const authHeader = API.apiClient.getConfig().getHeaders().Authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        return authHeader.substring(7);
-      }
-    } catch (error) {
-      API.logger.warn('Failed to get auth token', error);
-    }
-    
-    return null;
+  public static async hasFeature(featureKey: string): Promise<boolean> {
+    const subscriptionInfo = await API.subscriptionService.getSubscriptionInfo();
+    return !!(subscriptionInfo.features as Record<string, unknown>)[featureKey];
+  }
+
+  /**
+   * デバッグ情報の取得
+   */
+  public static getDebugInfo(): Record<string, unknown> {
+    return API.analyticsManager.getSystemInfo();
   }
 }
 
-// サブコンポーネントのメソッドをAPIに追加
-import { batchMethods } from './ApiBatchMethods';
-import { resourceMethods } from './ApiResourceMethods';
-import { subscriptionMethods } from './ApiSubscriptionMethods';
+// サブコンポーネントのメソッドをインポート
+import { applyExtensionMethods } from './ApiExtensions';
 
-// バッチ関連メソッド
-API.batch = batchMethods.batch;
+// 拡張メソッドを適用
+applyExtensionMethods(API);
 
-// リソース関連メソッド
-API.getResource = resourceMethods.getResource;
-API.createResource = resourceMethods.createResource;
-API.updateResource = resourceMethods.updateResource;
-API.deleteResource = resourceMethods.deleteResource;
-
-// サブスクリプション関連メソッド
-API.getSubscriptionInfo = subscriptionMethods.getSubscriptionInfo;
-API.upgradeSubscription = subscriptionMethods.upgradeSubscription;
-API.downgradeSubscription = subscriptionMethods.downgradeSubscription;
-
-// 自動初期化
+// 初期化（ブラウザ環境のみ）
 if (typeof window !== 'undefined') {
-  // ブラウザ環境の場合は自動的に初期化
   API.initialize();
 }
 
 export default API;
 
 // 型定義のエクスポート
-export type { BatchRequestItem, SubscriptionInfo, SubscriptionPlan };
+export type { BatchRequestItem, SubscriptionInfo, SubscriptionPlan, AIFeatureOptions };
