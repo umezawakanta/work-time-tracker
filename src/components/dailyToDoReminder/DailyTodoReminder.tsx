@@ -10,11 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  RefreshCcw,
-  Award,
-  Brain
-} from "lucide-react";
+import { RefreshCcw, Award, Brain } from "lucide-react";
 import { toast } from "react-hot-toast";
 import {
   fetchTodoItems,
@@ -30,7 +26,7 @@ import {
   selectDailyHistory,
   fetchAnalysisSummary,
   checkPremiumStatus,
-  selectIsPremium
+  selectIsPremium,
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
 import { TodoCalendar } from "@/components/calendar/TodoCalendar";
@@ -41,11 +37,13 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import TodoList from "./todo/TodoList";
 import ProgressSection from "./sections/ProgressSection";
 import StreakDisplay from "./sections/StreakDisplay";
-import TodoAnalysis from "./analysis/TodoAnalysis";
+// TodoAnalysisコンポーネントのパスを修正
+// または必要に応じてコンポーネントを作成してください
+import TodoAnalysis from "../todoAnalysis/TodoAnalysis";
 import TodoViewControls from "./controls/TodoViewControls";
 
 // 共通の型定義をインポート
-import { Todo } from '@/types/todo';
+import { Todo } from "@/types/todo";
 
 // CSSスタイル
 import "./DailyTodoReminder.css";
@@ -54,7 +52,9 @@ interface DailyTodoReminderProps {
   isPremium?: boolean;
 }
 
-export default function DailyTodoReminder({ isPremium = false }: DailyTodoReminderProps) {
+export default function DailyTodoReminder({
+  isPremium = false,
+}: DailyTodoReminderProps) {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos) as Todo[];
   const status = useSelector(selectTodoStatus);
@@ -62,7 +62,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
   const todoHistory = useSelector(selectTodoHistory);
   const dailyHistory = useSelector(selectDailyHistory);
   const hasPremium = useSelector(selectIsPremium) || isPremium;
-  
+
   // 状態管理
   const [selectedTab, setSelectedTab] = useState("list");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -72,7 +72,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
   const [streakCount, setStreakCount] = useState(0);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(true);
   const [showAnalysis, setShowAnalysis] = useState(false);
-  
+
   const initialAdjustmentDone = useRef(false);
 
   // データ取得
@@ -80,10 +80,10 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
     dispatch(fetchTodoItems());
     dispatch(fetchTodoHistory());
     dispatch(fetchDailyTodoHistory());
-    
+
     // プレミアム状態チェック
     dispatch(checkPremiumStatus());
-    
+
     // プレミアムユーザーの場合は分析データも取得
     if (hasPremium) {
       dispatch(fetchAnalysisSummary());
@@ -266,8 +266,12 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg font-bold">本日のToDoリスト</CardTitle>
-            <CardDescription>登録したことは必ずやり遂げましょう</CardDescription>
+            <CardTitle className="text-lg font-bold">
+              本日のToDoリスト
+            </CardTitle>
+            <CardDescription>
+              登録したことは必ずやり遂げましょう
+            </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
             {hasPremium && (
@@ -289,7 +293,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
       </CardHeader>
 
       {/* 進捗セクション */}
-      <ProgressSection 
+      <ProgressSection
         completedCount={completedCount}
         totalCount={totalCount}
         progressPercentage={progressPercentage}
@@ -309,7 +313,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
             <TabsTrigger value="calendar">カレンダー</TabsTrigger>
             <TabsTrigger value="chart">グラフ</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="list" className="m-0">
             {hasPremium && (
               <div className="flex justify-end mb-3">
@@ -330,7 +334,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
                 </Dialog>
               </div>
             )}
-            
+
             <TodoViewControls
               showFilters={showFilters}
               setShowFilters={setShowFilters}
@@ -347,14 +351,14 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
                 toast.success("タスクの優先度を調整しました");
               }}
             />
-            
-            <TodoList 
+
+            <TodoList
               todos={getFilteredTodos()}
               isPremium={hasPremium}
               onAnalyzeRequest={() => setShowAnalysis(true)}
             />
           </TabsContent>
-          
+
           <TabsContent value="calendar">
             <TodoCalendar
               todoHistory={
@@ -364,7 +368,7 @@ export default function DailyTodoReminder({ isPremium = false }: DailyTodoRemind
               }
             />
           </TabsContent>
-          
+
           <TabsContent value="chart">
             <TodoChart
               todoHistory={

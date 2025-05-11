@@ -66,6 +66,8 @@ interface TodoState {
   error: string | null;
   todoHistory: Record<string, number>;
   dailyHistory: Array<{ date: string; count: number }>;
+  isPremium: boolean;  // プレミアム状態を追加
+  analysisSummary: any; // 分析サマリーを追加（型は適切に定義する）
 }
 
 const initialState: TodoState = {
@@ -74,6 +76,8 @@ const initialState: TodoState = {
   error: null,
   todoHistory: {}, // 既存の履歴データ形式を維持
   dailyHistory: [], // 日別の履歴データを追加
+  isPremium: false, // デフォルトは非プレミアム
+  analysisSummary: null // 初期値はnull
 };
 
 export const fetchTodoItems = createAsyncThunk("todo/fetchTodoItems", async () => {
@@ -157,6 +161,26 @@ export const toggleTodoPriority = createAsyncThunk(
   }
 );
 
+// プレミアム状態をチェックするアクションを追加
+export const checkPremiumStatus = createAsyncThunk(
+  "todo/checkPremiumStatus",
+  async () => {
+    // API呼び出しを実装（例としてtodoApiに追加されていると仮定）
+    const response = await todoApi.checkPremiumStatus();
+    return response.data.isPremium;
+  }
+);
+
+// タスク分析サマリーを取得するアクションを追加
+export const fetchAnalysisSummary = createAsyncThunk(
+  "todo/fetchAnalysisSummary",
+  async () => {
+    // todoApi.getAnalysisSummaryの実装を仮定
+    const response = await todoApi.getAnalysisSummary();
+    return response.data;
+  }
+);
+
 const todoSlice = createSlice({
   name: "todo",
   initialState,
@@ -193,15 +217,15 @@ const todoSlice = createSlice({
             // 期限切れ: 最高優先度
             if (daysRemaining < 0) {
               priorityScore += 100;
-            } 
+            }
             // 今日が期限: 非常に高い優先度
             else if (daysRemaining === 0) {
               priorityScore += 80;
-            } 
+            }
             // 明日が期限: 高い優先度
             else if (daysRemaining === 1) {
               priorityScore += 60;
-            } 
+            }
             // 3日以内: 中程度の優先度
             else if (daysRemaining <= 3) {
               priorityScore += 40;
@@ -254,7 +278,7 @@ const todoSlice = createSlice({
         if (index !== -1) {
           // この行が重要です - 古いオブジェクトを新しいオブジェクトで完全に置き換える
           state.items[index] = action.payload;
-          
+
           // デバッグ用にログを追加
           console.log("Todo updated in Redux store:", action.payload);
         }
@@ -289,6 +313,13 @@ const todoSlice = createSlice({
         if (index !== -1) {
           state.items[index] = action.payload;
         }
+      })
+      // 新しく追加したアクションのリデューサー
+      .addCase(checkPremiumStatus.fulfilled, (state, action) => {
+        state.isPremium = action.payload;
+      })
+      .addCase(fetchAnalysisSummary.fulfilled, (state, action) => {
+        state.analysisSummary = action.payload;
       });
   },
 });
@@ -300,4 +331,8 @@ export const selectTodoStatus = (state: RootState) => state.todo.status;
 export const selectTodoError = (state: RootState) => state.todo.error;
 export const selectTodoHistory = (state: RootState) => state.todo.todoHistory;
 export const selectDailyHistory = (state: RootState) => state.todo.dailyHistory;
+// 新しく追加したセレクター
+export const selectIsPremium = (state: RootState) => state.todo.isPremium;
+export const selectAnalysisSummary = (state: RootState) => state.todo.analysisSummary;
+
 export default todoSlice.reducer;
