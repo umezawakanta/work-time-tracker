@@ -22,7 +22,7 @@ export abstract class BaseAIProcessor implements AIProcessor {
      * コンストラクタ
      */
     constructor() {
-        this.logger = new ApiLogger();
+        this.logger = ApiLogger.getInstance();
         this.logger.setContext(this.constructor.name);
     }
 
@@ -119,7 +119,7 @@ export abstract class BaseAIProcessor implements AIProcessor {
         } else if (data !== null && typeof data === 'object') {
             try {
                 dataStr = JSON.stringify(data, null, 2);
-            } catch (error) {
+            } catch {
                 dataStr = String(data);
             }
         } else {
