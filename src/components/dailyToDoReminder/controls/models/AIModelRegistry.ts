@@ -2,8 +2,8 @@
  * AIモデルレジストリ
  * 利用可能なAIモデルを管理するクラス
  */
-import { ApiLogger } from './ApiLogger';
-import { AIModel, AIModelSummary } from './AITypes';
+import { ApiLogger } from '../ApiLogger';
+import { AIModel, AIModelSummary } from '../types/AITypes';
 
 /**
  * AIモデルレジストリクラス
