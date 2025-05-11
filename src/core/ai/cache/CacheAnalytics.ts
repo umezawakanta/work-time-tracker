@@ -217,11 +217,33 @@ export class CacheAnalytics {
         );
 
         if (entriesInRange.length === 0) {
+            // すべてのAIEnhancementTypeに対して0を設定した初期分布を作成
+            const emptyDistribution: Record<AIEnhancementType, number> = {
+                'query-optimization': 0,
+                'content-generation': 0,
+                'text-summarization': 0,
+                'sentiment-analysis': 0,
+                'entity-extraction': 0,
+                'translation': 0,
+                'text-classification': 0,
+                'code-generation': 0,
+                'code-explanation': 0,
+                'data-analysis': 0,
+                'image-generation': 0,
+                'image-editing': 0,
+                'image-captioning': 0,
+                'audio-transcription': 0,
+                'chat-completion': 0,
+                'question-answering': 0,
+                'vector-embedding': 0,
+                'custom': 0
+            };
+
             return {
                 entriesCount: 0,
                 hitRate: 0,
                 averageLatency: 0,
-                typeDistribution: {} as Record<AIEnhancementType, number>
+                typeDistribution: emptyDistribution
             };
         }
 
@@ -238,10 +260,32 @@ export class CacheAnalytics {
             typeCounts[entry.type] = (typeCounts[entry.type] || 0) + 1;
         });
 
-        const typeDistribution = Object.entries(typeCounts).reduce((dist, [type, count]) => {
-            dist[type as AIEnhancementType] = count / entriesInRange.length;
-            return dist;
-        }, {} as Record<AIEnhancementType, number>);
+        // すべてのAIEnhancementTypeに対して初期値0の分布を作成
+        const typeDistribution: Record<AIEnhancementType, number> = {
+            'query-optimization': 0,
+            'content-generation': 0,
+            'text-summarization': 0,
+            'sentiment-analysis': 0,
+            'entity-extraction': 0,
+            'translation': 0,
+            'text-classification': 0,
+            'code-generation': 0,
+            'code-explanation': 0,
+            'data-analysis': 0,
+            'image-generation': 0,
+            'image-editing': 0,
+            'image-captioning': 0,
+            'audio-transcription': 0,
+            'chat-completion': 0,
+            'question-answering': 0,
+            'vector-embedding': 0,
+            'custom': 0
+        };
+
+        // 実際のデータで上書き
+        Object.entries(typeCounts).forEach(([type, count]) => {
+            typeDistribution[type as AIEnhancementType] = count / entriesInRange.length;
+        });
 
         return {
             entriesCount: entriesInRange.length,

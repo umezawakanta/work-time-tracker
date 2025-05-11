@@ -28,7 +28,7 @@ export class CacheKeyGenerator {
             } else {
                 dataStr = JSON.stringify(data);
             }
-        } catch (error) {
+        } catch {
             // JSON変換に失敗した場合はString()を使用
             dataStr = String(data);
         }
