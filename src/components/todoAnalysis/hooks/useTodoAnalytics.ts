@@ -1,8 +1,26 @@
 // src/components/todoAnalysis/hooks/useTodoAnalytics.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { AnalysisSummary, AnalyticsState } from '../types';
+import { AnalysisSummary, AnalyticsState, CategoryStats, CategoryDistribution } from '../types';
+
+// ReduxストアのTodoItemに合わせて必須プロパティを調整
+interface TodoItem {
+  // idは必須ではなくオプショナルに変更
+  id?: string | number;
+  title?: string;
+  completed?: boolean;
+  category?: string;
+  type?: string;
+  createdAt?: string | Date;
+  created_at?: string | Date;
+  date?: string | Date;
+  completedAt?: string | Date;
+  completion_date?: string | Date;
+  dateCompleted?: string | Date;
+  completed_at?: string | Date;
+  [key: string]: unknown;
+}
 
 /**
  * タスク分析データを取得・計算するカスタムフック
@@ -15,8 +33,17 @@ export const useTodoAnalytics = (): AnalyticsState => {
     });
 
     // Reduxからタスクデータを取得
-    const todos = useSelector((state: RootState) => state.todo.items);
-    const completedTodos = useSelector((state: RootState) => state.todo.completedItems);
+    const rawTodos = useSelector((state: RootState) => state.todo.items);
+    
+    // useMemoを使用してtodosの初期化をラップし、依存関係を安定させる
+    const todos = useMemo(() => {
+        return (rawTodos as unknown) as TodoItem[] || [];
+    }, [rawTodos]);
+    
+    // completedプロパティでフィルタリングもuseMemoでラップ
+    const completedTodos = useMemo(() => {
+        return todos.filter(todo => todo.completed);
+    }, [todos]);
 
     useEffect(() => {
         const calculateAnalytics = async (): Promise<void> => {
@@ -27,7 +54,7 @@ export const useTodoAnalytics = (): AnalyticsState => {
                 // const data = await response.json();
 
                 // モックデータの代わりに実際の計算ロジックを実装
-                if (!todos || !completedTodos) {
+                if (!todos || todos.length === 0) {
                     setState({
                         summary: null,
                         isLoading: false,
@@ -37,15 +64,25 @@ export const useTodoAnalytics = (): AnalyticsState => {
                 }
 
                 // 完了率を計算
-                const totalTasks = todos.length + completedTodos.length;
+                const totalTasks = todos.length;
                 const completionRate = totalTasks > 0
                     ? Math.round((completedTodos.length / totalTasks) * 100)
                     : 0;
 
                 // カテゴリごとのタスク数をカウント
-                const categoryStats = todos.concat(completedTodos).reduce(
+                const categoryStats = todos.reduce(
                     (acc, todo) => {
-                        const category = todo.category || 'uncategorized';
+                        // todoのプロパティに合わせて調整
+                        const category = todo.type || todo.category || 'uncategorized';
+                        
+                        // 入力と出力のカテゴリをマッピング
+                        if (typeof category === 'string' && (category.toLowerCase().includes('input') || category.toLowerCase() === 'インプット')) {
+                            acc.input = (acc.input || 0) + 1;
+                        } else if (typeof category === 'string' && (category.toLowerCase().includes('output') || category.toLowerCase() === 'アウトプット')) {
+                            acc.output = (acc.output || 0) + 1;
+                        }
+                        
+                        // カテゴリごとのカウントも追加
                         acc[category] = (acc[category] || 0) + 1;
                         return acc;
                     },
@@ -60,10 +97,26 @@ export const useTodoAnalytics = (): AnalyticsState => {
                         : 0;
                 });
 
-                // 最も生産的な曜日を計算（仮の実装）
+                // 最も生産的な曜日を計算
                 const dayCompletionCounts = completedTodos.reduce(
                     (acc, todo) => {
-                        const completedDate = new Date(todo.completedAt || Date.now());
+                        // completedAtがない場合はcompletion_dateやdateCompletedなどの
+                        // 可能性のあるプロパティを確認
+                        const completedAt = 
+                            todo.completedAt || 
+                            todo.completion_date || 
+                            todo.dateCompleted || 
+                            todo.completed_at || 
+                            todo.date;
+                        
+                        // 日付に変換できるかチェック
+                        const completedDate = completedAt ? new Date(completedAt) : new Date();
+                        
+                        // 有効な日付かチェック
+                        if (isNaN(completedDate.getTime())) {
+                            return acc;
+                        }
+                        
                         const day = completedDate.toLocaleDateString('ja-JP', { weekday: 'long' });
                         acc[day] = (acc[day] || 0) + 1;
                         return acc;
@@ -102,8 +155,21 @@ export const useTodoAnalytics = (): AnalyticsState => {
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-                const recentTasks = todos.concat(completedTodos).filter(
-                    todo => new Date(todo.createdAt) >= thirtyDaysAgo
+                const recentTasks = todos.filter(
+                    todo => {
+                        const createdAt = todo.createdAt || todo.created_at || todo.date;
+                        
+                        if (!createdAt) return false;
+                        
+                        const createdDate = new Date(createdAt);
+                        
+                        // 有効な日付かチェック
+                        if (isNaN(createdDate.getTime())) {
+                            return false;
+                        }
+                        
+                        return createdDate >= thirtyDaysAgo;
+                    }
                 );
 
                 const averageTasksPerDay = recentTasks.length / 30;
@@ -133,7 +199,7 @@ export const useTodoAnalytics = (): AnalyticsState => {
         };
 
         calculateAnalytics();
-    }, [todos, completedTodos]);
+    }, [todos, completedTodos]); // 依存配列にcompletedTodosを追加
 
     return state;
 };
