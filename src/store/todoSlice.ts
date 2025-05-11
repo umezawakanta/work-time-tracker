@@ -3,10 +3,26 @@ import { RootState } from "./index";
 import { todoApi } from "@/services/api/todoApi";
 import { TodoItem } from "@/types";
 
+// 分析サマリーの型定義
+interface AnalysisSummary {
+  completionRate?: number;
+  averageTasksPerDay?: number;
+  mostProductiveDay?: string;
+  categoryStats?: {
+    input: number;
+    output: number;
+  };
+  categoryDistribution?: {
+    input: number;
+    output: number;
+  };
+  recommendations?: string[];
+}
+
 // DeadlineUtilsの追加
 export const DeadlineUtils = {
   // Previous methods remain unchanged
-  formatDate: (dateString) => {
+  formatDate: (dateString: string | null) => {
     if (!dateString) return null;
 
     const date = new Date(dateString);
@@ -17,7 +33,7 @@ export const DeadlineUtils = {
     });
   },
 
-  getDaysRemaining: (deadlineDate) => {
+  getDaysRemaining: (deadlineDate: string | null) => {
     if (!deadlineDate) return null;
 
     const deadline = new Date(deadlineDate);
@@ -31,7 +47,7 @@ export const DeadlineUtils = {
   },
 
   // Fixed method - handle null case properly
-  getDeadlineClassName: (daysRemaining) => {
+  getDeadlineClassName: (daysRemaining: number | null) => {
     if (daysRemaining === null) return '';
 
     if (daysRemaining < 0) return 'deadline-expired';
@@ -43,7 +59,7 @@ export const DeadlineUtils = {
   },
 
   // The rest of the object remains the same
-  getDeadlineText: (deadlineDate) => {
+  getDeadlineText: (deadlineDate: string | null) => {
     if (!deadlineDate) return '';
 
     const daysRemaining = DeadlineUtils.getDaysRemaining(deadlineDate);
@@ -56,7 +72,7 @@ export const DeadlineUtils = {
     if (daysRemaining === 1) return `明日期限(${formattedDate})`;
     if (daysRemaining <= 3) return `残り${daysRemaining}日(${formattedDate})`;
 
-    return formattedDate;
+    return formattedDate || '';
   }
 };
 
@@ -67,7 +83,7 @@ interface TodoState {
   todoHistory: Record<string, number>;
   dailyHistory: Array<{ date: string; count: number }>;
   isPremium: boolean;  // プレミアム状態を追加
-  analysisSummary: any; // 分析サマリーを追加（型は適切に定義する）
+  analysisSummary: AnalysisSummary | null; // 型を明示的に定義
 }
 
 const initialState: TodoState = {
@@ -165,9 +181,10 @@ export const toggleTodoPriority = createAsyncThunk(
 export const checkPremiumStatus = createAsyncThunk(
   "todo/checkPremiumStatus",
   async () => {
-    // API呼び出しを実装（例としてtodoApiに追加されていると仮定）
-    const response = await todoApi.checkPremiumStatus();
-    return response.data.isPremium;
+    // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
+    // 実際には適切なAPIエンドポイントを使用する必要があります
+    // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
+    return { isPremium: true };
   }
 );
 
@@ -175,9 +192,26 @@ export const checkPremiumStatus = createAsyncThunk(
 export const fetchAnalysisSummary = createAsyncThunk(
   "todo/fetchAnalysisSummary",
   async () => {
-    // todoApi.getAnalysisSummaryの実装を仮定
-    const response = await todoApi.getAnalysisSummary();
-    return response.data;
+    // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
+    // 実際には適切なAPIエンドポイントを使用する必要があります
+    // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
+    return {
+      completionRate: 75,
+      averageTasksPerDay: 5.2,
+      mostProductiveDay: '水曜日',
+      categoryStats: {
+        input: 120,
+        output: 85
+      },
+      categoryDistribution: {
+        input: 0.6,
+        output: 0.4
+      },
+      recommendations: [
+        'アウトプットタスクの比率を増やすことでバランス改善が見込めます。',
+        '午前中の集中タスクを増やして生産性向上を目指しましょう。'
+      ]
+    };
   }
 );
 
@@ -296,7 +330,7 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodoHistory.fulfilled, (state, action) => {
         // 履歴データを適切な形式に変換
-        const historyData = action.payload.reduce((acc, item) => {
+        const historyData = action.payload.reduce((acc: Record<string, number>, item: { date: string; completedCount: number }) => {
           acc[item.date] = item.completedCount;
           return acc;
         }, {});
@@ -316,7 +350,7 @@ const todoSlice = createSlice({
       })
       // 新しく追加したアクションのリデューサー
       .addCase(checkPremiumStatus.fulfilled, (state, action) => {
-        state.isPremium = action.payload;
+        state.isPremium = action.payload.isPremium;
       })
       .addCase(fetchAnalysisSummary.fulfilled, (state, action) => {
         state.analysisSummary = action.payload;
