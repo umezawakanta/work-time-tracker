@@ -331,7 +331,10 @@ export class AICacheManager {
 
         // 優先度キューも更新
         if (this.priorityQueue) {
-            this.priorityQueue.update(cacheKey, current => updatedEntry);
+            this.priorityQueue.update(cacheKey, current => ({
+                ...current,
+                ...updatedEntry
+            }));
         }
 
         // ログ出力（安全なキー表現）
