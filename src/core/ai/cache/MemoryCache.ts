@@ -2,7 +2,6 @@
  * メモリキャッシュ
  * 高速なインメモリキャッシュを提供
  */
-import { CacheEntry } from './types/CacheTypes';
 
 /**
  * メモリキャッシュインターフェース
