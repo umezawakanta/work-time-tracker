@@ -3,7 +3,8 @@
  * キャッシュのパフォーマンスメトリクスを収集・分析
  */
 import { ApiLogger } from '../logger/ApiLogger';
-import { CacheStats, CacheAnalytics, AIEnhancementType } from './types/CacheTypes';
+import { CacheStats, CacheAnalytics } from './types/CacheTypes';
+import { AIEnhancementType } from '../types/AITypes';
 
 /**
  * キャッシュメトリクス収集クラス
