@@ -1,0 +1,131 @@
+/* src/components/todoAnalysis/TodoAnalysis.module.css */
+.container {
+  padding: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.loadingText {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.loadingSubtext {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.errorText {
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sectionContainer {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.statCard {
+  background-color: white;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.categoryContainer {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.categoryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.progressBarContainer {
+  width: 100%;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 0.625rem;
+}
+
+.inputProgressBar {
+  background-color: #3b82f6;
+  height: 0.625rem;
+  border-radius: 9999px;
+  transition: width 0.3s ease-in-out;
+}
+
+.outputProgressBar {
+  background-color: #22c55e;
+  height: 0.625rem;
+  border-radius: 9999px;
+  transition: width 0.3s ease-in-out;
+}
+
+.recommendationsList {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+.recommendationItem {
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.updatedText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 1rem;
+  text-align: right;
+}
