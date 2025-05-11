@@ -1,6 +1,5 @@
 /**
  * キャッシュキー生成ユーティリティ
- * データと設定からキャッシュキーを生成する
  */
 import { AIEnhancementType, AIFeatureOptions } from '../types/AITypes';
 
@@ -23,7 +22,6 @@ export class CacheKeyGenerator {
 
         // データをJSON文字列に変換
         let dataStr: string;
-
         try {
             if (typeof data === 'string') {
                 dataStr = data;
@@ -37,8 +35,10 @@ export class CacheKeyGenerator {
 
         // オプションから関連キャッシュ情報を抽出
         const modelId = options.model || 'default';
-        const temperature = options.temperature !== undefined ? options.temperature.toString() : 'default';
-        const maxTokens = options.maxTokens !== undefined ? options.maxTokens.toString() : 'default';
+        const temperature = options.temperature !== undefined ?
+            options.temperature.toString() : 'default';
+        const maxTokens = options.maxTokens !== undefined ?
+            options.maxTokens.toString() : 'default';
 
         // キャッシュキーを生成
         const keyParts = [
@@ -50,22 +50,38 @@ export class CacheKeyGenerator {
             this.hashString(dataStr)
         ];
 
-        const key = keyParts.join(':');
+        return keyParts.join(':');
+    }
 
-        // キーが長すぎる場合は切り詰め
-        return key.length > 100 ? key.substring(0, 100) : key;
+    /**
+     * ユーザースコープ付きキャッシュキーを生成
+     */
+    public static generateScopedKey(
+        data: unknown,
+        type: AIEnhancementType,
+        options: AIFeatureOptions,
+        userId?: string
+    ): string {
+        const baseKey = this.generateKey(data, type, options);
+
+        if (userId) {
+            return `user:${userId}:${baseKey}`;
+        }
+
+        return baseKey;
     }
 
     /**
      * 文字列のハッシュ値を計算
      */
     private static hashString(str: string): string {
+        // 長すぎる文字列の場合は切り詰める
+        const truncatedStr = str.length > 2000 ? str.substring(0, 2000) : str;
+
         // 簡易的なハッシュ関数
         let hash = 0;
-        const maxLength = Math.min(str.length, 1000); // 長すぎる文字列は切り詰める
-
-        for (let i = 0; i < maxLength; i++) {
-            const char = str.charCodeAt(i);
+        for (let i = 0; i < truncatedStr.length; i++) {
+            const char = truncatedStr.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // 32bitに変換
         }
@@ -74,92 +90,12 @@ export class CacheKeyGenerator {
     }
 
     /**
-     * 高度なハッシュ算出（SHA-256）
-     * Webブラウザ環境で利用可能な場合
-     */
-    public static async generateSecureHash(data: string): Promise<string> {
-        // Web Crypto APIが利用可能な場合
-        if (typeof crypto !== 'undefined' && crypto.subtle) {
-            try {
-                const encoder = new TextEncoder();
-                const dataBuffer = encoder.encode(data);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-
-                // ArrayBufferを16進数文字列に変換
-                return Array.from(new Uint8Array(hashBuffer))
-                    .map(b => b.toString(16).padStart(2, '0'))
-                    .join('');
-            } catch (error) {
-                // Crypto APIが失敗した場合は簡易ハッシュを使用
-                return this.hashString(data);
-            }
-        }
-
-        // Crypto APIが利用できない場合は簡易ハッシュを使用
-        return this.hashString(data);
-    }
-
-    /**
-     * データの複雑なハッシュ生成
-     * 特に大容量または複雑なデータに対して効率的
-     */
-    public static generateComplexKey(
-        data: unknown,
-        type: string,
-        additionalFactors: Record<string, unknown> = {}
-    ): string {
-        let baseString = '';
-
-        try {
-            // データタイプに基づいて基本文字列を生成
-            if (typeof data === 'string') {
-                baseString = data;
-            } else if (typeof data === 'number' || typeof data === 'boolean') {
-                baseString = String(data);
-            } else if (Array.isArray(data)) {
-                // 配列の場合は最初の数項目のみ使用
-                baseString = JSON.stringify(data.slice(0, 5));
-            } else if (data === null) {
-                baseString = 'null';
-            } else if (data === undefined) {
-                baseString = 'undefined';
-            } else if (typeof data === 'object') {
-                // オブジェクトの場合はキーの一部を使用
-                const obj = data as Record<string, unknown>;
-                const keys = Object.keys(obj).slice(0, 5);
-                const shortObj: Record<string, unknown> = {};
-
-                keys.forEach(key => {
-                    shortObj[key] = obj[key];
-                });
-
-                baseString = JSON.stringify(shortObj);
-            } else {
-                baseString = String(data);
-            }
-        } catch (error) {
-            baseString = 'error_serializing_data';
-        }
-
-        // 追加要素を文字列に含める
-        const additionalString = Object.entries(additionalFactors)
-            .map(([key, value]) => `${key}:${String(value)}`)
-            .join(',');
-
-        // 型情報とその他の要素を組み合わせる
-        const combined = `${type}|${baseString}|${additionalString}`;
-
-        // 直接ハッシュを計算して返す
-        return this.hashString(combined);
-    }
-
-    /**
-     * キーログ用に安全に切り詰めたキーを取得
+     * キーのログ出力用に安全に短縮する
      */
     public static getSafeKeyForLogging(key: string): string {
         if (!key) return '<空のキー>';
 
-        // キーが20文字より長い場合は切り詰める
+        // 長いキーを安全に切り詰める
         return key.length > 20 ? `${key.substring(0, 20)}...` : key;
     }
 }
