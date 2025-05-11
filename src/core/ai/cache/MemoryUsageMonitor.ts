@@ -88,11 +88,11 @@ export class MemoryUsageMonitor {
         if (type === 'object') {
             if (Array.isArray(obj)) {
                 // 配列
-                return (obj as unknown[]).reduce((acc, item) => acc + this.estimateSize(item), 0);
+                return (obj as unknown[]).reduce<number>((acc, item) => acc + this.estimateSize(item), 0);
             } else {
                 // オブジェクト
                 return Object.entries(obj as Record<string, unknown>)
-                    .reduce((acc, [key, value]) => {
+                    .reduce<number>((acc, [key, value]) => {
                         return acc + key.length * 2 + this.estimateSize(value);
                     }, 0);
             }
