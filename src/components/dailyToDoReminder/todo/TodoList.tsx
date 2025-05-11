@@ -2,14 +2,18 @@ import React, { useState, useCallback } from 'react';
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronDown, PlusCircle } from "lucide-react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { PlusCircle } from "lucide-react";
+import { 
+  DragDropContext, 
+  Droppable, 
+  Draggable,
+  DropResult  // DropResult型をインポート
+} from "@hello-pangea/dnd";
 import { 
   updateTodoItem, 
   deleteTodoItem, 
   reorderTodoItems, 
-  toggleTodoPriority,
-  analyzeTodoEfficiency
+  toggleTodoPriority
 } from "@/store/todoSlice";
 import { toast } from "react-hot-toast";
 import TodoItemComponent from './TodoItem';
@@ -55,15 +59,16 @@ const TodoList: React.FC<TodoListProps> = ({
         ).then(() => {
           if (!todoToUpdate.completed) {
             // タスク完了時にAI分析（プレミアム機能）
-            if (isPremium) {
-              dispatch(analyzeTodoEfficiency(id));
+            if (isPremium && onAnalyzeRequest) {
+              // analyzeTodoEfficiencyの代わりにonAnalyzeRequestを使用
+              onAnalyzeRequest();
             }
             toast.success("お疲れ様でした！タスクを完了しました");
           }
         });
       }
     },
-    [dispatch, todos, isPremium]
+    [dispatch, todos, isPremium, onAnalyzeRequest]
   );
 
   // タスクの優先度トグル
@@ -146,7 +151,7 @@ const TodoList: React.FC<TodoListProps> = ({
 
   // ドラッグ＆ドロップによる並べ替え処理
   const handleDragEnd = useCallback(
-    (result) => {
+    (result: DropResult) => { // anyの代わりにDropResult型を使用
       if (!result.destination || !isPremium || !isDragEnabled) return;
 
       const sourceIndex = result.source.index;
@@ -170,6 +175,13 @@ const TodoList: React.FC<TodoListProps> = ({
     },
     [dispatch, todos, isPremium, isDragEnabled]
   );
+
+  // タスク分析ボタン
+  const handleAnalyzeClick = useCallback(() => {
+    if (isPremium && onAnalyzeRequest) {
+      onAnalyzeRequest();
+    }
+  }, [isPremium, onAnalyzeRequest]);
 
   // タスクがない場合の表示
   if (todos.length === 0) {
@@ -197,6 +209,17 @@ const TodoList: React.FC<TodoListProps> = ({
           >
             {isDragEnabled ? "並べ替えを無効にする" : "並べ替えを有効にする"}
           </Button>
+          
+          {onAnalyzeRequest && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAnalyzeClick}
+              className="text-xs ml-2"
+            >
+              タスク効率分析
+            </Button>
+          )}
         </div>
       )}
 
