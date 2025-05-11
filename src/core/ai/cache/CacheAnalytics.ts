@@ -126,14 +126,34 @@ export class CacheAnalytics {
         // ヒット率の計算
         const hitRate = status.hitRate;
 
-        // 分布の計算
-        const distribution: Record<AIEnhancementType, number> = {};
+        // すべてのAIEnhancementTypeに対して初期値0の分布を作成
+        const distribution: Record<AIEnhancementType, number> = {
+            'query-optimization': 0,
+            'content-generation': 0,
+            'text-summarization': 0,
+            'sentiment-analysis': 0,
+            'entity-extraction': 0,
+            'translation': 0,
+            'text-classification': 0,
+            'code-generation': 0,
+            'code-explanation': 0,
+            'data-analysis': 0,
+            'image-generation': 0,
+            'image-editing': 0,
+            'image-captioning': 0,
+            'audio-transcription': 0,
+            'chat-completion': 0,
+            'question-answering': 0,
+            'vector-embedding': 0,
+            'custom': 0
+        };
 
-        if (stats.cacheHits) {
+        // 型別のヒット数があれば集計（cacheHitsが存在しない場合は処理しない）
+        if ('cacheHits' in stats && stats.cacheHits && typeof stats.cacheHits === 'object') {
             // 型別のヒット数を集計
-            const totalHits = Object.values(stats.cacheHits).reduce((sum, count) => sum + count, 0);
+            const totalHits = Object.values(stats.cacheHits as Record<string, number>).reduce<number>((sum, count) => sum + count, 0);
 
-            Object.entries(stats.cacheHits).forEach(([type, count]) => {
+            Object.entries(stats.cacheHits as Record<string, number>).forEach(([type, count]) => {
                 distribution[type as AIEnhancementType] = totalHits > 0 ? count / totalHits : 0;
             });
         }
@@ -143,12 +163,17 @@ export class CacheAnalytics {
         let estimatedTimeSaved = 0;
         let estimatedCostSaved = 0;
 
-        // 各タイプごとの節約を計算
-        if (stats.cacheHits) {
-            Object.entries(stats.cacheHits).forEach(([type, count]) => {
+        // 各タイプごとの節約を計算（cacheHitsが存在しない場合は処理しない）
+        if ('cacheHits' in stats && stats.cacheHits && typeof stats.cacheHits === 'object') {
+            Object.entries(stats.cacheHits as Record<string, number>).forEach(([type, count]) => {
                 const typeKey = type as AIEnhancementType;
-                estimatedTimeSaved += count * this.estimatedResponseTimes[typeKey];
-                estimatedCostSaved += count * this.estimatedCosts[typeKey];
+                
+                // 不明なタイプの場合はデフォルト値を使用
+                const responseTime = this.estimatedResponseTimes[typeKey] || this.estimatedResponseTimes.custom;
+                const cost = this.estimatedCosts[typeKey] || this.estimatedCosts.custom;
+                
+                estimatedTimeSaved += count * responseTime;
+                estimatedCostSaved += count * cost;
             });
         }
 
@@ -177,7 +202,7 @@ export class CacheAnalytics {
             recommendations.push('キャッシュサイズが小さいです。最大サイズを増やして効果を高めることを検討してください。');
         }
 
-        if (hitRate > 0.8 && Object.keys(distribution).length < 3) {
+        if (hitRate > 0.8 && Object.keys(distribution).filter(key => distribution[key as AIEnhancementType] > 0).length < 3) {
             recommendations.push('特定のタイプに偏ったキャッシュ利用が見られます。他のタイプでもキャッシュの活用を検討してください。');
         }
 
