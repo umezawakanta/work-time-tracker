@@ -17,12 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
