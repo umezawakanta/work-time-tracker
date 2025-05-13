@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { 
-  Filter, 
-  PlusCircle, 
-  Sparkles, 
-  ArrowUpDown, 
-  Clock, 
-  Download,
-  Upload,
+import {
+  Filter,
+  PlusCircle,
+  Sparkles,
+  ArrowUpDown,
+  Clock,
   Calendar,
   Settings,
-  BarChart
+  BarChart,
 } from "lucide-react";
 import {
   Popover,
@@ -80,56 +78,77 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   onImportTasks,
   onShowAnalytics,
   onShowSettings,
-  isPremium: propIsPremium
+  isPremium: propIsPremium,
 }) => {
   // Storeからのプレミアム状態も確認
   const storeIsPremium = useSelector(selectIsPremium);
   const isPremium = propIsPremium || storeIsPremium;
-  
+
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
-  const [recentActions, setRecentActions] = useState<{action: string, timestamp: number}[]>([]);
-  
+  const [recentActions, setRecentActions] = useState<
+    { action: string; timestamp: number }[]
+  >([]);
+
   // ソート順オプション
-  const sortOptions: { value: SortOption; label: string; icon: JSX.Element }[] = [
-    { value: "priority", label: "優先度順", icon: <Sparkles className="h-4 w-4" /> },
-    { value: "newest", label: "新しい順", icon: <Clock className="h-4 w-4" /> },
-    { value: "deadline", label: "期限順", icon: <Calendar className="h-4 w-4" /> },
-    { value: "type", label: "タイプ順", icon: <ArrowUpDown className="h-4 w-4" /> }
-  ];
-  
+  const sortOptions: { value: SortOption; label: string; icon: JSX.Element }[] =
+    [
+      {
+        value: "priority",
+        label: "優先度順",
+        icon: <Sparkles className="h-4 w-4" />,
+      },
+      {
+        value: "newest",
+        label: "新しい順",
+        icon: <Clock className="h-4 w-4" />,
+      },
+      {
+        value: "deadline",
+        label: "期限順",
+        icon: <Calendar className="h-4 w-4" />,
+      },
+      {
+        value: "type",
+        label: "タイプ順",
+        icon: <ArrowUpDown className="h-4 w-4" />,
+      },
+    ];
+
   // アクション履歴に追加
   const addToRecentActions = (action: string) => {
     const newAction = {
       action,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
-    setRecentActions(prev => [newAction, ...prev].slice(0, 5));
-    
+
+    setRecentActions((prev) => [newAction, ...prev].slice(0, 5));
+
     // ローカルストレージに保存（持続性のため）
     try {
-      const storedActions = localStorage.getItem('recentTodoActions');
+      const storedActions = localStorage.getItem("recentTodoActions");
       const actions = storedActions ? JSON.parse(storedActions) : [];
       const updatedActions = [newAction, ...actions].slice(0, 10);
-      localStorage.setItem('recentTodoActions', JSON.stringify(updatedActions));
+      localStorage.setItem("recentTodoActions", JSON.stringify(updatedActions));
     } catch (error) {
-      console.error('アクション履歴の保存に失敗しました', error);
+      console.error("アクション履歴の保存に失敗しました", error);
     }
   };
-  
+
   // フィルター切り替え
   const toggleFilters = () => {
     setShowFilters(!showFilters);
     addToRecentActions("フィルター" + (!showFilters ? "表示" : "非表示"));
   };
-  
+
   // タスク追加フォーム切り替え
   const toggleAddForm = () => {
     setShowAddForm(!showAddForm);
-    addToRecentActions("タスク追加フォーム" + (!showAddForm ? "表示" : "非表示"));
+    addToRecentActions(
+      "タスク追加フォーム" + (!showAddForm ? "表示" : "非表示")
+    );
   };
-  
+
   // ファイルインポート処理
   const handleImport = () => {
     if (importFile && onImportTasks) {
@@ -138,7 +157,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
       setImportFile(null);
     }
   };
-  
+
   // ファイルエクスポート処理
   const handleExport = () => {
     if (onExportTasks) {
@@ -146,7 +165,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
       addToRecentActions("タスクエクスポート");
     }
   };
-  
+
   // ソートオプション変更
   const handleSortChange = (option: SortOption) => {
     if (setSortOption) {
@@ -154,7 +173,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
       addToRecentActions(`ソート変更: ${option}`);
     }
   };
-  
+
   // アナリティクス表示
   const handleShowAnalytics = () => {
     if (onShowAnalytics) {
@@ -162,7 +181,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
       addToRecentActions("タスク分析を表示");
     }
   };
-  
+
   // 設定表示
   const handleShowSettings = () => {
     if (onShowSettings) {
@@ -170,17 +189,17 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
       addToRecentActions("設定を表示");
     }
   };
-  
+
   // 最近のアクションから経過時間を計算
   const getElapsedTime = (timestamp: number): string => {
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    
+
     if (seconds < 60) return `${seconds}秒前`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)}分前`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}時間前`;
     return `${Math.floor(seconds / 86400)}日前`;
   };
-  
+
   return (
     <>
       {/* メインコントロールバー */}
@@ -195,7 +214,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
             <Filter className="h-4 w-4" />
             <span className="hidden sm:inline">フィルター</span>
           </Button>
-          
+
           {isPremium && setSortOption && (
             <Popover>
               <PopoverTrigger asChild>
@@ -215,7 +234,9 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
                     {sortOptions.map((option) => (
                       <Button
                         key={option.value}
-                        variant={sortOption === option.value ? "default" : "ghost"}
+                        variant={
+                          sortOption === option.value ? "default" : "ghost"
+                        }
                         size="sm"
                         className="w-full justify-start"
                         onClick={() => handleSortChange(option.value)}
@@ -229,7 +250,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
               </PopoverContent>
             </Popover>
           )}
-          
+
           {isPremium && onShowAnalytics && (
             <TooltipProvider>
               <Tooltip>
@@ -249,7 +270,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
             </TooltipProvider>
           )}
         </div>
-        
+
         <div className="flex items-center gap-2">
           {isPremium && (
             <>
@@ -259,7 +280,9 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                      onClick={() =>
+                        setShowAdvancedOptions(!showAdvancedOptions)
+                      }
                     >
                       <Sparkles className="h-4 w-4" />
                     </Button>
@@ -269,7 +292,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              
+
               {onShowSettings && (
                 <TooltipProvider>
                   <Tooltip>
@@ -290,7 +313,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
               )}
             </>
           )}
-          
+
           <Button
             size="sm"
             onClick={toggleAddForm}
@@ -301,7 +324,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
           </Button>
         </div>
       </div>
-      
+
       {/* プレミアムユーザー向け高度なオプション - 別コンポーネントに移動 */}
       {isPremium && showAdvancedOptions && (
         <AdvancedOptions
