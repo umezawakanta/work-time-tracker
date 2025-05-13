@@ -22,7 +22,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
 import { selectIsPremium } from "@/store/todoSlice";
 import TodoFilters from "../todo/TodoFilters";
 import AddTodoForm from "../todo/AddTodoForm";
