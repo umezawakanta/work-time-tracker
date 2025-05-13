@@ -84,7 +84,7 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   >([]);
 
   // ソート順オプション
-  const sortOptions: { value: SortOption; label: string; icon: JSX.Element }[] =
+  const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] =
     [
       {
         value: "priority",
