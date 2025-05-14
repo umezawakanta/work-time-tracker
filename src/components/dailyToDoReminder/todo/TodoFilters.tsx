@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Upload, Calendar, RefreshCw, Tag, Clock, Search } from "lucide-react";
+import {
+  Download,
+  Upload,
+  Calendar,
+  RefreshCw,
+  Tag,
+  Clock,
+  Search,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -55,18 +63,19 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
   searchQuery = "",
   setSearchQuery,
   dateRangeFilter,
-  setDateRangeFilter
+  setDateRangeFilter,
 }) => {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [quickFilter, setQuickFilter] = useState<string | null>(null);
-  
+
   // 一般的なタグ（実際の実装ではデータベースから取得するか、ユーザーが作成したタグを表示）
-  const availableTags = tags.length > 0 ? tags : ["仕事", "個人", "緊急", "会議", "勉強", "買い物"];
-  
+  const availableTags =
+    tags.length > 0 ? tags : ["仕事", "個人", "緊急", "会議", "勉強", "買い物"];
+
   // クイックフィルターの選択
   const handleQuickFilterSelect = (filter: string) => {
     setQuickFilter(filter);
-    
+
     // フィルターの状態を設定
     switch (filter) {
       case "today":
@@ -92,7 +101,7 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
         setFilterStatus("all");
     }
   };
-  
+
   // 検索処理
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,33 +110,33 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
       console.log("検索: " + searchQuery);
     }
   };
-  
+
   // タグの選択/解除
   const toggleTag = (tag: string) => {
     if (!onTagsChange) return;
-    
+
     if (selectedTags.includes(tag)) {
-      onTagsChange(selectedTags.filter(t => t !== tag));
+      onTagsChange(selectedTags.filter((t) => t !== tag));
     } else {
       onTagsChange([...selectedTags, tag]);
     }
   };
-  
+
   // 日付範囲フィルターの設定
-  const handleDateRangeChange = (key: 'start' | 'end', value: string) => {
+  const handleDateRangeChange = (key: "start" | "end", value: string) => {
     if (!setDateRangeFilter || !dateRangeFilter) return;
-    
+
     const newRange: [Date | null, Date | null] = [...dateRangeFilter];
-    
+
     if (value) {
-      newRange[key === 'start' ? 0 : 1] = new Date(value);
+      newRange[key === "start" ? 0 : 1] = new Date(value);
     } else {
-      newRange[key === 'start' ? 0 : 1] = null;
+      newRange[key === "start" ? 0 : 1] = null;
     }
-    
+
     setDateRangeFilter(newRange);
   };
-  
+
   return (
     <div className="filter-area">
       {/* 検索フィールド - プレミアム機能 */}
@@ -138,13 +147,19 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="h-8 text-sm"
+            aria-label="タスクを検索"
           />
-          <Button type="submit" size="sm" className="h-8 px-2">
+          <Button
+            type="submit"
+            size="sm"
+            className="h-8 px-2"
+            aria-label="検索実行"
+          >
             <Search className="h-3.5 w-3.5" />
           </Button>
         </form>
       )}
-      
+
       {/* クイックフィルター - プレミアム機能 */}
       {isPremium && (
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -185,7 +200,7 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
           </Badge>
         </div>
       )}
-    
+
       <div className="filter-group">
         <span className="filter-label">状態</span>
         <div className="filter-buttons">
@@ -256,7 +271,7 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
           </Button>
         </div>
       </div>
-      
+
       {/* 詳細フィルター - トグルボタン */}
       {isPremium && (
         <div className="mt-2">
@@ -266,11 +281,13 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             className="text-xs w-full justify-start"
           >
-            {showAdvancedFilters ? "詳細フィルターを隠す" : "詳細フィルターを表示"}
+            {showAdvancedFilters
+              ? "詳細フィルターを隠す"
+              : "詳細フィルターを表示"}
           </Button>
         </div>
       )}
-      
+
       {/* 詳細フィルター - プレミアム機能 */}
       {isPremium && showAdvancedFilters && (
         <div className="mt-2 space-y-3 pt-2 border-t border-gray-200">
@@ -295,7 +312,7 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
               </div>
             </div>
           )}
-          
+
           {/* 日付範囲フィルター */}
           {setDateRangeFilter && dateRangeFilter && (
             <div>
@@ -305,33 +322,60 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
               </span>
               <div className="flex gap-2 mt-1">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 mb-1 block">開始日</label>
+                  <label
+                    htmlFor="start-date"
+                    className="text-xs text-gray-500 mb-1 block"
+                  >
+                    開始日
+                  </label>
                   <input
+                    id="start-date"
                     type="date"
-                    value={dateRangeFilter[0]?.toISOString().split('T')[0] || ""}
-                    onChange={(e) => handleDateRangeChange('start', e.target.value)}
+                    value={
+                      dateRangeFilter[0]?.toISOString().split("T")[0] || ""
+                    }
+                    onChange={(e) =>
+                      handleDateRangeChange("start", e.target.value)
+                    }
                     className="w-full text-xs p-1 border rounded"
+                    aria-label="期間の開始日"
+                    title="期間の開始日を選択"
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 mb-1 block">終了日</label>
+                  <label
+                    htmlFor="end-date"
+                    className="text-xs text-gray-500 mb-1 block"
+                  >
+                    終了日
+                  </label>
                   <input
+                    id="end-date"
                     type="date"
-                    value={dateRangeFilter[1]?.toISOString().split('T')[0] || ""}
-                    onChange={(e) => handleDateRangeChange('end', e.target.value)}
+                    value={
+                      dateRangeFilter[1]?.toISOString().split("T")[0] || ""
+                    }
+                    onChange={(e) =>
+                      handleDateRangeChange("end", e.target.value)
+                    }
                     className="w-full text-xs p-1 border rounded"
+                    aria-label="期間の終了日"
+                    title="期間の終了日を選択"
                   />
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* 優先度フィルター */}
           <div>
             <span className="filter-label">優先度</span>
             <div className="flex items-center gap-2 mt-1">
               <Select>
-                <SelectTrigger className="w-full h-8 text-xs">
+                <SelectTrigger
+                  className="w-full h-8 text-xs"
+                  aria-label="優先度を選択"
+                >
                   <SelectValue placeholder="優先度を選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -357,18 +401,23 @@ const TodoFilters: React.FC<TodoFiltersProps> = ({
                     checked={autoAdjustEnabled}
                     onCheckedChange={setAutoAdjustEnabled}
                   />
-                  <Label htmlFor="auto-adjust" className="text-xs cursor-pointer">
+                  <Label
+                    htmlFor="auto-adjust"
+                    className="text-xs cursor-pointer"
+                  >
                     自動調整
                   </Label>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="text-xs">期限に基づいて自動的に優先度を調整します</p>
+                <p className="text-xs">
+                  期限に基づいて自動的に優先度を調整します
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
-        
+
         <Button
           variant="outline"
           size="sm"
