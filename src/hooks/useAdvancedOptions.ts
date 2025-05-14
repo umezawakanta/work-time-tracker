@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  fetchTodoStats, 
-  exportTasks, 
-  importTasks 
+  fetchTaskStatistics as fetchTodoStats
 } from '@/services/todoStatsService';
-import { TodoStats, ExportFormat } from '@/types/todoStats';
+import { 
+  exportTasks,
+  ExportFormat,
+  importTasksAndSend as importTasks,
+} from '@/services/todoExportService';
+import { TodoStats } from '@/types/TodoStats';
 
 /**
  * AdvancedOptionsコンポーネントで使用するカスタムフック
@@ -18,13 +21,6 @@ export function useAdvancedOptions() {
   const [statistics, setStatistics] = useState<TodoStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // 最初のデータ読み込み
-  useEffect(() => {
-    loadStatistics();
-    loadRecentActions();
-    loadSettings();
-  }, []);
   
   // 統計データの読み込み
   const loadStatistics = useCallback(async () => {
@@ -64,6 +60,13 @@ export function useAdvancedOptions() {
       console.error('設定の読み込みエラー:', err);
     }
   }, []);
+  
+  // 最初のデータ読み込み
+  useEffect(() => {
+    loadStatistics();
+    loadRecentActions();
+    loadSettings();
+  }, [loadStatistics, loadRecentActions, loadSettings]); // 依存配列を追加
   
   // アクション履歴に追加
   const addToRecentActions = useCallback((action: string) => {
@@ -151,10 +154,11 @@ export function useAdvancedOptions() {
     
     try {
       setIsLoading(true);
-      const result = await importTasks(file, format);
+      const success = await importTasks(file, format);
       
-      if (result.success) {
-        addToRecentActions(`${result.count}件のタスクをインポート (${file.name})`);
+      if (success) {
+        // importTasksAndSendはbooleanを返すので、エラー対象のresult.countとresult.successは使用しない
+        addToRecentActions(`タスクをインポートしました (${file.name})`);
         // 統計を再読み込み
         loadStatistics();
         setError(null);
