@@ -1,5 +1,5 @@
 import { Todo } from '@/types/todo';
-import { api } from '@/lib/api';
+import { api } from '@/services/api';
 
 /**
  * タスクのエクスポート処理に関するサービス
@@ -37,19 +37,19 @@ export const exportTasks = async (
   try {
     // オプションをマージ
     const mergedOptions = { ...defaultExportOptions, ...options };
-    
+
     // APIリクエスト
     const response = await api.get('/api/todos/export', {
       params: {
         format,
         ...mergedOptions,
-        dateRange: mergedOptions.dateRange 
-          ? mergedOptions.dateRange.map(d => d.toISOString()) 
+        dateRange: mergedOptions.dateRange
+          ? mergedOptions.dateRange.map(d => d.toISOString())
           : undefined,
       },
       responseType: 'blob'
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('エクスポート中にエラーが発生しました', error);
@@ -69,7 +69,7 @@ export const downloadBlob = (blob: Blob, filename: string): void => {
   a.download = filename;
   document.body.appendChild(a);
   a.click();
-  
+
   // リソースの解放
   setTimeout(() => {
     document.body.removeChild(a);
@@ -90,16 +90,16 @@ export const exportAndDownload = async (
   try {
     // 現在の日付を取得
     const date = new Date().toISOString().split('T')[0];
-    
+
     // ファイル名の生成
     const filename = `tasks_${date}.${format}`;
-    
+
     // エクスポート処理
     const blob = await exportTasks(format, options);
-    
+
     // ダウンロード処理
     downloadBlob(blob, filename);
-    
+
     return true;
   } catch (error) {
     console.error('エクスポート処理中にエラーが発生しました', error);
@@ -116,16 +116,19 @@ export const parseCsvToTasks = (csv: string): Partial<Todo>[] => {
   // ヘッダーと行に分割
   const lines = csv.trim().split('\n');
   const headers = lines[0].split(',');
-  
+
+  // TodoValueTypeを定義（Todoの値として許容される型）
+  type TodoValueType = string | number | boolean | null | undefined;
+
   // タスクに変換
   return lines.slice(1).map(line => {
     const values = line.split(',');
-    const task: Record<string, any> = {};
-    
+    const task: Record<string, TodoValueType> = {}; // any型を回避
+
     // 各フィールドをマッピング
     headers.forEach((header, index) => {
       const value = values[index]?.trim();
-      
+
       // 型変換
       switch (header) {
         case 'completed':
@@ -147,7 +150,7 @@ export const parseCsvToTasks = (csv: string): Partial<Todo>[] => {
           task[header] = value;
       }
     });
-    
+
     return task as Partial<Todo>;
   });
 };
@@ -178,32 +181,32 @@ export const importTasksFromFile = async (
 ): Promise<Partial<Todo>[]> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (event) => {
       try {
         const content = event.target?.result as string;
-        
+
         // 自動フォーマット検出
         if (format === 'auto') {
           const extension = file.name.split('.').pop()?.toLowerCase();
           format = extension === 'json' ? 'json' : 'csv';
         }
-        
+
         // 形式に応じたパース
         const tasks = format === 'json'
           ? parseJsonToTasks(content)
           : parseCsvToTasks(content);
-        
+
         resolve(tasks);
       } catch (error) {
         reject(error);
       }
     };
-    
+
     reader.onerror = (error) => {
       reject(error);
     };
-    
+
     reader.readAsText(file);
   });
 };
@@ -237,12 +240,12 @@ export const importTasksAndSend = async (
   try {
     // ファイルからタスクを読み込み
     const tasks = await importTasksFromFile(file, format);
-    
+
     // タスク数のチェック
     if (tasks.length === 0) {
       throw new Error('インポートするタスクがありません');
     }
-    
+
     // APIに送信
     return await sendTasksToApi(tasks);
   } catch (error) {
