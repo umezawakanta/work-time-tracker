@@ -67,8 +67,6 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   onAdjustPriorities,
   sortOption = "priority",
   setSortOption,
-  onExportTasks,
-  onImportTasks,
   onShowAnalytics,
   onShowSettings,
   isPremium: propIsPremium,
@@ -78,7 +76,6 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   const isPremium = propIsPremium || storeIsPremium;
 
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [importFile, setImportFile] = useState<File | null>(null);
   const [recentActions, setRecentActions] = useState<
     { action: string; timestamp: number }[]
   >([]);
@@ -140,23 +137,6 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
     addToRecentActions(
       "タスク追加フォーム" + (!showAddForm ? "表示" : "非表示")
     );
-  };
-
-  // ファイルインポート処理
-  const handleImport = () => {
-    if (importFile && onImportTasks) {
-      onImportTasks(importFile);
-      addToRecentActions(`タスクインポート (${importFile.name})`);
-      setImportFile(null);
-    }
-  };
-
-  // ファイルエクスポート処理
-  const handleExport = () => {
-    if (onExportTasks) {
-      onExportTasks();
-      addToRecentActions("タスクエクスポート");
-    }
   };
 
   // ソートオプション変更
@@ -324,12 +304,6 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
           autoAdjustEnabled={autoAdjustEnabled}
           setAutoAdjustEnabled={setAutoAdjustEnabled}
           onAdjustPriorities={onAdjustPriorities}
-          onExportTasks={onExportTasks}
-          onImportTasks={onImportTasks}
-          importFile={importFile}
-          setImportFile={setImportFile}
-          handleImport={handleImport}
-          handleExport={handleExport}
           recentActions={recentActions}
           getElapsedTime={getElapsedTime}
         />
