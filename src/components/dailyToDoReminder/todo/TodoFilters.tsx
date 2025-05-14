@@ -8,20 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface TodoFiltersProps {
   filterStatus: string;
