@@ -101,7 +101,6 @@ export const fetchTodoItems = createAsyncThunk("todo/fetchTodoItems", async () =
   return response.data;
 });
 
-// タイプパラメータを追加
 export const addTodoItem = createAsyncThunk(
   "todo/addTodoItem",
   async (todo: {
@@ -109,14 +108,17 @@ export const addTodoItem = createAsyncThunk(
     priority: number;
     isPrioritized: boolean;
     type?: "input" | "output";
-    deadline?: string; // deadline プロパティを追加
+    deadline?: string;
+    createdAt?: string; // createdAt プロパティを追加
   }) => {
+    // todoApi.create 関数の引数を確認し、必要に応じて createdAt を追加
     const response = await todoApi.create(
       todo.task,
       todo.priority,
       todo.isPrioritized,
       todo.type || "input",
-      todo.deadline // deadline を API に渡す
+      todo.deadline,
+      todo.createdAt // API 関数が対応していない場合は修正が必要
     );
     return response.data.todo;
   }
