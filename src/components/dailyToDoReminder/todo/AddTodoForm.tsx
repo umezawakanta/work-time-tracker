@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Download, Upload, Calendar, Sparkles, RefreshCcw, X, Star, AlertTriangle, Zap, ArrowUp } from "lucide-react";
+import { Download, Upload, Calendar, Sparkles, RefreshCcw, X, AlertTriangle, Zap, ArrowUp } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { addTodoItem, selectTodos } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
