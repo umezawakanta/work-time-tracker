@@ -25,7 +25,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-import { Todo } from "@/types/todo";
+import { Todo } from "../types";
 
 interface TodoItemProps {
   readonly todo: Todo;
@@ -38,7 +38,7 @@ interface TodoItemProps {
   readonly isCompleted?: boolean;
 }
 
-const PRIORITY_CONFIG: Record<number, { color: string; label: string; }> = {
+const PRIORITY_CONFIG: Record<number, { color: string; label: string }> = {
   5: { color: "text-red-500", label: "最高" },
   4: { color: "text-orange-500", label: "高" },
   3: { color: "text-blue-500", label: "普通" },
@@ -60,7 +60,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isHighPriority = false,
   isCompleted = false,
 }) => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleToggle = useCallback(async (): Promise<void> => {
@@ -83,6 +82,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     }
   }, [todo.id, onDelete, isLoading]);
 
+  const handleEdit = useCallback((): void => {
+    // TODO: Implement edit functionality
+    // This could open a modal or inline editor
+    console.log("Edit functionality to be implemented");
+  }, []);
+
   const formatDeadline = (deadline: string): string => {
     const date = new Date(deadline);
     const now = new Date();
@@ -93,7 +98,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     if (diffDays === 0) return "今日";
     if (diffDays === 1) return "明日";
     if (diffDays <= 7) return `${diffDays}日後`;
-    
+
     return date.toLocaleDateString("ja-JP", {
       month: "short",
       day: "numeric",
@@ -101,7 +106,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   };
 
   const isOverdue = todo.deadline && new Date(todo.deadline) < new Date();
-  const isToday = todo.deadline && 
+  const isToday =
+    todo.deadline &&
     new Date(todo.deadline).toDateString() === new Date().toDateString();
 
   const priorityConfig = PRIORITY_CONFIG[todo.priority] || PRIORITY_CONFIG[3];
@@ -111,8 +117,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     isCompleted ? "opacity-75" : "",
     isHighPriority ? "border-l-4 border-l-red-500 bg-red-50/30" : "",
     isOverdue && !isCompleted ? "border-l-4 border-l-red-500 bg-red-50" : "",
-    isToday && !isCompleted ? "border-l-4 border-l-orange-500 bg-orange-50" : "",
-  ].filter(Boolean).join(" ");
+    isToday && !isCompleted
+      ? "border-l-4 border-l-orange-500 bg-orange-50"
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <Card className={cardClassName}>
@@ -143,20 +153,24 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 {/* Task Text */}
-                <h4 className={`font-medium text-sm leading-tight ${
-                  todo.completed ? "line-through text-gray-500" : "text-gray-900"
-                }`}>
+                <h4
+                  className={`font-medium text-sm leading-tight ${
+                    todo.completed
+                      ? "line-through text-gray-500"
+                      : "text-gray-900"
+                  }`}
+                >
                   {todo.text}
                 </h4>
 
                 {/* Meta Information */}
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   {/* Type Badge */}
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={`text-xs ${
-                      todo.type === "input" 
-                        ? "bg-blue-100 text-blue-700 border-blue-300" 
+                      todo.type === "input"
+                        ? "bg-blue-100 text-blue-700 border-blue-300"
                         : "bg-orange-100 text-orange-700 border-orange-300"
                     }`}
                   >
@@ -171,7 +185,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   {/* Priority Badge */}
                   {todo.priority > 3 && (
                     <Badge variant="outline" className="text-xs">
-                      <Flag className={`h-3 w-3 mr-1 ${priorityConfig.color}`} />
+                      <Flag
+                        className={`h-3 w-3 mr-1 ${priorityConfig.color}`}
+                      />
                       {priorityConfig.label}
                     </Badge>
                   )}
@@ -186,12 +202,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
                   {/* Deadline */}
                   {todo.deadline && (
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`text-xs ${
-                        isOverdue ? "bg-red-100 text-red-700 border-red-300" :
-                        isToday ? "bg-orange-100 text-orange-700 border-orange-300" :
-                        "bg-gray-100 text-gray-700 border-gray-300"
+                        isOverdue
+                          ? "bg-red-100 text-red-700 border-red-300"
+                          : isToday
+                          ? "bg-orange-100 text-orange-700 border-orange-300"
+                          : "bg-gray-100 text-gray-700 border-gray-300"
                       }`}
                     >
                       {isOverdue && <AlertCircle className="h-3 w-3 mr-1" />}
@@ -202,7 +220,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
                   {/* Estimated Duration */}
                   {isPremium && todo.estimatedDuration && (
-                    <Badge variant="outline" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-purple-100 text-purple-700 border-purple-300"
+                    >
                       <Clock className="h-3 w-3 mr-1" />
                       {todo.estimatedDuration}分
                     </Badge>
@@ -210,7 +231,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
                   {/* Category */}
                   {isPremium && todo.category && (
-                    <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-300">
+                    <Badge
+                      variant="outline"
+                      className="text-xs bg-green-100 text-green-700 border-green-300"
+                    >
                       <Tag className="h-3 w-3 mr-1" />
                       {todo.category}
                     </Badge>
@@ -221,16 +245,19 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 {isPremium && todo.tags && todo.tags.length > 0 && (
                   <div className="flex items-center gap-1 mt-2 flex-wrap">
                     {todo.tags.slice(0, 3).map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="secondary" 
+                      <Badge
+                        key={tag}
+                        variant="secondary"
                         className="text-xs bg-gray-100 text-gray-600"
                       >
                         #{tag}
                       </Badge>
                     ))}
                     {todo.tags.length > 3 && (
-                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs bg-gray-100 text-gray-600"
+                      >
                         +{todo.tags.length - 3}
                       </Badge>
                     )}
@@ -240,7 +267,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 {/* Completion Time */}
                 {todo.completed && todo.completedAt && (
                   <p className="text-xs text-gray-500 mt-1">
-                    完了: {new Date(todo.completedAt).toLocaleString("ja-JP", {
+                    完了:{" "}
+                    {new Date(todo.completedAt).toLocaleString("ja-JP", {
                       month: "short",
                       day: "numeric",
                       hour: "2-digit",
@@ -253,22 +281,22 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               {/* Actions Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                  <DropdownMenuItem onClick={handleEdit}>
                     <Edit3 className="h-4 w-4 mr-2" />
                     編集
                   </DropdownMenuItem>
-                  
+
                   {!todo.isPrioritized && (
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => onUpdate(todo.id, { isPrioritized: true })}
                     >
                       <Target className="h-4 w-4 mr-2" />
@@ -277,17 +305,19 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   )}
 
                   {todo.isPrioritized && (
-                    <DropdownMenuItem 
-                      onClick={() => onUpdate(todo.id, { isPrioritized: false })}
+                    <DropdownMenuItem
+                      onClick={() =>
+                        onUpdate(todo.id, { isPrioritized: false })
+                      }
                     >
                       <Target className="h-4 w-4 mr-2" />
                       重要タスクを解除
                     </DropdownMenuItem>
                   )}
-                  
+
                   <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem 
+
+                  <DropdownMenuItem
                     onClick={handleDelete}
                     className="text-red-600 focus:text-red-600"
                   >
