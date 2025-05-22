@@ -1,305 +1,361 @@
-import React, { useState, useCallback } from 'react';
+import React, { useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PlusCircle } from "lucide-react";
-import { 
-  DragDropContext, 
-  Droppable, 
-  Draggable,
-  DropResult  // DropResult型をインポート
-} from "@hello-pangea/dnd";
-import { 
-  updateTodoItem, 
-  deleteTodoItem, 
-  reorderTodoItems, 
-  toggleTodoPriority
-} from "@/store/todoSlice";
-import { toast } from "react-hot-toast";
-import TodoItemComponent from './TodoItem';
-import TodoEditor from './TodoEditor';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  ListChecks,
+  GripVertical,
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  Flag,
+  Calendar,
+  Tag,
+  Sparkles,
+  CheckCircle2,
+  Circle,
+  MoreHorizontal,
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
-// 共通の型をインポート
-import { Todo, TaskType } from '@/types/todo';
+import {
+  toggleTodoItem,
+  updateTodoItem,
+  deleteTodoItem,
+  reorderTodoItems,
+} from "@/store/todoSlice";
+import { AppDispatch } from "@/store";
+import { Todo } from "../types";
+import { getErrorMessage } from "../../utils/errorUtils";
+
+// Sub-components
+import { TodoItem } from "./TodoItem";
+import { EmptyState } from "./EmptyState";
 
 interface TodoListProps {
-  todos: Todo[];
-  isPremium: boolean;
-  onAnalyzeRequest?: () => void;
+  readonly todos: readonly Todo[];
+  readonly isPremium?: boolean;
+  readonly onAnalyzeRequest?: () => void;
 }
 
-const TodoList: React.FC<TodoListProps> = ({ 
-  todos, 
-  isPremium,
-  onAnalyzeRequest 
+interface GroupedTodos {
+  readonly prioritized: readonly Todo[];
+  readonly active: readonly Todo[];
+  readonly completed: readonly Todo[];
+}
+
+const PRIORITY_COLORS: Record<number, string> = {
+  5: "border-l-red-500 bg-red-50",
+  4: "border-l-orange-500 bg-orange-50",
+  3: "border-l-blue-500 bg-blue-50",
+  2: "border-l-green-500 bg-green-50",
+  1: "border-l-gray-500 bg-gray-50",
+};
+
+/**
+ * Todo List Component
+ * Advanced task list with drag & drop, grouping, and premium features
+ */
+export const TodoList: React.FC<TodoListProps> = ({
+  todos,
+  isPremium = false,
+  onAnalyzeRequest,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingText, setEditingText] = useState("");
-  const [editingType, setEditingType] = useState<TaskType>("input");
-  const [editingDeadline, setEditingDeadline] = useState<string | undefined>(undefined);
-  const [isDragEnabled, setIsDragEnabled] = useState(isPremium);
 
-  // タスクの完了/未完了のトグル
-  const handleToggle = useCallback(
-    (id: string) => {
-      const todoToUpdate = todos.find((todo) => todo._id === id);
-      if (todoToUpdate) {
-        dispatch(
-          updateTodoItem({
-            _id: id,
-            updates: {
-              completed: !todoToUpdate.completed,
-              completedDate: !todoToUpdate.completed
-                ? new Date().toISOString()
-                : null,
-            },
-          })
-        ).then(() => {
-          if (!todoToUpdate.completed) {
-            // タスク完了時にAI分析（プレミアム機能）
-            if (isPremium && onAnalyzeRequest) {
-              // analyzeTodoEfficiencyの代わりにonAnalyzeRequestを使用
-              onAnalyzeRequest();
-            }
-            toast.success("お疲れ様でした！タスクを完了しました");
-          }
-        });
+  // Group todos by status and priority
+  const groupedTodos = useMemo((): GroupedTodos => {
+    const prioritized: Todo[] = [];
+    const active: Todo[] = [];
+    const completed: Todo[] = [];
+
+    todos.forEach((todo: Todo) => {
+      if (todo.completed) {
+        completed.push(todo);
+      } else if (todo.isPrioritized) {
+        prioritized.push(todo);
+      } else {
+        active.push(todo);
       }
-    },
-    [dispatch, todos, isPremium, onAnalyzeRequest]
-  );
+    });
 
-  // タスクの優先度トグル
-  const handleTogglePriority = useCallback(
-    (id: string) => {
-      dispatch(toggleTodoPriority(id)).then(() => {
-        toast.success("優先度を変更しました");
-      });
+    // Sort each group by priority (descending) and creation date
+    const sortTodos = (a: Todo, b: Todo): number => {
+      if (a.priority !== b.priority) {
+        return b.priority - a.priority;
+      }
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    };
+
+    return {
+      prioritized: prioritized.sort(sortTodos),
+      active: active.sort(sortTodos),
+      completed: completed.sort(sortTodos),
+    };
+  }, [todos]);
+
+  const handleToggleComplete = useCallback(
+    async (todo: Todo): Promise<void> => {
+      try {
+        await dispatch(toggleTodoItem(todo.id)).unwrap();
+
+        const message = todo.completed
+          ? "タスクを未完了に戻しました"
+          : "🎉 タスクを完了しました！";
+        toast.success(message);
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        toast.error(`操作に失敗しました: ${errorMessage}`);
+      }
     },
     [dispatch]
   );
 
-  // 編集モード開始
-  const handleEditStart = useCallback(
-    (
-      id: string,
-      task: string,
-      type: TaskType | undefined,
-      deadline: string | undefined
-    ) => {
-      setEditingId(id);
-      setEditingText(task);
-      setEditingType(type || "input");
-      setEditingDeadline(deadline);
-    },
-    []
-  );
+  const handleDelete = useCallback(
+    async (todoId: string): Promise<void> => {
+      if (!window.confirm("このタスクを削除しますか？")) return;
 
-  // 編集キャンセル
-  const handleEditCancel = useCallback(() => {
-    setEditingId(null);
-    setEditingText("");
-    setEditingType("input");
-    setEditingDeadline(undefined);
-  }, []);
-
-  // 編集保存
-  const handleEditSave = useCallback(
-    (id: string) => {
-      if (editingText.trim()) {
-        dispatch(
-          updateTodoItem({
-            _id: id,
-            updates: {
-              task: editingText.trim(),
-              type: editingType,
-              deadline: editingDeadline,
-            },
-          })
-        ).then(() => {
-          setEditingId(null);
-          setEditingText("");
-          setEditingType("input");
-          setEditingDeadline(undefined);
-          toast.success("タスクを更新しました");
-        });
+      try {
+        await dispatch(deleteTodoItem(todoId)).unwrap();
+        toast.success("タスクを削除しました");
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        toast.error(`削除に失敗しました: ${errorMessage}`);
       }
     },
-    [dispatch, editingText, editingType, editingDeadline]
+    [dispatch]
   );
 
-  // タスク削除
-  const handleDeleteTodo = useCallback(
-    (id: string) => {
-      const todoToDelete = todos.find((todo) => todo._id === id);
-      
-      // プレミアム機能：未完了タスクも削除可能
-      if (todoToDelete && (todoToDelete.completed || isPremium)) {
-        dispatch(deleteTodoItem(id)).then(() => {
-          toast.success("タスクを削除しました");
-        });
-      } else {
-        toast.error(
-          "完了していないタスクは削除できません。必ず完了させてください。"
-        );
+  const handleUpdate = useCallback(
+    async (todoId: string, updates: Partial<Todo>): Promise<void> => {
+      try {
+        await dispatch(updateTodoItem({ id: todoId, updates })).unwrap();
+        toast.success("タスクを更新しました");
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        toast.error(`更新に失敗しました: ${errorMessage}`);
       }
     },
-    [dispatch, todos, isPremium]
+    [dispatch]
   );
 
-  // ドラッグ＆ドロップによる並べ替え処理
   const handleDragEnd = useCallback(
-    (result: DropResult) => { // anyの代わりにDropResult型を使用
-      if (!result.destination || !isPremium || !isDragEnabled) return;
+    (draggedId: string, newPosition: number): void => {
+      try {
+        dispatch(
+          reorderTodoItems({
+            sourceIndex: 0, // Will be calculated based on current position
+            destinationIndex: newPosition,
+            sourceGroupId: "active",
+            destinationGroupId: "active",
+            todoId: draggedId,
+          })
+        );
 
-      const sourceIndex = result.source.index;
-      const destinationIndex = result.destination.index;
-
-      if (sourceIndex === destinationIndex) return;
-
-      const updatedTodos = [...todos];
-      const [movedTodo] = updatedTodos.splice(sourceIndex, 1);
-      updatedTodos.splice(destinationIndex, 0, movedTodo);
-
-      // 優先度の再計算
-      const recalculatedTodos = updatedTodos.map((todo, idx) => ({
-        ...todo,
-        priority: idx + 1,
-      }));
-
-      dispatch(reorderTodoItems(recalculatedTodos)).then(() => {
         toast.success("タスクの順序を変更しました");
-      });
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        toast.error(`並び替えに失敗しました: ${errorMessage}`);
+      }
     },
-    [dispatch, todos, isPremium, isDragEnabled]
+    [dispatch]
   );
 
-  // タスク分析ボタン
-  const handleAnalyzeClick = useCallback(() => {
-    if (isPremium && onAnalyzeRequest) {
-      onAnalyzeRequest();
-    }
-  }, [isPremium, onAnalyzeRequest]);
+  const getEstimatedTime = (todos: readonly Todo[]): number => {
+    return todos.reduce((total, todo) => {
+      return total + (todo.estimatedDuration || 0);
+    }, 0);
+  };
 
-  // タスクがない場合の表示
+  const formatDuration = (minutes: number): string => {
+    if (minutes < 60) return `${minutes}分`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}時間${mins}分` : `${hours}時間`;
+  };
+
   if (todos.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-md border border-dashed border-gray-300 empty-state">
-        <div className="mb-2">
-          <PlusCircle className="h-10 w-10 mx-auto text-gray-400" />
-        </div>
-        <p>
-          タスクがありません。新しいタスクを追加しましょう！
-        </p>
-      </div>
+      <EmptyState onAnalyzeRequest={onAnalyzeRequest} isPremium={isPremium} />
     );
   }
 
   return (
-    <>
+    <div className="space-y-6">
+      {/* Summary Stats */}
       {isPremium && (
-        <div className="flex justify-between items-center mb-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsDragEnabled(!isDragEnabled)}
-            className="text-xs"
-          >
-            {isDragEnabled ? "並べ替えを無効にする" : "並べ替えを有効にする"}
-          </Button>
-          
-          {onAnalyzeRequest && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAnalyzeClick}
-              className="text-xs ml-2"
-            >
-              タスク効率分析
-            </Button>
-          )}
-        </div>
-      )}
-
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="todos" isDropDisabled={!isPremium || !isDragEnabled}>
-          {(provided, snapshot) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={`rounded-md ${
-                snapshot.isDraggingOver ? "droppable-is-dragging-over" : "droppable-is-not-dragging-over"
-              }`}
-            >
-              <div className="space-y-2">
-                {todos.map((todo, index) => (
-                  <Draggable
-                    key={todo._id}
-                    draggableId={todo._id}
-                    index={index}
-                    isDragDisabled={!isPremium || !isDragEnabled}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`todo-card flex items-start p-3 rounded-md shadow-sm border ${
-                          todo.completed
-                            ? "bg-gray-50 border-gray-200"
-                            : todo.isPrioritized
-                            ? "priority-task"
-                            : todo.type === "input"
-                            ? "input-type"
-                            : "output-type"
-                        }`}
-                      >
-                        <Checkbox
-                          id={`todo-${todo._id}`}
-                          checked={todo.completed}
-                          onCheckedChange={() => handleToggle(todo._id)}
-                          className="mt-1"
-                        />
-                        
-                        {editingId === todo._id ? (
-                          <TodoEditor
-                            text={editingText}
-                            type={editingType}
-                            deadline={editingDeadline}
-                            onTextChange={setEditingText}
-                            onTypeChange={setEditingType}
-                            onDeadlineChange={setEditingDeadline}
-                            onCancel={handleEditCancel}
-                            onSave={() => handleEditSave(todo._id)}
-                          />
-                        ) : (
-                          <TodoItemComponent 
-                            todo={todo}
-                            isPremium={isPremium}
-                            onTogglePriority={() => handleTogglePriority(todo._id)}
-                            onEditStart={() => handleEditStart(
-                              todo._id,
-                              todo.task,
-                              todo.type,
-                              todo.deadline
-                            )}
-                            onDelete={() => handleDeleteTodo(todo._id)}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <ListChecks className="h-5 w-5 text-blue-600" />
+                <div>
+                  <h3 className="font-medium text-blue-900">タスク概要</h3>
+                  <p className="text-sm text-blue-700">
+                    全{todos.length}件 • 完了{groupedTodos.completed.length}件 •
+                    残り
+                    {groupedTodos.prioritized.length +
+                      groupedTodos.active.length}
+                    件
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium text-blue-900">
+                  予想作業時間
+                </p>
+                <p className="text-lg font-bold text-blue-700">
+                  {formatDuration(
+                    getEstimatedTime([
+                      ...groupedTodos.prioritized,
+                      ...groupedTodos.active,
+                    ])
+                  )}
+                </p>
               </div>
             </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="space-y-6">
+        {/* Prioritized Tasks */}
+        {groupedTodos.prioritized.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Flag className="h-4 w-4 text-red-500" />
+              <h3 className="font-semibold text-gray-900">重要タスク</h3>
+              <Badge variant="destructive" className="text-xs">
+                {groupedTodos.prioritized.length}
+              </Badge>
+              {isPremium && (
+                <Badge
+                  variant="outline"
+                  className="text-xs bg-amber-100 text-amber-800"
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Premium
+                </Badge>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              {groupedTodos.prioritized.map((todo, index) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={handleToggleComplete}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                  isPremium={isPremium}
+                  dragHandleProps={null}
+                  isHighPriority={true}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Active Tasks */}
+        {groupedTodos.active.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Circle className="h-4 w-4 text-blue-500" />
+              <h3 className="font-semibold text-gray-900">今日のタスク</h3>
+              <Badge variant="secondary" className="text-xs">
+                {groupedTodos.active.length}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              {groupedTodos.active.map((todo, index) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={handleToggleComplete}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                  isPremium={isPremium}
+                  dragHandleProps={null}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Completed Tasks */}
+        {groupedTodos.completed.length > 0 && (
+          <div className="space-y-3">
+            <Separator />
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <h3 className="font-semibold text-gray-700">完了済み</h3>
+              <Badge
+                variant="outline"
+                className="text-xs bg-green-100 text-green-800"
+              >
+                {groupedTodos.completed.length}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              {groupedTodos.completed
+                .slice(0, isPremium ? 10 : 3)
+                .map((todo, index) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={handleToggleComplete}
+                    onDelete={handleDelete}
+                    onUpdate={handleUpdate}
+                    isPremium={isPremium}
+                    dragHandleProps={null}
+                    isCompleted={true}
+                  />
+                ))}
+
+              {groupedTodos.completed.length > (isPremium ? 10 : 3) && (
+                <p className="text-xs text-gray-500 text-center py-2">
+                  ...他 {groupedTodos.completed.length - (isPremium ? 10 : 3)}{" "}
+                  件の完了済みタスク
+                  {!isPremium && (
+                    <span className="ml-1 text-blue-500">
+                      (Premiumで全て表示)
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Premium Analysis CTA */}
+      {!isPremium && onAnalyzeRequest && todos.length > 0 && (
+        <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-5 w-5 text-amber-600" />
+                <div>
+                  <h3 className="font-medium text-amber-900">AIタスク分析</h3>
+                  <p className="text-sm text-amber-700">
+                    タスクの傾向分析と最適化提案をAIが行います
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={onAnalyzeRequest}
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                分析を開始
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
-
-export default TodoList;

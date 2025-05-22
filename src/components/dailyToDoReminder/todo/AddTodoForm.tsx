@@ -1,583 +1,403 @@
-import React, { useState, useCallback } from 'react';
-import { useDispatch, useSelector } from "react-redux";
-import { Input } from "@/components/ui/input";
+import React, { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Download, Upload, Calendar, Sparkles, RefreshCcw, X, AlertTriangle, Zap, ArrowUp } from "lucide-react";
+  Plus,
+  Calendar,
+  Flag,
+  Tag,
+  Clock,
+  Target,
+  X,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "react-hot-toast";
-import { addTodoItem, selectTodos } from "@/store/todoSlice";
+
+import { addTodoItem } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
-
-// GeminiServiceをインポート 
-import GeminiService, { TaskClassification } from "@/services/GeminiService";
-// TaskPriorityServiceをインポート
-import TaskPriorityService, { PriorityAnalysis } from "@/services/TaskPriorityService";
-
-// 共通の型をインポート
-import { TaskType } from '@/types/todo';
-
-// APIレート制限管理
-const API_COOLDOWN = 5000; // 5秒間隔
-let lastApiCallTime = 0;
+import { TodoItem } from "@/types/todo";
+import { getErrorMessage } from "../../utils/errorUtils";
 
 interface AddTodoFormProps {
-  onAddSuccess: () => void;
-  isPremium: boolean;
+  readonly isVisible: boolean;
+  readonly onClose: () => void;
+  readonly isPremium?: boolean;
 }
 
-const AddTodoForm: React.FC<AddTodoFormProps> = ({ onAddSuccess, isPremium }) => {
+type TodoType = "input" | "output";
+type PriorityLevel = 1 | 2 | 3 | 4 | 5;
+
+interface FormData {
+  text: string;
+  description: string;
+  type: TodoType;
+  priority: PriorityLevel;
+  deadline: string;
+  estimatedDuration: number;
+  category: string;
+  tags: readonly string[];
+  isPrioritized: boolean;
+}
+
+const initialFormData: FormData = {
+  text: "",
+  description: "",
+  type: "input",
+  priority: 3,
+  deadline: "",
+  estimatedDuration: 60,
+  category: "",
+  tags: [],
+  isPrioritized: false,
+};
+
+const PREDEFINED_CATEGORIES = [
+  "仕事", "学習", "健康", "趣味", "家事", "買い物", "会議", "プロジェクト"
+] as const;
+
+const PRIORITY_LABELS: Record<PriorityLevel, { label: string; color: string; }> = {
+  1: { label: "最低", color: "text-gray-500" },
+  2: { label: "低", color: "text-blue-500" },
+  3: { label: "普通", color: "text-green-500" },
+  4: { label: "高", color: "text-orange-500" },
+  5: { label: "最高", color: "text-red-500" },
+};
+
+/**
+ * Add Todo Form Component
+ * Advanced task creation form with premium features
+ */
+export const AddTodoForm: React.FC<AddTodoFormProps> = ({
+  isVisible,
+  onClose,
+  isPremium = false,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const todos = useSelector(selectTodos);
-  
-  // 状態
-  const [newTodo, setNewTodo] = useState("");
-  const [taskType, setTaskType] = useState<TaskType>("input");
-  const [deadline, setDeadline] = useState<string | undefined>(undefined);
-  const [showCommitmentDialog, setShowCommitmentDialog] = useState(false);
-  const [commitmentText, setCommitmentText] = useState("");
-  const [commitmentType, setCommitmentType] = useState<TaskType>("input");
-  
-  // AI分析関連の状態
-  const [isClassifying, setIsClassifying] = useState(false);
-  const [classification, setClassification] = useState<TaskClassification | null>(null);
-  const [showAiSuggestion, setShowAiSuggestion] = useState(false);
-  const [priorityAnalysis, setPriorityAnalysis] = useState<PriorityAnalysis | null>(null);
-  const [isAnalyzingPriority, setIsAnalyzingPriority] = useState(false);
-  const [showPrioritySuggestion, setShowPrioritySuggestion] = useState(false);
-  const [suggestedDeadline, setSuggestedDeadline] = useState<string | undefined>(undefined);
-  const [priorityEnabled, setPriorityEnabled] = useState(false);
-  const [analysisButtonEnabled, setAnalysisButtonEnabled] = useState(true);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [tagInput, setTagInput] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // タスク入力ハンドラー
-  const handleTaskInput = useCallback((value: string) => {
-    setNewTodo(value);
-
-    // 入力時は分析を行わず、UIの状態のみクリア
-    if (value.trim() === "") {
-      setClassification(null);
-      setShowAiSuggestion(false);
-      setPriorityAnalysis(null);
-      setShowPrioritySuggestion(false);
-    }
-  }, []);
-
-  // タスク追加処理
-  const handleAddTodo = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (newTodo.trim()) {
-        // 新規タスク追加時には確約ダイアログを表示
-        setCommitmentText(newTodo.trim());
-        setCommitmentType(taskType);
-        setShowCommitmentDialog(true);
-      }
+  const handleInputChange = useCallback(
+    <K extends keyof FormData>(field: K, value: FormData[K]): void => {
+      setFormData(prev => ({ ...prev, [field]: value }));
     },
-    [newTodo, taskType]
+    []
   );
 
-  // 確定追加処理
-  const confirmAddTodo = useCallback(() => {
-    if (commitmentText.trim()) {
-      // 最大の優先度を取得して、新しいタスクにはそれよりも大きな値を設定
-      const maxPriority = Math.max(...todos.map((todo) => todo.priority), 0);
-      const now = new Date().toISOString();
-
-      dispatch(
-        addTodoItem({
-          task: commitmentText.trim(),
-          priority: maxPriority + 1,
-          isPrioritized: priorityEnabled,
-          type: commitmentType,
-          deadline: deadline || suggestedDeadline,
-          createdAt: now, // createdAtを明示的に設定
-        })
-      );
-
-      // 状態のリセット
-      setNewTodo("");
-      setShowAiSuggestion(false);
-      setShowPrioritySuggestion(false);
-      setClassification(null);
-      setPriorityAnalysis(null);
-      setSuggestedDeadline(undefined);
-      setPriorityEnabled(false);
-      setDeadline(undefined);
-      setShowCommitmentDialog(false);
-      
-      // 親コンポーネントに通知
-      onAddSuccess();
-
-      toast.success(
-        `新しい${
-          commitmentType === "input" ? "インプット" : "アウトプット"
-        }タスクを追加しました`
-      );
+  const handleAddTag = useCallback((): void => {
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag && !formData.tags.includes(trimmedTag)) {
+      handleInputChange("tags", [...formData.tags, trimmedTag]);
+      setTagInput("");
     }
-  }, [
-    dispatch,
-    commitmentText,
-    commitmentType,
-    todos,
-    priorityEnabled,
-    suggestedDeadline,
-    deadline,
-    onAddSuccess
-  ]);
+  }, [tagInput, formData.tags, handleInputChange]);
 
-  // 手動分析ボタンのハンドラー
-  const handleManualAnalysis = useCallback(async () => {
-    if (!newTodo.trim() || newTodo.trim().length < 5) {
-      toast.error("分析するには、より詳細なタスク内容を入力してください");
-      return;
+  const handleRemoveTag = useCallback((tagToRemove: string): void => {
+    handleInputChange("tags", formData.tags.filter(tag => tag !== tagToRemove));
+  }, [formData.tags, handleInputChange]);
+
+  const handleKeyPress = useCallback((e: React.KeyboardEvent): void => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
+  }, [handleAddTag]);
+
+  const validateForm = (): boolean => {
+    if (!formData.text.trim()) {
+      toast.error("タスク名を入力してください");
+      return false;
     }
 
-    if (isClassifying || isAnalyzingPriority) {
-      return; // 既に分析中なら実行しない
+    if (formData.text.length > 100) {
+      toast.error("タスク名は100文字以内で入力してください");
+      return false;
     }
 
-    // レート制限チェック
-    const now = Date.now();
-    if (now - lastApiCallTime < API_COOLDOWN) {
-      toast.error(
-        `APIリクエストの間隔が短すぎます。あと${Math.ceil(
-          (API_COOLDOWN - (now - lastApiCallTime)) / 1000
-        )}秒お待ちください`
-      );
-      return;
+    if (formData.deadline && new Date(formData.deadline) < new Date()) {
+      toast.error("期限は現在時刻より後に設定してください");
+      return false;
     }
 
-    setIsClassifying(true);
-    setIsAnalyzingPriority(true);
-    setAnalysisButtonEnabled(false);
-    lastApiCallTime = now;
-
-    try {
-      // タスクタイプの分類
-      const typeResult = await GeminiService.classifyTaskType(newTodo);
-      setClassification(typeResult);
-      setTaskType(typeResult.type);
-
-      if (typeResult.confidence > 0.65) {
-        setShowAiSuggestion(true);
-      }
-
-      // タスク優先度の分析（少し遅延させて連続リクエストを避ける）
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const priorityResult = await TaskPriorityService.analyzePriority(newTodo);
-      setPriorityAnalysis(priorityResult);
-      setSuggestedDeadline(priorityResult.suggestedDeadline);
-      setPriorityEnabled(priorityResult.isPrioritized);
-
-      if (priorityResult.isPrioritized) {
-        setShowPrioritySuggestion(true);
-      }
-
-      toast.success("タスク分析が完了しました");
-    } catch (error) {
-      console.error("タスク分析エラー:", error);
-      toast.error("分析中にエラーが発生しました");
-
-      // エラー時はローカル分析を試行
-      try {
-        // タイプの簡易判定
-        const lowerText = newTodo.toLowerCase();
-        let detectedType: TaskType = "input";
-
-        // 単純なキーワードベースで判定
-        const outputKeywords = [
-          "作る",
-          "書く",
-          "開発",
-          "コード",
-          "投稿",
-          "実践",
-          "発表",
-        ];
-        if (outputKeywords.some((keyword) => lowerText.includes(keyword))) {
-          detectedType = "output";
-        }
-
-        setTaskType(detectedType);
-        setClassification({
-          type: detectedType,
-          confidence: 0.6,
-          explanation: `キーワード分析により${
-            detectedType === "input" ? "インプット" : "アウトプット"
-          }タスクと判断しました（ローカル分析）`,
-        });
-        setShowAiSuggestion(true);
-
-        // 優先度の簡易判定
-        const isPriority =
-          lowerText.includes("重要") ||
-          lowerText.includes("緊急") ||
-          lowerText.includes("今日") ||
-          lowerText.includes("明日");
-        setPriorityEnabled(isPriority);
-
-        if (isPriority) {
-          setPriorityAnalysis({
-            isPrioritized: true,
-            importance: 7,
-            urgency: 7,
-            explanation:
-              "キーワード分析により優先タスクと判断しました（ローカル分析）",
-            suggestedDeadline: undefined
-          });
-          setShowPrioritySuggestion(true);
-        }
-      } catch (localError) {
-        console.error("ローカル分析エラー:", localError);
-      }
-    } finally {
-      setIsClassifying(false);
-      setIsAnalyzingPriority(false);
-
-      // 一定時間後にボタンを再有効化
-      setTimeout(() => {
-        setAnalysisButtonEnabled(true);
-      }, API_COOLDOWN);
-    }
-  }, [newTodo, isClassifying, isAnalyzingPriority]);
-
-  // AIの提案を表示するコンポーネント
-  const AiSuggestionBadge = () => {
-    if (!showAiSuggestion || !classification) return null;
-
-    return (
-      <div className="flex items-center mt-1 mb-2 bg-purple-50 p-2 rounded-md border border-purple-200 ai-suggestion">
-        <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-        <div>
-          <p className="text-sm text-purple-700">
-            AIによる提案: この内容は
-            <span className="font-medium">
-              {classification.type === "input" ? "インプット" : "アウトプット"}
-            </span>
-            タスクです
-          </p>
-          <p className="text-xs text-purple-600">
-            {classification.explanation}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="ml-2"
-          onClick={() => setShowAiSuggestion(false)}
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-    );
+    return true;
   };
 
-  // 優先度提案を表示するコンポーネント
-  const PrioritySuggestionBadge = () => {
-    if (!showPrioritySuggestion || !priorityAnalysis) return null;
+  const handleSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
 
-    const { importance, urgency, explanation, suggestedDeadline } =
-      priorityAnalysis;
+    setIsSubmitting(true);
 
-    return (
-      <div className="flex items-start mt-1 mb-2 bg-amber-50 p-2 rounded-md border border-amber-200">
-        <ArrowUp className="h-4 w-4 text-amber-500 mr-2 mt-1 flex-shrink-0" />
-        <div className="flex-grow">
-          <p className="text-sm text-amber-700 font-medium">
-            優先タスク候補として検出しました
-          </p>
-          <p className="text-xs text-amber-600 mt-1">{explanation}</p>
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            <div className="flex items-center">
-              <Zap className="h-3 w-3 text-amber-500 mr-1" />
-              <span className="text-xs text-amber-700">
-                重要度: {importance}/10
-              </span>
+    try {
+      const newTodo: Omit<TodoItem, "id" | "createdAt"> = {
+        text: formData.text.trim(),
+        completed: false,
+        priority: formData.priority,
+        isPrioritized: formData.isPrioritized,
+        type: formData.type,
+        deadline: formData.deadline || undefined,
+        category: formData.category || undefined,
+        tags: formData.tags.length > 0 ? formData.tags : undefined,
+      };
+
+      await dispatch(addTodoItem(newTodo)).unwrap();
+      
+      toast.success("タスクを追加しました！");
+      setFormData(initialFormData);
+      setTagInput("");
+      onClose();
+    } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(`タスクの追加に失敗しました: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData, dispatch, onClose]);
+
+  const handleReset = useCallback((): void => {
+    setFormData(initialFormData);
+    setTagInput("");
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <Card className="w-full max-w-2xl mx-auto shadow-lg border border-gray-200">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Plus className="h-5 w-5" aria-hidden="true" />
+            新しいタスクを追加
+            {isPremium && (
+              <Badge variant="outline" className="bg-amber-100 text-amber-800">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Premium
+              </Badge>
+            )}
+          </CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <div className="grid w-full gap-2">
+              <Label htmlFor="task-name">タスク名 *</Label>
+              <Input
+                id="task-name"
+                placeholder="今日やることを入力してください"
+                value={formData.text}
+                onChange={(e) => handleInputChange("text", e.target.value)}
+                maxLength={100}
+                required
+                aria-describedby="task-name-hint"
+              />
+              <p id="task-name-hint" className="text-xs text-gray-500">
+                {formData.text.length}/100 文字
+              </p>
             </div>
-            <div className="flex items-center">
-              <AlertTriangle className="h-3 w-3 text-amber-500 mr-1" />
-              <span className="text-xs text-amber-700">
-                緊急度: {urgency}/10
-              </span>
-            </div>
-            {suggestedDeadline && (
-              <div className="flex items-center">
-                <Calendar className="h-3 w-3 text-amber-500 mr-1" />
-                <span className="text-xs text-amber-700">
-                  推奨期限: {suggestedDeadline}
-                </span>
+
+            {isPremium && (
+              <div className="grid w-full gap-2">
+                <Label htmlFor="task-description">詳細説明</Label>
+                <Textarea
+                  id="task-description"
+                  placeholder="タスクの詳細な説明（オプション）"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                />
               </div>
             )}
           </div>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="ml-2 flex-shrink-0"
-          onClick={() => setShowPrioritySuggestion(false)}
-        >
-          <X className="h-3 w-3" />
-        </Button>
-      </div>
-    );
-  };
 
-  return (
-    <>
-      <div className="p-3 bg-gray-50 rounded-md mb-4 border border-gray-200 task-form">
-        <form onSubmit={handleAddTodo} className="space-y-3">
-          <div className="flex flex-col gap-2">
-            <div className="flex space-x-2">
-              <Input
-                type="text"
-                value={newTodo}
-                onChange={(e) => handleTaskInput(e.target.value)}
-                placeholder="新しいタスクを追加"
-                className="flex-1"
-              />
+          <Separator />
+
+          {/* Task Configuration */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>タスクタイプ</Label>
               <Select
-                value={taskType}
-                onValueChange={(value: TaskType) => setTaskType(value)}
+                value={formData.type}
+                onValueChange={(value) => handleInputChange("type", value as TodoType)}
               >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="タイプを選択" />
+                <SelectTrigger>
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="input">
-                    <div className="flex items-center">
-                      <Download className="h-4 w-4 mr-2 text-blue-500" />
-                      <span>インプット</span>
-                    </div>
+                    📚 インプット（学習・情報収集）
                   </SelectItem>
                   <SelectItem value="output">
-                    <div className="flex items-center">
-                      <Upload className="h-4 w-4 mr-2 text-green-500" />
-                      <span>アウトプット</span>
-                    </div>
+                    🚀 アウトプット（作成・実行）
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* 期限入力フィールド */}
-            <div className="flex items-center">
-              <label
-                htmlFor="task-deadline"
-                className="text-sm mr-2 whitespace-nowrap"
+            <div className="space-y-2">
+              <Label>優先度</Label>
+              <Select
+                value={formData.priority.toString()}
+                onValueChange={(value) => handleInputChange("priority", parseInt(value) as PriorityLevel)}
               >
-                期限:
-              </label>
-              <input
-                type="date"
-                id="task-deadline"
-                value={deadline || ""}
-                min={new Date().toISOString().split("T")[0]}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="flex-1 p-1 text-sm border rounded"
-              />
-              {deadline && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-1 h-auto"
-                  onClick={() => setDeadline("")}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              )}
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(PRIORITY_LABELS).map(([value, { label, color }]) => (
+                    <SelectItem key={value} value={value}>
+                      <div className="flex items-center gap-2">
+                        <Flag className={`h-3 w-3 ${color}`} />
+                        {label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" className="flex-1">タスクを追加</Button>
-            
-            {isPremium && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleManualAnalysis}
-                disabled={
-                  !analysisButtonEnabled ||
-                  isClassifying ||
-                  isAnalyzingPriority ||
-                  newTodo.trim().length < 5
-                }
-              >
-                {isClassifying || isAnalyzingPriority ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin mr-2">
-                      <RefreshCcw className="h-3 w-3" />
+          {/* Advanced Options (Premium) */}
+          {isPremium && (
+            <>
+              <Separator />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="deadline">期限</Label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="deadline"
+                        type="datetime-local"
+                        value={formData.deadline}
+                        onChange={(e) => handleInputChange("deadline", e.target.value)}
+                        className="pl-10"
+                      />
                     </div>
-                    <span>分析中...</span>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    <span>AI分析</span>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="duration">予想作業時間（分）</Label>
+                    <div className="relative">
+                      <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="duration"
+                        type="number"
+                        min="5"
+                        max="480"
+                        step="5"
+                        value={formData.estimatedDuration}
+                        onChange={(e) => handleInputChange("estimatedDuration", parseInt(e.target.value) || 60)}
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
-                )}
-              </Button>
-            )}
-          </div>
-
-          {/* AI提案バッジを表示 */}
-          {isPremium && <AiSuggestionBadge />}
-
-          {/* 優先度の提案 */}
-          {isPremium && <PrioritySuggestionBadge />}
-        </form>
-      </div>
-
-      {/* 確約ダイアログ */}
-      <Dialog
-        open={showCommitmentDialog}
-        onOpenChange={setShowCommitmentDialog}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>タスクへのコミットメント</DialogTitle>
-            <DialogDescription>
-              このタスクを追加すると、必ず完了させる必要があります。削除はできません。
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-            <AlertTriangle className="h-6 w-6 text-yellow-500 mr-2" />
-            <div className="flex flex-col">
-              <p className="text-sm text-yellow-700">{commitmentText}</p>
-              <div className="flex items-center mt-1">
-                <div
-                  className={`flex items-center gap-1 text-xs px-2 py-1 rounded-md ${
-                    commitmentType === "input"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
-                      : "bg-green-50 text-green-700 border-green-200"
-                  }`}
-                >
-                  {commitmentType === "input" ? (
-                    <Download className="h-3 w-3 text-blue-500" />
-                  ) : (
-                    <Upload className="h-3 w-3 text-green-500" />
-                  )}
-                  <span>
-                    {commitmentType === "input" ? "インプット" : "アウトプット"}
-                  </span>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          {/* AI分析結果を表示 */}
-          {isPremium && classification && (
-            <div className="bg-purple-50 p-3 rounded-md border border-purple-200 mt-2">
-              <div className="flex items-center">
-                <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-                <span className="text-sm font-medium text-purple-700">
-                  AIによる分析
-                </span>
-              </div>
-              <p className="text-xs text-purple-600 mt-1">
-                {classification.explanation}
-              </p>
-            </div>
-          )}
-
-          {/* 優先度情報の表示 */}
-          {isPremium && priorityAnalysis && priorityAnalysis.isPrioritized && (
-            <div className="bg-amber-50 p-3 rounded-md border border-amber-200 mt-2">
-              <div className="flex items-center">
-                <ArrowUp className="h-4 w-4 text-amber-500 mr-2" />
-                <span className="text-sm font-medium text-amber-700">
-                  優先タスクとして検出
-                </span>
-              </div>
-              <p className="text-xs text-amber-600 mt-1">
-                {priorityAnalysis.explanation}
-              </p>
-
-              <div className="flex flex-wrap gap-3 mt-2">
-                <div className="flex items-center">
-                  <Zap className="h-3 w-3 text-amber-500 mr-1" />
-                  <span className="text-xs">
-                    重要度: {priorityAnalysis.importance}/10
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <AlertTriangle className="h-3 w-3 text-amber-500 mr-1" />
-                  <span className="text-xs">
-                    緊急度: {priorityAnalysis.urgency}/10
-                  </span>
-                </div>
-                {priorityAnalysis.suggestedDeadline && (
-                  <div className="flex items-center">
-                    <Calendar className="h-3 w-3 text-amber-500 mr-1" />
-                    <span className="text-xs">
-                      推奨期限: {priorityAnalysis.suggestedDeadline}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end mt-2">
-                <div className="flex items-center">
-                  <Checkbox
-                    id="priority-checkbox"
-                    checked={priorityEnabled}
-                    onCheckedChange={(checked) => setPriorityEnabled(!!checked)}
-                  />
-                  <label
-                    htmlFor="priority-checkbox"
-                    className="ml-2 text-xs text-amber-700"
+                <div className="space-y-2">
+                  <Label htmlFor="category">カテゴリ</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => handleInputChange("category", value)}
                   >
-                    優先タスクとして登録
-                  </label>
+                    <SelectTrigger>
+                      <SelectValue placeholder="カテゴリを選択（オプション）" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PREDEFINED_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>タグ</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="タグを入力してEnter"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="pl-10"
+                      />
+                    </div>
+                    <Button type="button" onClick={handleAddTag} variant="outline">
+                      追加
+                    </Button>
+                  </div>
+                  {formData.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTag(tag)}
+                            className="ml-1 hover:text-red-500"
+                            aria-label={`タグ ${tag} を削除`}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="prioritized"
+                    checked={formData.isPrioritized}
+                    onCheckedChange={(checked) => handleInputChange("isPrioritized", checked)}
+                  />
+                  <Label htmlFor="prioritized" className="flex items-center gap-2">
+                    <Target className="h-4 w-4" />
+                    今日の重要タスクとしてマーク
+                  </Label>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
-          {/* 期限表示 */}
-          {(deadline || suggestedDeadline) && (
-            <div className="bg-blue-50 p-3 rounded-md border border-blue-200 mt-2">
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 text-blue-500 mr-2" />
-                <span className="text-sm font-medium text-blue-700">
-                  タスクの期限
-                </span>
-              </div>
-              <p className="text-xs text-blue-600 mt-1">
-                {deadline
-                  ? `手動で設定された期限: ${deadline}`
-                  : `AIが提案した期限: ${suggestedDeadline}`}
-              </p>
-            </div>
-          )}
+          <Separator />
 
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowCommitmentDialog(false)}
-            >
-              キャンセル
+          {/* Form Actions */}
+          <div className="flex justify-between gap-3">
+            <Button type="button" variant="outline" onClick={handleReset}>
+              リセット
             </Button>
-            <Button onClick={confirmAddTodo}>コミットして追加する</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+            <div className="flex gap-2">
+              <Button type="button" variant="ghost" onClick={onClose}>
+                キャンセル
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "追加中..." : "タスクを追加"}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
-
-export default AddTodoForm;

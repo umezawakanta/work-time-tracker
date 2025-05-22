@@ -1,320 +1,305 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Edit,
-  Trash2,
-  Star,
-  Calendar,
-  Clock,
-  MoreHorizontal,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ja } from "date-fns/locale";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  GripVertical,
+  MoreHorizontal,
+  Edit3,
+  Trash2,
+  Flag,
+  Calendar,
+  Clock,
+  Tag,
+  TrendingUp,
+  TrendingDown,
+  Target,
+  AlertCircle,
+} from "lucide-react";
 
-// 共通の型をインポート
 import { Todo } from "@/types/todo";
 
 interface TodoItemProps {
-  todo: Todo;
-  isPremium?: boolean;
-  onTogglePriority: () => void;
-  onEditStart: () => void;
-  onDelete: () => void;
+  readonly todo: Todo;
+  readonly onToggle: (todo: Todo) => Promise<void>;
+  readonly onDelete: (todoId: string) => Promise<void>;
+  readonly onUpdate: (todoId: string, updates: Partial<Todo>) => Promise<void>;
+  readonly isPremium?: boolean;
+  readonly dragHandleProps?: Record<string, unknown> | null;
+  readonly isHighPriority?: boolean;
+  readonly isCompleted?: boolean;
 }
 
+const PRIORITY_CONFIG: Record<number, { color: string; label: string; }> = {
+  5: { color: "text-red-500", label: "最高" },
+  4: { color: "text-orange-500", label: "高" },
+  3: { color: "text-blue-500", label: "普通" },
+  2: { color: "text-green-500", label: "低" },
+  1: { color: "text-gray-500", label: "最低" },
+};
+
 /**
- * Todoアイテムを表示するコンポーネント
+ * Todo Item Component
+ * Individual task item with advanced features and interactions
  */
-const TodoItem: React.FC<TodoItemProps> = ({
+export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
-  isPremium = false,
-  onTogglePriority,
-  onEditStart,
+  onToggle,
   onDelete,
+  onUpdate,
+  isPremium = false,
+  dragHandleProps,
+  isHighPriority = false,
+  isCompleted = false,
 }) => {
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // 期限の書式と色を計算
-  const getDeadlineInfo = () => {
-    if (!todo.deadline) return null;
-
-    const deadlineDate = new Date(todo.deadline);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const deadlineDay = new Date(deadlineDate);
-    deadlineDay.setHours(0, 0, 0, 0);
-
-    let badgeClass = "";
-    if (deadlineDay < today) {
-      badgeClass = "deadline-expired";
-    } else if (deadlineDay.getTime() === today.getTime()) {
-      badgeClass = "deadline-today";
-    } else if (deadlineDay.getTime() === tomorrow.getTime()) {
-      badgeClass = "deadline-tomorrow";
-    } else {
-      badgeClass = "deadline-future";
+  const handleToggle = useCallback(async (): Promise<void> => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      await onToggle(todo);
+    } finally {
+      setIsLoading(false);
     }
+  }, [todo, onToggle, isLoading]);
 
-    return {
-      text: formatDistanceToNow(deadlineDate, { addSuffix: true, locale: ja }),
-      class: badgeClass,
-    };
-  };
-
-  const deadlineInfo = todo.deadline ? getDeadlineInfo() : null;
-
-  // プレミアム機能：タスク分析
-  const getTaskAnalysis = () => {
-    if (!isPremium) return null;
-
-    const completionTime =
-      todo.completed && todo.completedDate
-        ? (new Date(todo.completedDate).getTime() -
-            new Date(todo.createdAt).getTime()) /
-          (1000 * 60 * 60)
-        : null;
-
-    const hasDeadline = !!todo.deadline;
-
-    let analysisText = "";
-
-    if (todo.completed) {
-      if (completionTime !== null) {
-        if (completionTime < 1) {
-          const minutes = Math.round(completionTime * 60);
-          analysisText = `このタスクは約${minutes}分で完了しました。`;
-        } else {
-          analysisText = `このタスクは約${completionTime.toFixed(
-            1
-          )}時間で完了しました。`;
-        }
-      } else {
-        analysisText = "このタスクは完了しています。";
-      }
-
-      if (hasDeadline && todo.deadline) {
-        // ここで追加のチェックを行う
-        const deadlineDate = new Date(todo.deadline);
-        const completedDate = new Date(todo.completedDate!);
-        const isBeforeDeadline = completedDate < deadlineDate;
-
-        if (isBeforeDeadline) {
-          analysisText += " 期限内に完了することができました。";
-        } else {
-          analysisText += " 期限を過ぎて完了しました。";
-        }
-      }
-    } else {
-      analysisText = "このタスクはまだ完了していません。";
-
-      if (hasDeadline) {
-        const deadlineInfo = getDeadlineInfo();
-        analysisText += ` 期限は${deadlineInfo?.text}です。`;
-      } else {
-        analysisText += " 期限は設定されていません。";
-      }
+  const handleDelete = useCallback(async (): Promise<void> => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      await onDelete(todo.id);
+    } finally {
+      setIsLoading(false);
     }
+  }, [todo.id, onDelete, isLoading]);
 
-    return analysisText;
-  };
+  const formatDeadline = (deadline: string): string => {
+    const date = new Date(deadline);
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-  // タスク作成からの経過時間
-  const getElapsedTime = () => {
-    return formatDistanceToNow(new Date(todo.createdAt), {
-      addSuffix: true,
-      locale: ja,
+    if (diffDays < 0) return "期限切れ";
+    if (diffDays === 0) return "今日";
+    if (diffDays === 1) return "明日";
+    if (diffDays <= 7) return `${diffDays}日後`;
+    
+    return date.toLocaleDateString("ja-JP", {
+      month: "short",
+      day: "numeric",
     });
   };
 
+  const isOverdue = todo.deadline && new Date(todo.deadline) < new Date();
+  const isToday = todo.deadline && 
+    new Date(todo.deadline).toDateString() === new Date().toDateString();
+
+  const priorityConfig = PRIORITY_CONFIG[todo.priority] || PRIORITY_CONFIG[3];
+
+  const cardClassName = [
+    "group relative transition-all duration-200 hover:shadow-md",
+    isCompleted ? "opacity-75" : "",
+    isHighPriority ? "border-l-4 border-l-red-500 bg-red-50/30" : "",
+    isOverdue && !isCompleted ? "border-l-4 border-l-red-500 bg-red-50" : "",
+    isToday && !isCompleted ? "border-l-4 border-l-orange-500 bg-orange-50" : "",
+  ].filter(Boolean).join(" ");
+
   return (
-    <div className="flex-grow pl-3">
-      <div className="flex justify-between">
-        <div className="flex-1 min-w-0">
-          <p
-            className={`font-medium text-gray-900 ${
-              todo.completed ? "line-through text-gray-500" : ""
-            }`}
-          >
-            {todo.task}
-          </p>
-
-          <div className="flex flex-wrap gap-1 mt-1">
-            <Badge
-              variant="outline"
-              className={`text-xs ${
-                todo.type === "input"
-                  ? "bg-blue-50 text-blue-700 border-blue-200"
-                  : "bg-green-50 text-green-700 border-green-200"
-              }`}
+    <Card className={cardClassName}>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          {/* Drag Handle */}
+          {dragHandleProps && (
+            <div
+              {...dragHandleProps}
+              className="flex-shrink-0 p-1 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              {todo.type === "input" ? "インプット" : "アウトプット"}
-            </Badge>
+              <GripVertical className="h-4 w-4 text-gray-400" />
+            </div>
+          )}
 
-            {deadlineInfo && (
-              <Badge
-                variant="outline"
-                className={`text-xs ${deadlineInfo.class}`}
-              >
-                <Calendar className="h-3 w-3 mr-1" />
-                {deadlineInfo.text}
-              </Badge>
-            )}
-
-            {isPremium && (
-              <Badge
-                variant="outline"
-                className="text-xs bg-gray-50 text-gray-600"
-              >
-                <Clock className="h-3 w-3 mr-1" />
-                {getElapsedTime()}
-              </Badge>
-            )}
-
-            {todo.isPrioritized && (
-              <Badge className="text-xs bg-amber-100 text-amber-800 border-amber-200">
-                <Star className="h-3 w-3 mr-1" />
-                優先
-              </Badge>
-            )}
+          {/* Checkbox */}
+          <div className="flex-shrink-0 pt-0.5">
+            <Checkbox
+              checked={todo.completed}
+              onCheckedChange={handleToggle}
+              disabled={isLoading}
+              className="h-5 w-5"
+            />
           </div>
-        </div>
 
-        <div className="flex items-start gap-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>タスクを管理</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onTogglePriority}>
-                <Star className="h-4 w-4 mr-2" />
-                {todo.isPrioritized ? "優先から解除" : "優先に設定"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onEditStart}>
-                <Edit className="h-4 w-4 mr-2" />
-                編集
-              </DropdownMenuItem>
-              {isPremium && (
-                <DropdownMenuItem onClick={() => setIsDetailsOpen(true)}>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  詳細を表示
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={onDelete}
-                className="text-red-600 focus:bg-red-50"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                削除
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                {/* Task Text */}
+                <h4 className={`font-medium text-sm leading-tight ${
+                  todo.completed ? "line-through text-gray-500" : "text-gray-900"
+                }`}>
+                  {todo.text}
+                </h4>
 
-      {/* タスク詳細ダイアログ（プレミアム機能） */}
-      {isPremium && (
-        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{todo.task}</DialogTitle>
-              <DialogDescription>
-                {todo.completed ? "完了済み" : "未完了"} •{" "}
-                {todo.type === "input" ? "インプット" : "アウトプット"}
-              </DialogDescription>
-            </DialogHeader>
+                {/* Meta Information */}
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  {/* Type Badge */}
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs ${
+                      todo.type === "input" 
+                        ? "bg-blue-100 text-blue-700 border-blue-300" 
+                        : "bg-orange-100 text-orange-700 border-orange-300"
+                    }`}
+                  >
+                    {todo.type === "input" ? (
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                    ) : (
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                    )}
+                    {todo.type === "input" ? "インプット" : "アウトプット"}
+                  </Badge>
 
-            <div className="space-y-4">
-              {todo.deadline && (
-                <div>
-                  <h4 className="text-sm font-medium">期限</h4>
-                  <p className="text-sm">
-                    {new Date(todo.deadline).toLocaleString("ja-JP", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      weekday: "long",
-                    })}
-                  </p>
-                </div>
-              )}
+                  {/* Priority Badge */}
+                  {todo.priority > 3 && (
+                    <Badge variant="outline" className="text-xs">
+                      <Flag className={`h-3 w-3 mr-1 ${priorityConfig.color}`} />
+                      {priorityConfig.label}
+                    </Badge>
+                  )}
 
-              <div>
-                <h4 className="text-sm font-medium">作成日時</h4>
-                <p className="text-sm">
-                  {new Date(todo.createdAt).toLocaleString("ja-JP")}
-                </p>
-              </div>
+                  {/* Priority Mark */}
+                  {todo.isPrioritized && (
+                    <Badge variant="destructive" className="text-xs">
+                      <Target className="h-3 w-3 mr-1" />
+                      重要
+                    </Badge>
+                  )}
 
-              {todo.completed && todo.completedDate && (
-                <div>
-                  <h4 className="text-sm font-medium">完了日時</h4>
-                  <p className="text-sm">
-                    {new Date(todo.completedDate).toLocaleString("ja-JP")}
-                  </p>
-                </div>
-              )}
+                  {/* Deadline */}
+                  {todo.deadline && (
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs ${
+                        isOverdue ? "bg-red-100 text-red-700 border-red-300" :
+                        isToday ? "bg-orange-100 text-orange-700 border-orange-300" :
+                        "bg-gray-100 text-gray-700 border-gray-300"
+                      }`}
+                    >
+                      {isOverdue && <AlertCircle className="h-3 w-3 mr-1" />}
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {formatDeadline(todo.deadline)}
+                    </Badge>
+                  )}
 
-              <div className="bg-gray-50 p-3 rounded-md">
-                <h4 className="text-sm font-medium mb-1">タスク分析</h4>
-                <p className="text-sm text-gray-700">{getTaskAnalysis()}</p>
-              </div>
+                  {/* Estimated Duration */}
+                  {isPremium && todo.estimatedDuration && (
+                    <Badge variant="outline" className="text-xs bg-purple-100 text-purple-700 border-purple-300">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {todo.estimatedDuration}分
+                    </Badge>
+                  )}
 
-              {todo.efficiency && (
-                <div className="bg-indigo-50 p-3 rounded-md">
-                  <h4 className="text-sm font-medium mb-1">AI効率分析</h4>
-                  <p className="text-sm text-indigo-800">
-                    {todo.efficiency.suggestion ||
-                      "このタスクには効率化のポイントがありません。"}
-                  </p>
-                  {todo.efficiency.efficiencyScore !== undefined && (
-                    <div className="mt-2">
-                      <span className="text-xs font-medium">効率スコア: </span>
-                      <span className="text-xs font-bold">
-                        {todo.efficiency.efficiencyScore}/100
-                      </span>
-                    </div>
+                  {/* Category */}
+                  {isPremium && todo.category && (
+                    <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-300">
+                      <Tag className="h-3 w-3 mr-1" />
+                      {todo.category}
+                    </Badge>
                   )}
                 </div>
-              )}
-            </div>
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">閉じる</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
+                {/* Tags */}
+                {isPremium && todo.tags && todo.tags.length > 0 && (
+                  <div className="flex items-center gap-1 mt-2 flex-wrap">
+                    {todo.tags.slice(0, 3).map((tag) => (
+                      <Badge 
+                        key={tag} 
+                        variant="secondary" 
+                        className="text-xs bg-gray-100 text-gray-600"
+                      >
+                        #{tag}
+                      </Badge>
+                    ))}
+                    {todo.tags.length > 3 && (
+                      <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                        +{todo.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                )}
+
+                {/* Completion Time */}
+                {todo.completed && todo.completedAt && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    完了: {new Date(todo.completedAt).toLocaleString("ja-JP", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                )}
+              </div>
+
+              {/* Actions Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    編集
+                  </DropdownMenuItem>
+                  
+                  {!todo.isPrioritized && (
+                    <DropdownMenuItem 
+                      onClick={() => onUpdate(todo.id, { isPrioritized: true })}
+                    >
+                      <Target className="h-4 w-4 mr-2" />
+                      重要タスクにする
+                    </DropdownMenuItem>
+                  )}
+
+                  {todo.isPrioritized && (
+                    <DropdownMenuItem 
+                      onClick={() => onUpdate(todo.id, { isPrioritized: false })}
+                    >
+                      <Target className="h-4 w-4 mr-2" />
+                      重要タスクを解除
+                    </DropdownMenuItem>
+                  )}
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem 
+                    onClick={handleDelete}
+                    className="text-red-600 focus:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    削除
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
-
-export default TodoItem;

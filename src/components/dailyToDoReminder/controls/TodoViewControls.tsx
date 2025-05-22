@@ -1,59 +1,51 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Filter,
-  PlusCircle,
-  Sparkles,
-  ArrowUpDown,
-  Clock,
-  Calendar,
+  Plus,
   Settings,
-  BarChart,
+  Zap,
+  Calendar,
+  CheckCircle,
+  Circle,
+  ArrowUpDown,
 } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { selectIsPremium } from "@/store/todoSlice";
-import TodoFilters from "../todo/TodoFilters";
-import AddTodoForm from "../todo/AddTodoForm";
-import AdvancedOptions from "./AdvancedOptions";
-import { SortOption } from "@/types/todo";
+
+type FilterStatus = "all" | "active" | "completed";
+type CategoryFilter = "all" | "input" | "output" | "deadline";
 
 interface TodoViewControlsProps {
-  showFilters: boolean;
-  setShowFilters: (show: boolean) => void;
-  showAddForm: boolean;
-  setShowAddForm: (show: boolean) => void;
-  filterStatus: string;
-  setFilterStatus: (status: string) => void;
-  categoryFilter: string;
-  setCategoryFilter: (category: string) => void;
-  autoAdjustEnabled: boolean;
-  setAutoAdjustEnabled: (enabled: boolean) => void;
-  onAdjustPriorities: () => void;
-  sortOption?: SortOption;
-  setSortOption?: (option: SortOption) => void;
-  onExportTasks?: () => void;
-  onImportTasks?: (file: File) => void;
-  onShowAnalytics?: () => void;
-  onShowSettings?: () => void;
-  isPremium?: boolean;
+  readonly showFilters: boolean;
+  readonly setShowFilters: (show: boolean) => void;
+  readonly showAddForm: boolean;
+  readonly setShowAddForm: (show: boolean) => void;
+  readonly filterStatus: FilterStatus;
+  readonly setFilterStatus: (status: FilterStatus) => void;
+  readonly categoryFilter: CategoryFilter;
+  readonly setCategoryFilter: (category: CategoryFilter) => void;
+  readonly autoAdjustEnabled: boolean;
+  readonly setAutoAdjustEnabled: (enabled: boolean) => void;
+  readonly onAdjustPriorities: () => void;
 }
 
 /**
- * Todoリストの表示制御コンポーネント
- * フィルターやタスク追加フォームの表示/非表示を管理する
+ * Todo View Controls Component
+ * Provides filtering, sorting, and view control options
  */
-const TodoViewControls: React.FC<TodoViewControlsProps> = ({
+export const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   showFilters,
   setShowFilters,
   showAddForm,
@@ -65,276 +57,230 @@ const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   autoAdjustEnabled,
   setAutoAdjustEnabled,
   onAdjustPriorities,
-  sortOption = "priority",
-  setSortOption,
-  onShowAnalytics,
-  onShowSettings,
-  isPremium: propIsPremium,
 }) => {
-  // Storeからのプレミアム状態も確認
-  const storeIsPremium = useSelector(selectIsPremium);
-  const isPremium = propIsPremium || storeIsPremium;
-
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [recentActions, setRecentActions] = useState<
-    { action: string; timestamp: number }[]
-  >([]);
-
-  // ソート順オプション
-  const sortOptions: { value: SortOption; label: string; icon: React.ReactNode }[] =
-    [
-      {
-        value: "priority",
-        label: "優先度順",
-        icon: <Sparkles className="h-4 w-4" />,
-      },
-      {
-        value: "newest",
-        label: "新しい順",
-        icon: <Clock className="h-4 w-4" />,
-      },
-      {
-        value: "deadline",
-        label: "期限順",
-        icon: <Calendar className="h-4 w-4" />,
-      },
-      {
-        value: "type",
-        label: "タイプ順",
-        icon: <ArrowUpDown className="h-4 w-4" />,
-      },
-    ];
-
-  // アクション履歴に追加
-  const addToRecentActions = (action: string) => {
-    const newAction = {
-      action,
-      timestamp: Date.now(),
-    };
-
-    setRecentActions((prev) => [newAction, ...prev].slice(0, 5));
-
-    // ローカルストレージに保存（持続性のため）
-    try {
-      const storedActions = localStorage.getItem("recentTodoActions");
-      const actions = storedActions ? JSON.parse(storedActions) : [];
-      const updatedActions = [newAction, ...actions].slice(0, 10);
-      localStorage.setItem("recentTodoActions", JSON.stringify(updatedActions));
-    } catch (error) {
-      console.error("アクション履歴の保存に失敗しました", error);
+  const getStatusIcon = (status: FilterStatus): React.ReactNode => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle className="h-3 w-3" />;
+      case "active":
+        return <Circle className="h-3 w-3" />;
+      default:
+        return <ArrowUpDown className="h-3 w-3" />;
     }
   };
 
-  // フィルター切り替え
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-    addToRecentActions("フィルター" + (!showFilters ? "表示" : "非表示"));
-  };
-
-  // タスク追加フォーム切り替え
-  const toggleAddForm = () => {
-    setShowAddForm(!showAddForm);
-    addToRecentActions(
-      "タスク追加フォーム" + (!showAddForm ? "表示" : "非表示")
-    );
-  };
-
-  // ソートオプション変更
-  const handleSortChange = (option: SortOption) => {
-    if (setSortOption) {
-      setSortOption(option);
-      addToRecentActions(`ソート変更: ${option}`);
+  const getStatusLabel = (status: FilterStatus): string => {
+    switch (status) {
+      case "completed":
+        return "完了済み";
+      case "active":
+        return "未完了";
+      default:
+        return "すべて";
     }
   };
 
-  // アナリティクス表示
-  const handleShowAnalytics = () => {
-    if (onShowAnalytics) {
-      onShowAnalytics();
-      addToRecentActions("タスク分析を表示");
+  const getCategoryLabel = (category: CategoryFilter): string => {
+    switch (category) {
+      case "input":
+        return "インプット";
+      case "output":
+        return "アウトプット";
+      case "deadline":
+        return "期限あり";
+      default:
+        return "すべて";
     }
-  };
-
-  // 設定表示
-  const handleShowSettings = () => {
-    if (onShowSettings) {
-      onShowSettings();
-      addToRecentActions("設定を表示");
-    }
-  };
-
-  // 最近のアクションから経過時間を計算
-  const getElapsedTime = (timestamp: number): string => {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-
-    if (seconds < 60) return `${seconds}秒前`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}分前`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}時間前`;
-    return `${Math.floor(seconds / 86400)}日前`;
   };
 
   return (
-    <>
-      {/* メインコントロールバー */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
+    <div className="space-y-3">
+      {/* Control Bar */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          {/* Filter Toggle */}
           <Button
-            variant="outline"
+            variant={showFilters ? "default" : "outline"}
             size="sm"
-            onClick={toggleFilters}
-            className="flex items-center gap-1"
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2"
           >
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">フィルター</span>
+            {(filterStatus !== "all" || categoryFilter !== "all") && (
+              <Badge variant="secondary" className="text-xs px-1">
+                {(filterStatus !== "all" ? 1 : 0) +
+                  (categoryFilter !== "all" ? 1 : 0)}
+              </Badge>
+            )}
           </Button>
 
-          {isPremium && setSortOption && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1"
-                >
-                  <ArrowUpDown className="h-4 w-4" />
-                  <span className="hidden sm:inline">並び替え</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 p-0" align="start">
-                <div className="p-2">
-                  <h3 className="font-medium text-sm mb-2">ソート順</h3>
-                  <div className="space-y-1">
-                    {sortOptions.map((option) => (
-                      <Button
-                        key={option.value}
-                        variant={
-                          sortOption === option.value ? "default" : "ghost"
-                        }
-                        size="sm"
-                        className="w-full justify-start"
-                        onClick={() => handleSortChange(option.value)}
-                      >
-                        {option.icon}
-                        <span className="ml-2">{option.label}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-
-          {isPremium && onShowAnalytics && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleShowAnalytics}
-                  >
-                    <BarChart className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>タスク分析</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {/* Quick Status Filters */}
+          <div className="hidden md:flex items-center space-x-1">
+            <Button
+              variant={filterStatus === "all" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setFilterStatus("all")}
+              className="flex items-center gap-1"
+            >
+              {getStatusIcon("all")}
+              <span>すべて</span>
+            </Button>
+            <Button
+              variant={filterStatus === "active" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setFilterStatus("active")}
+              className="flex items-center gap-1"
+            >
+              {getStatusIcon("active")}
+              <span>未完了</span>
+            </Button>
+            <Button
+              variant={filterStatus === "completed" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setFilterStatus("completed")}
+              className="flex items-center gap-1"
+            >
+              {getStatusIcon("completed")}
+              <span>完了済み</span>
+            </Button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {isPremium && (
-            <>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setShowAdvancedOptions(!showAdvancedOptions)
-                      }
-                    >
-                      <Sparkles className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>高度なオプション</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+        <div className="flex items-center space-x-2">
+          {/* Settings Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline ml-1">設定</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>表示設定</DropdownMenuLabel>
+              <DropdownMenuSeparator />
 
-              {onShowSettings && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleShowSettings}
-                      >
-                        <Settings className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>設定</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </>
-          )}
+              <div className="p-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="auto-adjust" className="text-sm">
+                    自動優先度調整
+                  </Label>
+                  <Switch
+                    id="auto-adjust"
+                    checked={autoAdjustEnabled}
+                    onCheckedChange={setAutoAdjustEnabled}
+                  />
+                </div>
+              </div>
 
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem onClick={onAdjustPriorities}>
+                <Zap className="h-4 w-4 mr-2" />
+                優先度を今すぐ調整
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Add Task Button */}
           <Button
             size="sm"
-            onClick={toggleAddForm}
-            className="flex items-center gap-1"
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="flex items-center gap-2"
           >
-            <PlusCircle className="h-4 w-4" />
-            <span>新しいタスク</span>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">タスク追加</span>
           </Button>
         </div>
       </div>
 
-      {/* プレミアムユーザー向け高度なオプション - 別コンポーネントに移動 */}
-      {isPremium && showAdvancedOptions && (
-        <AdvancedOptions
-          autoAdjustEnabled={autoAdjustEnabled}
-          setAutoAdjustEnabled={setAutoAdjustEnabled}
-          onAdjustPriorities={onAdjustPriorities}
-          recentActions={recentActions}
-          getElapsedTime={getElapsedTime}
-        />
-      )}
-
-      {/* フィルターエリア（トグル式） */}
+      {/* Filter Panel */}
       {showFilters && (
-        <TodoFilters
-          filterStatus={filterStatus}
-          setFilterStatus={setFilterStatus}
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          autoAdjustEnabled={autoAdjustEnabled}
-          setAutoAdjustEnabled={setAutoAdjustEnabled}
-          onAdjustPriorities={onAdjustPriorities}
-          isPremium={isPremium}
-        />
-      )}
+        <Card className="border-dashed">
+          <CardContent className="p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">ステータス</Label>
+                <div className="flex flex-wrap gap-2">
+                  {(["all", "active", "completed"] as const).map((status) => (
+                    <Button
+                      key={status}
+                      variant={filterStatus === status ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setFilterStatus(status)}
+                      className="flex items-center gap-1"
+                    >
+                      {getStatusIcon(status)}
+                      <span>{getStatusLabel(status)}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
 
-      {/* タスク追加フォーム（トグル式） */}
-      {showAddForm && (
-        <AddTodoForm
-          onAddSuccess={() => {
-            setShowAddForm(false);
-            addToRecentActions("タスク追加");
-          }}
-          isPremium={isPremium}
-        />
+              {/* Category Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">カテゴリ</Label>
+                <div className="flex flex-wrap gap-2">
+                  {(["all", "input", "output", "deadline"] as const).map(
+                    (category) => (
+                      <Button
+                        key={category}
+                        variant={
+                          categoryFilter === category ? "default" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => setCategoryFilter(category)}
+                        className="flex items-center gap-1"
+                      >
+                        <Calendar className="h-3 w-3" />
+                        <span>{getCategoryLabel(category)}</span>
+                      </Button>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Active Filters Summary */}
+            {(filterStatus !== "all" || categoryFilter !== "all") && (
+              <>
+                <Separator className="my-3" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">
+                      適用中のフィルター:
+                    </span>
+                    <div className="flex gap-1">
+                      {filterStatus !== "all" && (
+                        <Badge variant="secondary" className="text-xs">
+                          {getStatusLabel(filterStatus)}
+                        </Badge>
+                      )}
+                      {categoryFilter !== "all" && (
+                        <Badge variant="secondary" className="text-xs">
+                          {getCategoryLabel(categoryFilter)}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setFilterStatus("all");
+                      setCategoryFilter("all");
+                    }}
+                    className="text-xs"
+                  >
+                    すべてクリア
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
       )}
-    </>
+    </div>
   );
 };
-
-export default TodoViewControls;
