@@ -6,33 +6,23 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   ListChecks,
-  GripVertical,
-  TrendingUp,
-  TrendingDown,
-  Clock,
   Flag,
-  Calendar,
-  Tag,
   Sparkles,
   CheckCircle2,
   Circle,
-  MoreHorizontal,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import {
-  toggleTodoItem,
   updateTodoItem,
   deleteTodoItem,
-  reorderTodoItems,
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
 import { Todo } from "../types";
-import { getErrorMessage } from "../../utils/errorUtils";
+import { getErrorMessage } from "../utils/errorUtils";
 
 // Sub-components
 import { TodoItem } from "./TodoItem";
-import { EmptyState } from "./EmptyState";
 
 interface TodoListProps {
   readonly todos: readonly Todo[];
@@ -45,14 +35,6 @@ interface GroupedTodos {
   readonly active: readonly Todo[];
   readonly completed: readonly Todo[];
 }
-
-const PRIORITY_COLORS: Record<number, string> = {
-  5: "border-l-red-500 bg-red-50",
-  4: "border-l-orange-500 bg-orange-50",
-  3: "border-l-blue-500 bg-blue-50",
-  2: "border-l-green-500 bg-green-50",
-  1: "border-l-gray-500 bg-gray-50",
-};
 
 /**
  * Todo List Component
@@ -99,7 +81,11 @@ export const TodoList: React.FC<TodoListProps> = ({
   const handleToggleComplete = useCallback(
     async (todo: Todo): Promise<void> => {
       try {
-        await dispatch(toggleTodoItem(todo.id)).unwrap();
+        // Toggle completion status using updateTodoItem
+        await dispatch(updateTodoItem({ 
+          _id: todo.id, 
+          updates: { completed: !todo.completed } 
+        })).unwrap();
 
         const message = todo.completed
           ? "タスクを未完了に戻しました"
@@ -131,33 +117,28 @@ export const TodoList: React.FC<TodoListProps> = ({
   const handleUpdate = useCallback(
     async (todoId: string, updates: Partial<Todo>): Promise<void> => {
       try {
-        await dispatch(updateTodoItem({ id: todoId, updates })).unwrap();
+        // Map local Todo properties to global TodoItem properties
+        const mappedUpdates: Partial<{
+          task?: string;
+          priority?: number;
+          isPrioritized?: boolean;
+          type?: "input" | "output";
+          deadline?: string;
+          completed?: boolean;
+        }> = {};
+        
+        if (updates.text !== undefined) mappedUpdates.task = updates.text;
+        if (updates.priority !== undefined) mappedUpdates.priority = updates.priority;
+        if (updates.isPrioritized !== undefined) mappedUpdates.isPrioritized = updates.isPrioritized;
+        if (updates.type !== undefined) mappedUpdates.type = updates.type;
+        if (updates.deadline !== undefined) mappedUpdates.deadline = updates.deadline;
+        if (updates.completed !== undefined) mappedUpdates.completed = updates.completed;
+        
+        await dispatch(updateTodoItem({ _id: todoId, updates: mappedUpdates })).unwrap();
         toast.success("タスクを更新しました");
       } catch (err) {
         const errorMessage = getErrorMessage(err);
         toast.error(`更新に失敗しました: ${errorMessage}`);
-      }
-    },
-    [dispatch]
-  );
-
-  const handleDragEnd = useCallback(
-    (draggedId: string, newPosition: number): void => {
-      try {
-        dispatch(
-          reorderTodoItems({
-            sourceIndex: 0, // Will be calculated based on current position
-            destinationIndex: newPosition,
-            sourceGroupId: "active",
-            destinationGroupId: "active",
-            todoId: draggedId,
-          })
-        );
-
-        toast.success("タスクの順序を変更しました");
-      } catch (err) {
-        const errorMessage = getErrorMessage(err);
-        toast.error(`並び替えに失敗しました: ${errorMessage}`);
       }
     },
     [dispatch]
@@ -178,7 +159,27 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   if (todos.length === 0) {
     return (
-      <EmptyState onAnalyzeRequest={onAnalyzeRequest} isPremium={isPremium} />
+      <Card className="bg-gradient-to-r from-gray-50 to-slate-50 border-gray-200">
+        <CardContent className="p-8 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <Circle className="h-12 w-12 text-gray-400" />
+            <div>
+              <h3 className="font-medium text-gray-900 mb-1">タスクがありません</h3>
+              <p className="text-sm text-gray-500">新しいタスクを追加して始めましょう</p>
+            </div>
+            {isPremium && onAnalyzeRequest && (
+              <Button
+                onClick={onAnalyzeRequest}
+                variant="outline"
+                className="mt-2"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                AI分析を開始
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -242,7 +243,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.prioritized.map((todo, index) => (
+              {groupedTodos.prioritized.map((todo) => (
                 <TodoItem
                   key={todo.id}
                   todo={todo}
@@ -270,7 +271,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.active.map((todo, index) => (
+              {groupedTodos.active.map((todo) => (
                 <TodoItem
                   key={todo.id}
                   todo={todo}
@@ -303,7 +304,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             <div className="space-y-2">
               {groupedTodos.completed
                 .slice(0, isPremium ? 10 : 3)
-                .map((todo, index) => (
+                .map((todo) => (
                   <TodoItem
                     key={todo.id}
                     todo={todo}
