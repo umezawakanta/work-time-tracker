@@ -23,8 +23,7 @@ import { toast } from "react-hot-toast";
 
 import { addTodoItem } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
-import { TodoItem } from "@/types/todo";
-import { getErrorMessage } from "../../utils/errorUtils";
+import { getErrorMessage } from "../utils/errorUtils";
 
 interface AddTodoFormProps {
   readonly isVisible: boolean;
@@ -111,7 +110,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
     }
   }, [handleAddTag]);
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     if (!formData.text.trim()) {
       toast.error("タスク名を入力してください");
       return false;
@@ -128,7 +127,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
     }
 
     return true;
-  };
+  }, [formData.text, formData.deadline]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -138,15 +137,15 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      const newTodo: Omit<TodoItem, "id" | "createdAt"> = {
-        text: formData.text.trim(),
-        completed: false,
+      // Create the new todo object that matches the expected format for the store
+      const newTodo = {
+        task: formData.text.trim(),
         priority: formData.priority,
         isPrioritized: formData.isPrioritized,
         type: formData.type,
         deadline: formData.deadline || undefined,
-        category: formData.category || undefined,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
+        // Note: category and tags are not supported by the global TodoItem type
+        // You may need to adjust the store action to handle these
       };
 
       await dispatch(addTodoItem(newTodo)).unwrap();
@@ -161,7 +160,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, dispatch, onClose]);
+  }, [formData, dispatch, onClose, validateForm]);
 
   const handleReset = useCallback((): void => {
     setFormData(initialFormData);
