@@ -197,10 +197,16 @@ const DiaryPage: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   // useRefは循環依存を解決するために使用
-  const saveStreakDataRef = useRef<(data: Streak) => void>();
-  const saveEntriesRef = useRef<(newEntries: DiaryEntry[]) => void>();
-  const calculateStreaksRef = useRef<(entries: DiaryEntry[]) => void>();
-  const checkAchievementsRef = useRef<() => void>();
+  const saveStreakDataRef = useRef<((data: Streak) => void) | undefined>(
+    undefined
+  );
+  const saveEntriesRef = useRef<
+    ((newEntries: DiaryEntry[]) => void) | undefined
+  >(undefined);
+  const calculateStreaksRef = useRef<
+    ((entries: DiaryEntry[]) => void) | undefined
+  >(undefined);
+  const checkAchievementsRef = useRef<(() => void) | undefined>(undefined);
 
   // ブレークポイント検出
   useEffect(() => {
