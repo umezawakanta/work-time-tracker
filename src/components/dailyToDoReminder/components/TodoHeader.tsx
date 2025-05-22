@@ -65,7 +65,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
             variant="outline"
             className="bg-amber-100 text-amber-800 flex items-center gap-1 premium-badge"
           >
-            <Award className="h-3 w-3" aria-hidden="true" />
+            <Award className="h-3 w-3" size={10} aria-hidden="true" />
             <span>プレミアム</span>
           </Badge>
         )}
@@ -79,7 +79,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
           className="reset-button"
           aria-label="1日を締める"
         >
-          <RefreshCcw className="h-4 w-4 mr-1" aria-hidden="true" />
+          <RefreshCcw className="h-4 w-4 mr-1" size={16} aria-hidden="true" />
           <span className="hidden sm:inline">1日を締める</span>
         </Button>
       </div>
