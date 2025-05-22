@@ -120,7 +120,7 @@ const practiceFormSchema = z.object({
   satisfaction: z.number({
     required_error: "満足度を選択してください",
   }).min(1).max(5),
-  isMilestone: z.boolean().default(false),
+  isMilestone: z.boolean(), // .default(false)を削除して、明示的にbooleanにする
 });
 
 // 新しい練習記録を作成するコンポーネント

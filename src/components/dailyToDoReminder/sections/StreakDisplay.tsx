@@ -1,4 +1,3 @@
-import React from 'react';
 import { Award } from "lucide-react";
 import {
   Tooltip,
