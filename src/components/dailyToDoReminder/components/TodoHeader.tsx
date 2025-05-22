@@ -12,7 +12,7 @@ import {
   fetchDailyTodoHistory,
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
-import { StreakDisplay } from "../sections/StreakDisplay";
+import StreakDisplay from "../sections/StreakDisplay";
 
 interface TodoHeaderProps {
   readonly hasPremium: boolean;
