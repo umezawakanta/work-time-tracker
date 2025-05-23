@@ -13,6 +13,7 @@ import { Brain } from "lucide-react";
 
 // Sub-components (will be implemented separately)
 import { TodoList } from "../todo/TodoList";
+import { AddTodoForm } from "../todo/AddTodoForm";
 import { TodoCalendar } from "@/components/calendar/TodoCalendar";
 import { TodoChart } from "@/components/chart/TodoChart";
 import TodoAnalysis from "../../todoAnalysis/TodoAnalysis";
@@ -128,6 +129,13 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
           autoAdjustEnabled={autoAdjustEnabled}
           setAutoAdjustEnabled={setAutoAdjustEnabled}
           onAdjustPriorities={handleAdjustPriorities}
+        />
+
+        {/* タスク追加フォームを表示 */}
+        <AddTodoForm
+          isVisible={showAddForm}
+          onClose={() => setShowAddForm(false)}
+          isPremium={hasPremium}
         />
 
         <TodoList

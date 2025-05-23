@@ -18,12 +18,15 @@ import {
   Target,
   X,
   Sparkles,
+  Brain,
+  Loader2,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import { addTodoItem } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
 import { getErrorMessage } from "../utils/errorUtils";
+import taskAnalyzer from "@/services/RateLimitedTaskAnalyzer";
 
 interface AddTodoFormProps {
   readonly isVisible: boolean;
@@ -83,6 +86,7 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [tagInput, setTagInput] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
 
   const handleInputChange = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]): void => {
@@ -90,6 +94,70 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
     },
     []
   );
+
+  // AI分析機能
+  const handleAIAnalysis = useCallback(async (): Promise<void> => {
+    if (!formData.text.trim()) {
+      toast.error("タスク名を入力してください");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const analysisResult = await taskAnalyzer.analyzeBoth(formData.text);
+      
+      if (analysisResult) {
+        // タイプの分析結果を反映
+        if (analysisResult.typeAnalysis) {
+          // 大文字から小文字に変換
+          const type = analysisResult.typeAnalysis.type.toLowerCase() as TodoType;
+          handleInputChange("type", type);
+          
+          // confidenceが高い場合のみ自動設定
+          if (analysisResult.typeAnalysis.confidence > 0.7) {
+            toast.success(`タスクタイプを「${type === "input" ? "インプット" : "アウトプット"}」に設定しました`);
+          }
+        }
+        
+        // 優先度の分析結果を反映
+        if (analysisResult.priorityAnalysis) {
+          // importance と urgency から優先度を計算
+          const importance = analysisResult.priorityAnalysis.importance;
+          const urgency = analysisResult.priorityAnalysis.urgency;
+          
+          let priority: PriorityLevel = 3; // デフォルト値
+          
+          // 重要度と緊急度の平均値を計算（1-10のスケールから1-5に変換）
+          const averageScore = (importance + urgency) / 2;
+          
+          if (averageScore >= 9) priority = 5;
+          else if (averageScore >= 7) priority = 4;
+          else if (averageScore >= 5) priority = 3;
+          else if (averageScore >= 3) priority = 2;
+          else priority = 1;
+          
+          handleInputChange("priority", priority);
+          
+          // isPrioritized フラグの設定
+          if (analysisResult.priorityAnalysis.isPrioritized) {
+            handleInputChange("isPrioritized", true);
+          }
+          
+          // 説明がある場合はトーストで表示
+          if (analysisResult.priorityAnalysis.explanation) {
+            toast.success(analysisResult.priorityAnalysis.explanation);
+          }
+        }
+        
+        toast.success("AIがタスクを分析しました！");
+      }
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      toast.error("AI分析に失敗しました。しばらくしてから再度お試しください。");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [formData.text, handleInputChange]);
 
   const handleAddTag = useCallback((): void => {
     const trimmedTag = tagInput.trim();
@@ -194,7 +262,26 @@ export const AddTodoForm: React.FC<AddTodoFormProps> = ({
           {/* Basic Information */}
           <div className="space-y-4">
             <div className="grid w-full gap-2">
-              <Label htmlFor="task-name">タスク名 *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="task-name">タスク名 *</Label>
+                {isPremium && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAIAnalysis}
+                    disabled={!formData.text.trim() || isAnalyzing}
+                    className="flex items-center gap-1"
+                  >
+                    {isAnalyzing ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Brain className="h-3 w-3" />
+                    )}
+                    <span className="text-xs">AI分析</span>
+                  </Button>
+                )}
+              </div>
               <Input
                 id="task-name"
                 placeholder="今日やることを入力してください"
