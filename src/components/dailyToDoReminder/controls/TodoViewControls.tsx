@@ -1,8 +1,6 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,14 +16,20 @@ import {
   Plus,
   Settings,
   Zap,
-  Calendar,
-  CheckCircle,
-  Circle,
-  ArrowUpDown,
+  Download,
+  Upload,
+  Palette,
 } from "lucide-react";
+import { useAnalytics } from "../hooks/useAnalytics";
+import { FilterPanel } from "./FilterPanel";
+import { QuickActions } from "./QuickActions";
+import { ViewSettings } from "./ViewSettings";
+import { cn } from "@/lib/utils";
 
-type FilterStatus = "all" | "active" | "completed";
-type CategoryFilter = "all" | "input" | "output" | "deadline";
+export type FilterStatus = "all" | "active" | "completed";
+export type CategoryFilter = "all" | "input" | "output" | "deadline";
+export type SortOption = "priority" | "deadline" | "created" | "title";
+export type ViewMode = "list" | "grid" | "kanban";
 
 interface TodoViewControlsProps {
   readonly showFilters: boolean;
@@ -39,13 +43,19 @@ interface TodoViewControlsProps {
   readonly autoAdjustEnabled: boolean;
   readonly setAutoAdjustEnabled: (enabled: boolean) => void;
   readonly onAdjustPriorities: () => void;
+  readonly viewMode?: ViewMode;
+  readonly setViewMode?: (mode: ViewMode) => void;
+  readonly sortOption?: SortOption;
+  readonly setSortOption?: (option: SortOption) => void;
+  readonly isPremium?: boolean;
 }
 
 /**
- * Todo View Controls Component
- * Provides filtering, sorting, and view control options
+ * TodoViewControls Component
+ * エンタープライズグレードのタスク管理コントロール
+ * 高度なフィルタリング、ソート、ビュー制御を提供
  */
-export const TodoViewControls: React.FC<TodoViewControlsProps> = ({
+export const TodoViewControls: React.FC<TodoViewControlsProps> = React.memo(({
   showFilters,
   setShowFilters,
   showAddForm,
@@ -57,98 +67,105 @@ export const TodoViewControls: React.FC<TodoViewControlsProps> = ({
   autoAdjustEnabled,
   setAutoAdjustEnabled,
   onAdjustPriorities,
+  viewMode = "list",
+  setViewMode,
+  sortOption = "priority",
+  setSortOption,
+  isPremium = false,
 }) => {
-  const getStatusIcon = (status: FilterStatus): React.ReactNode => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="h-3 w-3" />;
-      case "active":
-        return <Circle className="h-3 w-3" />;
-      default:
-        return <ArrowUpDown className="h-3 w-3" />;
-    }
-  };
+  const analytics = useAnalytics();
 
-  const getStatusLabel = (status: FilterStatus): string => {
-    switch (status) {
-      case "completed":
-        return "完了済み";
-      case "active":
-        return "未完了";
-      default:
-        return "すべて";
-    }
-  };
+  // アクティブフィルター数の計算
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filterStatus !== "all") count++;
+    if (categoryFilter !== "all") count++;
+    return count;
+  }, [filterStatus, categoryFilter]);
 
-  const getCategoryLabel = (category: CategoryFilter): string => {
-    switch (category) {
-      case "input":
-        return "インプット";
-      case "output":
-        return "アウトプット";
-      case "deadline":
-        return "期限あり";
-      default:
-        return "すべて";
-    }
-  };
+  // フィルター変更ハンドラー
+  const handleFilterStatusChange = useCallback((status: FilterStatus) => {
+    setFilterStatus(status);
+    analytics.track("todo_filter_changed", { type: "status", value: status });
+  }, [setFilterStatus, analytics]);
+
+  const handleCategoryFilterChange = useCallback((category: CategoryFilter) => {
+    setCategoryFilter(category);
+    analytics.track("todo_filter_changed", { type: "category", value: category });
+  }, [setCategoryFilter, analytics]);
+
+  // 設定変更ハンドラー
+  const handleAutoAdjustToggle = useCallback((enabled: boolean) => {
+    setAutoAdjustEnabled(enabled);
+    analytics.track("todo_settings_changed", { 
+      setting: "auto_adjust", 
+      value: enabled 
+    });
+  }, [setAutoAdjustEnabled, analytics]);
+
+  const handleAdjustPriorities = useCallback(() => {
+    onAdjustPriorities();
+    analytics.track("todo_priorities_adjusted");
+  }, [onAdjustPriorities, analytics]);
+
+  // すべてのフィルターをクリア
+  const handleClearAllFilters = useCallback(() => {
+    setFilterStatus("all");
+    setCategoryFilter("all");
+    analytics.track("todo_filters_cleared");
+  }, [setFilterStatus, setCategoryFilter, analytics]);
 
   return (
     <div className="space-y-3">
-      {/* Control Bar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          {/* Filter Toggle */}
+      {/* メインコントロールバー */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          {/* フィルタートグル */}
           <Button
             variant={showFilters ? "default" : "outline"}
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2"
+            className={cn(
+              "flex items-center gap-2 transition-all",
+              showFilters && "shadow-sm"
+            )}
           >
             <Filter className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">フィルター</span>
-            {(filterStatus !== "all" || categoryFilter !== "all") && (
-              <Badge variant="secondary" className="text-xs px-1">
-                {(filterStatus !== "all" ? 1 : 0) +
-                  (categoryFilter !== "all" ? 1 : 0)}
+            {activeFilterCount > 0 && (
+              <Badge 
+                variant="secondary" 
+                className="text-xs px-1 ml-1 bg-primary/20"
+              >
+                {activeFilterCount}
               </Badge>
             )}
           </Button>
 
-          {/* Quick Status Filters */}
-          <div className="hidden md:flex items-center space-x-1">
-            <Button
-              variant={filterStatus === "all" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilterStatus("all")}
-              className="flex items-center gap-1"
-            >
-              {getStatusIcon("all")}
-              <span>すべて</span>
-            </Button>
-            <Button
-              variant={filterStatus === "active" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilterStatus("active")}
-              className="flex items-center gap-1"
-            >
-              {getStatusIcon("active")}
-              <span>未完了</span>
-            </Button>
-            <Button
-              variant={filterStatus === "completed" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setFilterStatus("completed")}
-              className="flex items-center gap-1"
-            >
-              {getStatusIcon("completed")}
-              <span>完了済み</span>
-            </Button>
+          {/* クイックフィルター（デスクトップ） */}
+          <div className="hidden md:flex items-center">
+            <QuickActions
+              filterStatus={filterStatus}
+              onFilterStatusChange={handleFilterStatusChange}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              isPremium={isPremium}
+            />
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {/* Settings Menu */}
+        <div className="flex items-center gap-2">
+          {/* ビュー設定 */}
+          {isPremium && setViewMode && (
+            <ViewSettings
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              sortOption={sortOption}
+              onSortOptionChange={setSortOption}
+            />
+          )}
+
+          {/* 詳細設定メニュー */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -157,36 +174,58 @@ export const TodoViewControls: React.FC<TodoViewControlsProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>表示設定</DropdownMenuLabel>
+              <DropdownMenuLabel>タスク管理設定</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
+              {/* 自動優先度調整 */}
               <div className="p-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="auto-adjust" className="text-sm">
+                  <Label htmlFor="auto-adjust" className="text-sm cursor-pointer">
                     自動優先度調整
                   </Label>
                   <Switch
                     id="auto-adjust"
                     checked={autoAdjustEnabled}
-                    onCheckedChange={setAutoAdjustEnabled}
+                    onCheckedChange={handleAutoAdjustToggle}
                   />
                 </div>
               </div>
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={onAdjustPriorities}>
+              {/* アクション */}
+              <DropdownMenuItem onClick={handleAdjustPriorities}>
                 <Zap className="h-4 w-4 mr-2" />
                 優先度を今すぐ調整
               </DropdownMenuItem>
+
+              {isPremium && (
+                <>
+                  <DropdownMenuItem>
+                    <Download className="h-4 w-4 mr-2" />
+                    設定をエクスポート
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Upload className="h-4 w-4 mr-2" />
+                    設定をインポート
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Palette className="h-4 w-4 mr-2" />
+                    テーマ設定
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Add Task Button */}
+          {/* タスク追加ボタン */}
           <Button
             size="sm"
             onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2"
+            className={cn(
+              "flex items-center gap-2 transition-all",
+              showAddForm && "ring-2 ring-primary/50"
+            )}
           >
             <Plus className="h-4 w-4" aria-hidden="true" />
             <span className="hidden sm:inline">タスク追加</span>
@@ -194,93 +233,19 @@ export const TodoViewControls: React.FC<TodoViewControlsProps> = ({
         </div>
       </div>
 
-      {/* Filter Panel */}
+      {/* フィルターパネル */}
       {showFilters && (
-        <Card className="border-dashed">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Status Filter */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">ステータス</Label>
-                <div className="flex flex-wrap gap-2">
-                  {(["all", "active", "completed"] as const).map((status) => (
-                    <Button
-                      key={status}
-                      variant={filterStatus === status ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setFilterStatus(status)}
-                      className="flex items-center gap-1"
-                    >
-                      {getStatusIcon(status)}
-                      <span>{getStatusLabel(status)}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Category Filter */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">カテゴリ</Label>
-                <div className="flex flex-wrap gap-2">
-                  {(["all", "input", "output", "deadline"] as const).map(
-                    (category) => (
-                      <Button
-                        key={category}
-                        variant={
-                          categoryFilter === category ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => setCategoryFilter(category)}
-                        className="flex items-center gap-1"
-                      >
-                        <Calendar className="h-3 w-3" />
-                        <span>{getCategoryLabel(category)}</span>
-                      </Button>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Active Filters Summary */}
-            {(filterStatus !== "all" || categoryFilter !== "all") && (
-              <>
-                <Separator className="my-3" />
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">
-                      適用中のフィルター:
-                    </span>
-                    <div className="flex gap-1">
-                      {filterStatus !== "all" && (
-                        <Badge variant="secondary" className="text-xs">
-                          {getStatusLabel(filterStatus)}
-                        </Badge>
-                      )}
-                      {categoryFilter !== "all" && (
-                        <Badge variant="secondary" className="text-xs">
-                          {getCategoryLabel(categoryFilter)}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setFilterStatus("all");
-                      setCategoryFilter("all");
-                    }}
-                    className="text-xs"
-                  >
-                    すべてクリア
-                  </Button>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <FilterPanel
+          filterStatus={filterStatus}
+          categoryFilter={categoryFilter}
+          onFilterStatusChange={handleFilterStatusChange}
+          onCategoryFilterChange={handleCategoryFilterChange}
+          onClearAll={handleClearAllFilters}
+          activeFilterCount={activeFilterCount}
+        />
       )}
     </div>
   );
-};
+});
+
+TodoViewControls.displayName = "TodoViewControls";
