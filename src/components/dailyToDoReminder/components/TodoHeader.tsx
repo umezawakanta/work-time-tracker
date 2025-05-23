@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { RefreshCcw, Award } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import {
@@ -13,76 +12,150 @@ import {
 } from "@/store/todoSlice";
 import { AppDispatch } from "@/store";
 import StreakDisplay from "../sections/StreakDisplay";
+import { PremiumBadge } from "./PremiumBadge";
+import { ResetConfirmDialog } from "./ResetConfirmDialog";
+import { TodoHeaderMetrics } from "./TodoHeaderMetrics";
+import { useAnalytics } from "../hooks/useAnalytics";
+import { usePerformanceMonitor } from "../hooks/usePerformanceMonitor";
 
 interface TodoHeaderProps {
   readonly hasPremium: boolean;
   readonly streakCount: number;
+  readonly completedToday?: number;
+  readonly totalToday?: number;
+  readonly productivityScore?: number;
 }
 
 /**
- * Todo Header Component
- * Displays title, premium badge, streak, and reset functionality
+ * TodoHeader Component
+ * エンタープライズグレードのタスク管理ヘッダー
+ * パフォーマンス最適化とアクセシビリティを考慮した設計
  */
-export const TodoHeader: React.FC<TodoHeaderProps> = ({
+export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(({
   hasPremium,
   streakCount,
+  completedToday = 0,
+  totalToday = 0,
+  productivityScore = 0,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const analytics = useAnalytics();
+  const performanceMonitor = usePerformanceMonitor("TodoHeader");
+  
+  const [showResetDialog, setShowResetDialog] = React.useState(false);
+  const [isResetting, setIsResetting] = React.useState(false);
 
-  const handleResetTodos = async (): Promise<void> => {
-    const confirmed = window.confirm(
-      "今日のタスクを締めくくり、新しい日を始めますか？\n" +
-        "完了したタスクはアーカイブされ、未完了のタスクは引き継がれます。"
-    );
-
-    if (!confirmed) return;
+  // パフォーマンス最適化されたリセットハンドラー
+  const handleResetTodos = useCallback(async (): Promise<void> => {
+    performanceMonitor.startMeasurement("resetTodos");
+    setIsResetting(true);
 
     try {
+      // Analytics tracking
+      analytics.track("todo_reset_initiated", {
+        streakCount,
+        completedToday,
+        totalToday,
+        productivityScore,
+      });
+
       await dispatch(resetTodoList()).unwrap();
+      
+      // 並列実行でパフォーマンス向上
       await Promise.all([
         dispatch(fetchTodoHistory()).unwrap(),
         dispatch(fetchDailyTodoHistory()).unwrap(),
       ]);
 
-      toast.success("新しい日の準備ができました。今日も頑張りましょう！");
+      toast.success("新しい日の準備ができました。今日も頑張りましょう！", {
+        duration: 4000,
+        position: "top-center",
+        icon: "🎯",
+      });
+
+      analytics.track("todo_reset_completed", {
+        success: true,
+      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
+      const errorMessage = err instanceof Error ? err.message : "不明なエラー";
+      
       console.error("Reset error:", err);
-      toast.error(`エラーが発生しました: ${errorMessage}`);
+      
+      toast.error(`エラーが発生しました: ${errorMessage}`, {
+        duration: 5000,
+        position: "top-center",
+      });
+
+      analytics.track("todo_reset_failed", {
+        error: errorMessage,
+      });
+    } finally {
+      setIsResetting(false);
+      performanceMonitor.endMeasurement("resetTodos");
     }
-  };
+  }, [dispatch, analytics, performanceMonitor, streakCount, completedToday, totalToday, productivityScore]);
+
+  // メトリクスデータの最適化
+  const metricsData = useMemo(() => ({
+    completedToday,
+    totalToday,
+    productivityScore,
+    completionRate: totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0,
+  }), [completedToday, totalToday, productivityScore]);
 
   return (
-    <div className="flex justify-between items-start">
-      <div className="todo-header-info">
-        <CardTitle className="text-lg font-bold">本日のToDoリスト</CardTitle>
-        <CardDescription>登録したことは必ずやり遂げましょう</CardDescription>
-      </div>
+    <>
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div className="todo-header-info flex-1">
+          <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            本日のToDoリスト
+          </CardTitle>
+          <CardDescription className="text-sm">
+            登録したことは必ずやり遂げましょう
+          </CardDescription>
+          {hasPremium && totalToday > 0 && (
+            <TodoHeaderMetrics {...metricsData} />
+          )}
+        </div>
 
-      <div className="flex items-center space-x-2">
-        {hasPremium && (
-          <Badge
+        <div className="flex items-center gap-2 flex-wrap">
+          {hasPremium && <PremiumBadge variant="compact" />}
+          
+          <StreakDisplay streakCount={streakCount} />
+
+          <Button
             variant="outline"
-            className="bg-amber-100 text-amber-800 flex items-center gap-1 premium-badge"
+            size="sm"
+            onClick={() => setShowResetDialog(true)}
+            disabled={isResetting}
+            className="reset-button transition-all hover:scale-105"
+            aria-label="1日を締める"
           >
-            <Award className="h-3 w-3" size={10} aria-hidden="true" />
-            <span>プレミアム</span>
-          </Badge>
-        )}
-
-        <StreakDisplay streakCount={streakCount} />
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleResetTodos}
-          className="reset-button"
-          aria-label="1日を締める"
-        >
-          <RefreshCcw className="h-4 w-4 mr-1" size={16} aria-hidden="true" />
-          <span className="hidden sm:inline">1日を締める</span>
-        </Button>
+            <RefreshCcw 
+              className={`h-4 w-4 mr-1 ${isResetting ? 'animate-spin' : ''}`}
+              size={16} 
+              aria-hidden="true" 
+            />
+            <span className="hidden sm:inline">
+              {isResetting ? "処理中..." : "1日を締める"}
+            </span>
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <ResetConfirmDialog
+        open={showResetDialog}
+        onOpenChange={setShowResetDialog}
+        onConfirm={handleResetTodos}
+        isLoading={isResetting}
+        stats={{
+          completedCount: completedToday,
+          totalCount: totalToday,
+          streakCount,
+        }}
+      />
+    </>
   );
-};
+});
+
+TodoHeader.displayName = "TodoHeader";
