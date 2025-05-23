@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -158,6 +158,11 @@ export function EventModal({
           <DialogTitle>
             {event ? "イベントを編集" : "新しいイベント"}
           </DialogTitle>
+          <DialogDescription>
+            {event 
+              ? "イベントの詳細を編集して更新ボタンをクリックしてください。"
+              : "新しいイベントの詳細を入力して作成ボタンをクリックしてください。"}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
