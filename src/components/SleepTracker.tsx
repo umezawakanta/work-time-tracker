@@ -28,6 +28,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription, // この行を追加
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
@@ -766,6 +767,9 @@ export default function SleepTracker() {
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>睡眠記録を追加</DialogTitle>
+                  <DialogDescription>
+                    睡眠時間と質を記録して、健康的な睡眠習慣を作りましょう。
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
@@ -1252,6 +1256,9 @@ export default function SleepTracker() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>睡眠記録を編集</DialogTitle>
+            <DialogDescription>
+              睡眠記録の詳細を編集して更新ボタンをクリックしてください。
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
