@@ -1,6 +1,13 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 
@@ -97,6 +104,12 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[800px]">
+                <DialogHeader>
+                  <DialogTitle>タスク分析</DialogTitle>
+                  <DialogDescription>
+                    あなたのタスクパターンを分析し、生産性向上のためのインサイトを提供します。
+                  </DialogDescription>
+                </DialogHeader>
                 <TodoAnalysis />
               </DialogContent>
             </Dialog>
