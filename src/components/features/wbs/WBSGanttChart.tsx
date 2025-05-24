@@ -1,5 +1,5 @@
 // src/components/features/wbs/WBSGanttChart.tsx
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useRef } from "react";
 import { WBSNode } from "@/types/wbs";
 import {
   format,
