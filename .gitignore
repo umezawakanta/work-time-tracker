@@ -28,3 +28,8 @@ dist-ssr
 .vercel
 ~*
 /.env
+
+# OneDrive temporary files
+.tmp.driveupload/
+~$*
+.~*
