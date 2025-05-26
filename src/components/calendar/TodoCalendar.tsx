@@ -41,7 +41,7 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
           completed: 'bg-green-500 text-white',
         }}
         components={{
-          DayContent: ({ date }) => {
+          DayCell: ({ date }) => {
             const dateString = date.toISOString().split('T')[0];
             const count = historyMap.get(dateString) || 0;
             return (

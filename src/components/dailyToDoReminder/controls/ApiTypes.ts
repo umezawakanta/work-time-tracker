@@ -1,29 +1,28 @@
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
 
 export interface RequestData {
   [key: string]: any;
 }
 
+export interface RequestConfig extends ExtendedRequestConfig {}
+
 export interface ExtendedRequestConfig {
   retry?: number;
   timeout?: number;
   cache?: RequestCache;
+  cacheTTL?: number;
+  _cacheHit?: boolean;
 }
 
 export interface ApiServiceConfig {
   baseURL: string;
+  baseEndpoint?: string;
   timeout?: number;
   headers?: Record<string, string>;
 }
 
-export interface SubscriptionPlan {
-  id: string;
-  name: string;
-  features: string[];
-  limits: {
-    [key: string]: number;
-  };
-}
+// SubscriptionPlanを拡張
+export type SubscriptionPlan = 'free' | 'basic' | 'pro' | 'enterprise' | 'professional';
 
 export interface ApiResponseMeta {
   timestamp: number;
@@ -41,8 +40,14 @@ export interface ApiResponseMeta {
     used: number;
     plan: string;
     allowed?: boolean;
+    received?: number;
   };
   errorHandled?: boolean;
+  processingTime?: number;
+  cache?: {
+    hit: boolean;
+    ttl?: number;
+  };
 }
 
 export interface ApiResponse<T = any> {
@@ -54,10 +59,11 @@ export interface ApiResponse<T = any> {
     details?: any;
   };
   meta: ApiResponseMeta;
+  statusCode?: number;
 }
 
 export interface ApiErrorResponse extends ApiResponse {
-  data: any; // 必須に変更
+  data: any;
 }
 
 export interface IApiManager {

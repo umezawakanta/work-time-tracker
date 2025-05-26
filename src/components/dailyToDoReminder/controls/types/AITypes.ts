@@ -7,6 +7,8 @@ export interface AIModel {
   multimodal?: boolean;
   requiresSubscription?: boolean;
   priority?: number;
+  contextWindow?: number;
+  maxTokens?: number;
 }
 
 export interface AIModelSummary {

@@ -40,7 +40,7 @@ class SubscriptionService {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5分間キャッシュ
 
   constructor() {
-    this.apiClient = ApiClient.getInstance();
+    this.apiClient = new ApiClient();
   }
 
   /**
@@ -117,8 +117,9 @@ class SubscriptionService {
       this.invalidateCache();
       
       return {
+        data: null,
         success: false,
-        error: error instanceof Error ? error.message : '不明なエラーが発生しました',
+        error: { code: 'ERROR', message: error instanceof Error ? error.message : '不明なエラーが発生しました' },
         meta: {
           timestamp: Date.now()
         }
@@ -156,8 +157,9 @@ class SubscriptionService {
       this.invalidateCache();
       
       return {
+        data: null,
         success: false,
-        error: error instanceof Error ? error.message : '不明なエラーが発生しました',
+        error: { code: 'ERROR', message: error instanceof Error ? error.message : '不明なエラーが発生しました' },
         meta: {
           timestamp: Date.now()
         }

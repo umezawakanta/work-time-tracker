@@ -402,5 +402,5 @@ export class AIFeatureManager {
 }
 
 // エクスポート
-export { AIFeatureOptions, AIEnhancementType, AIEnhancementResult };
+export type { AIFeatureOptions, AIEnhancementType, AIEnhancementResult };
 export default AIFeatureManager.getInstance();

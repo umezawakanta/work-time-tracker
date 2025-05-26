@@ -134,7 +134,7 @@ import {
         // エラーレスポンスを生成
         const errorResponse: ApiResponse<T> = {
           success: false,
-          error: error instanceof Error ? error.message : '一括リクエスト実行中にエラーが発生しました',
+          error: { code: 'ERROR', message: error instanceof Error ? error.message : '一括リクエスト実行中にエラーが発生しました' },
           meta: {
             timestamp: Date.now()
           }
@@ -209,7 +209,7 @@ import {
           if (remainingCount > 0) {
             const errorResponse: ApiResponse<T> = {
               success: false,
-              error: '先行リクエストのエラーにより中止されました',
+              error: { code: 'ERROR', message: '先行リクエストのエラーにより中止されました' },
               meta: {
                 timestamp: Date.now(),
                 errorHandled: true
@@ -274,7 +274,7 @@ import {
           // 未実行のリクエストに対してエラーレスポンスを生成
           const errorResponse: ApiResponse<T> = {
             success: false,
-            error: '先行リクエストのエラーにより中止されました',
+            error: { code: 'ERROR', message: '先行リクエストのエラーにより中止されました' },
             meta: {
               timestamp: Date.now(),
               errorHandled: true
@@ -305,7 +305,7 @@ import {
     private createFeatureLimitError<T>(plan: SubscriptionPlan): ApiResponse<T> {
       return {
         success: false,
-        error: '一括リクエスト機能はこのサブスクリプションプランでは利用できません',
+        error: { code: 'ERROR', message: '一括リクエスト機能はこのサブスクリプションプランでは利用できません' },
         meta: {
           timestamp: Date.now(),
           featureLimit: {
@@ -322,7 +322,7 @@ import {
     private createBatchSizeLimitError<T>(limit: number, received: number): ApiResponse<T> {
       return {
         success: false,
-        error: `一括リクエスト数が上限を超えています (${limit})`,
+        error: { code: 'ERROR', message: `一括リクエスト数が上限を超えています (${limit})` },
         meta: {
           timestamp: Date.now(),
           featureLimit: {
