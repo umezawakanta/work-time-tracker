@@ -3,14 +3,11 @@ import { TodoStats } from '@/types/todo';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
-  BarChart4, 
   ArrowUpRight, 
   ArrowDownRight, 
   TrendingUp 

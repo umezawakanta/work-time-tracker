@@ -44,7 +44,7 @@ export class ApiRequestHandler {
     this.axios.interceptors.request.use(
       (config) => {
         // タイムスタンプの追加
-        config.headers = config.headers || {};
+        config.headers = config.headers || {} as any;
         config.headers['X-Request-Time'] = Date.now().toString();
         
         // プラン情報の追加
@@ -103,7 +103,7 @@ export class ApiRequestHandler {
       const axiosConfig: AxiosRequestConfig = {
         ...config,
         method: method.toLowerCase(),
-        url: this.buildUrl(serviceConfig.baseEndpoint, endpoint),
+        url: this.buildUrl((serviceConfig.baseEndpoint || serviceConfig.baseURL), endpoint),
       };
       
       // GET/DELETEリクエストの場合はparamsとして設定

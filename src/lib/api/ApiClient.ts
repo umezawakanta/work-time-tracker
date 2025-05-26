@@ -1,23 +1,67 @@
 export class ApiClient {
-  private static instance: ApiClient;
+  private baseURL: string;
   
-  static getInstance(): ApiClient {
-    if (!ApiClient.instance) {
-      ApiClient.instance = new ApiClient();
+  constructor(baseURL: string) {
+    this.baseURL = baseURL;
+  }
+
+  async fetch<T = any>(
+    url: string, 
+    options?: RequestInit
+  ): Promise<{ data: T; success: boolean; error?: any }> {
+    try {
+      const response = await fetch(`${this.baseURL}${url}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers,
+        },
+      });
+      
+      const data = await response.json();
+      
+      return {
+        data,
+        success: response.ok,
+        error: response.ok ? undefined : data.error
+      };
+    } catch (error) {
+      return {
+        data: null as any,
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
-    return ApiClient.instance;
   }
   
   async get<T = any>(url: string, params?: any): Promise<{ data: T; success: boolean; error?: any }> {
-    return { data: {} as T, success: true };
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    return this.fetch<T>(`${url}${queryString}`, { method: 'GET' });
   }
   
   async post<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
-    return { data: {} as T, success: true };
+    return this.fetch<T>(url, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
   }
   
-  async fetch<T = any>(url: string, options?: any): Promise<{ data: T; success: boolean; error?: any }> {
-    return { data: {} as T, success: true };
+  async put<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
+    return this.fetch<T>(url, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  }
+  
+  async delete<T = any>(url: string): Promise<{ data: T; success: boolean; error?: any }> {
+    return this.fetch<T>(url, { method: 'DELETE' });
+  }
+  
+  async patch<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
+    return this.fetch<T>(url, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
+    });
   }
 }
 

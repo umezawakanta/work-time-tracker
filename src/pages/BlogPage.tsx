@@ -162,7 +162,7 @@ const BlogPage: React.FC = () => {
       </Box>
       <Grid container spacing={4}>
         {currentPosts.map((post) => (
-          <Grid xs={12} sm={6} md={4} key={post._id}>
+          <Grid2 xs={12} sm={6} md={4} key={post._id}>
             <Card>
               <CardContent>
                 <Typography variant="h5" component="h2">
@@ -190,9 +190,9 @@ const BlogPage: React.FC = () => {
                 </Button>
               </CardActions>
             </Card>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
       <Pagination
         count={Math.ceil(sortedPosts.length / POSTS_PER_PAGE)}
         page={page}

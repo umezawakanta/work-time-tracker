@@ -1,38 +1,29 @@
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
-
-export interface RequestData {
-  [key: string]: any;
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T | null;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+  } | string;
+  meta: ApiResponseMeta;
 }
-
-export interface RequestConfig extends ExtendedRequestConfig {}
-
-export interface ExtendedRequestConfig {
-  retry?: number;
-  timeout?: number;
-  cache?: RequestCache;
-  cacheTTL?: number;
-  _cacheHit?: boolean;
-}
-
-export interface ApiServiceConfig {
-  baseURL: string;
-  baseEndpoint?: string;
-  timeout?: number;
-  headers?: Record<string, string>;
-}
-
-// SubscriptionPlanを拡張
-export type SubscriptionPlan = 'free' | 'basic' | 'pro' | 'enterprise' | 'professional';
 
 export interface ApiResponseMeta {
   timestamp: number;
   requestId?: string;
-  statusCode?: number;
   headers?: Record<string, string>;
   rateLimit?: {
     limit: number;
     remaining: number;
     reset: number;
+    exceeded?: boolean;
+  };
+  cache?: {
+    hit: boolean;
+    ttl?: number;
+    stale?: boolean;
+    age?: number;
   };
   featureLimit?: {
     feature: string;
@@ -42,36 +33,57 @@ export interface ApiResponseMeta {
     allowed?: boolean;
     received?: number;
   };
+  errorCode?: string;
   errorHandled?: boolean;
   processingTime?: number;
-  cache?: {
-    hit: boolean;
-    ttl?: number;
-  };
-}
-
-export interface ApiResponse<T = any> {
-  data: T;
-  success: boolean;
-  error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-  meta: ApiResponseMeta;
   statusCode?: number;
 }
 
-export interface ApiErrorResponse extends ApiResponse {
-  data: any;
+export interface RequestConfig {
+  headers?: Record<string, string>;
+  params?: Record<string, any>;
+  timeout?: number;
+  retry?: number;
+  cache?: boolean | RequestCache;
+  signal?: AbortSignal;
+  priority?: 'low' | 'normal' | 'high';
+  withCredentials?: boolean;
+  retryDelay?: number;
+  cacheTTL?: number;
 }
 
-export interface IApiManager {
-  request<T>(
-    serviceName: string,
-    method: HttpMethod,
-    endpoint: string,
-    data?: RequestData,
-    config?: ExtendedRequestConfig
-  ): Promise<ApiResponse<T>>;
+export interface ExtendedRequestConfig extends RequestConfig {
+  _cachedResponse?: any;
+  _cacheHit?: boolean;
+}
+
+export interface ApiErrorResponse extends Omit<ApiResponse<any>, 'data'> {
+  data?: any;
+  statusCode?: number;
+}
+
+export interface ApiServiceConfig {
+  baseURL: string;
+  baseEndpoint?: string; // 互換性のため
+  timeout?: number;
+  headers?: Record<string, string>;
+}
+
+export type SubscriptionPlan = 'free' | 'basic' | 'pro' | 'professional' | 'enterprise';
+
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+
+export interface RequestData {
+  [key: string]: any;
+}
+
+export interface PluginHook {
+  beforeRequest?: (config: any, serviceName: string) => Promise<void>;
+  afterResponse?: (response: any, config: any, serviceName: string) => Promise<any>;
+  onError?: (error: any, originalError: any, serviceName: string) => Promise<void>;
+}
+
+export interface ApiPlugin {
+  name: string;
+  hooks: PluginHook;
 }

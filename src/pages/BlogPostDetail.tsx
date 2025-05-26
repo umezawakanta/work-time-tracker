@@ -157,9 +157,9 @@ const BlogPostDetail: React.FC = () => {
           <Typography variant="h5" gutterBottom>
             関連記事
           </Typography>
-          <Grid container spacing={2}>
+          <Grid2 container spacing={2}>
             {relatedPosts.map((relatedPost) => (
-              <Grid xs={12} sm={4} key={relatedPost._id}>
+              <Grid2 xs={12} sm={4} key={relatedPost._id}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" component="div" noWrap>
@@ -175,9 +175,9 @@ const BlogPostDetail: React.FC = () => {
                     </Button>
                   </CardActions>
                 </Card>
-              </Grid>
+              </Grid2>
             ))}
-          </Grid>
+          </Grid2>
         </Box>
       )}
 

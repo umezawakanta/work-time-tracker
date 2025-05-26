@@ -168,7 +168,7 @@ import {
      */
     public async request<T>(
       serviceName: string,
-      method: HttpMethod,
+      method: HttpMethod | string,
       endpoint: string,
       data?: RequestData,
       config?: ExtendedRequestConfig
@@ -194,9 +194,9 @@ import {
           });
           
           return {
-            success: false,
-            error: 'レート制限を超過しました。しばらく時間をおいてから再試行してください。',
-            meta: {
+        success: false,
+        data: null,
+        error: 
               timestamp: startTime,
               rateLimit: {
                 exceeded: true,
@@ -243,9 +243,9 @@ import {
         this.metricsCollector.incrementCounter('unexpected_errors');
         
         return {
-          success: false,
-          error: error instanceof Error ? error.message : '予期せぬエラーが発生しました',
-          meta: {
+        success: false,
+        data: null,
+        error: 
             timestamp: startTime,
             processingTime: Date.now() - startTime
           }

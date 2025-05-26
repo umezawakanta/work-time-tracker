@@ -26,7 +26,7 @@ import { generateUniqueId } from './utils/IdGenerator';
  */
 export class AIFeatureManager {
     private static instance: AIFeatureManager | null = null;
-    private logger = new ApiLogger();
+    private logger = ApiLogger.getInstance();
     private initialized = false;
     private modelRegistry: AIModelRegistry;
     private usageTracker: AIUsageTracker;

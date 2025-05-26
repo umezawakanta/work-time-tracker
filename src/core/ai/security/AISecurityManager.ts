@@ -38,7 +38,7 @@ interface SecurityStatus {
  * AIセキュリティマネージャークラス
  */
 export class AISecurityManager {
-    private logger = new ApiLogger();
+    private logger = ApiLogger.getInstance();
     private initialized = false;
     private enabled = true;
     private filters: Record<SecurityFilterType, SecurityFilterConfig> = {

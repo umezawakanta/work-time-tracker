@@ -50,7 +50,7 @@ interface UsageSummary {
  * AI使用状況追跡クラス
  */
 export class AIUsageTracker {
-    private logger = new ApiLogger();
+    private logger = ApiLogger.getInstance();
     private usageRecords: UsageRecord[] = [];
     private initialized = false;
     private maxStoredRecords = 1000;

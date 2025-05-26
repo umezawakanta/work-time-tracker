@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from "@/components/ui/badge";
+
 import { PlanType, PlanTerm } from './PremiumPromotion';
 import { PremiumPlanService } from './PremiumPlanService';
 

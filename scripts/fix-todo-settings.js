@@ -1,4 +1,18 @@
-import React, { useState } from 'react';
+// scripts/fix-todo-settings.js
+import { promises as fs } from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+
+async function fixTodoSettings() {
+    console.log(chalk.blue('🔧 Fixing TodoSettings.tsx errors...\n'));
+
+    const filePath = path.join(process.cwd(), 'src/components/dailyToDoReminder/controls/TodoSettings.tsx');
+
+    try {
+        // ファイルを読み込んで、完全に書き直す
+        console.log(chalk.yellow('📝 Rewriting TodoSettings.tsx with correct syntax...'));
+
+        const correctedContent = `import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -407,4 +421,24 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
   );
 };
 
-export default TodoSettings;
+export default TodoSettings;`;
+
+        await fs.writeFile(filePath, correctedContent);
+        console.log(chalk.green('✅ TodoSettings.tsx has been completely rewritten'));
+
+        console.log(chalk.yellow('\n📝 Creating a backup of the original file...'));
+        try {
+            const backupPath = filePath + '.backup';
+            await fs.rename(filePath + '.old', backupPath).catch(() => { });
+            console.log(chalk.green('✅ Backup created'));
+        } catch (error) {
+            console.log(chalk.gray('⏭️  No backup needed'));
+        }
+
+    } catch (error) {
+        console.error(chalk.red('❌ Failed to fix TodoSettings.tsx:'), error.message);
+    }
+}
+
+// メイン実行
+fixTodoSettings().catch(console.error);

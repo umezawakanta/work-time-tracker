@@ -21,7 +21,7 @@ import { LocalAIProcessor } from './LocalAIProcessor';
  * AIプロセッサーファクトリークラス
  */
 export class AIProcessorFactory {
-    private logger = new ApiLogger();
+    private logger = ApiLogger.getInstance();
     private processors: Map<AIProvider, AIProcessor> = new Map();
 
     /**
