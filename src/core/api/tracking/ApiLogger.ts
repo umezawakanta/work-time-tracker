@@ -1,5 +1,6 @@
 export class ApiLogger {
   private static instance: ApiLogger;
+  private context: string = '';
   
   static getInstance(): ApiLogger {
     if (!ApiLogger.instance) {
@@ -8,8 +9,16 @@ export class ApiLogger {
     return ApiLogger.instance;
   }
   
+  setContext(context: string): void {
+    this.context = context;
+  }
+  
+  private formatMessage(message: string): string {
+    return this.context ? `[${this.context}] ${message}` : message;
+  }
+  
   log(level: string, message: string, data?: any): void {
-    console.log(`[${level}] ${message}`, data);
+    console.log(`[${level}] ${this.formatMessage(message)}`, data);
   }
   
   info(message: string, data?: any): void {

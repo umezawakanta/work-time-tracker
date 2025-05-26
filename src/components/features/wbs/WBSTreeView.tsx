@@ -1,14 +1,20 @@
 import React from 'react';
+import { WBSNode } from '@/types/wbs';
 
 interface WBSTreeViewProps {
-  // TODO: Add props
+  nodes: WBSNode[];
+  onNodeClick: (node: WBSNode) => void;
+  onNodeUpdate: (nodeId: string, updates: Partial<WBSNode>) => Promise<void>;
 }
 
-const WBSTreeView: React.FC<WBSTreeViewProps> = () => {
+const WBSTreeView: React.FC<WBSTreeViewProps> = ({ nodes, onNodeClick, onNodeUpdate }) => {
   return (
-    <div>
-      {/* TODO: Implement WBS Tree View */}
-      <p>WBS Tree View - Coming Soon</p>
+    <div className="wbs-tree-view">
+      {nodes.map(node => (
+        <div key={node.id} onClick={() => onNodeClick(node)}>
+          {node.name}
+        </div>
+      ))}
     </div>
   );
 };

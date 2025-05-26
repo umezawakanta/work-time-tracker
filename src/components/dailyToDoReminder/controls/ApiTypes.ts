@@ -40,6 +40,7 @@ export interface ApiResponseMeta {
     limit: number;
     used: number;
     plan: string;
+    allowed?: boolean;
   };
   errorHandled?: boolean;
 }
@@ -56,7 +57,7 @@ export interface ApiResponse<T = any> {
 }
 
 export interface ApiErrorResponse extends ApiResponse {
-  data?: any;
+  data: any; // 必須に変更
 }
 
 export interface IApiManager {

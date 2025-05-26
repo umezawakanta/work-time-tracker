@@ -182,7 +182,7 @@ const BlogPage: React.FC = () => {
       </Box>
       <Grid container spacing={4}>
         {currentPosts.map((post) => (
-          <Grid item xs={12} sm={6} md={4} key={post._id}>
+          <Grid xs={12} sm={6} md={4} key={post._id}>
             <Card>
               <CardContent>
                 <Typography variant="h5" component="h2">

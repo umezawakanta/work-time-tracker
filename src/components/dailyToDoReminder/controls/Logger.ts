@@ -15,3 +15,5 @@ export class Logger {
     this.log('WARN', message, data);
   }
 }
+
+export default Logger;
