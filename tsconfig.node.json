@@ -2,25 +2,10 @@
   "compilerOptions": {
     "composite": true,
     "skipLibCheck": true,
-    "noImplicitThis": false,
-    "noImplicitAny": false,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["node", "vite/client"],
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "target": "ES2022",
-    "lib": [
-      "ES2022"
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "esModuleInterop": true  // この行を追加
+    "strict": true
   },
   "include": [
     "vite.config.ts"
