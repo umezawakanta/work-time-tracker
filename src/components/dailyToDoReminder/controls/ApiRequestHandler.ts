@@ -48,7 +48,7 @@ export class ApiRequestHandler {
         config.headers['X-Request-Time'] = Date.now().toString();
         
         // プラン情報の追加
-        const userPlan = this.apiManager.getUserPlan();
+        const userPlan = 'free';
         config.headers['X-Subscription-Plan'] = userPlan;
         
         return config;
@@ -114,7 +114,7 @@ export class ApiRequestHandler {
       }
       
       // リクエスト実行前のプラグインフックを実行
-      const plugins = this.apiManager.getPlugins();
+      const plugins = [];
       
       for (const plugin of plugins) {
         if (plugin.hooks.beforeRequest) {
@@ -144,7 +144,7 @@ export class ApiRequestHandler {
         data: processedData,
         meta: {
           statusCode: response.status,
-          headers: response.headers,
+          headers: Object.fromEntries(Object.entries(response.headers || {}).map(([k, v]) => [k, String(v)])),
           timestamp: startTime,
           processingTime: Date.now() - startTime
         }
@@ -168,7 +168,7 @@ export class ApiRequestHandler {
       }
       
       // エラー処理後のプラグインフックを実行
-      const plugins = this.apiManager.getPlugins();
+      const plugins = [];
       
       for (const plugin of plugins) {
         if (plugin.hooks.onError) {

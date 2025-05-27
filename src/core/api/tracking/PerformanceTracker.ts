@@ -1,6 +1,16 @@
 export class PerformanceTracker {
+  private static instance: PerformanceTracker;
   private metrics: Map<string, any> = new Map();
   private activeTracking: Map<string, number> = new Map();
+
+  private constructor() {}
+
+  static getInstance(): PerformanceTracker {
+    if (!this.instance) {
+      this.instance = new PerformanceTracker();
+    }
+    return this.instance;
+  }
 
   initialize(): void {
     console.log('Performance tracker initialized');

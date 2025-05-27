@@ -40,7 +40,7 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
       return [];
     }
 
-    const lines: JSX.Element[] = [];
+    const lines: React.ReactElement[] = [];
     const latestData = data[data.length - 1];
     
     const sortedParties = [...parties].sort((a, b) => {

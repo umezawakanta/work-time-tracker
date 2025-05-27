@@ -1,145 +1,109 @@
-/**
- * APIクライアントHTTPメソッド
- * 各HTTPメソッド（GET、POST、PUT、DELETE、PATCH）の実装
- */
-import ApiClient from './ApiClient';
 import { ApiResponse, RequestConfig } from './ApiTypes';
+import ApiClient from './ApiClient';
 
-class ApiClientHttpMethods {
+export class ApiClientHttpMethods {
   private apiClient: ApiClient;
-  
+
   constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
   }
 
-  /**
-   * GETリクエスト
-   */
-  public async get<T>(
-    endpoint: string, 
-    params?: Record<string, string>,
+  async get<T = any>(
+    url: string,
+    params?: any,
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
-    let url = endpoint;
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    const response = await this.apiClient.fetch<T>(`${url}${queryString}`, { 
+      method: 'GET',
+      ...config 
+    });
     
-    // URLパラメータの追加
-    if (params && Object.keys(params).length > 0) {
-      const queryParams = new URLSearchParams();
-      
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams.append(key, value);
-        }
-      });
-      
-      const queryString = queryParams.toString();
-      if (queryString) {
-        url = `${endpoint}?${queryString}`;
+    return {
+      ...response,
+      meta: {
+        timestamp: Date.now(),
+        ...response.meta
       }
-    }
+    };
+  }
+
+  async post<T = any>(
+    url: string,
+    data?: any,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
+    const response = await this.apiClient.fetch<T>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...config
+    });
     
-    return this.apiClient.fetch<T>(url, { method: 'GET' }, config);
+    return {
+      ...response,
+      meta: {
+        timestamp: Date.now(),
+        ...response.meta
+      }
+    };
   }
 
-  /**
-   * POSTリクエスト
-   */
-  public async post<T>(
-    endpoint: string, 
-    data?: Record<string, unknown> | unknown[] | null,
+  async put<T = any>(
+    url: string,
+    data?: any,
     config?: RequestConfig
   ): Promise<ApiResponse<T>> {
-    return this.apiClient.fetch<T>(
-      endpoint, 
-      {
-        method: 'POST',
-        body: data ? JSON.stringify(data) : undefined
-      },
-      config
-    );
-  }
-
-  /**
-   * PUTリクエスト
-   */
-  public async put<T>(
-    endpoint: string, 
-    data?: Record<string, unknown> | unknown[] | null,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return this.apiClient.fetch<T>(
-      endpoint, 
-      {
-        method: 'PUT',
-        body: data ? JSON.stringify(data) : undefined
-      },
-      config
-    );
-  }
-
-  /**
-   * DELETEリクエスト
-   */
-  public async delete<T>(
-    endpoint: string,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return this.apiClient.fetch<T>(
-      endpoint, 
-      { method: 'DELETE' },
-      config
-    );
-  }
-
-  /**
-   * PATCHリクエスト
-   */
-  public async patch<T>(
-    endpoint: string, 
-    data?: Record<string, unknown> | unknown[] | null,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    return this.apiClient.fetch<T>(
-      endpoint, 
-      {
-        method: 'PATCH',
-        body: data ? JSON.stringify(data) : undefined
-      },
-      config
-    );
-  }
-
-  /**
-   * マルチパートFORMリクエスト（ファイルアップロード用）
-   */
-  public async uploadFile<T>(
-    endpoint: string,
-    file: File,
-    fieldName: string = 'file',
-    additionalData?: Record<string, string>,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
-    const formData = new FormData();
-    formData.append(fieldName, file);
+    const response = await this.apiClient.fetch<T>(url, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      ...config
+    });
     
-    // 追加データがある場合は追加
-    if (additionalData) {
-      Object.entries(additionalData).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-    }
+    return {
+      ...response,
+      meta: {
+        timestamp: Date.now(),
+        ...response.meta
+      }
+    };
+  }
+
+  async delete<T = any>(
+    url: string,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
+    const response = await this.apiClient.fetch<T>(url, {
+      method: 'DELETE',
+      ...config
+    });
     
-    return this.apiClient.fetch<T>(
-      endpoint,
-      {
-        method: 'POST',
-        body: formData,
-        // FormDataを使用する場合は、Content-Typeヘッダーを設定しない
-        // （ブラウザが自動的に設定する）
-        headers: {}
-      },
-      config
-    );
+    return {
+      ...response,
+      meta: {
+        timestamp: Date.now(),
+        ...response.meta
+      }
+    };
+  }
+
+  async patch<T = any>(
+    url: string,
+    data?: any,
+    config?: RequestConfig
+  ): Promise<ApiResponse<T>> {
+    const response = await this.apiClient.fetch<T>(url, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      ...config
+    });
+    
+    return {
+      ...response,
+      meta: {
+        timestamp: Date.now(),
+        ...response.meta
+      }
+    };
   }
 }
 

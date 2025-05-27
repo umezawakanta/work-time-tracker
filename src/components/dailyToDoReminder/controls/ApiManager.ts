@@ -150,6 +150,10 @@ export class ApiManager {
   public getBatchRequestManager(): BatchRequestManager {
     return this.batchRequestManager;
   }
+
+  public getPlugins(): ApiPlugin[] {
+    return this.plugins;
+  }
 }
 
 export default ApiManager;

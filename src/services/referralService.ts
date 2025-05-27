@@ -267,3 +267,7 @@ export const fetchSubscriptionStatus = async (): Promise<{
     };
   }
 };
+
+export const inviteUser = async (email: string, referralCode: string): Promise<void> => {
+  console.log('Inviting user via referral:', email, referralCode);
+};

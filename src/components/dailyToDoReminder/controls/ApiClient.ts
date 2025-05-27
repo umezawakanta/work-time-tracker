@@ -76,3 +76,6 @@ export class ApiClient {
 }
 
 export default ApiClient;
+
+// Re-export types for compatibility
+export type { ApiResponse, RequestConfig, RequestData } from './ApiTypes';

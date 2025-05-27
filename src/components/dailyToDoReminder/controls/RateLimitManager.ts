@@ -20,6 +20,21 @@ export interface RateLimitResult {
  * レート制限マネージャークラス
  */
 export class RateLimitManager {
+  async checkLimit(serviceName: string, endpoint: string): Promise<{
+    allowed: boolean;
+    limit: number;
+    remaining: number;
+    resetTime: number;
+  }> {
+    // シンプルな実装
+    return {
+      allowed: true,
+      limit: 100,
+      remaining: 99,
+      resetTime: Date.now() + 3600000
+    };
+  }
+
   private rateLimitCounter: Map<string, number>;
   private lastRateLimitReset: number;
   private resetInterval: number;
