@@ -160,9 +160,9 @@ const BlogPage: React.FC = () => {
           />
         ))}
       </Box>
-      <Grid container spacing={4}>
+      <Grid2 spacing={4}>
         {currentPosts.map((post) => (
-          <Grid2 xs={12} sm={6} md={4} key={post._id}>
+          <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={post._id}>
             <Card>
               <CardContent>
                 <Typography variant="h5" component="h2">

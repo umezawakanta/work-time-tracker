@@ -1,4 +1,33 @@
-import { 
+// scripts/fix-remaining-errors.js
+import { promises as fs } from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+
+async function fixRemainingErrors() {
+    console.log(chalk.blue.bold('🔧 Fixing remaining TypeScript errors...\n'));
+
+    // 1. ApiManager.tsの構文エラーを修正
+    await fixApiManagerSyntax();
+
+    // 2. BlogPage.tsxのGrid問題を修正
+    await fixBlogPageGrid();
+
+    console.log(chalk.green.bold('\n✨ All fixes completed!'));
+}
+
+async function fixApiManagerSyntax() {
+    console.log(chalk.yellow('📝 Fixing ApiManager.ts syntax errors...'));
+
+    const filePath = path.join(process.cwd(), 'src/components/dailyToDoReminder/controls/ApiManager.ts');
+
+    try {
+        let content = await fs.readFile(filePath, 'utf8');
+
+        // 構文エラーの原因を特定して修正
+        // returnステートメントの欠落やブレースの不一致を探す
+
+        // 完全に書き直す方が安全な場合
+        const fixedContent = `import { 
   ApiServiceConfig, 
   ApiResponse, 
   RequestConfig, 
@@ -102,7 +131,7 @@ export class ApiManager {
       // サービス設定を取得
       const serviceConfig = this.services.get(serviceName);
       if (!serviceConfig) {
-        throw new Error(`Service '${serviceName}' not found`);
+        throw new Error(\`Service '\${serviceName}' not found\`);
       }
 
       // リクエストを実行
@@ -152,4 +181,60 @@ export class ApiManager {
   }
 }
 
-export default ApiManager;
+export default ApiManager;`;
+
+        await fs.writeFile(filePath, fixedContent);
+        console.log(chalk.green('✅ ApiManager.ts fixed'));
+    } catch (error) {
+        console.error(chalk.red('❌ Failed to fix ApiManager.ts:'), error.message);
+    }
+}
+
+async function fixBlogPageGrid() {
+    console.log(chalk.yellow('📝 Fixing BlogPage.tsx Grid issues...'));
+
+    const filePath = path.join(process.cwd(), 'src/pages/BlogPage.tsx');
+
+    try {
+        let content = await fs.readFile(filePath, 'utf8');
+
+        // Grid2への変換が不完全な場合、統一する
+        if (content.includes('Grid2')) {
+            // すべてのGridタグをGrid2に統一
+            content = content.replace(/<Grid\s+/g, '<Grid2 ');
+            content = content.replace(/<\/Grid>/g, '</Grid2>');
+
+            // containerプロパティを修正（Grid2では不要な場合がある）
+            content = content.replace(/\scontainer\s/g, ' ');
+
+            // itemプロパティを削除（Grid2では不要）
+            content = content.replace(/\sitem\s/g, ' ');
+
+            // xs, sm, mdプロパティをsizeプロパティに変換
+            content = content.replace(
+                /xs={(\d+)}\s+sm={(\d+)}\s+md={(\d+)}/g,
+                'size={{ xs: $1, sm: $2, md: $3 }}'
+            );
+
+            // 単独のxs, sm, mdプロパティも変換
+            content = content.replace(/\sxs={(\d+)}/g, ' size={{ xs: $1 }}');
+            content = content.replace(/\ssm={(\d+)}/g, ' size={{ sm: $1 }}');
+            content = content.replace(/\smd={(\d+)}/g, ' size={{ md: $1 }}');
+        } else {
+            // Grid v1を使用している場合は、itemプロパティが必要
+            // <Grid item xs={12}>のような形式に修正
+            content = content.replace(
+                /<Grid\s+xs=/g,
+                '<Grid item xs='
+            );
+        }
+
+        await fs.writeFile(filePath, content);
+        console.log(chalk.green('✅ BlogPage.tsx fixed'));
+    } catch (error) {
+        console.error(chalk.red('❌ Failed to fix BlogPage.tsx:'), error.message);
+    }
+}
+
+// メイン実行
+fixRemainingErrors().catch(console.error);
