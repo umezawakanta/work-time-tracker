@@ -101,10 +101,17 @@ class ApiRequestExecutor {
             url,
           });
 
+          // Map RequestPriority to QueuedRequest priority
+          const mapPriority = (priority?: RequestPriority): 'high' | 'normal' | 'low' => {
+            if (priority === 'high') return 'high';
+            if (priority === 'low') return 'low';
+            return 'normal'; // default for 'normal', 'auto', or undefined
+          };
+
           return new Promise((resolve, reject) => {
             queueCallback({
               execute: () => executeRequest().then(resolve).catch(reject),
-              priority: config.priority || 'normal',
+              priority: mapPriority(config.priority as RequestPriority),
             });
           });
         }
@@ -211,7 +218,7 @@ class ApiRequestExecutor {
   private createResponseMeta(
     response: Response,
     startTime: number,
-    processingTime: number
+    _processingTime: number
   ): ApiResponseMeta {
     return {
       requestId: response.headers.get('X-Request-ID') || undefined,
@@ -275,6 +282,7 @@ class ApiRequestExecutor {
       },
       meta: {
         timestamp: startTime,
+        processingTime,
         requestId: apiError.requestId,
       },
     };
