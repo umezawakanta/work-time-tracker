@@ -6,16 +6,6 @@ import { TodoArchive } from '../models/TodoArchive.js';
 
 const router = express.Router();
 
-// Add interface at the top of the file
-interface TodoHistoryItem {
-  date: string;
-  completedCount: number;
-  taskDetails: Array<{
-    task: string;
-    completedDate: Date;
-  }>;
-}
-
 // GET all todos
 router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
@@ -182,11 +172,11 @@ router.get('/history/daily', async (_req: Request, res: Response): Promise<void>
       date: { $gte: thirtyDaysAgoStr },
     }).sort({ date: 1 });
 
-    // Then update the reduce function
-    const dailyCounts: DailyCounts = history.reduce((acc: DailyCounts, item: TodoHistoryItem) => {
+    // 日付ごとの完了数を集計 - provide initial value and use proper types
+    const dailyCounts: DailyCounts = history.reduce((acc: DailyCounts, item) => {
       acc[item.date] = item.completedCount;
       return acc;
-    }, {});
+    }, {} as DailyCounts);
 
     // 日付の配列を生成（過去30日間の全日付）
     const allDates: string[] = [];

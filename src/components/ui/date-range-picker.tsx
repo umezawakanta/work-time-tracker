@@ -10,13 +10,26 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
+interface DateRange {
+  from?: Date;
+  to?: Date;
+}
+
 interface DateRangePickerProps {
   className?: string;
   placeholder?: string;
-  selected?: any;
-  onSelect?: (date: any) => void;
+  selected?: DateRange;
+  onSelect?: (date: DateRange) => void;
   mode?: string;
-  [key: string]: any; // Allow additional props
+  [key: string]: unknown; // Change any to unknown
+}
+
+interface Preset {
+  name: string;
+  dates: {
+    from: Date;
+    to: Date;
+  };
 }
 
 export function DateRangePicker({
@@ -65,7 +78,7 @@ export function DateRangePicker({
     },
   ];
 
-  const handleSelect = (selectedDate: any) => {
+  const handleSelect = (selectedDate: DateRange) => {
     setDate(selectedDate);
     if (onSelect) {
       onSelect(selectedDate);
@@ -73,7 +86,7 @@ export function DateRangePicker({
   };
 
   // プリセットをクリックした時の処理
-  const handlePresetClick = (preset: any) => {
+  const handlePresetClick = (preset: Preset) => {
     handleSelect(preset.dates);
   };
 
