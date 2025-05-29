@@ -8,8 +8,8 @@ import Logger from './Logger';
 declare global {
   interface Window {
     // Google Analytics 4のgtag関数
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
+    gtag?: (command: string, ...args: unknown[]) => void;
+    dataLayer?: unknown[];
   }
 }
 
@@ -68,9 +68,9 @@ export class GoogleAnalyticsProvider implements AnalyticsProvider {
       try {
         // データレイヤーの初期化
         window.dataLayer = window.dataLayer || [];
-        window.gtag = function gtag() {
+        window.gtag = function gtag(...args: unknown[]) {
           if (window.dataLayer) {
-            window.dataLayer.push(arguments);
+            window.dataLayer.push(args);
           }
         };
 

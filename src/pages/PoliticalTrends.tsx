@@ -91,8 +91,8 @@ export default function PoliticalTrends() {
   const [activeTab, setActiveTab] = useState('chart');
   const [viewMode, setViewMode] = useState<'line' | 'bar' | 'pie'>('line');
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: startOfMonth(subMonths(new Date(), 12)),
-    to: endOfMonth(new Date()),
+    from: undefined,
+    to: undefined,
   });
   const [isQuickEntryMode, setIsQuickEntryMode] = useState(false);
   const [normalizeYAxis, setNormalizeYAxis] = useState(false);

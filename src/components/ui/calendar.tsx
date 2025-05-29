@@ -24,8 +24,10 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames,
       }}
       components={{
-        PreviousMonthButton: ({ ...props }) => <ChevronLeft className="h-4 w-4" {...props} />,
-        NextMonthButton: ({ ...props }) => <ChevronRight className="h-4 w-4" {...props} />,
+        PreviousMonthButton: ({ ...props }) => (
+          <ChevronLeft className="h-4 w-4" {...(props as any)} />
+        ),
+        NextMonthButton: ({ ...props }) => <ChevronRight className="h-4 w-4" {...(props as any)} />,
       }}
       {...props}
     />

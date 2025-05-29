@@ -156,7 +156,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremiu
     setInviteResult(null);
 
     try {
-      const result = await inviteUser(emails, message);
+      const result = await inviteUser(emails.join(','), message);
 
       if (result.success) {
         setInviteResult({
