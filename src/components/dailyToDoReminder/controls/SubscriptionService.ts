@@ -8,7 +8,7 @@ import ApiClient from './ApiClient';
 /**
  * サブスクリプション状態の型定義
  */
-export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired';
+export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'cancelled';
 
 /**
  * サブスクリプションプランの型定義
@@ -24,7 +24,7 @@ export interface SubscriptionInfo {
   features: string[];
   price: number;
   billing: 'monthly' | 'yearly';
-  status?: 'active' | 'inactive' | 'cancelled';
+  status?: SubscriptionStatus;
 }
 
 export class SubscriptionService {
