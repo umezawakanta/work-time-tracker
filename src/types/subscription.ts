@@ -40,3 +40,7 @@ export interface PricingPlans {
     [plan: string]: number;
   };
 }
+
+export interface UserSubscriptionInfo {
+  plans: SubscriptionPlan[];
+}

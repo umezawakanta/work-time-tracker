@@ -45,7 +45,7 @@ export class ApiRequestHandler {
     this.axios.interceptors.request.use(
       (config) => {
         // タイムスタンプの追加
-        config.headers = config.headers || ({} as any);
+        config.headers = config.headers || ({} as Record<string, string>);
         config.headers['X-Request-Time'] = Date.now().toString();
 
         // プラン情報の追加
@@ -100,6 +100,7 @@ export class ApiRequestHandler {
     serviceName?: string
   ): Promise<ApiResponse<T>> {
     const startTime = Date.now();
+    const safeServiceName = serviceName || 'default';
 
     try {
       // 設定の準備
@@ -121,7 +122,7 @@ export class ApiRequestHandler {
 
       for (const plugin of plugins) {
         if (plugin.hooks.beforeRequest) {
-          await plugin.hooks.beforeRequest(axiosConfig, serviceName);
+          await plugin.hooks.beforeRequest(axiosConfig, safeServiceName);
         }
       }
 
@@ -133,7 +134,11 @@ export class ApiRequestHandler {
 
       for (const plugin of plugins) {
         if (plugin.hooks.afterResponse) {
-          processedData = await plugin.hooks.afterResponse(processedData, response, serviceName);
+          processedData = (await plugin.hooks.afterResponse(
+            processedData,
+            response,
+            safeServiceName
+          )) as T;
         }
       }
 
@@ -184,7 +189,7 @@ export class ApiRequestHandler {
 
       for (const plugin of plugins) {
         if (plugin.hooks.onError) {
-          await plugin.hooks.onError(errorResponse, error, serviceName);
+          await plugin.hooks.onError(errorResponse, error as Error, safeServiceName);
         }
       }
 
