@@ -1,26 +1,26 @@
 ﻿export enum CachePriority {
   LOW = 1,
   MEDIUM = 2,
-  HIGH = 3
+  HIGH = 3,
 }
 
 export class CacheManager {
   private static instance: CacheManager;
-  private cache: Map<string, any> = new Map();
-  
+  private cache: Map<string, unknown> = new Map();
+
   static getInstance(): CacheManager {
     if (!CacheManager.instance) {
       CacheManager.instance = new CacheManager();
     }
     return CacheManager.instance;
   }
-  
-  set(key: string, value: any, options?: any): void {
+
+  set(key: string, value: unknown, _options?: unknown): void {
     this.cache.set(key, value);
   }
-  
-  get<T = any>(key: string): T | null {
-    return this.cache.get(key) || null;
+
+  get<T = unknown>(key: string): T | null {
+    return (this.cache.get(key) as T) || null;
   }
 }
 

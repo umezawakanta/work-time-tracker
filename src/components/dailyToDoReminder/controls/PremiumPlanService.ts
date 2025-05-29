@@ -99,7 +99,7 @@ export class PremiumPlanService {
     // キャッシュに保存（開発環境でも）
     this.cacheManager.set(cacheKey, fallbackData, {
       ttl: 5 * 60 * 1000,
-      priority: CachePriority.NORMAL,
+      priority: CachePriority.MEDIUM,
     });
 
     return fallbackData;
@@ -141,7 +141,7 @@ export class PremiumPlanService {
     // キャッシュに保存（開発環境でも）
     this.cacheManager.set(cacheKey, fallbackData, {
       ttl: 5 * 60 * 1000,
-      priority: CachePriority.NORMAL,
+      priority: CachePriority.MEDIUM,
     });
 
     return fallbackData;
@@ -186,7 +186,10 @@ export class PremiumPlanService {
 
         return {
           success: false,
-          message: response.error || 'アップグレード処理中にエラーが発生しました。',
+          message:
+            typeof response.error === 'string'
+              ? response.error
+              : 'アップグレード処理中にエラーが発生しました。',
         };
       }
 

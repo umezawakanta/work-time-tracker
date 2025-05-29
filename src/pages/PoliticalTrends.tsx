@@ -1,6 +1,6 @@
 // src/components/PoliticalTrendsAdvanced.tsx
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,11 +8,11 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   BarChart2,
   RefreshCw,
@@ -27,28 +27,24 @@ import {
   AlertCircle,
   Plus,
   Info,
-} from "lucide-react";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { toast } from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
+} from 'lucide-react';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { toast } from 'react-hot-toast';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -56,14 +52,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
-import PoliticalLineChart from "@/components/chart/PoliticalLineChart";
-import { useSurveyData } from "@/components/chart/hooks/useSurveyData";
-import { ChartDataPoint, SupportRate, Survey } from "@/types/survey";
-import { QuickEntryForm } from "@/components/forms/QuickEntryForm";
-import { surveyApi } from "@/services/api/surveyApi";
+} from '@/components/ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import PoliticalLineChart from '@/components/chart/PoliticalLineChart';
+import { useSurveyData } from '@/components/chart/hooks/useSurveyData';
+import { ChartDataPoint, SupportRate, Survey } from '@/types/survey';
+import { QuickEntryForm } from '@/components/forms/QuickEntryForm';
+import { surveyApi } from '@/services/api/surveyApi';
 
 type DateRange = {
   from: Date | null;
@@ -85,21 +81,15 @@ interface SurveySubmitData {
 
 export default function PoliticalTrends() {
   // カスタムフックからデータを取得
-  const {
-    chartData,
-    mediaList,
-    parties,
-    isLoading,
-    missingData,
-    fetchSurveyData,
-  } = useSurveyData();
+  const { chartData, mediaList, parties, isLoading, missingData, fetchSurveyData } =
+    useSurveyData();
 
   // 状態管理
-  const [selectedMedia, setSelectedMedia] = useState<string>("各社平均");
+  const [selectedMedia, setSelectedMedia] = useState<string>('各社平均');
   const [selectedParties, setSelectedParties] = useState<string[]>([]);
   const [highlightedParties, setHighlightedParties] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState("chart");
-  const [viewMode, setViewMode] = useState<"line" | "bar" | "pie">("line");
+  const [activeTab, setActiveTab] = useState('chart');
+  const [viewMode, setViewMode] = useState<'line' | 'bar' | 'pie'>('line');
   const [dateRange, setDateRange] = useState<DateRange>({
     from: startOfMonth(subMonths(new Date(), 12)),
     to: endOfMonth(new Date()),
@@ -108,7 +98,7 @@ export default function PoliticalTrends() {
   const [normalizeYAxis, setNormalizeYAxis] = useState(false);
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const [exportFormat, setExportFormat] = useState("csv");
+  const [exportFormat, setExportFormat] = useState('csv');
   const [showMissingDataAlert, setShowMissingDataAlert] = useState(true);
 
   // 初期データ読み込み
@@ -120,11 +110,9 @@ export default function PoliticalTrends() {
   // 政党が読み込まれたら主要政党を自動選択
   useEffect(() => {
     if (parties && parties.length > 0) {
-      const majorParties = ["自民", "立民", "維新", "公明", "共産"];
+      const majorParties = ['自民', '立民', '維新', '公明', '共産'];
       setSelectedParties(
-        parties
-          .filter((p) => majorParties.includes(p.shortName))
-          .map((p) => p.shortName)
+        parties.filter((p) => majorParties.includes(p.shortName)).map((p) => p.shortName)
       );
     }
   }, [parties]);
@@ -169,9 +157,9 @@ export default function PoliticalTrends() {
   const handleRefresh = async () => {
     try {
       await fetchSurveyData();
-      toast.success("データを最新の状態に更新しました");
+      toast.success('データを最新の状態に更新しました');
     } catch (error) {
-      toast.error("データの更新に失敗しました");
+      toast.error('データの更新に失敗しました');
       console.error(error);
     }
   };
@@ -179,7 +167,7 @@ export default function PoliticalTrends() {
   // CSV/Excelエクスポート処理
   const handleExportData = () => {
     if (!isPremiumUser) {
-      toast.error("この機能はプレミアムユーザー限定です");
+      toast.error('この機能はプレミアムユーザー限定です');
       return;
     }
 
@@ -188,34 +176,29 @@ export default function PoliticalTrends() {
       const csvContent = generateCSVContent(filteredData);
 
       // ダウンロード処理
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `政党支持率データ_${format(new Date(), "yyyy-MM-dd")}.csv`
-      );
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `政党支持率データ_${format(new Date(), 'yyyy-MM-dd')}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       setIsExportDialogOpen(false);
-      toast.success(
-        `データを${exportFormat.toUpperCase()}形式でエクスポートしました`
-      );
+      toast.success(`データを${exportFormat.toUpperCase()}形式でエクスポートしました`);
     } catch (error) {
-      toast.error("エクスポートに失敗しました");
+      toast.error('エクスポートに失敗しました');
       console.error(error);
     }
   };
 
   // CSVコンテンツ生成
   const generateCSVContent = (data: ChartDataPoint[]) => {
-    if (!data || data.length === 0) return "";
+    if (!data || data.length === 0) return '';
 
     // ヘッダー行の生成
-    const headers = ["日付", "メディア"];
+    const headers = ['日付', 'メディア'];
     parties.forEach((party) => {
       if (selectedParties.includes(party.shortName)) {
         headers.push(party.name);
@@ -228,24 +211,22 @@ export default function PoliticalTrends() {
       parties.forEach((party) => {
         if (selectedParties.includes(party.shortName)) {
           const key =
-            selectedMedia === "各社平均"
-              ? party.shortName
-              : `${party.shortName}_${selectedMedia}`;
-          row.push(point[key]?.toString() || "");
+            selectedMedia === '各社平均' ? party.shortName : `${party.shortName}_${selectedMedia}`;
+          row.push(point[key]?.toString() || '');
         }
       });
-      return row.join(",");
+      return row.join(',');
     });
 
     // CSV形式で返す
-    return [headers.join(","), ...rows].join("\n");
+    return [headers.join(','), ...rows].join('\n');
   };
 
   // クイック入力処理
   const handleQuickEntrySubmit = async (formData: SurveySubmitData) => {
     try {
       // 既存のsurveyApiメソッドに合わせてデータを変換
-      const surveyData: Omit<Survey, "_id"> = {
+      const surveyData: Omit<Survey, '_id'> = {
         mediaOutlet: formData.mediaOutlet,
         surveyStartDate: formData.surveyEndDate, // 簡易入力では開始日=終了日とする
         surveyEndDate: formData.surveyEndDate,
@@ -253,22 +234,23 @@ export default function PoliticalTrends() {
       };
 
       // 支持率データを変換
-      const supportRatesData: Omit<SupportRate, "_id" | "surveyId">[] =
-        formData.supportRates.map((rate) => ({
+      const supportRatesData: Omit<SupportRate, '_id' | 'surveyId'>[] = formData.supportRates.map(
+        (rate) => ({
           partyId: rate.partyId,
           supportRate: rate.supportRate,
-        }));
+        })
+      );
 
       // 正しいAPIメソッドを呼び出す
       const response = await surveyApi.create(surveyData, supportRatesData);
 
       if (response.status === 201) {
-        toast.success("データを登録しました");
+        toast.success('データを登録しました');
         setIsQuickEntryMode(false);
         fetchSurveyData(); // データを再取得
       }
     } catch (error) {
-      toast.error("データの登録に失敗しました");
+      toast.error('データの登録に失敗しました');
       console.error(error);
     }
   };
@@ -292,27 +274,24 @@ export default function PoliticalTrends() {
     return parties.map((party) => (
       <div key={party.shortName} className="inline-block">
         <Badge
-          variant={
-            selectedParties.includes(party.shortName) ? "default" : "outline"
-          }
+          variant={selectedParties.includes(party.shortName) ? 'default' : 'outline'}
           className={`
             mb-2 mr-2 cursor-pointer 
             ${
               highlightedParties.includes(party.shortName)
-                ? "ring-2 ring-yellow-400 dark:ring-yellow-500"
-                : ""
+                ? 'ring-2 ring-yellow-400 dark:ring-yellow-500'
+                : ''
             }
           `}
           style={{
             backgroundColor: selectedParties.includes(party.shortName)
               ? party.colorCode
-              : "transparent",
+              : 'transparent',
             borderColor: party.colorCode,
             color:
-              selectedParties.includes(party.shortName) &&
-              isColorDark(party.colorCode)
-                ? "white"
-                : "inherit",
+              selectedParties.includes(party.shortName) && isColorDark(party.colorCode)
+                ? 'white'
+                : 'inherit',
           }}
           onClick={() => toggleParty(party.shortName)}
           onContextMenu={(e) => {
@@ -329,7 +308,7 @@ export default function PoliticalTrends() {
   // ヘルパー関数: 色の明暗を判定
   function isColorDark(hexColor: string): boolean {
     // #で始まる場合は取り除く
-    hexColor = hexColor.replace("#", "");
+    hexColor = hexColor.replace('#', '');
 
     // RGB値に変換
     const r = parseInt(hexColor.substr(0, 2), 16);
@@ -347,7 +326,7 @@ export default function PoliticalTrends() {
     const currentMedia = selectedMedia;
     if (
       !showMissingDataAlert ||
-      currentMedia === "各社平均" ||
+      currentMedia === '各社平均' ||
       !missingData[currentMedia] ||
       missingData[currentMedia].length === 0
     ) {
@@ -357,18 +336,18 @@ export default function PoliticalTrends() {
     // ここを修正します
     const missingMonths = missingData[currentMedia]
       .map((month) => {
-        console.log("Missing month:", month);
+        console.log('Missing month:', month);
         // month が "2025/04" のような形式で来ることを想定
-        const [year, monthNum] = month.split("/");
+        const [year, monthNum] = month.split('/');
         // parseInt の後にエラーチェックを追加
         const monthInt = parseInt(monthNum);
-        console.log("Parsed month:", monthInt);
+        console.log('Parsed month:', monthInt);
         if (isNaN(monthInt)) {
           return `${year}年不明月`;
         }
         return `${year}年${monthInt}月`;
       })
-      .join("、");
+      .join('、');
 
     return (
       <Alert className="mb-4 bg-amber-50 border-amber-200 text-amber-800">
@@ -407,9 +386,7 @@ export default function PoliticalTrends() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>データエクスポート</DialogTitle>
-          <DialogDescription>
-            現在表示されているデータをエクスポートします
-          </DialogDescription>
+          <DialogDescription>現在表示されているデータをエクスポートします</DialogDescription>
         </DialogHeader>
 
         <div className="py-4 space-y-4">
@@ -440,10 +417,7 @@ export default function PoliticalTrends() {
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setIsExportDialogOpen(false)}
-          >
+          <Button variant="outline" onClick={() => setIsExportDialogOpen(false)}>
             キャンセル
           </Button>
           <Button onClick={handleExportData} disabled={!isPremiumUser}>
@@ -461,14 +435,12 @@ export default function PoliticalTrends() {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>クイック調査データ登録</DialogTitle>
-          <DialogDescription>
-            調査機関の支持率データを素早く登録できます
-          </DialogDescription>
+          <DialogDescription>調査機関の支持率データを素早く登録できます</DialogDescription>
         </DialogHeader>
 
         <QuickEntryForm
           parties={parties}
-          mediaOutlet={selectedMedia !== "各社平均" ? selectedMedia : undefined}
+          mediaOutlet={selectedMedia !== '各社平均' ? selectedMedia : undefined}
           onSubmit={handleQuickEntrySubmit}
           onCancel={() => setIsQuickEntryMode(false)}
         />
@@ -476,8 +448,8 @@ export default function PoliticalTrends() {
     </Dialog>
   );
 
-  const getPartyColorClass = (partyId) =>
-    `party-color-${partyId.replace(/[^a-zA-Z0-9]/g, "")}`;
+  const getPartyColorClass = (partyId: string) =>
+    `party-color-${partyId.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -489,24 +461,15 @@ export default function PoliticalTrends() {
           <div className="flex items-center gap-3">
             <h1 className="text-4xl font-bold">政党支持率トレンド</h1>
             {isPremiumUser && (
-              <Badge
-                variant="default"
-                className="bg-gradient-to-r from-amber-500 to-amber-700"
-              >
+              <Badge variant="default" className="bg-gradient-to-r from-amber-500 to-amber-700">
                 プレミアム
               </Badge>
             )}
           </div>
-          <p className="text-muted-foreground mt-2">
-            複数の世論調査機関による政党支持率の推移
-          </p>
+          <p className="text-muted-foreground mt-2">複数の世論調査機関による政党支持率の推移</p>
         </div>
         <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsQuickEntryMode(true)}
-          >
+          <Button variant="outline" size="sm" onClick={() => setIsQuickEntryMode(true)}>
             <Plus className="mr-2 h-4 w-4" />
             クイック入力
           </Button>
@@ -519,21 +482,19 @@ export default function PoliticalTrends() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => setViewMode("line")}>
+              <DropdownMenuItem onSelect={() => setViewMode('line')}>
                 <TrendingUp className="mr-2 h-4 w-4" />
                 折れ線グラフ
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setViewMode("bar")}>
+              <DropdownMenuItem onSelect={() => setViewMode('bar')}>
                 <BarChart className="mr-2 h-4 w-4" />
                 棒グラフ
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setViewMode("pie")}>
+              <DropdownMenuItem onSelect={() => setViewMode('pie')}>
                 <BarChart2 className="mr-2 h-4 w-4" />
                 円グラフ
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setNormalizeYAxis(!normalizeYAxis)}
-              >
+              <DropdownMenuItem onSelect={() => setNormalizeYAxis(!normalizeYAxis)}>
                 <Switch checked={normalizeYAxis} className="mr-2" />
                 Y軸を自動調整
               </DropdownMenuItem>
@@ -544,15 +505,8 @@ export default function PoliticalTrends() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            variant="outline"
-            size="sm"
-            className="relative overflow-hidden"
-          >
-            <label
-              htmlFor="csv-upload"
-              className="absolute inset-0 cursor-pointer"
-            >
+          <Button variant="outline" size="sm" className="relative overflow-hidden">
+            <label htmlFor="csv-upload" className="absolute inset-0 cursor-pointer">
               <span className="sr-only">CSVファイルをアップロード</span>
             </label>
             <input
@@ -560,7 +514,7 @@ export default function PoliticalTrends() {
               type="file"
               accept=".csv"
               aria-label="CSVファイルをアップロード"
-              onChange={() => toast.success("CSVアップロード機能を準備中です")}
+              onChange={() => toast.success('CSVアップロード機能を準備中です')}
               className="hidden"
             />
             <FileUp className="mr-2 h-4 w-4" />
@@ -619,17 +573,14 @@ export default function PoliticalTrends() {
                 <Label className="mb-2 block">期間</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left"
-                    >
+                    <Button variant="outline" className="w-full justify-start text-left">
                       <Calendar className="mr-2 h-4 w-4" />
                       {dateRange.from && dateRange.to
-                        ? `${format(dateRange.from, "yyyy/MM")} - ${format(
+                        ? `${format(dateRange.from, 'yyyy/MM')} - ${format(
                             dateRange.to,
-                            "yyyy/MM"
+                            'yyyy/MM'
                           )}`
-                        : "期間を選択"}
+                        : '期間を選択'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -661,25 +612,20 @@ export default function PoliticalTrends() {
               <div className="flex justify-between items-center">
                 <CardTitle>
                   {selectedMedia} (
-                  {viewMode === "line"
-                    ? "折れ線"
-                    : viewMode === "bar"
-                    ? "棒グラフ"
-                    : "円グラフ"}
-                  )
+                  {viewMode === 'line' ? '折れ線' : viewMode === 'bar' ? '棒グラフ' : '円グラフ'})
                 </CardTitle>
                 <div className="text-xs text-muted-foreground">
                   {dateRange.from && dateRange.to
-                    ? `${format(dateRange.from, "yyyy年MM月")}～${format(
+                    ? `${format(dateRange.from, 'yyyy年MM月')}～${format(
                         dateRange.to,
-                        "yyyy年MM月"
+                        'yyyy年MM月'
                       )}`
-                    : "全期間"}
+                    : '全期間'}
                 </div>
               </div>
               <CardDescription>
                 {selectedParties.length === 0
-                  ? "政党を選択してください"
+                  ? '政党を選択してください'
                   : `${selectedParties.length}政党のデータを表示中`}
               </CardDescription>
             </CardHeader>
@@ -692,18 +638,13 @@ export default function PoliticalTrends() {
               ) : filteredData.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-96 border border-dashed rounded-lg p-6">
                   <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    データがありません
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">データがありません</h3>
                   <p className="text-sm text-center text-muted-foreground mb-4">
                     選択した期間やメディアにデータが存在しないか、
                     <br />
                     政党が選択されていません。
                   </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsQuickEntryMode(true)}
-                  >
+                  <Button variant="outline" onClick={() => setIsQuickEntryMode(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     データを追加
                   </Button>
@@ -773,15 +714,11 @@ export default function PoliticalTrends() {
                           メディア
                         </th>
                         {parties
-                          .filter((party) =>
-                            selectedParties.includes(party.shortName)
-                          )
+                          .filter((party) => selectedParties.includes(party.shortName))
                           .map((party) => (
                             <th
                               key={party._id}
-                              className={`party-header ${getPartyColorClass(
-                                party._id
-                              )}`}
+                              className={`party-header ${getPartyColorClass(party._id)}`}
                             >
                               {party.name}
                             </th>
@@ -790,10 +727,7 @@ export default function PoliticalTrends() {
                     </thead>
                     <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                       {filteredData.map((dataPoint, index) => (
-                        <tr
-                          key={index}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                        >
+                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             {dataPoint.monthDate}
                           </td>
@@ -801,12 +735,10 @@ export default function PoliticalTrends() {
                             {dataPoint.mediaOutlet}
                           </td>
                           {parties
-                            .filter((party) =>
-                              selectedParties.includes(party.shortName)
-                            )
+                            .filter((party) => selectedParties.includes(party.shortName))
                             .map((party) => {
                               const key =
-                                selectedMedia === "各社平均"
+                                selectedMedia === '各社平均'
                                   ? party.shortName
                                   : `${party.shortName}_${selectedMedia}`;
                               const value = dataPoint[key];
@@ -815,9 +747,7 @@ export default function PoliticalTrends() {
                                   key={party._id}
                                   className={`px-6 py-4 whitespace-nowrap text-sm font-semibold party-cell-${party._id}`}
                                 >
-                                  {typeof value === "number"
-                                    ? `${value.toFixed(1)}%`
-                                    : "-"}
+                                  {typeof value === 'number' ? `${value.toFixed(1)}%` : '-'}
                                 </td>
                               );
                             })}
@@ -853,44 +783,32 @@ export default function PoliticalTrends() {
                   <h3 className="text-lg font-medium mb-2">調査手法と注意点</h3>
                   <div className="space-y-4">
                     {mediaList
-                      .filter((m) => m !== "各社平均")
+                      .filter((m) => m !== '各社平均')
                       .map((media, index) => (
                         <div key={index} className="border rounded-md p-4">
                           <h4 className="font-medium mb-1">{media}</h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {media === "NHK" &&
-                              "電話調査（RDD方式）、サンプルサイズ約2,000人"}
-                            {media === "読売新聞" &&
-                              "電話調査（RDD方式）、サンプルサイズ約1,000人"}
-                            {media === "朝日新聞" &&
-                              "電話調査（RDD方式）、サンプルサイズ約1,500人"}
-                            {media === "毎日新聞" &&
-                              "電話調査（RDD方式）、サンプルサイズ約1,000人"}
-                            {media === "日経新聞" &&
-                              "電話調査（RDD方式）、サンプルサイズ約1,000人"}
-                            {media === "共同通信" &&
-                              "電話調査（RDD方式）、サンプルサイズ約1,000人"}
+                            {media === 'NHK' && '電話調査（RDD方式）、サンプルサイズ約2,000人'}
+                            {media === '読売新聞' && '電話調査（RDD方式）、サンプルサイズ約1,000人'}
+                            {media === '朝日新聞' && '電話調査（RDD方式）、サンプルサイズ約1,500人'}
+                            {media === '毎日新聞' && '電話調査（RDD方式）、サンプルサイズ約1,000人'}
+                            {media === '日経新聞' && '電話調査（RDD方式）、サンプルサイズ約1,000人'}
+                            {media === '共同通信' && '電話調査（RDD方式）、サンプルサイズ約1,000人'}
                           </p>
-                          {missingData[media] &&
-                            missingData[media].length > 0 && (
-                              <div className="mt-2">
-                                <Badge
-                                  variant="outline"
-                                  className="text-amber-500 border-amber-500"
-                                >
-                                  データ未入力: {missingData[media].length}ヶ月
-                                </Badge>
-                              </div>
-                            )}
+                          {missingData[media] && missingData[media].length > 0 && (
+                            <div className="mt-2">
+                              <Badge variant="outline" className="text-amber-500 border-amber-500">
+                                データ未入力: {missingData[media].length}ヶ月
+                              </Badge>
+                            </div>
+                          )}
                         </div>
                       ))}
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium mb-2">
-                    データ利用にあたっての注意
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">データ利用にあたっての注意</h3>
                   <div className="text-sm space-y-2">
                     <p>
                       各調査機関によって調査手法、質問方法、実施時期などが異なるため、
@@ -947,9 +865,7 @@ export default function PoliticalTrends() {
               >
                 プレミアムにアップグレード
               </Button>
-              <p className="text-xs mt-2 text-white/80">
-                いつでもキャンセル可能
-              </p>
+              <p className="text-xs mt-2 text-white/80">いつでもキャンセル可能</p>
             </div>
           </div>
         </div>
