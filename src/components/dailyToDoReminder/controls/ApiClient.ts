@@ -3,11 +3,11 @@ import { ApiServiceConfig } from './ApiTypes';
 export class ApiClient {
   private static instance: ApiClient;
   private baseURL: string;
-  
+
   constructor(config: ApiServiceConfig) {
     this.baseURL = config.baseURL;
   }
-  
+
   static getInstance(config?: ApiServiceConfig): ApiClient {
     if (!this.instance && config) {
       this.instance = new ApiClient(config);
@@ -15,10 +15,10 @@ export class ApiClient {
     return this.instance;
   }
 
-  async fetch<T = any>(
-    url: string, 
+  async fetch<T = unknown>(
+    url: string,
     options?: RequestInit
-  ): Promise<{ data: T; success: boolean; error?: any }> {
+  ): Promise<{ data: T; success: boolean; error?: unknown }> {
     try {
       const response = await fetch(`${this.baseURL}${url}`, {
         ...options,
@@ -27,50 +27,62 @@ export class ApiClient {
           ...options?.headers,
         },
       });
-      
+
       const data = await response.json();
-      
+
       return {
         data,
         success: response.ok,
-        error: response.ok ? undefined : data.error
+        error: response.ok ? undefined : data.error,
       };
     } catch (error) {
       return {
-        data: null as any,
+        data: null as T,
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
-  
-  async get<T = any>(url: string, params?: any): Promise<{ data: T; success: boolean; error?: any }> {
+
+  async get<T = unknown>(
+    url: string,
+    params?: Record<string, string>
+  ): Promise<{ data: T; success: boolean; error?: unknown }> {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
     return this.fetch<T>(`${url}${queryString}`, { method: 'GET' });
   }
-  
-  async post<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
+
+  async post<T = unknown>(
+    url: string,
+    data?: unknown
+  ): Promise<{ data: T; success: boolean; error?: unknown }> {
     return this.fetch<T>(url, {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
   }
-  
-  async put<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
+
+  async put<T = unknown>(
+    url: string,
+    data?: unknown
+  ): Promise<{ data: T; success: boolean; error?: unknown }> {
     return this.fetch<T>(url, {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
   }
-  
-  async delete<T = any>(url: string): Promise<{ data: T; success: boolean; error?: any }> {
+
+  async delete<T = unknown>(url: string): Promise<{ data: T; success: boolean; error?: unknown }> {
     return this.fetch<T>(url, { method: 'DELETE' });
   }
-  
-  async patch<T = any>(url: string, data?: any): Promise<{ data: T; success: boolean; error?: any }> {
+
+  async patch<T = unknown>(
+    url: string,
+    data?: unknown
+  ): Promise<{ data: T; success: boolean; error?: unknown }> {
     return this.fetch<T>(url, {
       method: 'PATCH',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
   }
 }
@@ -78,4 +90,4 @@ export class ApiClient {
 export default ApiClient;
 
 // Re-export types for compatibility
-export type { ApiResponse, RequestConfig, RequestData } from './ApiTypes';
+export type { ApiResponse, ExtendedRequestConfig, RequestData } from './ApiTypes';
