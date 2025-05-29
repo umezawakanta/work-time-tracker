@@ -1,6 +1,6 @@
-﻿import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+﻿import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -18,7 +18,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           ui: ['@mui/material', '@mui/icons-material'],
-          ai: ['@anthropic-ai/sdk', 'openai'],
+          ai: ['@anthropic-ai/sdk'],
         },
       },
     },
@@ -35,4 +35,4 @@ export default defineConfig({
   define: {
     'process.env': process.env,
   },
-})
+});
