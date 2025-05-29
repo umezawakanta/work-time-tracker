@@ -1,7 +1,7 @@
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 export interface RequestData {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | RequestData | Array<RequestData>;
 }
 
 export interface ExtendedRequestConfig {
@@ -56,7 +56,7 @@ export interface ApiResponse<T = any> {
 }
 
 export interface ApiErrorResponse extends ApiResponse {
-  data?: any;
+  data: any;
 }
 
 export interface IApiManager {
