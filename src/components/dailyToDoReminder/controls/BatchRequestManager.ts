@@ -6,337 +6,204 @@ import { ApiResponse, RequestData, ExtendedRequestConfig } from './ApiTypes';
 import Logger from './Logger';
 import { FeatureManager } from './FeatureManager';
 import { ApiMetricsCollector } from './ApiMetricsCollector';
+import { BatchRequestValidator } from './BatchRequestValidator';
+import { BatchExecutionEngine } from './BatchExecutionEngine';
+import { BatchRequestOptimizer } from './BatchRequestOptimizer';
 
 /**
- * 一括リクエスト項目
+ * 一括リクエスト項目の型定義
  */
 export interface BatchRequestItem {
-  method: string;
-  endpoint: string;
-  data?: RequestData;
-  config?: ExtendedRequestConfig;
-  serviceName?: string;
+  readonly id: string;
+  readonly method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  readonly endpoint: string;
+  readonly data?: RequestData;
+  readonly config?: ExtendedRequestConfig;
+  readonly serviceName?: string;
+  readonly priority?: number;
+  readonly timeout?: number;
+  readonly retryConfig?: BatchRetryConfig;
 }
 
 /**
  * 一括リクエスト実行モード
  */
 export enum BatchExecutionMode {
-  PARALLEL = 'parallel', // 並列実行（デフォルト）
-  SEQUENTIAL = 'sequential', // 順次実行
-  THROTTLED = 'throttled', // スロットル付き並列実行
+  PARALLEL = 'parallel',
+  SEQUENTIAL = 'sequential',
+  THROTTLED = 'throttled',
+  OPTIMIZED = 'optimized',
+}
+
+/**
+ * 再試行設定
+ */
+export interface BatchRetryConfig {
+  readonly maxRetries: number;
+  readonly backoffMultiplier: number;
+  readonly initialDelayMs: number;
+  readonly maxDelayMs: number;
 }
 
 /**
  * 一括リクエスト設定
  */
 export interface BatchRequestConfig {
-  mode?: BatchExecutionMode;
-  throttleLimit?: number; // スロットル時の同時実行数
-  throttleDelayMs?: number; // スロットル時のリクエスト間隔
-  abortOnError?: boolean; // エラー時に残りのリクエストを中止するか
-  timeout?: number; // タイムアウト（ミリ秒）
+  readonly mode?: BatchExecutionMode;
+  readonly throttleLimit?: number;
+  readonly throttleDelayMs?: number;
+  readonly abortOnError?: boolean;
+  readonly timeout?: number;
+  readonly enableOptimization?: boolean;
+  readonly retryConfig?: BatchRetryConfig;
 }
 
 /**
- * 一括リクエストマネージャークラス
+ * API管理インターフェース
+ */
+interface ApiManagerInterface {
+  request(
+    serviceName: string,
+    method: string,
+    endpoint: string,
+    data?: RequestData,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<unknown>>;
+}
+
+/**
+ * バッチリクエスト結果
+ */
+export interface BatchRequestResult<T = unknown> {
+  readonly requestId: string;
+  readonly success: boolean;
+  readonly data: ApiResponse<T>;
+  readonly duration: number;
+  readonly retryCount: number;
+}
+
+/**
+ * エンタープライズ級一括リクエストマネージャー
+ * 高性能・高可用性・高セキュリティを実現
  */
 export class BatchRequestManager {
-  private apiManager: any; // ApiManagerとの循環参照を避けるためany型を使用
-  private featureManager: FeatureManager;
-  private metricsCollector: ApiMetricsCollector;
-  private logger: Logger;
+  private readonly apiManager: ApiManagerInterface;
+  private readonly featureManager: FeatureManager;
+  private readonly metricsCollector: ApiMetricsCollector;
+  private readonly logger: Logger;
+  private readonly validator: BatchRequestValidator;
+  private readonly executionEngine: BatchExecutionEngine;
+  private readonly optimizer: BatchRequestOptimizer;
 
-  /**
-   * コンストラクタ
-   * @param apiManager APIマネージャーインスタンス
-   */
-  constructor(apiManager: any) {
+  private static readonly DEFAULT_CONFIG: Required<BatchRequestConfig> = {
+    mode: BatchExecutionMode.OPTIMIZED,
+    throttleLimit: 10,
+    throttleDelayMs: 100,
+    abortOnError: false,
+    timeout: 30000,
+    enableOptimization: true,
+    retryConfig: {
+      maxRetries: 3,
+      backoffMultiplier: 2,
+      initialDelayMs: 1000,
+      maxDelayMs: 30000,
+    },
+  };
+
+  constructor(apiManager: ApiManagerInterface) {
     this.apiManager = apiManager;
     this.featureManager = FeatureManager.getInstance();
     this.metricsCollector = ApiMetricsCollector.getInstance();
     this.logger = Logger.getInstance();
+    this.validator = new BatchRequestValidator();
+    this.executionEngine = new BatchExecutionEngine(apiManager, this.logger);
+    this.optimizer = new BatchRequestOptimizer();
   }
 
   /**
    * 一括リクエストの実行
    */
   public async executeBatch<T>(
-    requests: BatchRequestItem[],
+    requests: readonly BatchRequestItem[],
     config: BatchRequestConfig = {}
-  ): Promise<Array<ApiResponse<T>>> {
-    // 設定のデフォルト値
-    const finalConfig: Required<BatchRequestConfig> = {
-      mode: config.mode || BatchExecutionMode.PARALLEL,
-      throttleLimit: config.throttleLimit || 5,
-      throttleDelayMs: config.throttleDelayMs || 200,
-      abortOnError: config.abortOnError || false,
-      timeout: config.timeout || 30000,
-    };
+  ): Promise<readonly BatchRequestResult<T>[]> {
+    const finalConfig = { ...BatchRequestManager.DEFAULT_CONFIG, ...config };
+    const startTime = performance.now();
 
-    // 一括リクエスト機能が利用可能かチェック
-    const batchFeature = this.featureManager.checkFeatureLimit('api.batchRequest');
-
-    if (!batchFeature.allowed) {
-      const userPlan = this.featureManager.getUserPlan();
-
-      this.logger.warn('一括リクエスト機能が利用できません', {
-        plan: userPlan,
-        requestCount: requests.length,
-      });
-
-      return requests.map(() => this.createFeatureLimitError<T>(String(userPlan)));
-    }
-
-    // リクエスト数が上限を超えていないかチェック
-    const maxBatchSize = batchFeature.limit || Infinity;
-    if (requests.length > maxBatchSize) {
-      this.logger.warn(`一括リクエスト数が上限を超えています: ${requests.length}/${maxBatchSize}`, {
-        plan: this.featureManager.getUserPlan(),
-      });
-
-      return requests.map(() => this.createBatchSizeLimitError<T>(maxBatchSize, requests.length));
-    }
-
-    // 使用回数をインクリメント
-    this.featureManager.incrementFeatureUsage('api.batchRequest');
-
-    // メトリクスを記録
-    this.metricsCollector.incrementCounter('batch_requests');
-    this.metricsCollector.recordValue('batch_request_size', requests.length);
-
-    // 実行モードに応じてリクエストを処理
     try {
-      let results: Array<ApiResponse<T>>;
+      // リクエスト検証
+      this.validator.validateBatchRequest(requests, finalConfig);
 
-      switch (finalConfig.mode) {
-        case BatchExecutionMode.SEQUENTIAL:
-          results = await this.executeSequentially<T>(requests, finalConfig);
-          break;
-        case BatchExecutionMode.THROTTLED:
-          results = await this.executeThrottled<T>(requests, finalConfig);
-          break;
-        case BatchExecutionMode.PARALLEL:
-        default:
-          results = await this.executeParallel<T>(requests, finalConfig);
-          break;
-      }
+      // 機能制限チェック
+      await this.checkFeatureLimits(requests.length);
+
+      // リクエスト最適化
+      const optimizedRequests = finalConfig.enableOptimization
+        ? this.optimizer.optimizeRequests(requests)
+        : requests;
+
+      // メトリクス記録開始
+      // this.metricsCollector.startBatchOperation(optimizedRequests.length);
+
+      // 実行
+      const results = await this.executionEngine.execute<T>(optimizedRequests, finalConfig);
+
+      // 実行時間計測
+      const totalDuration = performance.now() - startTime;
+
+      // メトリクス記録
+      this.recordMetrics(results, totalDuration, finalConfig);
 
       return results;
     } catch (error) {
-      this.logger.error('一括リクエスト実行中にエラーが発生しました', { error });
-
-      // エラーレスポンスを生成
-      const errorResponse: ApiResponse<T> = {
-        success: false,
-        data: null as T,
-        error: {
-          code: 'ERROR',
-          message:
-            error instanceof Error ? error.message : '一括リクエスト実行中にエラーが発生しました',
-        },
-        meta: {
-          timestamp: Date.now(),
-        },
-      };
-
-      return new Array(requests.length).fill(errorResponse);
+      this.logger.error('バッチリクエスト実行エラー', { error, requestCount: requests.length });
+      throw error;
     }
   }
 
   /**
-   * 並列実行
+   * 機能制限チェック
    */
-  private async executeParallel<T>(
-    requests: BatchRequestItem[],
-    config: Required<BatchRequestConfig>
-  ): Promise<Array<ApiResponse<T>>> {
-    // タイムアウト処理
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`一括リクエストがタイムアウトしました (${config.timeout}ms)`));
-      }, config.timeout);
+  private async checkFeatureLimits(requestCount: number): Promise<void> {
+    const batchFeature = this.featureManager.checkFeatureLimit('api.batchRequest');
+
+    if (!batchFeature.allowed) {
+      throw new Error('バッチリクエスト機能が利用できません');
+    }
+
+    if (requestCount > (batchFeature.limit || Infinity)) {
+      throw new Error(`リクエスト数が上限を超えています: ${requestCount}/${batchFeature.limit}`);
+    }
+
+    this.featureManager.incrementFeatureUsage('api.batchRequest');
+  }
+
+  /**
+   * メトリクス記録
+   */
+  private recordMetrics<T>(
+    results: readonly BatchRequestResult<T>[],
+    duration: number,
+    config: BatchRequestConfig
+  ): void {
+    const successCount = results.filter((r) => r.success).length;
+    const errorCount = results.length - successCount;
+
+    // this.metricsCollector.recordBatchMetrics({
+    //   totalRequests: results.length,
+    //   successCount,
+    //   errorCount,
+    //   totalDuration: duration,
+    //   averageDuration: duration / results.length,
+    //   mode: config.mode || BatchExecutionMode.OPTIMIZED,
+    // });
+
+    // 基本的なログ出力に置き換え
+    this.logger.info('バッチリクエスト完了', {
+      totalRequests: results.length,
+      successCount,
+      errorCount,
+      duration,
     });
-
-    // すべてのリクエストを並列実行
-    const requestPromises = requests.map((req) =>
-      (this.apiManager as any).request(
-        req.serviceName || 'default',
-        req.method,
-        req.endpoint,
-        req.data,
-        req.config
-      )
-    );
-
-    // Promise.raceを使ってタイムアウト処理を追加
-    return Promise.race([Promise.all(requestPromises), timeoutPromise]);
-  }
-
-  /**
-   * 順次実行
-   */
-  private async executeSequentially<T>(
-    requests: BatchRequestItem[],
-    config: Required<BatchRequestConfig>
-  ): Promise<Array<ApiResponse<T>>> {
-    const results: Array<ApiResponse<T>> = [];
-    const startTime = Date.now();
-
-    for (const req of requests) {
-      // タイムアウトチェック
-      if (Date.now() - startTime > config.timeout) {
-        throw new Error(`一括リクエストがタイムアウトしました (${config.timeout}ms)`);
-      }
-
-      const response = await (this.apiManager as any).request(
-        req.serviceName || 'default',
-        req.method,
-        req.endpoint,
-        req.data,
-        req.config
-      );
-
-      results.push(response);
-
-      // エラー時に中止する設定の場合
-      if (config.abortOnError && !response.success) {
-        // 残りのリクエストに対してエラーレスポンスを生成
-        const remainingCount = requests.length - results.length;
-        if (remainingCount > 0) {
-          const errorResponse: ApiResponse<T> = {
-            success: false,
-            data: null as T,
-            error: { code: 'ERROR', message: '先行リクエストのエラーにより中止されました' },
-            meta: {
-              timestamp: Date.now(),
-              errorHandled: true,
-            },
-          };
-
-          results.push(...new Array(remainingCount).fill(errorResponse));
-        }
-
-        break;
-      }
-    }
-
-    return results;
-  }
-
-  /**
-   * スロットル付き並列実行
-   */
-  private async executeThrottled<T>(
-    requests: BatchRequestItem[],
-    config: Required<BatchRequestConfig>
-  ): Promise<Array<ApiResponse<T>>> {
-    const results: Array<ApiResponse<T>> = new Array(requests.length);
-    const startTime = Date.now();
-
-    // 同時実行数を制限するためのセマフォのような処理
-    const executeWithThrottle = async (index: number): Promise<void> => {
-      // タイムアウトチェック
-      if (Date.now() - startTime > config.timeout) {
-        throw new Error(`一括リクエストがタイムアウトしました (${config.timeout}ms)`);
-      }
-
-      const req = requests[index];
-      const response = await (this.apiManager as any).request(
-        req.serviceName || 'default',
-        req.method,
-        req.endpoint,
-        req.data,
-        req.config
-      );
-
-      results[index] = response;
-    };
-
-    // リクエストをチャンクに分割
-    const chunks: Array<number[]> = [];
-    for (let i = 0; i < requests.length; i += config.throttleLimit) {
-      chunks.push(
-        Array.from({ length: Math.min(config.throttleLimit, requests.length - i) }, (_, j) => i + j)
-      );
-    }
-
-    // チャンクごとに並列実行
-    for (const chunk of chunks) {
-      // チャンク内のリクエストを並列実行
-      await Promise.all(chunk.map((index) => executeWithThrottle(index)));
-
-      // エラー時に中止する設定の場合
-      if (config.abortOnError && results.some((r) => r && !r.success)) {
-        // 未実行のリクエストに対してエラーレスポンスを生成
-        const errorResponse: ApiResponse<T> = {
-          success: false,
-          data: null as T,
-          error: { code: 'ERROR', message: '先行リクエストのエラーにより中止されました' },
-          meta: {
-            timestamp: Date.now(),
-            errorHandled: true,
-          },
-        };
-
-        for (let i = 0; i < results.length; i++) {
-          if (results[i] === undefined) {
-            results[i] = errorResponse;
-          }
-        }
-
-        break;
-      }
-
-      // チャンク間の遅延
-      if (config.throttleDelayMs > 0 && chunks.indexOf(chunk) < chunks.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, config.throttleDelayMs));
-      }
-    }
-
-    return results;
-  }
-
-  /**
-   * 機能制限エラーレスポンスの作成
-   */
-  private createFeatureLimitError<T>(plan: string): ApiResponse<T> {
-    return {
-      success: false,
-      data: null as T,
-      error: {
-        code: 'ERROR',
-        message: '一括リクエスト機能はこのサブスクリプションプランでは利用できません',
-      },
-      meta: {
-        timestamp: Date.now(),
-        featureLimit: {
-          feature: 'api.batchRequest',
-          limit: 0,
-          used: 1,
-          plan: plan,
-        },
-      },
-    };
-  }
-
-  /**
-   * バッチサイズ制限エラーレスポンスの作成
-   */
-  private createBatchSizeLimitError<T>(limit: number, received: number): ApiResponse<T> {
-    return {
-      success: false,
-      data: null as T,
-      error: { code: 'ERROR', message: `一括リクエスト数が上限を超えています (${limit})` },
-      meta: {
-        timestamp: Date.now(),
-        featureLimit: {
-          feature: 'api.batchRequest',
-          limit,
-          used: received,
-          plan: String(this.featureManager.getUserPlan()),
-        },
-      },
-    };
   }
 }
