@@ -1,10 +1,11 @@
-import { 
-  ApiServiceConfig, 
-  ApiResponse, 
-  RequestConfig, 
+import {
+  ApiServiceConfig,
+  ApiResponse,
+  ExtendedRequestConfig,
   HttpMethod,
-  ApiPlugin
+  RequestData,
 } from './ApiTypes';
+import { ApiPlugin } from './ApiPlugin';
 import { ApiRequestHandler } from './ApiRequestHandler';
 import { ApiManagerHTTPMethods } from './ApiManagerHTTPMethods';
 import { BatchRequestManager } from './BatchRequestManager';
@@ -26,14 +27,14 @@ export class ApiManager {
   private networkMonitor: NetworkMonitor;
 
   constructor() {
-    this.requestHandler = new ApiRequestHandler();
+    this.requestHandler = new ApiRequestHandler(this);
     this.batchRequestManager = new BatchRequestManager(this);
     this.rateLimitManager = new RateLimitManager();
     this.featureManager = FeatureManager.getInstance();
     this.metricsCollector = ApiMetricsCollector.getInstance();
     this.logger = new ApiLogger();
     this.networkMonitor = new NetworkMonitor();
-    
+
     this.initializeDefaultService();
   }
 
@@ -42,8 +43,8 @@ export class ApiManager {
       baseURL: process.env.API_BASE_URL || 'https://api.example.com/v1',
       timeout: 30000,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
   }
 
@@ -53,29 +54,31 @@ export class ApiManager {
 
   public registerPlugin(plugin: ApiPlugin): void {
     this.plugins.push(plugin);
-    this.requestHandler.registerPlugin(plugin);
   }
 
-  public async request<T = any>(
+  public async request<T = unknown>(
     serviceName: string,
     method: HttpMethod | string,
     endpoint: string,
-    data?: any,
-    config?: RequestConfig
+    data?: RequestData,
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const startTime = Date.now();
-    
+
     try {
       // ネットワーク状態をチェック
       if (!this.networkMonitor.isConnected()) {
         return {
           success: false,
-          data: null,
-          error: 'ネットワークに接続されていません',
+          data: null as T,
+          error: {
+            code: 'NETWORK_ERROR',
+            message: 'ネットワークに接続されていません',
+          },
           meta: {
             timestamp: Date.now(),
-            processingTime: Date.now() - startTime
-          }
+            processingTime: Date.now() - startTime,
+          },
         };
       }
 
@@ -84,8 +87,11 @@ export class ApiManager {
       if (!rateLimitCheck.allowed) {
         return {
           success: false,
-          data: null,
-          error: 'レート制限を超過しました',
+          data: null as T,
+          error: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            message: 'レート制限を超過しました',
+          },
           meta: {
             timestamp: Date.now(),
             processingTime: Date.now() - startTime,
@@ -93,9 +99,9 @@ export class ApiManager {
               limit: rateLimitCheck.limit,
               remaining: 0,
               reset: rateLimitCheck.resetTime,
-              exceeded: true
-            }
-          }
+              exceeded: true,
+            },
+          },
         };
       }
 
@@ -107,11 +113,10 @@ export class ApiManager {
 
       // リクエストを実行
       const response = await this.requestHandler.executeRequest<T>(
-        serviceName,
         serviceConfig,
         method,
         endpoint,
-        data,
+        data as RequestData,
         config
       );
 
@@ -126,19 +131,21 @@ export class ApiManager {
       }
 
       return response;
-      
     } catch (error) {
       this.logger.error('Request failed', { serviceName, method, endpoint, error });
       this.metricsCollector.incrementCounter('unexpected_errors');
-      
+
       return {
         success: false,
-        data: null,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        data: null as T,
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
         meta: {
           timestamp: Date.now(),
-          processingTime: Date.now() - startTime
-        }
+          processingTime: Date.now() - startTime,
+        },
       };
     }
   }

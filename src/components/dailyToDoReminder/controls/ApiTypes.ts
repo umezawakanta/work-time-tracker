@@ -27,6 +27,7 @@ export interface SubscriptionPlan {
 
 export interface ApiResponseMeta {
   timestamp: number;
+  processingTime?: number;
   requestId?: string;
   statusCode?: number;
   headers?: Record<string, string>;
@@ -34,6 +35,7 @@ export interface ApiResponseMeta {
     limit: number;
     remaining: number;
     reset: number;
+    exceeded?: boolean;
   };
   featureLimit?: {
     feature: string;
@@ -44,19 +46,19 @@ export interface ApiResponseMeta {
   errorHandled?: boolean;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
   meta: ApiResponseMeta;
 }
 
 export interface ApiErrorResponse extends ApiResponse {
-  data: any;
+  data: unknown;
 }
 
 export interface IApiManager {
