@@ -232,7 +232,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscript
 
   // 月ごとのサブスクリプション登録状況を計算
   const getMonthlyStatus = () => {
-    const status = {};
+    const status: MonthlyStatus = {}; // Add proper typing here
 
     years.forEach((year) => {
       status[year] = {};

@@ -79,7 +79,7 @@ export const useAnalytics = () => {
     script.src = 'https://cdn.amplitude.com/libs/amplitude-8.5.0-min.js';
     script.onload = function () {
       if (window.amplitude) {
-        window.amplitude.getInstance().init(amplitudeKey);
+        (window.amplitude as any).getInstance().init(amplitudeKey);
       }
     };
     document.head.appendChild(script);
@@ -105,12 +105,12 @@ export const useAnalytics = () => {
 
       // Mixpanel
       if (window.mixpanel) {
-        window.mixpanel.track(eventName, data);
+        (window.mixpanel as any).track(eventName, data);
       }
 
       // Amplitude
       if (window.amplitude) {
-        window.amplitude.getInstance().logEvent(eventName, data);
+        (window.amplitude as any).getInstance().logEvent(eventName, data);
       }
 
       // カスタムデータレイヤー
@@ -218,7 +218,7 @@ declare global {
   interface Window {
     gtag?: (command: string, ...args: unknown[]) => void;
     dataLayer?: unknown[];
-    mixpanel?: any;
-    amplitude?: any;
+    mixpanel?: unknown;
+    amplitude?: unknown;
   }
 }

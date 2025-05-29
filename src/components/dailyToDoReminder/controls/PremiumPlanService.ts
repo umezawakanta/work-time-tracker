@@ -239,8 +239,9 @@ export class PremiumPlanService {
         return {
           valid: false,
           message:
-            (typeof response.error === 'string' ? response.error : response.error?.message) ||
-            '検証中にエラーが発生しました。',
+            (typeof response.error === 'string'
+              ? response.error
+              : (response.error as any)?.message) || '検証中にエラーが発生しました。',
         };
       }
 
