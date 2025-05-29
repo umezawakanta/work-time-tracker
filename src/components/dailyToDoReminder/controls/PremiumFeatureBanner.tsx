@@ -76,27 +76,27 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const user = useAuth();
+  const { user } = useAuth();
 
   // 使用統計の取得
+  const loadUsageStats = async () => {
+    if (!user?.uid) return;
+
+    try {
+      const stats = await fetchUsageStatistics(user.uid);
+      // Handle stats...
+      setUsageStats({
+        tasksCreated: stats.tasks.total,
+        tasksCompleted: stats.tasks.completed,
+        storageUsed: stats.storage.used,
+        storageLimit: stats.storage.limit,
+      });
+    } catch (error) {
+      console.error('Failed to load usage stats:', error);
+    }
+  };
+
   useEffect(() => {
-    const loadUsageStats = async () => {
-      if (!user?.uid) return;
-
-      try {
-        const stats = await fetchUsageStatistics(user.uid);
-        // Handle stats...
-        setUsageStats({
-          tasksCreated: stats.tasks.total,
-          tasksCompleted: stats.tasks.completed,
-          storageUsed: stats.storage.used,
-          storageLimit: stats.storage.limit,
-        });
-      } catch (error) {
-        console.error('Failed to load usage stats:', error);
-      }
-    };
-
     loadUsageStats();
   }, [user?.uid]);
 

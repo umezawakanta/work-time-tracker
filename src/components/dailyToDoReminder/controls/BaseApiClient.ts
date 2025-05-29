@@ -6,6 +6,12 @@
 import { ApiResponse, ExtendedRequestConfig, RequestData } from './ApiClient';
 
 export abstract class BaseApiClient {
+  protected baseURL: string;
+
+  constructor(baseURL: string) {
+    this.baseURL = baseURL;
+  }
+
   /**
    * APIリクエストを実行する抽象メソッド
    * @param endpoint APIエンドポイント
@@ -177,4 +183,30 @@ export abstract class BaseApiClient {
       reset: parseInt(headers.get('X-RateLimit-Reset') || '', 10) || null,
     };
   }
+
+  abstract get<T>(
+    url: string,
+    params?: Record<string, string>,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<T>>;
+
+  abstract post<T>(
+    url: string,
+    data?: RequestData,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<T>>;
+
+  abstract put<T>(
+    url: string,
+    data?: RequestData,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<T>>;
+
+  abstract delete<T>(url: string, config?: ExtendedRequestConfig): Promise<ApiResponse<T>>;
+
+  abstract patch<T>(
+    url: string,
+    data?: RequestData,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<T>>;
 }

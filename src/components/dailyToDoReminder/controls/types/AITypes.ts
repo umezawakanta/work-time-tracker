@@ -9,10 +9,20 @@ export interface AIModel {
   priority?: number;
   contextWindow?: number;
   maxTokens?: number;
+  tokenCost?: {
+    input: number;
+    output: number;
+  };
 }
 
 export interface AIModelSummary {
   modelId: string;
   displayName: string;
   description: string;
+  id?: string;
+  name?: string;
+  provider?: string;
+  capabilities?: string[];
+  multimodal?: boolean;
+  requiresSubscription?: boolean;
 }

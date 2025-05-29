@@ -8,6 +8,11 @@ export interface ExtendedRequestConfig {
   retry?: number;
   timeout?: number;
   cache?: RequestCache;
+  signal?: AbortSignal;
+  priority?: 'high' | 'normal' | 'low';
+  withCredentials?: boolean;
+  retryDelay?: number;
+  method?: string;
 }
 
 export interface ApiServiceConfig {

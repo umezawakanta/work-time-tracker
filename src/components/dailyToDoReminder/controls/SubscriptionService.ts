@@ -24,6 +24,7 @@ export interface SubscriptionInfo {
   features: string[];
   price: number;
   billing: 'monthly' | 'yearly';
+  status?: 'active' | 'inactive' | 'cancelled';
 }
 
 export class SubscriptionService {
@@ -73,7 +74,13 @@ export class SubscriptionService {
     } catch (error) {
       return {
         success: false,
-        data: {} as SubscriptionInfo,
+        data: {
+          id: '',
+          name: '',
+          features: [],
+          price: 0,
+          billing: 'monthly',
+        } as SubscriptionInfo,
         error: {
           code: 'SUBSCRIPTION_ERROR',
           message: error instanceof Error ? error.message : 'Failed to get subscription info',
@@ -172,16 +179,12 @@ export class SubscriptionService {
    */
   private getDefaultSubscriptionInfo(): SubscriptionInfo {
     return {
+      id: 'default',
+      name: 'Free Plan',
+      features: ['Basic features'],
+      price: 0,
+      billing: 'monthly',
       status: 'inactive',
-      plan: 'free',
-      startDate: new Date().toISOString(),
-      autoRenew: false,
-      features: ['基本機能'],
-      usage: {
-        current: 0,
-        limit: 10,
-        unit: '件',
-      },
     };
   }
 
