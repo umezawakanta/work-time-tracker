@@ -211,8 +211,8 @@ export class CachePlugin extends BaseApiPlugin {
       }
 
       return data as ApiResponse<T>;
-    } catch (error) {
-      console.warn(`キャッシュの読み取りに失敗しました: ${key}`, error);
+    } catch {
+      // パースエラーの場合は削除対象に
       return null;
     }
   }
@@ -257,7 +257,7 @@ export class CachePlugin extends BaseApiPlugin {
               keysToRemove.push(key);
             }
           }
-        } catch (error) {
+        } catch {
           // パースエラーの場合は削除対象に
           keysToRemove.push(key);
         }

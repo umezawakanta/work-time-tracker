@@ -4,16 +4,12 @@ import * as React from 'react';
 import { CalendarIcon } from 'lucide-react';
 import { addDays, format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { DateRange } from 'react-day-picker';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-
-interface DateRange {
-  from?: Date;
-  to?: Date;
-}
 
 interface DateRangePickerProps {
   className?: string;
@@ -21,7 +17,7 @@ interface DateRangePickerProps {
   selected?: DateRange;
   onSelect?: (date: DateRange) => void;
   mode?: string;
-  [key: string]: unknown; // Change any to unknown
+  [key: string]: unknown;
 }
 
 interface Preset {
@@ -145,6 +141,7 @@ export function DateRangePicker({
                 onSelect={handleSelect}
                 numberOfMonths={2}
                 locale={ja}
+                required
               />
             </div>
           </PopoverContent>

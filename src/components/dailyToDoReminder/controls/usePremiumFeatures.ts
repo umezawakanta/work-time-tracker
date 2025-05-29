@@ -141,6 +141,7 @@ export function usePremiumFeatures() {
   return {
     isPremium,
     features: premiumFeatures,
+    expiresAt,
     loading,
     error,
     premiumPlan,
