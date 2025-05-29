@@ -23,6 +23,7 @@ import { ReferralDialog } from './ReferralDialog';
 // サブスクリプション関連のサービス
 import { _extendTrialPeriod as extendTrialPeriod } from '@/services/userAccountService';
 import { _fetchUsageStatistics as fetchUsageStatistics } from '@/services/userAccountService';
+import { useAuth } from '@/hooks/useAuth';
 
 // プレミアム機能の型定義
 interface PremiumFeature {
@@ -72,31 +73,32 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
   const [trialExtended, setTrialExtended] = useState<boolean>(false);
   const [usageStats, setUsageStats] = useState<UsageStats | undefined>(initialUsageStats);
   const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const user = useAuth();
 
   // 使用統計の取得
   useEffect(() => {
     const loadUsageStats = async () => {
-      if (isPremium && !initialUsageStats) {
-        setIsLoadingStats(true);
-        try {
-          const stats = await fetchUsageStatistics();
-          // APIからの応答を適切に整形して使用
-          setUsageStats({
-            tasksCreated: stats.tasks.total,
-            tasksCompleted: stats.tasks.completed,
-            storageUsed: stats.storage.used,
-            storageLimit: stats.storage.limit,
-          });
-        } catch (error) {
-          console.error('使用統計取得エラー:', error);
-        } finally {
-          setIsLoadingStats(false);
-        }
+      if (!user?.uid) return;
+
+      try {
+        const stats = await fetchUsageStatistics(user.uid);
+        // Handle stats...
+        setUsageStats({
+          tasksCreated: stats.tasks.total,
+          tasksCompleted: stats.tasks.completed,
+          storageUsed: stats.storage.used,
+          storageLimit: stats.storage.limit,
+        });
+      } catch (error) {
+        console.error('Failed to load usage stats:', error);
       }
     };
 
     loadUsageStats();
-  }, [isPremium, initialUsageStats]);
+  }, [user?.uid]);
 
   // プレミアム機能リスト
   const premiumFeatures: PremiumFeature[] = [
@@ -231,22 +233,14 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
 
   // トライアル延長処理
   const handleExtendTrial = async () => {
-    setIsExtendingTrial(true);
+    if (!user?.uid) return;
 
     try {
-      const result = await extendTrialPeriod();
-
-      if (result.success) {
-        setTrialExtended(true);
-        // 成功メッセージを表示
-        setTimeout(() => {
-          setTrialExtended(false);
-        }, 3000);
-      }
+      await extendTrialPeriod(user.uid, 7); // 7 days extension
+      setSuccessMessage('Trial period extended successfully!');
     } catch (error) {
-      console.error('トライアル延長エラー:', error);
-    } finally {
-      setIsExtendingTrial(false);
+      console.error('Failed to extend trial:', error);
+      setErrorMessage('Failed to extend trial period');
     }
   };
 

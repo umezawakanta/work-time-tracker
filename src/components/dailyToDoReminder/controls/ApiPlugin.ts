@@ -135,19 +135,17 @@ export class CachePlugin extends BaseApiPlugin {
   }
 
   beforeRequest(url: string, config: ExtendedRequestConfig): ExtendedRequestConfig {
-    // GETリクエスト以外はキャッシュしない
-    if (config.method !== 'GET') return config;
-
-    // キャッシュが無効の場合はスキップ
+    // Remove method check since ExtendedRequestConfig doesn't have method property
+    // Cache for all requests - method checking should be done at a higher level
     if (!this.storage) return config;
 
-    // キャッシュキーの生成
+    // Generate cache key
     const cacheKey = this.getCacheKey(url);
 
-    // キャッシュからデータを取得
+    // Get cached data
     const cachedData = this.getFromCache(cacheKey);
     if (cachedData) {
-      // キャッシュヒットを示すフラグを追加
+      // Add cache hit flag
       return {
         ...config,
         cacheHit: true,

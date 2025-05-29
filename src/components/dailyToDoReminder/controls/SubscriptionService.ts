@@ -19,18 +19,11 @@ export type SubscriptionPlan = 'free' | 'basic' | 'premium' | 'enterprise';
  * サブスクリプション情報の型定義
  */
 export interface SubscriptionInfo {
-  status: SubscriptionStatus;
-  plan: SubscriptionPlan;
-  startDate: string;
-  endDate?: string;
-  autoRenew: boolean;
-  paymentMethod?: string;
+  id: string;
+  name: string;
   features: string[];
-  usage: {
-    current: number;
-    limit: number;
-    unit: string;
-  };
+  price: number;
+  billing: 'monthly' | 'yearly';
 }
 
 export class SubscriptionService {
@@ -80,7 +73,7 @@ export class SubscriptionService {
     } catch (error) {
       return {
         success: false,
-        data: null as unknown as SubscriptionInfo,
+        data: {} as SubscriptionInfo,
         error: {
           code: 'SUBSCRIPTION_ERROR',
           message: error instanceof Error ? error.message : 'Failed to get subscription info',
@@ -222,7 +215,7 @@ export class SubscriptionService {
     } catch (error) {
       return {
         success: false,
-        data: null as unknown as SubscriptionInfo,
+        data: {} as SubscriptionInfo,
         error: {
           code: 'SUBSCRIPTION_ERROR',
           message: error instanceof Error ? error.message : 'Failed to update subscription',

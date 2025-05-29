@@ -15,6 +15,8 @@ interface DateRangePickerProps {
   placeholder?: string;
   selected?: any;
   onSelect?: (date: any) => void;
+  mode?: string;
+  [key: string]: any; // Allow additional props
 }
 
 export function DateRangePicker({

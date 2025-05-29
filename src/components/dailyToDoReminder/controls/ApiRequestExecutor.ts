@@ -2,8 +2,7 @@
  * APIリクエスト実行担当クラス
  * リクエストの実際の実行とエラーハンドリングを担当
  */
-import { ApiResponse, RequestConfig, ApiResponseMeta } from './ApiTypes';
-import ApiClientConfig from './ApiClientConfig';
+import { ApiResponse, ExtendedRequestConfig, ApiResponseMeta } from './ApiTypes';
 import ApiError from './ApiError';
 import Logger from './Logger';
 import ApiMetricsCollector from './ApiMetricsCollector';
@@ -13,12 +12,19 @@ interface QueuedRequest {
   priority: 'high' | 'normal' | 'low';
 }
 
+interface ApiClientConfigType {
+  requestTimeoutMs: number;
+  maxRetries: number;
+  retryDelay: number;
+  getHeaders(): Record<string, string>;
+}
+
 class ApiRequestExecutor {
-  private config: ApiClientConfig;
+  private config: ApiClientConfigType;
   private logger: Logger;
   private metrics: ApiMetricsCollector;
 
-  constructor(config: ApiClientConfig, logger: Logger, metrics: ApiMetricsCollector) {
+  constructor(config: ApiClientConfigType, logger: Logger, metrics: ApiMetricsCollector) {
     this.config = config;
     this.logger = logger;
     this.metrics = metrics;
@@ -56,7 +62,7 @@ class ApiRequestExecutor {
   public async execute<T>(
     url: string,
     options: RequestInit,
-    config: RequestConfig,
+    config: ExtendedRequestConfig,
     isOnline: boolean,
     queueCallback: (request: QueuedRequest) => void
   ): Promise<ApiResponse<T>> {
@@ -146,8 +152,11 @@ class ApiRequestExecutor {
 
           return {
             success: false,
-            error: errorMessage,
-            statusCode: response.status,
+            data: null as T,
+            error: {
+              code: 'HTTP_ERROR',
+              message: errorMessage,
+            },
             meta,
           };
         }
@@ -156,7 +165,6 @@ class ApiRequestExecutor {
         return {
           success: true,
           data: data as T,
-          statusCode: response.status,
           meta,
         };
       } catch (error) {
@@ -205,25 +213,10 @@ class ApiRequestExecutor {
     startTime: number,
     processingTime: number
   ): ApiResponseMeta {
-    const meta: ApiResponseMeta = {
+    return {
       requestId: response.headers.get('X-Request-ID') || undefined,
       timestamp: startTime,
-      processingTime,
     };
-
-    // キャッシュ情報を追加
-    const cacheControl = response.headers.get('Cache-Control') || '';
-    const age = response.headers.get('Age');
-
-    if (cacheControl || age) {
-      meta.cache = {
-        hit: !!response.headers.get('X-Cache')?.includes('HIT'),
-        stale: cacheControl.includes('must-revalidate') && !!age,
-        age: age ? parseInt(age, 10) : undefined,
-      };
-    }
-
-    return meta;
   }
 
   /**
@@ -246,7 +239,6 @@ class ApiRequestExecutor {
       if (error instanceof DOMException && error.name === 'AbortError') {
         this.logger.error(`APIリクエストタイムアウト [${url}]`);
 
-        // 注意: codeプロパティはread-onlyなので、コンストラクタで設定する必要がある
         apiError = new ApiError(
           'リクエストがタイムアウトしました。インターネット接続を確認してください。',
           {
@@ -276,12 +268,13 @@ class ApiRequestExecutor {
 
     return {
       success: false,
-      error: apiError.message,
-      statusCode: apiError.statusCode,
+      data: null as T,
+      error: {
+        code: apiError.code || 'UNKNOWN_ERROR',
+        message: apiError.message,
+      },
       meta: {
         timestamp: startTime,
-        processingTime,
-        errorCode: apiError.code,
         requestId: apiError.requestId,
       },
     };
@@ -293,7 +286,7 @@ class ApiRequestExecutor {
   private async retryRequest<T>(
     executeRequest: (retryCount: number) => Promise<ApiResponse<T>>,
     currentRetry: number,
-    config: RequestConfig = {}
+    config: ExtendedRequestConfig = {}
   ): Promise<ApiResponse<T>> {
     // 指数バックオフでリトライ間隔を計算
     const retryDelay = config.retryDelay || this.config.retryDelay;

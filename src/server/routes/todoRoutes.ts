@@ -1,5 +1,5 @@
-import * as express from "express";
-import { Request, Response } from "express";
+import * as express from 'express';
+import { Request, Response } from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
 import { TodoArchive } from '../models/TodoArchive.js';
@@ -20,14 +20,14 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { task, priority, isPrioritized, type, deadline } = req.body;
-    const newTodo = new TodoItem({ 
-      task, 
-      completed: false, 
-      completedDate: null, 
-      priority, 
+    const newTodo = new TodoItem({
+      task,
+      completed: false,
+      completedDate: null,
+      priority,
       isPrioritized,
       type: type || 'input',
-      deadline: deadline || null // 期限パラメータを追加
+      deadline: deadline || null, // 期限パラメータを追加
     });
     const savedTodo = await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
@@ -77,24 +77,24 @@ router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
   try {
     // 完了したタスクを見つける
     const completedTodos = await TodoItem.find({ completed: true });
-    
+
     // 完了したタスクの数をカウント
     const completedCount = completedTodos.length;
-    
+
     // 履歴データを保存
     if (completedCount > 0) {
       const today = new Date().toISOString().split('T')[0];
-      
+
       // 今日の日付のデータがすでに存在するか確認
       const existingHistory = await TodoHistory.findOne({ date: today });
-      
+
       if (existingHistory) {
         // 既存のデータを更新
         existingHistory.completedCount += completedCount;
         existingHistory.taskDetails.push(
-          ...completedTodos.map(todo => ({
+          ...completedTodos.map((todo) => ({
             task: todo.task,
-            completedDate: todo.completedDate
+            completedDate: todo.completedDate,
           }))
         );
         await existingHistory.save();
@@ -103,14 +103,14 @@ router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
         await TodoHistory.create({
           date: today,
           completedCount: completedCount,
-          taskDetails: completedTodos.map(todo => ({
+          taskDetails: completedTodos.map((todo) => ({
             task: todo.task,
-            completedDate: todo.completedDate
-          }))
+            completedDate: todo.completedDate,
+          })),
         });
       }
     }
-    
+
     // 完了したタスクをアーカイブとしてマーク
     const todosToArchive = await TodoItem.find({ completed: true });
     for (const todo of todosToArchive) {
@@ -124,18 +124,18 @@ router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
         isPrioritized: todo.isPrioritized,
         type: todo.type,
         deadline: todo.deadline, // 期限フィールドを追加
-        archivedAt: new Date()
+        archivedAt: new Date(),
       });
-      
+
       // 元のタスクを削除
       await TodoItem.findByIdAndDelete(todo._id);
     }
-    
+
     // 未完了のタスクはそのまま残す
-    const activeTodos = await TodoItem.find({ 
-      completed: false
+    const activeTodos = await TodoItem.find({
+      completed: false,
     }).sort({ isPrioritized: -1, priority: 1 });
-    
+
     res.json(activeTodos);
   } catch (error) {
     res.status(500).json({ message: 'Error resetting todos', error });
@@ -149,11 +149,11 @@ router.get('/history', async (_req: Request, res: Response): Promise<void> => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
-    
-    const history = await TodoHistory.find({ 
-      date: { $gte: thirtyDaysAgoStr } 
+
+    const history = await TodoHistory.find({
+      date: { $gte: thirtyDaysAgoStr },
     }).sort({ date: 1 });
-    
+
     res.json(history);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching todo history', error });
@@ -167,17 +167,17 @@ router.get('/history/daily', async (_req: Request, res: Response): Promise<void>
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
-    
-    const history = await TodoHistory.find({ 
-      date: { $gte: thirtyDaysAgoStr } 
+
+    const history = await TodoHistory.find({
+      date: { $gte: thirtyDaysAgoStr },
     }).sort({ date: 1 });
-    
+
     // 日付ごとの完了数を集計
-    const dailyCounts = history.reduce((acc, item) => {
+    const dailyCounts: DailyCounts = history.reduce((acc: DailyCounts, item: any) => {
       acc[item.date] = item.completedCount;
       return acc;
     }, {});
-    
+
     // 日付の配列を生成（過去30日間の全日付）
     const allDates: string[] = [];
     for (let i = 0; i < 30; i++) {
@@ -186,13 +186,13 @@ router.get('/history/daily', async (_req: Request, res: Response): Promise<void>
       const dateStr = d.toISOString().split('T')[0];
       allDates.unshift(dateStr);
     }
-    
+
     // 結果フォーマット
-    const result = allDates.map(date => ({
+    const result = allDates.map((date) => ({
       date: date,
-      count: dailyCounts[date] || 0
+      count: dailyCounts[date] || 0,
     }));
-    
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching daily history', error });
@@ -206,11 +206,15 @@ router.post('/reorder', async (req: Request, res: Response): Promise<void> => {
     const bulkOps = items.map((item) => ({
       updateOne: {
         filter: { _id: item._id },
-        update: { $set: { priority: item.priority } }
-      }
+        update: { $set: { priority: item.priority } },
+      },
     }));
     await TodoItem.bulkWrite(bulkOps);
-    const updatedTodos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
+    const updatedTodos = await TodoItem.find().sort({
+      completed: 1,
+      isPrioritized: -1,
+      priority: 1,
+    });
     res.json({ message: 'Todos reordered successfully', todos: updatedTodos });
   } catch (error) {
     res.status(500).json({ message: 'Error reordering todos', error });
@@ -233,5 +237,10 @@ router.post('/:id/toggle-priority', async (req: Request, res: Response): Promise
     res.status(500).json({ message: 'Error toggling todo priority', error });
   }
 });
+
+// Define proper types for the aggregation result
+interface DailyCounts {
+  [date: string]: number;
+}
 
 export default router;
