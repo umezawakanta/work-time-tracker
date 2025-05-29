@@ -7,14 +7,13 @@ import {
   Tabs,
   Card,
   CardContent,
-  Grid,
   Chip,
   Button,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  TextField
+  TextField,
 } from '@mui/material';
 
 interface BlogPost {
@@ -29,7 +28,7 @@ interface BlogPost {
 
 const BlogPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, _setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,10 +52,11 @@ const BlogPage: React.FC = () => {
     setSelectedTab(newValue);
   };
 
-  const filteredPosts = posts.filter(post => {
+  const filteredPosts = posts.filter((post) => {
     const matchesCategory = category === 'all' || post.category === category;
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -89,11 +89,7 @@ const BlogPage: React.FC = () => {
         <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>カテゴリ</InputLabel>
-            <Select
-              value={category}
-              label="カテゴリ"
-              onChange={(e) => setCategory(e.target.value)}
-            >
+            <Select value={category} label="カテゴリ" onChange={(e) => setCategory(e.target.value)}>
               <MenuItem value="all">すべて</MenuItem>
               <MenuItem value="tech">技術</MenuItem>
               <MenuItem value="product">プロダクト</MenuItem>
@@ -110,35 +106,39 @@ const BlogPage: React.FC = () => {
           />
         </Box>
 
-        <Grid container spacing={3}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 3,
+          }}
+        >
           {filteredPosts.map((post) => (
-            <Grid item xs={12} md={6} lg={4} key={post.id}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" component="h2" gutterBottom>
-                    {post.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {post.content.substring(0, 150)}...
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                    {post.tags.map((tag) => (
-                      <Chip key={tag} label={tag} size="small" />
-                    ))}
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {post.author}  {post.publishedAt.toLocaleDateString()}
-                  </Typography>
-                </CardContent>
-                <Box sx={{ p: 2, pt: 0 }}>
-                  <Button size="small" href={/blog/{post.id}}>
-                    続きを読む
-                  </Button>
+            <Card key={post.id} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  {post.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  {post.content.substring(0, 150)}...
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                  {post.tags.map((tag) => (
+                    <Chip key={tag} label={tag} size="small" />
+                  ))}
                 </Box>
-              </Card>
-            </Grid>
+                <Typography variant="caption" color="text.secondary">
+                  {post.author} {post.publishedAt.toLocaleDateString()}
+                </Typography>
+              </CardContent>
+              <Box sx={{ p: 2, pt: 0 }}>
+                <Button size="small" href={`/blog/${post.id}`}>
+                  続きを読む
+                </Button>
+              </Box>
+            </Card>
           ))}
-        </Grid>
+        </Box>
 
         {filteredPosts.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 4 }}>
