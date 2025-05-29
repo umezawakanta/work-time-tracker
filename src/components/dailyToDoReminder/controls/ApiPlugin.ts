@@ -3,7 +3,7 @@
  * APIクライアントの機能を拡張するためのプラグインインターフェースと実装
  */
 
-import { ApiResponse, ExtendedRequestConfig } from './ApiClient';
+import { ApiResponse, ExtendedRequestConfig } from './ApiTypes';
 
 /**
  * APIリクエスト情報
@@ -37,12 +37,22 @@ export enum PluginHook {
 }
 
 /**
+ * プラグインフック
+ */
+export interface PluginHooks {
+  beforeRequest?: (config: unknown, serviceName: string) => Promise<unknown>;
+  afterResponse?: (data: unknown, response: unknown, serviceName: string) => Promise<unknown>;
+  onError?: (errorResponse: unknown, error: Error, serviceName: string) => Promise<void>;
+}
+
+/**
  * APIプラグインインターフェース
  */
 export interface ApiPlugin {
   id: string;
   name: string;
   version: string;
+  hooks: PluginHooks;
 
   beforeRequest?: (
     url: string,
@@ -59,6 +69,7 @@ export abstract class BaseApiPlugin implements ApiPlugin {
   abstract id: string;
   abstract name: string;
   abstract version: string;
+  abstract hooks: PluginHooks;
 
   beforeRequest?(
     url: string,
@@ -84,6 +95,7 @@ export class LoggingPlugin extends BaseApiPlugin {
   id = 'logging-plugin';
   name = 'Logging Plugin';
   version = '1.0.0';
+  hooks: PluginHooks = {};
 
   constructor() {
     super();
@@ -115,6 +127,7 @@ export class CachePlugin extends BaseApiPlugin {
   id = 'cache-plugin';
   name = 'Cache Plugin';
   version = '1.0.0';
+  hooks: PluginHooks = {};
 
   private storage: Storage | null;
   private prefix: string;

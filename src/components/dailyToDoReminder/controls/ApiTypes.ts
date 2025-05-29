@@ -9,10 +9,9 @@ export interface ExtendedRequestConfig {
   timeout?: number;
   cache?: RequestCache;
   signal?: AbortSignal;
-  priority?: 'high' | 'normal' | 'low';
+  priority?: RequestPriority;
   withCredentials?: boolean;
   retryDelay?: number;
-  method?: string;
 }
 
 export interface ApiServiceConfig {

@@ -14,9 +14,11 @@ export class ApiClientHttpMethods {
     config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    const { retry, timeout, retryDelay, ...requestInit } = config || {};
+
     const response = await this.apiClient.fetch<T>(`${url}${queryString}`, {
       method: 'GET',
-      ...config,
+      ...requestInit,
     });
 
     return {
@@ -39,10 +41,12 @@ export class ApiClientHttpMethods {
     data?: unknown,
     config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
+    const { retry, timeout, retryDelay, ...requestInit } = config || {};
+
     const response = await this.apiClient.fetch<T>(url, {
       method: 'POST',
       body: JSON.stringify(data),
-      ...config,
+      ...requestInit,
     });
 
     return {
@@ -65,10 +69,12 @@ export class ApiClientHttpMethods {
     data?: unknown,
     config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
+    const { retry, timeout, retryDelay, ...requestInit } = config || {};
+
     const response = await this.apiClient.fetch<T>(url, {
       method: 'PUT',
       body: JSON.stringify(data),
-      ...config,
+      ...requestInit,
     });
 
     return {
@@ -87,9 +93,11 @@ export class ApiClientHttpMethods {
   }
 
   async delete<T = unknown>(url: string, config?: ExtendedRequestConfig): Promise<ApiResponse<T>> {
+    const { retry, timeout, retryDelay, ...requestInit } = config || {};
+
     const response = await this.apiClient.fetch<T>(url, {
       method: 'DELETE',
-      ...config,
+      ...requestInit,
     });
 
     return {
@@ -112,10 +120,12 @@ export class ApiClientHttpMethods {
     data?: unknown,
     config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
+    const { retry, timeout, retryDelay, ...requestInit } = config || {};
+
     const response = await this.apiClient.fetch<T>(url, {
       method: 'PATCH',
       body: JSON.stringify(data),
-      ...config,
+      ...requestInit,
     });
 
     return {
