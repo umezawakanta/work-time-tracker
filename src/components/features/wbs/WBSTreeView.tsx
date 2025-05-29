@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import { WBSNode } from '@/types/wbs';
 
 interface WBSTreeViewProps {
   nodes: WBSNode[];
-  onNodeClick: (node: WBSNode) => void;
-  onNodeUpdate: (nodeId: string, updates: Partial<WBSNode>) => Promise<void>;
+  onNodeClick: (_node: any) => void;
+  onNodeUpdate: (_nodeId: any) => Promise<void>;
 }
 
 const WBSTreeView: React.FC<WBSTreeViewProps> = ({ nodes, onNodeClick, onNodeUpdate }) => {

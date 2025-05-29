@@ -141,8 +141,8 @@ const WBSManager: React.FC = () => {
       {/* 繝倥ャ繝繝ｼ */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">WBS邂｡逅・/h2>
-          <p className="text-muted-foreground">
+          <h2>WBS邂｡逅・/h2>
+          </h2><p className="text-muted-foreground">
             繝励Ο繧ｸ繧ｧ繧ｯ繝医・隧ｳ邏ｰ縺ｪ菴懈･ｭ蛻・ｧ｣讒矩繧堤ｮ｡逅・
           </p>
         </div>
@@ -162,7 +162,7 @@ const WBSManager: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>繝励Ο繧ｸ繧ｧ繧ｯ繝・/CardTitle>
-        </CardHeader>
+        </CardTitle></CardHeader>
         <CardContent>
           <div className="flex gap-2 overflow-x-auto">
             {projects.map((project) => (
@@ -191,7 +191,7 @@ const WBSManager: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">繧ｿ繧ｹ繧ｯ謨ｰ</CardTitle>
+                <CardTitle>繧ｿ繧ｹ繧ｯ謨ｰ</CardTitle></CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -204,7 +204,7 @@ const WBSManager: React.FC = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">騾ｲ謐礼紫</CardTitle>
+                <CardTitle>騾ｲ謐礼紫</CardTitle></CardTitle>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -222,8 +222,8 @@ const WBSManager: React.FC = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">莠育ｮ・/CardTitle>
-                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>莠育ｮ・/CardTitle>
+                </CardTitle><AlertCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
@@ -237,7 +237,7 @@ const WBSManager: React.FC = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">譛滄剞</CardTitle>
+                <CardTitle>譛滄剞</CardTitle></CardTitle>
                 <s className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -262,8 +262,8 @@ const WBSManager: React.FC = () => {
             onValueChange={(v) => setViewMode(v as "tree" | "gantt")}
           >
             <TabsList>
-              <TabsTrigger value="gantt">繧ｬ繝ｳ繝医メ繝｣繝ｼ繝・/TabsTrigger>
-              <TabsTrigger value="tree">繝・Μ繝ｼ繝薙Η繝ｼ</TabsTrigger>
+              <TabsTrigger>繧ｬ繝ｳ繝医メ繝｣繝ｼ繝・/TabsTrigger>
+              </TabsTrigger><TabsTrigger>繝・Μ繝ｼ繝薙Η繝ｼ</TabsTrigger></TabsTrigger>
             </TabsList>
 
             <TabsContent value="gantt" className="mt-4">
@@ -317,4 +317,5 @@ const WBSManager: React.FC = () => {
 };
 
 export default WBSManager;
+
 

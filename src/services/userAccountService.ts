@@ -1,5 +1,4 @@
-// Firebase importをモック（実際のプロジェクトではfirebaseの設定が必要）
-const db = {} as any;
+﻿// Firebase import繧偵Δ繝・け・亥ｮ滄圀縺ｮ繝励Ο繧ｸ繧ｧ繧ｯ繝医〒縺ｯfirebase縺ｮ險ｭ螳壹′蠢・ｦ・ｼ・const _db = {} as any;
 
 export interface Profile {
   displayName?: string;
@@ -37,9 +36,9 @@ export interface UserAccount {
   updatedAt: Date;
 }
 
-export const getUserAccount = async (uid: string): Promise<UserAccount | null> => {
+export const _getUserAccount = async (uid: string): Promise<UserAccount | null> => {
   try {
-    // Firebaseの実装をモック
+    // Firebase縺ｮ螳溯｣・ｒ繝｢繝・け
     return {
       uid,
       email: 'user@example.com',
@@ -53,37 +52,37 @@ export const getUserAccount = async (uid: string): Promise<UserAccount | null> =
   }
 };
 
-export const createUserAccount = async (uid: string, email: string): Promise<void> => {
+export const _createUserAccount = async (uid: string, email: string): Promise<void> => {
   console.log('Creating user account:', uid, email);
 };
 
-export const updateUserProfile = async (
+export const _updateUserProfile = async (
   uid: string,
   data: Partial<Profile>
 ): Promise<void> => {
   console.log('Updating user profile:', uid, data);
 };
 
-export const inviteUser = async (email: string, referralCode: string): Promise<void> => {
+export const _inviteUser = async (email: string, referralCode: string): Promise<void> => {
   console.log('Inviting user:', email, 'with code:', referralCode);
 };
 
-export const checkPremiumFeatures = async (uid: string): Promise<any> => {
+export const _checkPremiumFeatures = async (uid: string): Promise<any> => {
   return {
     hasAccess: true,
     features: []
   };
 };
 
-export const upgradeToPremium = async (uid: string, plan: PremiumPlanType): Promise<void> => {
+export const _upgradeToPremium = async (uid: string, plan: PremiumPlanType): Promise<void> => {
   console.log('Upgrading to premium:', uid, plan);
 };
 
-export const extendTrialPeriod = async (uid: string, days: number): Promise<void> => {
+export const _extendTrialPeriod = async (uid: string, days: number): Promise<void> => {
   console.log('Extending trial period:', uid, days);
 };
 
-export const fetchUsageStatistics = async (uid: string): Promise<any> => {
+export const _fetchUsageStatistics = async (uid: string): Promise<any> => {
   return {
     usage: {},
     limits: {}

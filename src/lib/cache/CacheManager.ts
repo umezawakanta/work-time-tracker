@@ -1,8 +1,7 @@
-export enum CachePriority {
-  LOW = 'LOW',
-  NORMAL = 'MEDIUM',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH'
+﻿export enum CachePriority {
+  LOW = 1,
+  MEDIUM = 2,
+  HIGH = 3
 }
 
 export class CacheManager {

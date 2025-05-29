@@ -14,13 +14,11 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
   // todoHistory繝・・繧ｿ繧樽emoize
   const { historyMap, selectedDates } = useMemo(() => {
     // 螻･豁ｴ繝・・繧ｿ縺九ｉMap繧剃ｽ懈・・域律莉倥ｒ繧ｭ繝ｼ縺ｫ縲√ち繧ｹ繧ｯ謨ｰ繧貞､縺ｫ・・
-    const map = new Map(todoHistory.map(item => [item.date, item.count]));
-    
+    const map = new Map(todoHistory.map((item) => [item.date, item.count]));
+
     // 螳御ｺ・ち繧ｹ繧ｯ縺ｮ縺ゅｋ譌･莉倥□縺代ｒ驕ｸ謚橸ｼ・ount > 0・・
-    const dates = todoHistory
-      .filter(item => item.count > 0)
-      .map(item => new Date(item.date));
-    
+    const dates = todoHistory.filter((item) => item.count > 0).map((item) => new Date(item.date));
+
     return { historyMap: map, selectedDates: dates };
   }, [todoHistory]);
 
@@ -41,12 +39,12 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
           completed: 'bg-green-500 text-white',
         }}
         components={{
-          Day: ({ date }) => {
-            const dateString = date.toISOString().split('T')[0];
+          Day: ({ day }) => {
+            const dateString = day.date.toISOString().split('T')[0];
             const count = historyMap.get(dateString) || 0;
             return (
               <div className="flex flex-col items-center">
-                <span>{date.getDate()}</span>
+                <span>{day.date.getDate()}</span>
                 {count > 0 && <span className="text-xs">{count}</span>}
               </div>
             );

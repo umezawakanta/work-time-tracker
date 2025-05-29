@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -49,7 +49,7 @@ interface TodoSettingsProps {
   isOpen: boolean;
   onClose: () => void;
   settings: TodoSettingsType;
-  onSave: (settings: TodoSettingsType) => void;
+  onSave: (_settings: any) => void;
   isPremium?: boolean;
 }
 
@@ -64,7 +64,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
   const [activeTab, setActiveTab] = useState("general");
   const [hasChanges, setHasChanges] = useState(false);
 
-  const update = <K extends keyof TodoSettingsType>(
+  const _update = <K extends keyof TodoSettingsType>(
     category: K,
     field: keyof TodoSettingsType[K],
     value: any
@@ -79,13 +79,13 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
     setHasChanges(true);
   };
 
-  const handleSave = () => {
+  const _handleSave = () => {
     onSave(updated);
     setHasChanges(false);
     onClose();
   };
 
-  const handleCancel = () => {
+  const _handleCancel = () => {
     setUpdated(settings);
     setHasChanges(false);
     onClose();
@@ -98,8 +98,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-2xl font-bold">
-            設定
-          </CardTitle>
+            險ｭ螳・          </CardTitle>
           <Button
             variant="ghost"
             size="icon"
@@ -114,29 +113,29 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
             <TabsList className="grid grid-cols-5 w-full">
               <TabsTrigger value="general">
                 <Palette className="h-4 w-4 mr-2" />
-                一般
+                荳闊ｬ
               </TabsTrigger>
               <TabsTrigger value="notifications">
                 <Bell className="h-4 w-4 mr-2" />
-                通知
+                騾夂衍
               </TabsTrigger>
               <TabsTrigger value="schedule">
                 <Calendar className="h-4 w-4 mr-2" />
-                スケジュール
+                繧ｹ繧ｱ繧ｸ繝･繝ｼ繝ｫ
               </TabsTrigger>
               <TabsTrigger value="sync">
                 <Cloud className="h-4 w-4 mr-2" />
-                同期
+                蜷梧悄
               </TabsTrigger>
               <TabsTrigger value="privacy">
                 <Shield className="h-4 w-4 mr-2" />
-                プライバシー
+                繝励Λ繧､繝舌す繝ｼ
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-4 mt-4">
               <div>
-                <Label htmlFor="theme">テーマ</Label>
+                <Label htmlFor="theme">繝・・繝・/Label>
                 <Select
                   value={updated.theme}
                   onValueChange={(value) => update('theme', value as any, value)}
@@ -145,9 +144,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="light">ライト</SelectItem>
-                    <SelectItem value="dark">ダーク</SelectItem>
-                    <SelectItem value="system">システム設定に従う</SelectItem>
+                    <SelectItem value="light">繝ｩ繧､繝・/SelectItem>
+                    <SelectItem value="dark">繝繝ｼ繧ｯ</SelectItem>
+                    <SelectItem value="system">繧ｷ繧ｹ繝・Β險ｭ螳壹↓蠕薙≧</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -156,10 +155,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
             <TabsContent value="notifications" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="notifications-enabled">通知を有効化</Label>
+                  <Label htmlFor="notifications-enabled">騾夂衍繧呈怏蜉ｹ蛹・/Label>
                   <p className="text-sm text-muted-foreground">
-                    タスクのリマインダーと更新を受け取る
-                  </p>
+                    繧ｿ繧ｹ繧ｯ縺ｮ繝ｪ繝槭う繝ｳ繝繝ｼ縺ｨ譖ｴ譁ｰ繧貞女縺大叙繧・                  </p>
                 </div>
                 <Switch
                   id="notifications-enabled"
@@ -174,10 +172,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                 <>
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="notifications-sound">サウンド</Label>
+                      <Label htmlFor="notifications-sound">繧ｵ繧ｦ繝ｳ繝・/Label>
                       <p className="text-sm text-muted-foreground">
-                        通知音を再生する
-                      </p>
+                        騾夂衍髻ｳ繧貞・逕溘☆繧・                      </p>
                     </div>
                     <Switch
                       id="notifications-sound"
@@ -190,9 +187,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="notifications-desktop">デスクトップ通知</Label>
+                      <Label htmlFor="notifications-desktop">繝・せ繧ｯ繝医ャ繝鈴夂衍</Label>
                       <p className="text-sm text-muted-foreground">
-                        システムの通知を表示する
+                        繧ｷ繧ｹ繝・Β縺ｮ騾夂衍繧定｡ｨ遉ｺ縺吶ｋ
                       </p>
                     </div>
                     <Switch
@@ -211,18 +208,17 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    デスクトップ通知はプレミアムプランで利用可能です
-                  </AlertDescription>
+                    繝・せ繧ｯ繝医ャ繝鈴夂衍縺ｯ繝励Ξ繝溘い繝繝励Λ繝ｳ縺ｧ蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｧ縺・                  </AlertDescription>
                 </Alert>
               )}
             </TabsContent>
 
             <TabsContent value="schedule" className="space-y-4 mt-4">
               <div>
-                <Label>勤務時間</Label>
+                <Label>蜍､蜍呎凾髢・/Label>
                 <div className="grid grid-cols-2 gap-4 mt-2">
                   <div>
-                    <Label htmlFor="work-start">開始時刻</Label>
+                    <Label htmlFor="work-start">髢句ｧ区凾蛻ｻ</Label>
                     <input
                       id="work-start"
                       type="time"
@@ -234,7 +230,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                     />
                   </div>
                   <div>
-                    <Label htmlFor="work-end">終了時刻</Label>
+                    <Label htmlFor="work-end">邨ゆｺ・凾蛻ｻ</Label>
                     <input
                       id="work-end"
                       type="time"
@@ -249,13 +245,13 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
               </div>
 
               <div>
-                <Label>休憩設定</Label>
+                <Label>莨第・險ｭ螳・/Label>
                 <div className="space-y-4 mt-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label htmlFor="breaks-enabled">定期的な休憩</Label>
+                      <Label htmlFor="breaks-enabled">螳壽悄逧・↑莨第・</Label>
                       <p className="text-sm text-muted-foreground">
-                        作業中に休憩を促す
+                        菴懈･ｭ荳ｭ縺ｫ莨第・繧剃ｿ・☆
                       </p>
                     </div>
                     <Switch
@@ -270,7 +266,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                   {updated.breaks.enabled && (
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="break-duration">休憩時間（分）</Label>
+                        <Label htmlFor="break-duration">莨第・譎る俣・亥・・・/Label>
                         <input
                           id="break-duration"
                           type="number"
@@ -284,7 +280,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                         />
                       </div>
                       <div>
-                        <Label htmlFor="break-interval">間隔（分）</Label>
+                        <Label htmlFor="break-interval">髢馴囈・亥・・・/Label>
                         <input
                           id="break-interval"
                           type="number"
@@ -306,10 +302,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
             <TabsContent value="sync" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="auto-save">自動保存</Label>
+                  <Label htmlFor="auto-save">閾ｪ蜍穂ｿ晏ｭ・/Label>
                   <p className="text-sm text-muted-foreground">
-                    変更を自動的に保存する
-                  </p>
+                    螟画峩繧定・蜍慕噪縺ｫ菫晏ｭ倥☆繧・                  </p>
                 </div>
                 <Switch
                   id="auto-save"
@@ -321,7 +316,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
               </div>
 
               <div>
-                <Label htmlFor="sync-interval">同期間隔（秒）</Label>
+                <Label htmlFor="sync-interval">蜷梧悄髢馴囈・育ｧ抵ｼ・/Label>
                 <Select
                   value={updated.dataSync.syncInterval.toString()}
                   onValueChange={(value) => 
@@ -332,10 +327,10 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="30">30秒</SelectItem>
-                    <SelectItem value="60">1分</SelectItem>
-                    <SelectItem value="300">5分</SelectItem>
-                    <SelectItem value="600">10分</SelectItem>
+                    <SelectItem value="30">30遘・/SelectItem>
+                    <SelectItem value="60">1蛻・/SelectItem>
+                    <SelectItem value="300">5蛻・/SelectItem>
+                    <SelectItem value="600">10蛻・/SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -344,10 +339,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
             <TabsContent value="privacy" className="space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="share-analytics">使用状況の共有</Label>
+                  <Label htmlFor="share-analytics">菴ｿ逕ｨ迥ｶ豕√・蜈ｱ譛・/Label>
                   <p className="text-sm text-muted-foreground">
-                    アプリの改善のために匿名データを共有する
-                  </p>
+                    繧｢繝励Μ縺ｮ謾ｹ蝟・・縺溘ａ縺ｫ蛹ｿ蜷阪ョ繝ｼ繧ｿ繧貞・譛峨☆繧・                  </p>
                 </div>
                 <Switch
                   id="share-analytics"
@@ -360,9 +354,9 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
 
               <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor="public-profile">公開プロフィール</Label>
+                  <Label htmlFor="public-profile">蜈ｬ髢九・繝ｭ繝輔ぅ繝ｼ繝ｫ</Label>
                   <p className="text-sm text-muted-foreground">
-                    他のユーザーがあなたのプロフィールを閲覧できる
+                    莉悶・繝ｦ繝ｼ繧ｶ繝ｼ縺後≠縺ｪ縺溘・繝励Ο繝輔ぅ繝ｼ繝ｫ繧帝夢隕ｧ縺ｧ縺阪ｋ
                   </p>
                 </div>
                 <Switch
@@ -379,8 +373,7 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    公開プロフィールはプレミアムプランで利用可能です
-                  </AlertDescription>
+                    蜈ｬ髢九・繝ｭ繝輔ぅ繝ｼ繝ｫ縺ｯ繝励Ξ繝溘い繝繝励Λ繝ｳ縺ｧ蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｧ縺・                  </AlertDescription>
                 </Alert>
               )}
             </TabsContent>
@@ -391,15 +384,14 @@ const TodoSettings: React.FC<TodoSettingsProps> = ({
               variant="outline"
               onClick={handleCancel}
             >
-              キャンセル
+              繧ｭ繝｣繝ｳ繧ｻ繝ｫ
             </Button>
             <Button
               onClick={handleSave}
               disabled={!hasChanges}
             >
               <Save className="h-4 w-4 mr-2" />
-              保存
-            </Button>
+              菫晏ｭ・            </Button>
           </div>
         </CardContent>
       </Card>
