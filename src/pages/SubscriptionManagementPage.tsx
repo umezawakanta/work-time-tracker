@@ -253,11 +253,12 @@ const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscript
       console.log('sub.billingDate = ' + sub.billingDate);
       if (sub.billingDate) {
         const [subYear, subMonth] = String(sub.billingDate).split('/');
+        const yearNum = parseInt(subYear, 10); // Convert to number for indexing
 
-        if (status[subYear] && status[subYear][subMonth]) {
-          status[subYear][subMonth].registered = true;
-          status[subYear][subMonth].count += 1;
-          status[subYear][subMonth].totalAmount += sub.amount;
+        if (status[yearNum] && status[yearNum][subMonth]) {
+          status[yearNum][subMonth].registered = true;
+          status[yearNum][subMonth].count += 1;
+          status[yearNum][subMonth].totalAmount += sub.amount;
         }
       }
     });
@@ -781,7 +782,7 @@ export default function SubscriptionManagementPage() {
 
   // 支払い方法タグコンポーネント
   const PaymentMethodTag = ({ method }: { method: string }) => {
-    const methods: { [key: string]: { color: string; icon: JSX.Element } } = {
+    const methods: { [key: string]: { color: string; icon: React.ReactElement } } = {
       // Add index signature
       credit: {
         color: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -1566,7 +1567,14 @@ export default function SubscriptionManagementPage() {
 
           {/* 登録状況カレンダータブ */}
           <TabsContent value="calendar">
-            <MonthlyRegistrationStatus subscriptions={subscriptions as any} /> // Temporary cast
+            <MonthlyRegistrationStatus
+              subscriptions={subscriptions.map((sub) => ({
+                id: sub._id,
+                startDate: sub.billingDate?.toString() || '',
+                amount: sub.amount,
+                billingDate: sub.billingDate,
+              }))}
+            />
             <Card>
               <CardHeader>
                 <CardTitle>月別登録状況の概要</CardTitle>

@@ -461,18 +461,10 @@ export class PremiumPlanService {
   }
 
   async getPlans() {
-    return this.apiClient.get('/plans', undefined, {
-      priority: 'normal',
-    });
+    return this.apiClient.get('/plans');
   }
 
   async updatePlan(planId: string) {
-    return this.apiClient.post(
-      '/plans/update',
-      { planId },
-      {
-        priority: 'normal',
-      }
-    );
+    return this.apiClient.post('/plans/update', { planId });
   }
 }

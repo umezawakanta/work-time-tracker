@@ -89,7 +89,7 @@ export class SubscriptionService {
       this.invalidateCache();
 
       return {
-        data: null,
+        data: {} as SubscriptionInfo,
         success: false,
         error: {
           code: 'ERROR',
@@ -125,7 +125,7 @@ export class SubscriptionService {
       this.invalidateCache();
 
       return {
-        data: null,
+        data: {} as SubscriptionInfo,
         success: false,
         error: {
           code: 'ERROR',

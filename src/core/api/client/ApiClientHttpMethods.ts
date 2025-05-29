@@ -114,7 +114,7 @@ export class ApiClientHttpMethods {
       ...config,
       headers: {
         ...config?.headers,
-        'Content-Type': undefined, // undefinedを設定するとヘッダーが削除される
+        // Don't set Content-Type for FormData
       },
     };
 
@@ -135,7 +135,7 @@ export class ApiClientHttpMethods {
       ...config,
       headers: {
         ...config?.headers,
-        'Content-Type': undefined,
+        // Don't set Content-Type for FormData
       },
     };
 

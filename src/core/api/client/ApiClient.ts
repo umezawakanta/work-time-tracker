@@ -178,8 +178,8 @@ export class ApiClient {
   private buildRequestConfig(method: string, data?: unknown, config?: RequestConfig): RequestInit {
     // デフォルトヘッダー
     const headers: Record<string, string> = {
-      Accept: 'application/json',
       ...this.config.headers,
+      Accept: 'application/json',
     };
 
     // コンテンツタイプを設定（FormDataの場合は設定しない）
@@ -270,7 +270,7 @@ export class ApiClient {
       };
 
       // パースに失敗した場合はエラー情報を追加
-      if (parseFailed) {
+      if (parseFailed && errorResponse.error) {
         errorResponse.error.code = 'PARSE_ERROR';
         errorResponse.error.message = 'レスポンスの解析に失敗しました';
       }
