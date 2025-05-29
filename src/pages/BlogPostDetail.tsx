@@ -9,7 +9,6 @@ import {
   Divider,
   Card,
   CardContent,
-  Grid
 } from '@mui/material';
 import { ArrowBack, Share } from '@mui/icons-material';
 
@@ -27,25 +26,25 @@ interface BlogPost {
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const [post, _setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [relatedPosts, _setRelatedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) return;
-      
+
       try {
         // API呼び出しでポストを取得
         // const response = await fetch(/api/blog/{id});
         // const data = await response.json();
         // setPost(data);
-        
+
         // 関連記事も取得
         // const relatedResponse = await fetch(/api/blog/{id}/related);
         // const relatedData = await relatedResponse.json();
         // setRelatedPosts(relatedData);
-        
+
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch post:', error);
@@ -58,14 +57,14 @@ const BlogPostDetail: React.FC = () => {
 
   const handleShare = async () => {
     if (!post) return;
-    
+
     try {
       await navigator.share({
         title: post.title,
         text: post.content.substring(0, 100),
         url: window.location.href,
       });
-    } catch (error) {
+    } catch {
       // フォールバック: URLをクリップボードにコピー
       navigator.clipboard.writeText(window.location.href);
       console.log('URLをクリップボードにコピーしました');
@@ -91,11 +90,7 @@ const BlogPostDetail: React.FC = () => {
           <Typography variant="h4" component="h1">
             記事が見つかりません
           </Typography>
-          <Button
-            startIcon={<ArrowBack />}
-            onClick={() => navigate('/blog')}
-            sx={{ mt: 2 }}
-          >
+          <Button startIcon={<ArrowBack />} onClick={() => navigate('/blog')} sx={{ mt: 2 }}>
             ブログ一覧に戻る
           </Button>
         </Box>
@@ -115,12 +110,7 @@ const BlogPostDetail: React.FC = () => {
           >
             戻る
           </Button>
-          <Button
-            startIcon={<Share />}
-            onClick={handleShare}
-            variant="outlined"
-            size="small"
-          >
+          <Button startIcon={<Share />} onClick={handleShare} variant="outlined" size="small">
             共有
           </Button>
         </Box>
@@ -168,28 +158,29 @@ const BlogPostDetail: React.FC = () => {
             <Typography variant="h5" component="h2" gutterBottom>
               関連記事
             </Typography>
-            <Grid container spacing={2}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                gap: 2,
+              }}
+            >
               {relatedPosts.map((relatedPost) => (
-                <Grid item xs={12} sm={6} key={relatedPost.id}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6" component="h3" gutterBottom>
-                        {relatedPost.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" paragraph>
-                        {relatedPost.content.substring(0, 100)}...
-                      </Typography>
-                      <Button 
-                        size="small" 
-                        href={/blog/{relatedPost.id}}
-                      >
-                        続きを読む
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <Card key={relatedPost.id}>
+                  <CardContent>
+                    <Typography variant="h6" component="h3" gutterBottom>
+                      {relatedPost.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" paragraph>
+                      {relatedPost.content.substring(0, 100)}...
+                    </Typography>
+                    <Button size="small" href={`/blog/${relatedPost.id}`}>
+                      続きを読む
+                    </Button>
+                  </CardContent>
+                </Card>
               ))}
-            </Grid>
+            </Box>
           </Box>
         )}
       </Box>
