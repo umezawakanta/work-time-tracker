@@ -33,6 +33,9 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env': process.env,
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    'process.env.NEXT_PUBLIC_OPENAI_API_KEY': JSON.stringify(
+      process.env.NEXT_PUBLIC_OPENAI_API_KEY
+    ),
   },
 });
