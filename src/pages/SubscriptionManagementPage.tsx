@@ -635,8 +635,8 @@ export default function SubscriptionManagementPage() {
     selectedAccount,
     onSelectAccount,
   }: {
-    selectedAccount: any;
-    onSelectAccount: (account: any) => void;
+    selectedAccount: string;
+    onSelectAccount: (accountId: string) => void;
   }) => {
     // 登録済み銀行口座リスト
     const bankAccounts = [
