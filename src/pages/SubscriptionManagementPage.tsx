@@ -726,7 +726,7 @@ export default function SubscriptionManagementPage() {
   };
 
   // 登録月確認リマインダーコンポーネント
-  const RegistrationReminderCard = ({ unregisteredMonths }: { unregisteredMonths: any[] }) => {
+  const RegistrationReminderCard = ({ unregisteredMonths }: { unregisteredMonths: string[] }) => {
     return (
       <Card className="mb-6 border-amber-200">
         <CardHeader className="bg-amber-50">
