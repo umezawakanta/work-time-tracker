@@ -40,69 +40,39 @@ export enum PluginHook {
  * APIプラグインインターフェース
  */
 export interface ApiPlugin {
-  /**
-   * プラグインの名前
-   */
+  id: string;
   name: string;
+  version: string;
 
-  /**
-   * プラグインの優先度（高いほど先に実行される）
-   */
-  priority: number;
-
-  /**
-   * プラグインが処理するフック
-   */
-  hooks: PluginHook[];
-
-  /**
-   * リクエスト前の処理
-   * @param requestInfo リクエスト情報
-   * @returns 変更されたリクエスト情報（または元のリクエスト情報）
-   */
-  preRequest?: (requestInfo: ApiRequestInfo) => Promise<ApiRequestInfo> | ApiRequestInfo;
-
-  /**
-   * リクエスト後の処理
-   * @param responseInfo レスポンス情報
-   * @returns 変更されたレスポンス情報（または元のレスポンス情報）
-   */
-  postRequest?: <T>(
-    responseInfo: ApiResponseInfo<T>
-  ) => Promise<ApiResponseInfo<T>> | ApiResponseInfo<T>;
-
-  /**
-   * リクエストエラー時の処理
-   * @param error エラー情報
-   * @param requestInfo リクエスト情報
-   * @returns 処理結果（trueを返すとエラーを処理済みとみなす）
-   */
-  requestError?: (error: Error, requestInfo: ApiRequestInfo) => Promise<boolean> | boolean;
-
-  /**
-   * リクエストリトライ時の処理
-   * @param requestInfo リクエスト情報
-   * @param retryCount リトライ回数
-   * @returns 変更されたリクエスト情報（または元のリクエスト情報）
-   */
-  requestRetry?: (
-    requestInfo: ApiRequestInfo,
-    retryCount: number
-  ) => Promise<ApiRequestInfo> | ApiRequestInfo;
+  beforeRequest?: (
+    url: string,
+    config: ExtendedRequestConfig
+  ) => ExtendedRequestConfig | Promise<ExtendedRequestConfig>;
+  afterResponse?: <T>(response: ApiResponse<T>) => ApiResponse<T> | Promise<ApiResponse<T>>;
+  onError?: (error: Error) => void | Promise<void>;
 }
 
 /**
  * 基本的なAPIプラグイン実装
  */
 export abstract class BaseApiPlugin implements ApiPlugin {
-  public name: string;
-  public priority: number;
-  public hooks: PluginHook[];
+  abstract id: string;
+  abstract name: string;
+  abstract version: string;
 
-  constructor(name: string, priority: number = 0, hooks: PluginHook[] = []) {
-    this.name = name;
-    this.priority = priority;
-    this.hooks = hooks;
+  beforeRequest?(
+    url: string,
+    config: ExtendedRequestConfig
+  ): ExtendedRequestConfig | Promise<ExtendedRequestConfig> {
+    return config;
+  }
+
+  afterResponse?<T>(response: ApiResponse<T>): ApiResponse<T> | Promise<ApiResponse<T>> {
+    return response;
+  }
+
+  onError?(error: Error): void | Promise<void> {
+    console.error(`Plugin ${this.name} encountered an error:`, error);
   }
 }
 

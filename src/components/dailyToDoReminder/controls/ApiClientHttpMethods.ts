@@ -20,7 +20,14 @@ export class ApiClientHttpMethods {
     });
 
     return {
-      ...response,
+      data: response.data,
+      success: response.success,
+      error: response.error
+        ? {
+            code: 'API_ERROR',
+            message: typeof response.error === 'string' ? response.error : 'Unknown error occurred',
+          }
+        : undefined,
       meta: {
         timestamp: Date.now(),
       },
@@ -39,7 +46,14 @@ export class ApiClientHttpMethods {
     });
 
     return {
-      ...response,
+      data: response.data,
+      success: response.success,
+      error: response.error
+        ? {
+            code: 'API_ERROR',
+            message: typeof response.error === 'string' ? response.error : 'Unknown error occurred',
+          }
+        : undefined,
       meta: {
         timestamp: Date.now(),
       },
@@ -58,7 +72,14 @@ export class ApiClientHttpMethods {
     });
 
     return {
-      ...response,
+      data: response.data,
+      success: response.success,
+      error: response.error
+        ? {
+            code: 'API_ERROR',
+            message: typeof response.error === 'string' ? response.error : 'Unknown error occurred',
+          }
+        : undefined,
       meta: {
         timestamp: Date.now(),
       },
@@ -72,7 +93,14 @@ export class ApiClientHttpMethods {
     });
 
     return {
-      ...response,
+      data: response.data,
+      success: response.success,
+      error: response.error
+        ? {
+            code: 'API_ERROR',
+            message: typeof response.error === 'string' ? response.error : 'Unknown error occurred',
+          }
+        : undefined,
       meta: {
         timestamp: Date.now(),
       },
@@ -91,7 +119,14 @@ export class ApiClientHttpMethods {
     });
 
     return {
-      ...response,
+      data: response.data,
+      success: response.success,
+      error: response.error
+        ? {
+            code: 'API_ERROR',
+            message: typeof response.error === 'string' ? response.error : 'Unknown error occurred',
+          }
+        : undefined,
       meta: {
         timestamp: Date.now(),
       },

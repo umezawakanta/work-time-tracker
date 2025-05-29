@@ -1,12 +1,27 @@
-﻿export interface SubscriptionInfo {
+﻿export interface Subscription {
   id: string;
-  userId: string;
-  plan: SubscriptionPlan;
-  status: 'active' | 'inactive' | 'cancelled' | 'past_due';
-  currentPeriodStart: Date;
-  currentPeriodEnd: Date;
-  trialEnd?: Date;
-  cancelAtPeriodEnd: boolean;
+  plan: SubscriptionInfo;
+  status: 'active' | 'inactive' | 'cancelled';
+  startDate: Date;
+  endDate?: Date;
+  paymentMethod: string;
+  amount: number;
+}
+
+export interface SubscriptionInfo {
+  id: string;
+  name: string;
+  features: string[];
+  price: number;
+  billing: 'monthly' | 'yearly';
+}
+
+export interface SubscriptionSummary {
+  totalSubscriptions: number;
+  activeSubscriptions: number;
+  plans: SubscriptionInfo[];
+  monthlyRevenue: number;
+  yearlyRevenue: number;
 }
 
 export type PremiumPlanType = 'basic' | 'pro' | 'enterprise';
