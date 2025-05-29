@@ -41,6 +41,19 @@ export interface PricingPlans {
   };
 }
 
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  features: string[];
+  limits: {
+    [key: string]: number;
+  };
+}
+
 export interface UserSubscriptionInfo {
+  plans: SubscriptionPlan[];
+}
+
+export interface SubscriptionData {
   plans: SubscriptionPlan[];
 }
