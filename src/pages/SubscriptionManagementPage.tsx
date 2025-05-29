@@ -219,6 +219,7 @@ interface Subscription {
   id: string;
   startDate: string;
   amount: number;
+  billingDate?: string | number; // Add billingDate property
   // ... other subscription properties
 }
 
@@ -251,7 +252,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscript
     subscriptions.forEach((sub: Subscription) => {
       console.log('sub.billingDate = ' + sub.billingDate);
       if (sub.billingDate) {
-        const [subYear, subMonth] = sub.billingDate.split('/');
+        const [subYear, subMonth] = String(sub.billingDate).split('/');
 
         if (status[subYear] && status[subYear][subMonth]) {
           status[subYear][subMonth].registered = true;
@@ -780,7 +781,8 @@ export default function SubscriptionManagementPage() {
 
   // 支払い方法タグコンポーネント
   const PaymentMethodTag = ({ method }: { method: string }) => {
-    const methods = {
+    const methods: { [key: string]: { color: string; icon: JSX.Element } } = {
+      // Add index signature
       credit: {
         color: 'bg-blue-100 text-blue-800 border-blue-200',
         icon: <CreditCard className="h-3 w-3 mr-1" />,
@@ -854,8 +856,8 @@ export default function SubscriptionManagementPage() {
 
     // 色をTailwindの定義済みカラークラスにマッピングする関数
     function getColorClass(color: string, opacity: number = 20) {
-      // よく使われる色のマッピング
-      const colorMap = {
+      const colorMap: { [key: string]: string } = {
+        // Add index signature
         '#FF9900': 'bg-amber-500',
         '#E50914': 'bg-red-600',
         '#1DB954': 'bg-green-500',
@@ -866,8 +868,8 @@ export default function SubscriptionManagementPage() {
         // 他の色を必要に応じて追加
       };
 
-      // 透明度のマッピング
-      const opacityClass = {
+      const opacityClass: { [key: number]: string } = {
+        // Add index signature
         10: 'bg-opacity-10',
         20: 'bg-opacity-20',
         30: 'bg-opacity-30',
@@ -1564,8 +1566,7 @@ export default function SubscriptionManagementPage() {
 
           {/* 登録状況カレンダータブ */}
           <TabsContent value="calendar">
-            <MonthlyRegistrationStatus subscriptions={subscriptions} />
-
+            <MonthlyRegistrationStatus subscriptions={subscriptions as any} /> // Temporary cast
             <Card>
               <CardHeader>
                 <CardTitle>月別登録状況の概要</CardTitle>

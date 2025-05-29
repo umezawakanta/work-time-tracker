@@ -45,8 +45,9 @@ export class ApiClientHttpMethods {
     // Fix undefined Content-Type headers
     const headers: Record<string, string> = {};
 
+    // Only set Content-Type when needed, don't assign undefined
     if (data && !(data instanceof FormData)) {
-      headers['Content-Type'] = 'application/json'; // Don't set to undefined
+      headers['Content-Type'] = 'application/json';
     }
 
     return this.apiClient.request<T>('POST', endpoint, data, { ...config, headers });

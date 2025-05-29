@@ -73,22 +73,17 @@ export class SubscriptionService {
     try {
       const response = await this.apiClient.fetch<SubscriptionInfo>('subscription/upgrade', {
         method: 'POST',
-        body: JSON.stringify({
-          plan,
-          paymentMethod,
-        }),
+        body: JSON.stringify({ plan, paymentMethod }),
       });
 
       if (response.success && response.data) {
-        // キャッシュを更新
         this.cachedInfo = response.data;
         this.lastFetchTime = Date.now();
+        return this.createSuccessResponse(response.data);
       } else {
-        // キャッシュを無効化して次回強制的に更新
         this.invalidateCache();
+        return this.createErrorResponse('Upgrade failed');
       }
-
-      return response;
     } catch (error) {
       console.error('サブスクリプションのアップグレードに失敗しました', error);
       this.invalidateCache();
@@ -118,15 +113,13 @@ export class SubscriptionService {
       });
 
       if (response.success && response.data) {
-        // キャッシュを更新
         this.cachedInfo = response.data;
         this.lastFetchTime = Date.now();
+        return this.createSuccessResponse(response.data);
       } else {
-        // キャッシュを無効化して次回強制的に更新
         this.invalidateCache();
+        return this.createErrorResponse('Downgrade failed');
       }
-
-      return response;
     } catch (error) {
       console.error('サブスクリプションのダウングレードに失敗しました', error);
       this.invalidateCache();
@@ -213,7 +206,7 @@ export class SubscriptionService {
 
   private createErrorResponse<T>(message: string): ApiResponse<T> {
     return {
-      data: undefined as T,
+      data: {} as T,
       success: false,
       error: {
         code: 'ERROR',

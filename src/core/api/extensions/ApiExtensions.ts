@@ -361,7 +361,7 @@ export function applyExtensionMethods(apiClass: any): void {
         services: {},
         latency,
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         online: false,
         services: {},

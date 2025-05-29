@@ -131,7 +131,6 @@ export const useAnalytics = () => {
    * @param pageTitle ページタイトル
    */
   const trackPageView = useCallback((pagePath: string, pageTitle: string) => {
-    // 開発環境ではコンソールに出力するだけ
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Analytics] Page View: ${pagePath} (${pageTitle})`);
       return;
@@ -148,7 +147,7 @@ export const useAnalytics = () => {
 
       // Mixpanel
       if (window.mixpanel) {
-        window.mixpanel.track('Page View', {
+        (window.mixpanel as any).track('Page View', {
           page_path: pagePath,
           page_title: pageTitle,
         });
@@ -156,7 +155,7 @@ export const useAnalytics = () => {
 
       // Amplitude
       if (window.amplitude) {
-        window.amplitude.getInstance().logEvent('Page View', {
+        (window.amplitude as any).getInstance().logEvent('Page View', {
           page_path: pagePath,
           page_title: pageTitle,
         });
@@ -172,7 +171,6 @@ export const useAnalytics = () => {
    * @param traits ユーザー特性
    */
   const identifyUser = useCallback((userId: string, traits: Record<string, any> = {}) => {
-    // 開発環境ではコンソールに出力するだけ
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[Analytics] Identify User: ${userId}`, traits);
       return;
@@ -187,19 +185,19 @@ export const useAnalytics = () => {
 
       // Mixpanel
       if (window.mixpanel) {
-        window.mixpanel.identify(userId);
-        window.mixpanel.people.set(traits);
+        (window.mixpanel as any).identify(userId);
+        (window.mixpanel as any).people.set(traits);
       }
 
       // Amplitude
       if (window.amplitude) {
-        const identify = new window.amplitude.Identify();
+        const identify = new (window.amplitude as any).Identify();
         Object.entries(traits).forEach(([key, value]) => {
           identify.set(key, value);
         });
 
-        window.amplitude.getInstance().setUserId(userId);
-        window.amplitude.getInstance().identify(identify);
+        (window.amplitude as any).getInstance().setUserId(userId);
+        (window.amplitude as any).getInstance().identify(identify);
       }
     } catch (error) {
       console.error('[Analytics] Error identifying user:', error);
