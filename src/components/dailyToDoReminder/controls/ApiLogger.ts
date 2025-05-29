@@ -1,4 +1,11 @@
-export class ApiLogger {
+﻿export class ApiLogger {
+  debug(message: string): void {
+    console.debug(message);
+  }
+
+  setContext(context: string): void {
+    // コンテキスト設定
+  }
   private static instance: ApiLogger;
   
   constructor() {}

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 
 export interface TodoHistoryItem {
@@ -11,12 +11,12 @@ interface TodoCalendarProps {
 }
 
 export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
-  // todoHistoryデータをMemoize
+  // todoHistory繝・・繧ｿ繧樽emoize
   const { historyMap, selectedDates } = useMemo(() => {
-    // 履歴データからMapを作成（日付をキーに、タスク数を値に）
+    // 螻･豁ｴ繝・・繧ｿ縺九ｉMap繧剃ｽ懈・・域律莉倥ｒ繧ｭ繝ｼ縺ｫ縲√ち繧ｹ繧ｯ謨ｰ繧貞､縺ｫ・・
     const map = new Map(todoHistory.map(item => [item.date, item.count]));
     
-    // 完了タスクのある日付だけを選択（count > 0）
+    // 螳御ｺ・ち繧ｹ繧ｯ縺ｮ縺ゅｋ譌･莉倥□縺代ｒ驕ｸ謚橸ｼ・ount > 0・・
     const dates = todoHistory
       .filter(item => item.count > 0)
       .map(item => new Date(item.date));
@@ -26,7 +26,7 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">タスク完了カレンダー</h2>
+      <h2 className="text-lg font-semibold mb-4">繧ｿ繧ｹ繧ｯ螳御ｺ・き繝ｬ繝ｳ繝繝ｼ</h2>
       <Calendar
         mode="multiple"
         selected={selectedDates}
@@ -41,7 +41,7 @@ export const TodoCalendar: React.FC<TodoCalendarProps> = ({ todoHistory }) => {
           completed: 'bg-green-500 text-white',
         }}
         components={{
-          DayCell: ({ date }) => {
+          Day: ({ date }) => {
             const dateString = date.toISOString().split('T')[0];
             const count = historyMap.get(dateString) || 0;
             return (

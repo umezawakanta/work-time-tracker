@@ -1,4 +1,4 @@
-
+﻿
 // src/components/features/wbs/WBSManager.tsx
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import {
   Plus,
   FileDown,
   ChevronRight,
-  Calendars,
+  Calendar,
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -71,8 +71,8 @@ const WBSManager: React.FC = () => {
     if (!user) return;
 
     const projectId = await WBSService.createProject(user.uid, {
-      name: "Work Time Tracker 開発計画",
-      description: "世界最高のタスク管理サービスを構築するための開発計画",
+      name: "Work Time Tracker 髢狗匱險育判",
+      description: "荳也阜譛鬮倥・繧ｿ繧ｹ繧ｯ邂｡逅・し繝ｼ繝薙せ繧呈ｧ狗ｯ峨☆繧九◆繧√・髢狗匱險育判",
     });
 
     await loadProjects();
@@ -130,7 +130,7 @@ const WBSManager: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">読み込み中...</div>
+      <div className="flex items-center justify-center h-64">隱ｭ縺ｿ霎ｼ縺ｿ荳ｭ...</div>
     );
   }
 
@@ -138,30 +138,30 @@ const WBSManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* ヘッダー */}
+      {/* 繝倥ャ繝繝ｼ */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">WBS管理</h2>
+          <h2 className="text-3xl font-bold">WBS邂｡逅・/h2>
           <p className="text-muted-foreground">
-            プロジェクトの詳細な作業分解構造を管理
+            繝励Ο繧ｸ繧ｧ繧ｯ繝医・隧ｳ邏ｰ縺ｪ菴懈･ｭ蛻・ｧ｣讒矩繧堤ｮ｡逅・
           </p>
         </div>
         <div className="flex gap-2">
           <Button onClick={exportProject} variant="outline">
             <FileDown className="h-4 w-4 mr-2" />
-            エクスポート
+            繧ｨ繧ｯ繧ｹ繝昴・繝・
           </Button>
           <Button onClick={() => setShowNodeDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            タスク追加
+            繧ｿ繧ｹ繧ｯ霑ｽ蜉
           </Button>
         </div>
       </div>
 
-      {/* プロジェクト選択 */}
+      {/* 繝励Ο繧ｸ繧ｧ繧ｯ繝磯∈謚・*/}
       <Card>
         <CardHeader>
-          <CardTitle>プロジェクト</CardTitle>
+          <CardTitle>繝励Ο繧ｸ繧ｧ繧ｯ繝・/CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2 overflow-x-auto">
@@ -179,7 +179,7 @@ const WBSManager: React.FC = () => {
             ))}
             <Button variant="ghost" onClick={createNewProject}>
               <Plus className="h-4 w-4 mr-2" />
-              新規プロジェクト
+              譁ｰ隕上・繝ｭ繧ｸ繧ｧ繧ｯ繝・
             </Button>
           </div>
         </CardContent>
@@ -187,24 +187,24 @@ const WBSManager: React.FC = () => {
 
       {selectedProject && (
         <>
-          {/* 統計情報 */}
+          {/* 邨ｱ險域ュ蝣ｱ */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">タスク数</CardTitle>
+                <CardTitle className="text-sm font-medium">繧ｿ繧ｹ繧ｯ謨ｰ</CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalTasks}</div>
                 <p className="text-xs text-muted-foreground">
-                  完了: {stats.completedTasks} / 遅延: {stats.delayedTasks}
+                  螳御ｺ・ {stats.completedTasks} / 驕・ｻｶ: {stats.delayedTasks}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">進捗率</CardTitle>
+                <CardTitle className="text-sm font-medium">騾ｲ謐礼紫</CardTitle>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -222,22 +222,22 @@ const WBSManager: React.FC = () => {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">予算</CardTitle>
+                <CardTitle className="text-sm font-medium">莠育ｮ・/CardTitle>
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  ¥{stats.totalBudget.toLocaleString()}
+                  ﾂ･{stats.totalBudget.toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  実績: ¥{stats.actualCost.toLocaleString()}
+                  螳溽ｸｾ: ﾂ･{stats.actualCost.toLocaleString()}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">期限</CardTitle>
+                <CardTitle className="text-sm font-medium">譛滄剞</CardTitle>
                 <s className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -247,7 +247,7 @@ const WBSManager: React.FC = () => {
                   })}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  開始:{" "}
+                  髢句ｧ・{" "}
                   {format(new Date(selectedProject.startDate), "M/d", {
                     locale: ja,
                   })}
@@ -256,14 +256,14 @@ const WBSManager: React.FC = () => {
             </Card>
           </div>
 
-          {/* ビューモード切り替え */}
+          {/* 繝薙Η繝ｼ繝｢繝ｼ繝牙・繧頑崛縺・*/}
           <Tabs
             value={viewMode}
             onValueChange={(v) => setViewMode(v as "tree" | "gantt")}
           >
             <TabsList>
-              <TabsTrigger value="gantt">ガントチャート</TabsTrigger>
-              <TabsTrigger value="tree">ツリービュー</TabsTrigger>
+              <TabsTrigger value="gantt">繧ｬ繝ｳ繝医メ繝｣繝ｼ繝・/TabsTrigger>
+              <TabsTrigger value="tree">繝・Μ繝ｼ繝薙Η繝ｼ</TabsTrigger>
             </TabsList>
 
             <TabsContent value="gantt" className="mt-4">
@@ -287,7 +287,7 @@ const WBSManager: React.FC = () => {
         </>
       )}
 
-      {/* ノード編集ダイアログ */}
+      {/* 繝弱・繝臥ｷｨ髮・ム繧､繧｢繝ｭ繧ｰ */}
       <WBSNodeDialog
         open={showNodeDialog || !!selectedNode}
         onClose={() => {
@@ -317,3 +317,4 @@ const WBSManager: React.FC = () => {
 };
 
 export default WBSManager;
+

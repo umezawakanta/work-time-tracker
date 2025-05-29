@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { Link } from 'react-router-dom';
 import { fetchBlogPosts, selectBlogPosts, selectBlogStatus, selectDrafts } from '@/store/blogSlice';
 import { Button, Container, Typography, Card, CardContent, CardActions, CircularProgress, Pagination, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Box, TextField, Chip, Tabs, Tab } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2';
+import Grid2 from '@mui/material/Grid';
 
 const POSTS_PER_PAGE = 6;
 
@@ -96,55 +96,55 @@ const BlogPage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
-        ブログ
+        繝悶Ο繧ｰ
       </Typography>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="blog tabs">
-          <Tab label="公開済み" />
-          <Tab label="下書き" />
+          <Tab label="蜈ｬ髢区ｸ医∩" />
+          <Tab label="荳区嶌縺・ />
         </Tabs>
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Button component={Link} to="/blog/new" variant="contained" color="primary">
-          新規投稿
+          譁ｰ隕乗兜遞ｿ
         </Button>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="category-select-label">カテゴリー</InputLabel>
+            <InputLabel id="category-select-label">繧ｫ繝・ざ繝ｪ繝ｼ</InputLabel>
             <Select
               labelId="category-select-label"
               id="category-select"
               value={selectedCategory}
-              label="カテゴリー"
+              label="繧ｫ繝・ざ繝ｪ繝ｼ"
               onChange={handleCategoryChange}
             >
               {categories.map((category) => (
                 <MenuItem key={category} value={category}>
-                  {category === 'all' ? 'すべて' : category}
+                  {category === 'all' ? '縺吶∋縺ｦ' : category}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="sort-select-label">並び替え</InputLabel>
+            <InputLabel id="sort-select-label">荳ｦ縺ｳ譖ｿ縺・/InputLabel>
             <Select
               labelId="sort-select-label"
               id="sort-select"
               value={sortOption}
-              label="並び替え"
+              label="荳ｦ縺ｳ譖ｿ縺・
               onChange={handleSortChange}
             >
-              <MenuItem value="newest">最新順</MenuItem>
-              <MenuItem value="oldest">古い順</MenuItem>
-              <MenuItem value="mostLiked">いいね数順</MenuItem>
-              <MenuItem value="mostCommented">コメント数順</MenuItem>
+              <MenuItem value="newest">譛譁ｰ鬆・/MenuItem>
+              <MenuItem value="oldest">蜿､縺・・/MenuItem>
+              <MenuItem value="mostLiked">縺・＞縺ｭ謨ｰ鬆・/MenuItem>
+              <MenuItem value="mostCommented">繧ｳ繝｡繝ｳ繝域焚鬆・/MenuItem>
             </Select>
           </FormControl>
         </Box>
       </Box>
       <TextField
         fullWidth
-        label="検索"
+        label="讀懃ｴ｢"
         variant="outlined"
         value={searchTerm}
         onChange={handleSearchChange}
@@ -170,7 +170,7 @@ const BlogPage: React.FC = () => {
                   {post.title}
                 </Typography>
                 <Typography color="textSecondary" gutterBottom>
-                  カテゴリー: {post.category}
+                  繧ｫ繝・ざ繝ｪ繝ｼ: {post.category}
                 </Typography>
                 <Typography variant="body2" component="p">
                   {post.content.substring(0, 100)}...
@@ -182,12 +182,12 @@ const BlogPage: React.FC = () => {
                   ))}
                 </Box>
                 <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                  いいね: {post.likes.length} | コメント: {post.comments.length}
+                  縺・＞縺ｭ: {post.likes.length} | 繧ｳ繝｡繝ｳ繝・ {post.comments.length}
                 </Typography>
               </CardContent>
               <CardActions>
                 <Button size="small" component={Link} to={`/blog/${post._id}`}>
-                  {post.status === 'draft' ? '編集' : '続きを読む'}
+                  {post.status === 'draft' ? '邱ｨ髮・ : '邯壹″繧定ｪｭ繧'}
                 </Button>
               </CardActions>
             </Card>

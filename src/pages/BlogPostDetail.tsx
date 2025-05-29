@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { fetchBlogPost, addComment, deleteBlogPost, selectBlogPostById, toggleLike, selectBlogPosts } from '@/store/blogSlice';
 import { Container, Typography, Box, Chip, Button, Divider, CircularProgress, TextField, IconButton, Card, CardContent, CardActions } from '@mui/material';
-import Grid2 from '@mui/material/Unstable_Grid2';
+import Grid2 from '@mui/material/Grid';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -19,7 +19,7 @@ const BlogPostDetail: React.FC = () => {
   const allPosts = useSelector(selectBlogPosts);
   const status = useSelector((state: RootState) => state.blog.status);
   const [newComment, setNewComment] = useState('');
-  const currentUserId = 'testUser'; // 実際の実装では、認証システムからユーザーIDを取得します
+  const currentUserId = 'testUser'; // 螳滄圀縺ｮ螳溯｣・〒縺ｯ縲∬ｪ崎ｨｼ繧ｷ繧ｹ繝・Β縺九ｉ繝ｦ繝ｼ繧ｶ繝ｼID繧貞叙蠕励＠縺ｾ縺・
 
   useEffect(() => {
     if (id) {
@@ -36,7 +36,7 @@ const BlogPostDetail: React.FC = () => {
   };
 
   const handleDelete = async () => {
-    if (id && window.confirm('本当にこの投稿を削除しますか？')) {
+    if (id && window.confirm('譛ｬ蠖薙↓縺薙・謚慕ｨｿ繧貞炎髯､縺励∪縺吶°・・)) {
       await dispatch(deleteBlogPost(id));
       navigate('/blog');
     }
@@ -92,10 +92,10 @@ const BlogPostDetail: React.FC = () => {
     return (
       <Container maxWidth="lg">
         <Typography variant="h4" component="h1" gutterBottom>
-          投稿が見つかりません
+          謚慕ｨｿ縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ
         </Typography>
         <Button component={Link} to="/blog" variant="contained" color="primary">
-          ブログ一覧に戻る
+          繝悶Ο繧ｰ荳隕ｧ縺ｫ謌ｻ繧・
         </Button>
       </Container>
     );
@@ -110,7 +110,7 @@ const BlogPostDetail: React.FC = () => {
         {post.title}
       </Typography>
       <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-        カテゴリー: {post.category || '未分類'}
+        繧ｫ繝・ざ繝ｪ繝ｼ: {post.category || '譛ｪ蛻・｡・}
       </Typography>
       <Box sx={{ mb: 2 }}>
         {post.tags.map((tag) => (
@@ -126,7 +126,7 @@ const BlogPostDetail: React.FC = () => {
             {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </IconButton>
           <Typography variant="body2" component="span">
-            {post.likes.length} いいね
+            {post.likes.length} 縺・＞縺ｭ
           </Typography>
         </Box>
         <Box>
@@ -143,20 +143,20 @@ const BlogPostDetail: React.FC = () => {
       </Box>
       <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <Button component={Link} to="/blog" variant="outlined" sx={{ mr: 1 }}>
-          戻る
+          謌ｻ繧・
         </Button>
         <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary" sx={{ mr: 1 }}>
-          編集
+          邱ｨ髮・
         </Button>
         <Button onClick={handleDelete} variant="contained" color="error">
-          削除
+          蜑企勁
         </Button>
       </Box>
       
       {relatedPosts.length > 0 && (
         <Box sx={{ mt: 4 }}>
           <Typography variant="h5" gutterBottom>
-            関連記事
+            髢｢騾｣險倅ｺ・
           </Typography>
           <Grid2 container spacing={2}>
             {relatedPosts.map((relatedPost) => (
@@ -172,7 +172,7 @@ const BlogPostDetail: React.FC = () => {
                   </CardContent>
                   <CardActions>
                     <Button size="small" component={Link} to={`/blog/${relatedPost._id}`}>
-                      読む
+                      隱ｭ繧
                     </Button>
                   </CardActions>
                 </Card>
@@ -184,7 +184,7 @@ const BlogPostDetail: React.FC = () => {
 
       <Box sx={{ mt: 4 }}>
         <Typography variant="h6" gutterBottom>
-          コメント
+          繧ｳ繝｡繝ｳ繝・
         </Typography>
         <Divider />
         {post.comments && post.comments.length > 0 ? (
@@ -197,13 +197,13 @@ const BlogPostDetail: React.FC = () => {
             </Box>
           ))
         ) : (
-          <Typography variant="body1">まだコメントはありません。</Typography>
+          <Typography variant="body1">縺ｾ縺繧ｳ繝｡繝ｳ繝医・縺ゅｊ縺ｾ縺帙ｓ縲・/Typography>
         )}
       </Box>
       <Box component="form" onSubmit={handleAddComment} sx={{ mt: 4 }}>
         <TextField
           fullWidth
-          label="新しいコメント"
+          label="譁ｰ縺励＞繧ｳ繝｡繝ｳ繝・
           multiline
           rows={4}
           value={newComment}
@@ -211,7 +211,7 @@ const BlogPostDetail: React.FC = () => {
           margin="normal"
         />
         <Button type="submit" variant="contained" color="primary">
-          コメントを追加
+          繧ｳ繝｡繝ｳ繝医ｒ霑ｽ蜉
         </Button>
       </Box>
     </Container>
