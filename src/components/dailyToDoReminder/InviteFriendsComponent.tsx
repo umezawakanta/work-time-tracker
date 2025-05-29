@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -6,11 +6,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import {
   Users,
   Copy,
@@ -25,13 +25,13 @@ import {
   ChevronRight,
   Loader2,
   Sparkles,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion';
 import {
   Table,
   TableBody,
@@ -39,7 +39,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -47,17 +47,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import {
   ReferralInfo,
   fetchReferralSummary,
   inviteUser,
   claimReferralReward,
-} from "@/services/referralService";
+} from '@/services/referralService';
 
 interface InviteFriendsProps {
   userName: string;
@@ -69,16 +69,12 @@ interface InviteFriendsProps {
  * 友達招待コンポーネント
  * リファラルプログラムの管理と友達招待機能を提供
  */
-export const InviteFriends: React.FC<InviteFriendsProps> = ({
-  userName,
-  isPremium,
-  onUpgrade,
-}) => {
+export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremium, onUpgrade }) => {
   // 状態管理
   const [referralInfo, setReferralInfo] = useState<ReferralInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
-  const [emailInput, setEmailInput] = useState<string>("");
+  const [emailInput, setEmailInput] = useState<string>('');
   const [message, setMessage] = useState<string>(
     `${userName}さんから招待が届きました！このタスク管理アプリで生産性が向上します。登録すると、あなたも私も1ヶ月間無料でプレミアム機能が使えます。`
   );
@@ -89,7 +85,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
     message: string;
   } | null>(null);
   const [isClaimingReward, setIsClaimingReward] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("invite");
+  const [activeTab, setActiveTab] = useState<string>('invite');
 
   // リファラル情報の取得
   useEffect(() => {
@@ -99,7 +95,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
         const info = await fetchReferralSummary();
         setReferralInfo(info);
       } catch (error) {
-        console.error("リファラル情報の取得に失敗しました:", error);
+        console.error('リファラル情報の取得に失敗しました:', error);
       } finally {
         setLoading(false);
       }
@@ -119,31 +115,29 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
         setTimeout(() => setCopySuccess(false), 2000);
       })
       .catch((err) => {
-        console.error("URLのコピーに失敗しました:", err);
+        console.error('URLのコピーに失敗しました:', err);
       });
   };
 
   // SNSシェアURL生成
-  const generateSocialShareUrl = (
-    platform: "twitter" | "facebook" | "linkedin"
-  ): string => {
-    if (!referralInfo) return "#";
+  const generateSocialShareUrl = (platform: 'twitter' | 'facebook' | 'linkedin'): string => {
+    if (!referralInfo) return '#';
 
     const text = encodeURIComponent(`${message} ${referralInfo.personalUrl}`);
 
     switch (platform) {
-      case "twitter":
+      case 'twitter':
         return `https://twitter.com/intent/tweet?text=${text}`;
-      case "facebook":
+      case 'facebook':
         return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
           referralInfo.personalUrl
         )}`;
-      case "linkedin":
+      case 'linkedin':
         return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
           referralInfo.personalUrl
         )}`;
       default:
-        return "#";
+        return '#';
     }
   };
 
@@ -152,7 +146,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
     if (!emailInput.trim()) return;
 
     const emails = emailInput
-      .split(",")
+      .split(',')
       .map((email) => email.trim())
       .filter((email) => email.length > 0);
 
@@ -169,7 +163,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
           success: true,
           message: `${result.sentCount}人の友達に招待メールを送信しました。`,
         });
-        setEmailInput("");
+        setEmailInput('');
 
         // リファラル情報を再取得
         const updatedInfo = await fetchReferralSummary();
@@ -177,13 +171,13 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
       } else {
         setInviteResult({
           success: false,
-          message: result.error || "招待の送信に失敗しました。",
+          message: result.error || '招待の送信に失敗しました。',
         });
       }
     } catch {
       setInviteResult({
         success: false,
-        message: "招待処理中にエラーが発生しました。",
+        message: '招待処理中にエラーが発生しました。',
       });
     } finally {
       setIsInviting(false);
@@ -212,13 +206,13 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
       } else {
         setInviteResult({
           success: false,
-          message: result.error || "報酬の請求に失敗しました。",
+          message: result.error || '報酬の請求に失敗しました。',
         });
       }
     } catch {
       setInviteResult({
         success: false,
-        message: "報酬請求中にエラーが発生しました。",
+        message: '報酬請求中にエラーが発生しました。',
       });
     } finally {
       setIsClaimingReward(false);
@@ -273,9 +267,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
               <Users className="h-5 w-5 mr-2 text-blue-500" />
               友達招待プログラム
             </CardTitle>
-            <CardDescription>
-              友達を招待して特典を獲得しましょう
-            </CardDescription>
+            <CardDescription>友達を招待して特典を獲得しましょう</CardDescription>
           </div>
 
           {referralInfo && referralInfo.earnedMonths > 0 && (
@@ -308,38 +300,22 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                 {/* リファラル統計情報 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-                    <div className="text-sm text-gray-500 mb-1">
-                      招待した友達
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {referralInfo.totalInvites}
-                    </div>
+                    <div className="text-sm text-gray-500 mb-1">招待した友達</div>
+                    <div className="text-2xl font-bold">{referralInfo.totalInvites}</div>
                   </div>
 
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-                    <div className="text-sm text-gray-500 mb-1">
-                      アップグレードした友達
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {referralInfo.successfulInvites}
-                    </div>
+                    <div className="text-sm text-gray-500 mb-1">アップグレードした友達</div>
+                    <div className="text-2xl font-bold">{referralInfo.successfulInvites}</div>
                   </div>
 
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
-                    <div className="text-sm text-gray-500 mb-1">
-                      獲得した無料期間
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {referralInfo.earnedMonths}ヶ月
-                    </div>
+                    <div className="text-sm text-gray-500 mb-1">獲得した無料期間</div>
+                    <div className="text-2xl font-bold">{referralInfo.earnedMonths}ヶ月</div>
                   </div>
                 </div>
 
-                <Tabs
-                  defaultValue="invite"
-                  value={activeTab}
-                  onValueChange={setActiveTab}
-                >
+                <Tabs defaultValue="invite" value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid grid-cols-2 mb-4">
                     <TabsTrigger value="invite">友達を招待</TabsTrigger>
                     <TabsTrigger value="invites">招待履歴</TabsTrigger>
@@ -361,16 +337,13 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                             className="flex-1 rounded-l-md border border-r-0 border-gray-300 px-3 py-2 text-sm"
                             aria-label="あなた専用の招待リンク"
                           />
-                          <Button
-                            className="rounded-l-none"
-                            onClick={copyReferralUrl}
-                          >
+                          <Button className="rounded-l-none" onClick={copyReferralUrl}>
                             {copySuccess ? (
                               <CheckCircle className="h-4 w-4 mr-1" />
                             ) : (
                               <Copy className="h-4 w-4 mr-1" />
                             )}
-                            {copySuccess ? "コピー済み" : "コピー"}
+                            {copySuccess ? 'コピー済み' : 'コピー'}
                           </Button>
                         </div>
                       </div>
@@ -383,12 +356,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                             variant="outline"
                             size="sm"
                             className="flex-1"
-                            onClick={() =>
-                              window.open(
-                                generateSocialShareUrl("twitter"),
-                                "_blank"
-                              )
-                            }
+                            onClick={() => window.open(generateSocialShareUrl('twitter'), '_blank')}
                           >
                             <Twitter className="h-4 w-4 mr-1 text-blue-400" />
                             Twitter
@@ -398,10 +366,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                             size="sm"
                             className="flex-1"
                             onClick={() =>
-                              window.open(
-                                generateSocialShareUrl("facebook"),
-                                "_blank"
-                              )
+                              window.open(generateSocialShareUrl('facebook'), '_blank')
                             }
                           >
                             <Facebook className="h-4 w-4 mr-1 text-blue-600" />
@@ -412,10 +377,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                             size="sm"
                             className="flex-1"
                             onClick={() =>
-                              window.open(
-                                generateSocialShareUrl("linkedin"),
-                                "_blank"
-                              )
+                              window.open(generateSocialShareUrl('linkedin'), '_blank')
                             }
                           >
                             <Linkedin className="h-4 w-4 mr-1 text-blue-700" />
@@ -426,10 +388,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
 
                       {/* メール招待ボタン */}
                       <div className="mt-4">
-                        <Button
-                          onClick={() => setShowInviteDialog(true)}
-                          className="w-full"
-                        >
+                        <Button onClick={() => setShowInviteDialog(true)} className="w-full">
                           <Mail className="h-4 w-4 mr-1" />
                           メールで友達を招待
                         </Button>
@@ -444,10 +403,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                           </span>
                         </div>
                         <Progress
-                          value={Math.min(
-                            (referralInfo.successfulInvites / 5) * 100,
-                            100
-                          )}
+                          value={Math.min((referralInfo.successfulInvites / 5) * 100, 100)}
                           className="h-2"
                         />
                         <p className="text-xs text-gray-500 mt-1">
@@ -461,7 +417,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                   </TabsContent>
 
                   <TabsContent value="invites">
-                    {referralInfo.invitedUsers.length > 0 ? (
+                    {referralInfo.inviteds.length > 0 ? (
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -472,17 +428,17 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {referralInfo.invitedUsers.map((user) => (
+                          {referralInfo.inviteds.map((user: any) => (
                             <TableRow key={user.id}>
                               <TableCell className="font-medium">
                                 {user.name || user.email}
                               </TableCell>
                               <TableCell>
-                                {user.status === "subscribed" ? (
+                                {user.status === 'subscribed' ? (
                                   <Badge className="bg-green-100 text-green-800 border-0">
                                     プレミアム
                                   </Badge>
-                                ) : user.status === "registered" ? (
+                                ) : user.status === 'registered' ? (
                                   <Badge className="bg-blue-100 text-blue-800 border-0">
                                     登録済み
                                   </Badge>
@@ -494,12 +450,10 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                               </TableCell>
                               <TableCell>
                                 {user.joinedAt
-                                  ? new Date(user.joinedAt).toLocaleDateString(
-                                      "ja-JP"
-                                    )
-                                  : "-"}
+                                  ? new Date(user.joinedAt).toLocaleDateString('ja-JP')
+                                  : '-'}
                               </TableCell>
-                              <TableCell>{user.planType || "-"}</TableCell>
+                              <TableCell>{user.planType || '-'}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -507,13 +461,11 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                     ) : (
                       <div className="text-center py-8">
                         <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium mb-1">
-                          まだ友達を招待していません
-                        </h3>
+                        <h3 className="text-lg font-medium mb-1">まだ友達を招待していません</h3>
                         <p className="text-sm text-gray-500 mb-4">
                           友達を招待して、一緒にタスク管理を始めましょう
                         </p>
-                        <Button onClick={() => setActiveTab("invite")}>
+                        <Button onClick={() => setActiveTab('invite')}>
                           <Share2 className="h-4 w-4 mr-1" />
                           招待を始める
                         </Button>
@@ -527,8 +479,8 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                   <div
                     className={`mt-4 p-3 rounded-md ${
                       inviteResult.success
-                        ? "bg-green-50 border border-green-200"
-                        : "bg-red-50 border border-red-200"
+                        ? 'bg-green-50 border border-green-200'
+                        : 'bg-red-50 border border-red-200'
                     }`}
                   >
                     <div className="flex items-start">
@@ -539,9 +491,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
                       )}
                       <span
                         className={`text-sm ${
-                          inviteResult.success
-                            ? "text-green-700"
-                            : "text-red-700"
+                          inviteResult.success ? 'text-green-700' : 'text-red-700'
                         }`}
                       >
                         {inviteResult.message}
@@ -553,9 +503,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
             ) : (
               <div className="text-center py-8">
                 <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <h3 className="text-lg font-medium mb-1">
-                  招待プログラムに参加
-                </h3>
+                <h3 className="text-lg font-medium mb-1">招待プログラムに参加</h3>
                 <p className="text-sm text-gray-500 mb-4">
                   友達を招待して、互いにプレミアム機能を無料で体験しましょう
                 </p>
@@ -629,10 +577,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({
             <Button variant="ghost" onClick={() => setShowInviteDialog(false)}>
               キャンセル
             </Button>
-            <Button
-              onClick={handleInvite}
-              disabled={isInviting || !emailInput.trim()}
-            >
+            <Button onClick={handleInvite} disabled={isInviting || !emailInput.trim()}>
               {isInviting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1 animate-spin" />

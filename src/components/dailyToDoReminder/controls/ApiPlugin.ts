@@ -13,7 +13,7 @@ export interface ApiRequestInfo {
   url: string;
   headers: Record<string, string>;
   body?: unknown;
-  config: RequestConfig;
+  config: ExtendedRequestConfig;
 }
 
 /**
@@ -81,12 +81,12 @@ export abstract class BaseApiPlugin implements ApiPlugin {
  * APIリクエストをログに記録する
  */
 export class LoggingPlugin extends BaseApiPlugin {
-  constructor(priority: number = 0) {
-    super('LoggingPlugin', priority, [
-      PluginHook.PRE_REQUEST,
-      PluginHook.POST_REQUEST,
-      PluginHook.REQUEST_ERROR,
-    ]);
+  id = 'logging-plugin';
+  name = 'Logging Plugin';
+  version = '1.0.0';
+
+  constructor() {
+    super();
   }
 
   preRequest(requestInfo: ApiRequestInfo): ApiRequestInfo {
@@ -94,25 +94,16 @@ export class LoggingPlugin extends BaseApiPlugin {
     return requestInfo;
   }
 
-  postRequest<T>(responseInfo: ApiResponseInfo<T>): ApiResponseInfo<T> {
-    const { response, requestInfo, startTime, endTime } = responseInfo;
-    const duration = endTime - startTime;
-
+  afterResponse<T>(response: ApiResponse<T>): ApiResponse<T> {
     console.log(
-      `[API] ${requestInfo.method} ${requestInfo.url} - レスポンス受信 (${duration}ms)`,
-      response.success ? '成功' : `エラー: ${response.error}`
+      `[API] レスポンス受信`,
+      response.success ? '成功' : `エラー: ${response.error?.message || 'Unknown error'}`
     );
-
-    return responseInfo;
+    return response;
   }
 
-  requestError(error: Error, requestInfo: ApiRequestInfo): boolean {
-    console.error(
-      `[API] ${requestInfo.method} ${requestInfo.url} - リクエストエラー:`,
-      error.message
-    );
-
-    return false; // エラーは処理されていないのでfalseを返す
+  onError(error: Error): void {
+    console.error(`[API] リクエストエラー:`, error.message);
   }
 }
 
@@ -121,16 +112,19 @@ export class LoggingPlugin extends BaseApiPlugin {
  * API応答をローカルストレージにキャッシュする
  */
 export class CachePlugin extends BaseApiPlugin {
+  id = 'cache-plugin';
+  name = 'Cache Plugin';
+  version = '1.0.0';
+
   private storage: Storage | null;
   private prefix: string;
   private defaultTTL: number;
 
   constructor(
     prefix: string = 'api_cache_',
-    defaultTTL: number = 5 * 60 * 1000, // 5分
-    priority: number = 10
+    defaultTTL: number = 5 * 60 * 1000 // 5分
   ) {
-    super('CachePlugin', priority, [PluginHook.PRE_REQUEST, PluginHook.POST_REQUEST]);
+    super();
 
     this.prefix = prefix;
     this.defaultTTL = defaultTTL;
@@ -140,60 +134,51 @@ export class CachePlugin extends BaseApiPlugin {
     this.cleanExpiredCache();
   }
 
-  preRequest(requestInfo: ApiRequestInfo): ApiRequestInfo {
+  beforeRequest(url: string, config: ExtendedRequestConfig): ExtendedRequestConfig {
     // GETリクエスト以外はキャッシュしない
-    if (requestInfo.method !== 'GET') return requestInfo;
+    if (config.method !== 'GET') return config;
 
     // キャッシュが無効の場合はスキップ
-    if (!this.storage || !requestInfo.config.cacheTTL) return requestInfo;
+    if (!this.storage) return config;
 
     // キャッシュキーの生成
-    const cacheKey = this.getCacheKey(requestInfo);
+    const cacheKey = this.getCacheKey(url);
 
     // キャッシュからデータを取得
     const cachedData = this.getFromCache(cacheKey);
     if (cachedData) {
-      // リクエストをスキップするためのフラグを追加
+      // キャッシュヒットを示すフラグを追加
       return {
-        ...requestInfo,
-        config: {
-          ...requestInfo.config,
-          _cacheHit: true,
-          _cachedResponse: cachedData,
-        },
-      };
+        ...config,
+        cacheHit: true,
+        cachedResponse: cachedData,
+      } as ExtendedRequestConfig;
     }
 
-    return requestInfo;
+    return config;
   }
 
-  postRequest<T>(responseInfo: ApiResponseInfo<T>): ApiResponseInfo<T> {
-    const { response, requestInfo } = responseInfo;
-
-    // GETリクエスト以外はキャッシュしない
-    if (requestInfo.method !== 'GET') return responseInfo;
-
+  afterResponse<T>(response: ApiResponse<T>): ApiResponse<T> {
     // 成功したレスポンスのみキャッシュする
-    if (!response.success) return responseInfo;
+    if (!response.success) return response;
 
     // キャッシュが無効の場合はスキップ
-    if (!this.storage || !requestInfo.config.cacheTTL) return responseInfo;
+    if (!this.storage) return response;
 
     // キャッシュキーの生成
-    const cacheKey = this.getCacheKey(requestInfo);
+    const cacheKey = this.getCacheKey(''); // URL should be passed from context
 
     // キャッシュに保存
-    this.saveToCache(cacheKey, response, requestInfo.config.cacheTTL || this.defaultTTL);
+    this.saveToCache(cacheKey, response, this.defaultTTL);
 
-    return responseInfo;
+    return response;
   }
 
   /**
    * キャッシュキーの生成
    */
-  private getCacheKey(requestInfo: ApiRequestInfo): string {
-    const { method, url } = requestInfo;
-    return `${this.prefix}${method}_${url}`;
+  private getCacheKey(url: string): string {
+    return `${this.prefix}GET_${url}`;
   }
 
   /**

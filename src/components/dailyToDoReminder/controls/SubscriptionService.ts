@@ -65,7 +65,14 @@ export class SubscriptionService {
       const response = await this.apiClient.get<SubscriptionInfo>('/subscription/info');
 
       return {
-        ...response,
+        data: response.data,
+        success: response.success,
+        error: response.error
+          ? {
+              code: 'SUBSCRIPTION_ERROR',
+              message: typeof response.error === 'string' ? response.error : 'Unknown error',
+            }
+          : undefined,
         meta: {
           timestamp: Date.now(),
         },
@@ -200,7 +207,14 @@ export class SubscriptionService {
       });
 
       return {
-        ...response,
+        data: response.data,
+        success: response.success,
+        error: response.error
+          ? {
+              code: 'SUBSCRIPTION_ERROR',
+              message: typeof response.error === 'string' ? response.error : 'Unknown error',
+            }
+          : undefined,
         meta: {
           timestamp: Date.now(),
         },

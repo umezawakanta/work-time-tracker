@@ -7,15 +7,16 @@ import {
   _extendTrialPeriod as extendTrialPeriod,
 } from '@/services/userAccountService';
 import { fetchReferralSummary } from '@/services/referralService';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * プレミアム機能の管理用カスタムフック
  */
 export function usePremiumFeatures() {
-  // プレミアム状態
+  const { user } = useAuth();
   const [isPremium, setIsPremium] = useState<boolean>(false);
   const [premiumFeatures, setPremiumFeatures] = useState<Record<string, boolean>>({});
-  const [expiresAt, setExpiresAt] = useState<string | undefined>(undefined);
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [premiumPlan, setPremiumPlan] = useState<PremiumPlanCycle>('monthly');
@@ -32,16 +33,19 @@ export function usePremiumFeatures() {
     | undefined
   >(undefined);
 
-  // プレミアム機能の情報を初期ロード
   useEffect(() => {
-    const loadPremiumStatus = async () => {
-      setLoading(true);
+    const checkStatus = async () => {
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        // プレミアム機能の状態を取得
-        const status = await checkPremiumFeatures();
+        setLoading(true);
+        const status = await checkPremiumFeatures(user.uid);
         setIsPremium(status.isPremium);
         setPremiumFeatures(status.features);
-        setExpiresAt(status.expiresAt);
+        setExpiresAt(status.expiresAt ? new Date(status.expiresAt) : null);
 
         // リファラル情報の取得
         try {
@@ -52,51 +56,57 @@ export function usePremiumFeatures() {
         } catch (referralError) {
           console.error('リファラル情報取得エラー:', referralError);
         }
-      } catch (err) {
-        console.error('プレミアム機能確認エラー:', err);
+      } catch (error) {
+        console.error('プレミアム機能確認エラー:', error);
         setError('プレミアム機能の情報取得に失敗しました');
+        setIsPremium(false);
       } finally {
         setLoading(false);
       }
     };
 
-    loadPremiumStatus();
-  }, []);
+    checkStatus();
+  }, [user?.uid]);
 
-  // プレミアムへのアップグレード処理
-  const upgradeToPremiumPlan = useCallback(
-    async (planType: PremiumPlanType, planCycle: PremiumPlanCycle) => {
-      try {
-        const result = await upgradeToPremium(planType, planCycle);
-        if (result.success && result.redirectUrl) {
-          window.location.href = result.redirectUrl;
-          return true;
-        }
-        return false;
-      } catch (err) {
-        console.error('アップグレードエラー:', err);
-        setError('プレミアムプランへのアップグレードに失敗しました');
-        return false;
-      }
-    },
-    []
-  );
-
-  // トライアル延長処理
-  const extendTrial = useCallback(async () => {
-    try {
-      const result = await extendTrialPeriod();
-      if (result.success && result.expiresAt) {
-        setExpiresAt(result.expiresAt);
-        return true;
-      }
-      return false;
-    } catch (err) {
-      console.error('トライアル延長エラー:', err);
-      setError('トライアル期間の延長に失敗しました');
-      return false;
+  const upgrade = async (planType: PremiumPlanType) => {
+    if (!user?.uid) {
+      throw new Error('User not authenticated');
     }
-  }, []);
+
+    try {
+      setLoading(true);
+      await upgradeToPremium(user.uid, planType);
+      // Note: The function returns void, so we'll handle success differently
+      setIsPremium(true);
+      return { success: true };
+    } catch (error) {
+      console.error('Upgrade failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const extendTrial = async (days: number = 7) => {
+    if (!user?.uid) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      setLoading(true);
+      await extendTrialPeriod(user.uid, days);
+      // Note: The function returns void, so we'll handle success differently
+      const newExpiryDate = new Date();
+      newExpiryDate.setDate(newExpiryDate.getDate() + days);
+      setExpiresAt(newExpiryDate);
+      return { success: true, expiresAt: newExpiryDate };
+    } catch (error) {
+      console.error('Trial extension failed:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // プレミアム機能が利用可能かチェック
   const hasFeature = useCallback(
@@ -131,7 +141,6 @@ export function usePremiumFeatures() {
   return {
     isPremium,
     features: premiumFeatures,
-    expiresAt,
     loading,
     error,
     premiumPlan,
@@ -141,7 +150,7 @@ export function usePremiumFeatures() {
     setUsageStats,
     hasFeature,
     checkLimit,
-    upgradeToPremiumPlan,
+    upgrade,
     extendTrial,
   };
 }
