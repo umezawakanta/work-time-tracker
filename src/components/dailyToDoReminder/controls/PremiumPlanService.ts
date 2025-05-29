@@ -271,7 +271,7 @@ export class PremiumPlanService {
 
         return {
           valid: false,
-          message: response.error || '検証中にエラーが発生しました。',
+          message: String(response.error) || '検証中にエラーが発生しました。',
         };
       }
 

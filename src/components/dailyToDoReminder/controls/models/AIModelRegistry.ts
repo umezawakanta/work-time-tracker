@@ -303,7 +303,7 @@ export class AIModelRegistry {
    * @param enhancementType 強化タイプ
    */
   public getModelsByCapability(enhancementType: string): AIModel[] {
-    return this.models.filter((model) => model.capabilities.includes(enhancementType as any));
+    return this.models.filter((model) => model.capabilities.includes(enhancementType));
   }
 
   /**

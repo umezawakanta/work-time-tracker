@@ -41,7 +41,7 @@ export abstract class BaseApiClient {
 
     // Network Information API（一部のブラウザでサポート）
     if ('connection' in navigator) {
-      const conn = (navigator as any).connection;
+      const conn = (navigator as unknown as { connection?: { type?: string } }).connection;
       if (conn && conn.type) {
         return conn.type;
       }

@@ -2,7 +2,7 @@
  * 一括リクエストマネージャー
  * 複数APIリクエストの効率的な実行を担当
  */
-import { ApiResponse, RequestData, ExtendedRequestConfig, SubscriptionPlan } from './ApiTypes';
+import { ApiResponse, RequestData, ExtendedRequestConfig } from './ApiTypes';
 import Logger from './Logger';
 import { FeatureManager } from './FeatureManager';
 import { ApiMetricsCollector } from './ApiMetricsCollector';

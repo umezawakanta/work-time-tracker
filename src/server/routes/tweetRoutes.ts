@@ -23,7 +23,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post('/', authMiddleware, upload.single('image') as any, createTweet as any);
+router.post(
+  '/',
+  authMiddleware,
+  upload.single('image') as unknown as express.RequestHandler,
+  createTweet as unknown as express.RequestHandler
+);
 router.get('/', authMiddleware, getTweets);
 router.put('/:id', authMiddleware, updateTweet);
 
