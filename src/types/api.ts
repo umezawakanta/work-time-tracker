@@ -11,7 +11,7 @@ export interface RequestConfig {
   cache?: RequestCache;
   retry?: number;
   signal?: AbortSignal;
-  priority?: "low" | "normal" | "high";
+  priority?: 'low' | 'normal' | 'high';
   withCredentials?: boolean;
   retryDelay?: number;
   cacheTTL?: number;
@@ -20,7 +20,7 @@ export interface RequestConfig {
 export interface ApiResponse<T> {
   data: T | null;
   success: boolean;
-  error?: any;
+  error?: Error | string;
   meta: ApiResponseMeta;
 }
 

@@ -36,10 +36,10 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
   term,
   pricingPlans,
   promotionData,
-  referralData
+  referralData,
 }) => {
   const _planService = PremiumPlanService.getInstance();
-  
+
   // 辟｡譁吶・繝ｩ繝ｳ縺ｮ蝣ｴ蜷・
   if (plan === 'free') {
     return (
@@ -54,97 +54,95 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
   if (term === 'lifetime') {
     if (pricingPlans.lifetime && pricingPlans.lifetime[plan]) {
       const _price = pricingPlans.lifetime[plan];
-      let discountedPrice = price;
+      let discountedPrice = _price;
       let showDiscount = false;
-      
+
       if (promotionData.hasPromotion || referralData.valid) {
         let discountRate = 0;
         if (promotionData.hasPromotion) discountRate += promotionData.promoDiscount;
         if (referralData.valid) discountRate += referralData.discountRate;
-        
-        discountedPrice = planService.calculateDiscountedPrice(price, discountRate);
+
+        discountedPrice = _planService.calculateDiscountedPrice(_price, discountRate);
         showDiscount = true;
       }
-      
+
       return (
         <>
           <div className="text-2xl font-bold">
             {showDiscount && (
               <span className="line-through text-gray-400 mr-2 text-lg">
-                ﾂ･{price.toLocaleString()}
+                ﾂ･{_price.toLocaleString()}
               </span>
             )}
             ﾂ･{discountedPrice.toLocaleString()}
-            <span className="text-xs text-gray-500 ml-1">・井ｸ蠎ｦ縺阪ｊ・・/span>
+            <span className="text-xs text-gray-500 ml-1">・井ｸ蠎ｦ縺阪ｊ・・</span>
           </div>
         </>
       );
     }
     return null;
   }
-  
+
   // 蟷ｴ髢薙・繝ｩ繝ｳ縺ｮ蜃ｦ逅・
   if (term === 'annual' && pricingPlans.annual[plan]) {
     const _annualPrice = pricingPlans.annual[plan];
-    const _monthlyEquivalent = planService.calculateMonthlyPrice(annualPrice);
-    
-    let discountedPrice = annualPrice;
+    const _monthlyEquivalent = _planService.calculateMonthlyPrice(_annualPrice);
+
+    let discountedPrice = _annualPrice;
     let showDiscount = false;
-    
+
     if (promotionData.hasPromotion || referralData.valid) {
       let discountRate = 0;
       if (promotionData.hasPromotion) discountRate += promotionData.promoDiscount;
       if (referralData.valid) discountRate += referralData.discountRate;
-      
-      discountedPrice = planService.calculateDiscountedPrice(annualPrice, discountRate);
+
+      discountedPrice = _planService.calculateDiscountedPrice(_annualPrice, discountRate);
       showDiscount = true;
     }
-    
-    const _discountedMonthly = planService.calculateMonthlyPrice(discountedPrice);
-    
+
+    const _discountedMonthly = _planService.calculateMonthlyPrice(discountedPrice);
+
     return (
       <>
-        <div className="text-2xl font-bold">
-          ﾂ･{discountedMonthly.toLocaleString()}/譛・
-        </div>
+        <div className="text-2xl font-bold">ﾂ･{_discountedMonthly.toLocaleString()}/譛・</div>
         <p className="text-xs text-gray-500">
           蟷ｴ髢・
           {showDiscount && (
-            <span className="line-through mr-1">ﾂ･{annualPrice.toLocaleString()}</span>
+            <span className="line-through mr-1">ﾂ･{_annualPrice.toLocaleString()}</span>
           )}
           ﾂ･{discountedPrice.toLocaleString()} (荳諡ｬ謇輔＞)
         </p>
       </>
     );
-  } 
-  
+  }
+
   // 譛磯｡阪・繝ｩ繝ｳ縺ｮ蜃ｦ逅・
   if (pricingPlans.monthly[plan]) {
     const _monthlyPrice = pricingPlans.monthly[plan];
-    
-    let discountedPrice = monthlyPrice;
+
+    let discountedPrice = _monthlyPrice;
     let showDiscount = false;
-    
+
     if (promotionData.hasPromotion || referralData.valid) {
       let discountRate = 0;
       if (promotionData.hasPromotion) discountRate += promotionData.promoDiscount;
       if (referralData.valid) discountRate += referralData.discountRate;
-      
-      discountedPrice = planService.calculateDiscountedPrice(monthlyPrice, discountRate);
+
+      discountedPrice = _planService.calculateDiscountedPrice(_monthlyPrice, discountRate);
       showDiscount = true;
     }
-    
+
     return (
       <div className="text-2xl font-bold">
         {showDiscount && (
           <span className="line-through text-gray-400 mr-2 text-lg">
-            ﾂ･{monthlyPrice.toLocaleString()}
+            ﾂ･{_monthlyPrice.toLocaleString()}
           </span>
         )}
         ﾂ･{discountedPrice.toLocaleString()}/譛・
       </div>
     );
   }
-  
+
   return null;
 };

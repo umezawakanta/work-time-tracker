@@ -239,7 +239,7 @@ export class AIFeatureManager {
     }
 
     // AIモデルの準備と処理
-    const result = await this.processWithAI(data, options, requestId);
+    const result = await this.processWithAI(data, options);
 
     // 処理時間の計算
     const duration = performance.now() - startTime;
@@ -307,8 +307,7 @@ export class AIFeatureManager {
    */
   private async processWithAI(
     data: unknown,
-    options: AIFeatureOptions,
-    requestId: string
+    options: AIFeatureOptions
   ): Promise<{
     data: unknown;
     modelId: string;
