@@ -1,4 +1,4 @@
-import { ApiResponse, RequestConfig } from './ApiTypes';
+import { ApiResponse, ExtendedRequestConfig } from './ApiTypes';
 import ApiClient from './ApiClient';
 
 export class ApiClientHttpMethods {
@@ -8,101 +8,93 @@ export class ApiClientHttpMethods {
     this.apiClient = apiClient;
   }
 
-  async get<T = any>(
+  async get<T = unknown>(
     url: string,
-    params?: any,
-    config?: RequestConfig
+    params?: Record<string, string>,
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
-    const response = await this.apiClient.fetch<T>(`${url}${queryString}`, { 
+    const response = await this.apiClient.fetch<T>(`${url}${queryString}`, {
       method: 'GET',
-      ...config 
+      ...config,
     });
-    
+
     return {
       ...response,
       meta: {
         timestamp: Date.now(),
-        ...response.meta
-      }
+      },
     };
   }
 
-  async post<T = any>(
+  async post<T = unknown>(
     url: string,
-    data?: any,
-    config?: RequestConfig
+    data?: unknown,
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.apiClient.fetch<T>(url, {
       method: 'POST',
       body: JSON.stringify(data),
-      ...config
+      ...config,
     });
-    
+
     return {
       ...response,
       meta: {
         timestamp: Date.now(),
-        ...response.meta
-      }
+      },
     };
   }
 
-  async put<T = any>(
+  async put<T = unknown>(
     url: string,
-    data?: any,
-    config?: RequestConfig
+    data?: unknown,
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.apiClient.fetch<T>(url, {
       method: 'PUT',
       body: JSON.stringify(data),
-      ...config
+      ...config,
     });
-    
+
     return {
       ...response,
       meta: {
         timestamp: Date.now(),
-        ...response.meta
-      }
+      },
     };
   }
 
-  async delete<T = any>(
-    url: string,
-    config?: RequestConfig
-  ): Promise<ApiResponse<T>> {
+  async delete<T = unknown>(url: string, config?: ExtendedRequestConfig): Promise<ApiResponse<T>> {
     const response = await this.apiClient.fetch<T>(url, {
       method: 'DELETE',
-      ...config
+      ...config,
     });
-    
+
     return {
       ...response,
       meta: {
         timestamp: Date.now(),
-        ...response.meta
-      }
+      },
     };
   }
 
-  async patch<T = any>(
+  async patch<T = unknown>(
     url: string,
-    data?: any,
-    config?: RequestConfig
+    data?: unknown,
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>> {
     const response = await this.apiClient.fetch<T>(url, {
       method: 'PATCH',
       body: JSON.stringify(data),
-      ...config
+      ...config,
     });
-    
+
     return {
       ...response,
       meta: {
         timestamp: Date.now(),
-        ...response.meta
-      }
+      },
     };
   }
 }
