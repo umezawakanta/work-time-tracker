@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -11,14 +11,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -26,8 +26,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -36,22 +36,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from '@/components/ui/accordion';
 import {
   addSubscription,
   fetchSubscriptions,
   updateSubscription,
   deleteSubscription,
-} from "@/store/subscriptionSlice";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+} from '@/store/subscriptionSlice';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
   Loader2,
   Pencil,
@@ -78,10 +78,10 @@ import {
   SparklesIcon,
   PlusIcon,
   CrownIcon,
-} from "lucide-react";
-import { SubscriptionCharts } from "@/components/chart/SubscriptionCharts";
-import { MonthlySubscriptionChart } from "@/components/chart/MonthlySubscriptionChart";
-import { SubscriptionService } from "@/types";
+} from 'lucide-react';
+import { SubscriptionCharts } from '@/components/chart/SubscriptionCharts';
+import { MonthlySubscriptionChart } from '@/components/chart/MonthlySubscriptionChart';
+import { SubscriptionService } from '@/types';
 // サブスクリプション管理ガイドコンポーネント
 const SubscriptionManagementGuide = () => {
   return (
@@ -91,9 +91,7 @@ const SubscriptionManagementGuide = () => {
           <HelpCircle className="h-5 w-5" />
           サブスクリプション登録の手順
         </CardTitle>
-        <CardDescription>
-          カード利用履歴からサブスクリプションを簡単に登録する方法
-        </CardDescription>
+        <CardDescription>カード利用履歴からサブスクリプションを簡単に登録する方法</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <Accordion type="single" collapsible className="w-full">
@@ -204,8 +202,28 @@ const SubscriptionManagementGuide = () => {
   );
 };
 
+// Add proper type definitions
+interface MonthStatus {
+  registered: boolean;
+  count: number;
+  totalAmount: number;
+}
+
+interface MonthlyStatus {
+  [year: number]: {
+    [month: string]: MonthStatus;
+  };
+}
+
+interface Subscription {
+  id: string;
+  startDate: string;
+  amount: number;
+  // ... other subscription properties
+}
+
 // 月次登録状況カレンダーコンポーネント
-const MonthlyRegistrationStatus = ({ subscriptions }) => {
+const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscription[] }) => {
   // 現在の年を取得
   const currentYear = new Date().getFullYear();
 
@@ -220,7 +238,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
       status[year] = {};
       for (let month = 1; month <= 12; month++) {
         // 各月の状態を初期化
-        const monthKey = `${month}`.padStart(2, "0");
+        const monthKey = `${month}`.padStart(2, '0');
         status[year][monthKey] = {
           registered: false,
           count: 0,
@@ -230,10 +248,10 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
     });
 
     // サブスクリプションデータから登録状況を更新
-    subscriptions.forEach((sub) => {
-      console.log("sub.billingDate = " + sub.billingDate)
+    subscriptions.forEach((sub: Subscription) => {
+      console.log('sub.billingDate = ' + sub.billingDate);
       if (sub.billingDate) {
-        const [subYear, subMonth] = sub.billingDate.split("/");
+        const [subYear, subMonth] = sub.billingDate.split('/');
 
         if (status[subYear] && status[subYear][subMonth]) {
           status[subYear][subMonth].registered = true;
@@ -250,18 +268,18 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
 
   // 月の名前
   const monthNames = [
-    "1月",
-    "2月",
-    "3月",
-    "4月",
-    "5月",
-    "6月",
-    "7月",
-    "8月",
-    "9月",
-    "10月",
-    "11月",
-    "12月",
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月',
   ];
 
   return (
@@ -271,9 +289,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
           <CalendarDays className="h-5 w-5" />
           サブスクリプション登録状況カレンダー
         </CardTitle>
-        <CardDescription>
-          月ごとのサブスクリプション登録状況を確認できます
-        </CardDescription>
+        <CardDescription>月ごとのサブスクリプション登録状況を確認できます</CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={currentYear.toString()} className="w-full">
@@ -289,7 +305,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
             <TabsContent key={year} value={year.toString()}>
               <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                 {monthNames.map((name, index) => {
-                  const monthKey = `${index + 1}`.padStart(2, "0");
+                  const monthKey = `${index + 1}`.padStart(2, '0');
                   const status = monthlyStatus[year][monthKey];
 
                   return (
@@ -298,8 +314,8 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
                       className={`
                       ${
                         status.registered
-                          ? "border-green-200 bg-green-50"
-                          : "border-gray-200 bg-gray-50"
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-gray-200 bg-gray-50'
                       }
                     `}
                     >
@@ -318,9 +334,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
                           <div className="space-y-1">
                             <p className="text-sm flex justify-between">
                               <span>登録数:</span>
-                              <span className="font-medium">
-                                {status.count}件
-                              </span>
+                              <span className="font-medium">{status.count}件</span>
                             </p>
                             <p className="text-sm flex justify-between">
                               <span>合計:</span>
@@ -348,23 +362,19 @@ const MonthlyRegistrationStatus = ({ subscriptions }) => {
 // メインコンポーネント
 export default function SubscriptionManagementPage() {
   const dispatch = useDispatch<AppDispatch>();
-  const { subscriptions, status, error } = useSelector(
-    (state: RootState) => state.subscription
-  );
+  const { subscriptions, status, error } = useSelector((state: RootState) => state.subscription);
   // 新規ステート
-  const [selectedBankAccount, setSelectedBankAccount] = useState("smbc_main");
-  const [paymentSource, setPaymentSource] = useState("all"); // "all", "credit", "bank"
-  const [checkStatus, setCheckStatus] = useState("all"); // "all", "checked", "unchecked"
+  const [selectedBankAccount, setSelectedBankAccount] = useState('smbc_main');
+  const [paymentSource, setPaymentSource] = useState('all'); // "all", "credit", "bank"
+  const [checkStatus, setCheckStatus] = useState('all'); // "all", "checked", "unchecked"
 
-  const [newSubscription, setNewSubscription] = useState<
-    Omit<SubscriptionService, "_id">
-  >({
-    name: "",
+  const [newSubscription, setNewSubscription] = useState<Omit<SubscriptionService, '_id'>>({
+    name: '',
     billingDate: 0,
-    type: "",
+    type: '',
     amount: 0,
     paymentMethod: {
-      type: "credit",
+      type: 'credit',
       isDefault: true,
     },
     isActive: true,
@@ -372,36 +382,29 @@ export default function SubscriptionManagementPage() {
   });
 
   // サブスクリプション登録時に選択した支払い方法を設定
-  const handlePaymentMethodChange = (method) => {
+  const handlePaymentMethodChange = (method: string) => {
     setNewSubscription({
       ...newSubscription,
       paymentMethod: {
         type: method,
         isDefault: true,
       },
-      bankAccount: method === "bank" ? selectedBankAccount : undefined, // nullの代わりにundefinedを使用
+      bankAccount: method === 'bank' ? selectedBankAccount : undefined, // nullの代わりにundefinedを使用
     });
   };
 
   // 未確認月のモックデータ
-  const unregisteredMonths = [
-    "2024/01",
-    "2023/11",
-    "2023/10",
-    "2023/06",
-    "2023/05",
-  ];
+  const unregisteredMonths = ['2024/01', '2023/11', '2023/10', '2023/06', '2023/05'];
 
-  const [editingSubscription, setEditingSubscription] =
-    useState<SubscriptionService | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [filterMonth, setFilterMonth] = useState<string>("all");
-  const [filterType, setFilterType] = useState<string>("all");
+  const [editingSubscription, setEditingSubscription] = useState<SubscriptionService | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [filterMonth, setFilterMonth] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
   const [showGuide, setShowGuide] = useState(true);
-  const [activeTab, setActiveTab] = useState("manage");
+  const [activeTab, setActiveTab] = useState('manage');
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === 'idle') {
       dispatch(fetchSubscriptions());
     }
   }, [status, dispatch]);
@@ -421,19 +424,17 @@ export default function SubscriptionManagementPage() {
         await dispatch(addSubscription(newSubscription)).unwrap();
       }
       setNewSubscription({
-        name: "",
+        name: '',
         billingDate: 0, // 数値型に変更
         // または現在の日付をフォーマットした数値に
         // billingDate: Number(format(new Date(), "yyyyMMdd")),
-        type: "",
+        type: '',
         amount: 0,
         isActive: true,
-        expiresAt: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
-        ).toISOString(),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       });
     } catch (err) {
-      console.error("Failed to save the subscription: ", err);
+      console.error('Failed to save the subscription: ', err);
     }
   };
 
@@ -453,79 +454,66 @@ export default function SubscriptionManagementPage() {
     try {
       await dispatch(deleteSubscription(id)).unwrap();
     } catch (err) {
-      console.error("Failed to delete the subscription: ", err);
+      console.error('Failed to delete the subscription: ', err);
     }
   };
 
   const toggleSortOrder = () => {
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const sortedAndFilteredSubscriptions = subscriptions
     .filter((sub) => {
       const monthFilter =
-        filterMonth === "all" ||
+        filterMonth === 'all' ||
         (() => {
-          const [year, month] = String(sub.billingDate).split("/");
+          const [year, month] = String(sub.billingDate).split('/');
           return `${year}/${month}` === filterMonth;
         })();
-      const typeFilter = filterType === "all" || sub.type === filterType;
+      const typeFilter = filterType === 'all' || sub.type === filterType;
 
       // Add check status filter
       const checkFilter =
-        checkStatus === "all" ||
-        (checkStatus === "checked" && (sub.checkedMonths?.length ?? 0) > 0) ||
-        (checkStatus === "unchecked" &&
-          (!sub.checkedMonths || sub.checkedMonths?.length === 0));
+        checkStatus === 'all' ||
+        (checkStatus === 'checked' && (sub.checkedMonths?.length ?? 0) > 0) ||
+        (checkStatus === 'unchecked' && (!sub.checkedMonths || sub.checkedMonths?.length === 0));
 
       // 支払い方法フィルター
       const paymentMethodType =
-        typeof sub.paymentMethod === "object"
-          ? sub.paymentMethod?.type
-          : sub.paymentMethod;
+        typeof sub.paymentMethod === 'object' ? sub.paymentMethod?.type : sub.paymentMethod;
 
-      const paymentFilter =
-        paymentSource === "all" || paymentMethodType === paymentSource;
+      const paymentFilter = paymentSource === 'all' || paymentMethodType === paymentSource;
 
       // 最終的なフィルター適用
       return monthFilter && typeFilter && checkFilter && paymentFilter;
     })
     .sort((a, b) => {
       // billingDate プロパティが存在しない場合のデフォルト値を設定
-      const dateStrA = a.billingDate
-        ? String(a.billingDate).replace(/\//g, "-")
-        : "1970-01-01";
-      const dateStrB = b.billingDate
-        ? String(b.billingDate).replace(/\//g, "-")
-        : "1970-01-01";
+      const dateStrA = a.billingDate ? String(a.billingDate).replace(/\//g, '-') : '1970-01-01';
+      const dateStrB = b.billingDate ? String(b.billingDate).replace(/\//g, '-') : '1970-01-01';
 
       const dateA = new Date(dateStrA);
       const dateB = new Date(dateStrB);
 
-      return sortOrder === "asc"
+      return sortOrder === 'asc'
         ? dateA.getTime() - dateB.getTime()
         : dateB.getTime() - dateA.getTime();
     });
 
-  const totalAmount = sortedAndFilteredSubscriptions.reduce(
-    (sum, sub) => sum + sub.amount,
-    0
-  );
+  const totalAmount = sortedAndFilteredSubscriptions.reduce((sum, sub) => sum + sub.amount, 0);
 
   const uniqueMonths = Array.from(
     new Set(
       subscriptions.map((sub) => {
-        const [year, month] = String(sub.billingDate).split("/");
+        const [year, month] = String(sub.billingDate).split('/');
         return `${year}/${month}`;
       })
     )
   ).sort();
 
-  const uniqueTypes = Array.from(
-    new Set(subscriptions.map((sub) => sub.type))
-  ).sort();
+  const uniqueTypes = Array.from(new Set(subscriptions.map((sub) => sub.type))).sort();
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -533,7 +521,7 @@ export default function SubscriptionManagementPage() {
     );
   }
 
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <Alert variant="destructive">
         <AlertTitle>エラー</AlertTitle>
@@ -551,9 +539,7 @@ export default function SubscriptionManagementPage() {
   const detailedGuideContent = (
     <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-2xl">
-          サブスクリプション管理の詳細ガイド
-        </DialogTitle>
+        <DialogTitle className="text-2xl">サブスクリプション管理の詳細ガイド</DialogTitle>
         <DialogDescription>
           効率的にサブスクリプションを管理して無駄な支出を削減しましょう
         </DialogDescription>
@@ -561,9 +547,7 @@ export default function SubscriptionManagementPage() {
 
       <div className="space-y-6 py-4">
         <div>
-          <h3 className="text-lg font-medium">
-            カード明細からサブスクリプションを見つける方法
-          </h3>
+          <h3 className="text-lg font-medium">カード明細からサブスクリプションを見つける方法</h3>
           <div className="mt-2 space-y-2">
             <p>サブスクリプションは以下の特徴があります：</p>
             <ul className="list-disc pl-5 space-y-1">
@@ -577,9 +561,7 @@ export default function SubscriptionManagementPage() {
                 <li>3ヶ月分の明細を並べて比較する</li>
                 <li>同じ金額の引き落としを探す</li>
                 <li>不明な請求は検索エンジンで会社名を調べる</li>
-                <li>
-                  メールボックスで「サブスクリプション」「定期購入」などで検索
-                </li>
+                <li>メールボックスで「サブスクリプション」「定期購入」などで検索</li>
               </ol>
             </div>
           </div>
@@ -615,13 +597,9 @@ export default function SubscriptionManagementPage() {
           <div className="mt-2 space-y-2">
             <p>登録したデータを活用して支出を最適化しましょう：</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>
-                種別ごとの合計金額を確認し、優先順位の低いカテゴリーの解約を検討
-              </li>
+              <li>種別ごとの合計金額を確認し、優先順位の低いカテゴリーの解約を検討</li>
               <li>利用頻度の低いサービスを特定し、解約または一時停止</li>
-              <li>
-                同じカテゴリーの重複サービスを見直す（例：複数の音楽サービス）
-              </li>
+              <li>同じカテゴリーの重複サービスを見直す（例：複数の音楽サービス）</li>
               <li>年払いに変更すると割引があるサービスを探す</li>
             </ul>
           </div>
@@ -651,29 +629,35 @@ export default function SubscriptionManagementPage() {
   );
 
   // 銀行アカウント選択コンポーネント
-  const BankAccountSelector = ({ selectedAccount, onSelectAccount }) => {
+  const BankAccountSelector = ({
+    selectedAccount,
+    onSelectAccount,
+  }: {
+    selectedAccount: any;
+    onSelectAccount: (account: any) => void;
+  }) => {
     // 登録済み銀行口座リスト
     const bankAccounts = [
       {
-        id: "smbc_main",
-        name: "三井住友銀行 (メイン口座)",
-        type: "普通",
-        accountNumber: "1234567",
-        url: "direct3.smbc.co.jp/ib/web/top/TPALTOPaccountFutsuDetail.smbc",
+        id: 'smbc_main',
+        name: '三井住友銀行 (メイン口座)',
+        type: '普通',
+        accountNumber: '1234567',
+        url: 'direct3.smbc.co.jp/ib/web/top/TPALTOPaccountFutsuDetail.smbc',
       },
       {
-        id: "mizuho_savings",
-        name: "みずほ銀行",
-        type: "普通",
-        accountNumber: "7654321",
-        url: "web.ib.mizuhobank.co.jp/servlet/LOGBNK0000000B.do",
+        id: 'mizuho_savings',
+        name: 'みずほ銀行',
+        type: '普通',
+        accountNumber: '7654321',
+        url: 'web.ib.mizuhobank.co.jp/servlet/LOGBNK0000000B.do',
       },
       {
-        id: "japan_post",
-        name: "ゆうちょ銀行",
-        type: "普通",
-        accountNumber: "00123456789",
-        url: "direct.jp-bank.japanpost.jp/tp1web/U010101SCK.do?link_id=ycZc",
+        id: 'japan_post',
+        name: 'ゆうちょ銀行',
+        type: '普通',
+        accountNumber: '00123456789',
+        url: 'direct.jp-bank.japanpost.jp/tp1web/U010101SCK.do?link_id=ycZc',
       },
     ];
 
@@ -695,8 +679,8 @@ export default function SubscriptionManagementPage() {
                 key={account.id}
                 className={`p-4 border rounded-lg cursor-pointer ${
                   selectedAccount === account.id
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50/30'
                 }`}
                 onClick={() => onSelectAccount(account.id)}
               >
@@ -706,9 +690,7 @@ export default function SubscriptionManagementPage() {
                     <p className="text-sm text-gray-600">
                       {account.type}：{account.accountNumber.substring(0, 3)}
                       ＊＊＊＊
-                      {account.accountNumber.substring(
-                        account.accountNumber.length - 2
-                      )}
+                      {account.accountNumber.substring(account.accountNumber.length - 2)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -742,7 +724,7 @@ export default function SubscriptionManagementPage() {
   };
 
   // 登録月確認リマインダーコンポーネント
-  const RegistrationReminderCard = ({ unregisteredMonths }) => {
+  const RegistrationReminderCard = ({ unregisteredMonths }: { unregisteredMonths: any[] }) => {
     return (
       <Card className="mb-6 border-amber-200">
         <CardHeader className="bg-amber-50">
@@ -797,26 +779,26 @@ export default function SubscriptionManagementPage() {
   };
 
   // 支払い方法タグコンポーネント
-  const PaymentMethodTag = ({ method }) => {
+  const PaymentMethodTag = ({ method }: { method: string }) => {
     const methods = {
       credit: {
-        color: "bg-blue-100 text-blue-800 border-blue-200",
+        color: 'bg-blue-100 text-blue-800 border-blue-200',
         icon: <CreditCard className="h-3 w-3 mr-1" />,
       },
       bank: {
-        color: "bg-green-100 text-green-800 border-green-200",
+        color: 'bg-green-100 text-green-800 border-green-200',
         icon: <Building className="h-3 w-3 mr-1" />,
       },
       paypal: {
-        color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+        color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
         icon: <DollarSign className="h-3 w-3 mr-1" />,
       },
       apple: {
-        color: "bg-gray-100 text-gray-800 border-gray-200",
+        color: 'bg-gray-100 text-gray-800 border-gray-200',
         icon: <SmartphoneIcon className="h-3 w-3 mr-1" />,
       },
       google: {
-        color: "bg-orange-100 text-orange-800 border-orange-200",
+        color: 'bg-orange-100 text-orange-800 border-orange-200',
         icon: <SmartphoneIcon className="h-3 w-3 mr-1" />,
       },
     };
@@ -829,17 +811,17 @@ export default function SubscriptionManagementPage() {
         className={`${color} flex items-center text-xs font-normal py-0.5 px-1.5`}
       >
         {icon}
-        {method === "credit"
-          ? "カード"
-          : method === "bank"
-          ? "銀行振替"
-          : method === "paypal"
-          ? "PayPal"
-          : method === "apple"
-          ? "Apple"
-          : method === "google"
-          ? "Google"
-          : method}
+        {method === 'credit'
+          ? 'カード'
+          : method === 'bank'
+            ? '銀行振替'
+            : method === 'paypal'
+              ? 'PayPal'
+              : method === 'apple'
+                ? 'Apple'
+                : method === 'google'
+                  ? 'Google'
+                  : method}
       </Badge>
     );
   };
@@ -848,55 +830,55 @@ export default function SubscriptionManagementPage() {
   const SmartSuggestions = () => {
     const suggestedServices = [
       {
-        name: "Amazon Prime",
-        description: "月額¥500、年払いで¥4,900 (18%お得)",
-        logo: "/images/amazon-logo.png",
-        color: "#FF9900",
-        type: "動画/ショッピング",
+        name: 'Amazon Prime',
+        description: '月額¥500、年払いで¥4,900 (18%お得)',
+        logo: '/images/amazon-logo.png',
+        color: '#FF9900',
+        type: '動画/ショッピング',
       },
       {
-        name: "Netflix",
-        description: "スタンダードプラン ¥1,490/月",
-        logo: "/images/netflix-logo.png",
-        color: "#E50914",
-        type: "動画",
+        name: 'Netflix',
+        description: 'スタンダードプラン ¥1,490/月',
+        logo: '/images/netflix-logo.png',
+        color: '#E50914',
+        type: '動画',
       },
       {
-        name: "Spotify",
-        description: "プレミアムプラン ¥980/月",
-        logo: "/images/spotify-logo.png",
-        color: "#1DB954",
-        type: "音楽",
+        name: 'Spotify',
+        description: 'プレミアムプラン ¥980/月',
+        logo: '/images/spotify-logo.png',
+        color: '#1DB954',
+        type: '音楽',
       },
     ];
 
     // 色をTailwindの定義済みカラークラスにマッピングする関数
-    function getColorClass(color, opacity = 20) {
+    function getColorClass(color: string, opacity: number = 20) {
       // よく使われる色のマッピング
       const colorMap = {
-        "#FF9900": "bg-amber-500",
-        "#E50914": "bg-red-600",
-        "#1DB954": "bg-green-500",
-        "#4285F4": "bg-blue-500",
-        "#EA4335": "bg-red-500",
-        "#FBBC05": "bg-yellow-500",
-        "#34A853": "bg-green-500",
+        '#FF9900': 'bg-amber-500',
+        '#E50914': 'bg-red-600',
+        '#1DB954': 'bg-green-500',
+        '#4285F4': 'bg-blue-500',
+        '#EA4335': 'bg-red-500',
+        '#FBBC05': 'bg-yellow-500',
+        '#34A853': 'bg-green-500',
         // 他の色を必要に応じて追加
       };
 
       // 透明度のマッピング
       const opacityClass = {
-        10: "bg-opacity-10",
-        20: "bg-opacity-20",
-        30: "bg-opacity-30",
-        40: "bg-opacity-40",
-        50: "bg-opacity-50",
+        10: 'bg-opacity-10',
+        20: 'bg-opacity-20',
+        30: 'bg-opacity-30',
+        40: 'bg-opacity-40',
+        50: 'bg-opacity-50',
         // 他の透明度を必要に応じて追加
       };
 
       // マッピングされた色があればそれを使用、なければデフォルトの色を使用
-      const bgClass = colorMap[color] || "bg-gray-500";
-      const opacityValue = opacityClass[opacity] || "bg-opacity-20";
+      const bgClass = colorMap[color] || 'bg-gray-500';
+      const opacityValue = opacityClass[opacity] || 'bg-opacity-20';
 
       return `${bgClass} ${opacityValue}`;
     }
@@ -926,20 +908,14 @@ export default function SubscriptionManagementPage() {
                   )}`}
                 >
                   {service.logo ? (
-                    <img
-                      src={service.logo}
-                      alt={service.name}
-                      className="w-6 h-6"
-                    />
+                    <img src={service.logo} alt={service.name} className="w-6 h-6" />
                   ) : (
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClass(
                         service.color
                       )}`}
                     >
-                      <span className="text-white font-bold">
-                        {service.name.charAt(0)}
-                      </span>
+                      <span className="text-white font-bold">{service.name.charAt(0)}</span>
                     </div>
                   )}
                 </div>
@@ -971,10 +947,8 @@ export default function SubscriptionManagementPage() {
           <div>
             <h1 className="text-2xl font-bold">サブスクリプション管理</h1>
             <p className="text-gray-600">
-              毎月の自動引き落とし金額:{" "}
-              <span className="font-bold text-lg">
-                {monthlyTotal.toLocaleString()}円
-              </span>
+              毎月の自動引き落とし金額:{' '}
+              <span className="font-bold text-lg">{monthlyTotal.toLocaleString()}円</span>
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -984,12 +958,8 @@ export default function SubscriptionManagementPage() {
               className="gap-1"
               onClick={() => setShowGuide(!showGuide)}
             >
-              {showGuide ? (
-                <XCircle className="h-4 w-4" />
-              ) : (
-                <HelpCircle className="h-4 w-4" />
-              )}
-              {showGuide ? "ガイドを隠す" : "ガイドを表示"}
+              {showGuide ? <XCircle className="h-4 w-4" /> : <HelpCircle className="h-4 w-4" />}
+              {showGuide ? 'ガイドを隠す' : 'ガイドを表示'}
             </Button>
           </div>
         </div>
@@ -1043,10 +1013,7 @@ export default function SubscriptionManagementPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <form
-                      onSubmit={handleSubscriptionSubmit}
-                      className="space-y-4"
-                    >
+                    <form onSubmit={handleSubscriptionSubmit} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="name">名称</Label>
@@ -1064,9 +1031,7 @@ export default function SubscriptionManagementPage() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="billingDate">
-                            引き落とし日 (YYYY/MM/DD)
-                          </Label>
+                          <Label htmlFor="billingDate">引き落とし日 (YYYY/MM/DD)</Label>
                           <Input
                             id="billingDate"
                             value={newSubscription.billingDate}
@@ -1107,10 +1072,7 @@ export default function SubscriptionManagementPage() {
                             onChange={(e) =>
                               setNewSubscription({
                                 ...newSubscription,
-                                amount:
-                                  e.target.value === ""
-                                    ? 0
-                                    : parseInt(e.target.value, 10),
+                                amount: e.target.value === '' ? 0 : parseInt(e.target.value, 10),
                               })
                             }
                             placeholder="月額金額（税込）"
@@ -1126,15 +1088,15 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              (typeof newSubscription.paymentMethod === "object"
+                              (typeof newSubscription.paymentMethod === 'object'
                                 ? newSubscription.paymentMethod?.type
-                                : newSubscription.paymentMethod) === "credit"
-                                ? "default"
-                                : "outline"
+                                : newSubscription.paymentMethod) === 'credit'
+                                ? 'default'
+                                : 'outline'
                             }
                             size="sm"
                             className="gap-1"
-                            onClick={() => handlePaymentMethodChange("credit")}
+                            onClick={() => handlePaymentMethodChange('credit')}
                           >
                             <CreditCard className="h-4 w-4" />
                             クレジットカード
@@ -1142,15 +1104,15 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              (typeof newSubscription.paymentMethod === "object"
+                              (typeof newSubscription.paymentMethod === 'object'
                                 ? newSubscription.paymentMethod?.type
-                                : newSubscription.paymentMethod) === "bank"
-                                ? "default"
-                                : "outline"
+                                : newSubscription.paymentMethod) === 'bank'
+                                ? 'default'
+                                : 'outline'
                             }
                             size="sm"
                             className="gap-1"
-                            onClick={() => handlePaymentMethodChange("bank")}
+                            onClick={() => handlePaymentMethodChange('bank')}
                           >
                             <Building className="h-4 w-4" />
                             銀行口座振替
@@ -1158,15 +1120,15 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              (typeof newSubscription.paymentMethod === "object"
+                              (typeof newSubscription.paymentMethod === 'object'
                                 ? newSubscription.paymentMethod?.type
-                                : newSubscription.paymentMethod) === "paypal"
-                                ? "default"
-                                : "outline"
+                                : newSubscription.paymentMethod) === 'paypal'
+                                ? 'default'
+                                : 'outline'
                             }
                             size="sm"
                             className="gap-1"
-                            onClick={() => handlePaymentMethodChange("paypal")}
+                            onClick={() => handlePaymentMethodChange('paypal')}
                           >
                             <DollarSign className="h-4 w-4" />
                             PayPal
@@ -1174,15 +1136,15 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              (typeof newSubscription.paymentMethod === "object"
+                              (typeof newSubscription.paymentMethod === 'object'
                                 ? newSubscription.paymentMethod?.type
-                                : newSubscription.paymentMethod) === "apple"
-                                ? "default"
-                                : "outline"
+                                : newSubscription.paymentMethod) === 'apple'
+                                ? 'default'
+                                : 'outline'
                             }
                             size="sm"
                             className="gap-1"
-                            onClick={() => handlePaymentMethodChange("apple")}
+                            onClick={() => handlePaymentMethodChange('apple')}
                           >
                             <SmartphoneIcon className="h-4 w-4" />
                             Apple
@@ -1190,15 +1152,15 @@ export default function SubscriptionManagementPage() {
                           <Button
                             type="button"
                             variant={
-                              (typeof newSubscription.paymentMethod === "object"
+                              (typeof newSubscription.paymentMethod === 'object'
                                 ? newSubscription.paymentMethod?.type
-                                : newSubscription.paymentMethod) === "google"
-                                ? "default"
-                                : "outline"
+                                : newSubscription.paymentMethod) === 'google'
+                                ? 'default'
+                                : 'outline'
                             }
                             size="sm"
                             className="gap-1"
-                            onClick={() => handlePaymentMethodChange("google")}
+                            onClick={() => handlePaymentMethodChange('google')}
                           >
                             <SmartphoneIcon className="h-4 w-4" />
                             Google Play
@@ -1207,9 +1169,9 @@ export default function SubscriptionManagementPage() {
                       </div>
 
                       {/* 銀行口座選択（銀行振替の場合のみ表示） */}
-                      {(typeof newSubscription.paymentMethod === "object"
+                      {(typeof newSubscription.paymentMethod === 'object'
                         ? newSubscription.paymentMethod?.type
-                        : newSubscription.paymentMethod) === "bank" && (
+                        : newSubscription.paymentMethod) === 'bank' && (
                         <div>
                           <Label className="mb-2 block">引き落とし口座</Label>
                           <Select
@@ -1226,24 +1188,16 @@ export default function SubscriptionManagementPage() {
                               <SelectValue placeholder="口座を選択" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="smbc_main">
-                                三井住友銀行 (メイン口座)
-                              </SelectItem>
-                              <SelectItem value="mizuho_savings">
-                                みずほ銀行
-                              </SelectItem>
-                              <SelectItem value="japan_post">
-                                ゆうちょ銀行
-                              </SelectItem>
+                              <SelectItem value="smbc_main">三井住友銀行 (メイン口座)</SelectItem>
+                              <SelectItem value="mizuho_savings">みずほ銀行</SelectItem>
+                              <SelectItem value="japan_post">ゆうちょ銀行</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       )}
 
                       <div className="flex gap-2">
-                        <Button type="submit">
-                          {editingSubscription ? "更新" : "登録"}
-                        </Button>
+                        <Button type="submit">{editingSubscription ? '更新' : '登録'}</Button>
                         {editingSubscription && (
                           <Button
                             type="button"
@@ -1251,13 +1205,13 @@ export default function SubscriptionManagementPage() {
                             onClick={() => {
                               setEditingSubscription(null);
                               setNewSubscription({
-                                name: "",
+                                name: '',
                                 billingDate: 0, // 空文字列ではなく、数値型の初期値
-                                type: "",
+                                type: '',
                                 amount: 0,
                                 paymentMethod: {
                                   // 文字列ではなく、オブジェクト型
-                                  type: "credit",
+                                  type: 'credit',
                                   isDefault: true,
                                 },
                                 bankAccount: undefined, // nullではなく、undefined
@@ -1298,41 +1252,27 @@ export default function SubscriptionManagementPage() {
                           </Button>
 
                           {/* 支払い方法フィルター */}
-                          <Select
-                            value={paymentSource}
-                            onValueChange={setPaymentSource}
-                          >
+                          <Select value={paymentSource} onValueChange={setPaymentSource}>
                             <SelectTrigger className="w-[150px]">
                               <SelectValue placeholder="支払い方法" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="all">
-                                すべての支払い方法
-                              </SelectItem>
-                              <SelectItem value="credit">
-                                クレジットカード
-                              </SelectItem>
+                              <SelectItem value="all">すべての支払い方法</SelectItem>
+                              <SelectItem value="credit">クレジットカード</SelectItem>
                               <SelectItem value="bank">銀行振替</SelectItem>
                               <SelectItem value="paypal">PayPal</SelectItem>
                               <SelectItem value="apple">Apple</SelectItem>
-                              <SelectItem value="google">
-                                Google Play
-                              </SelectItem>
+                              <SelectItem value="google">Google Play</SelectItem>
                             </SelectContent>
                           </Select>
 
                           {/* 確認ステータスフィルター */}
-                          <Select
-                            value={checkStatus}
-                            onValueChange={setCheckStatus}
-                          >
+                          <Select value={checkStatus} onValueChange={setCheckStatus}>
                             <SelectTrigger className="w-[150px]">
                               <SelectValue placeholder="確認ステータス" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="all">
-                                全ての確認状態
-                              </SelectItem>
+                              <SelectItem value="all">全ての確認状態</SelectItem>
                               <SelectItem value="checked">確認済み</SelectItem>
                               <SelectItem value="unchecked">未確認</SelectItem>
                             </SelectContent>
@@ -1340,10 +1280,7 @@ export default function SubscriptionManagementPage() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                          <Select
-                            value={filterMonth}
-                            onValueChange={setFilterMonth}
-                          >
+                          <Select value={filterMonth} onValueChange={setFilterMonth}>
                             <SelectTrigger className="w-full sm:w-[180px]">
                               <SelectValue placeholder="月でフィルター" />
                             </SelectTrigger>
@@ -1356,10 +1293,7 @@ export default function SubscriptionManagementPage() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <Select
-                            value={filterType}
-                            onValueChange={setFilterType}
-                          >
+                          <Select value={filterType} onValueChange={setFilterType}>
                             <SelectTrigger className="w-full sm:w-[180px]">
                               <SelectValue placeholder="種別でフィルター" />
                             </SelectTrigger>
@@ -1375,10 +1309,9 @@ export default function SubscriptionManagementPage() {
                         </div>
                       </div>
                       <div className="mb-4 text-lg font-semibold">
-                        {filterMonth === "all" ? "全ての月" : filterMonth}
-                        {filterType !== "all" && `、${filterType}`}
-                        のサブスクリプションの合計金額:{" "}
-                        {totalAmount.toLocaleString()}円
+                        {filterMonth === 'all' ? '全ての月' : filterMonth}
+                        {filterType !== 'all' && `、${filterType}`}
+                        のサブスクリプションの合計金額: {totalAmount.toLocaleString()}円
                       </div>
                       <div className="overflow-x-auto">
                         <Table>
@@ -1401,18 +1334,16 @@ export default function SubscriptionManagementPage() {
                                   <TableCell>
                                     <PaymentMethodTag
                                       method={
-                                        typeof sub.paymentMethod === "object"
+                                        typeof sub.paymentMethod === 'object'
                                           ? sub.paymentMethod.type // オブジェクトの場合はtype属性を抽出
-                                          : sub.paymentMethod || "credit"
+                                          : sub.paymentMethod || 'credit'
                                       }
                                     />
                                   </TableCell>
                                   <TableCell>
                                     <Badge variant="outline">{sub.type}</Badge>
                                   </TableCell>
-                                  <TableCell>
-                                    {sub.amount.toLocaleString()}円
-                                  </TableCell>
+                                  <TableCell>{sub.amount.toLocaleString()}円</TableCell>
                                   <TableCell>
                                     <div className="flex gap-1">
                                       <Button
@@ -1435,10 +1366,7 @@ export default function SubscriptionManagementPage() {
                               ))
                             ) : (
                               <TableRow>
-                                <TableCell
-                                  colSpan={6}
-                                  className="text-center py-8 text-gray-500"
-                                >
+                                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                                   表示するサブスクリプションがありません
                                 </TableCell>
                               </TableRow>
@@ -1462,9 +1390,7 @@ export default function SubscriptionManagementPage() {
                       <CrownIcon className="h-5 w-5 text-amber-500" />
                       プレミアム機能
                     </CardTitle>
-                    <CardDescription>
-                      有料プランでより多くの機能にアクセス
-                    </CardDescription>
+                    <CardDescription>有料プランでより多くの機能にアクセス</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -1517,9 +1443,7 @@ export default function SubscriptionManagementPage() {
             <Card>
               <CardHeader>
                 <CardTitle>オンラインバンキング情報</CardTitle>
-                <CardDescription>
-                  各銀行のオンラインバンキングへのリンクと確認手順
-                </CardDescription>
+                <CardDescription>各銀行のオンラインバンキングへのリンクと確認手順</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -1624,9 +1548,7 @@ export default function SubscriptionManagementPage() {
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-sm">
                       <li>月ごとに同じ日付で同じ金額の引き落としを確認する</li>
-                      <li>
-                        「自動支払」「自動引落」などの表記がある取引に注目する
-                      </li>
+                      <li>「自動支払」「自動引落」などの表記がある取引に注目する</li>
                       <li>
                         引き落とし元の事業者名で検索すると、対応するサービスが分かることが多い
                       </li>
@@ -1647,23 +1569,16 @@ export default function SubscriptionManagementPage() {
             <Card>
               <CardHeader>
                 <CardTitle>月別登録状況の概要</CardTitle>
-                <CardDescription>
-                  月ごとの登録進捗と未対応の月を確認できます
-                </CardDescription>
+                <CardDescription>月ごとの登録進捗と未対応の月を確認できます</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm font-medium">登録進捗状況</span>
-                      <span className="text-sm font-medium">
-                        {uniqueMonths.length} / 36 ヶ月
-                      </span>
+                      <span className="text-sm font-medium">{uniqueMonths.length} / 36 ヶ月</span>
                     </div>
-                    <Progress
-                      value={(uniqueMonths.length / 36) * 100}
-                      className="h-2"
-                    />
+                    <Progress value={(uniqueMonths.length / 36) * 100} className="h-2" />
                   </div>
 
                   {uniqueMonths.length < 36 && (
@@ -1683,11 +1598,7 @@ export default function SubscriptionManagementPage() {
                         >
                           未登録の月に移動
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1"
-                        >
+                        <Button variant="outline" size="sm" className="flex items-center gap-1">
                           <CalendarDays className="h-4 w-4" />
                           確認カレンダーを表示
                         </Button>
@@ -1753,9 +1664,7 @@ export default function SubscriptionManagementPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>サブスクリプション分析</CardTitle>
-                  <CardDescription>
-                    種別ごとの支出分布と月別推移
-                  </CardDescription>
+                  <CardDescription>種別ごとの支出分布と月別推移</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <SubscriptionCharts subscriptions={subscriptions} />
@@ -1770,16 +1679,12 @@ export default function SubscriptionManagementPage() {
                 <CardContent>
                   <div className="flex justify-center">
                     <div className="max-w-md w-full text-center">
-                      <div className="text-sm text-gray-500 mb-4">
-                        支払い方法ごとの月額合計
-                      </div>
+                      <div className="text-sm text-gray-500 mb-4">支払い方法ごとの月額合計</div>
                       <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                           <CreditCard className="h-5 w-5 text-blue-600 mx-auto mb-1" />
                           <div className="text-xl font-bold">8,500円</div>
-                          <div className="text-xs text-gray-600">
-                            クレジットカード
-                          </div>
+                          <div className="text-xs text-gray-600">クレジットカード</div>
                         </div>
                         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
                           <Building className="h-5 w-5 text-green-600 mx-auto mb-1" />
@@ -1812,9 +1717,7 @@ export default function SubscriptionManagementPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>月別サブスクリプション推移</CardTitle>
-                  <CardDescription>
-                    月ごとの支出推移を確認できます
-                  </CardDescription>
+                  <CardDescription>月ごとの支出推移を確認できます</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <MonthlySubscriptionChart subscriptions={subscriptions} />
@@ -1827,13 +1730,9 @@ export default function SubscriptionManagementPage() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle>カード・銀行口座履歴確認</CardTitle>
-                <CardDescription>
-                  各金融機関の明細確認サイトへのリンクと確認手順
-                </CardDescription>
+                <CardDescription>各金融機関の明細確認サイトへのリンクと確認手順</CardDescription>
               </CardHeader>
-              <CardContent>
-                {/* コンテンツは前回のコードとほぼ同じ */}
-              </CardContent>
+              <CardContent>{/* コンテンツは前回のコードとほぼ同じ */}</CardContent>
             </Card>
 
             <Card>
@@ -1849,9 +1748,7 @@ export default function SubscriptionManagementPage() {
                 </p>
                 <div className="bg-gray-100 border border-gray-200 rounded-md p-8 text-center">
                   <LockIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                  <h3 className="text-lg font-medium text-gray-500">
-                    プレミアム機能
-                  </h3>
+                  <h3 className="text-lg font-medium text-gray-500">プレミアム機能</h3>
                   <p className="text-sm text-gray-500 mb-4">
                     確認履歴トラッカーはプレミアムプランでご利用いただけます
                   </p>

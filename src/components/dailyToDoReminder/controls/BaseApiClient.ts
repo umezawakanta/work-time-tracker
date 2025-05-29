@@ -21,7 +21,7 @@ export abstract class BaseApiClient {
   public abstract fetch<T>(
     endpoint: string,
     options?: RequestInit,
-    config?: RequestConfig
+    config?: ExtendedRequestConfig
   ): Promise<ApiResponse<T>>;
 
   /**

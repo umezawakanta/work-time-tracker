@@ -57,38 +57,10 @@ export class SubscriptionService {
   public async getSubscriptionInfo(): Promise<ApiResponse<SubscriptionInfo>> {
     try {
       const response = await this.apiClient.get<SubscriptionInfo>('/subscription/info');
-
-      return {
-        data: response.data,
-        success: response.success,
-        error: response.error
-          ? {
-              code: 'SUBSCRIPTION_ERROR',
-              message: typeof response.error === 'string' ? response.error : 'Unknown error',
-            }
-          : undefined,
-        meta: {
-          timestamp: Date.now(),
-        },
-      };
+      const responseData = this.createSuccessResponse(response.data);
+      return responseData;
     } catch (error) {
-      return {
-        success: false,
-        data: {
-          id: '',
-          name: '',
-          features: [],
-          price: 0,
-          billing: 'monthly',
-        } as SubscriptionInfo,
-        error: {
-          code: 'SUBSCRIPTION_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to get subscription info',
-        },
-        meta: {
-          timestamp: Date.now(),
-        },
-      };
+      return this.createErrorResponse('Failed to get subscription info');
     }
   }
 
@@ -228,6 +200,30 @@ export class SubscriptionService {
         },
       };
     }
+  }
+
+  private createSuccessResponse<T>(data: T): ApiResponse<T> {
+    return {
+      data,
+      success: true,
+      meta: {
+        timestamp: Date.now(),
+      },
+    };
+  }
+
+  private createErrorResponse<T>(message: string): ApiResponse<T> {
+    return {
+      data: undefined as T,
+      success: false,
+      error: {
+        code: 'ERROR',
+        message,
+      },
+      meta: {
+        timestamp: Date.now(),
+      },
+    };
   }
 }
 

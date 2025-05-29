@@ -202,7 +202,7 @@ export function applyExtensionMethods(apiClass: any): void {
 
     // 強制更新が要求されていない場合はキャッシュをチェック
     if (!options?.forceRefresh) {
-      const cachedResponse = apiClass.cache.get<ApiResponse<T>>(cacheKey);
+      const cachedResponse = (apiClass.cache as any).get(cacheKey);
       if (cachedResponse) {
         // キャッシュ情報を追加
         cachedResponse.fromCache = true;

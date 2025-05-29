@@ -160,7 +160,7 @@ export class BatchRequestManager {
 
     // すべてのリクエストを並列実行
     const requestPromises = requests.map((req) =>
-      this.apiManager.request<T>(
+      (this.apiManager as any).request(
         req.serviceName || 'default',
         req.method,
         req.endpoint,
@@ -189,7 +189,7 @@ export class BatchRequestManager {
         throw new Error(`一括リクエストがタイムアウトしました (${config.timeout}ms)`);
       }
 
-      const response = await (this.apiManager as any).request<T>(
+      const response = await (this.apiManager as any).request(
         req.serviceName || 'default',
         req.method,
         req.endpoint,
@@ -242,7 +242,7 @@ export class BatchRequestManager {
       }
 
       const req = requests[index];
-      const response = await (this.apiManager as any).request<T>(
+      const response = await (this.apiManager as any).request(
         req.serviceName || 'default',
         req.method,
         req.endpoint,

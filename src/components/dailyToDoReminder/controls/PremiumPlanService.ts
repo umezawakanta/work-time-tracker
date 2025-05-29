@@ -238,7 +238,9 @@ export class PremiumPlanService {
 
         return {
           valid: false,
-          message: response.error || '検証中にエラーが発生しました。',
+          message:
+            (typeof response.error === 'string' ? response.error : response.error?.message) ||
+            '検証中にエラーが発生しました。',
         };
       }
 
@@ -471,12 +473,5 @@ export class PremiumPlanService {
         priority: 'normal',
       }
     );
-  }
-}
-
-// Windowインターフェースの拡張（アナリティクス用）
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
   }
 }
