@@ -65,6 +65,15 @@ interface InviteFriendsProps {
   onUpgrade?: () => void;
 }
 
+interface InvitedUser {
+  id: string;
+  name: string;
+  email: string;
+  status: 'registered' | 'subscribed' | 'pending';
+  joinedAt: Date;
+  planType?: string;
+}
+
 /**
  * 友達招待コンポーネント
  * リファラルプログラムの管理と友達招待機能を提供
@@ -156,28 +165,22 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremiu
     setInviteResult(null);
 
     try {
-      const result = await inviteUser(emails.join(','), message);
+      await inviteUser(emails.join(','), message);
 
-      if (result.success) {
-        setInviteResult({
-          success: true,
-          message: `${result.sentCount}人の友達に招待メールを送信しました。`,
-        });
-        setEmailInput('');
+      // Since inviteUser returns void, we'll assume success and create our own result
+      setInviteResult({
+        success: true,
+        message: `${emails.length}人の友達に招待メールを送信しました。`,
+      });
+      setEmailInput('');
 
-        // リファラル情報を再取得
-        const updatedInfo = await fetchReferralSummary();
-        setReferralInfo(updatedInfo);
-      } else {
-        setInviteResult({
-          success: false,
-          message: result.error || '招待の送信に失敗しました。',
-        });
-      }
+      // リファラル情報を再取得
+      const updatedInfo = await fetchReferralSummary();
+      setReferralInfo(updatedInfo);
     } catch {
       setInviteResult({
         success: false,
-        message: '招待処理中にエラーが発生しました。',
+        message: '招待の送信に失敗しました。',
       });
     } finally {
       setIsInviting(false);
@@ -428,7 +431,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = ({ userName, isPremiu
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {referralInfo.inviteds.map((user: any) => (
+                          {referralInfo.inviteds.map((user: InvitedUser) => (
                             <TableRow key={user.id}>
                               <TableCell className="font-medium">
                                 {user.name || user.email}

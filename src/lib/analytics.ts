@@ -15,12 +15,12 @@ export const useAnalytics = () => {
       if (!window.gtag) {
         loadGoogleAnalytics();
       }
-      
+
       // 例: Mixpanelの初期化
       if (!window.mixpanel) {
         loadMixpanel();
       }
-      
+
       // 例: Amplitudeの初期化
       if (!window.amplitude) {
         loadAmplitude();
@@ -77,7 +77,7 @@ export const useAnalytics = () => {
     script.type = 'text/javascript';
     script.async = true;
     script.src = 'https://cdn.amplitude.com/libs/amplitude-8.5.0-min.js';
-    script.onload = function() {
+    script.onload = function () {
       if (window.amplitude) {
         window.amplitude.getInstance().init(amplitudeKey);
       }
@@ -102,22 +102,22 @@ export const useAnalytics = () => {
       if (window.gtag) {
         window.gtag('event', eventName, data);
       }
-      
+
       // Mixpanel
       if (window.mixpanel) {
         window.mixpanel.track(eventName, data);
       }
-      
+
       // Amplitude
       if (window.amplitude) {
         window.amplitude.getInstance().logEvent(eventName, data);
       }
-      
+
       // カスタムデータレイヤー
       if (window.dataLayer) {
         window.dataLayer.push({
           event: eventName,
-          ...data
+          ...data,
         });
       }
     } catch (error) {
@@ -142,23 +142,23 @@ export const useAnalytics = () => {
       if (window.gtag) {
         window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
           page_path: pagePath,
-          page_title: pageTitle
+          page_title: pageTitle,
         });
       }
-      
+
       // Mixpanel
       if (window.mixpanel) {
         window.mixpanel.track('Page View', {
           page_path: pagePath,
-          page_title: pageTitle
+          page_title: pageTitle,
         });
       }
-      
+
       // Amplitude
       if (window.amplitude) {
         window.amplitude.getInstance().logEvent('Page View', {
           page_path: pagePath,
-          page_title: pageTitle
+          page_title: pageTitle,
         });
       }
     } catch (error) {
@@ -184,20 +184,20 @@ export const useAnalytics = () => {
         window.gtag('set', 'user_properties', traits);
         window.gtag('set', 'user_id', userId);
       }
-      
+
       // Mixpanel
       if (window.mixpanel) {
         window.mixpanel.identify(userId);
         window.mixpanel.people.set(traits);
       }
-      
+
       // Amplitude
       if (window.amplitude) {
         const identify = new window.amplitude.Identify();
         Object.entries(traits).forEach(([key, value]) => {
           identify.set(key, value);
         });
-        
+
         window.amplitude.getInstance().setUserId(userId);
         window.amplitude.getInstance().identify(identify);
       }
@@ -209,15 +209,15 @@ export const useAnalytics = () => {
   return {
     trackEvent,
     trackPageView,
-    identifyUser
+    identifyUser,
   };
 };
 
 // Window型を拡張してアナリティクスのグローバル変数を宣言
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
+    gtag?: (command: string, ...args: unknown[]) => void;
+    dataLayer?: unknown[];
     mixpanel?: any;
     amplitude?: any;
   }

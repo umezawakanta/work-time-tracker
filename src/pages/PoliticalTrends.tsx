@@ -54,17 +54,13 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import PoliticalLineChart from '@/components/chart/PoliticalLineChart';
 import { useSurveyData } from '@/components/chart/hooks/useSurveyData';
 import { ChartDataPoint, SupportRate, Survey } from '@/types/survey';
 import { QuickEntryForm } from '@/components/forms/QuickEntryForm';
 import { surveyApi } from '@/services/api/surveyApi';
-
-type DateRange = {
-  from: Date | null;
-  to: Date | null;
-};
+import { DateRange } from 'react-day-picker';
 
 // 送信データの型定義
 interface SurveySubmitData {
