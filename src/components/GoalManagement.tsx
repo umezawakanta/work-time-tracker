@@ -298,7 +298,7 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                   </div>
                   <div className="progress-container">
                     <div 
-                      ref={el => categoryProgressRefs.current[item.category.value] = el}
+                      ref={(el) => { if (el) categoryProgressRefs.current[item.category.value] = el; }}
                       className="category-progress-bar"
                     ></div>
                   </div>

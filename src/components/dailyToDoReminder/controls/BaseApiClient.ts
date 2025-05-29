@@ -3,7 +3,7 @@
  * APIクライアントの基本機能を提供する抽象クラス
  */
 
-import { ApiResponse, RequestConfig, RequestData } from './ApiClient';
+import { ApiResponse, ExtendedRequestConfig, RequestData } from './ApiClient';
 
 export abstract class BaseApiClient {
   /**
@@ -32,7 +32,7 @@ export abstract class BaseApiClient {
    */
   public getConnectionType(): string {
     if (typeof navigator === 'undefined') return 'unknown';
-    
+
     // Network Information API（一部のブラウザでサポート）
     if ('connection' in navigator) {
       const conn = (navigator as any).connection;
@@ -40,7 +40,7 @@ export abstract class BaseApiClient {
         return conn.type;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -52,11 +52,11 @@ export abstract class BaseApiClient {
     if (typeof navigator === 'undefined') {
       return { platform: 'unknown', browser: 'unknown' };
     }
-    
+
     const ua = navigator.userAgent;
     const platform = navigator.platform || 'unknown';
     let browser = 'unknown';
-    
+
     // ブラウザの種類を判定
     if (ua.indexOf('Chrome') > -1) {
       browser = 'Chrome';
@@ -69,11 +69,11 @@ export abstract class BaseApiClient {
     } else if (ua.indexOf('Edge') > -1) {
       browser = 'Edge';
     }
-    
+
     return {
       platform,
       browser,
-      userAgent: ua
+      userAgent: ua,
     };
   }
 
@@ -84,7 +84,7 @@ export abstract class BaseApiClient {
    */
   public parseQueryParams(url: string): Record<string, string> {
     const params: Record<string, string> = {};
-    
+
     try {
       const urlObj = new URL(url, window.location.origin);
       urlObj.searchParams.forEach((value, key) => {
@@ -94,12 +94,12 @@ export abstract class BaseApiClient {
       // URLが不正な場合はクエリ部分だけを解析
       const queryString = url.split('?')[1] || '';
       const searchParams = new URLSearchParams(queryString);
-      
+
       searchParams.forEach((value, key) => {
         params[key] = value;
       });
     }
-    
+
     return params;
   }
 
@@ -108,15 +108,17 @@ export abstract class BaseApiClient {
    * @param params パラメータオブジェクト
    * @returns URLクエリ文字列（先頭の?なし）
    */
-  public buildQueryString(params: Record<string, string | number | boolean | null | undefined>): string {
+  public buildQueryString(
+    params: Record<string, string | number | boolean | null | undefined>
+  ): string {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         searchParams.append(key, String(value));
       }
     });
-    
+
     return searchParams.toString();
   }
 
@@ -149,9 +151,9 @@ export abstract class BaseApiClient {
     // 先頭と末尾のスラッシュを正規化
     const normalizedBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    
+
     let url = `${normalizedBase}${normalizedPath}`;
-    
+
     // クエリパラメータを追加
     if (params && Object.keys(params).length > 0) {
       const queryString = this.buildQueryString(params);
@@ -159,7 +161,7 @@ export abstract class BaseApiClient {
         url = `${url}?${queryString}`;
       }
     }
-    
+
     return url;
   }
 
@@ -172,7 +174,7 @@ export abstract class BaseApiClient {
     return {
       limit: parseInt(headers.get('X-RateLimit-Limit') || '', 10) || null,
       remaining: parseInt(headers.get('X-RateLimit-Remaining') || '', 10) || null,
-      reset: parseInt(headers.get('X-RateLimit-Reset') || '', 10) || null
+      reset: parseInt(headers.get('X-RateLimit-Reset') || '', 10) || null,
     };
   }
 }

@@ -9,7 +9,7 @@ import { AIModel, AIEnhancementType, AIModelSummary, AIProvider } from '../types
  * AIモデルレジストリクラス
  */
 export class AIModelRegistry {
-    private logger = new ApiLogger();
+    private logger = ApiLogger.getInstance();
     private models = new Map<string, AIModel>();
     private initialized = false;
 

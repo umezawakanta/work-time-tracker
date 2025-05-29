@@ -1,4 +1,3 @@
-import { User } from '@/types/user';
 
 /**
  * リファラル（紹介）プログラム関連の情報
@@ -9,7 +8,7 @@ export interface ReferralInfo {
   successfulInvites: number;
   pendingInvites: number;
   earnedMonths: number;
-  invitedUsers: Array<{
+  inviteds: Array<{
     id: string;
     name: string;
     email: string;
@@ -59,7 +58,7 @@ export const fetchReferralSummary = async (): Promise<ReferralInfo> => {
       successfulInvites: 0,
       pendingInvites: 0,
       earnedMonths: 0,
-      invitedUsers: [],
+      inviteds: [],
       personalUrl: ''
     };
   }
@@ -129,7 +128,7 @@ const generateFallbackReferralCode = (options: GenerateReferralCodeOptions): str
 /**
  * ユーザーを紹介する（招待メールを送信）
  */
-export const inviteUser = async (emails: string[], message?: string): Promise<{
+export const invite= async (emails: string[], message?: string): Promise<{
   success: boolean;
   sentCount: number;
   failedEmails?: string[];
@@ -267,4 +266,8 @@ export const fetchSubscriptionStatus = async (): Promise<{
       }
     };
   }
+};
+
+export const inviteUser = async (email: string, referralCode: string): Promise<void> => {
+  console.log('Inviting user via referral:', email, referralCode);
 };

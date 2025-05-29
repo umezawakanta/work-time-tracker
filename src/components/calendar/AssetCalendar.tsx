@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useMemo, useState, useCallback, useEffect, Suspense } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import { EventContentArg, DatesSetArg } from "@fullcalendar/core";
-import { CalendarApi } from "@fullcalendar/core";
+import { useMemo, useState, useCallback, useEffect, Suspense } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { EventContentArg, DatesSetArg } from '@fullcalendar/core';
+import { CalendarApi } from '@fullcalendar/core';
 import {
   format,
   startOfMonth,
@@ -18,9 +18,9 @@ import {
   subDays,
   isWithinInterval,
   subMonths,
-} from "date-fns";
-import { toZonedTime, format as formatTZ } from "date-fns-tz";
-import { ja } from "date-fns/locale";
+} from 'date-fns';
+import { toZonedTime, format as formatTZ } from 'date-fns-tz';
+import { ja } from 'date-fns/locale';
 import {
   Dialog,
   DialogContent,
@@ -28,20 +28,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,7 +46,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Trash2,
   PlusCircle,
@@ -61,11 +55,11 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   RefreshCw,
-} from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import "./AssetCalendar.css";
-import { SubscriptionService } from "@/types";
+} from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import './AssetCalendar.css';
+import { SubscriptionService } from '@/types';
 
 interface DataPoint {
   date: Date;
@@ -96,9 +90,18 @@ interface AssetCalendarProps {
   data: DataPoint[];
   withdrawals: WithdrawalEntry[];
   subscriptions: SubscriptionService[];
-  onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, "_id">) => void;
+  onAddWithdrawal: (withdrawal: Omit<WithdrawalEntry, '_id'>) => void;
   onDeleteWithdrawal: (withdrawalId: string) => void;
   onMonthChange: (newMonth: Date) => void;
+}
+
+interface SummaryCardProps {
+  title: string;
+  value: number;
+  isPositive: boolean;
+  icon: React.ComponentType<{ className?: string }>;
+  previous?: number;
+  showTrend?: boolean;
 }
 
 // スケルトンローダー（カレンダー用）
@@ -135,25 +138,17 @@ const SummaryCard = ({
   icon: Icon,
   previous,
   showTrend = true,
-}) => {
+}: SummaryCardProps) => {
   const percentChange =
-    previous && previous !== 0
-      ? ((value - previous) / Math.abs(previous)) * 100
-      : 0;
+    previous && previous !== 0 ? ((value - previous) / Math.abs(previous)) * 100 : 0;
 
   return (
     <div className="card-container transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <Card className="h-full">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-md font-medium text-muted-foreground">
-              {title}
-            </CardTitle>
-            <Icon
-              className={`h-4 w-4 ${
-                isPositive ? "text-green-500" : "text-red-500"
-              }`}
-            />
+            <CardTitle className="text-md font-medium text-muted-foreground">{title}</CardTitle>
+            <Icon className={`h-4 w-4 ${isPositive ? 'text-green-500' : 'text-red-500'}`} />
           </div>
         </CardHeader>
         <CardContent>
@@ -170,20 +165,14 @@ const SummaryCard = ({
               <span
                 className={`text-sm ${
                   percentChange > 0
-                    ? "text-green-500"
+                    ? 'text-green-500'
                     : percentChange < 0
-                    ? "text-red-500"
-                    : "text-gray-500"
+                      ? 'text-red-500'
+                      : 'text-gray-500'
                 }`}
               >
-                {percentChange !== 0
-                  ? `${Math.abs(percentChange).toFixed(1)}%`
-                  : "0%"}
-                {percentChange > 0
-                  ? " 増加"
-                  : percentChange < 0
-                  ? " 減少"
-                  : " 変化なし"}
+                {percentChange !== 0 ? `${Math.abs(percentChange).toFixed(1)}%` : '0%'}
+                {percentChange > 0 ? ' 増加' : percentChange < 0 ? ' 減少' : ' 変化なし'}
               </span>
             </div>
           )}
@@ -205,14 +194,12 @@ export function AssetCalendar({
   const [previousMonth, setPreviousMonth] = useState(subMonths(new Date(), 1));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [activeTab, setActiveTab] = useState("summary");
-  const [newWithdrawal, setNewWithdrawal] = useState<
-    Omit<WithdrawalEntry, "_id" | "date">
-  >({
-    bank: "",
-    branch: "",
+  const [activeTab, setActiveTab] = useState('summary');
+  const [newWithdrawal, setNewWithdrawal] = useState<Omit<WithdrawalEntry, '_id' | 'date'>>({
+    bank: '',
+    branch: '',
     amount: 0,
-    description: "",
+    description: '',
   });
   const [isLoading, setIsLoading] = useState(true);
   const [calendarApi, setCalendarApi] = useState<CalendarApi | null>(null);
@@ -253,16 +240,14 @@ export function AssetCalendar({
       if (points.length === 0) return;
       let lastValue = points[0].value;
       const allDates = Array.from(
-        new Set(sortedData.map((d) => d.date.toISOString().split("T")[0]))
+        new Set(sortedData.map((d) => d.date.toISOString().split('T')[0]))
       )
         .sort()
         .map((dateStr) => new Date(dateStr));
 
       allDates.forEach((date) => {
         const point = points.find(
-          (p) =>
-            p.date.toISOString().split("T")[0] ===
-            date.toISOString().split("T")[0]
+          (p) => p.date.toISOString().split('T')[0] === date.toISOString().split('T')[0]
         );
         if (point) {
           lastValue = point.value;
@@ -278,7 +263,7 @@ export function AssetCalendar({
   const aggregatedData = useMemo(() => {
     const result: Record<string, Record<string, number>> = {};
     processedData.forEach((item) => {
-      const dateStr = item.date.toISOString().split("T")[0];
+      const dateStr = item.date.toISOString().split('T')[0];
       if (!result[dateStr]) {
         result[dateStr] = {};
       }
@@ -286,7 +271,7 @@ export function AssetCalendar({
     });
 
     Object.keys(result).forEach((dateStr) => {
-      result[dateStr]["合計"] = Object.values(result[dateStr]).reduce(
+      result[dateStr]['合計'] = Object.values(result[dateStr]).reduce(
         (sum, value) => sum + value,
         0
       );
@@ -304,18 +289,18 @@ export function AssetCalendar({
         .map((w) => w.date),
       ...subscriptions
         .filter((s) => s && s.billingDate) // undefined/null や billingDate のない要素を除外
-        .map((s) => String(s.billingDate).replace(/\//g, "-")),
+        .map((s) => String(s.billingDate).replace(/\//g, '-')),
     ]);
 
     // undefined や null や空文字を除外する
     const sortedDates = Array.from(allDates)
-      .filter((date) => date !== undefined && date !== null && date !== "")
+      .filter((date) => date !== undefined && date !== null && date !== '')
       .sort();
 
     if (sortedDates.length === 0) return [];
 
     const firstDataDate = sortedDates[0];
-    const firstDataTotal = aggregatedData[firstDataDate]?.["合計"] || 0;
+    const firstDataTotal = aggregatedData[firstDataDate]?.['合計'] || 0;
 
     return sortedDates.map((date) => {
       let currentDate;
@@ -340,53 +325,49 @@ export function AssetCalendar({
           } else {
             // ここで例外が発生する可能性がある
             try {
-              currentDate = toZonedTime(dateObj, "Asia/Tokyo");
+              currentDate = toZonedTime(dateObj, 'Asia/Tokyo');
             } catch (tzError) {
-              console.error("タイムゾーン変換エラー:", tzError);
+              console.error('タイムゾーン変換エラー:', tzError);
               currentDate = new Date(date); // フォールバック
             }
           }
         }
 
         prevDate = subDays(currentDate, 1);
-        prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", {
-          timeZone: "Asia/Tokyo",
+        prevDateStr = formatTZ(prevDate, 'yyyy-MM-dd', {
+          timeZone: 'Asia/Tokyo',
         });
       } catch (error) {
         console.error(`日付処理エラー: ${error}`);
         // エラー発生時のフォールバック
         currentDate = new Date();
         prevDate = subDays(currentDate, 1);
-        prevDateStr = formatTZ(prevDate, "yyyy-MM-dd", {
-          timeZone: "Asia/Tokyo",
+        prevDateStr = formatTZ(prevDate, 'yyyy-MM-dd', {
+          timeZone: 'Asia/Tokyo',
         });
       }
 
       const dailyChange =
-        (aggregatedData[date]?.["合計"] || 0) -
-        (aggregatedData[prevDateStr]?.["合計"] || 0);
+        (aggregatedData[date]?.['合計'] || 0) - (aggregatedData[prevDateStr]?.['合計'] || 0);
 
       const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-      const weekStartStr = formatTZ(weekStart, "yyyy-MM-dd", {
-        timeZone: "Asia/Tokyo",
+      const weekStartStr = formatTZ(weekStart, 'yyyy-MM-dd', {
+        timeZone: 'Asia/Tokyo',
       });
-      const weekStartTotal = aggregatedData[weekStartStr]?.["合計"] || 0;
-      const weeklyChange =
-        (aggregatedData[date]?.["合計"] || 0) - weekStartTotal;
+      const weekStartTotal = aggregatedData[weekStartStr]?.['合計'] || 0;
+      const weeklyChange = (aggregatedData[date]?.['合計'] || 0) - weekStartTotal;
 
       const monthStart = startOfMonth(currentDate);
-      const monthStartStr = formatTZ(monthStart, "yyyy-MM-dd", {
-        timeZone: "Asia/Tokyo",
+      const monthStartStr = formatTZ(monthStart, 'yyyy-MM-dd', {
+        timeZone: 'Asia/Tokyo',
       });
-      const monthStartTotal = aggregatedData[monthStartStr]?.["合計"] || 0;
-      const cumulativeChange =
-        (aggregatedData[date]?.["合計"] || 0) - monthStartTotal;
+      const monthStartTotal = aggregatedData[monthStartStr]?.['合計'] || 0;
+      const cumulativeChange = (aggregatedData[date]?.['合計'] || 0) - monthStartTotal;
 
-      const totalChange =
-        (aggregatedData[date]?.["合計"] || 0) - firstDataTotal;
+      const totalChange = (aggregatedData[date]?.['合計'] || 0) - firstDataTotal;
 
       const dateWithdrawals = withdrawals.filter((w) => {
-        const withdrawalDate = toZonedTime(parseISO(w.date), "Asia/Tokyo");
+        const withdrawalDate = toZonedTime(parseISO(w.date), 'Asia/Tokyo');
         return isSameDay(withdrawalDate, currentDate);
       });
 
@@ -395,23 +376,19 @@ export function AssetCalendar({
         const billingDateStr = String(s.billingDate);
 
         // yyyy/MM/dd と yyyy-MM-dd の両方のフォーマットに対応
-        const subscriptionDateStr = billingDateStr.includes("/")
+        const subscriptionDateStr = billingDateStr.includes('/')
           ? billingDateStr
-          : billingDateStr.replace(/-/g, "/");
+          : billingDateStr.replace(/-/g, '/');
 
-        const subscriptionDate = parse(
-          subscriptionDateStr,
-          "yyyy/MM/dd",
-          new Date()
-        );
+        const subscriptionDate = parse(subscriptionDateStr, 'yyyy/MM/dd', new Date());
         return isSameDay(subscriptionDate, currentDate);
       });
 
       const hasAggregatedData = !!aggregatedData[date];
-      const currentTotal = aggregatedData[date]?.["合計"] || 0;
+      const currentTotal = aggregatedData[date]?.['合計'] || 0;
 
       // 日次変化に基づく背景色の計算
-      let backgroundColor = "transparent";
+      let backgroundColor = 'transparent';
       if (hasAggregatedData) {
         if (dailyChange > 0) {
           // プラスの変化に基づく緑の濃さ
@@ -432,7 +409,7 @@ export function AssetCalendar({
       return {
         title: hasAggregatedData
           ? `日次: ${dailyChange.toLocaleString()}円\n週次: ${weeklyChange.toLocaleString()}円\n月次: ${cumulativeChange.toLocaleString()}円\n全期間: ${totalChange.toLocaleString()}円`
-          : "",
+          : '',
         date,
         backgroundColor,
         extendedProps: {
@@ -478,48 +455,32 @@ export function AssetCalendar({
       <div className="event-content">
         {hasAggregatedData && (
           <>
-            <div className="total-amount">
-              残高: {currentTotal.toLocaleString()}円
-            </div>
+            <div className="total-amount">残高: {currentTotal.toLocaleString()}円</div>
             <div
-              className={`change-item daily-change ${
-                dailyChange >= 0 ? "positive" : "negative"
-              }`}
+              className={`change-item daily-change ${dailyChange >= 0 ? 'positive' : 'negative'}`}
             >
               <span className="change-label">日次:</span>
-              <span className="change-value">
-                {dailyChange.toLocaleString()}円
-              </span>
+              <span className="change-value">{dailyChange.toLocaleString()}円</span>
             </div>
             <div
-              className={`change-item weekly-change ${
-                weeklyChange >= 0 ? "positive" : "negative"
-              }`}
+              className={`change-item weekly-change ${weeklyChange >= 0 ? 'positive' : 'negative'}`}
             >
               <span className="change-label">週次:</span>
-              <span className="change-value">
-                {weeklyChange.toLocaleString()}円
-              </span>
+              <span className="change-value">{weeklyChange.toLocaleString()}円</span>
             </div>
             <div
               className={`change-item cumulative-change ${
-                cumulativeChange >= 0 ? "positive" : "negative"
+                cumulativeChange >= 0 ? 'positive' : 'negative'
               }`}
             >
               <span className="change-label">月次:</span>
-              <span className="change-value">
-                {cumulativeChange.toLocaleString()}円
-              </span>
+              <span className="change-value">{cumulativeChange.toLocaleString()}円</span>
             </div>
             <div
-              className={`change-item total-change ${
-                totalChange >= 0 ? "positive" : "negative"
-              }`}
+              className={`change-item total-change ${totalChange >= 0 ? 'positive' : 'negative'}`}
             >
               <span className="change-label">全期間:</span>
-              <span className="change-value">
-                {totalChange.toLocaleString()}円
-              </span>
+              <span className="change-value">{totalChange.toLocaleString()}円</span>
             </div>
           </>
         )}
@@ -527,9 +488,7 @@ export function AssetCalendar({
         {(withdrawals.length > 0 || subscriptions.length > 0) && (
           <div className="total-expenses-today">
             <span className="expenses-label">本日支出:</span>
-            <span className="expenses-value">
-              {totalExpensesToday.toLocaleString()}円
-            </span>
+            <span className="expenses-value">{totalExpensesToday.toLocaleString()}円</span>
           </div>
         )}
 
@@ -543,17 +502,12 @@ export function AssetCalendar({
                     {withdrawal.bank} {withdrawal.branch}
                   </div>
                   <div className="withdrawal-amount">
-                    {withdrawal.description}:{" "}
-                    {withdrawal.amount.toLocaleString()}円
+                    {withdrawal.description}: {withdrawal.amount.toLocaleString()}円
                   </div>
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="delete-button"
-                    >
+                    <Button variant="ghost" size="icon" className="delete-button">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
@@ -566,9 +520,7 @@ export function AssetCalendar({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => onDeleteWithdrawal(withdrawal._id!)}
-                      >
+                      <AlertDialogAction onClick={() => onDeleteWithdrawal(withdrawal._id!)}>
                         削除
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -585,9 +537,7 @@ export function AssetCalendar({
             {subscriptions.map((subscription) => (
               <div key={subscription._id} className="subscription-info">
                 <div className="subscription-name">{subscription.name}</div>
-                <div className="subscription-amount">
-                  {subscription.amount.toLocaleString()}円
-                </div>
+                <div className="subscription-amount">{subscription.amount.toLocaleString()}円</div>
               </div>
             ))}
           </div>
@@ -610,9 +560,8 @@ export function AssetCalendar({
           return isWithinInterval(date, { start: monthStart, end: monthEnd });
         })
         .reduce((sum, [, accounts]) => {
-          const dailyChange =
-            accounts["合計"] - (previousTotal || accounts["合計"]);
-          previousTotal = accounts["合計"];
+          const dailyChange = accounts['合計'] - (previousTotal || accounts['合計']);
+          previousTotal = accounts['合計'];
           return sum + (dailyChange > 0 ? dailyChange : 0);
         }, 0);
 
@@ -622,9 +571,8 @@ export function AssetCalendar({
           return isWithinInterval(date, { start: monthStart, end: monthEnd });
         })
         .reduce((sum, [, accounts]) => {
-          const dailyChange =
-            accounts["合計"] - (previousTotal || accounts["合計"]);
-          previousTotal = accounts["合計"];
+          const dailyChange = accounts['合計'] - (previousTotal || accounts['合計']);
+          previousTotal = accounts['合計'];
           return sum + (dailyChange < 0 ? -dailyChange : 0);
         }, 0);
 
@@ -636,30 +584,20 @@ export function AssetCalendar({
         });
       });
 
-      const totalWithdrawals = monthlyWithdrawals.reduce(
-        (sum, w) => sum + w.amount,
-        0
-      );
+      const totalWithdrawals = monthlyWithdrawals.reduce((sum, w) => sum + w.amount, 0);
 
       const monthlySubscriptions = subscriptions.filter((s) => {
-        const subscriptionDateStr = String(s.billingDate).includes("/")
+        const subscriptionDateStr = String(s.billingDate).includes('/')
           ? String(s.billingDate)
-          : String(s.billingDate).replace(/-/g, "/");
-        const subscriptionDate = parse(
-          subscriptionDateStr,
-          "yyyy/MM/dd",
-          new Date()
-        );
+          : String(s.billingDate).replace(/-/g, '/');
+        const subscriptionDate = parse(subscriptionDateStr, 'yyyy/MM/dd', new Date());
         return isWithinInterval(subscriptionDate, {
           start: monthStart,
           end: monthEnd,
         });
       });
 
-      const totalSubscriptions = monthlySubscriptions.reduce(
-        (sum, s) => sum + s.amount,
-        0
-      );
+      const totalSubscriptions = monthlySubscriptions.reduce((sum, s) => sum + s.amount, 0);
 
       const fixedCosts = totalWithdrawals + totalSubscriptions;
       const availableVariableExpenses = Math.max(monthlyIncome - fixedCosts, 0);
@@ -703,20 +641,20 @@ export function AssetCalendar({
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setNewWithdrawal({
-      bank: "",
-      branch: "",
+      bank: '',
+      branch: '',
       amount: 0,
-      description: "",
+      description: '',
     });
   };
 
   const handleWithdrawalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedDate) {
-      const tokyoDate = toZonedTime(selectedDate, "Asia/Tokyo");
+      const tokyoDate = toZonedTime(selectedDate, 'Asia/Tokyo');
       const newWithdrawalEntry = {
         ...newWithdrawal,
-        date: formatTZ(tokyoDate, "yyyy-MM-dd", { timeZone: "Asia/Tokyo" }),
+        date: formatTZ(tokyoDate, 'yyyy-MM-dd', { timeZone: 'Asia/Tokyo' }),
       };
       onAddWithdrawal(newWithdrawalEntry);
       handleDialogClose();
@@ -727,7 +665,7 @@ export function AssetCalendar({
     const { name, value } = e.target;
     setNewWithdrawal((prev) => ({
       ...prev,
-      [name]: name === "amount" ? Number(value) || 0 : value,
+      [name]: name === 'amount' ? Number(value) || 0 : value,
     }));
   };
 
@@ -780,7 +718,7 @@ export function AssetCalendar({
         <TabsContent value="summary" className="space-y-6">
           <div className="flex flex-col space-y-4">
             <h2 className="text-2xl font-bold">
-              {format(currentMonth, "yyyy年M月", { locale: ja })}の財務概要
+              {format(currentMonth, 'yyyy年M月', { locale: ja })}の財務概要
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -818,9 +756,7 @@ export function AssetCalendar({
               <Card>
                 <CardHeader>
                   <CardTitle>固定費内訳</CardTitle>
-                  <CardDescription>
-                    サブスクリプションと引き落とし
-                  </CardDescription>
+                  <CardDescription>サブスクリプションと引き落とし</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mb-4">
@@ -877,20 +813,12 @@ export function AssetCalendar({
                           className="flex justify-between items-center bg-gray-50 p-2 rounded"
                         >
                           <div>
-                            <div className="font-medium">
-                              {subscription.name}
-                            </div>
+                            <div className="font-medium">{subscription.name}</div>
                             <div className="text-xs text-muted-foreground">
                               {subscription.billingDate} 請求
                             </div>
                           </div>
-                          <Badge
-                            variant={
-                              subscription.amount > 5000
-                                ? "destructive"
-                                : "outline"
-                            }
-                          >
+                          <Badge variant={subscription.amount > 5000 ? 'destructive' : 'outline'}>
                             {subscription.amount.toLocaleString()}円
                           </Badge>
                         </div>
@@ -900,16 +828,14 @@ export function AssetCalendar({
                         <Button
                           variant="outline"
                           className="w-full mt-2"
-                          onClick={() => setActiveTab("analysis")}
+                          onClick={() => setActiveTab('analysis')}
                         >
                           すべて表示
                         </Button>
                       )}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">
-                      サブスクリプションはありません
-                    </p>
+                    <p className="text-sm text-muted-foreground">サブスクリプションはありません</p>
                   )}
                 </CardContent>
               </Card>
@@ -929,23 +855,21 @@ export function AssetCalendar({
                 events={events}
                 eventContent={renderEventContent}
                 headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "dayGridMonth,timeGridWeek",
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: 'dayGridMonth,timeGridWeek',
                 }}
                 buttonText={{
-                  today: "今日",
-                  month: "月",
-                  week: "週",
+                  today: '今日',
+                  month: '月',
+                  week: '週',
                 }}
                 locale="ja"
                 firstDay={1}
                 datesSet={handleDatesSet}
                 dateClick={handleDateClick}
                 dayCellContent={(args) => (
-                  <div className="custom-day-cell">
-                    {format(args.date, "d", { locale: ja })}
-                  </div>
+                  <div className="custom-day-cell">{format(args.date, 'd', { locale: ja })}</div>
                 )}
                 height="auto"
                 ref={(el) => {
@@ -973,8 +897,7 @@ export function AssetCalendar({
             <CardHeader>
               <CardTitle>固定費分析</CardTitle>
               <CardDescription>
-                毎月の固定費の合計: {monthlySummary.fixedCosts.toLocaleString()}
-                円
+                毎月の固定費の合計: {monthlySummary.fixedCosts.toLocaleString()}円
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -997,16 +920,12 @@ export function AssetCalendar({
                             className="flex justify-between items-center p-3 border rounded"
                           >
                             <div>
-                              <div className="font-medium">
-                                {withdrawal.description}
-                              </div>
+                              <div className="font-medium">{withdrawal.description}</div>
                               <div className="text-xs text-muted-foreground">
-                                {withdrawal.bank} {withdrawal.branch} •{" "}
-                                {format(
-                                  parseISO(withdrawal.date),
-                                  "yyyy年MM月dd日",
-                                  { locale: ja }
-                                )}
+                                {withdrawal.bank} {withdrawal.branch} •{' '}
+                                {format(parseISO(withdrawal.date), 'yyyy年MM月dd日', {
+                                  locale: ja,
+                                })}
                               </div>
                             </div>
                             <div className="flex items-center">
@@ -1021,21 +940,15 @@ export function AssetCalendar({
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      引き落とし情報の削除
-                                    </AlertDialogTitle>
+                                    <AlertDialogTitle>引き落とし情報の削除</AlertDialogTitle>
                                     <AlertDialogDescription>
                                       この引き落とし情報を削除してもよろしいですか？この操作は取り消せません。
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      キャンセル
-                                    </AlertDialogCancel>
+                                    <AlertDialogCancel>キャンセル</AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() =>
-                                        onDeleteWithdrawal(withdrawal._id!)
-                                      }
+                                      onClick={() => onDeleteWithdrawal(withdrawal._id!)}
                                     >
                                       削除
                                     </AlertDialogAction>
@@ -1047,16 +960,12 @@ export function AssetCalendar({
                         ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">
-                      引き落としが登録されていません
-                    </p>
+                    <p className="text-muted-foreground">引き落としが登録されていません</p>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium mb-2">
-                    サブスクリプション一覧
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">サブスクリプション一覧</h3>
                   {subscriptions.length > 0 ? (
                     <div className="grid grid-cols-1 gap-2">
                       {sortedSubscriptions.map((subscription) => (
@@ -1065,30 +974,19 @@ export function AssetCalendar({
                           className="flex justify-between items-center p-3 border rounded"
                         >
                           <div>
-                            <div className="font-medium">
-                              {subscription.name}
-                            </div>
+                            <div className="font-medium">{subscription.name}</div>
                             <div className="text-xs text-muted-foreground">
-                              タイプ: {subscription.type} • 請求日:{" "}
-                              {subscription.billingDate}
+                              タイプ: {subscription.type} • 請求日: {subscription.billingDate}
                             </div>
                           </div>
-                          <Badge
-                            variant={
-                              subscription.amount > 5000
-                                ? "destructive"
-                                : "outline"
-                            }
-                          >
+                          <Badge variant={subscription.amount > 5000 ? 'destructive' : 'outline'}>
                             {subscription.amount.toLocaleString()}円
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground">
-                      サブスクリプションが登録されていません
-                    </p>
+                    <p className="text-muted-foreground">サブスクリプションが登録されていません</p>
                   )}
                 </div>
               </div>
@@ -1103,10 +1001,10 @@ export function AssetCalendar({
           <DialogHeader>
             <DialogTitle>引き落とし情報登録</DialogTitle>
             <DialogDescription>
-              日付:{" "}
+              日付:{' '}
               {selectedDate
-                ? format(selectedDate, "yyyy年MM月dd日", { locale: ja })
-                : format(new Date(), "yyyy年MM月dd日", { locale: ja })}
+                ? format(selectedDate, 'yyyy年MM月dd日', { locale: ja })
+                : format(new Date(), 'yyyy年MM月dd日', { locale: ja })}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleWithdrawalSubmit}>
@@ -1165,11 +1063,7 @@ export function AssetCalendar({
               </div>
             </div>
             <DialogFooter>
-              <Button
-                variant="outline"
-                type="button"
-                onClick={handleDialogClose}
-              >
+              <Button variant="outline" type="button" onClick={handleDialogClose}>
                 キャンセル
               </Button>
               <Button type="submit">登録</Button>

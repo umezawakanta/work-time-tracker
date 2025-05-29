@@ -1,36 +1,28 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { 
-  Lock, 
-  Sparkles, 
-  Calendar, 
-  Gift, 
-  Star, 
-  BarChart, 
-  Download, 
-  Zap, 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Lock,
+  Sparkles,
+  Calendar,
+  Gift,
+  Star,
+  BarChart,
+  Download,
+  Zap,
   Shield,
-  Loader2
-} from "lucide-react";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
+  Loader2,
+} from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Progress } from '@/components/ui/progress';
 
 // 切り出したコンポーネントのインポート
-import { 
-  PremiumPlanSelector, 
-  PremiumPlanInfo 
-} from './PremiumPlanSelector';
+import { PremiumPlanSelector, PremiumPlanInfo } from './PremiumPlanSelector';
 import { ReferralDialog } from './ReferralDialog';
 
 // サブスクリプション関連のサービス
-import { extendTrialPeriod } from '@/services/userAccountService';
-import { fetchUsageStatistics } from '@/services/userAccountService';
+import { _extendTrialPeriod as extendTrialPeriod } from '@/services/userAccountService';
+import { _fetchUsageStatistics as fetchUsageStatistics } from '@/services/userAccountService';
 
 // プレミアム機能の型定義
 interface PremiumFeature {
@@ -71,7 +63,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
   usageStats: initialUsageStats,
   onPlanSelected,
   referralCode,
-  appDomain = 'yourtaskapp.com'
+  appDomain = 'yourtaskapp.com',
 }) => {
   // 状態管理
   const [showPlansDialog, setShowPlansDialog] = useState<boolean>(false);
@@ -80,7 +72,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
   const [trialExtended, setTrialExtended] = useState<boolean>(false);
   const [usageStats, setUsageStats] = useState<UsageStats | undefined>(initialUsageStats);
   const [isLoadingStats, setIsLoadingStats] = useState<boolean>(false);
-  
+
   // 使用統計の取得
   useEffect(() => {
     const loadUsageStats = async () => {
@@ -93,7 +85,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
             tasksCreated: stats.tasks.total,
             tasksCompleted: stats.tasks.completed,
             storageUsed: stats.storage.used,
-            storageLimit: stats.storage.limit
+            storageLimit: stats.storage.limit,
           });
         } catch (error) {
           console.error('使用統計取得エラー:', error);
@@ -102,127 +94,127 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
         }
       }
     };
-    
+
     loadUsageStats();
   }, [isPremium, initialUsageStats]);
-  
+
   // プレミアム機能リスト
   const premiumFeatures: PremiumFeature[] = [
     {
-      name: "高度な統計",
+      name: '高度な統計',
       icon: <BarChart className="h-3 w-3" />,
-      description: "タスク完了率や生産性のトレンドなど、詳細な分析と生産性インサイトを提供します。"
+      description: 'タスク完了率や生産性のトレンドなど、詳細な分析と生産性インサイトを提供します。',
     },
     {
-      name: "データエクスポート",
+      name: 'データエクスポート',
       icon: <Download className="h-3 w-3" />,
-      description: "タスクデータをCSV、JSON、iCal形式でエクスポートし、他のツールと連携できます。"
+      description: 'タスクデータをCSV、JSON、iCal形式でエクスポートし、他のツールと連携できます。',
     },
     {
-      name: "自動優先度調整",
+      name: '自動優先度調整',
       icon: <Zap className="h-3 w-3" />,
-      description: "期限に基づいてタスクの優先度を自動的に調整し、重要なタスクを見逃しません。",
-      isNew: true
+      description: '期限に基づいてタスクの優先度を自動的に調整し、重要なタスクを見逃しません。',
+      isNew: true,
     },
     {
-      name: "プライバシー保護",
+      name: 'プライバシー保護',
       icon: <Shield className="h-3 w-3" />,
-      description: "エンドツーエンドの暗号化でデータを保護し、プライバシーを確保します。"
-    }
+      description: 'エンドツーエンドの暗号化でデータを保護し、プライバシーを確保します。',
+    },
   ];
-  
+
   // プレミアムプラン情報
   const premiumPlans: PremiumPlanInfo[] = [
     {
-      name: "ベーシック",
+      name: 'ベーシック',
       price: {
         monthly: 980,
-        annual: 9800
+        annual: 9800,
       },
       features: [
-        "すべてのプレミアム機能",
-        "最大100タスク",
-        "基本的な統計分析",
-        "30日間のデータ保存"
-      ]
+        'すべてのプレミアム機能',
+        '最大100タスク',
+        '基本的な統計分析',
+        '30日間のデータ保存',
+      ],
     },
     {
-      name: "プロフェッショナル",
+      name: 'プロフェッショナル',
       price: {
         monthly: 1980,
-        annual: 19800
+        annual: 19800,
       },
       features: [
-        "すべてのプレミアム機能",
-        "無制限のタスク",
-        "高度な統計と予測",
-        "1年間のデータ保存",
-        "優先サポート"
+        'すべてのプレミアム機能',
+        '無制限のタスク',
+        '高度な統計と予測',
+        '1年間のデータ保存',
+        '優先サポート',
       ],
       isPopular: true,
-      discount: 20 // 年間プランの場合20%OFF
+      discount: 20, // 年間プランの場合20%OFF
     },
     {
-      name: "エンタープライズ",
+      name: 'エンタープライズ',
       price: {
         monthly: 4980,
         annual: 49800,
-        lifetime: 99800
+        lifetime: 99800,
       },
       features: [
-        "すべてのプレミアム機能",
-        "チーム共有機能",
-        "詳細なレポート生成",
-        "永続的なデータ保存",
-        "専用サポート",
-        "ホワイトラベル対応"
-      ]
-    }
+        'すべてのプレミアム機能',
+        'チーム共有機能',
+        '詳細なレポート生成',
+        '永続的なデータ保存',
+        '専用サポート',
+        'ホワイトラベル対応',
+      ],
+    },
   ];
 
   // 有効期限の表示形式を整形する
   const formatExpiryDate = (dateString?: string): string => {
     if (!dateString) return '無期限';
-    
+
     try {
       const date = new Date(dateString);
       return new Intl.DateTimeFormat('ja-JP', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       }).format(date);
     } catch (e) {
       console.error('日付形式エラー:', e);
       return '日付エラー';
     }
   };
-  
+
   // 有効期限までの残り日数を計算
   const getDaysRemaining = (dateString?: string): number => {
     if (!dateString) return Infinity;
-    
+
     try {
       const expiryDate = new Date(dateString);
       const today = new Date();
-      
+
       // 時間部分をリセットして日付のみで比較
       expiryDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
-      
+
       const diffTime = expiryDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       return Math.max(diffDays, 0); // 負の値にならないよう調整
     } catch (e) {
       console.error('日付計算エラー:', e);
       return 0;
     }
   };
-  
+
   const daysRemaining = getDaysRemaining(expiresAt);
   const isExpiringSoon = daysRemaining <= 7 && daysRemaining !== Infinity;
   const isTrialPeriod = daysRemaining <= 7 && !isPremium;
-  
+
   // プレミアムプランの表示名を取得
   const getPlanDisplayName = (plan: 'monthly' | 'annual' | 'lifetime'): string => {
     switch (plan) {
@@ -236,14 +228,14 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
         return '月額プラン';
     }
   };
-  
+
   // トライアル延長処理
   const handleExtendTrial = async () => {
     setIsExtendingTrial(true);
-    
+
     try {
       const result = await extendTrialPeriod();
-      
+
       if (result.success) {
         setTrialExtended(true);
         // 成功メッセージを表示
@@ -257,45 +249,48 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
       setIsExtendingTrial(false);
     }
   };
-  
+
   // プランの選択処理
-  const handlePlanSelect = useCallback((planType: string, cycle: 'monthly' | 'annual' | 'lifetime') => {
-    // プラン選択ダイアログを閉じる
-    setShowPlansDialog(false);
-    
-    // アップグレード処理を呼び出し
-    onUpgrade();
-    
-    // 親コンポーネントにプラン選択を通知
-    if (onPlanSelected) {
-      onPlanSelected(planType, cycle);
-    } else {
-      // デフォルトの処理（リダイレクト）
-      window.location.href = `/checkout?plan=${cycle}&type=${planType}`;
-    }
-  }, [onUpgrade, onPlanSelected]);
-  
+  const handlePlanSelect = useCallback(
+    (planType: string, cycle: 'monthly' | 'annual' | 'lifetime') => {
+      // プラン選択ダイアログを閉じる
+      setShowPlansDialog(false);
+
+      // アップグレード処理を呼び出し
+      onUpgrade();
+
+      // 親コンポーネントにプラン選択を通知
+      if (onPlanSelected) {
+        onPlanSelected(planType, cycle);
+      } else {
+        // デフォルトの処理（リダイレクト）
+        window.location.href = `/checkout?plan=${cycle}&type=${planType}`;
+      }
+    },
+    [onUpgrade, onPlanSelected]
+  );
+
   // ストレージ使用率の計算
   const calculateStorageUsage = (): number => {
     if (!usageStats) return 0;
-    
+
     const { storageUsed, storageLimit } = usageStats;
     return Math.min(Math.round((storageUsed / storageLimit) * 100), 100);
   };
-  
+
   return (
     <>
-      <div className={`mb-4 rounded-md border overflow-hidden ${
-        isPremium 
-          ? 'border-amber-200' 
-          : 'border-gray-200'
-      }`}>
+      <div
+        className={`mb-4 rounded-md border overflow-hidden ${
+          isPremium ? 'border-amber-200' : 'border-gray-200'
+        }`}
+      >
         {/* ヘッダー部分 */}
-        <div className={`p-3 ${
-          isPremium 
-            ? 'bg-gradient-to-r from-amber-100 to-yellow-100' 
-            : 'bg-gray-50'
-        }`}>
+        <div
+          className={`p-3 ${
+            isPremium ? 'bg-gradient-to-r from-amber-100 to-yellow-100' : 'bg-gray-50'
+          }`}
+        >
           {isPremium ? (
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center">
@@ -308,41 +303,43 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
                     {getPlanDisplayName(premiumPlan)}
                   </span>
                 </div>
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className="ml-2 bg-amber-100 text-amber-800 border-amber-200"
                 >
                   プレミアム
                 </Badge>
               </div>
-              
+
               <div className="flex items-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex items-center">
                         <Calendar className="h-3 w-3 text-gray-500 mr-1" />
-                        <span className={`text-xs ${
-                          isExpiringSoon ? 'text-red-600 font-medium' : 'text-gray-600'
-                        }`}>
-                          {expiresAt 
-                            ? `有効期限: ${formatExpiryDate(expiresAt)}` 
+                        <span
+                          className={`text-xs ${
+                            isExpiringSoon ? 'text-red-600 font-medium' : 'text-gray-600'
+                          }`}
+                        >
+                          {expiresAt
+                            ? `有効期限: ${formatExpiryDate(expiresAt)}`
                             : '無期限サブスクリプション'}
                         </span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {isExpiringSoon 
+                      {isExpiringSoon
                         ? `あと${daysRemaining}日で有効期限が切れます。更新をお忘れなく。`
                         : '有効期限の詳細情報'}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                
+
                 {isExpiringSoon && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="ml-2 text-xs h-7 bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100"
                     onClick={() => setShowPlansDialog(true)}
                   >
@@ -364,10 +361,10 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 {isTrialPeriod && (
-                  <Button 
+                  <Button
                     variant="outline"
                     size="sm"
                     className="mr-2 text-xs"
@@ -389,9 +386,9 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
                     )}
                   </Button>
                 )}
-                
-                <Button 
-                  size="sm" 
+
+                <Button
+                  size="sm"
                   className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white"
                   onClick={() => setShowPlansDialog(true)}
                 >
@@ -402,7 +399,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
             </div>
           )}
         </div>
-        
+
         {/* 下部コンテンツ */}
         {isPremium ? (
           // プレミアムユーザー向け使用状況表示
@@ -419,25 +416,26 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
                   <div className="flex items-center">
                     <Progress value={calculateStorageUsage()} className="h-2 w-32 mr-2" />
                     <span className="text-xs text-gray-600">
-                      {usageStats.storageUsed.toLocaleString()} / {usageStats.storageLimit.toLocaleString()} KB
+                      {usageStats.storageUsed.toLocaleString()} /{' '}
+                      {usageStats.storageLimit.toLocaleString()} KB
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4">
                   <div>
                     <h4 className="text-xs font-medium mb-1">作成済みタスク</h4>
                     <span className="text-sm">{usageStats.tasksCreated.toLocaleString()}</span>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-xs font-medium mb-1">完了タスク</h4>
                     <span className="text-sm">{usageStats.tasksCompleted.toLocaleString()}</span>
                   </div>
-                  
+
                   {referralCode && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="text-xs h-7"
                       onClick={() => setShowReferralDialog(true)}
@@ -463,9 +461,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex items-center text-xs bg-gray-50 rounded-full px-2 py-1">
-                        <div className="mr-1 text-amber-500">
-                          {feature.icon}
-                        </div>
+                        <div className="mr-1 text-amber-500">{feature.icon}</div>
                         <span>{feature.name}</span>
                         {feature.isNew && (
                           <Badge className="ml-1 text-[0.6rem] h-4 bg-green-100 text-green-800 border-0">
@@ -488,7 +484,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* プラン選択ダイアログ */}
       <PremiumPlanSelector
         isOpen={showPlansDialog}
@@ -497,7 +493,7 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
         initialCycle={premiumPlan}
         plans={premiumPlans}
       />
-      
+
       {/* リファラルダイアログ */}
       {referralCode && (
         <ReferralDialog

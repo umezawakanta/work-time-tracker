@@ -1,217 +1,188 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store';
-import { fetchBlogPost, addComment, deleteBlogPost, selectBlogPostById, toggleLike, selectBlogPosts } from '@/store/blogSlice';
-import { Container, Typography, Box, Chip, Button, Divider, CircularProgress, TextField, IconButton, Grid, Card, CardContent, CardActions } from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
+﻿import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Box,
+  Chip,
+  Button,
+  Divider,
+  Card,
+  CardContent,
+} from '@mui/material';
+import { ArrowBack, Share } from '@mui/icons-material';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  publishedAt: Date;
+  author: string;
+  readTime?: number;
+}
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const post = useSelector((state: RootState) => selectBlogPostById(state, id));
-  const allPosts = useSelector(selectBlogPosts);
-  const status = useSelector((state: RootState) => state.blog.status);
-  const [newComment, setNewComment] = useState('');
-  const currentUserId = 'testUser'; // 実際の実装では、認証システムからユーザーIDを取得します
+  const [post, _setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedPosts, _setRelatedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
-    if (id) {
-      dispatch(fetchBlogPost(id));
+    const fetchPost = async () => {
+      if (!id) return;
+
+      try {
+        // API呼び出しでポストを取得
+        // const response = await fetch(/api/blog/{id});
+        // const data = await response.json();
+        // setPost(data);
+
+        // 関連記事も取得
+        // const relatedResponse = await fetch(/api/blog/{id}/related);
+        // const relatedData = await relatedResponse.json();
+        // setRelatedPosts(relatedData);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch post:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [id]);
+
+  const handleShare = async () => {
+    if (!post) return;
+
+    try {
+      await navigator.share({
+        title: post.title,
+        text: post.content.substring(0, 100),
+        url: window.location.href,
+      });
+    } catch {
+      // フォールバック: URLをクリップボードにコピー
+      navigator.clipboard.writeText(window.location.href);
+      console.log('URLをクリップボードにコピーしました');
     }
-  }, [dispatch, id]);
-
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (id && newComment.trim()) {
-      await dispatch(addComment({ postId: id, comment: { content: newComment, author: 'Current User' } }));
-      setNewComment('');
-    }
   };
 
-  const handleDelete = async () => {
-    if (id && window.confirm('本当にこの投稿を削除しますか？')) {
-      await dispatch(deleteBlogPost(id));
-      navigate('/blog');
-    }
-  };
-
-  const handleLike = async () => {
-    if (id) {
-      await dispatch(toggleLike({ postId: id, userId: currentUserId }));
-    }
-  };
-
-  const getRelatedPosts = () => {
-    if (!post) return [];
-    return allPosts
-      .filter(p => p._id !== post._id)
-      .filter(p => 
-        p.category === post.category || 
-        p.tags.some(tag => post.tags.includes(tag))
-      )
-      .slice(0, 3);
-  };
-
-  const getShareUrl = () => {
-    return `${window.location.origin}/blog/${id}`;
-  };
-
-  const getTwitterShareUrl = () => {
-    const text = encodeURIComponent(`${post?.title} | `);
-    const url = encodeURIComponent(getShareUrl());
-    return `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-  };
-
-  const getFacebookShareUrl = () => {
-    const url = encodeURIComponent(getShareUrl());
-    return `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-  };
-
-  const getLinkedInShareUrl = () => {
-    const url = encodeURIComponent(getShareUrl());
-    const title = encodeURIComponent(post?.title || '');
-    return `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`;
-  };
-
-  if (status === 'loading') {
+  if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
+      <Container maxWidth="md">
+        <Box sx={{ py: 4 }}>
+          <Typography variant="h4" component="h1">
+            読み込み中...
+          </Typography>
+        </Box>
       </Container>
     );
   }
 
   if (!post) {
     return (
-      <Container maxWidth="lg">
-        <Typography variant="h4" component="h1" gutterBottom>
-          投稿が見つかりません
-        </Typography>
-        <Button component={Link} to="/blog" variant="contained" color="primary">
-          ブログ一覧に戻る
-        </Button>
+      <Container maxWidth="md">
+        <Box sx={{ py: 4 }}>
+          <Typography variant="h4" component="h1">
+            記事が見つかりません
+          </Typography>
+          <Button startIcon={<ArrowBack />} onClick={() => navigate('/blog')} sx={{ mt: 2 }}>
+            ブログ一覧に戻る
+          </Button>
+        </Box>
       </Container>
     );
   }
-  
-  const isLiked = post.likes.includes(currentUserId);
-  const relatedPosts = getRelatedPosts();
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom>
-        {post.title}
-      </Typography>
-      <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-        カテゴリー: {post.category || '未分類'}
-      </Typography>
-      <Box sx={{ mb: 2 }}>
-        {post.tags.map((tag) => (
-          <Chip key={tag} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
-        ))}
-      </Box>
-      <Typography variant="body1" paragraph>
-        {post.content}
-      </Typography>
-      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <IconButton onClick={handleLike} color={isLiked ? 'secondary' : 'default'}>
-            {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-          <Typography variant="body2" component="span">
-            {post.likes.length} いいね
+      <Box sx={{ py: 4 }}>
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            startIcon={<ArrowBack />}
+            onClick={() => navigate('/blog')}
+            variant="outlined"
+            size="small"
+          >
+            戻る
+          </Button>
+          <Button startIcon={<Share />} onClick={handleShare} variant="outlined" size="small">
+            共有
+          </Button>
+        </Box>
+
+        <Typography variant="h3" component="h1" gutterBottom>
+          {post.title}
+        </Typography>
+
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Typography variant="body2" color="text.secondary">
+            {post.author}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {post.publishedAt.toLocaleDateString()}
+          </Typography>
+          {post.readTime && (
+            <Typography variant="body2" color="text.secondary">
+              約{post.readTime}分で読めます
+            </Typography>
+          )}
+        </Box>
+
+        <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {post.tags.map((tag) => (
+            <Chip key={tag} label={tag} size="small" />
+          ))}
+        </Box>
+
+        <Divider sx={{ mb: 4 }} />
+
+        <Box sx={{ mb: 4, lineHeight: 1.8 }}>
+          <Typography variant="body1" component="div">
+            {post.content.split('\n').map((paragraph, index) => (
+              <Typography key={index} paragraph>
+                {paragraph}
+              </Typography>
+            ))}
           </Typography>
         </Box>
-        <Box>
-          <IconButton component="a" href={getTwitterShareUrl()} target="_blank" rel="noopener noreferrer">
-            <TwitterIcon />
-          </IconButton>
-          <IconButton component="a" href={getFacebookShareUrl()} target="_blank" rel="noopener noreferrer">
-            <FacebookIcon />
-          </IconButton>
-          <IconButton component="a" href={getLinkedInShareUrl()} target="_blank" rel="noopener noreferrer">
-            <LinkedInIcon />
-          </IconButton>
-        </Box>
-      </Box>
-      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button component={Link} to="/blog" variant="outlined" sx={{ mr: 1 }}>
-          戻る
-        </Button>
-        <Button component={Link} to={`/blog/edit/${id}`} variant="contained" color="primary" sx={{ mr: 1 }}>
-          編集
-        </Button>
-        <Button onClick={handleDelete} variant="contained" color="error">
-          削除
-        </Button>
-      </Box>
-      
-      {relatedPosts.length > 0 && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            関連記事
-          </Typography>
-          <Grid container spacing={2}>
-            {relatedPosts.map((relatedPost) => (
-              <Grid item xs={12} sm={4} key={relatedPost._id}>
-                <Card>
+
+        <Divider sx={{ mb: 4 }} />
+
+        {relatedPosts.length > 0 && (
+          <Box>
+            <Typography variant="h5" component="h2" gutterBottom>
+              関連記事
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                gap: 2,
+              }}
+            >
+              {relatedPosts.map((relatedPost) => (
+                <Card key={relatedPost.id}>
                   <CardContent>
-                    <Typography variant="h6" component="div" noWrap>
+                    <Typography variant="h6" component="h3" gutterBottom>
                       {relatedPost.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {relatedPost.content.substring(0, 50)}...
+                    <Typography variant="body2" color="text.secondary" paragraph>
+                      {relatedPost.content.substring(0, 100)}...
                     </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" component={Link} to={`/blog/${relatedPost._id}`}>
-                      読む
+                    <Button size="small" href={`/blog/${relatedPost.id}`}>
+                      続きを読む
                     </Button>
-                  </CardActions>
+                  </CardContent>
                 </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      )}
-
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          コメント
-        </Typography>
-        <Divider />
-        {post.comments && post.comments.length > 0 ? (
-          post.comments.map((comment) => (
-            <Box key={comment._id} sx={{ my: 2 }}>
-              <Typography variant="body2" color="textSecondary">
-                {comment.author} - {new Date(comment.createdAt).toLocaleString()}
-              </Typography>
-              <Typography variant="body1">{comment.content}</Typography>
+              ))}
             </Box>
-          ))
-        ) : (
-          <Typography variant="body1">まだコメントはありません。</Typography>
+          </Box>
         )}
-      </Box>
-      <Box component="form" onSubmit={handleAddComment} sx={{ mt: 4 }}>
-        <TextField
-          fullWidth
-          label="新しいコメント"
-          multiline
-          rows={4}
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">
-          コメントを追加
-        </Button>
       </Box>
     </Container>
   );

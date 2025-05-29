@@ -1,72 +1,72 @@
-/**
- * API関連の型定義
- */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
-/**
- * キャッシュポリシーの列挙型
- */
-export enum CachePolicy {
-    Default = 'default',
-    NoCache = 'no-cache',
-    NoStore = 'no-store',
-    ForceCache = 'force-cache',
-    OnlyIfCached = 'only-if-cached',
-    Reload = 'reload'
-  }
-  
-  /**
-   * APIリクエスト設定
-   */
-  export interface RequestConfig {
-    timeout?: number;
-    retry?: number;
-    retryDelay?: number;
-    withCredentials?: boolean;
-    cachePolicy?: CachePolicy;
-    cacheMaxAge?: number;
-    priority?: 'high' | 'normal' | 'low';
-    signal?: AbortSignal;
-    headers?: Record<string, string>;
-  }
-  
-  /**
-   * APIレスポンスのメタデータ
-   */
-  export interface ApiResponseMeta {
-    timestamp: number;
-    processingTime?: number;
-    requestId?: string;
-    errorCode?: string;
-    endpoint?: string;
-    batchFailed?: boolean;
-    cache?: {
-      hit: boolean;
-      stale: boolean;
-      age?: number;
-    };
-  }
-  
-  /**
-   * API成功レスポンス
-   */
-  export interface ApiSuccessResponse<T> {
-    success: true;
-    data: T;
-    statusCode?: number;
-    meta: ApiResponseMeta;
-  }
-  
-  /**
-   * APIエラーレスポンス
-   */
-  export interface ApiErrorResponse {
-    success: false;
-    error: string;
-    statusCode?: number;
-    meta: ApiResponseMeta;
-  }
-  
-  /**
-   * APIレスポンス（成功またはエラー）
-   */
-  export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+export interface RequestData {
+  [key: string]: string | number | boolean | null | undefined | RequestData | Array<RequestData>;
+}
+
+export interface ExtendedRequestConfig {
+  retry?: number;
+  timeout?: number;
+  cache?: RequestCache;
+}
+
+export interface ApiServiceConfig {
+  baseURL: string;
+  timeout?: number;
+  headers?: Record<string, string>;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  features: string[];
+  limits: {
+    [key: string]: number;
+  };
+}
+
+export interface ApiResponseMeta {
+  timestamp: number;
+  processingTime?: number;
+  requestId?: string;
+  statusCode?: number;
+  headers?: Record<string, string>;
+  rateLimit?: {
+    limit: number;
+    remaining: number;
+    reset: number;
+    exceeded?: boolean;
+  };
+  featureLimit?: {
+    feature: string;
+    limit: number;
+    used: number;
+    plan: string;
+  };
+  errorHandled?: boolean;
+}
+
+export interface ApiResponse<T = unknown> {
+  data: T;
+  success: boolean;
+  error?: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+  meta: ApiResponseMeta;
+}
+
+export interface ApiErrorResponse extends ApiResponse {
+  data: unknown;
+}
+
+export interface IApiManager {
+  request<T>(
+    serviceName: string,
+    method: HttpMethod,
+    endpoint: string,
+    data?: RequestData,
+    config?: ExtendedRequestConfig
+  ): Promise<ApiResponse<T>>;
+}

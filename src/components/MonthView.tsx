@@ -161,7 +161,8 @@ export function MonthView() {
       </ScrollArea>
       {selectedDate && (
         <EventModal
-          isOpen={isModalOpen}
+        isPremium={false}
+        isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
             setSelectedEvent(null);

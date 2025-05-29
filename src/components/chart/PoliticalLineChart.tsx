@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   LineChart,
   Line,
@@ -14,24 +14,34 @@ import {
   ResponsiveContainer,
   Cell,
   // Label を削除（未使用）
-} from "recharts";
-import { PoliticalParty } from "@/types/survey";
-import CustomTooltip from "../CustomTooltip";
-import { ChartDataPoint } from "./hooks/useSurveyData";
+} from 'recharts';
+import { PoliticalParty } from '@/types/survey';
+import CustomTooltip from '../CustomTooltip';
+import { ChartDataPoint } from './hooks/useSurveyData';
 
 interface PoliticalLineChartProps {
   data: ChartDataPoint[];
   parties: PoliticalParty[];
   mediaOutlet: string;
-  chartType: "line" | "bar" | "pie";
+  chartType: 'line' | 'bar' | 'pie';
   highlightedParties: string[];
+}
+
+interface LabelProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  name: string;
+  value: number;
 }
 
 const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
   data,
   parties,
   mediaOutlet,
-  chartType = "line",
+  chartType = 'line',
   highlightedParties = [],
 }) => {
   // 表示順序を調整（支持率が高い順）
@@ -40,18 +50,12 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
       return [];
     }
 
-    const lines: JSX.Element[] = [];
+    const lines: React.ReactElement[] = [];
     const latestData = data[data.length - 1];
-    
+
     const sortedParties = [...parties].sort((a, b) => {
-      const aKey =
-        mediaOutlet === "各社平均"
-          ? a.shortName
-          : `${a.shortName}_${mediaOutlet}`;
-      const bKey =
-        mediaOutlet === "各社平均"
-          ? b.shortName
-          : `${b.shortName}_${mediaOutlet}`;
+      const aKey = mediaOutlet === '各社平均' ? a.shortName : `${a.shortName}_${mediaOutlet}`;
+      const bKey = mediaOutlet === '各社平均' ? b.shortName : `${b.shortName}_${mediaOutlet}`;
 
       const aValue = (latestData[aKey] as number) || 0;
       const bValue = (latestData[bKey] as number) || 0;
@@ -61,18 +65,14 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
 
     sortedParties.forEach((party) => {
       const partyKey =
-        mediaOutlet === "各社平均"
-          ? `${party.shortName}`
-          : `${party.shortName}_${mediaOutlet}`;
+        mediaOutlet === '各社平均' ? `${party.shortName}` : `${party.shortName}_${mediaOutlet}`;
 
       // 最新の支持率
       const latestValue = latestData[partyKey] as number;
 
       // 3%以上の政党にのみラベルを表示
       const shouldShowLabel =
-        latestValue >= 3 ||
-        party.shortName === "自民" ||
-        party.shortName === "立民";
+        latestValue >= 3 || party.shortName === '自民' || party.shortName === '立民';
 
       lines.push(
         <Line
@@ -95,18 +95,18 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
           label={
             shouldShowLabel
               ? {
-                  position: "top",
+                  position: 'top',
                   fill: party.colorCode,
                   fontSize: 14,
-                  fontWeight: "bold",
-                  formatter: (value: number) => `${value?.toFixed(1) || ""}%`,
+                  fontWeight: 'bold',
+                  formatter: (value: number) => `${value?.toFixed(1) || ''}%`,
                 }
               : false
           }
         />
       );
     });
-    
+
     return lines;
   };
 
@@ -117,14 +117,8 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
 
     const latestData = data[data.length - 1];
     const sortedParties = [...parties].sort((a, b) => {
-      const aKey =
-        mediaOutlet === "各社平均"
-          ? a.shortName
-          : `${a.shortName}_${mediaOutlet}`;
-      const bKey =
-        mediaOutlet === "各社平均"
-          ? b.shortName
-          : `${b.shortName}_${mediaOutlet}`;
+      const aKey = mediaOutlet === '各社平均' ? a.shortName : `${a.shortName}_${mediaOutlet}`;
+      const bKey = mediaOutlet === '各社平均' ? b.shortName : `${b.shortName}_${mediaOutlet}`;
 
       const aValue = (latestData[aKey] as number) || 0;
       const bValue = (latestData[bKey] as number) || 0;
@@ -133,7 +127,7 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
     });
 
     return (
-      <BarChart 
+      <BarChart
         data={data.length > 0 ? [data[data.length - 1]] : []}
         margin={{ top: 20, right: 30, left: 20, bottom: 200 }}
       >
@@ -142,15 +136,13 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
         <Tooltip />
         {sortedParties.map((party) => {
           const partyKey =
-            mediaOutlet === "各社平均"
-              ? `${party.shortName}`
-              : `${party.shortName}_${mediaOutlet}`;
+            mediaOutlet === '各社平均' ? `${party.shortName}` : `${party.shortName}_${mediaOutlet}`;
 
           return (
             <Bar key={partyKey} dataKey={partyKey} fill={party.colorCode} name={party.name}>
-              <Cell 
-                key={`cell-${partyKey}`} 
-                fill={highlightedParties.includes(party.shortName) ? 'gold' : party.colorCode} 
+              <Cell
+                key={`cell-${partyKey}`}
+                fill={highlightedParties.includes(party.shortName) ? 'gold' : party.colorCode}
               />
             </Bar>
           );
@@ -168,22 +160,20 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
     const pieData = parties
       .map((party) => {
         const partyKey =
-          mediaOutlet === "各社平均"
-            ? `${party.shortName}`
-            : `${party.shortName}_${mediaOutlet}`;
+          mediaOutlet === '各社平均' ? `${party.shortName}` : `${party.shortName}_${mediaOutlet}`;
 
         const value = (latestData[partyKey] as number) || 0;
-        return { 
-          name: party.name, 
+        return {
+          name: party.name,
           value: value,
-          color: highlightedParties.includes(party.shortName) ? 'gold' : party.colorCode
+          color: highlightedParties.includes(party.shortName) ? 'gold' : party.colorCode,
         };
       })
-      .filter(item => item.value > 0)
+      .filter((item) => item.value > 0)
       .sort((a, b) => b.value - a.value);
 
     // renderCustomizedLabel の修正
-    const renderCustomizedLabel = (props) => {
+    const renderCustomizedLabel = (props: LabelProps) => {
       const { cx, cy, midAngle, innerRadius, outerRadius, name, value } = props;
       const RADIAN = Math.PI / 180;
       const radius = 25 + innerRadius + (outerRadius - innerRadius);
@@ -191,12 +181,7 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
       const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
       return (
-        <text 
-          x={x} 
-          y={y} 
-          textAnchor={x > cx ? 'start' : 'end'} 
-          dominantBaseline="central"
-        >
+        <text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
           {`${name}: ${value.toFixed(1)}%`}
         </text>
       );
@@ -226,17 +211,13 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
     <div className="w-full overflow-x-auto overflow-y-visible h-[900px]">
       <div className="w-full overflow-auto h-[850px]">
         <ResponsiveContainer width="100%" height="100%">
-          {chartType === "line" ? (
+          {chartType === 'line' ? (
             <LineChart
               data={data}
               margin={{ top: 20, right: 30, left: 20, bottom: 200 }}
               className="bg-black"
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#666"
-                strokeOpacity={0.3}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="#666" strokeOpacity={0.3} />
               <XAxis
                 dataKey="monthDate"
                 className="text-foreground"
@@ -244,8 +225,8 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
                   fontSize: 12,
                   fontWeight: 600,
                 }}
-                axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
-                tickLine={{ stroke: "#666" }}
+                axisLine={{ stroke: '#666', strokeWidth: 1.5 }}
+                tickLine={{ stroke: '#666' }}
                 angle={-45}
                 textAnchor="end"
                 tickMargin={25}
@@ -257,14 +238,14 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
                   fontSize: 12,
                   fontWeight: 600,
                 }}
-                axisLine={{ stroke: "#666", strokeWidth: 1.5 }}
-                tickLine={{ stroke: "#666" }}
+                axisLine={{ stroke: '#666', strokeWidth: 1.5 }}
+                tickLine={{ stroke: '#666' }}
                 domain={[0, 50]}
                 tickCount={11}
                 label={{
-                  value: "支持率 (%)",
+                  value: '支持率 (%)',
                   angle: -90,
-                  position: "insideLeft",
+                  position: 'insideLeft',
                   style: {
                     fontSize: 14,
                     fontWeight: 600,
@@ -277,17 +258,17 @@ const PoliticalLineChart: React.FC<PoliticalLineChartProps> = ({
                 verticalAlign="bottom"
                 align="center"
                 wrapperStyle={{
-                  padding: "20px 10px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  marginTop: "20px",
-                  bottom: "20px"
+                  padding: '20px 10px',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  marginTop: '20px',
+                  bottom: '20px',
                 }}
-                formatter={(value: string) => value.split("(")[0]}
+                formatter={(value: string) => value.split('(')[0]}
               />
               {generateLines()}
             </LineChart>
-          ) : chartType === "bar" ? (
+          ) : chartType === 'bar' ? (
             generateBars() || (
               <div className="flex items-center justify-center h-full">
                 <p>表示できるデータがありません</p>

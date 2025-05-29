@@ -255,8 +255,8 @@ export const PremiumPromotion: React.FC<PremiumPromotionProps> = ({
                 features={details.features}
                 buttonText={details.buttonText}
                 buttonVariant={details.buttonVariant}
-                disabled={details.disabled}
-                isRecommended={details.isRecommended}
+                disabled={'disabled' in details ? details.disabled : false}
+                isRecommended={'isRecommended' in details ? details.isRecommended : false}
                 price={
                   <PriceDisplay
                     plan={plan}
@@ -270,8 +270,8 @@ export const PremiumPromotion: React.FC<PremiumPromotionProps> = ({
                 upgrading={upgrading}
                 onSelectPlan={handlePlanSelect}
                 showCountdown={showCountdown && (details.isRecommended || details.badgeType === 'limited')}
-                badgeType={details.badgeType}
-                badgeText={details.badgeText}
+                badgeType={'badgeType' in details ? details.badgeType : undefined}
+                badgeText={'badgeText' in details ? details.badgeText : undefined}
                 planSpecificFeatures={planSpecificFeatures}
               />
             );

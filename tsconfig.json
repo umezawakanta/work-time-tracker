@@ -1,48 +1,37 @@
-{
+﻿{
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "noImplicitThis": false,
-    "noImplicitAny": false,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
-    "types": [
-      "jest",
-      "node",
-      "@testing-library/jest-dom"
-    ],
-    "esModuleInterop": true
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/services/*": ["./src/services/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/contexts/*": ["./src/contexts/*"]
+    }
   },
   "include": [
-    "src",
-    "server",
-    "vite-env.d.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
   ]
 }

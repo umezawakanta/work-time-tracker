@@ -1,468 +1,375 @@
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+﻿import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Bell,
-  Calendar,
-  Clock,
-  Cloud,
-  CreditCard,
-  Moon,
-  Sun,
-  Smartphone,
-  Mail,
-  Save
-} from "lucide-react";
-import { ViewSettings, UserSettings } from '@/types/todo';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Palette, Bell, Calendar, Cloud, Shield, AlertCircle, Save, X } from 'lucide-react';
 
-interface TodoSettingsProps {
-  settings: UserSettings;
-  onSaveSettings: (settings: UserSettings) => void;
-  isPremium: boolean;
-  onUpgradeToPremium?: () => void;
+interface TodoSettingsType {
+  theme: 'light' | 'dark' | 'system';
+  notifications: {
+    enabled: boolean;
+    sound: boolean;
+    desktop: boolean;
+  };
+  workingHours: {
+    start: string;
+    end: string;
+    daysOfWeek: number[];
+  };
+  breaks: {
+    enabled: boolean;
+    duration: number;
+    interval: number;
+  };
+  dataSync: {
+    autoSave: boolean;
+    syncInterval: number;
+  };
+  privacy: {
+    shareAnalytics: boolean;
+    showPublicProfile: boolean;
+  };
 }
 
-/**
- * TodoSettings - タスク管理の設定画面コンポーネント
- */
+interface TodoSettingsProps {
+  isOpen: boolean;
+  onClose: () => void;
+  settings: TodoSettingsType;
+  onSave: (_settings: TodoSettingsType) => void;
+  isPremium?: boolean;
+}
+
 const TodoSettings: React.FC<TodoSettingsProps> = ({
+  isOpen,
+  onClose,
   settings,
-  onSaveSettings,
-  isPremium,
-  onUpgradeToPremium
+  onSave,
+  isPremium = false,
 }) => {
-  const [updatedSettings, setUpdatedSettings] = useState<UserSettings>(settings);
-  const [activeTab, setActiveTab] = useState<string>("general");
-  const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
-  
-  // 設定の更新ハンドラー
-  const updateSettings = <K extends keyof UserSettings>(
-    key: K,
-    value: UserSettings[K]
+  const [updated, setUpdated] = useState<TodoSettingsType>(settings);
+  const [activeTab, setActiveTab] = useState('general');
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const _update = <K extends keyof TodoSettingsType>(
+    category: K,
+    field: keyof TodoSettingsType[K],
+    value: TodoSettingsType[K][keyof TodoSettingsType[K]]
   ) => {
-    setUpdatedSettings(prev => ({ ...prev, [key]: value }));
-    setUnsavedChanges(true);
-  };
-  
-  // 表示設定の更新ハンドラー
-  const updateViewSettings = <K extends keyof ViewSettings>(
-    key: K,
-    value: ViewSettings[K]
-  ) => {
-    setUpdatedSettings(prev => ({
+    setUpdated((prev) => ({
       ...prev,
-      viewSettings: {
-        ...prev.viewSettings,
-        [key]: value
-      }
+      [category]: {
+        ...(prev[category] as object),
+        [field]: value,
+      },
     }));
-    setUnsavedChanges(true);
+    setHasChanges(true);
   };
-  
-  // 通知設定の更新ハンドラー
-  const updateNotificationSettings = <K extends keyof UserSettings['notifications']>(
-    key: K,
-    value: UserSettings['notifications'][K]
-  ) => {
-    setUpdatedSettings(prev => ({
-      ...prev,
-      notifications: {
-        ...prev.notifications,
-        [key]: value
-      }
-    }));
-    setUnsavedChanges(true);
+
+  const _handleSave = () => {
+    onSave(updated);
+    setHasChanges(false);
+    onClose();
   };
-  
-  // 連携設定の更新ハンドラー
-  const updateIntegrationSettings = <K extends keyof UserSettings['integrations']>(
-    key: K,
-    value: UserSettings['integrations'][K]
-  ) => {
-    setUpdatedSettings(prev => ({
-      ...prev,
-      integrations: {
-        ...prev.integrations,
-        [key]: value
-      }
-    }));
-    setUnsavedChanges(true);
+
+  const _handleCancel = () => {
+    setUpdated(settings);
+    setHasChanges(false);
+    onClose();
   };
-  
-  // 設定保存ハンドラー
-  const handleSaveSettings = () => {
-    onSaveSettings(updatedSettings);
-    setUnsavedChanges(false);
-  };
-  
+
+  if (!isOpen) return null;
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>設定</CardTitle>
-            <CardDescription>タスク管理のカスタマイズと環境設定</CardDescription>
-          </div>
-          
-          {!isPremium && onUpgradeToPremium && (
-            <Button onClick={onUpgradeToPremium} className="bg-gradient-to-r from-amber-500 to-amber-600">
-              <CreditCard className="mr-2 h-4 w-4" />
-              プレミアムにアップグレード
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="general">一般</TabsTrigger>
-            <TabsTrigger value="appearance">表示</TabsTrigger>
-            <TabsTrigger value="notifications" disabled={!isPremium}>通知</TabsTrigger>
-            <TabsTrigger value="integrations" disabled={!isPremium}>連携</TabsTrigger>
-          </TabsList>
-          
-          {/* 一般設定タブ */}
-          <TabsContent value="general" className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">名前</Label>
-              <Input 
-                id="name" 
-                value={updatedSettings.name} 
-                onChange={(e) => updateSettings('name', e.target.value)}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">メールアドレス</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                value={updatedSettings.email} 
-                onChange={(e) => updateSettings('email', e.target.value)}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="timezone">タイムゾーン</Label>
-              <Select 
-                value={updatedSettings.viewSettings.timezone} 
-                onValueChange={(value) => updateViewSettings('timezone', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="タイムゾーンを選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Asia/Tokyo">日本時間 (UTC+9)</SelectItem>
-                  <SelectItem value="America/New_York">アメリカ東部時間 (UTC-5)</SelectItem>
-                  <SelectItem value="Europe/London">イギリス時間 (UTC+0)</SelectItem>
-                  <SelectItem value="Europe/Paris">中央ヨーロッパ時間 (UTC+1)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="language">言語</Label>
-              <Select 
-                value={updatedSettings.viewSettings.language} 
-                onValueChange={(value) => updateViewSettings('language', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="言語を選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ja">日本語</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="zh">中文</SelectItem>
-                  <SelectItem value="ko">한국어</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </TabsContent>
-          
-          {/* 表示設定タブ */}
-          <TabsContent value="appearance" className="space-y-4 pt-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="darkMode">ダークモード</Label>
-                <p className="text-sm text-gray-500">暗い配色テーマを使用します</p>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold">Settings</CardTitle>
+          <Button variant="ghost" size="icon" onClick={_handleCancel}>
+            <X className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+
+        <CardContent className="overflow-y-auto max-h-[calc(90vh-8rem)]">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-5 w-full">
+              <TabsTrigger value="general">
+                <Palette className="h-4 w-4 mr-2" />
+                荳闊ｬ
+              </TabsTrigger>
+              <TabsTrigger value="notifications">
+                <Bell className="h-4 w-4 mr-2" />
+                騾夂衍
+              </TabsTrigger>
+              <TabsTrigger value="schedule">
+                <Calendar className="h-4 w-4 mr-2" />
+                繧ｹ繧ｱ繧ｸ繝･繝ｼ繝ｫ
+              </TabsTrigger>
+              <TabsTrigger value="sync">
+                <Cloud className="h-4 w-4 mr-2" />
+                蜷梧悄
+              </TabsTrigger>
+              <TabsTrigger value="privacy">
+                <Shield className="h-4 w-4 mr-2" />
+                繝励Λ繧､繝舌す繝ｼ
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="general" className="space-y-4 mt-4">
+              <div>
+                <Label htmlFor="theme">Theme</Label>
+                <Select
+                  value={updated.theme}
+                  onValueChange={(value) =>
+                    _update(
+                      'theme',
+                      'theme' as keyof TodoSettingsType['theme'],
+                      value as 'light' | 'dark' | 'system'
+                    )
+                  }
+                >
+                  <SelectTrigger id="theme">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System Default</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <Switch
-                id="darkMode"
-                checked={updatedSettings.viewSettings.darkMode}
-                onCheckedChange={(checked) => updateViewSettings('darkMode', checked)}
-              />
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="compactView">コンパクト表示</Label>
-                <p className="text-sm text-gray-500">タスクをより密集して表示します</p>
-              </div>
-              <Switch
-                id="compactView"
-                checked={updatedSettings.viewSettings.compactView}
-                onCheckedChange={(checked) => updateViewSettings('compactView', checked)}
-              />
-            </div>
-            
-            <Separator />
-            
-            <div className="space-y-2">
-              <Label htmlFor="sortOption">デフォルトのソート順</Label>
-              <Select 
-                value={updatedSettings.viewSettings.sortOption} 
-                onValueChange={(value) => updateViewSettings('sortOption', value as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="ソート順を選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="priority">優先度順</SelectItem>
-                  <SelectItem value="newest">新しい順</SelectItem>
-                  <SelectItem value="deadline">期限順</SelectItem>
-                  <SelectItem value="type">タイプ順</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="groupBy">グループ化</Label>
-              <Select 
-                value={updatedSettings.viewSettings.groupBy || 'none'} 
-                onValueChange={(value) => updateViewSettings('groupBy', value as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="グループ化" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">グループ化なし</SelectItem>
-                  <SelectItem value="date">日付別</SelectItem>
-                  <SelectItem value="priority">優先度別</SelectItem>
-                  <SelectItem value="type">タイプ別</SelectItem>
-                  <SelectItem value="tag">タグ別</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <Separator />
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="showCompleted">完了タスクを表示</Label>
-                <p className="text-sm text-gray-500">デフォルトで完了済みタスクを表示します</p>
-              </div>
-              <Switch
-                id="showCompleted"
-                checked={updatedSettings.viewSettings.showCompleted}
-                onCheckedChange={(checked) => updateViewSettings('showCompleted', checked)}
-              />
-            </div>
-          </TabsContent>
-          
-          {/* 通知設定タブ（プレミアム） */}
-          <TabsContent value="notifications" className="space-y-4 pt-4">
-            {isPremium ? (
-              <>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <div className="space-y-0.5">
-                      <Label htmlFor="emailNotifications">メール通知</Label>
-                      <p className="text-sm text-gray-500">期限間近のタスクをメールでお知らせ</p>
-                    </div>
-                  </div>
-                  <Switch
-                    id="emailNotifications"
-                    checked={updatedSettings.notifications.email}
-                    onCheckedChange={(checked) => updateNotificationSettings('email', checked)}
-                  />
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-4 mt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="notifications-enabled">Enable Notifications</Label>
+                  <p className="text-sm text-muted-foreground">
+                    繧ｿ繧ｹ繧ｯ縺ｮ繝ｪ繝槭う繝ｳ繝繝ｼ縺ｨ譖ｴ譁ｰ繧貞女縺大叙繧・{' '}
+                  </p>
                 </div>
-                
-                <Separator />
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Smartphone className="h-4 w-4 text-gray-500" />
-                    <div className="space-y-0.5">
-                      <Label htmlFor="pushNotifications">プッシュ通知</Label>
-                      <p className="text-sm text-gray-500">ブラウザ通知でタスクをお知らせ</p>
+                <Switch
+                  id="notifications-enabled"
+                  checked={updated.notifications.enabled}
+                  onCheckedChange={(checked) => _update('notifications', 'enabled', checked)}
+                />
+              </div>
+
+              {updated.notifications.enabled && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="notifications-sound">Sound</Label>
+                      <p className="text-sm text-muted-foreground">騾夂衍髻ｳ繧貞・逕溘☆繧・ </p>
                     </div>
-                  </div>
-                  <Switch
-                    id="pushNotifications"
-                    checked={updatedSettings.notifications.push}
-                    onCheckedChange={(checked) => updateNotificationSettings('push', checked)}
-                  />
-                </div>
-                
-                <Separator />
-                
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-500" />
-                    <Label>リマインダー設定</Label>
-                  </div>
-                  <p className="text-sm text-gray-500">期限前にどのくらい通知するか</p>
-                  
-                  <div className="pt-4">
-                    <Slider 
-                      value={[updatedSettings.notifications.reminderTime]} 
-                      min={5}
-                      max={1440}
-                      step={5}
-                      onValueChange={(value) => updateNotificationSettings('reminderTime', value[0])}
+                    <Switch
+                      id="notifications-sound"
+                      checked={updated.notifications.sound}
+                      onCheckedChange={(checked) => _update('notifications', 'sound', checked)}
                     />
-                    <div className="flex justify-between text-xs text-gray-500 mt-2">
-                      <span>5分前</span>
-                      <span>1時間前</span>
-                      <span>1日前</span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="notifications-desktop">繝・せ繧ｯ繝医ャ繝鈴夂衍</Label>
+                      <p className="text-sm text-muted-foreground">
+                        繧ｷ繧ｹ繝・Β縺ｮ騾夂衍繧定｡ｨ遉ｺ縺吶ｋ
+                      </p>
                     </div>
-                    <div className="text-center mt-4">
-                      <span className="text-sm font-medium">
-                        {updatedSettings.notifications.reminderTime < 60 
-                          ? `${updatedSettings.notifications.reminderTime}分前` 
-                          : updatedSettings.notifications.reminderTime < 1440 
-                            ? `${Math.floor(updatedSettings.notifications.reminderTime / 60)}時間前` 
-                            : `${Math.floor(updatedSettings.notifications.reminderTime / 1440)}日前`}
-                      </span>
-                    </div>
+                    <Switch
+                      id="notifications-desktop"
+                      checked={updated.notifications.desktop}
+                      onCheckedChange={(checked) => _update('notifications', 'desktop', checked)}
+                      disabled={!isPremium}
+                    />
+                  </div>
+                </>
+              )}
+
+              {!isPremium && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    繝・せ繧ｯ繝医ャ繝鈴夂衍縺ｯ繝励Ξ繝溘い繝繝励Λ繝ｳ縺ｧ蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｧ縺・{' '}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </TabsContent>
+
+            <TabsContent value="schedule" className="space-y-4 mt-4">
+              <div>
+                <Label>Working Hours</Label>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <Label htmlFor="work-start">Start Time</Label>
+                    <input
+                      id="work-start"
+                      type="time"
+                      value={updated.workingHours.start}
+                      onChange={(e) => _update('workingHours', 'start', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-md"
+                      aria-label="Start Time"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="work-end">End Time</Label>
+                    <input
+                      id="work-end"
+                      type="time"
+                      value={updated.workingHours.end}
+                      onChange={(e) => _update('workingHours', 'end', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-md"
+                      aria-label="End Time"
+                    />
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className="p-8 text-center">
-                <div className="text-amber-500 mb-2">
-                  <Bell className="h-10 w-10 mx-auto" />
-                </div>
-                <h3 className="text-lg font-medium mb-2">プレミアム限定機能</h3>
-                <p className="text-gray-500 mb-4">通知機能はプレミアムプランでご利用いただけます</p>
-                
-                {onUpgradeToPremium && (
-                  <Button onClick={onUpgradeToPremium}>
-                    プレミアムにアップグレード
-                  </Button>
-                )}
               </div>
-            )}
-          </TabsContent>
-          
-          {/* 外部連携タブ（プレミアム） */}
-          <TabsContent value="integrations" className="space-y-4 pt-4">
-            {isPremium ? (
-              <>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <div className="space-y-0.5">
-                      <Label htmlFor="calendarSync">カレンダー連携</Label>
-                      <p className="text-sm text-gray-500">期限付きタスクをカレンダーに同期</p>
+
+              <div>
+                <Label>Break Settings</Label>
+                <div className="space-y-4 mt-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label htmlFor="breaks-enabled">螳壽悄逧・↑莨第・</Label>
+                      <p className="text-sm text-muted-foreground">菴懈･ｭ荳ｭ縺ｫ莨第・繧剃ｿ・☆</p>
                     </div>
+                    <Switch
+                      id="breaks-enabled"
+                      checked={updated.breaks.enabled}
+                      onCheckedChange={(checked) => _update('breaks', 'enabled', checked)}
+                    />
                   </div>
-                  <Switch
-                    id="calendarSync"
-                    checked={updatedSettings.integrations.calendar}
-                    onCheckedChange={(checked) => updateIntegrationSettings('calendar', checked)}
-                  />
-                </div>
-                
-                <Separator />
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4 text-gray-500" />
-                    <div className="space-y-0.5">
-                      <Label htmlFor="emailIntegration">メール連携</Label>
-                      <p className="text-sm text-gray-500">メールからタスクを作成</p>
+
+                  {updated.breaks.enabled && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="break-duration">Break Duration (minutes)</Label>
+                        <input
+                          id="break-duration"
+                          type="number"
+                          min="5"
+                          max="60"
+                          value={updated.breaks.duration}
+                          onChange={(e) => _update('breaks', 'duration', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border rounded-md"
+                          aria-label="Break Duration in minutes"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="break-interval">Break Interval (minutes)</Label>
+                        <input
+                          id="break-interval"
+                          type="number"
+                          min="30"
+                          max="180"
+                          value={updated.breaks.interval}
+                          onChange={(e) => _update('breaks', 'interval', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border rounded-md"
+                          aria-label="Break Interval in minutes"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <Switch
-                    id="emailIntegration"
-                    checked={updatedSettings.integrations.email}
-                    onCheckedChange={(checked) => updateIntegrationSettings('email', checked)}
-                  />
+                  )}
                 </div>
-                
-                <Separator />
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Cloud className="h-4 w-4 text-gray-500" />
-                    <div className="space-y-0.5">
-                      <Label htmlFor="slackIntegration">Slack連携</Label>
-                      <p className="text-sm text-gray-500">Slackからタスクを管理</p>
-                    </div>
-                  </div>
-                  <Switch
-                    id="slackIntegration"
-                    checked={updatedSettings.integrations.slack}
-                    onCheckedChange={(checked) => updateIntegrationSettings('slack', checked)}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="p-8 text-center">
-                <div className="text-amber-500 mb-2">
-                  <Cloud className="h-10 w-10 mx-auto" />
-                </div>
-                <h3 className="text-lg font-medium mb-2">プレミアム限定機能</h3>
-                <p className="text-gray-500 mb-4">外部サービス連携はプレミアムプランでご利用いただけます</p>
-                
-                {onUpgradeToPremium && (
-                  <Button onClick={onUpgradeToPremium}>
-                    プレミアムにアップグレード
-                  </Button>
-                )}
               </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between border-t pt-4">
-        <p className="text-sm text-gray-500">
-          {isPremium 
-            ? `プレミアム会員: ${new Date(updatedSettings.premiumUntil || '').toLocaleDateString()}まで` 
-            : '無料プラン'}
-        </p>
-        
-        <Button 
-          onClick={handleSaveSettings} 
-          disabled={!unsavedChanges}
-          className="flex items-center gap-1"
-        >
-          <Save className="h-4 w-4" />
-          <span>設定を保存</span>
-        </Button>
-      </CardFooter>
-    </Card>
+            </TabsContent>
+
+            <TabsContent value="sync" className="space-y-4 mt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="auto-save">閾ｪ蜍穂ｿ晏ｭ・</Label>
+                  <p className="text-sm text-muted-foreground">
+                    螟画峩繧定・蜍慕噪縺ｫ菫晏ｭ倥☆繧・{' '}
+                  </p>
+                </div>
+                <Switch
+                  id="auto-save"
+                  checked={updated.dataSync.autoSave}
+                  onCheckedChange={(checked) => _update('dataSync', 'autoSave', checked)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="sync-interval">蜷梧悄髢馴囈・育ｧ抵ｼ・</Label>
+                <Select
+                  value={updated.dataSync.syncInterval.toString()}
+                  onValueChange={(value) => _update('dataSync', 'syncInterval', parseInt(value))}
+                >
+                  <SelectTrigger id="sync-interval">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="30">30 minutes</SelectItem>
+                    <SelectItem value="60">1 hour</SelectItem>
+                    <SelectItem value="300">5 hours</SelectItem>
+                    <SelectItem value="600">10 hours</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="privacy" className="space-y-4 mt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="share-analytics">菴ｿ逕ｨ迥ｶ豕√・蜈ｱ譛・</Label>
+                  <p className="text-sm text-muted-foreground">
+                    繧｢繝励Μ縺ｮ謾ｹ蝟・・縺溘ａ縺ｫ蛹ｿ蜷阪ョ繝ｼ繧ｿ繧貞・譛峨☆繧・{' '}
+                  </p>
+                </div>
+                <Switch
+                  id="share-analytics"
+                  checked={updated.privacy.shareAnalytics}
+                  onCheckedChange={(checked) => _update('privacy', 'shareAnalytics', checked)}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="public-profile">蜈ｬ髢九・繝ｭ繝輔ぅ繝ｼ繝ｫ</Label>
+                  <p className="text-sm text-muted-foreground">
+                    莉悶・繝ｦ繝ｼ繧ｶ繝ｼ縺後≠縺ｪ縺溘・繝励Ο繝輔ぅ繝ｼ繝ｫ繧帝夢隕ｧ縺ｧ縺阪ｋ
+                  </p>
+                </div>
+                <Switch
+                  id="public-profile"
+                  checked={updated.privacy.showPublicProfile}
+                  onCheckedChange={(checked) => _update('privacy', 'showPublicProfile', checked)}
+                  disabled={!isPremium}
+                />
+              </div>
+
+              {!isPremium && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    蜈ｬ髢九・繝ｭ繝輔ぅ繝ｼ繝ｫ縺ｯ繝励Ξ繝溘い繝繝励Λ繝ｳ縺ｧ蛻ｩ逕ｨ蜿ｯ閭ｽ縺ｧ縺・{' '}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-between border-t pt-4 mt-6">
+            <Button variant="outline" onClick={_handleCancel}>
+              繧ｭ繝｣繝ｳ繧ｻ繝ｫ
+            </Button>
+            <Button onClick={_handleSave} disabled={!hasChanges}>
+              <Save className="h-4 w-4 mr-2" />
+              菫晏ｭ・{' '}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

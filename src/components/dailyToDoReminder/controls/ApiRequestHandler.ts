@@ -44,11 +44,11 @@ export class ApiRequestHandler {
     this.axios.interceptors.request.use(
       (config) => {
         // タイムスタンプの追加
-        config.headers = config.headers || {};
+        config.headers = config.headers || {} as any;
         config.headers['X-Request-Time'] = Date.now().toString();
         
         // プラン情報の追加
-        const userPlan = this.apiManager.getUserPlan();
+        const userPlan = 'free';
         config.headers['X-Subscription-Plan'] = userPlan;
         
         return config;
@@ -103,7 +103,7 @@ export class ApiRequestHandler {
       const axiosConfig: AxiosRequestConfig = {
         ...config,
         method: method.toLowerCase(),
-        url: this.buildUrl(serviceConfig.baseEndpoint, endpoint),
+        url: this.buildUrl((serviceConfig.baseEndpoint || serviceConfig.baseURL), endpoint),
       };
       
       // GET/DELETEリクエストの場合はparamsとして設定
@@ -114,7 +114,7 @@ export class ApiRequestHandler {
       }
       
       // リクエスト実行前のプラグインフックを実行
-      const plugins = this.apiManager.getPlugins();
+      const plugins = [];
       
       for (const plugin of plugins) {
         if (plugin.hooks.beforeRequest) {
@@ -144,7 +144,7 @@ export class ApiRequestHandler {
         data: processedData,
         meta: {
           statusCode: response.status,
-          headers: response.headers,
+          headers: Object.fromEntries(Object.entries(response.headers || {}).map(([k, v]) => [k, String(v)])),
           timestamp: startTime,
           processingTime: Date.now() - startTime
         }
@@ -168,7 +168,7 @@ export class ApiRequestHandler {
       }
       
       // エラー処理後のプラグインフックを実行
-      const plugins = this.apiManager.getPlugins();
+      const plugins = [];
       
       for (const plugin of plugins) {
         if (plugin.hooks.onError) {

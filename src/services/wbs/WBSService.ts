@@ -4,7 +4,6 @@ import {
     doc,
     addDoc,
     updateDoc,
-    deleteDoc,
     getDocs,
     query,
     where,
@@ -18,12 +17,8 @@ import { db } from '@/config/firebase';
 import {
     WBSNode,
     WBSProject,
-    WBSComment,
     WBSActivity,
-    WBSTemplate,
-    WBSExportOptions,
-    WBSImportResult
-} from '@/types/wbs';
+    WBSExportOptions} from '@/types/wbs';
 
 class WBSService {
     private projectsCollection = 'wbs_projects';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -37,7 +37,18 @@ import {
   X 
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { TaskType } from '@/types/todo';
+
+// TaskTypeをenumとして定義
+export enum TaskType {
+  WORK = 'WORK',
+  PERSONAL = 'PERSONAL',
+  SHOPPING = 'SHOPPING',
+  HEALTH = 'HEALTH',
+  EDUCATION = 'EDUCATION',
+  FINANCE = 'FINANCE',
+  SOCIAL = 'SOCIAL',
+  OTHER = 'OTHER'
+}
 
 // カテゴリルールの型定義
 interface CategoryRule {
@@ -603,15 +614,15 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
             </p>
             <ul className="space-y-2 mb-6 w-full max-w-md">
               <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
+                <span className="text-green-500 mr-2"></span>
                 <span className="text-sm">キーワードに基づく自動カテゴリ分類</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
+                <span className="text-green-500 mr-2"></span>
                 <span className="text-sm">カスタムルールの作成と編集</span>
               </li>
               <li className="flex items-start">
-                <span className="text-green-500 mr-2">✓</span>
+                <span className="text-green-500 mr-2"></span>
                 <span className="text-sm">優先度の自動設定</span>
               </li>
             </ul>
