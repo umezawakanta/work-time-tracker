@@ -2,7 +2,7 @@
  * APIマネージャーHTTPメソッド
  * APIマネージャーのHTTPショートカットメソッドを提供するクラス
  */
-import { ApiResponse, RequestData, ExtendedRequestConfig, HttpMethod } from './ApiTypes';
+import { ApiResponse, RequestData, ExtendedRequestConfig } from './ApiTypes';
 import { ApiManager } from './ApiManager';
 import { BatchRequestItem, BatchRequestConfig } from './BatchRequestManager';
 
