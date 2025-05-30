@@ -96,7 +96,7 @@ export abstract class BaseApiClient {
       urlObj.searchParams.forEach((value, key) => {
         params[key] = value;
       });
-    } catch (error) {
+    } catch {
       // URLが不正な場合はクエリ部分だけを解析
       const queryString = url.split('?')[1] || '';
       const searchParams = new URLSearchParams(queryString);
