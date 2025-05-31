@@ -33,6 +33,8 @@ export const SiteDevTaskSuggester: React.FC = () => {
   const loadSuggestions = useCallback(async () => {
     setLoading(true);
     try {
+      console.log('Loading suggestions...');
+
       const completedTodos = currentTodos.filter((t) => t.completed);
       const activeTodos = currentTodos.filter((t) => !t.completed);
 
@@ -41,6 +43,8 @@ export const SiteDevTaskSuggester: React.FC = () => {
         completedTodos,
         'current-user' // TODO: 実際のユーザーIDを使用
       );
+
+      console.log('Received suggestions:', newSuggestions);
 
       setSuggestions(newSuggestions);
       setSelectedSuggestions(new Set());
@@ -52,7 +56,9 @@ export const SiteDevTaskSuggester: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to load suggestions:', error);
-      toast.error('提案の読み込みに失敗しました');
+      toast.error(
+        `提案の読み込みに失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`
+      );
     } finally {
       setLoading(false);
     }

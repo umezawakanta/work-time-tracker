@@ -31,8 +31,12 @@ export class SiteDevAIService {
     userId: string
   ): Promise<SiteDevTaskSuggestion[]> {
     try {
+      console.log('Starting task suggestion...');
+
       // WBSデータから現在の進捗を分析
       const wbsAnalysis = await this.analyzeWBSProgress();
+
+      console.log('WBS Analysis:', wbsAnalysis);
 
       // AIプロバイダーが設定されている場合はAIを使用
       return await this.generateAISuggestions(wbsAnalysis, currentTodos, completedTodos);
@@ -46,38 +50,55 @@ export class SiteDevAIService {
    * WBSの進捗を分析
    */
   private async analyzeWBSProgress() {
-    const nodes = await WBSService.getProjectNodes('site-dev-project');
+    try {
+      // Firebaseからデータを取得する代わりに、ローカルデータを使用
+      const nodes = siteDevNodes; // Firebaseではなくローカルデータを使用
 
-    const inProgressNodes = nodes.filter((n) => n.status === 'in-progress');
-    const notStartedNodes = nodes.filter((n) => n.status === 'not-started');
-    const delayedNodes = nodes.filter((n) => {
-      if (n.status === 'completed' || !n.endDate) return false;
-      return new Date(n.endDate) < new Date();
-    });
+      // デバッグログを追加
+      console.log('WBS nodes loaded:', nodes.length);
 
-    // 現在のフェーズを特定
-    const currentPhase =
-      inProgressNodes.find((n) => n.level === 0) || notStartedNodes.find((n) => n.level === 0);
-
-    // 優先度の高いタスクを特定
-    const priorityTasks = inProgressNodes
-      .filter((n) => n.progress < 50)
-      .sort((a, b) => {
-        // 期限が近い順
-        if (a.endDate && b.endDate) {
-          return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
-        }
-        return 0;
+      const inProgressNodes = nodes.filter((n) => n.status === 'in-progress');
+      const notStartedNodes = nodes.filter((n) => n.status === 'not-started');
+      const delayedNodes = nodes.filter((n) => {
+        if (n.status === 'completed' || !n.endDate) return false;
+        return new Date(n.endDate) < new Date();
       });
 
-    return {
-      currentPhase,
-      inProgressNodes,
-      notStartedNodes,
-      delayedNodes,
-      priorityTasks,
-      overallProgress: this.calculateOverallProgress(nodes),
-    };
+      // 現在のフェーズを特定
+      const currentPhase =
+        inProgressNodes.find((n) => n.level === 0) || notStartedNodes.find((n) => n.level === 0);
+
+      // 優先度の高いタスクを特定
+      const priorityTasks = inProgressNodes
+        .filter((n) => n.progress < 50)
+        .sort((a, b) => {
+          // 期限が近い順
+          if (a.endDate && b.endDate) {
+            return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
+          }
+          return 0;
+        });
+
+      return {
+        currentPhase,
+        inProgressNodes,
+        notStartedNodes,
+        delayedNodes,
+        priorityTasks,
+        overallProgress: this.calculateOverallProgress(nodes),
+      };
+    } catch (error) {
+      console.error('Error in analyzeWBSProgress:', error);
+      // エラーが発生した場合は空のデータを返す
+      return {
+        currentPhase: null,
+        inProgressNodes: [],
+        notStartedNodes: [],
+        delayedNodes: [],
+        priorityTasks: [],
+        overallProgress: 0,
+      };
+    }
   }
 
   /**
