@@ -43,9 +43,12 @@ import {
   Target,
   AlertCircle,
   X,
+  Brain,
+  Loader2,
 } from 'lucide-react';
 
 import { Todo } from '../types';
+import { RateLimitedTaskAnalyzer } from '@/services/RateLimitedTaskAnalyzer';
 
 interface TodoItemProps {
   readonly todo: Todo;
@@ -82,6 +85,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  const [isAIAnalysisDialogOpen, setIsAIAnalysisDialogOpen] = useState<boolean>(false);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+  const [aiAnalysisResult, setAiAnalysisResult] = useState<{
+    description?: string;
+    category?: string;
+    tags?: string[];
+    estimatedDuration?: number;
+    deadline?: string;
+    confidence?: number;
+  } | null>(null);
 
   // Edit form state
   const [editFormData, setEditFormData] = useState<{
@@ -194,6 +207,56 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   ]
     .filter(Boolean)
     .join(' ');
+
+  // AI分析ハンドラー
+  const handleAIAnalysis = useCallback(async (): Promise<void> => {
+    if (isAnalyzing) return;
+
+    setIsAnalyzing(true);
+    setIsAIAnalysisDialogOpen(true);
+    setAiAnalysisResult(null);
+
+    try {
+      // 完全な分析を実行
+      const result = await RateLimitedTaskAnalyzer.analyzeComplete(todo.text);
+
+      // 詳細分析結果を設定
+      if (result.detailAnalysis) {
+        setAiAnalysisResult({
+          description: result.detailAnalysis.description,
+          category: result.detailAnalysis.category,
+          tags: result.detailAnalysis.tags,
+          estimatedDuration: result.detailAnalysis.estimatedDuration,
+          deadline: result.detailAnalysis.deadline || undefined,
+          confidence: result.detailAnalysis.confidence,
+        });
+      }
+    } catch (error) {
+      console.error('AI分析エラー:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [todo.text, isAnalyzing]);
+
+  // AI分析結果を保存
+  const handleSaveAIAnalysis = useCallback(async (): Promise<void> => {
+    if (!aiAnalysisResult || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const updates: Partial<Todo> = {
+        category: aiAnalysisResult.category,
+        tags: aiAnalysisResult.tags,
+        estimatedDuration: aiAnalysisResult.estimatedDuration,
+        deadline: aiAnalysisResult.deadline,
+      };
+
+      await onUpdate(todo.id, updates);
+      setIsAIAnalysisDialogOpen(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [todo.id, aiAnalysisResult, onUpdate, isLoading]);
 
   return (
     <>
@@ -358,6 +421,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     <DropdownMenuItem onClick={handleEdit}>
                       <Edit3 className="h-4 w-4 mr-2" />
                       編集
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={handleAIAnalysis}>
+                      <Brain className="h-4 w-4 mr-2" />
+                      AI分析
                     </DropdownMenuItem>
 
                     {!todo.isPrioritized && (
@@ -544,6 +612,124 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             <Button onClick={handleSaveEdit} disabled={isLoading}>
               保存
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI分析ダイアログ */}
+      <Dialog open={isAIAnalysisDialogOpen} onOpenChange={setIsAIAnalysisDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>AI分析結果</DialogTitle>
+            <DialogDescription>AIがタスクを分析し、詳細情報を抽出しました。</DialogDescription>
+          </DialogHeader>
+
+          {isAnalyzing ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2">分析中...</span>
+            </div>
+          ) : aiAnalysisResult ? (
+            <div className="grid gap-4 py-4">
+              {/* 分析結果の信頼度 */}
+              {aiAnalysisResult.confidence !== undefined && (
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm font-medium">分析の信頼度</span>
+                  <Badge variant={aiAnalysisResult.confidence > 0.7 ? 'default' : 'secondary'}>
+                    {Math.round(aiAnalysisResult.confidence * 100)}%
+                  </Badge>
+                </div>
+              )}
+
+              {/* タスクの説明 */}
+              {aiAnalysisResult.description && (
+                <div className="grid gap-2">
+                  <Label>タスクの詳細説明</Label>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm">{aiAnalysisResult.description}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* カテゴリ */}
+              {aiAnalysisResult.category && (
+                <div className="grid gap-2">
+                  <Label>カテゴリ</Label>
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-green-600" />
+                    <Badge
+                      variant="outline"
+                      className="bg-green-100 text-green-700 border-green-300"
+                    >
+                      {aiAnalysisResult.category}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+
+              {/* タグ */}
+              {aiAnalysisResult.tags && aiAnalysisResult.tags.length > 0 && (
+                <div className="grid gap-2">
+                  <Label>推奨タグ</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {aiAnalysisResult.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 推定所要時間 */}
+              {aiAnalysisResult.estimatedDuration && (
+                <div className="grid gap-2">
+                  <Label>推定所要時間</Label>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-purple-600" />
+                    <Badge
+                      variant="outline"
+                      className="bg-purple-100 text-purple-700 border-purple-300"
+                    >
+                      {aiAnalysisResult.estimatedDuration}分
+                    </Badge>
+                  </div>
+                </div>
+              )}
+
+              {/* 推奨期限 */}
+              {aiAnalysisResult.deadline && (
+                <div className="grid gap-2">
+                  <Label>推奨期限</Label>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-orange-600" />
+                    <Badge
+                      variant="outline"
+                      className="bg-orange-100 text-orange-700 border-orange-300"
+                    >
+                      {new Date(aiAnalysisResult.deadline).toLocaleDateString('ja-JP')}
+                    </Badge>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="py-8 text-center text-gray-500">分析結果を取得できませんでした</div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsAIAnalysisDialogOpen(false)}
+              disabled={isLoading}
+            >
+              閉じる
+            </Button>
+            {aiAnalysisResult && (
+              <Button onClick={handleSaveAIAnalysis} disabled={isLoading || isAnalyzing}>
+                分析結果を適用
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
