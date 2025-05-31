@@ -38,7 +38,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
       await TodoWBSIntegrationService.handleTodoCreation(
         {
-          _id: savedTodo._id.toString(),
+          _id: savedTodo.id,
           task: savedTodo.task,
           type: savedTodo.type,
           completed: savedTodo.completed,
@@ -82,7 +82,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
 
     // WBS同期を実行
     await TodoWBSIntegrationService.syncTodoToWBS({
-      _id: updatedTodo._id.toString(),
+      _id: updatedTodo.id,
       task: updatedTodo.task,
       type: updatedTodo.type,
       completed: updatedTodo.completed,
