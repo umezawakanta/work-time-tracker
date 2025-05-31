@@ -22,7 +22,6 @@ import {
 import {
   Calendar as CalendarIcon,
   CheckCircle2,
-  TrendingUp,
   Target,
   Award,
   Flame,
