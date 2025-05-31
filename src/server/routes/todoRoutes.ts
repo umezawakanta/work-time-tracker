@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
 import { TodoArchive } from '../models/TodoArchive.js';
+import TodoWBSIntegrationService from '../../services/integration/TodoWBSIntegrationService.js';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/', async (_req: Request, res: Response): Promise<void> => {
 // POST new todo
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { task, priority, isPrioritized, type, deadline } = req.body;
+    const { task, priority, isPrioritized, type, deadline, tags, category } = req.body;
     const newTodo = new TodoItem({
       task,
       completed: false,
@@ -27,9 +28,36 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       priority,
       isPrioritized,
       type: type || 'input',
-      deadline: deadline || null, // 期限パラメータを追加
+      deadline: deadline || null,
+      tags: tags || [],
+      category: category || '',
     });
     const savedTodo = await newTodo.save();
+
+    // WBS連携を実行
+    try {
+      await TodoWBSIntegrationService.handleTodoCreation(
+        {
+          _id: savedTodo._id.toString(),
+          task: savedTodo.task,
+          type: savedTodo.type,
+          completed: savedTodo.completed,
+          priority: savedTodo.priority,
+          isPrioritized: savedTodo.isPrioritized,
+          createdAt: savedTodo.createdAt.toISOString(),
+          updatedAt: savedTodo.updatedAt.toISOString(),
+          completedDate: null,
+          deadline: savedTodo.deadline,
+          tags: savedTodo.tags,
+          priorityLevel: 'medium',
+        },
+        req.body.userId || 'default-user'
+      );
+    } catch (wbsError) {
+      console.error('WBS integration failed:', wbsError);
+      // WBS連携が失敗してもToDoの作成は成功とする
+    }
+
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {
     res.status(500).json({ message: 'Error creating todo', error });
@@ -51,6 +79,21 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: 'Todo not found' });
       return;
     }
+
+    // WBS同期を実行
+    await TodoWBSIntegrationService.syncTodoToWBS({
+      _id: updatedTodo._id.toString(),
+      task: updatedTodo.task,
+      type: updatedTodo.type,
+      completed: updatedTodo.completed,
+      priority: updatedTodo.priority,
+      isPrioritized: updatedTodo.isPrioritized,
+      completedDate: updatedTodo.completedDate,
+      deadline: updatedTodo.deadline,
+      tags: updatedTodo.tags,
+      priorityLevel: 'medium',
+    });
+
     res.json({ message: 'Todo updated successfully', todo: updatedTodo });
   } catch (error) {
     res.status(500).json({ message: 'Error updating todo', error });

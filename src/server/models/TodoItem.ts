@@ -8,38 +8,51 @@ export interface ITodoItem extends Document {
   isPrioritized: boolean;
   type: 'input' | 'output'; // タイプフィールドを追加
   deadline: Date | null; // 期限フィールドを追加
+  tags: string[];
+  category: string;
 }
 
-const todoItemSchema = new Schema({
-  task: {
-    type: String,
-    required: true,
+const todoItemSchema = new Schema(
+  {
+    task: {
+      type: String,
+      required: true,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+    completedDate: {
+      type: Date,
+      default: null,
+    },
+    priority: {
+      type: Number,
+      default: 0,
+    },
+    isPrioritized: {
+      type: Boolean,
+      default: false,
+    },
+    type: {
+      type: String,
+      enum: ['input', 'output'], // 許容値を制限
+      default: 'input', // デフォルト値
+    },
+    deadline: {
+      type: Date,
+      default: null,
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    category: {
+      type: String,
+      default: '',
+    },
   },
-  completed: {
-    type: Boolean,
-    default: false,
-  },
-  completedDate: {
-    type: Date,
-    default: null,
-  },
-  priority: {
-    type: Number,
-    default: 0,
-  },
-  isPrioritized: {
-    type: Boolean,
-    default: false,
-  },
-  type: {
-    type: String,
-    enum: ['input', 'output'], // 許容値を制限
-    default: 'input', // デフォルト値
-  },
-  deadline: {
-    type: Date,
-    default: null,
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export const TodoItem = mongoose.model<ITodoItem>('TodoItem', todoItemSchema);
