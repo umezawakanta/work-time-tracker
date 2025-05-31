@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Plus, RefreshCw, Clock, Target, ArrowRight } from 'lucide-react';
+import { Sparkles, Plus, RefreshCw, Clock, Target } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { AppDispatch } from '@/store';
