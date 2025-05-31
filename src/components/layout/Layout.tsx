@@ -729,6 +729,13 @@ export default function Layout({ children }: LayoutProps) {
         description: 'Work Breakdown Structureを作成します',
       },
       {
+        icon: <TrendingUp size={18} />,
+        label: 'サイト開発状況',
+        path: '/site-dev',
+        description: 'このサイトの開発進捗をWBSで確認します',
+        badge: 'NEW',
+      },
+      {
         icon: <BarChart2 size={18} />,
         label: '政党支持率',
         path: '/political-trends',
