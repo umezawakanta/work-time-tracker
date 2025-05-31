@@ -18,6 +18,7 @@ import {
   QueryDocumentSnapshot,
   deleteField,
   FieldValue,
+  getDoc,
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import {
@@ -252,6 +253,17 @@ export class TodoService {
     }
 
     return history;
+  }
+
+  async getTodoById(todoId: string): Promise<Todo | null> {
+    const todoRef = doc(db, this.collectionName, todoId);
+    const snapshot = await getDoc(todoRef);
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+    return this.mapDocumentToTodo(snapshot);
   }
 
   private mapDocumentToTodo(doc: QueryDocumentSnapshot<DocumentData>): Todo {

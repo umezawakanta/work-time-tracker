@@ -1,35 +1,31 @@
 // src/components/features/wbs/WBSNodeDialog.tsx
-import React, { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WBSNode } from "@/types/wbs";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon, Plus, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { WBSNode } from '@/types/wbs';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, Plus, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface WBSNodeDialogProps {
   open: boolean;
@@ -49,22 +45,19 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<Partial<WBSNode>>({
-    name: "",
-    description: "",
-    status: "not-started",
-    startDate: format(new Date(), "yyyy-MM-dd"),
-    endDate: format(
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      "yyyy-MM-dd"
-    ),
+    name: '',
+    description: '',
+    status: 'not-started',
+    startDate: format(new Date(), 'yyyy-MM-dd'),
+    endDate: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
     estimatedHours: 0,
     budget: 0,
     assignees: [],
     dependencies: [],
     deliverables: [],
   });
-  const [newDeliverable, setNewDeliverable] = useState("");
-  const [newAssignee, setNewAssignee] = useState("");
+  const [newDeliverable, setNewDeliverable] = useState('');
+  const [newAssignee, setNewAssignee] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -83,14 +76,11 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
       });
     } else {
       setFormData({
-        name: "",
-        description: "",
-        status: "not-started",
-        startDate: format(new Date(), "yyyy-MM-dd"),
-        endDate: format(
-          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          "yyyy-MM-dd"
-        ),
+        name: '',
+        description: '',
+        status: 'not-started',
+        startDate: format(new Date(), 'yyyy-MM-dd'),
+        endDate: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
         estimatedHours: 0,
         budget: 0,
         assignees: [],
@@ -109,7 +99,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
       });
       onClose();
     } catch (error) {
-      console.error("Failed to save node:", error);
+      console.error('Failed to save node:', error);
     } finally {
       setSaving(false);
     }
@@ -121,7 +111,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
         ...formData,
         deliverables: [...(formData.deliverables || []), newDeliverable.trim()],
       });
-      setNewDeliverable("");
+      setNewDeliverable('');
     }
   };
 
@@ -133,15 +123,12 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
   };
 
   const addAssignee = () => {
-    if (
-      newAssignee.trim() &&
-      !formData.assignees?.includes(newAssignee.trim())
-    ) {
+    if (newAssignee.trim() && !formData.assignees?.includes(newAssignee.trim())) {
       setFormData({
         ...formData,
         assignees: [...(formData.assignees || []), newAssignee.trim()],
       });
-      setNewAssignee("");
+      setNewAssignee('');
     }
   };
 
@@ -156,9 +143,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>
-            {node ? "タスクを編集" : "新規タスクを作成"}
-          </DialogTitle>
+          <DialogTitle>{node ? 'タスクを編集' : '新規タスクを作成'}</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="basic" className="mt-4">
@@ -175,9 +160,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="タスク名を入力"
               />
             </div>
@@ -187,9 +170,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="タスクの詳細な説明"
                 rows={4}
               />
@@ -202,7 +183,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                 onValueChange={(value) =>
                   setFormData({
                     ...formData,
-                    status: value as WBSNode["status"],
+                    status: value as WBSNode['status'],
                   })
                 }
               >
@@ -229,29 +210,25 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.startDate && "text-muted-foreground"
+                        'w-full justify-start text-left font-normal',
+                        !formData.startDate && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.startDate
-                        ? format(new Date(formData.startDate), "yyyy/MM/dd")
-                        : "選択してください"}
+                        ? format(new Date(formData.startDate), 'yyyy/MM/dd')
+                        : '選択してください'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={
-                        formData.startDate
-                          ? new Date(formData.startDate)
-                          : undefined
-                      }
+                      selected={formData.startDate ? new Date(formData.startDate) : undefined}
                       onSelect={(date) =>
                         date &&
                         setFormData({
                           ...formData,
-                          startDate: format(date, "yyyy-MM-dd"),
+                          startDate: format(date, 'yyyy-MM-dd'),
                         })
                       }
                     />
@@ -266,29 +243,25 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !formData.endDate && "text-muted-foreground"
+                        'w-full justify-start text-left font-normal',
+                        !formData.endDate && 'text-muted-foreground'
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {formData.endDate
-                        ? format(new Date(formData.endDate), "yyyy/MM/dd")
-                        : "選択してください"}
+                        ? format(new Date(formData.endDate), 'yyyy/MM/dd')
+                        : '選択してください'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={
-                        formData.endDate
-                          ? new Date(formData.endDate)
-                          : undefined
-                      }
+                      selected={formData.endDate ? new Date(formData.endDate) : undefined}
                       onSelect={(date) =>
                         date &&
                         setFormData({
                           ...formData,
-                          endDate: format(date, "yyyy-MM-dd"),
+                          endDate: format(date, 'yyyy-MM-dd'),
                         })
                       }
                     />
@@ -315,11 +288,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   {availableNodes
-                    .filter(
-                      (n) =>
-                        n.id !== node?.id &&
-                        !formData.dependencies?.includes(n.id)
-                    )
+                    .filter((n) => n.id !== node?.id && !formData.dependencies?.includes(n.id))
                     .map((n) => (
                       <SelectItem key={n.id} value={n.id}>
                         {n.name}
@@ -331,10 +300,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                 {formData.dependencies?.map((depId) => {
                   const depNode = availableNodes.find((n) => n.id === depId);
                   return (
-                    <div
-                      key={depId}
-                      className="flex items-center gap-2 text-sm"
-                    >
+                    <div key={depId} className="flex items-center gap-2 text-sm">
                       <span>{depNode?.name || depId}</span>
                       <Button
                         variant="ghost"
@@ -342,10 +308,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                         onClick={() =>
                           setFormData({
                             ...formData,
-                            dependencies:
-                              formData.dependencies?.filter(
-                                (d) => d !== depId
-                              ) || [],
+                            dependencies: formData.dependencies?.filter((d) => d !== depId) || [],
                           })
                         }
                       >
@@ -400,7 +363,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                   value={newAssignee}
                   onChange={(e) => setNewAssignee(e.target.value)}
                   placeholder="メールアドレス"
-                  onKeyPress={(e) => e.key === "Enter" && addAssignee()}
+                  onKeyPress={(e) => e.key === 'Enter' && addAssignee()}
                 />
                 <Button onClick={addAssignee} type="button">
                   <Plus className="h-4 w-4" />
@@ -413,6 +376,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                     <button
                       onClick={() => removeAssignee(email)}
                       className="ml-2"
+                      aria-label={`${email}を削除`}
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -430,7 +394,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                   value={newDeliverable}
                   onChange={(e) => setNewDeliverable(e.target.value)}
                   placeholder="成果物を入力"
-                  onKeyPress={(e) => e.key === "Enter" && addDeliverable()}
+                  onKeyPress={(e) => e.key === 'Enter' && addDeliverable()}
                 />
                 <Button onClick={addDeliverable} type="button">
                   <Plus className="h-4 w-4" />
@@ -440,11 +404,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
                 {formData.deliverables?.map((deliverable, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <span className="text-sm">{deliverable}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeDeliverable(index)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => removeDeliverable(index)}>
                       <X className="h-3 w-3" />
                     </Button>
                   </li>
@@ -459,7 +419,7 @@ const WBSNodeDialog: React.FC<WBSNodeDialogProps> = ({
             キャンセル
           </Button>
           <Button onClick={handleSave} disabled={saving || !formData.name}>
-            {saving ? "保存中..." : "保存"}
+            {saving ? '保存中...' : '保存'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,8 +1,9 @@
-import { AdvancedAIService } from './AdvancedAIService';
+import AdvancedAIService from './AdvancedAIService';
 import { WBSNode } from '@/types/wbs';
-import { NewTodo, Todo, TaskType } from '@/types/todo';
+import { Todo, TaskType } from '@/types/todo';
 import { siteDevNodes } from '@/data/siteDevWBS';
 import WBSService from '../wbs/WBSService';
+import { TodoItem } from '@/types';
 
 interface SiteDevTaskSuggestion {
   task: string;
@@ -17,18 +18,16 @@ interface SiteDevTaskSuggestion {
 }
 
 export class SiteDevAIService {
-  private aiService: AdvancedAIService;
+  private aiService = AdvancedAIService;
 
-  constructor() {
-    this.aiService = new AdvancedAIService();
-  }
+  constructor() {}
 
   /**
    * サイト開発に必要なToDoを提案
    */
   async suggestSiteDevTasks(
-    currentTodos: Todo[],
-    completedTodos: Todo[],
+    currentTodos: TodoItem[],
+    completedTodos: TodoItem[],
     userId: string
   ): Promise<SiteDevTaskSuggestion[]> {
     try {
@@ -36,12 +35,7 @@ export class SiteDevAIService {
       const wbsAnalysis = await this.analyzeWBSProgress();
 
       // AIプロバイダーが設定されている場合はAIを使用
-      if (this.aiService.hasActiveProvider()) {
-        return await this.generateAISuggestions(wbsAnalysis, currentTodos, completedTodos);
-      }
-
-      // フォールバック: ルールベースの提案
-      return this.generateRuleBasedSuggestions(wbsAnalysis, currentTodos, completedTodos);
+      return await this.generateAISuggestions(wbsAnalysis, currentTodos, completedTodos);
     } catch (error) {
       console.error('Task suggestion failed:', error);
       return this.getDefaultSuggestions();
@@ -91,29 +85,21 @@ export class SiteDevAIService {
    */
   private async generateAISuggestions(
     wbsAnalysis: any,
-    currentTodos: Todo[],
-    completedTodos: Todo[]
+    currentTodos: TodoItem[],
+    completedTodos: TodoItem[]
   ): Promise<SiteDevTaskSuggestion[]> {
-    const prompt = this.buildAIPrompt(wbsAnalysis, currentTodos, completedTodos);
-
-    try {
-      const response = await this.aiService.callProvider({
-        prompt,
-        maxTokens: 1500,
-        temperature: 0.7,
-      });
-
-      return this.parseAIResponse(response);
-    } catch (error) {
-      console.error('AI suggestion failed:', error);
-      return this.generateRuleBasedSuggestions(wbsAnalysis, currentTodos, completedTodos);
-    }
+    // Skip AI and use rule-based suggestions directly
+    return this.generateRuleBasedSuggestions(wbsAnalysis, currentTodos, completedTodos);
   }
 
   /**
    * AI用のプロンプトを構築
    */
-  private buildAIPrompt(wbsAnalysis: any, currentTodos: Todo[], completedTodos: Todo[]): string {
+  private buildAIPrompt(
+    wbsAnalysis: any,
+    currentTodos: TodoItem[],
+    completedTodos: TodoItem[]
+  ): string {
     const currentPhase = wbsAnalysis.currentPhase?.name || '不明';
     const progressSummary = wbsAnalysis.inProgressNodes
       .map((n: WBSNode) => `- ${n.name}: ${n.progress}%完了`)
@@ -163,8 +149,8 @@ ${progressSummary}
    */
   private generateRuleBasedSuggestions(
     wbsAnalysis: any,
-    currentTodos: Todo[],
-    completedTodos: Todo[]
+    currentTodos: TodoItem[],
+    completedTodos: TodoItem[]
   ): SiteDevTaskSuggestion[] {
     const suggestions: SiteDevTaskSuggestion[] = [];
 

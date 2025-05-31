@@ -1,4 +1,4 @@
-import { db } from '@/config/firebaseConfig';
+import { db } from '@/config/firebase';
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { WBSNode } from '@/types/wbs';
 import { Todo, NewTodo } from '@/types/todo';
@@ -68,7 +68,7 @@ class TodoWBSIntegrationService {
       name: todo.task,
       description: todo.note || `ToDoから自動作成: ${todo.task}`,
       level: currentPhase ? currentPhase.level + 1 : 1,
-      orderIndex: await this.getNextOrderIndex(parentNodeId || currentPhase?.id),
+      orderIndex: await this.getNextOrderIndex(parentNodeId || currentPhase?.id || null),
       startDate: new Date().toISOString().split('T')[0],
       endDate: todo.deadline
         ? new Date(todo.deadline).toISOString().split('T')[0]
@@ -91,7 +91,7 @@ class TodoWBSIntegrationService {
       icon: this.getIconByType(todo.type),
     };
 
-    const nodeId = await WBSService.createNode(wbsNode);
+    const nodeId = await WBSService.createNode(wbsNode, userId);
 
     // マッピング情報を保存
     await this.createMapping(todo._id, nodeId, this.SITE_DEV_PROJECT_ID);
@@ -209,7 +209,7 @@ class TodoWBSIntegrationService {
         endDate: todo.deadline ? new Date(todo.deadline).toISOString().split('T')[0] : undefined,
         updatedAt: new Date().toISOString(),
       },
-      todo.userId || ''
+      ''
     );
   }
 

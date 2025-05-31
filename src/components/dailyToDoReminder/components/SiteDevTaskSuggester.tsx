@@ -7,7 +7,7 @@ import { Sparkles, Plus, RefreshCw, Code, Clock, AlertCircle } from 'lucide-reac
 import { toast } from 'react-hot-toast';
 import { AppDispatch } from '@/store';
 import { addTodoItem } from '@/store/todoSlice';
-import { selectTodos } from '../store/selectors/todoSelectors';
+import { selectTodos as selectTodoItems } from '@/store/todoSlice';
 import SiteDevAIService from '@/services/ai/SiteDevAIService';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +25,7 @@ interface TaskSuggestion {
 
 export const SiteDevTaskSuggester: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const currentTodos = useSelector(selectTodos);
+  const currentTodos = useSelector(selectTodoItems);
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
@@ -80,13 +80,11 @@ export const SiteDevTaskSuggester: React.FC = () => {
       for (const suggestion of tasksToAdd) {
         await dispatch(
           addTodoItem({
-            task: suggestion.task,
+            task: `[${suggestion.category}] ${suggestion.task}`,
             type: suggestion.type,
             priority: suggestion.priority,
             isPrioritized: suggestion.priority >= 4,
             deadline: suggestion.deadline,
-            tags: ['サイト開発', ...suggestion.tags],
-            category: suggestion.category,
           })
         ).unwrap();
       }
@@ -170,6 +168,7 @@ export const SiteDevTaskSuggester: React.FC = () => {
                     onChange={() => toggleSelection(index)}
                     className="mt-1"
                     onClick={(e) => e.stopPropagation()}
+                    aria-label={`選択: ${suggestion.task}`}
                   />
                 </div>
 
