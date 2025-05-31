@@ -49,6 +49,8 @@ import {
   Plus,
   CheckSquare,
   ListTodo,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -107,6 +109,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     subtasks?: SubTask[];
     actionItems?: string[];
   } | null>(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   // Edit form state
   const [editFormData, setEditFormData] = useState<{
@@ -317,6 +320,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     }
   }, [aiAnalysisResult, todo, dispatch, onToggle, isLoading]);
 
+  // タスクテキストが長いかどうかを判定する関数
+  const isLongText = (text: string): boolean => {
+    return text.length > 100 || text.includes('\n');
+  };
+
+  // タスクテキストの最初の部分を取得する関数
+  const getTruncatedText = (text: string, maxLength: number = 100): string => {
+    const firstLine = text.split('\n')[0];
+    if (firstLine.length > maxLength) {
+      return firstLine.substring(0, maxLength) + '...';
+    }
+    return firstLine + (text.includes('\n') ? '...' : '');
+  };
+
   return (
     <>
       <Card className={cardClassName}>
@@ -347,13 +364,46 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   {/* Task Text */}
-                  <h4
-                    className={`font-medium text-sm leading-tight ${
-                      todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
-                    }`}
-                  >
-                    {todo.text}
-                  </h4>
+                  <div>
+                    <h4
+                      className={`font-medium text-sm leading-tight ${
+                        todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                      }`}
+                    >
+                      {isExpanded || !isLongText(todo.text)
+                        ? todo.text
+                        : getTruncatedText(todo.text)}
+                    </h4>
+
+                    {/* 展開/折りたたみボタン */}
+                    {isLongText(todo.text) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="h-6 px-2 mt-1 text-xs text-gray-500 hover:text-gray-700"
+                      >
+                        {isExpanded ? (
+                          <>
+                            <ChevronUp className="h-3 w-3 mr-1" />
+                            折りたたむ
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="h-3 w-3 mr-1" />
+                            詳細を表示
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {/* 詳細説明エリア（展開時のみ表示） */}
+                    {isExpanded && isLongText(todo.text) && (
+                      <div className="mt-2 p-3 bg-gray-50 rounded-md">
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{todo.text}</p>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Meta Information */}
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -534,9 +584,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 id="edit-text"
                 value={editFormData.text}
                 onChange={(e) => setEditFormData({ ...editFormData, text: e.target.value })}
-                placeholder="タスクの内容を入力..."
-                className="min-h-[80px]"
+                placeholder="タスクの内容を入力...&#10;複数行で詳細な説明を追加できます"
+                className="min-h-[120px] resize-y"
               />
+              <p className="text-xs text-gray-500">
+                Shift+Enterで改行、詳細な説明を含めることができます
+              </p>
             </div>
 
             {/* Type and Priority */}
