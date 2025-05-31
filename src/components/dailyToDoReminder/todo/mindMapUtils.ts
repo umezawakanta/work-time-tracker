@@ -17,18 +17,44 @@ export type MindMapEdge = Edge & {
   animated?: boolean;
 };
 
-// Dagreを使用した自動レイアウト関数
+// Dagreを使用した自動レイアウト関数（改善版）
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 172;
-  const nodeHeight = 36;
+  // ノードサイズを大きくし、タイプに応じて調整
+  const getNodeDimensions = (node: Node) => {
+    const baseWidth = 200;
+    const baseHeight = 60;
+    
+    switch (node.data?.type) {
+      case 'root':
+        return { width: baseWidth + 50, height: baseHeight + 20 };
+      case 'category':
+      case 'status':
+        return { width: baseWidth + 30, height: baseHeight + 10 };
+      case 'priority':
+        return { width: baseWidth, height: baseHeight };
+      case 'task':
+        return { width: baseWidth + 20, height: baseHeight };
+      default:
+        return { width: baseWidth, height: baseHeight };
+    }
+  };
 
-  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 50 });
+  // グラフのレイアウト設定を改善
+  dagreGraph.setGraph({ 
+    rankdir: direction, 
+    ranksep: 150,      // ランク間の距離を増やす
+    nodesep: 80,       // ノード間の距離を増やす
+    edgesep: 50,       // エッジ間の距離
+    marginx: 40,       // 水平マージン
+    marginy: 40        // 垂直マージン
+  });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    const dimensions = getNodeDimensions(node);
+    dagreGraph.setNode(node.id, dimensions);
   });
 
   edges.forEach((edge) => {
@@ -39,14 +65,16 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
+    const dimensions = getNodeDimensions(node);
+    
     node.targetPosition = 'top' as Position;
     node.sourcePosition = 'bottom' as Position;
 
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        x: nodeWithPosition.x - dimensions.width / 2,
+        y: nodeWithPosition.y - dimensions.height / 2,
       },
     };
   });
@@ -177,7 +205,7 @@ const getCategoryIcon = (category: string) => {
   return iconMap[category] || '📋';
 };
 
-// ステータス別グループ化バージョン
+// ステータス別グループ化バージョン（修正版）
 export const convertTodosByStatus = (todos: readonly Todo[]) => {
   const nodes: MindMapNode[] = [];
   const edges: MindMapEdge[] = [];
@@ -185,9 +213,14 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
   // ルートノード
   const rootNode: MindMapNode = {
     id: 'root',
-    type: 'input',
-    data: { label: 'タスクステータス', type: 'root', count: todos.length },
-    position: { x: 400, y: 300 },
+    type: 'custom',  // 'input' から 'custom' に変更
+    data: { 
+      label: 'タスクステータス', 
+      type: 'root', 
+      count: todos.length,
+      icon: '📊'
+    },
+    position: { x: 0, y: 0 },
   };
   nodes.push(rootNode);
 
@@ -199,20 +232,26 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
   };
 
   const statusConfig = [
-    { key: 'prioritized', label: '重要タスク', color: '#ef4444', x: 100 },
-    { key: 'active', label: '進行中', color: '#3b82f6', x: 400 },
-    { key: 'completed', label: '完了', color: '#10b981', x: 700 },
+    { key: 'prioritized', label: '重要タスク', color: '#ef4444', icon: '🔥' },
+    { key: 'active', label: '進行中', color: '#3b82f6', icon: '⚡' },
+    { key: 'completed', label: '完了', color: '#10b981', icon: '✅' },
   ];
 
-  statusConfig.forEach(({ key, label, color, x }) => {
+  statusConfig.forEach(({ key, label, color, icon }, statusIndex) => {
     const statusTodos = statusGroups[key as keyof typeof statusGroups];
     const statusId = `status-${key}`;
 
     // ステータスノード
     nodes.push({
       id: statusId,
-      data: { label, type: 'status', count: statusTodos.length },
-      position: { x, y: 150 },
+      type: 'custom',  // typeを追加
+      data: { 
+        label, 
+        type: 'status', 
+        count: statusTodos.length,
+        icon
+      },
+      position: { x: 0, y: 0 },
       style: { backgroundColor: color, color: 'white' },
     });
 
@@ -221,27 +260,23 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
       id: `root-${statusId}`,
       source: 'root',
       target: statusId,
-      style: { stroke: color },
+      style: { stroke: color, strokeWidth: 2 },
       animated: true,
     });
 
     // 各タスク
     statusTodos.forEach((todo, index) => {
       const taskId = `task-${todo.id}`;
-      const angle = index * 30 - (statusTodos.length - 1) * 15;
-      const radius = 120;
-      const taskX = x + radius * Math.cos((angle * Math.PI) / 180);
-      const taskY = 150 - radius * Math.sin((angle * Math.PI) / 180);
 
       nodes.push({
         id: taskId,
-        type: 'output',
+        type: 'custom',  // 'output' から 'custom' に変更
         data: {
-          label: truncateText(todo.text, 20),
+          label: truncateText(todo.text, 30),
           todo,
           type: 'task',
         },
-        position: { x: taskX, y: taskY },
+        position: { x: 0, y: 0 },
         style: getTaskStyle(todo),
       });
 
@@ -249,12 +284,16 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
         id: `${statusId}-${taskId}`,
         source: statusId,
         target: taskId,
-        style: { stroke: color },
+        style: { 
+          stroke: color,
+          strokeWidth: todo.completed ? 1 : 2,
+        },
       });
     });
   });
 
-  return { nodes, edges };
+  // 自動レイアウトを適用
+  return getLayoutedElements(nodes, edges, 'TB');
 };
 
 // ヘルパー関数
@@ -298,10 +337,11 @@ const getPriorityStyle = (priority: number) => {
 
 const getTaskStyle = (todo: Todo) => {
   const baseStyle = {
-    fontSize: '12px',
-    padding: '8px 12px',
+    fontSize: '13px',
+    padding: '10px 14px',
     borderRadius: '8px',
-    border: '1px solid #e5e7eb',
+    border: '2px solid',
+    transition: 'all 0.2s ease',
   };
 
   if (todo.completed) {
@@ -319,13 +359,14 @@ const getTaskStyle = (todo: Todo) => {
       ...baseStyle,
       backgroundColor: '#fef2f2',
       borderColor: '#fca5a5',
-      fontWeight: 'bold',
+      fontWeight: '600',
     };
   }
 
   return {
     ...baseStyle,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#ffffff',
+    borderColor: '#e5e7eb',
   };
 };
 

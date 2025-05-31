@@ -140,14 +140,20 @@ export const TodoMindMap: React.FC<TodoMindMapProps> = ({ todos, onClose }) => {
             nodeTypes={nodeTypes}
             fitView
             fitViewOptions={{
-              padding: 0.2,
+              padding: 0.4,
               includeHiddenNodes: false,
+              maxZoom: 1.5,
+              minZoom: 0.5,
             }}
             attributionPosition="bottom-left"
             defaultEdgeOptions={{
               animated: true,
               type: 'smoothstep',
+              style: {
+                strokeWidth: 2,
+              },
             }}
+            proOptions={{ hideAttribution: true }}
           >
             <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e5e7eb" />
             <Controls className="bg-white shadow-lg rounded-lg" />
