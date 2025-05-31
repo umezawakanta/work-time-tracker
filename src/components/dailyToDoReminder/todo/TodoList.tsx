@@ -1,28 +1,20 @@
-import React, { useMemo, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  ListChecks,
-  Flag,
-  Sparkles,
-  CheckCircle2,
-  Circle,
-} from "lucide-react";
-import { toast } from "react-hot-toast";
+import React, { useMemo, useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ListChecks, Flag, Sparkles, CheckCircle2, Circle, Network } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
-import {
-  updateTodoItem,
-  deleteTodoItem,
-} from "@/store/todoSlice";
-import { AppDispatch } from "@/store";
-import { Todo } from "../types";
-import { getErrorMessage } from "../utils/errorUtils";
+import { updateTodoItem, deleteTodoItem } from '@/store/todoSlice';
+import { AppDispatch } from '@/store';
+import { Todo } from '../types';
+import { getErrorMessage } from '../utils/errorUtils';
 
 // Sub-components
-import { TodoItem } from "./TodoItem";
+import { TodoItem } from './TodoItem';
+import { TodoMindMap } from './TodoMindMap';
 
 interface TodoListProps {
   readonly todos: readonly Todo[];
@@ -46,6 +38,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   onAnalyzeRequest,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const [showMindMap, setShowMindMap] = useState(false);
 
   // Group todos by status and priority
   const groupedTodos = useMemo((): GroupedTodos => {
@@ -82,14 +75,14 @@ export const TodoList: React.FC<TodoListProps> = ({
     async (todo: Todo): Promise<void> => {
       try {
         // Toggle completion status using updateTodoItem
-        await dispatch(updateTodoItem({ 
-          _id: todo.id, 
-          updates: { completed: !todo.completed } 
-        })).unwrap();
+        await dispatch(
+          updateTodoItem({
+            _id: todo.id,
+            updates: { completed: !todo.completed },
+          })
+        ).unwrap();
 
-        const message = todo.completed
-          ? "タスクを未完了に戻しました"
-          : "🎉 タスクを完了しました！";
+        const message = todo.completed ? 'タスクを未完了に戻しました' : '🎉 タスクを完了しました！';
         toast.success(message);
       } catch (err) {
         const errorMessage = getErrorMessage(err);
@@ -101,11 +94,11 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   const handleDelete = useCallback(
     async (todoId: string): Promise<void> => {
-      if (!window.confirm("このタスクを削除しますか？")) return;
+      if (!window.confirm('このタスクを削除しますか？')) return;
 
       try {
         await dispatch(deleteTodoItem(todoId)).unwrap();
-        toast.success("タスクを削除しました");
+        toast.success('タスクを削除しました');
       } catch (err) {
         const errorMessage = getErrorMessage(err);
         toast.error(`削除に失敗しました: ${errorMessage}`);
@@ -122,20 +115,21 @@ export const TodoList: React.FC<TodoListProps> = ({
           task?: string;
           priority?: number;
           isPrioritized?: boolean;
-          type?: "input" | "output";
+          type?: 'input' | 'output';
           deadline?: string;
           completed?: boolean;
         }> = {};
-        
+
         if (updates.text !== undefined) mappedUpdates.task = updates.text;
         if (updates.priority !== undefined) mappedUpdates.priority = updates.priority;
-        if (updates.isPrioritized !== undefined) mappedUpdates.isPrioritized = updates.isPrioritized;
+        if (updates.isPrioritized !== undefined)
+          mappedUpdates.isPrioritized = updates.isPrioritized;
         if (updates.type !== undefined) mappedUpdates.type = updates.type;
         if (updates.deadline !== undefined) mappedUpdates.deadline = updates.deadline;
         if (updates.completed !== undefined) mappedUpdates.completed = updates.completed;
-        
+
         await dispatch(updateTodoItem({ _id: todoId, updates: mappedUpdates })).unwrap();
-        toast.success("タスクを更新しました");
+        toast.success('タスクを更新しました');
       } catch (err) {
         const errorMessage = getErrorMessage(err);
         toast.error(`更新に失敗しました: ${errorMessage}`);
@@ -168,11 +162,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               <p className="text-sm text-gray-500">新しいタスクを追加して始めましょう</p>
             </div>
             {isPremium && onAnalyzeRequest && (
-              <Button
-                onClick={onAnalyzeRequest}
-                variant="outline"
-                className="mt-2"
-              >
+              <Button onClick={onAnalyzeRequest} variant="outline" className="mt-2">
                 <Sparkles className="h-4 w-4 mr-2" />
                 AI分析を開始
               </Button>
@@ -185,6 +175,9 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* マインドマップモーダル */}
+      {showMindMap && <TodoMindMap todos={todos} onClose={() => setShowMindMap(false)} />}
+
       {/* Summary Stats */}
       {isPremium && (
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
@@ -195,27 +188,53 @@ export const TodoList: React.FC<TodoListProps> = ({
                 <div>
                   <h3 className="font-medium text-blue-900">タスク概要</h3>
                   <p className="text-sm text-blue-700">
-                    全{todos.length}件 • 完了{groupedTodos.completed.length}件 •
-                    残り
-                    {groupedTodos.prioritized.length +
-                      groupedTodos.active.length}
-                    件
+                    全{todos.length}件 • 完了{groupedTodos.completed.length}件 • 残り
+                    {groupedTodos.prioritized.length + groupedTodos.active.length}件
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-blue-900">
-                  予想作業時間
-                </p>
-                <p className="text-lg font-bold text-blue-700">
-                  {formatDuration(
-                    getEstimatedTime([
-                      ...groupedTodos.prioritized,
-                      ...groupedTodos.active,
-                    ])
-                  )}
-                </p>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowMindMap(true)}
+                  className="gap-2"
+                >
+                  <Network className="h-4 w-4" />
+                  マインドマップ表示
+                </Button>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-blue-900">予想作業時間</p>
+                  <p className="text-lg font-bold text-blue-700">
+                    {formatDuration(
+                      getEstimatedTime([...groupedTodos.prioritized, ...groupedTodos.active])
+                    )}
+                  </p>
+                </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 非プレミアムユーザー向けのマインドマップボタン */}
+      {!isPremium && todos.length > 0 && (
+        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Network className="h-5 w-5 text-indigo-600" />
+                <div>
+                  <h3 className="font-medium text-indigo-900">タスクマインドマップ</h3>
+                  <p className="text-sm text-indigo-700">タスクを視覚的に整理して全体像を把握</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => setShowMindMap(true)}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                表示する
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -232,10 +251,7 @@ export const TodoList: React.FC<TodoListProps> = ({
                 {groupedTodos.prioritized.length}
               </Badge>
               {isPremium && (
-                <Badge
-                  variant="outline"
-                  className="text-xs bg-amber-100 text-amber-800"
-                >
+                <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Premium
                 </Badge>
@@ -293,39 +309,29 @@ export const TodoList: React.FC<TodoListProps> = ({
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <h3 className="font-semibold text-gray-700">完了済み</h3>
-              <Badge
-                variant="outline"
-                className="text-xs bg-green-100 text-green-800"
-              >
+              <Badge variant="outline" className="text-xs bg-green-100 text-green-800">
                 {groupedTodos.completed.length}
               </Badge>
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.completed
-                .slice(0, isPremium ? 10 : 3)
-                .map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    todo={todo}
-                    onToggle={handleToggleComplete}
-                    onDelete={handleDelete}
-                    onUpdate={handleUpdate}
-                    isPremium={isPremium}
-                    dragHandleProps={null}
-                    isCompleted={true}
-                  />
-                ))}
+              {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={handleToggleComplete}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdate}
+                  isPremium={isPremium}
+                  dragHandleProps={null}
+                  isCompleted={true}
+                />
+              ))}
 
               {groupedTodos.completed.length > (isPremium ? 10 : 3) && (
                 <p className="text-xs text-gray-500 text-center py-2">
-                  ...他 {groupedTodos.completed.length - (isPremium ? 10 : 3)}{" "}
-                  件の完了済みタスク
-                  {!isPremium && (
-                    <span className="ml-1 text-blue-500">
-                      (Premiumで全て表示)
-                    </span>
-                  )}
+                  ...他 {groupedTodos.completed.length - (isPremium ? 10 : 3)} 件の完了済みタスク
+                  {!isPremium && <span className="ml-1 text-blue-500">(Premiumで全て表示)</span>}
                 </p>
               )}
             </div>
@@ -347,10 +353,7 @@ export const TodoList: React.FC<TodoListProps> = ({
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={onAnalyzeRequest}
-                className="bg-amber-600 hover:bg-amber-700"
-              >
+              <Button onClick={onAnalyzeRequest} className="bg-amber-600 hover:bg-amber-700">
                 分析を開始
               </Button>
             </div>
