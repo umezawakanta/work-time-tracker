@@ -199,17 +199,13 @@ class TodoWBSIntegrationService {
     const mapping = await this.getMapping(todo._id);
     if (!mapping) return;
 
-    await WBSService.updateNode(
-      mapping.wbsNodeId,
-      {
-        name: todo.task,
-        progress: todo.completed ? 100 : 0,
-        status: todo.completed ? 'completed' : 'in-progress',
-        endDate: todo.deadline ? new Date(todo.deadline).toISOString().split('T')[0] : undefined,
-        updatedAt: new Date().toISOString(),
-      },
-      ''
-    );
+    await WBSService.updateNode(mapping.wbsNodeId, {
+      name: todo.task,
+      progress: todo.completed ? 100 : 0,
+      status: todo.completed ? 'completed' : 'in-progress',
+      endDate: todo.deadline ? new Date(todo.deadline).toISOString().split('T')[0] : undefined,
+      updatedAt: new Date().toISOString(),
+    });
   }
 
   /**
