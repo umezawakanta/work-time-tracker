@@ -25,7 +25,6 @@ import {
   Target,
   Award,
   Flame,
-  BarChart3,
   Filter,
   Download,
   ChevronLeft,
