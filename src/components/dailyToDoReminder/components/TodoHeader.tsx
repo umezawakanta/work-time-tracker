@@ -13,6 +13,7 @@ import { ResetConfirmDialog } from './ResetConfirmDialog';
 import { TodoHeaderMetrics } from './TodoHeaderMetrics';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
+import { AISuggestionModal } from './AISuggestionModal';
 
 interface TodoHeaderProps {
   readonly hasPremium: boolean;
@@ -35,6 +36,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
 
     const [showResetDialog, setShowResetDialog] = React.useState(false);
     const [isResetting, setIsResetting] = React.useState(false);
+    const [showAISuggestionModal, setShowAISuggestionModal] = React.useState(false);
 
     // パフォーマンス最適化されたリセットハンドラー
     const handleResetTodos = useCallback(async (): Promise<void> => {
@@ -143,9 +145,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  /* AI提案モーダルを開く */
-                }}
+                onClick={() => setShowAISuggestionModal(true)}
                 className="transition-all hover:scale-105"
               >
                 <Sparkles className="h-4 w-4 mr-1" />
@@ -166,6 +166,10 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
             streakCount,
           }}
         />
+
+        {hasPremium && (
+          <AISuggestionModal open={showAISuggestionModal} onOpenChange={setShowAISuggestionModal} />
+        )}
       </>
     );
   }
