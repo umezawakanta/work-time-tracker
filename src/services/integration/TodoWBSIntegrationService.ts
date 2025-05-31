@@ -1,7 +1,5 @@
-import { db } from '@/config/firebase';
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { WBSNode } from '@/types/wbs';
-import { Todo, NewTodo } from '@/types/todo';
+import { WBSNode } from '../../types/wbs';
+import { Todo, NewTodo } from '../../types/todo';
 import WBSService from '../wbs/WBSService';
 import { v4 as uuidv4 } from 'uuid';
 
