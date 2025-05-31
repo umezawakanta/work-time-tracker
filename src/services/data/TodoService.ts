@@ -1,13 +1,13 @@
 // src/services/data/TodoService.ts
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
   limit as firestoreLimit,
   onSnapshot,
   Unsubscribe,
@@ -17,19 +17,20 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
   deleteField,
-  FieldValue
+  FieldValue,
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { 
-  Todo, 
-  NewTodo, 
-  TodoUpdate, 
-  TodoFilter, 
+import {
+  Todo,
+  NewTodo,
+  TodoUpdate,
+  TodoFilter,
   TodoStats,
   TodoHistoryEntry,
   TaskType,
-  PriorityLevel
+  PriorityLevel,
 } from '@/types/todo';
+import TodoWBSIntegrationService from '../integration/TodoWBSIntegrationService';
 
 type FirestoreUpdateData = {
   [key: string]: FieldValue | Partial<unknown> | undefined;
@@ -40,7 +41,7 @@ export class TodoService {
 
   async createTodo(userId: string, todoData: NewTodo): Promise<Todo> {
     const todoCollection = collection(db, this.collectionName);
-    
+
     const newTodo = {
       ...todoData,
       userId,
@@ -54,7 +55,7 @@ export class TodoService {
 
     const docRef = await addDoc(todoCollection, newTodo);
 
-    return {
+    const createdTodo: Todo = {
       _id: docRef.id,
       task: todoData.task,
       type: todoData.type,
@@ -72,13 +73,14 @@ export class TodoService {
       reminders: todoData.reminders,
       attachments: todoData.attachments,
     };
+
+    // WBS連携の実行
+    await TodoWBSIntegrationService.handleTodoCreation(createdTodo, userId);
+
+    return createdTodo;
   }
 
-  async getTodos(
-    userId: string, 
-    filter?: TodoFilter, 
-    limit?: number
-  ): Promise<Todo[]> {
+  async getTodos(userId: string, filter?: TodoFilter, limit?: number): Promise<Todo[]> {
     let q = query(
       collection(db, this.collectionName),
       where('userId', '==', userId),
@@ -106,12 +108,12 @@ export class TodoService {
     }
 
     const snapshot = await getDocs(q);
-    
-    return snapshot.docs.map(doc => this.mapDocumentToTodo(doc));
+
+    return snapshot.docs.map((doc) => this.mapDocumentToTodo(doc));
   }
 
   subscribeTodos(
-    userId: string, 
+    userId: string,
     callback: (todos: Todo[]) => void,
     filter?: TodoFilter
   ): Unsubscribe {
@@ -133,17 +135,21 @@ export class TodoService {
       q = query(q, where('isPrioritized', '==', filter.isPrioritized));
     }
 
-    return onSnapshot(q, (snapshot) => {
-      const todos = snapshot.docs.map(doc => this.mapDocumentToTodo(doc));
-      callback(todos);
-    }, (error) => {
-      console.error('Error subscribing to todos:', error);
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const todos = snapshot.docs.map((doc) => this.mapDocumentToTodo(doc));
+        callback(todos);
+      },
+      (error) => {
+        console.error('Error subscribing to todos:', error);
+      }
+    );
   }
 
   async updateTodo(update: TodoUpdate): Promise<void> {
     const todoRef = doc(db, this.collectionName, update._id);
-    
+
     const updateData: FirestoreUpdateData = {
       updatedAt: serverTimestamp(),
     };
@@ -161,6 +167,12 @@ export class TodoService {
     }
 
     await updateDoc(todoRef, updateData);
+
+    const updatedTodo = await this.getTodoById(update._id);
+    if (updatedTodo) {
+      // WBSへの同期
+      await TodoWBSIntegrationService.syncTodoToWBS(updatedTodo);
+    }
   }
 
   async deleteTodo(todoId: string): Promise<void> {
@@ -169,13 +181,13 @@ export class TodoService {
 
   async getTodoStats(userId: string): Promise<TodoStats> {
     const todos = await this.getTodos(userId);
-    const completed = todos.filter(t => t.completed);
-    
-    const inputTasks = todos.filter(t => t.type === 'input');
-    const outputTasks = todos.filter(t => t.type === 'output');
+    const completed = todos.filter((t) => t.completed);
 
-    const tasksWithDeadline = todos.filter(t => t.deadline);
-    const completedBeforeDeadline = completed.filter(t => {
+    const inputTasks = todos.filter((t) => t.type === 'input');
+    const outputTasks = todos.filter((t) => t.type === 'output');
+
+    const tasksWithDeadline = todos.filter((t) => t.deadline);
+    const completedBeforeDeadline = completed.filter((t) => {
       if (!t.deadline || !t.completedDate) return false;
       return new Date(t.completedDate) <= new Date(t.deadline);
     });
@@ -184,40 +196,36 @@ export class TodoService {
     const longestStreak = await this.calculateLongestStreak(userId);
 
     const completionTimes = completed
-      .filter(t => t.efficiency?.completionTime)
-      .map(t => t.efficiency!.completionTime!);
-    
-    const averageCompletionTime = completionTimes.length > 0
-      ? completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length
-      : 0;
+      .filter((t) => t.efficiency?.completionTime)
+      .map((t) => t.efficiency!.completionTime!);
+
+    const averageCompletionTime =
+      completionTimes.length > 0
+        ? completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length
+        : 0;
 
     return {
       totalTasks: todos.length,
       completedTasks: completed.length,
-      completionRate: todos.length > 0 
-        ? (completed.length / todos.length) * 100 
-        : 0,
+      completionRate: todos.length > 0 ? (completed.length / todos.length) * 100 : 0,
       averageCompletionTime,
       inputTasks: inputTasks.length,
       outputTasks: outputTasks.length,
-      inputOutputRatio: outputTasks.length > 0 
-        ? inputTasks.length / outputTasks.length 
-        : inputTasks.length,
+      inputOutputRatio:
+        outputTasks.length > 0 ? inputTasks.length / outputTasks.length : inputTasks.length,
       tasksCompletedBeforeDeadline: completedBeforeDeadline.length,
-      tasksCompletedAfterDeadline: 
-        completed.filter(t => t.deadline).length - completedBeforeDeadline.length,
-      deadlineMeetRate: tasksWithDeadline.length > 0
-        ? (completedBeforeDeadline.length / tasksWithDeadline.length) * 100
-        : 100,
+      tasksCompletedAfterDeadline:
+        completed.filter((t) => t.deadline).length - completedBeforeDeadline.length,
+      deadlineMeetRate:
+        tasksWithDeadline.length > 0
+          ? (completedBeforeDeadline.length / tasksWithDeadline.length) * 100
+          : 100,
       streakDays,
       longestStreak,
     };
   }
 
-  async getTodoHistory(
-    userId: string, 
-    days: number = 30
-  ): Promise<TodoHistoryEntry[]> {
+  async getTodoHistory(userId: string, days: number = 30): Promise<TodoHistoryEntry[]> {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -227,7 +235,7 @@ export class TodoService {
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
-      const dayTodos = todos.filter(t => {
+      const dayTodos = todos.filter((t) => {
         if (!t.completedDate) return false;
         const completedDateStr = new Date(t.completedDate).toISOString().split('T')[0];
         return completedDateStr === dateStr;
@@ -236,8 +244,8 @@ export class TodoService {
       history.push({
         date: dateStr,
         count: dayTodos.length,
-        inputCount: dayTodos.filter(t => t.type === 'input').length,
-        outputCount: dayTodos.filter(t => t.type === 'output').length,
+        inputCount: dayTodos.filter((t) => t.type === 'input').length,
+        outputCount: dayTodos.filter((t) => t.type === 'output').length,
         averageTime: this.calculateAverageTime(dayTodos),
         totalTime: this.calculateTotalTime(dayTodos),
       });
@@ -246,9 +254,7 @@ export class TodoService {
     return history;
   }
 
-  private mapDocumentToTodo(
-    doc: QueryDocumentSnapshot<DocumentData>
-  ): Todo {
+  private mapDocumentToTodo(doc: QueryDocumentSnapshot<DocumentData>): Todo {
     const data = doc.data();
     return {
       _id: doc.id,
@@ -260,9 +266,7 @@ export class TodoService {
       isPrioritized: data.isPrioritized || false,
       createdAt: this.formatTimestamp(data.createdAt),
       updatedAt: this.formatTimestamp(data.updatedAt),
-      completedDate: data.completedDate 
-        ? this.formatTimestamp(data.completedDate) 
-        : null,
+      completedDate: data.completedDate ? this.formatTimestamp(data.completedDate) : null,
       deadline: data.deadline,
       note: data.note,
       tags: data.tags || [],
@@ -275,15 +279,13 @@ export class TodoService {
     };
   }
 
-  private formatTimestamp(
-    timestamp: Timestamp | string | undefined
-  ): string {
+  private formatTimestamp(timestamp: Timestamp | string | undefined): string {
     if (!timestamp) return new Date().toISOString();
-    
+
     if (timestamp instanceof Timestamp) {
       return timestamp.toDate().toISOString();
     }
-    
+
     return timestamp;
   }
 
@@ -331,17 +333,15 @@ export class TodoService {
 
   private calculateAverageTime(todos: Todo[]): number {
     const times = todos
-      .filter(t => t.efficiency?.completionTime)
-      .map(t => t.efficiency!.completionTime!);
-    
-    return times.length > 0
-      ? times.reduce((a, b) => a + b, 0) / times.length
-      : 0;
+      .filter((t) => t.efficiency?.completionTime)
+      .map((t) => t.efficiency!.completionTime!);
+
+    return times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : 0;
   }
 
   private calculateTotalTime(todos: Todo[]): number {
     return todos
-      .filter(t => t.efficiency?.completionTime)
+      .filter((t) => t.efficiency?.completionTime)
       .reduce((sum, t) => sum + t.efficiency!.completionTime!, 0);
   }
 }
