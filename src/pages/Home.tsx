@@ -613,9 +613,9 @@ export default function Home() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6 text-center">日々のタスク管理</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           {/* 習慣トラッカー */}
-          <Card className="h-full shadow-sm border-primary/20 hover:shadow-md transition-shadow md:col-span-2 lg:col-span-1">
+          <Card className="shadow-sm border-primary/20 hover:shadow-md transition-shadow">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Activity className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -628,16 +628,14 @@ export default function Home() {
           </Card>
 
           {/* 残高更新リマインダー */}
-          <Card className="h-full shadow-sm border-primary/20 hover:shadow-md transition-shadow">
+          <Card className="shadow-sm border-primary/20 hover:shadow-md transition-shadow">
             <CardContent className="pt-6">
               <BalanceUpdateReminder assetEntries={assetEntries} debtEntries={debtEntries} />
             </CardContent>
           </Card>
 
           {/* 本日のToDoリスト */}
-          <div className="h-full md:col-span-2 lg:col-span-1">
-            <DailyTodoReminder isPremium={hasActiveSubscription || trialActivated} />
-          </div>
+          <DailyTodoReminder isPremium={hasActiveSubscription || trialActivated} />
         </div>
       </section>
 
