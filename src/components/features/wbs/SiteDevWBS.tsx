@@ -1,43 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Calendar, 
-  Clock, 
-  Target, 
+import {
+  Calendar,
+  Clock,
+  Target,
   TrendingUp,
   AlertCircle,
   CheckCircle,
-  XCircle 
+  XCircle,
 } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
-import { siteDevProject, siteDevNodes } from '@/data/siteDevWBS';
+import { siteDevProject } from '@/data/siteDevWBS';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import WBSService from '@/services/wbs/WBSService';
+import { WBSNode } from '@/types/wbs';
 
 const SiteDevWBS: React.FC = () => {
   const [viewMode, setViewMode] = useState<'gantt' | 'tree'>('gantt');
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Firebaseからデータを取得
+  useEffect(() => {
+    const fetchWBSNodes = async () => {
+      try {
+        setLoading(true);
+        const nodes = await WBSService.getProjectNodes('site-dev-project');
+        setWbsNodes(nodes);
+      } catch (error) {
+        console.error('WBSデータの取得に失敗しました:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWBSNodes();
+
+    // リアルタイム更新を購読
+    const unsubscribe = WBSService.subscribeToProject('site-dev-project', (nodes) => {
+      setWbsNodes(nodes);
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
 
   // 統計情報の計算
   const calculateStats = () => {
-    const totalTasks = siteDevNodes.filter(n => n.level > 0).length;
-    const completedTasks = siteDevNodes.filter(n => n.level > 0 && n.status === 'completed').length;
-    const inProgressTasks = siteDevNodes.filter(n => n.level > 0 && n.status === 'in-progress').length;
-    const delayedTasks = siteDevNodes.filter(n => n.status === 'delayed').length;
-    
-    const totalProgress = siteDevNodes.reduce((sum, node) => {
-      if (node.level === 0) return sum + node.progress;
-      return sum;
-    }, 0) / siteDevNodes.filter(n => n.level === 0).length;
+    const totalTasks = wbsNodes.filter((n) => n.level > 0).length;
+    const completedTasks = wbsNodes.filter((n) => n.level > 0 && n.status === 'completed').length;
+    const inProgressTasks = wbsNodes.filter(
+      (n) => n.level > 0 && n.status === 'in-progress'
+    ).length;
+    const delayedTasks = wbsNodes.filter((n) => n.status === 'delayed').length;
 
-    const totalBudget = siteDevNodes.reduce((sum, n) => sum + n.budget, 0);
-    const actualCost = siteDevNodes.reduce((sum, n) => sum + n.actualCost, 0);
-    const totalEstimatedHours = siteDevNodes.reduce((sum, n) => sum + n.estimatedHours, 0);
-    const totalActualHours = siteDevNodes.reduce((sum, n) => sum + n.actualHours, 0);
+    const totalProgress =
+      wbsNodes.reduce((sum, node) => {
+        if (node.level === 0) return sum + node.progress;
+        return sum;
+      }, 0) / wbsNodes.filter((n) => n.level === 0).length;
+
+    const totalBudget = wbsNodes.reduce((sum, n) => sum + n.budget, 0);
+    const actualCost = wbsNodes.reduce((sum, n) => sum + n.actualCost, 0);
+    const totalEstimatedHours = wbsNodes.reduce((sum, n) => sum + n.estimatedHours, 0);
+    const totalActualHours = wbsNodes.reduce((sum, n) => sum + n.actualHours, 0);
 
     return {
       totalTasks,
@@ -57,9 +90,9 @@ const SiteDevWBS: React.FC = () => {
   const stats = calculateStats();
 
   // フェーズ別の進捗状況
-  const phaseProgress = siteDevNodes
-    .filter(n => n.level === 0)
-    .map(phase => ({
+  const phaseProgress = wbsNodes
+    .filter((n) => n.level === 0)
+    .map((phase) => ({
       name: phase.name,
       progress: phase.progress,
       status: phase.status,
@@ -87,31 +120,36 @@ const SiteDevWBS: React.FC = () => {
               <div className="flex justify-between mb-2">
                 <span className="text-2xl font-bold">{stats.totalProgress}%</span>
                 <span className="text-sm text-muted-foreground">
-                  {format(new Date(siteDevProject.startDate), 'yyyy/MM/dd')} - 
+                  {format(new Date(siteDevProject.startDate), 'yyyy/MM/dd')} -
                   {format(new Date(siteDevProject.endDate), 'yyyy/MM/dd')}
                 </span>
               </div>
               <Progress value={stats.totalProgress} className="h-3" />
             </div>
-            
+
             {/* フェーズ別進捗 */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               {phaseProgress.map((phase, index) => (
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium truncate">{phase.name.split(':')[1]}</span>
-                    <Badge 
-                      variant={phase.status === 'completed' ? 'outline' : 
-                              phase.status === 'in-progress' ? 'default' : 'secondary'}
+                    <Badge
+                      variant={
+                        phase.status === 'completed'
+                          ? 'outline'
+                          : phase.status === 'in-progress'
+                            ? 'default'
+                            : 'secondary'
+                      }
                       className="text-xs"
                     >
                       {phase.progress}%
                     </Badge>
                   </div>
-                  <Progress 
-                    value={phase.progress} 
+                  <Progress
+                    value={phase.progress}
                     className="h-2"
-                    style={{ 
+                    style={{
                       backgroundColor: `${phase.color}20`,
                     }}
                   />
@@ -130,7 +168,9 @@ const SiteDevWBS: React.FC = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.completedTasks}/{stats.totalTasks}</div>
+            <div className="text-2xl font-bold">
+              {stats.completedTasks}/{stats.totalTasks}
+            </div>
             <div className="flex gap-4 mt-2 text-xs">
               <span className="flex items-center gap-1">
                 <CheckCircle className="h-3 w-3 text-green-500" />
@@ -177,11 +217,9 @@ const SiteDevWBS: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {siteDevNodes.filter(n => n.risks.length > 0).length}
+              {wbsNodes.filter((n) => n.risks.length > 0).length}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              リスクのあるタスク
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">リスクのあるタスク</p>
           </CardContent>
         </Card>
       </div>
@@ -197,7 +235,7 @@ const SiteDevWBS: React.FC = () => {
           <Card>
             <CardContent className="p-0">
               <WBSGanttChart
-                nodes={siteDevNodes}
+                nodes={wbsNodes}
                 startDate={new Date(siteDevProject.startDate)}
                 endDate={new Date(siteDevProject.endDate)}
                 onNodeClick={setSelectedNode}
@@ -211,7 +249,7 @@ const SiteDevWBS: React.FC = () => {
           <Card>
             <CardContent>
               <WBSTreeView
-                nodes={siteDevNodes}
+                nodes={wbsNodes}
                 onNodeClick={setSelectedNode}
                 onNodeUpdate={async () => {}} // 読み取り専用
               />
@@ -232,12 +270,12 @@ const SiteDevWBS: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">{selectedNode.description}</p>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">期間:</span>
                   <p className="font-medium">
-                    {format(new Date(selectedNode.startDate), 'MM/dd', { locale: ja })} - 
+                    {format(new Date(selectedNode.startDate), 'MM/dd', { locale: ja })} -
                     {format(new Date(selectedNode.endDate), 'MM/dd', { locale: ja })}
                   </p>
                 </div>
@@ -260,7 +298,9 @@ const SiteDevWBS: React.FC = () => {
                   <span className="text-sm text-muted-foreground">成果物:</span>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {selectedNode.deliverables.map((item: string, index: number) => (
-                      <Badge key={index} variant="outline">{item}</Badge>
+                      <Badge key={index} variant="outline">
+                        {item}
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -289,4 +329,4 @@ const SiteDevWBS: React.FC = () => {
   );
 };
 
-export default SiteDevWBS; 
+export default SiteDevWBS;
