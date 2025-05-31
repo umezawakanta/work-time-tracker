@@ -47,11 +47,11 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           completedDate: null,
-          deadline: savedTodo.deadline,
+          deadline: savedTodo.deadline ? savedTodo.deadline.toISOString() : undefined,
           tags: savedTodo.tags,
           priorityLevel: 'medium',
         },
-        req.body.userId || 'default-user'
+        typeof req.body.userId === 'string' ? req.body.userId : 'default-user'
       );
     } catch (wbsError) {
       console.error('WBS integration failed:', wbsError);
@@ -91,7 +91,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       completedDate: updatedTodo.completedDate ? updatedTodo.completedDate.toISOString() : null,
-      deadline: updatedTodo.deadline,
+      deadline: updatedTodo.deadline ? updatedTodo.deadline.toISOString() : undefined,
       tags: updatedTodo.tags,
       priorityLevel: 'medium',
     });
@@ -168,7 +168,7 @@ router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
         priority: todo.priority,
         isPrioritized: todo.isPrioritized,
         type: todo.type,
-        deadline: todo.deadline, // 期限フィールドを追加
+        deadline: todo.deadline ? todo.deadline.toISOString() : undefined,
         archivedAt: new Date(),
       });
 
