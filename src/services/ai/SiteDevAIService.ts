@@ -1,6 +1,6 @@
 import AdvancedAIService from './AdvancedAIService';
 import { WBSNode } from '@/types/wbs';
-import { Todo, TaskType } from '@/types/todo';
+import { TaskType } from '@/types/todo';
 import { siteDevNodes } from '@/data/siteDevWBS';
 import WBSService from '../wbs/WBSService';
 import { TodoItem } from '@/types';
