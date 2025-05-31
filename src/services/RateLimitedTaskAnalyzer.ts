@@ -9,6 +9,26 @@ const MIN_INTERVAL_BETWEEN_CALLS = 5000; // ミリ秒単位 (5秒)
 const MIN_TEXT_LENGTH_FOR_ANALYSIS = 8; // 分析に必要な最小文字数
 const MAX_CALLS_PER_MINUTE = 10; // 1分あたりの最大呼び出し回数
 
+// 短いテキストから文脈を推測するためのマッピング
+const SHORT_TEXT_MAPPINGS = {
+  // 一般的な略語や短いテキスト
+  mtg: { expanded: '会議', type: 'input', category: '仕事' },
+  dev: { expanded: '開発作業', type: 'output', category: '仕事' },
+  doc: { expanded: 'ドキュメント作成', type: 'output', category: '仕事' },
+  study: { expanded: '勉強・学習', type: 'input', category: '学習' },
+  review: { expanded: 'レビュー確認', type: 'input', category: '仕事' },
+  fix: { expanded: 'バグ修正', type: 'output', category: '仕事' },
+  test: { expanded: 'テスト実行', type: 'output', category: '仕事' },
+  mail: { expanded: 'メール確認・返信', type: 'input', category: '仕事' },
+  pr: { expanded: 'プルリクエスト作成', type: 'output', category: '仕事' },
+  gym: { expanded: 'ジムでトレーニング', type: 'output', category: '健康' },
+  run: { expanded: 'ランニング', type: 'output', category: '健康' },
+  read: { expanded: '読書', type: 'input', category: '学習' },
+  write: { expanded: '執筆作業', type: 'output', category: '仕事' },
+  plan: { expanded: '計画立案', type: 'output', category: '仕事' },
+  rest: { expanded: '休憩', type: 'input', category: 'その他' },
+};
+
 // 呼び出し履歴の追跡
 const callHistory: number[] = [];
 let lastTypeAnalysisTime = 0;
@@ -19,6 +39,39 @@ let isProcessingQueue = false;
 // キャッシュに詳細分析用を追加
 const detailCache: AnalysisCache<TaskDetailAnalysis> = {};
 let lastDetailAnalysisTime = 0;
+
+// 短いテキストを補完する関数
+const expandShortText = (taskText: string): string => {
+  const lowerText = taskText.toLowerCase().trim();
+
+  // 短いテキストのマッピングをチェック
+  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
+  if (shortMapping) {
+    return shortMapping.expanded;
+  }
+
+  // その他の短いテキストの場合
+  if (taskText.trim().length < MIN_TEXT_LENGTH_FOR_ANALYSIS) {
+    // 動詞で終わる場合
+    if (
+      lowerText.endsWith('る') ||
+      lowerText.endsWith('う') ||
+      lowerText.endsWith('く') ||
+      lowerText.endsWith('す') ||
+      lowerText.endsWith('つ') ||
+      lowerText.endsWith('ぬ') ||
+      lowerText.endsWith('ぶ') ||
+      lowerText.endsWith('む')
+    ) {
+      return `${taskText}作業を実施する`;
+    }
+    // 名詞の場合
+    return `${taskText}に関する作業を行う`;
+  }
+
+  // すでに十分な長さがある場合はそのまま返す
+  return taskText;
+};
 
 // リクエストキューを処理する関数
 const processQueue = async (): Promise<void> => {
@@ -108,17 +161,22 @@ export const RateLimitedTaskAnalyzer = {
    */
   analyzeTaskType: async (taskText: string): Promise<TaskClassification> => {
     // 入力チェック
-    if (!taskText || taskText.trim().length < MIN_TEXT_LENGTH_FOR_ANALYSIS) {
-      console.log('テキストが短すぎるため、分析をスキップします');
+    if (!taskText || taskText.trim().length === 0) {
       return {
         type: 'input',
-        confidence: 0.5,
-        explanation: 'テキストが短すぎるため、デフォルト値を使用します',
+        confidence: 0.1,
+        explanation: 'テキストが空のため、デフォルト値を使用します',
       };
     }
 
-    // キャッシュをチェック
-    const cacheKey = taskText.trim().toLowerCase();
+    const originalText = taskText.trim();
+    const isShortText = originalText.length < MIN_TEXT_LENGTH_FOR_ANALYSIS;
+
+    // 短いテキストの場合は補完する
+    const analyzableText = isShortText ? expandShortText(originalText) : originalText;
+
+    // キャッシュをチェック（元のテキストでキャッシュキーを作成）
+    const cacheKey = originalText.toLowerCase();
     if (typeCache[cacheKey] && Date.now() - typeCache[cacheKey].timestamp < CACHE_TTL) {
       console.log('キャッシュから結果を返します (タイプ分析)');
       return typeCache[cacheKey].result;
@@ -137,7 +195,7 @@ export const RateLimitedTaskAnalyzer = {
     if (callHistory.length >= MAX_CALLS_PER_MINUTE) {
       console.log('1分あたりの最大呼び出し回数に達しました (タイプ分析)');
       // ローカル分析を使用
-      const result = localTypeAnalysis(taskText);
+      const result = localTypeAnalysis(originalText);
       return result;
     }
 
@@ -145,7 +203,7 @@ export const RateLimitedTaskAnalyzer = {
     if (now - lastTypeAnalysisTime < MIN_INTERVAL_BETWEEN_CALLS) {
       console.log('前回の分析からの間隔が短すぎます (タイプ分析)');
       // ローカル分析を使用
-      const result = localTypeAnalysis(taskText);
+      const result = localTypeAnalysis(originalText);
       return result;
     }
 
@@ -154,9 +212,13 @@ export const RateLimitedTaskAnalyzer = {
       lastTypeAnalysisTime = now;
       callHistory.push(now);
 
-      const result = await GeminiService.classifyTaskType(taskText);
+      if (isShortText) {
+        console.log(`短いテキスト "${originalText}" を "${analyzableText}" に補完して分析します`);
+      }
 
-      // 結果をキャッシュ
+      const result = await GeminiService.classifyTaskType(analyzableText);
+
+      // 結果をキャッシュ（元のテキストでキャッシュ）
       typeCache[cacheKey] = {
         result,
         timestamp: now,
@@ -165,7 +227,7 @@ export const RateLimitedTaskAnalyzer = {
       return result;
     } catch (error) {
       console.error('タイプ分析中にエラーが発生しました:', error);
-      return localTypeAnalysis(taskText);
+      return localTypeAnalysis(originalText);
     }
   },
 
@@ -176,18 +238,23 @@ export const RateLimitedTaskAnalyzer = {
    */
   analyzeTaskPriority: async (taskText: string): Promise<PriorityAnalysis> => {
     // 入力チェック
-    if (!taskText || taskText.trim().length < MIN_TEXT_LENGTH_FOR_ANALYSIS) {
-      console.log('テキストが短すぎるため、分析をスキップします');
+    if (!taskText || taskText.trim().length === 0) {
       return {
         isPrioritized: false,
         importance: 5,
         urgency: 5,
-        explanation: 'テキストが短すぎるため、デフォルト値を使用します',
+        explanation: 'テキストが空のため、デフォルト値を使用します',
       };
     }
 
-    // キャッシュをチェック
-    const cacheKey = taskText.trim().toLowerCase();
+    const originalText = taskText.trim();
+    const isShortText = originalText.length < MIN_TEXT_LENGTH_FOR_ANALYSIS;
+
+    // 短いテキストの場合は補完する
+    const analyzableText = isShortText ? expandShortText(originalText) : originalText;
+
+    // キャッシュをチェック（元のテキストでキャッシュキーを作成）
+    const cacheKey = originalText.toLowerCase();
     if (priorityCache[cacheKey] && Date.now() - priorityCache[cacheKey].timestamp < CACHE_TTL) {
       console.log('キャッシュから結果を返します (優先度分析)');
       return priorityCache[cacheKey].result;
@@ -206,14 +273,14 @@ export const RateLimitedTaskAnalyzer = {
     if (callHistory.length >= MAX_CALLS_PER_MINUTE) {
       console.log('1分あたりの最大呼び出し回数に達しました (優先度分析)');
       // ローカル分析を使用
-      return TaskPriorityService.localPriorityAnalysis(taskText);
+      return TaskPriorityService.localPriorityAnalysis(originalText);
     }
 
     // 前回の分析からの経過時間をチェック
     if (now - lastPriorityAnalysisTime < MIN_INTERVAL_BETWEEN_CALLS) {
       console.log('前回の分析からの間隔が短すぎます (優先度分析)');
       // ローカル分析を使用
-      return TaskPriorityService.localPriorityAnalysis(taskText);
+      return TaskPriorityService.localPriorityAnalysis(originalText);
     }
 
     // APIを呼び出し
@@ -221,9 +288,13 @@ export const RateLimitedTaskAnalyzer = {
       lastPriorityAnalysisTime = now;
       callHistory.push(now);
 
-      const result = await TaskPriorityService.analyzePriority(taskText);
+      if (isShortText) {
+        console.log(`短いテキスト "${originalText}" を "${analyzableText}" に補完して分析します`);
+      }
 
-      // 結果をキャッシュ
+      const result = await TaskPriorityService.analyzePriority(analyzableText);
+
+      // 結果をキャッシュ（元のテキストでキャッシュ）
       priorityCache[cacheKey] = {
         result,
         timestamp: now,
@@ -232,7 +303,7 @@ export const RateLimitedTaskAnalyzer = {
       return result;
     } catch (error) {
       console.error('優先度分析中にエラーが発生しました:', error);
-      return TaskPriorityService.localPriorityAnalysis(taskText);
+      return TaskPriorityService.localPriorityAnalysis(originalText);
     }
   },
 
@@ -276,8 +347,7 @@ export const RateLimitedTaskAnalyzer = {
    */
   analyzeTaskDetails: async (taskText: string): Promise<TaskDetailAnalysis> => {
     // 入力チェック
-    if (!taskText || taskText.trim().length < MIN_TEXT_LENGTH_FOR_ANALYSIS) {
-      console.log('テキストが短すぎるため、分析をスキップします');
+    if (!taskText || taskText.trim().length === 0) {
       return {
         description: '',
         category: 'その他',
@@ -287,8 +357,14 @@ export const RateLimitedTaskAnalyzer = {
       };
     }
 
-    // キャッシュをチェック
-    const cacheKey = taskText.trim().toLowerCase();
+    const originalText = taskText.trim();
+    const isShortText = originalText.length < MIN_TEXT_LENGTH_FOR_ANALYSIS;
+
+    // 短いテキストの場合は補完する
+    const analyzableText = isShortText ? expandShortText(originalText) : originalText;
+
+    // キャッシュをチェック（元のテキストでキャッシュキーを作成）
+    const cacheKey = originalText.toLowerCase();
     if (detailCache[cacheKey] && Date.now() - detailCache[cacheKey].timestamp < CACHE_TTL) {
       console.log('キャッシュから結果を返します (詳細分析)');
       return detailCache[cacheKey].result;
@@ -306,13 +382,13 @@ export const RateLimitedTaskAnalyzer = {
     // 1分あたりの最大呼び出し回数をチェック
     if (callHistory.length >= MAX_CALLS_PER_MINUTE) {
       console.log('1分あたりの最大呼び出し回数に達しました (詳細分析)');
-      return localDetailAnalysis(taskText);
+      return localDetailAnalysis(originalText);
     }
 
     // 前回の分析からの経過時間をチェック
     if (now - lastDetailAnalysisTime < MIN_INTERVAL_BETWEEN_CALLS) {
       console.log('前回の分析からの間隔が短すぎます (詳細分析)');
-      return localDetailAnalysis(taskText);
+      return localDetailAnalysis(originalText);
     }
 
     // APIを呼び出し
@@ -320,9 +396,13 @@ export const RateLimitedTaskAnalyzer = {
       lastDetailAnalysisTime = now;
       callHistory.push(now);
 
-      const result = await GeminiService.analyzeTaskDetails(taskText);
+      if (isShortText) {
+        console.log(`短いテキスト "${originalText}" を "${analyzableText}" に補完して分析します`);
+      }
 
-      // 結果をキャッシュ
+      const result = await GeminiService.analyzeTaskDetails(analyzableText);
+
+      // 結果をキャッシュ（元のテキストでキャッシュ）
       detailCache[cacheKey] = {
         result,
         timestamp: now,
@@ -331,7 +411,7 @@ export const RateLimitedTaskAnalyzer = {
       return result;
     } catch (error) {
       console.error('詳細分析中にエラーが発生しました:', error);
-      return localDetailAnalysis(taskText);
+      return localDetailAnalysis(originalText);
     }
   },
 
@@ -374,9 +454,40 @@ export const RateLimitedTaskAnalyzer = {
   },
 };
 
-// ローカルでのタイプ分析 (フォールバック用)
+// ローカルでのタイプ分析 (フォールバック用と短いテキスト用)
 function localTypeAnalysis(taskText: string): TaskClassification {
-  const lowerText = taskText.toLowerCase();
+  const lowerText = taskText.toLowerCase().trim();
+
+  // 短いテキストのマッピングをチェック
+  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
+  if (shortMapping) {
+    return {
+      type: shortMapping.type as 'input' | 'output',
+      confidence: 0.8,
+      explanation: `"${taskText}"は"${shortMapping.expanded}"として解釈しました（短縮語分析）`,
+    };
+  }
+
+  // 単一単語の分析
+  if (!lowerText.includes(' ') && lowerText.length < 8) {
+    // 動詞から推測
+    if (lowerText.endsWith('る') || lowerText.endsWith('う')) {
+      if (['作る', '書く', '描く', '建てる'].some((v) => lowerText.includes(v))) {
+        return {
+          type: 'output',
+          confidence: 0.7,
+          explanation: `"${taskText}"は作成系の動詞のため、アウトプット活動と判断しました`,
+        };
+      }
+      if (['見る', '読む', '聞く', '学ぶ'].some((v) => lowerText.includes(v))) {
+        return {
+          type: 'input',
+          confidence: 0.7,
+          explanation: `"${taskText}"は取得系の動詞のため、インプット活動と判断しました`,
+        };
+      }
+    }
+  }
 
   // インプット関連のキーワード
   const inputKeywords = [
@@ -392,6 +503,11 @@ function localTypeAnalysis(taskText: string): TaskClassification {
     'リサーチ',
     '参考',
     '調査',
+    'mtg',
+    'meeting',
+    'レビュー',
+    '打ち合わせ',
+    'ミーティング',
   ];
 
   // アウトプット関連のキーワード
@@ -409,6 +525,11 @@ function localTypeAnalysis(taskText: string): TaskClassification {
     '教える',
     'シェア',
     '投稿',
+    'dev',
+    'develop',
+    'code',
+    'fix',
+    'impl',
   ];
 
   // キーワードマッチの数をカウント
@@ -423,20 +544,33 @@ function localTypeAnalysis(taskText: string): TaskClassification {
     if (lowerText.includes(keyword)) outputScore++;
   });
 
+  // 短いテキストの場合は部分一致も考慮
+  if (lowerText.length < 8) {
+    // 最初の2-3文字でマッチング
+    const prefix = lowerText.substring(0, 3);
+    inputKeywords.forEach((keyword) => {
+      if (keyword.startsWith(prefix)) inputScore += 0.5;
+    });
+    outputKeywords.forEach((keyword) => {
+      if (keyword.startsWith(prefix)) outputScore += 0.5;
+    });
+  }
+
   // スコアに基づいて分類
   if (inputScore > outputScore) {
     return {
       type: 'input',
-      confidence: 0.7,
-      explanation: 'インプット関連のキーワードが検出されました（ローカル分析）',
+      confidence: Math.min(0.9, 0.5 + inputScore * 0.1),
+      explanation: `インプット関連のキーワードが検出されました（${lowerText.length < 8 ? '短文' : 'ローカル'}分析）`,
     };
   } else if (outputScore > inputScore) {
     return {
       type: 'output',
-      confidence: 0.7,
-      explanation: 'アウトプット関連のキーワードが検出されました（ローカル分析）',
+      confidence: Math.min(0.9, 0.5 + outputScore * 0.1),
+      explanation: `アウトプット関連のキーワードが検出されました（${lowerText.length < 8 ? '短文' : 'ローカル'}分析）`,
     };
   } else {
+    // 文脈から推測
     if (lowerText.includes('ai') || lowerText.includes('連携') || lowerText.includes('開発')) {
       return {
         type: 'output',
@@ -446,56 +580,143 @@ function localTypeAnalysis(taskText: string): TaskClassification {
     } else {
       return {
         type: 'input',
-        confidence: 0.5,
-        explanation: 'タスク種別を判別できないため、デフォルト設定しました（ローカル分析）',
+        confidence: 0.4,
+        explanation: `"${taskText}"の種別を推測できませんでした。文脈から判断してデフォルト設定しました`,
       };
     }
   }
 }
 
-// ローカルでの詳細分析 (フォールバック用)
+// ローカルでの詳細分析 (フォールバック用と短いテキスト用)
 function localDetailAnalysis(taskText: string): TaskDetailAnalysis {
-  const lowerText = taskText.toLowerCase();
+  const lowerText = taskText.toLowerCase().trim();
+
+  // 短いテキストのマッピングをチェック
+  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
+  let expandedText = taskText;
+  let baseCategory = 'その他';
+
+  if (shortMapping) {
+    expandedText = shortMapping.expanded;
+    baseCategory = shortMapping.category;
+  }
 
   // カテゴリの推測
-  let category = 'その他';
-  if (lowerText.includes('仕事') || lowerText.includes('会議') || lowerText.includes('開発')) {
+  let category = baseCategory;
+  if (
+    lowerText.includes('仕事') ||
+    lowerText.includes('会議') ||
+    lowerText.includes('開発') ||
+    lowerText.includes('work') ||
+    lowerText.includes('job') ||
+    lowerText.includes('task')
+  ) {
     category = '仕事';
   } else if (
     lowerText.includes('勉強') ||
     lowerText.includes('学習') ||
-    lowerText.includes('読書')
+    lowerText.includes('読書') ||
+    lowerText.includes('study') ||
+    lowerText.includes('learn') ||
+    lowerText.includes('book')
   ) {
     category = '学習';
   } else if (
     lowerText.includes('運動') ||
     lowerText.includes('ジム') ||
-    lowerText.includes('ランニング')
+    lowerText.includes('ランニング') ||
+    lowerText.includes('gym') ||
+    lowerText.includes('run') ||
+    lowerText.includes('exercise')
   ) {
     category = '健康';
   }
 
-  // タグの抽出
+  // タグの抽出（短いテキストからも推測）
   const tags: string[] = [];
-  if (lowerText.includes('プログラミング') || lowerText.includes('コーディング'))
-    tags.push('プログラミング');
-  if (lowerText.includes('react')) tags.push('React');
-  if (lowerText.includes('ai') || lowerText.includes('人工知能')) tags.push('AI');
 
-  // 推定時間
+  // プログラミング関連
+  if (
+    lowerText.includes('プログラミング') ||
+    lowerText.includes('コーディング') ||
+    lowerText.includes('code') ||
+    lowerText.includes('dev') ||
+    lowerText.includes('開発')
+  ) {
+    tags.push('プログラミング');
+  }
+
+  // 技術スタック
+  if (lowerText.includes('react')) tags.push('React');
+  if (lowerText.includes('vue')) tags.push('Vue');
+  if (lowerText.includes('node') || lowerText.includes('nodejs')) tags.push('Node.js');
+  if (lowerText.includes('python') || lowerText.includes('py')) tags.push('Python');
+  if (lowerText.includes('js') || lowerText.includes('javascript')) tags.push('JavaScript');
+  if (lowerText.includes('ts') || lowerText.includes('typescript')) tags.push('TypeScript');
+
+  // AI関連
+  if (lowerText.includes('ai') || lowerText.includes('人工知能') || lowerText.includes('ml')) {
+    tags.push('AI');
+  }
+
+  // 短いキーワードから推測
+  if (lowerText === 'mtg' || lowerText.includes('会議')) tags.push('ミーティング');
+  if (lowerText === 'doc' || lowerText.includes('文書')) tags.push('ドキュメント');
+  if (lowerText === 'pr' || lowerText.includes('pull')) tags.push('レビュー');
+
+  // 推定時間（短いテキストでも文脈から推測）
   let estimatedDuration = 60;
-  if (lowerText.includes('簡単') || lowerText.includes('クイック')) {
+
+  if (
+    lowerText.includes('簡単') ||
+    lowerText.includes('クイック') ||
+    lowerText.includes('quick') ||
+    lowerText.includes('simple') ||
+    lowerText.length < 5
+  ) {
     estimatedDuration = 30;
-  } else if (lowerText.includes('大規模') || lowerText.includes('詳細')) {
+  } else if (
+    lowerText.includes('大規模') ||
+    lowerText.includes('詳細') ||
+    lowerText.includes('complex') ||
+    lowerText.includes('detailed')
+  ) {
     estimatedDuration = 180;
+  } else if (
+    lowerText.includes('mtg') ||
+    lowerText.includes('会議') ||
+    lowerText.includes('meeting')
+  ) {
+    estimatedDuration = 60;
+  } else if (
+    lowerText.includes('dev') ||
+    lowerText.includes('開発') ||
+    lowerText.includes('実装')
+  ) {
+    estimatedDuration = 120;
+  }
+
+  // 説明文の生成
+  let description = expandedText;
+  if (shortMapping) {
+    description = `${expandedText}を行う`;
+  } else if (lowerText.length < 8) {
+    // 短いテキストの場合は補完
+    if (lowerText.endsWith('る') || lowerText.endsWith('う')) {
+      description = `${taskText}タスクを実行する`;
+    } else {
+      description = `${taskText}に関する作業を行う`;
+    }
+  } else {
+    description = `${taskText}を実行する`;
   }
 
   return {
-    description: `${taskText}を実行する`,
+    description,
     category,
     tags,
     estimatedDuration,
-    confidence: 0.3,
+    confidence: lowerText.length < 8 ? 0.5 : 0.3,
   };
 }
 

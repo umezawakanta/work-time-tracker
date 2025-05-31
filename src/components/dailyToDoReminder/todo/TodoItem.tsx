@@ -262,6 +262,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
     setIsLoading(true);
     try {
+      // デバッグ用ログ
+      console.log('AI分析結果を適用:', {
+        現在のタイトル: todo.text,
+        改善されたタイトル: aiAnalysisResult.improvedTitle,
+        カテゴリ: aiAnalysisResult.category,
+        タグ: aiAnalysisResult.tags,
+      });
+
       const updates: Partial<Todo> = {
         // 改善されたタイトルがある場合は使用
         text: aiAnalysisResult.improvedTitle || todo.text,
@@ -271,12 +279,51 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         deadline: aiAnalysisResult.deadline,
       };
 
+      // 実際に変更があるかチェック
+      const hasChanges =
+        (aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text) ||
+        aiAnalysisResult.category !== todo.category ||
+        JSON.stringify(aiAnalysisResult.tags) !== JSON.stringify(todo.tags) ||
+        aiAnalysisResult.estimatedDuration !== todo.estimatedDuration ||
+        aiAnalysisResult.deadline !== todo.deadline;
+
+      if (!hasChanges) {
+        toast('変更する内容がありません');
+        setIsAIAnalysisDialogOpen(false);
+        return;
+      }
+
       await onUpdate(todo.id, updates);
+
+      // 成功時のフィードバック
+      const updatedItems = [];
+      if (aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text) {
+        updatedItems.push('タイトル');
+      }
+      if (aiAnalysisResult.category) updatedItems.push('カテゴリ');
+      if (aiAnalysisResult.tags?.length) updatedItems.push('タグ');
+      if (aiAnalysisResult.estimatedDuration) updatedItems.push('推定時間');
+      if (aiAnalysisResult.deadline) updatedItems.push('期限');
+
+      toast.success(`${updatedItems.join('、')}を更新しました`);
       setIsAIAnalysisDialogOpen(false);
+    } catch (error) {
+      console.error('AI分析結果の適用エラー:', error);
+      toast.error('更新に失敗しました');
     } finally {
       setIsLoading(false);
     }
-  }, [todo.id, todo.text, aiAnalysisResult, onUpdate, isLoading]);
+  }, [
+    todo.id,
+    todo.text,
+    todo.category,
+    todo.tags,
+    todo.estimatedDuration,
+    todo.deadline,
+    aiAnalysisResult,
+    onUpdate,
+    isLoading,
+  ]);
 
   // 子タスクを作成する関数
   const handleCreateSubtasks = useCallback(async (): Promise<void> => {
