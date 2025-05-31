@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { TodoItem, ITodoItem } from '../models/TodoItem.js';
 import { TodoHistory } from '../models/TodoHistory.js';
 import { TodoArchive } from '../models/TodoArchive.js';
-import TodoWBSIntegrationService from '../../services/integration/TodoWBSIntegrationService.js';
+// import TodoWBSIntegrationService from '../../services/integration/TodoWBSIntegrationService.js';  // コメントアウト
 
 const router = express.Router();
 
@@ -34,7 +34,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     });
     const savedTodo = await newTodo.save();
 
-    // WBS連携を実行
+    // WBS連携を一時的に無効化
+    /*
     try {
       await TodoWBSIntegrationService.handleTodoCreation(
         {
@@ -55,8 +56,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       );
     } catch (wbsError) {
       console.error('WBS integration failed:', wbsError);
-      // WBS連携が失敗してもToDoの作成は成功とする
     }
+    */
 
     res.status(201).json({ message: 'Todo created successfully', todo: savedTodo });
   } catch (error) {
@@ -81,20 +82,20 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     }
 
     // WBS同期を実行
-    await TodoWBSIntegrationService.syncTodoToWBS({
-      _id: updatedTodo.id,
-      task: updatedTodo.task,
-      type: updatedTodo.type,
-      completed: updatedTodo.completed,
-      priority: updatedTodo.priority,
-      isPrioritized: updatedTodo.isPrioritized,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      completedDate: updatedTodo.completedDate ? updatedTodo.completedDate.toISOString() : null,
-      deadline: updatedTodo.deadline ? updatedTodo.deadline.toISOString() : undefined,
-      tags: updatedTodo.tags,
-      priorityLevel: 'medium',
-    });
+    // await TodoWBSIntegrationService.syncTodoToWBS({
+    //   _id: updatedTodo.id,
+    //   task: updatedTodo.task,
+    //   type: updatedTodo.type,
+    //   completed: updatedTodo.completed,
+    //   priority: updatedTodo.priority,
+    //   isPrioritized: updatedTodo.isPrioritized,
+    //   createdAt: new Date().toISOString(),
+    //   updatedAt: new Date().toISOString(),
+    //   completedDate: updatedTodo.completedDate ? updatedTodo.completedDate.toISOString() : null,
+    //   deadline: updatedTodo.deadline ? updatedTodo.deadline.toISOString() : undefined,
+    //   tags: updatedTodo.tags,
+    //   priorityLevel: 'medium',
+    // });
 
     res.json({ message: 'Todo updated successfully', todo: updatedTodo });
   } catch (error) {

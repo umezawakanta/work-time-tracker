@@ -1,7 +1,8 @@
-import { WBSNode } from '../../types/wbs';
-import { Todo, NewTodo } from '../../types/todo';
-import WBSService from '../wbs/WBSService';
-import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../config/firebase.js';
+import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { WBSNode } from '../../types/wbs.js';
+import { Todo, NewTodo } from '../../types/todo.js';
+import WBSService from '../wbs/WBSService.js';
 
 interface TodoWBSMapping {
   id: string;
