@@ -184,7 +184,7 @@ export class BatchRequestManager {
   private recordMetrics<T>(
     results: readonly BatchRequestResult<T>[],
     duration: number,
-    config: BatchRequestConfig
+    _config: BatchRequestConfig
   ): void {
     const successCount = results.filter((r) => r.success).length;
     const errorCount = results.length - successCount;
