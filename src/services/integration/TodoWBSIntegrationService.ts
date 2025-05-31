@@ -1,11 +1,8 @@
-import { db } from '../../config/firebase.js';
-import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { WBSNode } from '../../types/wbs.js';
 import { Todo, NewTodo } from '../../types/todo.js';
 import WBSService from '../wbs/WBSService.js';
 
 interface TodoWBSMapping {
-  id: string;
   todoId: string;
   wbsNodeId: string;
   projectId: string;
@@ -14,7 +11,6 @@ interface TodoWBSMapping {
 }
 
 class TodoWBSIntegrationService {
-  private mappingCollection = 'todo_wbs_mappings';
   private SITE_DEV_PROJECT_ID = 'site-dev-project';
 
   // サイト開発関連のキーワード
@@ -92,7 +88,7 @@ class TodoWBSIntegrationService {
 
     const nodeId = await WBSService.createNode(wbsNode, userId);
 
-    // マッピング情報を保存
+    // マッピング情報を保存（MongoDBのAPIを通じて）
     await this.createMapping(todo._id, nodeId, this.SITE_DEV_PROJECT_ID);
 
     return nodeId;
@@ -180,15 +176,19 @@ class TodoWBSIntegrationService {
   }
 
   /**
-   * マッピング情報を作成
+   * マッピング情報を作成（MongoDB API経由）
    */
   private async createMapping(todoId: string, wbsNodeId: string, projectId: string): Promise<void> {
-    await addDoc(collection(db, this.mappingCollection), {
-      todoId,
-      wbsNodeId,
-      projectId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+    await fetch('/api/wbs-mappings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        todoId,
+        wbsNodeId,
+        projectId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }),
     });
   }
 
@@ -209,18 +209,12 @@ class TodoWBSIntegrationService {
   }
 
   /**
-   * ToDoとWBSのマッピングを取得
+   * ToDoとWBSのマッピングを取得（MongoDB API経由）
    */
   private async getMapping(todoId: string): Promise<TodoWBSMapping | null> {
-    const q = query(collection(db, this.mappingCollection), where('todoId', '==', todoId));
-
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
-
-    return {
-      id: snapshot.docs[0].id,
-      ...snapshot.docs[0].data(),
-    } as TodoWBSMapping;
+    const response = await fetch(`/api/wbs-mappings/todo/${todoId}`);
+    if (!response.ok) return null;
+    return response.json();
   }
 
   /**
@@ -243,13 +237,9 @@ class TodoWBSIntegrationService {
    * WBSノードに関連するToDoを取得
    */
   async getTodosForWBSNode(wbsNodeId: string): Promise<Todo[]> {
-    const q = query(collection(db, this.mappingCollection), where('wbsNodeId', '==', wbsNodeId));
-
-    const snapshot = await getDocs(q);
-    const todoIds = snapshot.docs.map((doc) => doc.data().todoId);
-
-    // TODO: TodoServiceを使ってToDoを取得
-    return [];
+    const response = await fetch(`/api/wbs-mappings/wbs/${wbsNodeId}/todos`);
+    if (!response.ok) return [];
+    return response.json();
   }
 }
 

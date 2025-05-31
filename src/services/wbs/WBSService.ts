@@ -1,28 +1,10 @@
 // src/services/wbs/WBSService.ts
-import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  serverTimestamp,
-  writeBatch,
-  onSnapshot,
-  Unsubscribe,
-} from 'firebase/firestore';
-import { db } from '@/config/firebase';
 import { WBSNode, WBSProject, WBSActivity, WBSExportOptions } from '@/types/wbs';
 
 class WBSService {
-  private projectsCollection = 'wbs_projects';
-  private nodesCollection = 'wbs_nodes';
-  private commentsCollection = 'wbs_comments';
-  private activitiesCollection = 'wbs_activities';
-  private templatesCollection = 'wbs_templates';
   private baseUrl = '/api/wbs';
+  private projectsUrl = '/api/wbs-projects';
+  private activitiesUrl = '/api/wbs-activities';
 
   // プロジェクト管理
   async createProject(userId: string, projectData: Partial<WBSProject>): Promise<string> {
@@ -42,32 +24,24 @@ class WBSService {
       updatedAt: new Date().toISOString(),
     };
 
-    const docRef = await addDoc(collection(db, this.projectsCollection), {
-      ...newProject,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+    const response = await fetch(this.projectsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newProject),
     });
 
-    await this.logActivity(docRef.id, userId, 'created', 'プロジェクトを作成しました');
+    if (!response.ok) throw new Error('Failed to create project');
+    const created = await response.json();
 
-    return docRef.id;
+    await this.logActivity(created._id, userId, 'created', 'プロジェクトを作成しました');
+
+    return created._id;
   }
 
   async getProjects(userId: string): Promise<WBSProject[]> {
-    const q = query(
-      collection(db, this.projectsCollection),
-      where('team', 'array-contains', userId),
-      orderBy('updatedAt', 'desc')
-    );
-
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(
-      (doc) =>
-        ({
-          id: doc.id,
-          ...doc.data(),
-        }) as WBSProject
-    );
+    const response = await fetch(`${this.projectsUrl}/user/${userId}`);
+    if (!response.ok) throw new Error('Failed to fetch projects');
+    return response.json();
   }
 
   // ノード管理
@@ -85,7 +59,13 @@ class WBSService {
   async getProjectNodes(projectId: string): Promise<WBSNode[]> {
     const response = await fetch(`${this.baseUrl}/project/${projectId}`);
     if (!response.ok) throw new Error('Failed to fetch WBS nodes');
-    return response.json();
+    const nodes = await response.json();
+
+    // _idをidにマッピング
+    return nodes.map((node: any) => ({
+      ...node,
+      id: node._id,
+    }));
   }
 
   async updateNode(nodeId: string, updates: Partial<WBSNode>): Promise<void> {
@@ -104,8 +84,11 @@ class WBSService {
     if (!response.ok) throw new Error('Failed to delete WBS node');
   }
 
-  // リアルタイム監視
+  // リアルタイム監視（ポーリング）
   subscribeToProject(projectId: string, callback: (nodes: WBSNode[]) => void): () => void {
+    // 初回読み込み
+    this.getProjectNodes(projectId).then(callback).catch(console.error);
+
     // ポーリングで実装
     const interval = setInterval(async () => {
       try {
@@ -137,10 +120,18 @@ class WBSService {
 
   // 依存関係チェック
   async checkDependencies(nodeId: string): Promise<boolean> {
-    const node = await this.getNode(nodeId);
+    const response = await fetch(`${this.baseUrl}/${nodeId}`);
+    if (!response.ok) return true;
+
+    const node = await response.json();
     if (!node || node.dependencies.length === 0) return true;
 
-    const dependencies = await Promise.all(node.dependencies.map((depId) => this.getNode(depId)));
+    const dependencies = await Promise.all(
+      node.dependencies.map(async (depId: string) => {
+        const depResponse = await fetch(`${this.baseUrl}/${depId}`);
+        return depResponse.ok ? depResponse.json() : null;
+      })
+    );
 
     return dependencies.every((dep) => dep && dep.status === 'completed');
   }
@@ -152,50 +143,23 @@ class WBSService {
     action: WBSActivity['action'],
     details: string
   ): Promise<void> {
-    await addDoc(collection(db, this.activitiesCollection), {
-      nodeId: projectId,
-      userId,
-      action,
-      details,
-      timestamp: serverTimestamp(),
+    await fetch(this.activitiesUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nodeId: projectId,
+        userId,
+        action,
+        details,
+        timestamp: new Date().toISOString(),
+      }),
     });
-  }
-
-  // ヘルパーメソッド
-  private async getNode(nodeId: string): Promise<WBSNode | null> {
-    const snapshot = await getDocs(
-      query(collection(db, this.nodesCollection), where('id', '==', nodeId))
-    );
-
-    if (snapshot.empty) return null;
-
-    return {
-      id: snapshot.docs[0].id,
-      ...snapshot.docs[0].data(),
-    } as WBSNode;
-  }
-
-  private async getChildNodes(parentId: string): Promise<WBSNode[]> {
-    const q = query(collection(db, this.nodesCollection), where('parentId', '==', parentId));
-
-    const snapshot = await getDocs(q);
-    const children = snapshot.docs.map(
-      (doc) =>
-        ({
-          id: doc.id,
-          ...doc.data(),
-        }) as WBSNode
-    );
-
-    // 再帰的に子ノードを取得
-    const grandChildren = await Promise.all(children.map((child) => this.getChildNodes(child.id)));
-
-    return [...children, ...grandChildren.flat()];
   }
 
   // エクスポート機能
   async exportProject(projectId: string, options: WBSExportOptions): Promise<Blob> {
-    const project = await this.getProject(projectId);
+    const projectResponse = await fetch(`${this.projectsUrl}/${projectId}`);
+    const project = projectResponse.ok ? await projectResponse.json() : null;
     const nodes = await this.getProjectNodes(projectId);
 
     const data = {
@@ -229,19 +193,6 @@ class WBSService {
 
     const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
     return new Blob([csv], { type: 'text/csv' });
-  }
-
-  private async getProject(projectId: string): Promise<WBSProject | null> {
-    const snapshot = await getDocs(
-      query(collection(db, this.projectsCollection), where('id', '==', projectId))
-    );
-
-    if (snapshot.empty) return null;
-
-    return {
-      id: snapshot.docs[0].id,
-      ...snapshot.docs[0].data(),
-    } as WBSProject;
   }
 }
 
