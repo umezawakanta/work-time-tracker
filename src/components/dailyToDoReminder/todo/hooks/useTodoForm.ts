@@ -54,25 +54,19 @@ export const useTodoForm = (onClose: () => void) => {
 
     setIsAnalyzing(true);
     try {
-      const analysisResult = await taskAnalyzer.analyzeBoth(formData.text);
+      // 完全な分析を実行（タイプ、優先度、詳細情報）
+      const analysisResult = await taskAnalyzer.analyzeComplete(formData.text);
 
       if (analysisResult) {
         // タイプの分析結果を反映
         if (analysisResult.typeAnalysis) {
           const type = analysisResult.typeAnalysis.type.toLowerCase() as TodoType;
           handleInputChange('type', type);
-
-          if (analysisResult.typeAnalysis.confidence > 0.7) {
-            toast.success(
-              `タスクタイプを「${type === 'input' ? 'インプット' : 'アウトプット'}」に設定しました`
-            );
-          }
         }
 
         // 優先度の分析結果を反映
         if (analysisResult.priorityAnalysis) {
-          const { importance, urgency, isPrioritized, explanation } =
-            analysisResult.priorityAnalysis;
+          const { importance, urgency, isPrioritized } = analysisResult.priorityAnalysis;
 
           // 優先度を計算
           const averageScore = (importance + urgency) / 2;
@@ -89,13 +83,48 @@ export const useTodoForm = (onClose: () => void) => {
           if (isPrioritized) {
             handleInputChange('isPrioritized', true);
           }
-
-          if (explanation) {
-            toast.success(explanation);
-          }
         }
 
-        toast.success('AIがタスクを分析しました！');
+        // 詳細分析結果を反映
+        if (analysisResult.detailAnalysis) {
+          const { description, category, tags, estimatedDuration, deadline } =
+            analysisResult.detailAnalysis;
+
+          // 説明を設定
+          if (description && description !== formData.text) {
+            handleInputChange('description', description);
+          }
+
+          // カテゴリを設定
+          if (category && category !== 'その他') {
+            handleInputChange('category', category);
+          }
+
+          // タグを設定
+          if (tags && tags.length > 0) {
+            handleInputChange('tags', tags);
+          }
+
+          // 推定所要時間を設定
+          if (estimatedDuration && estimatedDuration !== 60) {
+            handleInputChange('estimatedDuration', estimatedDuration);
+          }
+
+          // 期限を設定
+          if (deadline) {
+            // ISO日付形式をHTMLのdatetime-local形式に変換
+            const deadlineDate = new Date(deadline);
+            const localDatetime = deadlineDate.toISOString().slice(0, 16);
+            handleInputChange('deadline', localDatetime);
+          }
+
+          // 分析の確信度が高い場合はメッセージを表示
+          if (analysisResult.detailAnalysis.confidence > 0.7) {
+            toast.success('AI分析により、タスクの詳細情報を自動設定しました！');
+          } else {
+            toast.success('AI分析を実行しました。必要に応じて詳細を調整してください。');
+          }
+        }
       }
     } catch (error) {
       console.error('AI analysis error:', error);
