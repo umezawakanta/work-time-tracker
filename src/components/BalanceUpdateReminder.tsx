@@ -175,24 +175,25 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
   );
 
   return (
-    <Card className="mb-8 bg-yellow-100">
-      <CardHeader>
-        <CardTitle>残高更新リマインダー</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="mb-4">本日の資産・負債の残高を入力してください。</p>
-        {renderAccountStatus(assetStatuses, "資産")}
-        {renderAccountStatus(debtStatuses, "負債")}
-        
-        {onAddNew && (
-          <div className="mt-4">
-            <Button onClick={onAddNew} variant="outline">
-              新しいアカウントを追加
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <>
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold flex items-center gap-2">
+          <RefreshCw className="h-5 w-5 text-primary" />
+          残高更新リマインダー
+        </h3>
+        <p className="text-sm text-gray-600 mt-1">本日の資産・負債の残高を入力してください。</p>
+      </div>
+      {renderAccountStatus(assetStatuses, "資産")}
+      {renderAccountStatus(debtStatuses, "負債")}
+      
+      {onAddNew && (
+        <div className="mt-4">
+          <Button onClick={onAddNew} variant="outline">
+            新しいアカウントを追加
+          </Button>
+        </div>
+      )}
+    </>
   );
 };
 
