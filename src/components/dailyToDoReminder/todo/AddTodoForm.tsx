@@ -1,32 +1,21 @@
-import React, { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import {
-  Plus,
-  Calendar,
-  Flag,
-  Tag,
-  Clock,
-  Target,
-  X,
-  Sparkles,
-  Brain,
-  Loader2,
-} from "lucide-react";
-import { toast } from "react-hot-toast";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Plus, X, Sparkles } from 'lucide-react';
 
-import { addTodoItem } from "@/store/todoSlice";
-import { AppDispatch } from "@/store";
-import { getErrorMessage } from "../utils/errorUtils";
-import taskAnalyzer from "@/services/RateLimitedTaskAnalyzer";
+import { useTodoForm } from './hooks/useTodoForm';
+import { TaskNameInput } from './components/TaskNameInput';
+import { TaskDescription } from './components/TaskDescription';
+import { TaskTypeSelect } from './components/TaskTypeSelect';
+import { PrioritySelect } from './components/PrioritySelect';
+import { DeadlineInput } from './components/DeadlineInput';
+import { DurationInput } from './components/DurationInput';
+import { CategorySelect } from './components/CategorySelect';
+import { TagsInput } from './components/TagsInput';
+import { PrioritizedSwitch } from './components/PrioritizedSwitch';
+import { FormActions } from './components/FormActions';
 
 interface AddTodoFormProps {
   readonly isVisible: boolean;
@@ -34,456 +23,122 @@ interface AddTodoFormProps {
   readonly isPremium?: boolean;
 }
 
-type TodoType = "input" | "output";
-type PriorityLevel = 1 | 2 | 3 | 4 | 5;
-
-interface FormData {
-  text: string;
-  description: string;
-  type: TodoType;
-  priority: PriorityLevel;
-  deadline: string;
-  estimatedDuration: number;
-  category: string;
-  tags: readonly string[];
-  isPrioritized: boolean;
-}
-
-const initialFormData: FormData = {
-  text: "",
-  description: "",
-  type: "input",
-  priority: 3,
-  deadline: "",
-  estimatedDuration: 60,
-  category: "",
-  tags: [],
-  isPrioritized: false,
-};
-
-const PREDEFINED_CATEGORIES = [
-  "仕事", "学習", "健康", "趣味", "家事", "買い物", "会議", "プロジェクト"
-] as const;
-
-const PRIORITY_LABELS: Record<PriorityLevel, { label: string; color: string; }> = {
-  1: { label: "最低", color: "text-gray-500" },
-  2: { label: "低", color: "text-blue-500" },
-  3: { label: "普通", color: "text-green-500" },
-  4: { label: "高", color: "text-orange-500" },
-  5: { label: "最高", color: "text-red-500" },
-};
-
 /**
  * Add Todo Form Component
  * Advanced task creation form with premium features
  */
-export const AddTodoForm: React.FC<AddTodoFormProps> = ({
-  isVisible,
-  onClose,
-  isPremium = false,
-}) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [tagInput, setTagInput] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+export const AddTodoForm = React.memo<AddTodoFormProps>(
+  ({ isVisible, onClose, isPremium = false }) => {
+    const {
+      formData,
+      isSubmitting,
+      isAnalyzing,
+      handleInputChange,
+      handleAIAnalysis,
+      handleSubmit,
+      handleReset,
+    } = useTodoForm(onClose);
 
-  const handleInputChange = useCallback(
-    <K extends keyof FormData>(field: K, value: FormData[K]): void => {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    },
-    []
-  );
+    if (!isVisible) return null;
 
-  // AI分析機能
-  const handleAIAnalysis = useCallback(async (): Promise<void> => {
-    if (!formData.text.trim()) {
-      toast.error("タスク名を入力してください");
-      return;
-    }
-
-    setIsAnalyzing(true);
-    try {
-      const analysisResult = await taskAnalyzer.analyzeBoth(formData.text);
-      
-      if (analysisResult) {
-        // タイプの分析結果を反映
-        if (analysisResult.typeAnalysis) {
-          // 大文字から小文字に変換
-          const type = analysisResult.typeAnalysis.type.toLowerCase() as TodoType;
-          handleInputChange("type", type);
-          
-          // confidenceが高い場合のみ自動設定
-          if (analysisResult.typeAnalysis.confidence > 0.7) {
-            toast.success(`タスクタイプを「${type === "input" ? "インプット" : "アウトプット"}」に設定しました`);
-          }
-        }
-        
-        // 優先度の分析結果を反映
-        if (analysisResult.priorityAnalysis) {
-          // importance と urgency から優先度を計算
-          const importance = analysisResult.priorityAnalysis.importance;
-          const urgency = analysisResult.priorityAnalysis.urgency;
-          
-          let priority: PriorityLevel = 3; // デフォルト値
-          
-          // 重要度と緊急度の平均値を計算（1-10のスケールから1-5に変換）
-          const averageScore = (importance + urgency) / 2;
-          
-          if (averageScore >= 9) priority = 5;
-          else if (averageScore >= 7) priority = 4;
-          else if (averageScore >= 5) priority = 3;
-          else if (averageScore >= 3) priority = 2;
-          else priority = 1;
-          
-          handleInputChange("priority", priority);
-          
-          // isPrioritized フラグの設定
-          if (analysisResult.priorityAnalysis.isPrioritized) {
-            handleInputChange("isPrioritized", true);
-          }
-          
-          // 説明がある場合はトーストで表示
-          if (analysisResult.priorityAnalysis.explanation) {
-            toast.success(analysisResult.priorityAnalysis.explanation);
-          }
-        }
-        
-        toast.success("AIがタスクを分析しました！");
-      }
-    } catch (error) {
-      console.error("AI analysis error:", error);
-      toast.error("AI分析に失敗しました。しばらくしてから再度お試しください。");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, [formData.text, handleInputChange]);
-
-  const handleAddTag = useCallback((): void => {
-    const trimmedTag = tagInput.trim();
-    if (trimmedTag && !formData.tags.includes(trimmedTag)) {
-      handleInputChange("tags", [...formData.tags, trimmedTag]);
-      setTagInput("");
-    }
-  }, [tagInput, formData.tags, handleInputChange]);
-
-  const handleRemoveTag = useCallback((tagToRemove: string): void => {
-    handleInputChange("tags", formData.tags.filter(tag => tag !== tagToRemove));
-  }, [formData.tags, handleInputChange]);
-
-  const handleKeyPress = useCallback((e: React.KeyboardEvent): void => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddTag();
-    }
-  }, [handleAddTag]);
-
-  const validateForm = useCallback((): boolean => {
-    if (!formData.text.trim()) {
-      toast.error("タスク名を入力してください");
-      return false;
-    }
-
-    if (formData.text.length > 100) {
-      toast.error("タスク名は100文字以内で入力してください");
-      return false;
-    }
-
-    if (formData.deadline && new Date(formData.deadline) < new Date()) {
-      toast.error("期限は現在時刻より後に設定してください");
-      return false;
-    }
-
-    return true;
-  }, [formData.text, formData.deadline]);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
-    try {
-      // Create the new todo object that matches the expected format for the store
-      const newTodo = {
-        task: formData.text.trim(),
-        priority: formData.priority,
-        isPrioritized: formData.isPrioritized,
-        type: formData.type,
-        deadline: formData.deadline || undefined,
-        // Note: category and tags are not supported by the global TodoItem type
-        // You may need to adjust the store action to handle these
-      };
-
-      await dispatch(addTodoItem(newTodo)).unwrap();
-      
-      toast.success("タスクを追加しました！");
-      setFormData(initialFormData);
-      setTagInput("");
-      onClose();
-    } catch (err) {
-      const errorMessage = getErrorMessage(err);
-      toast.error(`タスクの追加に失敗しました: ${errorMessage}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [formData, dispatch, onClose, validateForm]);
-
-  const handleReset = useCallback((): void => {
-    setFormData(initialFormData);
-    setTagInput("");
-  }, []);
-
-  if (!isVisible) return null;
-
-  return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg border border-gray-200">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5" aria-hidden="true" />
-            新しいタスクを追加
-            {isPremium && (
-              <Badge variant="outline" className="bg-amber-100 text-amber-800">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Premium
-              </Badge>
-            )}
-          </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <div className="grid w-full gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="task-name">タスク名 *</Label>
-                {isPremium && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAIAnalysis}
-                    disabled={!formData.text.trim() || isAnalyzing}
-                    className="flex items-center gap-1"
-                  >
-                    {isAnalyzing ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Brain className="h-3 w-3" />
-                    )}
-                    <span className="text-xs">AI分析</span>
-                  </Button>
-                )}
-              </div>
-              <Input
-                id="task-name"
-                placeholder="今日やることを入力してください"
-                value={formData.text}
-                onChange={(e) => handleInputChange("text", e.target.value)}
-                maxLength={100}
-                required
-                aria-describedby="task-name-hint"
-              />
-              <p id="task-name-hint" className="text-xs text-gray-500">
-                {formData.text.length}/100 文字
-              </p>
-            </div>
-
-            {isPremium && (
-              <div className="grid w-full gap-2">
-                <Label htmlFor="task-description">詳細説明</Label>
-                <Textarea
-                  id="task-description"
-                  placeholder="タスクの詳細な説明（オプション）"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  rows={3}
-                  maxLength={500}
-                />
-              </div>
-            )}
-          </div>
-
-          <Separator />
-
-          {/* Task Configuration */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>タスクタイプ</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => handleInputChange("type", value as TodoType)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="input">
-                    📚 インプット（学習・情報収集）
-                  </SelectItem>
-                  <SelectItem value="output">
-                    🚀 アウトプット（作成・実行）
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>優先度</Label>
-              <Select
-                value={formData.priority.toString()}
-                onValueChange={(value) => handleInputChange("priority", parseInt(value) as PriorityLevel)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PRIORITY_LABELS).map(([value, { label, color }]) => (
-                    <SelectItem key={value} value={value}>
-                      <div className="flex items-center gap-2">
-                        <Flag className={`h-3 w-3 ${color}`} />
-                        {label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Advanced Options (Premium) */}
-          {isPremium && (
-            <>
-              <Separator />
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="deadline">期限</Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="deadline"
-                        type="datetime-local"
-                        value={formData.deadline}
-                        onChange={(e) => handleInputChange("deadline", e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="duration">予想作業時間（分）</Label>
-                    <div className="relative">
-                      <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="duration"
-                        type="number"
-                        min="5"
-                        max="480"
-                        step="5"
-                        value={formData.estimatedDuration}
-                        onChange={(e) => handleInputChange("estimatedDuration", parseInt(e.target.value) || 60)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">カテゴリ</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => handleInputChange("category", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="カテゴリを選択（オプション）" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PREDEFINED_CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>タグ</Label>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Tag className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="タグを入力してEnter"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="pl-10"
-                      />
-                    </div>
-                    <Button type="button" onClick={handleAddTag} variant="outline">
-                      追加
-                    </Button>
-                  </div>
-                  {formData.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {formData.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTag(tag)}
-                            className="ml-1 hover:text-red-500"
-                            aria-label={`タグ ${tag} を削除`}
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="prioritized"
-                    checked={formData.isPrioritized}
-                    onCheckedChange={(checked) => handleInputChange("isPrioritized", checked)}
-                  />
-                  <Label htmlFor="prioritized" className="flex items-center gap-2">
-                    <Target className="h-4 w-4" />
-                    今日の重要タスクとしてマーク
-                  </Label>
-                </div>
-              </div>
-            </>
-          )}
-
-          <Separator />
-
-          {/* Form Actions */}
-          <div className="flex justify-between gap-3">
-            <Button type="button" variant="outline" onClick={handleReset}>
-              リセット
+    return (
+      <Card className="w-full max-w-2xl mx-auto shadow-lg border border-gray-200">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" aria-hidden="true" />
+              新しいタスクを追加
+              {isPremium && (
+                <Badge variant="outline" className="bg-amber-100 text-amber-800">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Premium
+                </Badge>
+              )}
+            </CardTitle>
+            <Button variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
+              <X className="h-4 w-4" />
             </Button>
-            <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={onClose}>
-                キャンセル
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "追加中..." : "タスクを追加"}
-              </Button>
-            </div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
-  );
-};
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <TaskNameInput
+                value={formData.text}
+                onChange={(value) => handleInputChange('text', value)}
+                onAIAnalysis={handleAIAnalysis}
+                isAnalyzing={isAnalyzing}
+                isPremium={isPremium}
+              />
+
+              {isPremium && (
+                <TaskDescription
+                  value={formData.description}
+                  onChange={(value) => handleInputChange('description', value)}
+                />
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Task Configuration */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TaskTypeSelect
+                value={formData.type}
+                onChange={(value) => handleInputChange('type', value)}
+              />
+
+              <PrioritySelect
+                value={formData.priority}
+                onChange={(value) => handleInputChange('priority', value)}
+              />
+            </div>
+
+            {/* Advanced Options (Premium) */}
+            {isPremium && (
+              <>
+                <Separator />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DeadlineInput
+                      value={formData.deadline}
+                      onChange={(value) => handleInputChange('deadline', value)}
+                    />
+
+                    <DurationInput
+                      value={formData.estimatedDuration}
+                      onChange={(value) => handleInputChange('estimatedDuration', value)}
+                    />
+                  </div>
+
+                  <CategorySelect
+                    value={formData.category}
+                    onChange={(value) => handleInputChange('category', value)}
+                  />
+
+                  <TagsInput
+                    tags={formData.tags}
+                    onChange={(tags) => handleInputChange('tags', tags)}
+                  />
+
+                  <PrioritizedSwitch
+                    checked={formData.isPrioritized}
+                    onChange={(checked) => handleInputChange('isPrioritized', checked)}
+                  />
+                </div>
+              </>
+            )}
+
+            <Separator />
+
+            <FormActions onReset={handleReset} onCancel={onClose} isSubmitting={isSubmitting} />
+          </form>
+        </CardContent>
+      </Card>
+    );
+  }
+);
+
+AddTodoForm.displayName = 'AddTodoForm';
