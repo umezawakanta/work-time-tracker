@@ -33,6 +33,7 @@ import CalendarPage from "./pages/CalendarPage";
 import DiaryPage from "./pages/DiaryPage";
 import ImpulseTrackerPage from "./pages/ImpulseTrackerPage"; // 新しく追加
 import GuitarPracticePage from "./pages/GuitarPracticePage";
+import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 
 const theme = createTheme({
   palette: {
@@ -110,6 +111,7 @@ export default function App() {
                   />{" "}
                   {/* 新しく追加されたルート */}
                 </Route>
+                <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Routes>
