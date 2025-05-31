@@ -235,12 +235,16 @@ export const PremiumFeatureBanner: React.FC<PremiumFeatureBannerProps> = ({
   const handleExtendTrial = async () => {
     if (!user?.uid) return;
 
+    setIsExtendingTrial(true);
     try {
       await extendTrialPeriod(user.uid, 7); // 7 days extension
       setSuccessMessage('Trial period extended successfully!');
+      setTrialExtended(true);
     } catch (error) {
       console.error('Failed to extend trial:', error);
       setErrorMessage('Failed to extend trial period');
+    } finally {
+      setIsExtendingTrial(false);
     }
   };
 

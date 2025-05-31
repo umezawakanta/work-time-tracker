@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Brain, Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface TaskNameInputProps {
   value: string;
@@ -15,39 +16,46 @@ interface TaskNameInputProps {
 export const TaskNameInput = React.memo<TaskNameInputProps>(
   ({ value, onChange, onAIAnalysis, isAnalyzing, isPremium = false }) => {
     return (
-      <div className="grid w-full gap-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="task-name">タスク名 *</Label>
-          {isPremium && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onAIAnalysis}
-              disabled={!value.trim() || isAnalyzing}
-              className="flex items-center gap-1"
-            >
-              {isAnalyzing ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                <Brain className="h-3 w-3" />
-              )}
-              <span className="text-xs">AI分析</span>
-            </Button>
-          )}
+      <div className="space-y-2">
+        <Label htmlFor="task-name" className="text-sm font-medium">
+          タスク名
+          <span className="text-red-500 ml-1">*</span>
+        </Label>
+        <div className="space-y-2">
+          <Textarea
+            id="task-name"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="タスクの内容を入力...&#10;詳細な説明は改行して記載できます"
+            className="min-h-[80px] resize-y"
+            required
+          />
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-500">Shift+Enterで改行し、詳細な説明を追加できます</p>
+            {isPremium && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onAIAnalysis}
+                disabled={isAnalyzing || !value.trim()}
+                className="gap-2"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    分析中...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4" />
+                    AI分析
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
-        <Input
-          id="task-name"
-          placeholder="今日やることを入力してください"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          maxLength={100}
-          required
-          aria-describedby="task-name-hint"
-        />
-        <p id="task-name-hint" className="text-xs text-gray-500">
-          {value.length}/100 文字
-        </p>
       </div>
     );
   }
