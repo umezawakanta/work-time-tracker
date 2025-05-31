@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,10 +46,17 @@ import {
   X,
   Brain,
   Loader2,
+  Plus,
+  CheckSquare,
+  ListTodo,
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 import { Todo } from '../types';
 import { RateLimitedTaskAnalyzer } from '@/services/RateLimitedTaskAnalyzer';
+import { AppDispatch } from '@/store';
+import { addTodoItem } from '@/store/todoSlice';
+import { SubTask } from '@/services/GeminiService';
 
 interface TodoItemProps {
   readonly todo: Todo;
@@ -83,6 +91,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isHighPriority = false,
   isCompleted = false,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAIAnalysisDialogOpen, setIsAIAnalysisDialogOpen] = useState<boolean>(false);
@@ -94,6 +103,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     estimatedDuration?: number;
     deadline?: string;
     confidence?: number;
+    improvedTitle?: string;
+    subtasks?: SubTask[];
+    actionItems?: string[];
   } | null>(null);
 
   // Edit form state
@@ -220,7 +232,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       // 完全な分析を実行
       const result = await RateLimitedTaskAnalyzer.analyzeComplete(todo.text);
 
-      // 詳細分析結果を設定
+      // 詳細分析結果を設定（新しいフィールドも含む）
       if (result.detailAnalysis) {
         setAiAnalysisResult({
           description: result.detailAnalysis.description,
@@ -229,6 +241,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           estimatedDuration: result.detailAnalysis.estimatedDuration,
           deadline: result.detailAnalysis.deadline || undefined,
           confidence: result.detailAnalysis.confidence,
+          improvedTitle: result.detailAnalysis.improvedTitle,
+          subtasks: result.detailAnalysis.subtasks,
+          actionItems: result.detailAnalysis.actionItems,
         });
       }
     } catch (error) {
@@ -238,13 +253,15 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     }
   }, [todo.text, isAnalyzing]);
 
-  // AI分析結果を保存
+  // AI分析結果を保存（拡張版）
   const handleSaveAIAnalysis = useCallback(async (): Promise<void> => {
     if (!aiAnalysisResult || isLoading) return;
 
     setIsLoading(true);
     try {
       const updates: Partial<Todo> = {
+        // 改善されたタイトルがある場合は使用
+        text: aiAnalysisResult.improvedTitle || todo.text,
         category: aiAnalysisResult.category,
         tags: aiAnalysisResult.tags,
         estimatedDuration: aiAnalysisResult.estimatedDuration,
@@ -256,7 +273,49 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [todo.id, aiAnalysisResult, onUpdate, isLoading]);
+  }, [todo.id, todo.text, aiAnalysisResult, onUpdate, isLoading]);
+
+  // 子タスクを作成する関数
+  const handleCreateSubtasks = useCallback(async (): Promise<void> => {
+    if (!aiAnalysisResult?.subtasks || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      // 各子タスクを新しいTodoとして作成
+      for (const subtask of aiAnalysisResult.subtasks) {
+        const newTodo = {
+          task: subtask.title,
+          type: subtask.type,
+          priority: todo.priority, // 親タスクの優先度を継承
+          isPrioritized: false,
+          estimatedDuration: subtask.estimatedDuration,
+          category: aiAnalysisResult.category,
+          tags: aiAnalysisResult.tags,
+          // 親タスクへの参照を説明に含める
+          description: `${subtask.description || ''} (親タスク: ${todo.text})`,
+        };
+
+        await dispatch(addTodoItem(newTodo));
+      }
+
+      // 親タスクを完了状態にするか確認
+      const shouldCompleteParent = window.confirm(
+        '子タスクを作成しました。親タスクを完了にしますか？'
+      );
+
+      if (shouldCompleteParent) {
+        await onToggle(todo);
+      }
+
+      setIsAIAnalysisDialogOpen(false);
+      toast.success(`${aiAnalysisResult.subtasks.length}個の子タスクを作成しました`);
+    } catch (error) {
+      console.error('子タスク作成エラー:', error);
+      toast.error('子タスクの作成に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [aiAnalysisResult, todo, dispatch, onToggle, isLoading]);
 
   return (
     <>
@@ -614,9 +673,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* AI分析ダイアログ */}
+      {/* AI分析ダイアログ（拡張版） */}
       <Dialog open={isAIAnalysisDialogOpen} onOpenChange={setIsAIAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>AI分析結果</DialogTitle>
             <DialogDescription>AIがタスクを分析し、詳細情報を抽出しました。</DialogDescription>
@@ -639,12 +698,88 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 </div>
               )}
 
+              {/* 改善されたタイトル */}
+              {aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text && (
+                <div className="grid gap-2">
+                  <Label>改善されたタスクタイトル</Label>
+                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm font-medium text-blue-900">
+                      {aiAnalysisResult.improvedTitle}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      より具体的で実行可能なタイトルに改善されました
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* タスクの説明 */}
               {aiAnalysisResult.description && (
                 <div className="grid gap-2">
                   <Label>タスクの詳細説明</Label>
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <p className="text-sm">{aiAnalysisResult.description}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* 子タスク */}
+              {aiAnalysisResult.subtasks && aiAnalysisResult.subtasks.length > 0 && (
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="flex items-center gap-2">
+                      <ListTodo className="h-4 w-4" />
+                      推奨される子タスク
+                    </Label>
+                    <Badge variant="outline">{aiAnalysisResult.subtasks.length}個</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {aiAnalysisResult.subtasks.map((subtask, index) => (
+                      <div key={index} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="flex items-start gap-2">
+                          <CheckSquare className="h-4 w-4 text-gray-400 mt-0.5" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{subtask.title}</p>
+                            {subtask.description && (
+                              <p className="text-xs text-gray-600 mt-1">{subtask.description}</p>
+                            )}
+                            <div className="flex items-center gap-3 mt-2">
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${
+                                  subtask.type === 'input'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-orange-100 text-orange-700'
+                                }`}
+                              >
+                                {subtask.type === 'input' ? 'インプット' : 'アウトプット'}
+                              </Badge>
+                              <span className="text-xs text-gray-500">
+                                <Clock className="h-3 w-3 inline mr-1" />
+                                {subtask.estimatedDuration}分
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* アクションアイテム */}
+              {aiAnalysisResult.actionItems && aiAnalysisResult.actionItems.length > 0 && (
+                <div className="grid gap-2">
+                  <Label>具体的なアクションアイテム</Label>
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <ul className="space-y-1">
+                      {aiAnalysisResult.actionItems.map((item, index) => (
+                        <li key={index} className="text-sm flex items-start gap-2">
+                          <span className="text-gray-400">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
@@ -723,6 +858,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             >
               閉じる
             </Button>
+            {aiAnalysisResult?.subtasks && aiAnalysisResult.subtasks.length > 0 && (
+              <Button
+                onClick={handleCreateSubtasks}
+                disabled={isLoading || isAnalyzing}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                子タスクを作成
+              </Button>
+            )}
             {aiAnalysisResult && (
               <Button onClick={handleSaveAIAnalysis} disabled={isLoading || isAnalyzing}>
                 分析結果を適用

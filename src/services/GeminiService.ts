@@ -13,7 +13,7 @@ export interface TaskClassification {
   explanation: string;
 }
 
-// タスクの詳細分析結果のインターフェース
+// タスクの詳細分析結果のインターフェースを拡張
 export interface TaskDetailAnalysis {
   description: string;
   category: string;
@@ -21,6 +21,18 @@ export interface TaskDetailAnalysis {
   estimatedDuration: number; // 分単位
   deadline?: string; // ISO日付形式
   confidence: number;
+  // 新しく追加
+  improvedTitle?: string; // より具体的なタスクタイトル
+  subtasks?: SubTask[]; // 子タスクのリスト
+  actionItems?: string[]; // 具体的なアクションアイテム
+}
+
+// 子タスクの定義
+export interface SubTask {
+  title: string;
+  type: 'input' | 'output';
+  estimatedDuration: number;
+  description?: string;
 }
 
 /**
@@ -139,7 +151,7 @@ JSON形式で回答してください:
   },
 
   /**
-   * タスクテキストから詳細情報を分析する
+   * タスクテキストから詳細情報を分析する（拡張版）
    * @param taskText タスク内容のテキスト
    * @returns タスクの詳細分析結果
    */
@@ -154,25 +166,69 @@ JSON形式で回答してください:
 
       const prompt = `
 以下のタスクタイトルから、タスクの詳細情報を分析してください。
+特に、タスクが抽象的な場合は、より具体的な内容に落とし込んでください。
 
 タスク: "${taskText}"
 
 以下の項目を推測して、JSON形式で回答してください：
 1. description: タスクの詳細な説明（100文字以内）
 2. category: タスクのカテゴリ（例: "仕事", "個人", "学習", "健康", "家事", "趣味", "その他"）
-3. tags: 関連するタグの配列（最大5個、例: ["プログラミング", "React", "開発"]）
-4. estimatedDuration: 推定所要時間（分単位、例: 60）
-5. deadline: 期限が推測できる場合のみ、ISO日付形式（例: "2024-12-31T23:59:59"）。推測できない場合はnull
+3. tags: 関連するタグの配列（最大5個）
+4. estimatedDuration: 推定所要時間（分単位）
+5. deadline: 期限が推測できる場合のみ、ISO日付形式
 6. confidence: 分析の確信度（0〜1）
+7. improvedTitle: タスクが抽象的な場合、より具体的で実行可能なタイトルに改善したもの
+8. subtasks: タスクを分解した場合の子タスクリスト（必要な場合のみ）
+   - 各子タスクには title, type ("input" or "output"), estimatedDuration, description を含む
+9. actionItems: 具体的なアクションアイテムのリスト（最大5個）
+
+特に重要な点：
+- タスクが「プロジェクトを進める」のような抽象的なものの場合、具体的なステップに分解してください
+- 「調査する」「検討する」のような曖昧な動詞は、より具体的な行動に置き換えてください
+- 子タスクは実行可能で測定可能なものにしてください
 
 JSON形式の例:
 {
   "description": "ReactのTodoアプリにAI分析機能を実装し、タスクの自動分類を可能にする",
   "category": "仕事",
   "tags": ["プログラミング", "React", "AI", "開発"],
-  "estimatedDuration": 120,
+  "estimatedDuration": 240,
   "deadline": null,
-  "confidence": 0.8
+  "confidence": 0.8,
+  "improvedTitle": "TodoアプリにGemini APIを統合してタスク自動分類機能を実装する",
+  "subtasks": [
+    {
+      "title": "Gemini APIのドキュメントを読んで理解する",
+      "type": "input",
+      "estimatedDuration": 30,
+      "description": "API仕様とベストプラクティスを確認"
+    },
+    {
+      "title": "API認証とサービスクラスを実装する",
+      "type": "output",
+      "estimatedDuration": 60,
+      "description": "GeminiServiceクラスの作成"
+    },
+    {
+      "title": "タスク分析UIコンポーネントを作成する",
+      "type": "output",
+      "estimatedDuration": 90,
+      "description": "分析結果を表示するReactコンポーネント"
+    },
+    {
+      "title": "統合テストを実行する",
+      "type": "output",
+      "estimatedDuration": 60,
+      "description": "機能の動作確認とデバッグ"
+    }
+  ],
+  "actionItems": [
+    "Gemini APIキーを取得する",
+    "axios で API クライアントをセットアップする",
+    "タスク分析のプロンプトを設計する",
+    "分析結果をReduxストアに保存する処理を追加",
+    "エラーハンドリングとフォールバック処理を実装"
+  ]
 }`;
 
       const response = await axios.post(
@@ -189,7 +245,7 @@ JSON形式の例:
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 1024,
+            maxOutputTokens: 2048, // より長い応答を許可
           },
         },
         {
@@ -211,6 +267,11 @@ JSON形式の例:
           estimatedDuration: jsonResponse.estimatedDuration || 60,
           deadline: jsonResponse.deadline || undefined,
           confidence: jsonResponse.confidence || 0.5,
+          improvedTitle: jsonResponse.improvedTitle,
+          subtasks: Array.isArray(jsonResponse.subtasks) ? jsonResponse.subtasks : undefined,
+          actionItems: Array.isArray(jsonResponse.actionItems)
+            ? jsonResponse.actionItems
+            : undefined,
         };
       }
 
@@ -302,7 +363,7 @@ function fallbackClassification(taskText: string): TaskClassification {
   }
 }
 
-// 詳細分析のフォールバック実装
+// フォールバック関数も更新
 function fallbackDetailAnalysis(taskText: string): TaskDetailAnalysis {
   const lowerText = taskText.toLowerCase();
 
@@ -339,12 +400,62 @@ function fallbackDetailAnalysis(taskText: string): TaskDetailAnalysis {
     estimatedDuration = 180;
   }
 
+  // 抽象的なタスクの判定と改善
+  let improvedTitle: string | undefined;
+  let subtasks: SubTask[] | undefined;
+  let actionItems: string[] | undefined;
+
+  // 抽象的なキーワードのチェック
+  const abstractKeywords = ['進める', '検討', '調査', '確認', '対応', '処理', '改善', '最適化'];
+  const isAbstract = abstractKeywords.some((keyword) => lowerText.includes(keyword));
+
+  if (isAbstract) {
+    // 簡単な改善を試みる
+    if (lowerText.includes('プロジェクト') && lowerText.includes('進める')) {
+      improvedTitle = taskText.replace('進める', 'の次のマイルストーンを完了する');
+      subtasks = [
+        {
+          title: '現在の進捗状況を確認する',
+          type: 'input',
+          estimatedDuration: 15,
+        },
+        {
+          title: '次のステップをリストアップする',
+          type: 'output',
+          estimatedDuration: 30,
+        },
+        {
+          title: '必要なリソースを準備する',
+          type: 'output',
+          estimatedDuration: 45,
+        },
+      ];
+    } else if (lowerText.includes('調査')) {
+      improvedTitle = taskText.replace('調査', 'について情報収集し、レポートにまとめる');
+      subtasks = [
+        {
+          title: '関連資料を収集する',
+          type: 'input',
+          estimatedDuration: 30,
+        },
+        {
+          title: '重要なポイントをまとめる',
+          type: 'output',
+          estimatedDuration: 30,
+        },
+      ];
+    }
+  }
+
   return {
     description: `${taskText}を実行する`,
     category,
     tags,
     estimatedDuration,
     confidence: 0.3,
+    improvedTitle,
+    subtasks,
+    actionItems,
   };
 }
 
