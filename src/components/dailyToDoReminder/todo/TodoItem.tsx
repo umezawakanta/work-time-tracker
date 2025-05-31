@@ -350,7 +350,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     )}
 
                     {/* Estimated Duration */}
-                    {isPremium && todo.estimatedDuration && (
+                    {todo.estimatedDuration && (
                       <Badge
                         variant="outline"
                         className="text-xs bg-purple-100 text-purple-700 border-purple-300"
@@ -361,7 +361,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     )}
 
                     {/* Category */}
-                    {isPremium && todo.category && (
+                    {todo.category && (
                       <Badge
                         variant="outline"
                         className="text-xs bg-green-100 text-green-700 border-green-300"
@@ -373,7 +373,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   </div>
 
                   {/* Tags */}
-                  {isPremium && todo.tags && todo.tags.length > 0 && (
+                  {todo.tags && todo.tags.length > 0 && (
                     <div className="flex items-center gap-1 mt-2 flex-wrap">
                       {todo.tags.slice(0, 3).map((tag) => (
                         <Badge
@@ -556,49 +556,47 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             </div>
 
             {/* Premium Fields */}
-            {isPremium && (
-              <>
-                {/* Category */}
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-category">カテゴリ</Label>
-                  <Input
-                    id="edit-category"
-                    value={editFormData.category}
-                    onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
-                    placeholder="例: 仕事、勉強、趣味"
-                  />
-                </div>
+            <>
+              {/* Category */}
+              <div className="grid gap-2">
+                <Label htmlFor="edit-category">カテゴリ</Label>
+                <Input
+                  id="edit-category"
+                  value={editFormData.category}
+                  onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
+                  placeholder="例: 仕事、勉強、趣味"
+                />
+              </div>
 
-                {/* Estimated Duration */}
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-duration">推定時間（分）</Label>
-                  <Input
-                    id="edit-duration"
-                    type="number"
-                    value={editFormData.estimatedDuration || ''}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        estimatedDuration: e.target.value ? parseInt(e.target.value) : undefined,
-                      })
-                    }
-                    placeholder="例: 30"
-                    min="1"
-                  />
-                </div>
+              {/* Estimated Duration */}
+              <div className="grid gap-2">
+                <Label htmlFor="edit-duration">推定時間（分）</Label>
+                <Input
+                  id="edit-duration"
+                  type="number"
+                  value={editFormData.estimatedDuration || ''}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      estimatedDuration: e.target.value ? parseInt(e.target.value) : undefined,
+                    })
+                  }
+                  placeholder="例: 30"
+                  min="1"
+                />
+              </div>
 
-                {/* Tags */}
-                <div className="grid gap-2">
-                  <Label htmlFor="edit-tags">タグ（カンマ区切り）</Label>
-                  <Input
-                    id="edit-tags"
-                    value={editFormData.tags}
-                    onChange={(e) => setEditFormData({ ...editFormData, tags: e.target.value })}
-                    placeholder="例: 重要, 月次レポート, 会議"
-                  />
-                </div>
-              </>
-            )}
+              {/* Tags */}
+              <div className="grid gap-2">
+                <Label htmlFor="edit-tags">タグ（カンマ区切り）</Label>
+                <Input
+                  id="edit-tags"
+                  value={editFormData.tags}
+                  onChange={(e) => setEditFormData({ ...editFormData, tags: e.target.value })}
+                  placeholder="例: 重要, 月次レポート, 会議"
+                />
+              </div>
+            </>
           </div>
 
           <DialogFooter>
