@@ -45,9 +45,8 @@ const expandShortText = (taskText: string): string => {
   const lowerText = taskText.toLowerCase().trim();
 
   // 短いテキストのマッピングをチェック
-  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
-  if (shortMapping) {
-    return shortMapping.expanded;
+  if (lowerText in SHORT_TEXT_MAPPINGS) {
+    return SHORT_TEXT_MAPPINGS[lowerText as keyof typeof SHORT_TEXT_MAPPINGS].expanded;
   }
 
   // その他の短いテキストの場合
@@ -459,13 +458,8 @@ function localTypeAnalysis(taskText: string): TaskClassification {
   const lowerText = taskText.toLowerCase().trim();
 
   // 短いテキストのマッピングをチェック
-  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
-  if (shortMapping) {
-    return {
-      type: shortMapping.type as 'input' | 'output',
-      confidence: 0.8,
-      explanation: `"${taskText}"は"${shortMapping.expanded}"として解釈しました（短縮語分析）`,
-    };
+  if (lowerText in SHORT_TEXT_MAPPINGS) {
+    return SHORT_TEXT_MAPPINGS[lowerText as keyof typeof SHORT_TEXT_MAPPINGS].expanded;
   }
 
   // 単一単語の分析
