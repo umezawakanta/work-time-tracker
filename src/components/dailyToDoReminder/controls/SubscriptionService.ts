@@ -58,7 +58,7 @@ export class SubscriptionService {
     try {
       const response = await this.apiClient.get<SubscriptionInfo>('/subscription/info');
       return this.createSuccessResponse(response.data);
-    } catch (error) {
+    } catch {
       return this.createErrorResponse('Failed to get subscription info');
     }
   }
