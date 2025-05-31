@@ -458,127 +458,135 @@ function localTypeAnalysis(taskText: string): TaskClassification {
   const lowerText = taskText.toLowerCase().trim();
 
   // 短いテキストのマッピングをチェック
-  if (lowerText in SHORT_TEXT_MAPPINGS) {
-    return SHORT_TEXT_MAPPINGS[lowerText as keyof typeof SHORT_TEXT_MAPPINGS].expanded;
+  const shortMapping =
+    lowerText in SHORT_TEXT_MAPPINGS
+      ? SHORT_TEXT_MAPPINGS[lowerText as keyof typeof SHORT_TEXT_MAPPINGS]
+      : undefined;
+  let expandedText = taskText;
+  let baseCategory = 'その他';
+
+  if (shortMapping) {
+    expandedText = shortMapping.expanded;
+    baseCategory = shortMapping.category;
   }
 
-  // 単一単語の分析
-  if (!lowerText.includes(' ') && lowerText.length < 8) {
-    // 動詞から推測
+  // カテゴリの推測
+  let category = baseCategory;
+  if (
+    lowerText.includes('仕事') ||
+    lowerText.includes('会議') ||
+    lowerText.includes('開発') ||
+    lowerText.includes('work') ||
+    lowerText.includes('job') ||
+    lowerText.includes('task')
+  ) {
+    category = '仕事';
+  } else if (
+    lowerText.includes('勉強') ||
+    lowerText.includes('学習') ||
+    lowerText.includes('読書') ||
+    lowerText.includes('study') ||
+    lowerText.includes('learn') ||
+    lowerText.includes('book')
+  ) {
+    category = '学習';
+  } else if (
+    lowerText.includes('運動') ||
+    lowerText.includes('ジム') ||
+    lowerText.includes('ランニング') ||
+    lowerText.includes('gym') ||
+    lowerText.includes('run') ||
+    lowerText.includes('exercise')
+  ) {
+    category = '健康';
+  }
+
+  // タグの抽出（短いテキストからも推測）
+  const tags: string[] = [];
+
+  // プログラミング関連
+  if (
+    lowerText.includes('プログラミング') ||
+    lowerText.includes('コーディング') ||
+    lowerText.includes('code') ||
+    lowerText.includes('dev') ||
+    lowerText.includes('開発')
+  ) {
+    tags.push('プログラミング');
+  }
+
+  // 技術スタック
+  if (lowerText.includes('react')) tags.push('React');
+  if (lowerText.includes('vue')) tags.push('Vue');
+  if (lowerText.includes('node') || lowerText.includes('nodejs')) tags.push('Node.js');
+  if (lowerText.includes('python') || lowerText.includes('py')) tags.push('Python');
+  if (lowerText.includes('js') || lowerText.includes('javascript')) tags.push('JavaScript');
+  if (lowerText.includes('ts') || lowerText.includes('typescript')) tags.push('TypeScript');
+
+  // AI関連
+  if (lowerText.includes('ai') || lowerText.includes('人工知能') || lowerText.includes('ml')) {
+    tags.push('AI');
+  }
+
+  // 短いキーワードから推測
+  if (lowerText === 'mtg' || lowerText.includes('会議')) tags.push('ミーティング');
+  if (lowerText === 'doc' || lowerText.includes('文書')) tags.push('ドキュメント');
+  if (lowerText === 'pr' || lowerText.includes('pull')) tags.push('レビュー');
+
+  // 推定時間（短いテキストでも文脈から推測）
+  let estimatedDuration = 60;
+
+  if (
+    lowerText.includes('簡単') ||
+    lowerText.includes('クイック') ||
+    lowerText.includes('quick') ||
+    lowerText.includes('simple') ||
+    lowerText.length < 5
+  ) {
+    estimatedDuration = 30;
+  } else if (
+    lowerText.includes('大規模') ||
+    lowerText.includes('詳細') ||
+    lowerText.includes('complex') ||
+    lowerText.includes('detailed')
+  ) {
+    estimatedDuration = 180;
+  } else if (
+    lowerText.includes('mtg') ||
+    lowerText.includes('会議') ||
+    lowerText.includes('meeting')
+  ) {
+    estimatedDuration = 60;
+  } else if (
+    lowerText.includes('dev') ||
+    lowerText.includes('開発') ||
+    lowerText.includes('実装')
+  ) {
+    estimatedDuration = 120;
+  }
+
+  // 説明文の生成
+  let description = expandedText;
+  if (shortMapping) {
+    description = `${expandedText}を行う`;
+  } else if (lowerText.length < 8) {
+    // 短いテキストの場合は補完
     if (lowerText.endsWith('る') || lowerText.endsWith('う')) {
-      if (['作る', '書く', '描く', '建てる'].some((v) => lowerText.includes(v))) {
-        return {
-          type: 'output',
-          confidence: 0.7,
-          explanation: `"${taskText}"は作成系の動詞のため、アウトプット活動と判断しました`,
-        };
-      }
-      if (['見る', '読む', '聞く', '学ぶ'].some((v) => lowerText.includes(v))) {
-        return {
-          type: 'input',
-          confidence: 0.7,
-          explanation: `"${taskText}"は取得系の動詞のため、インプット活動と判断しました`,
-        };
-      }
-    }
-  }
-
-  // インプット関連のキーワード
-  const inputKeywords = [
-    '読む',
-    '見る',
-    '聴く',
-    '学ぶ',
-    '勉強',
-    '情報収集',
-    'チェック',
-    'インプット',
-    '確認',
-    'リサーチ',
-    '参考',
-    '調査',
-    'mtg',
-    'meeting',
-    'レビュー',
-    '打ち合わせ',
-    'ミーティング',
-  ];
-
-  // アウトプット関連のキーワード
-  const outputKeywords = [
-    '書く',
-    '作る',
-    '実践',
-    '実行',
-    '発表',
-    '作成',
-    '構築',
-    '開発',
-    'コーディング',
-    'アウトプット',
-    '教える',
-    'シェア',
-    '投稿',
-    'dev',
-    'develop',
-    'code',
-    'fix',
-    'impl',
-  ];
-
-  // キーワードマッチの数をカウント
-  let inputScore = 0;
-  let outputScore = 0;
-
-  inputKeywords.forEach((keyword) => {
-    if (lowerText.includes(keyword)) inputScore++;
-  });
-
-  outputKeywords.forEach((keyword) => {
-    if (lowerText.includes(keyword)) outputScore++;
-  });
-
-  // 短いテキストの場合は部分一致も考慮
-  if (lowerText.length < 8) {
-    // 最初の2-3文字でマッチング
-    const prefix = lowerText.substring(0, 3);
-    inputKeywords.forEach((keyword) => {
-      if (keyword.startsWith(prefix)) inputScore += 0.5;
-    });
-    outputKeywords.forEach((keyword) => {
-      if (keyword.startsWith(prefix)) outputScore += 0.5;
-    });
-  }
-
-  // スコアに基づいて分類
-  if (inputScore > outputScore) {
-    return {
-      type: 'input',
-      confidence: Math.min(0.9, 0.5 + inputScore * 0.1),
-      explanation: `インプット関連のキーワードが検出されました（${lowerText.length < 8 ? '短文' : 'ローカル'}分析）`,
-    };
-  } else if (outputScore > inputScore) {
-    return {
-      type: 'output',
-      confidence: Math.min(0.9, 0.5 + outputScore * 0.1),
-      explanation: `アウトプット関連のキーワードが検出されました（${lowerText.length < 8 ? '短文' : 'ローカル'}分析）`,
-    };
-  } else {
-    // 文脈から推測
-    if (lowerText.includes('ai') || lowerText.includes('連携') || lowerText.includes('開発')) {
-      return {
-        type: 'output',
-        confidence: 0.6,
-        explanation: 'AI連携や開発はアウトプット活動と判断しました（ローカル分析）',
-      };
+      description = `${taskText}タスクを実行する`;
     } else {
-      return {
-        type: 'input',
-        confidence: 0.4,
-        explanation: `"${taskText}"の種別を推測できませんでした。文脈から判断してデフォルト設定しました`,
-      };
+      description = `${taskText}に関する作業を行う`;
     }
+  } else {
+    description = `${taskText}を実行する`;
   }
+
+  return {
+    description,
+    category,
+    tags,
+    estimatedDuration,
+    confidence: lowerText.length < 8 ? 0.5 : 0.3,
+  };
 }
 
 // ローカルでの詳細分析 (フォールバック用と短いテキスト用)
@@ -586,7 +594,10 @@ function localDetailAnalysis(taskText: string): TaskDetailAnalysis {
   const lowerText = taskText.toLowerCase().trim();
 
   // 短いテキストのマッピングをチェック
-  const shortMapping = SHORT_TEXT_MAPPINGS[lowerText];
+  const shortMapping =
+    lowerText in SHORT_TEXT_MAPPINGS
+      ? SHORT_TEXT_MAPPINGS[lowerText as keyof typeof SHORT_TEXT_MAPPINGS]
+      : undefined;
   let expandedText = taskText;
   let baseCategory = 'その他';
 

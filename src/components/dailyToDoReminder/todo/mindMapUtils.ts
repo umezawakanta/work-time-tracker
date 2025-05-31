@@ -1,5 +1,6 @@
 import { Todo } from '../types';
-import { Node, Edge } from 'reactflow';
+import { Node, Edge, Position } from 'reactflow';
+import dagre from 'dagre';
 
 export interface MindMapNode extends Node {
   data: {
@@ -7,6 +8,8 @@ export interface MindMapNode extends Node {
     todo?: Todo;
     type: 'root' | 'category' | 'priority' | 'status' | 'task';
     count?: number;
+    icon?: string;
+    priority?: number;
   };
 }
 
@@ -14,7 +17,44 @@ export type MindMapEdge = Edge & {
   animated?: boolean;
 };
 
-// ToDoリストをマインドマップ用のノードとエッジに変換
+// Dagreを使用した自動レイアウト関数
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+  const nodeWidth = 172;
+  const nodeHeight = 36;
+
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 100, nodesep: 50 });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = 'top' as Position;
+    node.sourcePosition = 'bottom' as Position;
+
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
+
+// 改善されたマインドマップ変換関数
 export const convertTodosToMindMap = (todos: readonly Todo[]) => {
   const nodes: MindMapNode[] = [];
   const edges: MindMapEdge[] = [];
@@ -22,30 +62,34 @@ export const convertTodosToMindMap = (todos: readonly Todo[]) => {
   // ルートノード
   const rootNode: MindMapNode = {
     id: 'root',
-    type: 'input',
-    data: { label: 'タスク管理', type: 'root', count: todos.length },
-    position: { x: 400, y: 200 },
+    type: 'custom',
+    data: {
+      label: 'タスク管理',
+      type: 'root',
+      count: todos.length,
+      icon: '🎯',
+    },
+    position: { x: 0, y: 0 },
   };
   nodes.push(rootNode);
 
   // カテゴリー別グループ
   const categories = groupByCategory(todos);
-  const categoryY = 50;
-  let categoryX = 0;
 
   Object.entries(categories).forEach(([category, categoryTodos], index) => {
     const categoryId = `category-${index}`;
-    categoryX = index * 300;
 
     // カテゴリーノード
     nodes.push({
       id: categoryId,
+      type: 'custom',
       data: {
         label: category || '未分類',
         type: 'category',
         count: categoryTodos.length,
+        icon: getCategoryIcon(category),
       },
-      position: { x: categoryX, y: categoryY },
+      position: { x: 0, y: 0 },
     });
 
     // ルートからカテゴリーへのエッジ
@@ -53,27 +97,28 @@ export const convertTodosToMindMap = (todos: readonly Todo[]) => {
       id: `root-${categoryId}`,
       source: 'root',
       target: categoryId,
+      type: 'smoothstep',
       animated: true,
+      style: { stroke: '#8b5cf6', strokeWidth: 2 },
     });
 
     // 優先度別サブグループ
     const priorityGroups = groupByPriority(categoryTodos);
-    let priorityY = categoryY - 100;
 
     Object.entries(priorityGroups).forEach(([priority, priorityTodos], pIndex) => {
       const priorityId = `${categoryId}-priority-${pIndex}`;
-      const priorityX = categoryX + (pIndex - 1) * 150;
-      priorityY = categoryY - 100 - pIndex * 50;
 
       // 優先度ノード
       nodes.push({
         id: priorityId,
+        type: 'custom',
         data: {
           label: getPriorityLabel(Number(priority)),
           type: 'priority',
           count: priorityTodos.length,
+          priority: Number(priority),
         },
-        position: { x: priorityX, y: priorityY },
+        position: { x: 0, y: 0 },
         style: getPriorityStyle(Number(priority)),
       });
 
@@ -82,23 +127,22 @@ export const convertTodosToMindMap = (todos: readonly Todo[]) => {
         id: `${categoryId}-${priorityId}`,
         source: categoryId,
         target: priorityId,
+        type: 'smoothstep',
       });
 
       // 各タスクノード
-      priorityTodos.forEach((todo, tIndex) => {
+      priorityTodos.forEach((todo, _tIndex) => {
         const taskId = `task-${todo.id}`;
-        const taskX = priorityX + (tIndex % 2 === 0 ? -50 : 50);
-        const taskY = priorityY - 80 - Math.floor(tIndex / 2) * 60;
 
         nodes.push({
           id: taskId,
-          type: 'output',
+          type: 'custom',
           data: {
-            label: truncateText(todo.text, 20),
+            label: truncateText(todo.text, 30),
             todo,
             type: 'task',
           },
-          position: { x: taskX, y: taskY },
+          position: { x: 0, y: 0 },
           style: getTaskStyle(todo),
         });
 
@@ -107,13 +151,30 @@ export const convertTodosToMindMap = (todos: readonly Todo[]) => {
           id: `${priorityId}-${taskId}`,
           source: priorityId,
           target: taskId,
-          style: { stroke: todo.completed ? '#10b981' : '#6b7280' },
+          style: {
+            stroke: todo.completed ? '#10b981' : '#6b7280',
+            strokeWidth: todo.completed ? 1 : 2,
+          },
         });
       });
     });
   });
 
-  return { nodes, edges };
+  // 自動レイアウトを適用
+  return getLayoutedElements(nodes, edges, 'TB');
+};
+
+// カテゴリーアイコンを取得
+const getCategoryIcon = (category: string) => {
+  const iconMap: Record<string, string> = {
+    仕事: '💼',
+    プライベート: '🏠',
+    学習: '📚',
+    健康: '🏃',
+    買い物: '🛒',
+    未分類: '📋',
+  };
+  return iconMap[category] || '📋';
 };
 
 // ステータス別グループ化バージョン

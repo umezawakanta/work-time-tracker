@@ -26,6 +26,7 @@ import { Todo } from '../types';
 import { convertTodosToMindMap, convertTodosByStatus } from './mindMapUtils';
 import { toast } from 'react-hot-toast';
 import html2canvas from 'html2canvas';
+import { CustomMindMapNode } from './CustomMindMapNode';
 
 interface TodoMindMapProps {
   todos: readonly Todo[];
@@ -33,6 +34,10 @@ interface TodoMindMapProps {
 }
 
 type ViewMode = 'category' | 'status';
+
+const nodeTypes = {
+  custom: CustomMindMapNode,
+};
 
 export const TodoMindMap: React.FC<TodoMindMapProps> = ({ todos, onClose }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('category');
@@ -83,9 +88,9 @@ export const TodoMindMap: React.FC<TodoMindMapProps> = ({ todos, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col">
+      <div className="bg-white rounded-lg w-full max-w-7xl h-[95vh] flex flex-col">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex items-center gap-4">
             <Network className="h-6 w-6 text-indigo-600" />
             <h2 className="text-xl font-semibold">タスクマインドマップ</h2>
@@ -125,19 +130,29 @@ export const TodoMindMap: React.FC<TodoMindMapProps> = ({ todos, onClose }) => {
         </div>
 
         {/* マインドマップ本体 */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative bg-gradient-to-br from-slate-50 to-gray-100">
           <ReactFlow
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
             fitView
+            fitViewOptions={{
+              padding: 0.2,
+              includeHiddenNodes: false,
+            }}
             attributionPosition="bottom-left"
+            defaultEdgeOptions={{
+              animated: true,
+              type: 'smoothstep',
+            }}
           >
-            <Background variant={BackgroundVariant.Dots} />
-            <Controls />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e5e7eb" />
+            <Controls className="bg-white shadow-lg rounded-lg" />
             <MiniMap
+              className="bg-white shadow-lg rounded-lg"
               nodeColor={(node) => {
                 if (node.data.type === 'root') return '#6366f1';
                 if (node.data.type === 'category') return '#8b5cf6';

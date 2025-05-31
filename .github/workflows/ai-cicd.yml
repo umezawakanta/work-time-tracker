@@ -5,6 +5,8 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '0 9 * * 1' # 毎週月曜日9時
 
 env:
   NODE_VERSION: '18'
@@ -14,20 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        
-      - name: Type check
-        run: pnpm run type-check || true
-        
-      - name: Lint
-        run: pnpm run lint || true
-        
-      - name: Build
-        run: pnpm run build
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm run test:unit

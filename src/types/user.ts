@@ -7,11 +7,3 @@ export interface User {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-export interface UserAccount extends User {
-  subscription?: {
-    plan: string;
-    status: string;
-    expiresAt?: Date;
-  };
-}
