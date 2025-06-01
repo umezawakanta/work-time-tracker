@@ -20,7 +20,7 @@ const STYLES = {
   dayWidth: 30,
   rowHeight: 40,
   headerHeight: 60,
-  taskNameWidth: 256,
+  taskNameWidth: 256, // 16rem = 256px
 };
 
 const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
@@ -112,11 +112,11 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
         {/* 月ヘッダー */}
         <div className={styles.monthHeader}>
           <div className={styles.taskNameHeader}>タスク名</div>
-          <div className="flex">
+          <div className="flex overflow-hidden">
             {monthGroups.map((group, index) => (
               <div
                 key={index}
-                className="border-r text-center font-medium bg-gray-50"
+                className="border-r text-center font-medium bg-gray-50 flex-shrink-0"
                 style={{ width: `${group.days * STYLES.dayWidth}px` }}
               >
                 {format(group.month, 'yyyy年M月', { locale: ja })}
@@ -127,8 +127,11 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
 
         {/* 日付ヘッダー */}
         <div className={styles.dateHeader}>
-          <div className="w-64 border-r bg-gray-50"></div>
-          <div className="flex">
+          <div
+            className="border-r bg-gray-50 flex-shrink-0"
+            style={{ width: `${STYLES.taskNameWidth}px` }}
+          ></div>
+          <div className="flex overflow-hidden">
             {Array.from({ length: totalDays }).map((_, index) => {
               const date = addDays(startDate, index);
               const isWeekend = date.getDay() === 0 || date.getDay() === 6;
@@ -138,9 +141,10 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                   key={index}
                   className={cn(
                     styles.dayColumn,
-                    'text-xs text-center py-1',
+                    'text-xs text-center py-1 flex-shrink-0',
                     isWeekend && styles.dayColumnWeekend
                   )}
+                  style={{ width: `${STYLES.dayWidth}px` }}
                 >
                   {format(date, 'd')}
                 </div>
@@ -152,15 +156,18 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
 
       {/* タスク行 */}
       <div className="relative">
-        {/* 今日の線 */}
+        {/* 今日の線 - 位置を修正 */}
         {todayPosition !== null && (
           <div
             className={styles.todayLine}
-            style={{ left: `${STYLES.taskNameWidth + todayPosition}px` }}
+            style={{
+              left: `${todayPosition}px`,
+              marginLeft: `${STYLES.taskNameWidth}px`,
+            }}
           />
         )}
 
-        {nodes.map((node, index) => {
+        {nodes.map((node, rowIndex) => {
           const nodePosition = getNodePosition(node);
 
           return (
@@ -168,14 +175,18 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
               {/* タスク名 */}
               <div
                 className={styles.taskName}
-                style={{ paddingLeft: `${node.level * 20 + 16}px` }}
+                style={{
+                  paddingLeft: `${node.level * 20 + 16}px`,
+                  width: `${STYLES.taskNameWidth}px`,
+                }}
                 onClick={() => onNodeClick?.(node)}
               >
                 <span className={styles.taskNameText}>{node.name}</span>
               </div>
 
-              {/* ガントバー */}
+              {/* ガントエリア */}
               <div className={styles.ganttArea}>
+                {/* 背景グリッド */}
                 <div className="absolute inset-0 flex">
                   {Array.from({ length: totalDays }).map((_, dayIndex) => {
                     const date = addDays(startDate, dayIndex);
@@ -185,6 +196,7 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                       <div
                         key={dayIndex}
                         className={cn(styles.dayColumn, isWeekend && styles.dayColumnWeekend)}
+                        style={{ width: `${STYLES.dayWidth}px` }}
                       />
                     );
                   })}
@@ -219,39 +231,38 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                   <div className={styles.progressText}>{node.progress}%</div>
                 </div>
 
-                {/* 依存関係の線 */}
+                {/* 依存関係の線 - 修正版 */}
                 {node.dependencies.map((depId) => {
                   const depNode = nodes.find((n) => n.id === depId);
                   if (!depNode) return null;
 
                   const depPos = getNodePosition(depNode);
                   const depIndex = nodes.findIndex((n) => n.id === depId);
-                  const svgWidth = nodePosition.left - (depPos.left + depPos.width);
-                  const svgHeight = Math.abs(index - depIndex) * STYLES.rowHeight;
+
+                  // 線の開始と終了位置を計算
+                  const startX = depPos.left + depPos.width;
+                  const endX = nodePosition.left;
+                  const startY = depIndex * STYLES.rowHeight + STYLES.rowHeight / 2;
+                  const endY = rowIndex * STYLES.rowHeight + STYLES.rowHeight / 2;
+
+                  if (endX <= startX) return null; // 依存関係が逆方向の場合はスキップ
 
                   return (
                     <svg
                       key={depId}
                       className={styles.dependencyArrow}
                       style={{
-                        left: `${depPos.left + depPos.width}px`,
-                        top: `${-index * STYLES.rowHeight + depIndex * STYLES.rowHeight + STYLES.rowHeight / 2}px`,
-                        width: `${svgWidth}px`,
-                        height: `${svgHeight}px`,
+                        position: 'absolute',
+                        left: `${startX}px`,
+                        top: `${Math.min(startY, endY)}px`,
+                        width: `${endX - startX}px`,
+                        height: `${Math.abs(endY - startY)}px`,
+                        pointerEvents: 'none',
                       }}
                     >
-                      <path
-                        d={`M 0 ${STYLES.rowHeight / 2} L ${svgWidth} ${
-                          index > depIndex ? svgHeight - STYLES.rowHeight / 2 : STYLES.rowHeight / 2
-                        }`}
-                        stroke="#666"
-                        strokeWidth="2"
-                        fill="none"
-                        markerEnd="url(#arrowhead)"
-                      />
                       <defs>
                         <marker
-                          id="arrowhead"
+                          id={`arrowhead-${depId}`}
                           markerWidth="10"
                           markerHeight="7"
                           refX="9"
@@ -261,6 +272,14 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                           <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
                         </marker>
                       </defs>
+                      <path
+                        d={`M 0,${startY < endY ? 0 : Math.abs(endY - startY)} 
+                            L ${endX - startX},${startY < endY ? Math.abs(endY - startY) : 0}`}
+                        stroke="#666"
+                        strokeWidth="2"
+                        fill="none"
+                        markerEnd={`url(#arrowhead-${depId})`}
+                      />
                     </svg>
                   );
                 })}
