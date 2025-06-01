@@ -124,7 +124,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const [selectedProject, setSelectedProject] = useState<WBSProject | null>(null);
 
   // ローカルストレージを使用してWBSタスクを管理
-  const saveWBSTaskToLocal = (task: any) => {
+  const saveWBSTaskToLocal = (task: Partial<WBSNode>) => {
     const existingTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
     existingTasks.push({
       ...task,

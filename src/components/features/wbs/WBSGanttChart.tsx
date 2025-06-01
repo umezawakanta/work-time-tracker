@@ -1,7 +1,16 @@
 // src/components/features/wbs/WBSGanttChart.tsx
 import React, { useMemo, useRef } from 'react';
 import { WBSNode } from '@/types/wbs';
-import { format, differenceInDays, addDays, startOfMonth, endOfMonth } from 'date-fns';
+import {
+  format,
+  differenceInDays,
+  addDays,
+  startOfMonth,
+  endOfMonth,
+  min,
+  max,
+  subDays,
+} from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import styles from './WBSGanttChart.module.css';
@@ -10,8 +19,8 @@ interface WBSGanttChartProps {
   nodes: WBSNode[];
   onNodeClick?: (node: WBSNode) => void;
   onProgressUpdate?: (nodeId: string, progress: number) => void;
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date; // オプショナルに変更
+  endDate?: Date; // オプショナルに変更
   readonly?: boolean;
 }
 
@@ -27,11 +36,43 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
   nodes,
   onNodeClick,
   onProgressUpdate,
-  startDate,
-  endDate,
+  startDate: propStartDate, // propsからの日付をリネーム
+  endDate: propEndDate, // propsからの日付をリネーム
   readonly = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // ノードから動的に日付範囲を計算
+  const { startDate, endDate } = useMemo(() => {
+    if (nodes.length === 0) {
+      // ノードがない場合はデフォルトの範囲を使用
+      const defaultStart = propStartDate || new Date();
+      const defaultEnd = propEndDate || addDays(defaultStart, 90);
+      return { startDate: defaultStart, endDate: defaultEnd };
+    }
+
+    // すべてのノードの開始日と終了日を収集
+    const allStartDates = nodes.map((node) => new Date(node.startDate));
+    const allEndDates = nodes.map((node) => new Date(node.endDate));
+
+    // 最も早い開始日と最も遅い終了日を取得
+    const calculatedStart = min(allStartDates);
+    const calculatedEnd = max(allEndDates);
+
+    // バッファを追加（前後に1週間）
+    const bufferedStart = subDays(calculatedStart, 7);
+    const bufferedEnd = addDays(calculatedEnd, 7);
+
+    // propsで指定された範囲がある場合は、より広い範囲を採用
+    const finalStart = propStartDate ? min([propStartDate, bufferedStart]) : bufferedStart;
+    const finalEnd = propEndDate ? max([propEndDate, bufferedEnd]) : bufferedEnd;
+
+    return {
+      startDate: finalStart,
+      endDate: finalEnd,
+    };
+  }, [nodes, propStartDate, propEndDate]);
+
   const totalDays = differenceInDays(endDate, startDate) + 1;
 
   // 月ごとのグループを作成

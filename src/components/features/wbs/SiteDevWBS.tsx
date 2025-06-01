@@ -288,8 +288,6 @@ const SiteDevWBS: React.FC = () => {
             <CardContent className="p-0">
               <WBSGanttChart
                 nodes={wbsNodes}
-                startDate={new Date(siteDevProject.startDate)}
-                endDate={new Date(siteDevProject.endDate)}
                 onNodeClick={(node) => {
                   setSelectedNode(node);
                   handleEditTask(node);
