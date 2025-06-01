@@ -112,7 +112,7 @@ const mockWBSNodes: WBSNode[] = [
 export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOpenChange }) => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
-  const analysisSummary = useSelector(selectAnalysisSummary);
+  const _analysisSummary = useSelector(selectAnalysisSummary);
 
   const { user } = useAuth();
 
