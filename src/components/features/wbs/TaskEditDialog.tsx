@@ -372,6 +372,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                     <button
                       onClick={() => removeDeliverable(index)}
                       className="ml-2 hover:text-destructive"
+                      aria-label="削除"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -395,7 +396,9 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                 <div className="grid grid-cols-2 gap-2">
                   <Select
                     value={newRisk.probability}
-                    onValueChange={(value) => setNewRisk({ ...newRisk, probability: value })}
+                    onValueChange={(value) =>
+                      setNewRisk({ ...newRisk, probability: value as 'low' | 'medium' | 'high' })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="発生確率" />
@@ -408,7 +411,9 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                   </Select>
                   <Select
                     value={newRisk.impact}
-                    onValueChange={(value) => setNewRisk({ ...newRisk, impact: value })}
+                    onValueChange={(value) =>
+                      setNewRisk({ ...newRisk, impact: value as 'low' | 'medium' | 'high' })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="影響度" />
