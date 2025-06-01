@@ -446,13 +446,15 @@ const SiteDevWBS: React.FC = () => {
       />
 
       {/* AI分析ダイアログ */}
-      <TaskAIAnalysisDialog
-        open={!!aiAnalysisTask}
-        onOpenChange={(open) => !open && setAIAnalysisTask(null)}
-        task={aiAnalysisTask!}
-        onTaskUpdated={handleNodeUpdate}
-        onSubtasksCreated={handleSubtasksCreated}
-      />
+      {aiAnalysisTask && (
+        <TaskAIAnalysisDialog
+          open={!!aiAnalysisTask}
+          onOpenChange={(open) => !open && setAIAnalysisTask(null)}
+          task={aiAnalysisTask}
+          onTaskUpdated={handleNodeUpdate}
+          onSubtasksCreated={handleSubtasksCreated}
+        />
+      )}
     </div>
   );
 };
