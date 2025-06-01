@@ -246,7 +246,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                 </Label>
                 <DatePicker
                   date={formData.startDate ? new Date(formData.startDate) : undefined}
-                  onDateChange={(date) => updateField('startDate', date ? date.toISOString() : '')}
+                  setDate={(date) => updateField('startDate', date ? date.toISOString() : '')}
                 />
               </div>
 
@@ -257,7 +257,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                 </Label>
                 <DatePicker
                   date={formData.endDate ? new Date(formData.endDate) : undefined}
-                  onDateChange={(date) => updateField('endDate', date ? date.toISOString() : '')}
+                  setDate={(date) => updateField('endDate', date ? date.toISOString() : '')}
                 />
               </div>
             </div>
