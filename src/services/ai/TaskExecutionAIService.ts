@@ -1,0 +1,271 @@
+import { WBSNode } from '@/types/wbs';
+import { KnowledgeEntry } from '@/types/knowledge';
+import AdvancedAIService from './AdvancedAIService';
+import WBSService from '../wbs/WBSService';
+
+export interface TaskExecutionResult {
+  success: boolean;
+  executionType: 'research' | 'documentation' | 'analysis' | 'not-executable';
+  result?: any;
+  knowledgeEntries?: KnowledgeEntry[];
+  error?: string;
+}
+
+class TaskExecutionAIService {
+  private aiService = AdvancedAIService;
+  private wbsService = WBSService;
+
+  /**
+   * タスクがAIで実行可能かを判定
+   */
+  async canExecuteTask(task: WBSNode): Promise<boolean> {
+    const executablePatterns = [
+      /調査|リサーチ|研究/,
+      /理解|学習|把握/,
+      /分析|検討|評価/,
+      /まとめ|要約|整理/,
+      /定義|説明/,
+    ];
+
+    const taskName = task.name.toLowerCase();
+    const taskDescription = (task.description || '').toLowerCase();
+    const combinedText = `${taskName} ${taskDescription}`;
+
+    return executablePatterns.some((pattern) => pattern.test(combinedText));
+  }
+
+  /**
+   * タスクをAIで実行
+   */
+  async executeTask(task: WBSNode): Promise<TaskExecutionResult> {
+    try {
+      // タスクの種類を判定
+      const taskType = await this.classifyTaskType(task);
+
+      switch (taskType) {
+        case 'research':
+          return await this.executeResearchTask(task);
+        case 'documentation':
+          return await this.executeDocumentationTask(task);
+        case 'analysis':
+          return await this.executeAnalysisTask(task);
+        default:
+          return {
+            success: false,
+            executionType: 'not-executable',
+            error: 'このタスクはAIで実行できません',
+          };
+      }
+    } catch (error) {
+      console.error('タスク実行エラー:', error);
+      return {
+        success: false,
+        executionType: 'not-executable',
+        error: error instanceof Error ? error.message : '実行中にエラーが発生しました',
+      };
+    }
+  }
+
+  /**
+   * タスクの種類を分類
+   */
+  private async classifyTaskType(
+    task: WBSNode
+  ): Promise<'research' | 'documentation' | 'analysis' | 'not-executable'> {
+    const taskText = `${task.name} ${task.description || ''}`.toLowerCase();
+
+    if (/調査|リサーチ|研究|理解|学習|把握|とは何か/.test(taskText)) {
+      return 'research';
+    }
+    if (/ドキュメント|文書|仕様書|マニュアル/.test(taskText)) {
+      return 'documentation';
+    }
+    if (/分析|検討|評価/.test(taskText)) {
+      return 'analysis';
+    }
+
+    return 'not-executable';
+  }
+
+  /**
+   * 調査タスクの実行
+   */
+  private async executeResearchTask(task: WBSNode): Promise<TaskExecutionResult> {
+    // タスクから調査対象を抽出
+    const searchTerm = this.extractSearchTerm(task);
+
+    const prompt = `
+「${searchTerm}」について詳しく調査し、以下の形式で説明してください：
+
+1. 定義・概要
+2. 主な特徴
+3. 重要性・メリット
+4. 実践例・使用方法
+5. 関連用語
+
+各項目について簡潔かつ分かりやすく説明してください。
+`;
+
+    const aiResponse = await this.aiService.generateResponse(prompt);
+
+    // レスポンスを解析して知識エントリーを作成
+    const knowledgeEntries = this.parseResearchResponse(searchTerm, aiResponse, task.id);
+
+    return {
+      success: true,
+      executionType: 'research',
+      result: aiResponse,
+      knowledgeEntries,
+    };
+  }
+
+  /**
+   * 調査対象の抽出
+   */
+  private extractSearchTerm(task: WBSNode): string {
+    const patterns = [/「(.+?)」/, /『(.+?)』/, /【(.+?)】/, /について|を理解|を調査|を研究/];
+
+    for (const pattern of patterns) {
+      const match = task.name.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+
+    // パターンにマッチしない場合は、タスク名から動詞を除去
+    return task.name.replace(/を?理解する|を?調査する|を?研究する|について|とは何か/g, '').trim();
+  }
+
+  /**
+   * 調査結果を知識エントリーに変換
+   */
+  private parseResearchResponse(term: string, response: string, taskId: string): KnowledgeEntry[] {
+    const entries: KnowledgeEntry[] = [];
+    const timestamp = new Date().toISOString();
+
+    // メインの定義エントリー
+    const mainEntry: KnowledgeEntry = {
+      id: `knowledge-${Date.now()}`,
+      term,
+      definition: response,
+      category: 'research',
+      tags: this.extractTags(response),
+      relatedTasks: [taskId],
+      source: 'AI Generated',
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      createdBy: 'ai-assistant',
+      metadata: {
+        aiGenerated: true,
+        confidence: 0.85,
+      },
+    };
+
+    entries.push(mainEntry);
+
+    // 関連用語を抽出して追加エントリーを作成
+    const relatedTerms = this.extractRelatedTerms(response);
+    for (const relatedTerm of relatedTerms) {
+      if (relatedTerm.definition) {
+        entries.push({
+          id: `knowledge-${Date.now()}-${entries.length}`,
+          term: relatedTerm.term,
+          definition: relatedTerm.definition,
+          category: 'research',
+          tags: [term, ...relatedTerm.tags],
+          relatedTasks: [taskId],
+          source: 'AI Generated (Related)',
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          createdBy: 'ai-assistant',
+          metadata: {
+            aiGenerated: true,
+            confidence: 0.7,
+            references: [mainEntry.id],
+          },
+        });
+      }
+    }
+
+    return entries;
+  }
+
+  /**
+   * テキストからタグを抽出
+   */
+  private extractTags(text: string): string[] {
+    const tags = new Set<string>();
+
+    // 技術用語パターン
+    const techPatterns = [
+      /[A-Z]{2,}/g, // 大文字の略語
+      /\b(?:API|UI|UX|AI|ML|DB|SQL)\b/gi,
+    ];
+
+    for (const pattern of techPatterns) {
+      const matches = text.match(pattern);
+      if (matches) {
+        matches.forEach((match) => tags.add(match.toLowerCase()));
+      }
+    }
+
+    return Array.from(tags);
+  }
+
+  /**
+   * 関連用語の抽出
+   */
+  private extractRelatedTerms(
+    text: string
+  ): Array<{ term: string; definition?: string; tags: string[] }> {
+    const terms: Array<{ term: string; definition?: string; tags: string[] }> = [];
+
+    // 「5. 関連用語」セクションを探す
+    const relatedSection = text.match(/関連用語[：:]\s*(.+?)$/ms);
+    if (relatedSection) {
+      const termLines = relatedSection[1].split('\n');
+      for (const line of termLines) {
+        const termMatch = line.match(/[-・]\s*(.+?)[:：]?\s*(.+)?/);
+        if (termMatch) {
+          terms.push({
+            term: termMatch[1].trim(),
+            definition: termMatch[2]?.trim(),
+            tags: [],
+          });
+        }
+      }
+    }
+
+    return terms;
+  }
+
+  /**
+   * ドキュメント作成タスクの実行
+   */
+  private async executeDocumentationTask(task: WBSNode): Promise<TaskExecutionResult> {
+    // 実装予定
+    return {
+      success: false,
+      executionType: 'documentation',
+      error: 'ドキュメント作成機能は準備中です',
+    };
+  }
+
+  /**
+   * 分析タスクの実行
+   */
+  private async executeAnalysisTask(task: WBSNode): Promise<TaskExecutionResult> {
+    // Create a temporary solution using the existing methods
+    const fakeAnalysis = await this.aiService.analyzeProductivity([], {} as any);
+    const type = 'research'; // Default fallback or implement local classification
+
+    // 実装予定
+    return {
+      success: false,
+      executionType: 'analysis',
+      error: '分析機能は準備中です',
+    };
+  }
+}
+
+export default new TaskExecutionAIService();

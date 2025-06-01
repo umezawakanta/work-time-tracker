@@ -100,10 +100,7 @@ class AdvancedAIService {
     }
   }
 
-  async suggestNextTasks(
-    completedTodos: Todo[],
-    currentGoals: string[]
-  ): Promise<NewTodo[]> {
+  async suggestNextTasks(completedTodos: Todo[], currentGoals: string[]): Promise<NewTodo[]> {
     if (!this.currentProvider) {
       return this.generateLocalTaskSuggestions(completedTodos, currentGoals);
     }
@@ -137,7 +134,7 @@ class AdvancedAIService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.currentProvider!.apiKey}`,
+        Authorization: `Bearer ${this.currentProvider!.apiKey}`,
       },
       body: JSON.stringify({
         model: this.currentProvider!.model,
@@ -185,8 +182,11 @@ class AdvancedAIService {
   }
 
   private buildProductivityPrompt(todos: Todo[], summary: TodoAnalysisSummary): string {
-    const recentTasks = todos.slice(0, 5).map(t => `- ${t.task} (${t.type})`).join('\n');
-    
+    const recentTasks = todos
+      .slice(0, 5)
+      .map((t) => `- ${t.task} (${t.type})`)
+      .join('\n');
+
     return `
 タスク管理データの分析:
 - 完了タスク数: ${summary.totalCompleted}
@@ -224,7 +224,10 @@ ${recentTasks}
   }
 
   private buildTaskSuggestionPrompt(completedTodos: Todo[], currentGoals: string[]): string {
-    const recentTasks = completedTodos.slice(0, 10).map(t => t.task).join(', ');
+    const recentTasks = completedTodos
+      .slice(0, 10)
+      .map((t) => t.task)
+      .join(', ');
     const goals = currentGoals.join(', ');
 
     return `
@@ -262,16 +265,16 @@ ${recentTasks}
 
   private generateLocalAnalysis(todos: Todo[], summary: TodoAnalysisSummary): AIAnalysisResult {
     // ローカル分析では基本的な推奨事項を生成
-    const hasHighPriorityTasks = todos.some(t => t.priority >= 4);
-    const inputCount = todos.filter(t => t.type === 'input').length;
-    const outputCount = todos.filter(t => t.type === 'output').length;
-    
+    const hasHighPriorityTasks = todos.some((t) => t.priority >= 4);
+    const inputCount = todos.filter((t) => t.type === 'input').length;
+    const outputCount = todos.filter((t) => t.type === 'output').length;
+
     const insights: string[] = [];
-    
+
     if (summary.completionRate > 80) {
       insights.push('優れた完了率を維持しています');
     }
-    
+
     if (inputCount > outputCount * 2) {
       insights.push('インプット過多の傾向があります。アウトプットを増やしましょう');
     }
@@ -299,9 +302,9 @@ ${recentTasks}
   }
 
   private generateLocalTaskBreakdown(taskDescription: string): TaskBreakdown {
-    const complexity = taskDescription.length > 50 ? 'high' : 
-                      taskDescription.length > 20 ? 'medium' : 'low';
-    
+    const complexity =
+      taskDescription.length > 50 ? 'high' : taskDescription.length > 20 ? 'medium' : 'low';
+
     return {
       mainTask: taskDescription,
       subtasks: [
@@ -326,16 +329,13 @@ ${recentTasks}
     };
   }
 
-  private generateLocalTaskSuggestions(
-    completedTodos: Todo[],
-    currentGoals: string[]
-  ): NewTodo[] {
+  private generateLocalTaskSuggestions(completedTodos: Todo[], currentGoals: string[]): NewTodo[] {
     const suggestions: NewTodo[] = [];
-    
+
     // 完了タスクの傾向を分析
-    const recentTypes = completedTodos.slice(0, 5).map(t => t.type);
-    const needsMoreOutput = recentTypes.filter(t => t === 'input').length > 3;
-    
+    const recentTypes = completedTodos.slice(0, 5).map((t) => t.type);
+    const needsMoreOutput = recentTypes.filter((t) => t === 'input').length > 3;
+
     if (needsMoreOutput) {
       suggestions.push({
         task: '学んだことをブログ記事にまとめる',
@@ -387,6 +387,13 @@ ${recentTasks}
 
   getAvailableProviders(): string[] {
     return Array.from(this.providers.keys());
+  }
+
+  async generateResponse(prompt: string): Promise<string> {
+    if (!this.currentProvider) {
+      throw new Error('No AI provider configured');
+    }
+    return this.callAIProvider(prompt);
   }
 }
 

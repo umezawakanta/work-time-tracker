@@ -34,10 +34,13 @@ import {
   DollarSign,
   Package,
   Users,
+  Bot,
+  Sparkles,
 } from 'lucide-react';
 import { WBSNode, WBSRisk } from '@/types/wbs';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import TaskExecutionAIService from '@/services/ai/TaskExecutionAIService';
 
 interface TaskEditDialogProps {
   open: boolean;
@@ -66,6 +69,8 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
     mitigation: '',
     owner: '',
   });
+  const [canExecuteWithAI, setCanExecuteWithAI] = useState(false);
+  const [executingAI, setExecutingAI] = useState(false);
 
   // タスクが変更されたらフォームデータを更新
   useEffect(() => {
@@ -87,6 +92,17 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
         icon: task.icon,
       });
     }
+  }, [task]);
+
+  // タスクが変更されたらAI実行可能かチェック
+  useEffect(() => {
+    const checkAIExecutability = async () => {
+      if (task) {
+        const canExecute = await TaskExecutionAIService.canExecuteTask(task);
+        setCanExecuteWithAI(canExecute);
+      }
+    };
+    checkAIExecutability();
   }, [task]);
 
   // フォームフィールドの更新
@@ -152,6 +168,44 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
     }
   };
 
+  // AI実行処理
+  const handleAIExecute = async () => {
+    if (!task) return;
+
+    setExecutingAI(true);
+    try {
+      const result = await TaskExecutionAIService.executeTask(task);
+
+      if (result.success) {
+        // 知識ベースに保存（後で実装）
+        if (result.knowledgeEntries) {
+          // await KnowledgeService.saveEntries(result.knowledgeEntries);
+        }
+
+        // タスクを完了状態に更新
+        await onSave(task.id, {
+          status: 'completed',
+          progress: 100,
+          actualHours: formData.estimatedHours || 1,
+          deliverables: [
+            ...(formData.deliverables || []),
+            `AI実行結果: ${result.knowledgeEntries?.[0]?.term || 'completed'}`,
+          ],
+        });
+
+        // ダイアログを閉じる
+        onOpenChange(false);
+      } else {
+        alert(`AI実行エラー: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('AI実行エラー:', error);
+      alert('AI実行中にエラーが発生しました');
+    } finally {
+      setExecutingAI(false);
+    }
+  };
+
   // AI分析を開く
   const handleAIAnalyze = () => {
     if (task && onAIAnalyze) {
@@ -169,6 +223,12 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
           <DialogTitle className="flex items-center gap-2">
             {task.icon && <span>{task.icon}</span>}
             タスクの編集: {task.name}
+            {canExecuteWithAI && (
+              <Badge variant="secondary" className="ml-2">
+                <Bot className="h-3 w-3 mr-1" />
+                AI実行可能
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -469,6 +529,21 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             キャンセル
           </Button>
+          {canExecuteWithAI && (
+            <Button variant="outline" onClick={handleAIExecute} disabled={executingAI}>
+              {executingAI ? (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+                  AI実行中...
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4 mr-2" />
+                  AIで実行
+                </>
+              )}
+            </Button>
+          )}
           {onAIAnalyze && (
             <Button variant="outline" onClick={handleAIAnalyze}>
               <Brain className="h-4 w-4 mr-2" />
