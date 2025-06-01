@@ -319,9 +319,28 @@ const SiteDevWBS: React.FC = () => {
           <WBSAIAnalysis
             nodes={wbsNodes}
             selectedNode={selectedNode}
-            onOptimizationApply={(nodeId: string, optimization: any) => {
+            onOptimizationApply={async (nodeId: string, optimization: any) => {
               console.log('最適化を適用:', nodeId, optimization);
               // 最適化の適用ロジックを実装
+              try {
+                // 最適化の内容に応じて適切な更新を行う
+                const updates: Partial<WBSNode> = {};
+
+                if (optimization.type === 'schedule') {
+                  updates.startDate = optimization.startDate;
+                  updates.endDate = optimization.endDate;
+                } else if (optimization.type === 'resource') {
+                  updates.estimatedHours = optimization.estimatedHours;
+                  updates.assignees = optimization.assignees;
+                } else if (optimization.type === 'risk') {
+                  const currentRisks = wbsNodes.find((n) => n.id === nodeId)?.risks || [];
+                  updates.risks = [...currentRisks, optimization.newRisk];
+                }
+
+                await handleNodeUpdate(nodeId, updates);
+              } catch (error) {
+                console.error('最適化の適用に失敗しました:', error);
+              }
             }}
           />
         </TabsContent>
