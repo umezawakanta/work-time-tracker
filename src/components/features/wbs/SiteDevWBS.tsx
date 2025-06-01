@@ -11,65 +11,36 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
+  Edit,
+  Brain,
 } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
+import TaskEditDialog from './TaskEditDialog';
+import WBSAIAnalysis from './WBSAIAnalysis';
 import { siteDevProject } from '@/data/siteDevWBS';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import WBSService from '@/services/wbs/WBSService';
 import { WBSNode } from '@/types/wbs';
+import { Button } from '@/components/ui/button';
 
 const SiteDevWBS: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'gantt' | 'tree'>('gantt');
-  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'gantt' | 'tree' | 'ai'>('gantt');
+  const [selectedNode, setSelectedNode] = useState<WBSNode | null>(null);
   const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<WBSNode | null>(null);
 
-  // ローカルストレージからデータを読み込む関数を追加
-  const loadLocalWBSTasks = (): WBSNode[] => {
-    try {
-      const localTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
-      // site-dev-projectのタスクのみをフィルタリング
-      return localTasks.filter((task: any) => task.projectId === 'site-dev-project');
-    } catch (error) {
-      console.error('ローカルストレージからのデータ読み込みエラー:', error);
-      return [];
-    }
-  };
-
-  // FirebaseとローカルストレージからデータをマージしてWBSノードを取得
+  // MongoDBからWBSノードを取得
   useEffect(() => {
     const fetchWBSNodes = async () => {
       try {
         setLoading(true);
-
-        // ローカルストレージからタスクを取得
-        const localTasks = loadLocalWBSTasks();
-        console.log('ローカルストレージから読み込んだタスク:', localTasks);
-
-        try {
-          // Firebaseからデータを取得
-          const firebaseNodes = await WBSService.getProjectNodes('site-dev-project');
-          console.log('Firebaseから読み込んだタスク:', firebaseNodes);
-
-          // ローカルとFirebaseのデータをマージ（重複を避ける）
-          const mergedNodes = [...firebaseNodes];
-
-          // ローカルタスクのうち、Firebaseに存在しないものだけを追加
-          localTasks.forEach((localTask) => {
-            const exists = firebaseNodes.some((fbNode) => fbNode.name === localTask.name);
-            if (!exists) {
-              mergedNodes.push(localTask);
-            }
-          });
-
-          setWbsNodes(mergedNodes);
-        } catch (firebaseError) {
-          console.error('Firebaseからのデータ取得に失敗:', firebaseError);
-          // Firebaseエラーの場合はローカルデータのみを使用
-          setWbsNodes(localTasks);
-        }
+        // MongoDBからデータを取得
+        const nodes = await WBSService.getProjectNodes('site-dev-project');
+        setWbsNodes(nodes);
       } catch (error) {
         console.error('WBSデータの取得に失敗しました:', error);
         setWbsNodes([]);
@@ -80,103 +51,38 @@ const SiteDevWBS: React.FC = () => {
 
     fetchWBSNodes();
 
-    // リアルタイム更新を購読（Firebaseからのみ）
-    const unsubscribe = WBSService.subscribeToProject('site-dev-project', (firebaseNodes) => {
-      // リアルタイム更新時もローカルデータをマージ
-      const localTasks = loadLocalWBSTasks();
-      const mergedNodes = [...firebaseNodes];
-
-      localTasks.forEach((localTask) => {
-        const exists = firebaseNodes.some((fbNode) => fbNode.name === localTask.name);
-        if (!exists) {
-          mergedNodes.push(localTask);
-        }
-      });
-
-      setWbsNodes(mergedNodes);
-    });
-
-    // ローカルストレージの変更を監視
-    const handleStorageChange = () => {
-      fetchWBSNodes();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
+    // ポーリングで定期的に更新（リアルタイム更新の代替）
+    const interval = setInterval(fetchWBSNodes, 30000); // 30秒ごと
 
     return () => {
-      if (unsubscribe) unsubscribe();
-      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
     };
   }, []);
 
-  // ローカルストレージのタスクを更新する関数を追加
-  const updateLocalTask = (nodeId: string, updates: Partial<WBSNode>) => {
-    try {
-      const localTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
-      const updatedTasks = localTasks.map((task: any) =>
-        task.id === nodeId ? { ...task, ...updates } : task
-      );
-      localStorage.setItem('wbs-tasks', JSON.stringify(updatedTasks));
-
-      // storage イベントを手動で発火させて他のタブに通知
-      window.dispatchEvent(new Event('storage'));
-    } catch (error) {
-      console.error('ローカルストレージの更新エラー:', error);
-    }
-  };
-
-  // ノードの進捗を更新する関数を追加
-  const handleProgressUpdate = async (nodeId: string, progress: number) => {
-    try {
-      const node = wbsNodes.find((n) => n.id === nodeId);
-      if (!node) return;
-
-      // ローカルストレージから来たタスクかどうかを判定
-      const localTasks = loadLocalWBSTasks();
-      const isLocalTask = localTasks.some((task) => task.id === nodeId);
-
-      if (isLocalTask) {
-        // ローカルストレージのタスクの場合
-        updateLocalTask(nodeId, { progress, updatedAt: new Date().toISOString() });
-
-        // 即座にUIを更新
-        setWbsNodes((prevNodes) =>
-          prevNodes.map((n) => (n.id === nodeId ? { ...n, progress } : n))
-        );
-      } else {
-        // Firebaseのタスクの場合
-        await WBSService.updateNode(nodeId, { progress });
-      }
-    } catch (error) {
-      console.error('進捗の更新に失敗しました:', error);
-    }
-  };
-
-  // ノードを更新する関数を追加
+  // ノードを更新する関数
   const handleNodeUpdate = async (nodeId: string, updates: Partial<WBSNode>) => {
     try {
-      const node = wbsNodes.find((n) => n.id === nodeId);
-      if (!node) return;
+      await WBSService.updateNode(nodeId, updates);
 
-      // ローカルストレージから来たタスクかどうかを判定
-      const localTasks = loadLocalWBSTasks();
-      const isLocalTask = localTasks.some((task) => task.id === nodeId);
-
-      if (isLocalTask) {
-        // ローカルストレージのタスクの場合
-        updateLocalTask(nodeId, { ...updates, updatedAt: new Date().toISOString() });
-
-        // 即座にUIを更新
-        setWbsNodes((prevNodes) =>
-          prevNodes.map((n) => (n.id === nodeId ? { ...n, ...updates } : n))
-        );
-      } else {
-        // Firebaseのタスクの場合
-        await WBSService.updateNode(nodeId, updates);
-      }
+      // 即座にUIを更新
+      setWbsNodes((prevNodes) =>
+        prevNodes.map((n) => (n.id === nodeId ? { ...n, ...updates } : n))
+      );
     } catch (error) {
       console.error('ノードの更新に失敗しました:', error);
     }
+  };
+
+  // タスク編集ダイアログを開く
+  const handleEditTask = (task: WBSNode) => {
+    setEditingTask(task);
+    setEditDialogOpen(true);
+  };
+
+  // AI分析でタスクを分析
+  const handleAIAnalyzeTask = (task: WBSNode) => {
+    setSelectedNode(task);
+    setViewMode('ai');
   };
 
   // 統計情報の計算
@@ -188,7 +94,6 @@ const SiteDevWBS: React.FC = () => {
     ).length;
     const delayedTasks = wbsNodes.filter((n) => n.status === 'delayed').length;
 
-    // 分母が0の場合のエラーを防ぐ
     const level0Nodes = wbsNodes.filter((n) => n.level === 0);
     const totalProgress =
       level0Nodes.length > 0
@@ -230,6 +135,17 @@ const SiteDevWBS: React.FC = () => {
       status: phase.status,
       color: phase.color || '#6b7280',
     }));
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+          <p className="text-muted-foreground">データを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -357,10 +273,14 @@ const SiteDevWBS: React.FC = () => {
       </div>
 
       {/* ビューモード切り替え */}
-      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'gantt' | 'tree')}>
+      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'gantt' | 'tree' | 'ai')}>
         <TabsList>
           <TabsTrigger value="gantt">ガントチャート</TabsTrigger>
           <TabsTrigger value="tree">ツリー表示</TabsTrigger>
+          <TabsTrigger value="ai">
+            <Brain className="h-4 w-4 mr-2" />
+            AI分析
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="gantt" className="mt-4">
@@ -370,8 +290,11 @@ const SiteDevWBS: React.FC = () => {
                 nodes={wbsNodes}
                 startDate={new Date(siteDevProject.startDate)}
                 endDate={new Date(siteDevProject.endDate)}
-                onNodeClick={setSelectedNode}
-                onProgressUpdate={handleProgressUpdate}
+                onNodeClick={(node) => {
+                  setSelectedNode(node);
+                  handleEditTask(node);
+                }}
+                onProgressUpdate={(nodeId, progress) => handleNodeUpdate(nodeId, { progress })}
               />
             </CardContent>
           </Card>
@@ -382,21 +305,51 @@ const SiteDevWBS: React.FC = () => {
             <CardContent>
               <WBSTreeView
                 nodes={wbsNodes}
-                onNodeClick={setSelectedNode}
+                onNodeClick={(node) => {
+                  setSelectedNode(node);
+                  handleEditTask(node);
+                }}
                 onNodeUpdate={handleNodeUpdate}
               />
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="ai" className="mt-4">
+          <WBSAIAnalysis
+            nodes={wbsNodes}
+            selectedNode={selectedNode}
+            onOptimizationApply={(nodeId: string, optimization: any) => {
+              console.log('最適化を適用:', nodeId, optimization);
+              // 最適化の適用ロジックを実装
+            }}
+          />
+        </TabsContent>
       </Tabs>
 
       {/* 選択されたノードの詳細 */}
-      {selectedNode && (
+      {selectedNode && viewMode !== 'ai' && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              {selectedNode.icon && <span>{selectedNode.icon}</span>}
-              {selectedNode.name}
+            <CardTitle className="text-lg flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {selectedNode.icon && <span>{selectedNode.icon}</span>}
+                {selectedNode.name}
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => handleEditTask(selectedNode)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  編集
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleAIAnalyzeTask(selectedNode)}
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  AI分析
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -457,6 +410,15 @@ const SiteDevWBS: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* タスク編集ダイアログ */}
+      <TaskEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        task={editingTask}
+        onSave={handleNodeUpdate}
+        onAIAnalyze={handleAIAnalyzeTask}
+      />
     </div>
   );
 };
