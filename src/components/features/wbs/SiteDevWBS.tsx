@@ -26,15 +26,53 @@ const SiteDevWBS: React.FC = () => {
   const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Firebaseからデータを取得
+  // ローカルストレージからデータを読み込む関数を追加
+  const loadLocalWBSTasks = (): WBSNode[] => {
+    try {
+      const localTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
+      // site-dev-projectのタスクのみをフィルタリング
+      return localTasks.filter((task: any) => task.projectId === 'site-dev-project');
+    } catch (error) {
+      console.error('ローカルストレージからのデータ読み込みエラー:', error);
+      return [];
+    }
+  };
+
+  // FirebaseとローカルストレージからデータをマージしてWBSノードを取得
   useEffect(() => {
     const fetchWBSNodes = async () => {
       try {
         setLoading(true);
-        const nodes = await WBSService.getProjectNodes('site-dev-project');
-        setWbsNodes(nodes);
+
+        // ローカルストレージからタスクを取得
+        const localTasks = loadLocalWBSTasks();
+        console.log('ローカルストレージから読み込んだタスク:', localTasks);
+
+        try {
+          // Firebaseからデータを取得
+          const firebaseNodes = await WBSService.getProjectNodes('site-dev-project');
+          console.log('Firebaseから読み込んだタスク:', firebaseNodes);
+
+          // ローカルとFirebaseのデータをマージ（重複を避ける）
+          const mergedNodes = [...firebaseNodes];
+
+          // ローカルタスクのうち、Firebaseに存在しないものだけを追加
+          localTasks.forEach((localTask) => {
+            const exists = firebaseNodes.some((fbNode) => fbNode.name === localTask.name);
+            if (!exists) {
+              mergedNodes.push(localTask);
+            }
+          });
+
+          setWbsNodes(mergedNodes);
+        } catch (firebaseError) {
+          console.error('Firebaseからのデータ取得に失敗:', firebaseError);
+          // Firebaseエラーの場合はローカルデータのみを使用
+          setWbsNodes(localTasks);
+        }
       } catch (error) {
         console.error('WBSデータの取得に失敗しました:', error);
+        setWbsNodes([]);
       } finally {
         setLoading(false);
       }
@@ -42,13 +80,32 @@ const SiteDevWBS: React.FC = () => {
 
     fetchWBSNodes();
 
-    // リアルタイム更新を購読
-    const unsubscribe = WBSService.subscribeToProject('site-dev-project', (nodes) => {
-      setWbsNodes(nodes);
+    // リアルタイム更新を購読（Firebaseからのみ）
+    const unsubscribe = WBSService.subscribeToProject('site-dev-project', (firebaseNodes) => {
+      // リアルタイム更新時もローカルデータをマージ
+      const localTasks = loadLocalWBSTasks();
+      const mergedNodes = [...firebaseNodes];
+
+      localTasks.forEach((localTask) => {
+        const exists = firebaseNodes.some((fbNode) => fbNode.name === localTask.name);
+        if (!exists) {
+          mergedNodes.push(localTask);
+        }
+      });
+
+      setWbsNodes(mergedNodes);
     });
+
+    // ローカルストレージの変更を監視
+    const handleStorageChange = () => {
+      fetchWBSNodes();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       if (unsubscribe) unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
@@ -61,11 +118,15 @@ const SiteDevWBS: React.FC = () => {
     ).length;
     const delayedTasks = wbsNodes.filter((n) => n.status === 'delayed').length;
 
+    // 分母が0の場合のエラーを防ぐ
+    const level0Nodes = wbsNodes.filter((n) => n.level === 0);
     const totalProgress =
-      wbsNodes.reduce((sum, node) => {
-        if (node.level === 0) return sum + node.progress;
-        return sum;
-      }, 0) / wbsNodes.filter((n) => n.level === 0).length;
+      level0Nodes.length > 0
+        ? wbsNodes.reduce((sum, node) => {
+            if (node.level === 0) return sum + node.progress;
+            return sum;
+          }, 0) / level0Nodes.length
+        : 0;
 
     const totalBudget = wbsNodes.reduce((sum, n) => sum + n.budget, 0);
     const actualCost = wbsNodes.reduce((sum, n) => sum + n.actualCost, 0);
@@ -80,10 +141,11 @@ const SiteDevWBS: React.FC = () => {
       totalProgress: Math.round(totalProgress),
       totalBudget,
       actualCost,
-      costEfficiency: Math.round((actualCost / totalBudget) * 100),
+      costEfficiency: totalBudget > 0 ? Math.round((actualCost / totalBudget) * 100) : 0,
       totalEstimatedHours,
       totalActualHours,
-      timeEfficiency: Math.round((totalActualHours / totalEstimatedHours) * 100),
+      timeEfficiency:
+        totalEstimatedHours > 0 ? Math.round((totalActualHours / totalEstimatedHours) * 100) : 0,
     };
   };
 

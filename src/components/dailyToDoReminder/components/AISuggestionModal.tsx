@@ -40,7 +40,7 @@ interface TaskSuggestion {
 
 // モックのWBSプロジェクトとノード（開発用）
 const mockWBSProject: WBSProject = {
-  id: 'mock-project-1',
+  id: 'site-dev-project',
   name: 'Work Time Tracker 開発計画',
   description: '世界最高のタスク管理サービスを構築するための開発計画',
   startDate: new Date().toISOString(),
@@ -59,7 +59,7 @@ const mockWBSProject: WBSProject = {
 const mockWBSNodes: WBSNode[] = [
   {
     id: 'node-1',
-    projectId: 'mock-project-1',
+    projectId: 'site-dev-project',
     parentId: null,
     name: 'UI/UXの改善',
     description: 'ユーザビリティ向上のためのインターフェース改善',
@@ -84,7 +84,7 @@ const mockWBSNodes: WBSNode[] = [
   },
   {
     id: 'node-2',
-    projectId: 'mock-project-1',
+    projectId: 'site-dev-project',
     parentId: null,
     name: 'パフォーマンス最適化',
     description: 'アプリケーションの応答速度改善',
@@ -321,7 +321,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           console.log('User:', user);
 
           const wbsNode = {
-            projectId: selectedProject.id,
+            projectId: 'site-dev-project',
             parentId: null,
             name: suggestion.task,
             description: `AI提案タスク: ${suggestion.reason || ''}`,
