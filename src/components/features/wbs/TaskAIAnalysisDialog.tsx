@@ -120,7 +120,7 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
             createdBy: user.uid,
           };
 
-          const nodeId = await WBSService.createNode(newNode);
+          const nodeId = await WBSService.createNode(newNode, user.uid);
           createdSubtasks.push({ ...newNode, id: nodeId } as WBSNode);
         }
 
