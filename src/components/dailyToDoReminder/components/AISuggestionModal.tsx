@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Dialog,
@@ -10,14 +10,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Plus, RefreshCw, Clock, Target } from 'lucide-react';
+import { Sparkles, Plus, RefreshCw, Clock, Target, GitBranch } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { AppDispatch } from '@/store';
 import { addTodoItem, selectTodos, selectAnalysisSummary } from '@/store/todoSlice';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
+import WBSService from '@/services/wbs/WBSService';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from './LoadingSpinner';
+import { useAuth } from '@/hooks/useAuth';
+import { WBSNode, WBSProject } from '@/types/wbs';
 
 interface AISuggestionModalProps {
   open: boolean;
@@ -31,25 +34,61 @@ interface TaskSuggestion {
   estimatedDuration?: number;
   reason?: string;
   deadline?: string;
+  wbsNodeId?: string;
+  wbsNodeName?: string;
 }
 
 export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOpenChange }) => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const analysisSummary = useSelector(selectAnalysisSummary);
+  const { user } = useAuth();
 
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [wbsProjects, setWbsProjects] = useState<WBSProject[]>([]);
+  const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
+  const [selectedProject, setSelectedProject] = useState<WBSProject | null>(null);
 
-  // AI提案を生成
+  useEffect(() => {
+    const loadWBSData = async () => {
+      if (!user || !open) return;
+
+      try {
+        const projects = await WBSService.getProjects(user.uid);
+        setWbsProjects(projects);
+
+        if (projects.length > 0) {
+          setSelectedProject(projects[0]);
+          const nodes = await WBSService.getProjectNodes(projects[0].id);
+          setWbsNodes(nodes);
+        }
+      } catch (error) {
+        console.error('Failed to load WBS data:', error);
+      }
+    };
+
+    loadWBSData();
+  }, [user, open]);
+
   const generateSuggestions = useCallback(async () => {
     setLoading(true);
     try {
       const completedTodos = todos.filter((t) => t.completed);
-      const currentGoals = ['生産性向上', 'スキルアップ', 'タスク効率化']; // デフォルト目標
+      const currentGoals = ['生産性向上', 'スキルアップ', 'タスク効率化'];
 
-      // Map TodoItem[] to Todo[] by adding the missing updatedAt property
+      const incompleteWBSTasks = wbsNodes.filter(
+        (node) => node.status !== 'completed' && node.level > 1
+      );
+
+      const wbsContext = incompleteWBSTasks.map((node) => ({
+        name: node.name,
+        description: node.description,
+        deadline: node.endDate,
+        priority: node.estimatedHours > 8 ? 5 : 3,
+      }));
+
       const todosForAI = completedTodos.map((todo) => ({
         ...todo,
         type: todo.type || 'input',
@@ -57,7 +96,11 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         updatedAt: new Date().toISOString(),
       }));
 
-      const aiSuggestions = await AdvancedAIService.suggestNextTasks(todosForAI, currentGoals);
+      const aiSuggestions = await AdvancedAIService.suggestNextTasks(
+        todosForAI,
+        currentGoals,
+        wbsContext
+      );
 
       const formattedSuggestions: TaskSuggestion[] = aiSuggestions.map((s) => ({
         task: s.task,
@@ -66,9 +109,20 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         deadline: s.deadline,
       }));
 
-      // AIが提案を返さない場合のフォールバック
+      incompleteWBSTasks.slice(0, 3).forEach((node) => {
+        formattedSuggestions.push({
+          task: node.name,
+          type: 'output',
+          priority: node.estimatedHours > 8 ? 5 : 3,
+          estimatedDuration: node.estimatedHours * 60,
+          reason: `WBSタスク: ${node.description || 'プロジェクトの主要タスク'}`,
+          deadline: node.endDate,
+          wbsNodeId: node.id,
+          wbsNodeName: node.name,
+        });
+      });
+
       if (formattedSuggestions.length === 0) {
-        // 分析データに基づいた提案を生成
         const needsMoreOutput =
           todos.filter((t) => t.type === 'input').length >
           todos.filter((t) => t.type === 'output').length * 1.5;
@@ -111,16 +165,14 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     } finally {
       setLoading(false);
     }
-  }, [todos]);
+  }, [todos, wbsNodes]);
 
-  // 初回表示時に自動生成
   React.useEffect(() => {
     if (open && suggestions.length === 0) {
       generateSuggestions();
     }
   }, [open, suggestions.length, generateSuggestions]);
 
-  // 選択の切り替え
   const toggleSelection = (index: number) => {
     const newSelection = new Set(selectedSuggestions);
     if (newSelection.has(index)) {
@@ -131,7 +183,6 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     setSelectedSuggestions(newSelection);
   };
 
-  // 選択したタスクを追加
   const addSelectedTasks = async () => {
     const tasksToAdd = Array.from(selectedSuggestions).map((index) => suggestions[index]);
 
@@ -142,7 +193,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
 
     try {
       for (const suggestion of tasksToAdd) {
-        await dispatch(
+        const addedTodo = await dispatch(
           addTodoItem({
             task: suggestion.task,
             type: suggestion.type,
@@ -151,6 +202,46 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             deadline: suggestion.deadline,
           })
         ).unwrap();
+
+        if (!suggestion.wbsNodeId && selectedProject && user) {
+          try {
+            await WBSService.createNode(
+              {
+                projectId: selectedProject.id,
+                parentId: null,
+                name: suggestion.task,
+                description: `AI提案タスク: ${suggestion.reason || ''}`,
+                level: 1,
+                orderIndex: wbsNodes.length,
+                startDate: new Date().toISOString(),
+                endDate:
+                  suggestion.deadline ||
+                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                duration: suggestion.estimatedDuration ? suggestion.estimatedDuration / 60 : 8,
+                progress: 0,
+                status: 'not-started',
+                assignees: [user.uid],
+                dependencies: [],
+                estimatedHours: suggestion.estimatedDuration
+                  ? suggestion.estimatedDuration / 60
+                  : 8,
+                actualHours: 0,
+                budget: 0,
+                actualCost: 0,
+                deliverables: [],
+                risks: [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                createdBy: user.uid,
+              },
+              user.uid
+            );
+            toast.success(`タスク「${suggestion.task}」をWBSに追加しました`);
+          } catch (error) {
+            console.error('Failed to add task to WBS:', error);
+            toast.error('WBSへの追加に失敗しました');
+          }
+        }
       }
 
       toast.success(`${tasksToAdd.length}個のタスクを追加しました`);
@@ -180,9 +271,34 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             AI タスク提案
           </DialogTitle>
           <DialogDescription>
-            あなたの作業履歴と目標に基づいて、次に取り組むべきタスクを提案します
+            あなたの作業履歴とWBSタスクに基づいて、次に取り組むべきタスクを提案します
           </DialogDescription>
         </DialogHeader>
+
+        {wbsProjects.length > 0 && (
+          <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
+            <GitBranch className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">連携プロジェクト:</span>
+            <select
+              value={selectedProject?.id || ''}
+              onChange={async (e) => {
+                const project = wbsProjects.find((p) => p.id === e.target.value);
+                setSelectedProject(project || null);
+                if (project) {
+                  const nodes = await WBSService.getProjectNodes(project.id);
+                  setWbsNodes(nodes);
+                }
+              }}
+              className="text-sm border rounded px-2 py-1"
+            >
+              {wbsProjects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto">
           {loading ? (
@@ -221,6 +337,12 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-lg">{getTypeIcon(suggestion.type)}</span>
                         <h4 className="font-medium">{suggestion.task}</h4>
+                        {suggestion.wbsNodeId && (
+                          <Badge variant="outline" className="text-xs">
+                            <GitBranch className="h-3 w-3 mr-1" />
+                            WBS
+                          </Badge>
+                        )}
                       </div>
 
                       {suggestion.reason && (
