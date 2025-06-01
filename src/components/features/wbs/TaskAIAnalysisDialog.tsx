@@ -15,17 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Brain,
-  Loader2,
-  Plus,
-  Edit,
-  Save,
-  X,
-  AlertTriangle,
-  Package,
-  GitBranch,
-} from 'lucide-react';
+import { Brain, Loader2, Edit, Save, X, AlertTriangle, Package, GitBranch } from 'lucide-react';
 import { WBSNode } from '@/types/wbs';
 import WBSAIService from '@/services/ai/WBSAIService';
 import WBSService from '@/services/wbs/WBSService';
