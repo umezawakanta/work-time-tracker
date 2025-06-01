@@ -65,7 +65,13 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
   };
 
   const handleApply = async () => {
-    if (!user || !editedData) return;
+    console.log('handleApply called', { user, editedData });
+
+    if (!user || !editedData) {
+      console.error('Missing required data:', { user, editedData });
+      toast.error('ユーザー情報または分析データが不足しています');
+      return;
+    }
 
     try {
       // タスク本体を更新
@@ -79,6 +85,7 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
         })),
       };
 
+      console.log('Updating node:', { nodeId: task.id, updates });
       await WBSService.updateNode(task.id, updates);
       onTaskUpdated?.(task.id, updates);
 
@@ -108,8 +115,11 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
             deliverables: subtask.deliverables,
             risks: [],
             createdBy: user.uid,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
           };
 
+          console.log('Creating subtask:', newNode);
           const nodeId = await WBSService.createNode(newNode, user.uid);
           createdSubtasks.push({ ...newNode, id: nodeId } as WBSNode);
         }
@@ -120,8 +130,12 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
       toast.success('タスクの分析結果を適用しました');
       onOpenChange(false);
     } catch (error) {
-      console.error('Failed to apply analysis:', error);
-      toast.error('分析結果の適用に失敗しました');
+      console.error('Detailed error:', error);
+      if (error instanceof Error) {
+        toast.error(`エラー: ${error.message}`);
+      } else {
+        toast.error('分析結果の適用に失敗しました');
+      }
     }
   };
 
