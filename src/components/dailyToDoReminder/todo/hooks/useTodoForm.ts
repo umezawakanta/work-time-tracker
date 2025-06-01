@@ -5,6 +5,8 @@ import { AppDispatch } from '@/store';
 import { addTodoItem } from '@/store/todoSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import taskAnalyzer from '@/services/RateLimitedTaskAnalyzer';
+import WBSService from '@/services/wbs/WBSService';
+import { WBSNode } from '@/types/wbs';
 
 export type TodoType = 'input' | 'output';
 export type PriorityLevel = 1 | 2 | 3 | 4 | 5;
@@ -19,6 +21,8 @@ export interface FormData {
   category: string;
   tags: readonly string[];
   isPrioritized: boolean;
+  linkToWBS: boolean;
+  wbsProjectId?: string;
 }
 
 const initialFormData: FormData = {
@@ -31,6 +35,8 @@ const initialFormData: FormData = {
   category: '',
   tags: [],
   isPrioritized: false,
+  linkToWBS: false,
+  wbsProjectId: 'site-dev-project',
 };
 
 export const useTodoForm = (onClose: () => void) => {
@@ -170,7 +176,50 @@ export const useTodoForm = (onClose: () => void) => {
           deadline: formData.deadline || undefined,
         };
 
+        // ToDoを作成
         await dispatch(addTodoItem(newTodo)).unwrap();
+
+        // WBS連携が有効な場合
+        if (formData.linkToWBS && formData.wbsProjectId) {
+          try {
+            const userId = 'current-user'; // 実際のユーザーIDを取得する必要があります
+
+            // ToDoタスクをWBSノードに変換
+            const wbsNode: Partial<WBSNode> = {
+              projectId: formData.wbsProjectId,
+              parentId: null,
+              name: formData.text.trim(),
+              description: formData.description || '',
+              level: 0,
+              orderIndex: 999,
+              startDate: new Date().toISOString(),
+              endDate:
+                formData.deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              duration: Math.ceil(formData.estimatedDuration / 60),
+              progress: 0,
+              status: formData.isPrioritized ? 'in-progress' : 'not-started',
+              assignees: [userId],
+              dependencies: [],
+              estimatedHours: Math.ceil(formData.estimatedDuration / 60),
+              actualHours: 0,
+              budget: 0,
+              actualCost: 0,
+              deliverables: formData.tags ? [...formData.tags] : [],
+              risks: [],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              createdBy: userId,
+              color: formData.type === 'output' ? '#3b82f6' : '#10b981',
+              icon: formData.type === 'output' ? '📤' : '📥',
+            };
+
+            await WBSService.createNode(wbsNode, userId);
+            toast.success('タスクをWBSにも追加しました！');
+          } catch (wbsError) {
+            console.error('WBS連携エラー:', wbsError);
+            toast.error('WBSへの追加に失敗しました。タスクは作成されています。');
+          }
+        }
 
         toast.success('タスクを追加しました！');
         setFormData(initialFormData);

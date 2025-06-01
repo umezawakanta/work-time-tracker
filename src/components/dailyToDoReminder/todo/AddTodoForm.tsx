@@ -16,6 +16,7 @@ import { CategorySelect } from './components/CategorySelect';
 import { TagsInput } from './components/TagsInput';
 import { PrioritizedSwitch } from './components/PrioritizedSwitch';
 import { FormActions } from './components/FormActions';
+import { WBSLinkSwitch } from './components/WBSLinkSwitch';
 
 interface AddTodoFormProps {
   readonly isVisible: boolean;
@@ -126,6 +127,11 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                   <PrioritizedSwitch
                     checked={formData.isPrioritized}
                     onChange={(checked) => handleInputChange('isPrioritized', checked)}
+                  />
+
+                  <WBSLinkSwitch
+                    checked={formData.linkToWBS}
+                    onChange={(checked) => handleInputChange('linkToWBS', checked)}
                   />
                 </div>
               </>
