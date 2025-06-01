@@ -109,6 +109,76 @@ const SiteDevWBS: React.FC = () => {
     };
   }, []);
 
+  // ローカルストレージのタスクを更新する関数を追加
+  const updateLocalTask = (nodeId: string, updates: Partial<WBSNode>) => {
+    try {
+      const localTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
+      const updatedTasks = localTasks.map((task: any) =>
+        task.id === nodeId ? { ...task, ...updates } : task
+      );
+      localStorage.setItem('wbs-tasks', JSON.stringify(updatedTasks));
+
+      // storage イベントを手動で発火させて他のタブに通知
+      window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+      console.error('ローカルストレージの更新エラー:', error);
+    }
+  };
+
+  // ノードの進捗を更新する関数を追加
+  const handleProgressUpdate = async (nodeId: string, progress: number) => {
+    try {
+      const node = wbsNodes.find((n) => n.id === nodeId);
+      if (!node) return;
+
+      // ローカルストレージから来たタスクかどうかを判定
+      const localTasks = loadLocalWBSTasks();
+      const isLocalTask = localTasks.some((task) => task.id === nodeId);
+
+      if (isLocalTask) {
+        // ローカルストレージのタスクの場合
+        updateLocalTask(nodeId, { progress, updatedAt: new Date().toISOString() });
+
+        // 即座にUIを更新
+        setWbsNodes((prevNodes) =>
+          prevNodes.map((n) => (n.id === nodeId ? { ...n, progress } : n))
+        );
+      } else {
+        // Firebaseのタスクの場合
+        await WBSService.updateNode(nodeId, { progress });
+      }
+    } catch (error) {
+      console.error('進捗の更新に失敗しました:', error);
+    }
+  };
+
+  // ノードを更新する関数を追加
+  const handleNodeUpdate = async (nodeId: string, updates: Partial<WBSNode>) => {
+    try {
+      const node = wbsNodes.find((n) => n.id === nodeId);
+      if (!node) return;
+
+      // ローカルストレージから来たタスクかどうかを判定
+      const localTasks = loadLocalWBSTasks();
+      const isLocalTask = localTasks.some((task) => task.id === nodeId);
+
+      if (isLocalTask) {
+        // ローカルストレージのタスクの場合
+        updateLocalTask(nodeId, { ...updates, updatedAt: new Date().toISOString() });
+
+        // 即座にUIを更新
+        setWbsNodes((prevNodes) =>
+          prevNodes.map((n) => (n.id === nodeId ? { ...n, ...updates } : n))
+        );
+      } else {
+        // Firebaseのタスクの場合
+        await WBSService.updateNode(nodeId, updates);
+      }
+    } catch (error) {
+      console.error('ノードの更新に失敗しました:', error);
+    }
+  };
+
   // 統計情報の計算
   const calculateStats = () => {
     const totalTasks = wbsNodes.filter((n) => n.level > 0).length;
@@ -301,7 +371,7 @@ const SiteDevWBS: React.FC = () => {
                 startDate={new Date(siteDevProject.startDate)}
                 endDate={new Date(siteDevProject.endDate)}
                 onNodeClick={setSelectedNode}
-                onProgressUpdate={() => {}} // 読み取り専用
+                onProgressUpdate={handleProgressUpdate}
               />
             </CardContent>
           </Card>
@@ -313,7 +383,7 @@ const SiteDevWBS: React.FC = () => {
               <WBSTreeView
                 nodes={wbsNodes}
                 onNodeClick={setSelectedNode}
-                onNodeUpdate={async () => {}} // 読み取り専用
+                onNodeUpdate={handleNodeUpdate}
               />
             </CardContent>
           </Card>
