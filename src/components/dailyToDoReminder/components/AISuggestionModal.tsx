@@ -19,8 +19,8 @@ import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import WBSService from '@/services/wbs/WBSService';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from './LoadingSpinner';
-import { useAuth } from '@/hooks/useAuth';
 import { WBSNode, WBSProject } from '@/types/wbs';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AISuggestionModalProps {
   open: boolean;
@@ -113,6 +113,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector(selectTodos);
   const analysisSummary = useSelector(selectAnalysisSummary);
+
   const { user } = useAuth();
 
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
@@ -150,11 +151,16 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           return;
         }
 
-        if (!user) {
+        if (!user?.uid) {
           console.log('No user found, cannot load WBS data');
+          // モックデータを使用
+          setWbsProjects([mockWBSProject]);
+          setSelectedProject(mockWBSProject);
+          setWbsNodes(mockWBSNodes);
           return;
         }
 
+        // MongoDBのユーザーIDを使用
         const projects = await WBSService.getProjects(user.uid);
         console.log('Loaded WBS projects:', projects);
         setWbsProjects(projects);
@@ -342,7 +348,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
 
           try {
             // 開発環境ではローカルストレージに保存
-            if (process.env.NODE_ENV === 'development' || !user) {
+            if (process.env.NODE_ENV === 'development' || !user?.uid) {
               console.log('Saving WBS task to local storage');
               saveWBSTaskToLocal(wbsNode);
               toast.success(`タスク「${suggestion.task}」をローカルWBSに追加しました`);

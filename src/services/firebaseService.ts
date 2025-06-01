@@ -58,7 +58,7 @@ export const fetchAssets = async (): Promise<AssetEntry[]> => {
     const assetsRef = collection(db, 'users', user.uid, 'assets');
     const q = query(assetsRef, orderBy('date', 'desc'));
     const querySnapshot = await getDocs(q);
-    
+
     const assets: AssetEntry[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -73,7 +73,7 @@ export const fetchAssets = async (): Promise<AssetEntry[]> => {
         notes: data.notes || '',
       });
     });
-    
+
     return assets;
   } catch (error) {
     console.error('Error fetching assets:', error);
@@ -94,23 +94,23 @@ export const fetchDebts = async (): Promise<DebtEntry[]> => {
     const debtsRef = collection(db, 'users', user.uid, 'debts');
     const q = query(debtsRef, orderBy('date', 'desc'));
     const querySnapshot = await getDocs(q);
-    
+
     const debts: DebtEntry[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       debts.push({
-          id: doc.id,
-          account: data.account,
-          value: data.value,
-          date: data.date,
-          interestRate: data.interestRate || 0,
-          minimumPayment: data.minimumPayment || 0,
-          dueDate: data.dueDate || '',
-          notes: data.notes || '',
-          description: ''
+        id: doc.id,
+        account: data.account,
+        value: data.value,
+        date: data.date,
+        interestRate: data.interestRate || 0,
+        minimumPayment: data.minimumPayment || 0,
+        dueDate: data.dueDate || '',
+        notes: data.notes || '',
+        description: '',
       });
     });
-    
+
     return debts;
   } catch (error) {
     console.error('Error fetching debts:', error);
@@ -129,7 +129,7 @@ export const saveAsset = async (asset: AssetEntry): Promise<string> => {
 
   try {
     const assetsRef = collection(db, 'users', user.uid, 'assets');
-    
+
     // 既存のassetを更新するか、新規作成するか
     if (asset.id) {
       const assetRef = doc(db, 'users', user.uid, 'assets', asset.id);
@@ -175,7 +175,7 @@ export const saveDebt = async (debt: DebtEntry): Promise<string> => {
 
   try {
     const debtsRef = collection(db, 'users', user.uid, 'debts');
-    
+
     // 既存のdebtを更新するか、新規作成するか
     if (debt.id) {
       const debtRef = doc(db, 'users', user.uid, 'debts', debt.id);
@@ -258,7 +258,7 @@ export const fetchGoals = async (): Promise<FinancialGoal[]> => {
   try {
     const goalsRef = collection(db, 'users', user.uid, 'goals');
     const querySnapshot = await getDocs(goalsRef);
-    
+
     const goals: FinancialGoal[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -276,7 +276,7 @@ export const fetchGoals = async (): Promise<FinancialGoal[]> => {
         history: data.history || [],
       });
     });
-    
+
     return goals;
   } catch (error) {
     console.error('Error fetching goals:', error);
@@ -295,7 +295,7 @@ export const saveGoal = async (goal: FinancialGoal): Promise<string> => {
 
   try {
     const goalsRef = collection(db, 'users', user.uid, 'goals');
-    
+
     if (goal.id) {
       const goalRef = doc(db, 'users', user.uid, 'goals', goal.id);
       await updateDoc(goalRef, {
@@ -352,7 +352,7 @@ export const saveLastBalanceUpdateDate = async (date: string): Promise<void> => 
       lastBalanceUpdateDate: date,
       updatedAt: Timestamp.now(),
     });
-    
+
     // ローカルストレージにも保存（オフライン対応）
     localStorage.setItem('lastBalanceUpdateDate', date);
   } catch (error) {
@@ -374,7 +374,7 @@ export const getLastBalanceUpdateDate = async (): Promise<string | null> => {
   try {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
-    
+
     if (docSnap.exists() && docSnap.data().lastBalanceUpdateDate) {
       return docSnap.data().lastBalanceUpdateDate;
     } else {
@@ -411,7 +411,7 @@ export const getUserSettings = async (): Promise<{
   try {
     const userRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userRef);
-    
+
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -452,10 +452,10 @@ export const subscribeToAssets = (callback: (assets: AssetEntry[]) => void): (()
       callback([]);
       return;
     }
-    
+
     const assetsRef = collection(db, 'users', user.uid, 'assets');
     const q = query(assetsRef, orderBy('date', 'desc'));
-    
+
     const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
       const assets: AssetEntry[] = [];
       querySnapshot.forEach((doc) => {
@@ -473,10 +473,10 @@ export const subscribeToAssets = (callback: (assets: AssetEntry[]) => void): (()
       });
       callback(assets);
     });
-    
+
     return unsubscribeSnapshot;
   });
-  
+
   return unsubscribe;
 };
 
@@ -489,32 +489,32 @@ export const subscribeToDebts = (callback: (debts: DebtEntry[]) => void): (() =>
       callback([]);
       return;
     }
-    
+
     const debtsRef = collection(db, 'users', user.uid, 'debts');
     const q = query(debtsRef, orderBy('date', 'desc'));
-    
+
     const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
       const debts: DebtEntry[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         debts.push({
-            id: doc.id,
-            account: data.account,
-            value: data.value,
-            date: data.date,
-            interestRate: data.interestRate || 0,
-            minimumPayment: data.minimumPayment || 0,
-            dueDate: data.dueDate || '',
-            notes: data.notes || '',
-            description: ''
+          id: doc.id,
+          account: data.account,
+          value: data.value,
+          date: data.date,
+          interestRate: data.interestRate || 0,
+          minimumPayment: data.minimumPayment || 0,
+          dueDate: data.dueDate || '',
+          notes: data.notes || '',
+          description: '',
         });
       });
       callback(debts);
     });
-    
+
     return unsubscribeSnapshot;
   });
-  
+
   return unsubscribe;
 };
 
@@ -531,7 +531,7 @@ export const fetchLongTermData = async (): Promise<LongTermDataPoint[]> => {
     const dataRef = collection(db, 'users', user.uid, 'longTermData');
     const q = query(dataRef, orderBy('date', 'asc'));
     const querySnapshot = await getDocs(q);
-    
+
     const longTermData: LongTermDataPoint[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -544,7 +544,7 @@ export const fetchLongTermData = async (): Promise<LongTermDataPoint[]> => {
         categories: data.categories,
       });
     });
-    
+
     return longTermData;
   } catch (error) {
     console.error('Error fetching long term data:', error);
@@ -566,7 +566,7 @@ export const saveLongTermDataPoint = async (dataPoint: LongTermDataPoint): Promi
     // 同じ日付のデータが存在するか確認
     const q = query(dataRef, where('date', '==', dataPoint.date));
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       // 既存データを更新
       const docId = querySnapshot.docs[0].id;
