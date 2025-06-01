@@ -1,16 +1,10 @@
 // src/components/features/wbs/WBSGanttChart.tsx
-import React, { useMemo, useRef } from "react";
-import { WBSNode } from "@/types/wbs";
-import {
-  format,
-  differenceInDays,
-  addDays,
-  startOfMonth,
-  endOfMonth,
-} from "date-fns";
-import { ja } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import styles from "./WBSGanttChart.module.css";
+import React, { useMemo, useRef } from 'react';
+import { WBSNode } from '@/types/wbs';
+import { format, differenceInDays, addDays, startOfMonth, endOfMonth } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import styles from './WBSGanttChart.module.css';
 
 interface WBSGanttChartProps {
   nodes: WBSNode[];
@@ -69,10 +63,10 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
   };
 
   // ステータスに応じたクラス名を取得
-  const getStatusClassName = (status: WBSNode["status"]) => {
+  const getStatusClassName = (status: WBSNode['status']) => {
     const classNames = {
-      "not-started": styles.statusNotStarted,
-      "in-progress": styles.statusInProgress,
+      'not-started': styles.statusNotStarted,
+      'in-progress': styles.statusInProgress,
       completed: styles.statusCompleted,
       delayed: styles.statusDelayed,
       cancelled: styles.statusCancelled,
@@ -98,25 +92,17 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaX = moveEvent.clientX - startX;
       const progressDelta = (deltaX / width) * 100;
-      const newProgress = Math.max(
-        0,
-        Math.min(100, initialProgress + progressDelta)
-      );
+      const newProgress = Math.max(0, Math.min(100, initialProgress + progressDelta));
       onProgressUpdate(node.id, Math.round(newProgress));
     };
 
     const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
-
-  // CSS変数を使用して動的なスタイルを適用
-  const getDynamicStyles = (value: number, unit: string = 'px') => {
-    return { '--value': `${value}${unit}` } as React.CSSProperties;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   return (
@@ -131,10 +117,9 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
               <div
                 key={index}
                 className="border-r text-center font-medium bg-gray-50"
-                style={getDynamicStyles(group.days * STYLES.dayWidth)}
-                data-width={`${group.days * STYLES.dayWidth}px`}
+                style={{ width: `${group.days * STYLES.dayWidth}px` }}
               >
-                {format(group.month, "yyyy年M月", { locale: ja })}
+                {format(group.month, 'yyyy年M月', { locale: ja })}
               </div>
             ))}
           </div>
@@ -153,11 +138,11 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                   key={index}
                   className={cn(
                     styles.dayColumn,
-                    "text-xs text-center py-1",
+                    'text-xs text-center py-1',
                     isWeekend && styles.dayColumnWeekend
                   )}
                 >
-                  {format(date, "d")}
+                  {format(date, 'd')}
                 </div>
               );
             })}
@@ -171,19 +156,19 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
         {todayPosition !== null && (
           <div
             className={styles.todayLine}
-            data-position={`${STYLES.taskNameWidth + todayPosition}px`}
+            style={{ left: `${STYLES.taskNameWidth + todayPosition}px` }}
           />
         )}
 
         {nodes.map((node, index) => {
           const nodePosition = getNodePosition(node);
-          
+
           return (
             <div key={node.id} className={styles.taskRow}>
               {/* タスク名 */}
               <div
                 className={styles.taskName}
-                data-indent={`${node.level * 20 + 16}px`}
+                style={{ paddingLeft: `${node.level * 20 + 16}px` }}
                 onClick={() => onNodeClick?.(node)}
               >
                 <span className={styles.taskNameText}>{node.name}</span>
@@ -199,10 +184,7 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                     return (
                       <div
                         key={dayIndex}
-                        className={cn(
-                          styles.dayColumn,
-                          isWeekend && styles.dayColumnWeekend
-                        )}
+                        className={cn(styles.dayColumn, isWeekend && styles.dayColumnWeekend)}
                       />
                     );
                   })}
@@ -211,30 +193,30 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                 {/* タスクバー */}
                 <div
                   className={styles.taskBar}
-                  data-left={`${nodePosition.left}px`}
-                  data-width={`${nodePosition.width}px`}
-                  data-color={node.color || "#e5e7eb"}
+                  style={{
+                    left: `${nodePosition.left}px`,
+                    width: `${nodePosition.width}px`,
+                    backgroundColor: node.color || '#e5e7eb',
+                  }}
                   onClick={() => onNodeClick?.(node)}
                 >
                   {/* 進捗バー */}
                   <div
                     className={cn(styles.progressBar, getStatusClassName(node.status))}
-                    data-progress={`${node.progress}%`}
+                    style={{ width: `${node.progress}%` }}
                   />
 
                   {/* 進捗ハンドル */}
                   {!readonly && onProgressUpdate && (
                     <div
                       className={styles.progressHandle}
-                      data-position={`${node.progress}%`}
+                      style={{ left: `${node.progress}%` }}
                       onMouseDown={(e) => handleProgressDrag(e, node)}
                     />
                   )}
 
                   {/* 進捗テキスト */}
-                  <div className={styles.progressText}>
-                    {node.progress}%
-                  </div>
+                  <div className={styles.progressText}>{node.progress}%</div>
                 </div>
 
                 {/* 依存関係の線 */}
@@ -251,16 +233,16 @@ const WBSGanttChart: React.FC<WBSGanttChartProps> = ({
                     <svg
                       key={depId}
                       className={styles.dependencyArrow}
-                      data-left={`${depPos.left + depPos.width}px`}
-                      data-top={`${-index * STYLES.rowHeight + depIndex * STYLES.rowHeight + STYLES.rowHeight / 2}px`}
-                      data-width={`${svgWidth}px`}
-                      data-height={`${svgHeight}px`}
+                      style={{
+                        left: `${depPos.left + depPos.width}px`,
+                        top: `${-index * STYLES.rowHeight + depIndex * STYLES.rowHeight + STYLES.rowHeight / 2}px`,
+                        width: `${svgWidth}px`,
+                        height: `${svgHeight}px`,
+                      }}
                     >
                       <path
                         d={`M 0 ${STYLES.rowHeight / 2} L ${svgWidth} ${
-                          index > depIndex
-                            ? svgHeight - STYLES.rowHeight / 2
-                            : STYLES.rowHeight / 2
+                          index > depIndex ? svgHeight - STYLES.rowHeight / 2 : STYLES.rowHeight / 2
                         }`}
                         stroke="#666"
                         strokeWidth="2"
