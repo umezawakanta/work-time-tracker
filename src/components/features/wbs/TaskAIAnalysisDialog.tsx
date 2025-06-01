@@ -89,7 +89,7 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
         })),
       };
 
-      await WBSService.updateNode(task.id, updates, user.uid);
+      await WBSService.updateNode(task.id, updates);
       onTaskUpdated?.(task.id, updates);
 
       // 子タスクを作成
@@ -120,7 +120,7 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
             createdBy: user.uid,
           };
 
-          const nodeId = await WBSService.createNode(newNode, user.uid);
+          const nodeId = await WBSService.createNode(newNode);
           createdSubtasks.push({ ...newNode, id: nodeId } as WBSNode);
         }
 
