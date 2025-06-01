@@ -417,6 +417,264 @@ class WBSAIService {
       completionForecast: '予測完了日',
     };
   }
+
+  /**
+   * タスクを詳細分析し、具体的な作業内容と子タスクを生成
+   */
+  async analyzeAndBreakdownTask(node: WBSNode): Promise<{
+    enhancedDescription: string;
+    suggestedDeliverables: string[];
+    subtasks: Array<{
+      name: string;
+      description: string;
+      estimatedHours: number;
+      deliverables: string[];
+    }>;
+    risks: Array<{
+      description: string;
+      probability: 'low' | 'medium' | 'high';
+      impact: 'low' | 'medium' | 'high';
+      mitigation: string;
+    }>;
+  }> {
+    try {
+      // AIサービスを使用してタスクを分解
+      const breakdown = await this.aiService.breakdownTask(node.name);
+
+      // タスクの種類に基づいて具体的な内容を生成
+      const taskContext = this.analyzeTaskContext(node);
+
+      return {
+        enhancedDescription: this.generateEnhancedDescription(node, taskContext),
+        suggestedDeliverables: this.generateDeliverables(node, taskContext),
+        subtasks: this.generateSubtasks(node, breakdown, taskContext),
+        risks: this.generateTaskRisks(node, taskContext),
+      };
+    } catch (error) {
+      console.error('Task analysis failed:', error);
+      // フォールバック処理
+      return this.generateLocalTaskAnalysis(node);
+    }
+  }
+
+  private analyzeTaskContext(node: WBSNode) {
+    // タスク名から文脈を分析
+    const keywords = {
+      development: ['実装', '開発', '構築', 'コーディング'],
+      design: ['デザイン', 'UI', 'UX', '設計'],
+      testing: ['テスト', '検証', 'QA'],
+      documentation: ['ドキュメント', '文書', '仕様書'],
+      analysis: ['分析', '調査', '検討'],
+    };
+
+    let taskType = 'general';
+    for (const [type, words] of Object.entries(keywords)) {
+      if (words.some((word) => node.name.includes(word))) {
+        taskType = type;
+        break;
+      }
+    }
+
+    return { taskType, complexity: this.estimateComplexity(node) };
+  }
+
+  private generateEnhancedDescription(node: WBSNode, context: any): string {
+    const templates = {
+      development: `${node.name}の実装を行います。主な作業内容：
+- 要件の詳細確認と技術選定
+- アーキテクチャ設計とコンポーネント分割
+- 実装とユニットテストの作成
+- コードレビューとリファクタリング
+- 統合テストと動作確認`,
+      design: `${node.name}のデザイン作業を行います。主な作業内容：
+- ユーザーリサーチとペルソナ定義
+- ワイヤーフレームの作成
+- ビジュアルデザインの制作
+- プロトタイプの作成と検証
+- デザインシステムへの反映`,
+      testing: `${node.name}のテスト作業を行います。主な作業内容：
+- テスト計画の策定
+- テストケースの作成
+- 手動テストの実施
+- 自動テストの実装
+- バグレポートの作成と追跡`,
+      general: `${node.name}を実施します。${node.description || '詳細な作業内容を定義し、計画的に進めます。'}`,
+    };
+
+    return templates[context.taskType as keyof typeof templates] || templates.general;
+  }
+
+  private generateDeliverables(node: WBSNode, context: any): string[] {
+    const deliverableTemplates = {
+      development: ['実装済みソースコード', 'ユニットテスト', 'API仕様書', 'デプロイメント手順書'],
+      design: ['デザインファイル（Figma/XD）', 'スタイルガイド', 'アイコンセット', 'プロトタイプ'],
+      testing: ['テスト計画書', 'テストケース一覧', 'テスト結果レポート', 'バグ一覧'],
+      general: ['作業完了報告書', '成果物一式'],
+    };
+
+    return (
+      deliverableTemplates[context.taskType as keyof typeof deliverableTemplates] ||
+      deliverableTemplates.general
+    );
+  }
+
+  private generateSubtasks(node: WBSNode, breakdown: any, context: any): any[] {
+    const subtaskTemplates = {
+      development: [
+        {
+          name: '要件定義と設計',
+          description: '機能要件の詳細化と技術設計',
+          estimatedHours: Math.round(node.estimatedHours * 0.2),
+          deliverables: ['設計書', '技術選定資料'],
+        },
+        {
+          name: '実装',
+          description: 'コーディングとユニットテスト作成',
+          estimatedHours: Math.round(node.estimatedHours * 0.5),
+          deliverables: ['ソースコード', 'テストコード'],
+        },
+        {
+          name: 'テストと修正',
+          description: '動作確認とバグ修正',
+          estimatedHours: Math.round(node.estimatedHours * 0.2),
+          deliverables: ['テスト結果', '修正済みコード'],
+        },
+        {
+          name: 'ドキュメント作成',
+          description: '技術文書と使用方法の記載',
+          estimatedHours: Math.round(node.estimatedHours * 0.1),
+          deliverables: ['技術文書', 'README'],
+        },
+      ],
+      design: [
+        {
+          name: 'リサーチと分析',
+          description: 'ユーザーニーズと競合分析',
+          estimatedHours: Math.round(node.estimatedHours * 0.3),
+          deliverables: ['リサーチ結果', 'ペルソナ'],
+        },
+        {
+          name: 'デザイン制作',
+          description: 'UIデザインとビジュアル制作',
+          estimatedHours: Math.round(node.estimatedHours * 0.5),
+          deliverables: ['デザインファイル', 'アセット'],
+        },
+        {
+          name: 'レビューと修正',
+          description: 'フィードバック反映と最終調整',
+          estimatedHours: Math.round(node.estimatedHours * 0.2),
+          deliverables: ['最終デザイン', '納品物'],
+        },
+      ],
+    };
+
+    const templates = subtaskTemplates[context.taskType as keyof typeof subtaskTemplates];
+    if (templates) {
+      return templates;
+    }
+
+    // 汎用的なサブタスク生成
+    return [
+      {
+        name: '計画と準備',
+        description: '作業計画の策定と必要な準備',
+        estimatedHours: Math.round(node.estimatedHours * 0.2),
+        deliverables: ['作業計画書'],
+      },
+      {
+        name: 'メイン作業',
+        description: node.name + 'の主要作業',
+        estimatedHours: Math.round(node.estimatedHours * 0.6),
+        deliverables: ['成果物'],
+      },
+      {
+        name: '確認と完了',
+        description: '品質確認と完了処理',
+        estimatedHours: Math.round(node.estimatedHours * 0.2),
+        deliverables: ['完了報告書'],
+      },
+    ];
+  }
+
+  private generateTaskRisks(node: WBSNode, context: any): any[] {
+    const commonRisks = [
+      {
+        description: 'スケジュール遅延のリスク',
+        probability: 'medium' as const,
+        impact: 'medium' as const,
+        mitigation: 'マイルストーンを設定し、進捗を定期的に確認',
+      },
+    ];
+
+    const contextRisks = {
+      development: [
+        {
+          description: '技術的な実現性の問題',
+          probability: 'low' as const,
+          impact: 'high' as const,
+          mitigation: '早期にプロトタイプを作成し、技術検証を実施',
+        },
+      ],
+      design: [
+        {
+          description: 'ステークホルダーの合意形成が困難',
+          probability: 'medium' as const,
+          impact: 'medium' as const,
+          mitigation: '定期的なレビュー会を設定し、早期にフィードバックを収集',
+        },
+      ],
+    };
+
+    // Explicitly type the risks array
+    const risks: Array<{
+      description: string;
+      probability: 'low' | 'medium' | 'high';
+      impact: 'low' | 'medium' | 'high';
+      mitigation: string;
+    }> = [...commonRisks];
+
+    if (contextRisks[context.taskType as keyof typeof contextRisks]) {
+      risks.push(...contextRisks[context.taskType as keyof typeof contextRisks]);
+    }
+
+    return risks;
+  }
+
+  private generateLocalTaskAnalysis(node: WBSNode) {
+    // ローカルフォールバック
+    return {
+      enhancedDescription: `${node.name}を実施します。\n\n主な作業：\n- 詳細計画の策定\n- 実行と進捗管理\n- 品質確認と完了処理`,
+      suggestedDeliverables: ['成果物', '完了報告書'],
+      subtasks: [
+        {
+          name: '準備フェーズ',
+          description: '作業の準備と計画',
+          estimatedHours: Math.round(node.estimatedHours * 0.3),
+          deliverables: ['計画書'],
+        },
+        {
+          name: '実行フェーズ',
+          description: 'メイン作業の実施',
+          estimatedHours: Math.round(node.estimatedHours * 0.7),
+          deliverables: ['成果物'],
+        },
+      ],
+      risks: [
+        {
+          description: '想定外の作業が発生する可能性',
+          probability: 'medium' as const,
+          impact: 'low' as const,
+          mitigation: 'バッファを確保し、柔軟に対応',
+        },
+      ],
+    };
+  }
+
+  private estimateComplexity(node: WBSNode): 'low' | 'medium' | 'high' {
+    if (node.estimatedHours > 40) return 'high';
+    if (node.estimatedHours > 16) return 'medium';
+    return 'low';
+  }
 }
 
 export default new WBSAIService();

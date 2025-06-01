@@ -24,6 +24,7 @@ import { ja } from 'date-fns/locale';
 import WBSService from '@/services/wbs/WBSService';
 import { WBSNode } from '@/types/wbs';
 import { Button } from '@/components/ui/button';
+import { TaskAIAnalysisDialog } from './TaskAIAnalysisDialog';
 
 const SiteDevWBS: React.FC = () => {
   const [viewMode, setViewMode] = useState<'gantt' | 'tree' | 'ai'>('gantt');
@@ -32,6 +33,7 @@ const SiteDevWBS: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<WBSNode | null>(null);
+  const [aiAnalysisTask, setAIAnalysisTask] = useState<WBSNode | null>(null);
 
   // MongoDBからWBSノードを取得
   useEffect(() => {
@@ -81,8 +83,14 @@ const SiteDevWBS: React.FC = () => {
 
   // AI分析でタスクを分析
   const handleAIAnalyzeTask = (task: WBSNode) => {
-    setSelectedNode(task);
-    setViewMode('ai');
+    setAIAnalysisTask(task);
+  };
+
+  // AI分析結果の適用後の処理
+  const handleSubtasksCreated = async (parentId: string, subtasks: WBSNode[]) => {
+    // WBSノードリストを再取得
+    const nodes = await WBSService.getProjectNodes('site-dev-project');
+    setWbsNodes(nodes);
   };
 
   // 統計情報の計算
@@ -435,6 +443,15 @@ const SiteDevWBS: React.FC = () => {
         task={editingTask}
         onSave={handleNodeUpdate}
         onAIAnalyze={handleAIAnalyzeTask}
+      />
+
+      {/* AI分析ダイアログ */}
+      <TaskAIAnalysisDialog
+        open={!!aiAnalysisTask}
+        onOpenChange={(open) => !open && setAIAnalysisTask(null)}
+        task={aiAnalysisTask!}
+        onTaskUpdated={handleNodeUpdate}
+        onSubtasksCreated={handleSubtasksCreated}
       />
     </div>
   );
