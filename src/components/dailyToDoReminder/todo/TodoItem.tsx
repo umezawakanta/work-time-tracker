@@ -59,6 +59,8 @@ import { RateLimitedTaskAnalyzer } from '@/services/RateLimitedTaskAnalyzer';
 import { AppDispatch } from '@/store';
 import { addTodoItem } from '@/store/todoSlice';
 import { SubTask } from '@/services/GeminiService';
+import TodoWBSIntegrationService from '@/services/integration/TodoWBSIntegrationService';
+import { useAuth } from '@/hooks/useAuth';
 
 interface TodoItemProps {
   readonly todo: Todo;
@@ -94,6 +96,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isCompleted = false,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAIAnalysisDialogOpen, setIsAIAnalysisDialogOpen] = useState<boolean>(false);
@@ -262,36 +265,13 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
     setIsLoading(true);
     try {
-      // デバッグ用ログ
-      console.log('AI分析結果を適用:', {
-        現在のタイトル: todo.text,
-        改善されたタイトル: aiAnalysisResult.improvedTitle,
-        カテゴリ: aiAnalysisResult.category,
-        タグ: aiAnalysisResult.tags,
-      });
-
       const updates: Partial<Todo> = {
-        // 改善されたタイトルがある場合は使用
         text: aiAnalysisResult.improvedTitle || todo.text,
-        category: aiAnalysisResult.category,
-        tags: aiAnalysisResult.tags,
+        category: aiAnalysisResult.category || 'サイト開発',
+        tags: aiAnalysisResult.tags ? [...aiAnalysisResult.tags] : undefined,
         estimatedDuration: aiAnalysisResult.estimatedDuration,
         deadline: aiAnalysisResult.deadline,
       };
-
-      // 実際に変更があるかチェック
-      const hasChanges =
-        (aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text) ||
-        aiAnalysisResult.category !== todo.category ||
-        JSON.stringify(aiAnalysisResult.tags) !== JSON.stringify(todo.tags) ||
-        aiAnalysisResult.estimatedDuration !== todo.estimatedDuration ||
-        aiAnalysisResult.deadline !== todo.deadline;
-
-      if (!hasChanges) {
-        toast('変更する内容がありません');
-        setIsAIAnalysisDialogOpen(false);
-        return;
-      }
 
       await onUpdate(todo.id, updates);
 
@@ -325,7 +305,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     isLoading,
   ]);
 
-  // 子タスクを作成する関数
+  // 子タスクを作成する関数を修正
   const handleCreateSubtasks = useCallback(async (): Promise<void> => {
     if (!aiAnalysisResult?.subtasks || isLoading) return;
 
@@ -339,13 +319,32 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           priority: todo.priority, // 親タスクの優先度を継承
           isPrioritized: false,
           estimatedDuration: subtask.estimatedDuration,
-          category: aiAnalysisResult.category,
-          tags: aiAnalysisResult.tags,
+          category: aiAnalysisResult.category || todo.category,
+          tags: aiAnalysisResult.tags || todo.tags,
           // 親タスクへの参照を説明に含める
           description: `${subtask.description || ''} (親タスク: ${todo.text})`,
         };
 
-        await dispatch(addTodoItem(newTodo));
+        // TodoListに追加
+        const result = await dispatch(addTodoItem(newTodo)).unwrap();
+
+        // WBSに連携（サイト開発関連のタスクの場合）
+        if (user && result) {
+          try {
+            await TodoWBSIntegrationService.handleTodoCreation(
+              {
+                ...result,
+                updatedAt: new Date().toISOString(),
+                type: result.type || 'output',
+                createdAt: result.createdAt || new Date().toISOString(),
+              },
+              user.uid || 'dev-user'
+            );
+          } catch (error) {
+            console.error('WBS連携エラー:', error);
+            // WBS連携が失敗してもTodo作成は成功とする
+          }
+        }
       }
 
       // 親タスクを完了状態にするか確認
@@ -355,6 +354,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       if (shouldCompleteParent) {
         await onToggle(todo);
+        // 親タスクの完了もWBSに同期
+        if (user) {
+          await TodoWBSIntegrationService.syncTodoToWBS({
+            _id: todo.id,
+            task: todo.text,
+            completed: true,
+            priority: todo.priority,
+            type: todo.type,
+            completedDate: new Date().toISOString(),
+            isPrioritized: todo.isPrioritized,
+            createdAt: todo.createdAt,
+            updatedAt: new Date().toISOString(),
+          });
+        }
       }
 
       setIsAIAnalysisDialogOpen(false);
@@ -365,7 +378,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [aiAnalysisResult, todo, dispatch, onToggle, isLoading]);
+  }, [aiAnalysisResult, todo, dispatch, onToggle, isLoading, user]);
 
   // タスクテキストが長いかどうかを判定する関数
   const isLongText = (text: string): boolean => {
