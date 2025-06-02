@@ -316,11 +316,22 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         ).unwrap();
         console.log('Task added to TodoList:', addedTodo);
 
+        // WBS追加条件の詳細ログ
+        console.log('=== WBS Addition Debug Info ===');
+        console.log('suggestion.wbsNodeId:', suggestion.wbsNodeId);
+        console.log('selectedProject:', selectedProject);
+        console.log('autoAddToWBS:', autoAddToWBS);
+        console.log('Condition check: !suggestion.wbsNodeId =', !suggestion.wbsNodeId);
+        console.log('Condition check: selectedProject =', !!selectedProject);
+        console.log('Condition check: autoAddToWBS =', autoAddToWBS);
+        console.log('Will add to WBS:', !suggestion.wbsNodeId && selectedProject && autoAddToWBS);
+
         // WBSへの追加処理（autoAddToWBSフラグをチェック）
         if (!suggestion.wbsNodeId && selectedProject && autoAddToWBS) {
           console.log('Attempting to add task to WBS...');
           console.log('Selected project:', selectedProject);
           console.log('User:', user);
+          console.log('User UID:', user?.uid);
 
           const wbsNode: Partial<WBSNode> = {
             projectId: selectedProject.id,
@@ -355,38 +366,83 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             icon: suggestion.type === 'output' ? '📤' : '📥',
           };
 
+          console.log('WBS Node to create:', JSON.stringify(wbsNode, null, 2));
+
           try {
+            // 環境チェックの詳細ログ
+            console.log('Environment check:');
+            console.log('NODE_ENV:', process.env.NODE_ENV);
+            console.log('Is development:', process.env.NODE_ENV === 'development');
+            console.log('Has user UID:', !!user?.uid);
+            console.log(
+              'Will use local storage:',
+              process.env.NODE_ENV === 'development' || !user?.uid
+            );
+
             // 開発環境ではローカルストレージに保存
             if (process.env.NODE_ENV === 'development' || !user?.uid) {
               console.log('Saving WBS task to local storage');
               saveWBSTaskToLocal(wbsNode);
               toast.success(`タスク「${suggestion.task}」をローカルWBSに追加しました`);
             } else {
-              console.log('Creating WBS node:', wbsNode);
+              console.log('Creating WBS node via API...');
+              console.log('Calling WBSService.createNode with:', {
+                wbsNode: wbsNode,
+                userId: user.uid,
+              });
+
               const createdNode = await WBSService.createNode(wbsNode, user.uid);
-              console.log('WBS node created:', createdNode);
+              console.log('WBS node created successfully!');
+              console.log('Created node ID:', createdNode);
+              console.log('Type of createdNode:', typeof createdNode);
 
               // ノードリストを更新して画面に反映
               const newNode: WBSNode = {
                 ...(wbsNode as WBSNode),
                 id: createdNode, // createdNode is the ID string
               };
-              setWbsNodes((prev) => [...prev, newNode]);
+              console.log('New node object:', newNode);
+
+              setWbsNodes((prev) => {
+                console.log('Previous nodes count:', prev.length);
+                const updated = [...prev, newNode];
+                console.log('Updated nodes count:', updated.length);
+                return updated;
+              });
 
               toast.success(`タスク「${suggestion.task}」をWBSに追加しました`);
             }
           } catch (error) {
             console.error('Failed to add task to WBS:', error);
+            console.error('Error type:', error?.constructor?.name);
+            console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
             // エラーの詳細をログ出力
             if (error instanceof Error) {
-              console.error('Error details:', error.message);
+              console.error('Error details:', {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+              });
+            } else {
+              console.error('Unknown error type:', error);
             }
 
             // エラーが発生してもローカルに保存
             saveWBSTaskToLocal(wbsNode);
             toast.error('WBSへの追加に失敗しました。ローカルに保存しました。');
           }
+        } else {
+          console.log('Skipping WBS addition for this task');
+          if (suggestion.wbsNodeId) {
+            console.log('Reason: Task already has WBS node ID');
+          } else if (!selectedProject) {
+            console.log('Reason: No project selected');
+          } else if (!autoAddToWBS) {
+            console.log('Reason: Auto add to WBS is disabled');
+          }
         }
+        console.log('=== End WBS Addition Debug Info ===\n');
       }
 
       toast.success(`${tasksToAdd.length}個のタスクを追加しました`);
