@@ -205,14 +205,24 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         updatedAt: new Date().toISOString(),
       }));
 
+      console.log('=== Generating AI Suggestions ===');
+      console.log('Completed todos count:', completedTodos.length);
+      console.log('Incomplete WBS tasks count:', incompleteWBSTasks.length);
+
       const aiSuggestions = await AdvancedAIService.suggestNextTasks(todosForAI, currentGoals);
+
+      console.log('AI suggestions received:', aiSuggestions.length);
+      console.log('AI suggestions:', aiSuggestions);
 
       const formattedSuggestions: TaskSuggestion[] = aiSuggestions.map((s) => ({
         task: s.task,
         type: s.type || 'output',
         priority: s.priority || 3,
         deadline: s.deadline,
+        // wbsNodeIdは設定されない（新規タスクのため）
       }));
+
+      console.log('Formatted AI suggestions:', formattedSuggestions);
 
       // WBSタスクを提案の先頭に追加（最大5個）
       const wbsSuggestions = incompleteWBSTasks.slice(0, 5).map((node) => ({
@@ -226,8 +236,15 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         wbsNodeName: node.name,
       }));
 
+      console.log('WBS suggestions:', wbsSuggestions);
+
       // WBSタスクを優先的に表示
       const allSuggestions = [...wbsSuggestions, ...formattedSuggestions];
+
+      console.log('All suggestions combined:', allSuggestions.length);
+      console.log('Suggestions breakdown:');
+      console.log('- WBS tasks (with wbsNodeId):', wbsSuggestions.length);
+      console.log('- AI generated tasks (without wbsNodeId):', formattedSuggestions.length);
 
       // 提案が少ない場合のフォールバック
       if (allSuggestions.length === 0) {
@@ -551,6 +568,13 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
 
                       {suggestion.reason && (
                         <p className="text-sm text-muted-foreground mb-2">{suggestion.reason}</p>
+                      )}
+
+                      {/* タスクの種類を明示的に表示 */}
+                      {!suggestion.wbsNodeId && (
+                        <p className="text-xs text-blue-600 mb-2">
+                          💡 AI生成タスク（WBSに新規追加されます）
+                        </p>
                       )}
 
                       <div className="flex items-center gap-2 flex-wrap">
