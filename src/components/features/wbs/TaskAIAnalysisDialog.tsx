@@ -130,8 +130,19 @@ export const TaskAIAnalysisDialog: React.FC<TaskAIAnalysisDialogProps> = ({
 
           console.log('Creating subtask:', newNode);
           const nodeId = await WBSService.createNode(newNode, userId);
-          createdSubtasks.push({ ...newNode, id: nodeId } as WBSNode);
+
+          // 作成されたサブタスクの構造を修正
+          const createdNode = {
+            ...newNode,
+            id: nodeId, // WBSServiceは_idを返すので、idとして設定
+            _id: nodeId, // MongoDBの_idも保持
+          } as WBSNode;
+
+          createdSubtasks.push(createdNode);
         }
+
+        // onSubtasksCreatedのコールバックを呼ぶ前に少し待機（データベースの反映時間）
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         onSubtasksCreated?.(task.id, createdSubtasks);
       }

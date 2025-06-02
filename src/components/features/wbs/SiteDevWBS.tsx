@@ -15,6 +15,7 @@ import WBSService from '@/services/wbs/WBSService';
 import { WBSNode } from '@/types/wbs';
 import { Button } from '@/components/ui/button';
 import { TaskAIAnalysisDialog } from './TaskAIAnalysisDialog';
+import { toast } from 'react-hot-toast';
 
 const SiteDevWBS: React.FC = () => {
   const [viewMode, setViewMode] = useState<'gantt' | 'tree' | 'ai'>('gantt');
@@ -78,9 +79,20 @@ const SiteDevWBS: React.FC = () => {
 
   // AI分析結果の適用後の処理
   const handleSubtasksCreated = async (parentId: string, subtasks: WBSNode[]) => {
-    // WBSノードリストを再取得
-    const nodes = await WBSService.getProjectNodes('site-dev-project');
-    setWbsNodes(nodes);
+    try {
+      // データベースの反映を待つ
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // WBSノードリストを再取得
+      const nodes = await WBSService.getProjectNodes('site-dev-project');
+      setWbsNodes(nodes);
+
+      // 成功メッセージ
+      toast.success(`${subtasks.length}個のサブタスクを追加しました`);
+    } catch (error) {
+      console.error('サブタスクの反映に失敗しました:', error);
+      toast.error('サブタスクの反映に失敗しました');
+    }
   };
 
   // 統計情報の計算
