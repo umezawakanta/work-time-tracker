@@ -117,6 +117,10 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
 
   const { user } = useAuth();
 
+  // 開発環境用のモックユーザー
+  const effectiveUser =
+    user || (process.env.NODE_ENV === 'development' ? { uid: 'dev-user' } : null);
+
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -130,11 +134,11 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       if (!open) return;
 
       console.log('Loading WBS data...');
-      console.log('User:', user);
+      console.log('User:', effectiveUser);
 
       try {
-        // 開発環境用：実際のAPIが利用できない場合はモックデータを使用
-        if (process.env.NODE_ENV === 'development') {
+        // 開発環境またはユーザーが存在しない場合はモックデータを使用
+        if (!effectiveUser?.uid || process.env.NODE_ENV === 'development') {
           console.log('Using mock WBS data for development');
           setWbsProjects([mockWBSProject]);
           setSelectedProject(mockWBSProject);
@@ -142,17 +146,8 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           return;
         }
 
-        if (!user?.uid) {
-          console.log('No user found, cannot load WBS data');
-          // モックデータを使用
-          setWbsProjects([mockWBSProject]);
-          setSelectedProject(mockWBSProject);
-          setWbsNodes(mockWBSNodes);
-          return;
-        }
-
         // MongoDBのユーザーIDを使用
-        const projects = await WBSService.getProjects(user.uid);
+        const projects = await WBSService.getProjects(effectiveUser.uid);
         console.log('Loaded WBS projects:', projects);
         setWbsProjects(projects);
 
@@ -173,7 +168,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     };
 
     loadWBSData();
-  }, [user, open]);
+  }, [effectiveUser, open]);
 
   const generateSuggestions = useCallback(async () => {
     setLoading(true);
@@ -307,11 +302,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       return;
     }
 
-    // ユーザーが認証されていない場合は処理を中止
-    if (!user?.uid) {
-      toast.error('タスクを追加するにはログインが必要です');
-      return;
-    }
+    const currentUserId = effectiveUser?.uid || 'dev-user';
 
     try {
       for (const suggestion of tasksToAdd) {
@@ -339,7 +330,8 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         if (!suggestion.wbsNodeId && selectedProject && autoAddToWBS) {
           console.log('Attempting to add task to WBS...');
           console.log('Selected project:', selectedProject);
-          console.log('User:', user);
+          console.log('User:', effectiveUser);
+          console.log('Using user ID:', currentUserId);
 
           const wbsNode: Partial<WBSNode> = {
             projectId: selectedProject.id,
@@ -356,7 +348,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
               : 7,
             progress: 0,
             status: 'not-started' as const,
-            assignees: [user.uid],
+            assignees: [currentUserId],
             dependencies: [],
             estimatedHours: suggestion.estimatedDuration
               ? Math.ceil(suggestion.estimatedDuration / 60)
@@ -368,7 +360,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             risks: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            createdBy: user.uid,
+            createdBy: currentUserId,
             // 追加: タスクタイプに応じた色とアイコン
             color: suggestion.type === 'output' ? '#3b82f6' : '#10b981',
             icon: suggestion.type === 'output' ? '📤' : '📥',
@@ -380,10 +372,10 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             console.log('Creating WBS node via API...');
             console.log('Calling WBSService.createNode with:', {
               wbsNode: wbsNode,
-              userId: user.uid,
+              userId: currentUserId,
             });
 
-            const createdNode = await WBSService.createNode(wbsNode, user.uid);
+            const createdNode = await WBSService.createNode(wbsNode, currentUserId);
             console.log('WBS node created successfully!');
             console.log('Created node ID:', createdNode);
 
