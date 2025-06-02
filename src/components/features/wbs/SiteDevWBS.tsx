@@ -3,16 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import {
-  Clock,
-  Target,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Edit,
-  Brain,
-} from 'lucide-react';
+import { Clock, Target, TrendingUp, AlertCircle, CheckCircle, Edit, Brain } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
 import TaskEditDialog from './TaskEditDialog';
