@@ -3,7 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Clock, Target, TrendingUp, AlertCircle, CheckCircle, Edit, Brain } from 'lucide-react';
+import {
+  Clock,
+  Target,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  Edit,
+  Brain,
+  Filter,
+} from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
 import TaskEditDialog from './TaskEditDialog';
@@ -16,6 +25,26 @@ import { WBSNode } from '@/types/wbs';
 import { Button } from '@/components/ui/button';
 import { TaskAIAnalysisDialog } from './TaskAIAnalysisDialog';
 import { toast } from 'react-hot-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+
+// フィルター設定の型定義
+interface FilterSettings {
+  status: string[];
+  level: number | null;
+  progressRange: [number, number];
+  hasRisks: boolean | null;
+  phase: string | null;
+}
 
 const SiteDevWBS: React.FC = () => {
   const [viewMode, setViewMode] = useState<'gantt' | 'tree' | 'ai'>('gantt');
@@ -26,16 +55,26 @@ const SiteDevWBS: React.FC = () => {
   const [editingTask, setEditingTask] = useState<WBSNode | null>(null);
   const [aiAnalysisTask, setAIAnalysisTask] = useState<WBSNode | null>(null);
 
+  // フィルター設定の状態
+  const [filterSettings, setFilterSettings] = useState<FilterSettings>({
+    status: [],
+    level: null,
+    progressRange: [0, 100],
+    hasRisks: null,
+    phase: null,
+  });
+  const [showFilters, setShowFilters] = useState(false);
+
   // MongoDBからWBSノードを取得
   useEffect(() => {
     const fetchWBSNodes = async () => {
       try {
         setLoading(true);
-        // MongoDBからデータを取得
         const nodes = await WBSService.getProjectNodes('site-dev-project');
         setWbsNodes(nodes);
       } catch (error) {
         console.error('WBSデータの取得に失敗しました:', error);
+        toast.error('データの取得に失敗しました');
         setWbsNodes([]);
       } finally {
         setLoading(false);
@@ -44,15 +83,15 @@ const SiteDevWBS: React.FC = () => {
 
     fetchWBSNodes();
 
-    // ポーリングで定期的に更新（リアルタイム更新の代替）
-    const interval = setInterval(fetchWBSNodes, 30000); // 30秒ごと
+    // ポーリング間隔を5秒に短縮
+    const interval = setInterval(fetchWBSNodes, 5000);
 
     return () => {
       clearInterval(interval);
     };
   }, []);
 
-  // ノードを更新する関数
+  // ノードを更新する関数（エラーハンドリング強化）
   const handleNodeUpdate = async (nodeId: string, updates: Partial<WBSNode>) => {
     try {
       await WBSService.updateNode(nodeId, updates);
@@ -61,8 +100,19 @@ const SiteDevWBS: React.FC = () => {
       setWbsNodes((prevNodes) =>
         prevNodes.map((n) => (n.id === nodeId ? { ...n, ...updates } : n))
       );
+
+      toast.success('更新が完了しました');
     } catch (error) {
       console.error('ノードの更新に失敗しました:', error);
+      toast.error('更新に失敗しました。もう一度お試しください。');
+
+      // エラー時は最新データを再取得
+      try {
+        const nodes = await WBSService.getProjectNodes('site-dev-project');
+        setWbsNodes(nodes);
+      } catch (refetchError) {
+        console.error('データの再取得に失敗しました:', refetchError);
+      }
     }
   };
 
@@ -95,28 +145,87 @@ const SiteDevWBS: React.FC = () => {
     }
   };
 
+  // フィルタリング関数
+  const filterNodes = (nodes: WBSNode[]): WBSNode[] => {
+    return nodes.filter((node) => {
+      // ステータスフィルター
+      if (filterSettings.status.length > 0 && !filterSettings.status.includes(node.status)) {
+        return false;
+      }
+
+      // レベルフィルター
+      if (filterSettings.level !== null && node.level !== filterSettings.level) {
+        return false;
+      }
+
+      // 進捗フィルター
+      if (
+        node.progress < filterSettings.progressRange[0] ||
+        node.progress > filterSettings.progressRange[1]
+      ) {
+        return false;
+      }
+
+      // リスクフィルター
+      if (filterSettings.hasRisks !== null) {
+        const hasRisks = node.risks.length > 0;
+        if (filterSettings.hasRisks !== hasRisks) {
+          return false;
+        }
+      }
+
+      // フェーズフィルター
+      if (filterSettings.phase !== null) {
+        // レベル0のノードのIDを取得して、その子ノードかどうかを判定
+        const phaseNode = nodes.find((n) => n.id === filterSettings.phase);
+        if (!phaseNode) return false;
+
+        // 自身がフェーズノードの場合
+        if (node.id === filterSettings.phase) return true;
+
+        // 親をたどってフェーズノードに到達するか確認
+        let currentNode = node;
+        while (currentNode.parentId) {
+          if (currentNode.parentId === filterSettings.phase) return true;
+          const parent = nodes.find((n) => n.id === currentNode.parentId);
+          if (!parent) break;
+          currentNode = parent;
+        }
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  // フィルター適用後のノード
+  const filteredNodes = filterNodes(wbsNodes);
+
   // 統計情報の計算
   const calculateStats = () => {
-    const totalTasks = wbsNodes.filter((n) => n.level > 0).length;
-    const completedTasks = wbsNodes.filter((n) => n.level > 0 && n.status === 'completed').length;
-    const inProgressTasks = wbsNodes.filter(
+    const nodesToAnalyze = filteredNodes;
+    const totalTasks = nodesToAnalyze.filter((n) => n.level > 0).length;
+    const completedTasks = nodesToAnalyze.filter(
+      (n) => n.level > 0 && n.status === 'completed'
+    ).length;
+    const inProgressTasks = nodesToAnalyze.filter(
       (n) => n.level > 0 && n.status === 'in-progress'
     ).length;
-    const delayedTasks = wbsNodes.filter((n) => n.status === 'delayed').length;
+    const delayedTasks = nodesToAnalyze.filter((n) => n.status === 'delayed').length;
 
-    const level0Nodes = wbsNodes.filter((n) => n.level === 0);
+    const level0Nodes = nodesToAnalyze.filter((n) => n.level === 0);
     const totalProgress =
       level0Nodes.length > 0
-        ? wbsNodes.reduce((sum, node) => {
+        ? nodesToAnalyze.reduce((sum, node) => {
             if (node.level === 0) return sum + node.progress;
             return sum;
           }, 0) / level0Nodes.length
         : 0;
 
-    const totalBudget = wbsNodes.reduce((sum, n) => sum + n.budget, 0);
-    const actualCost = wbsNodes.reduce((sum, n) => sum + n.actualCost, 0);
-    const totalEstimatedHours = wbsNodes.reduce((sum, n) => sum + n.estimatedHours, 0);
-    const totalActualHours = wbsNodes.reduce((sum, n) => sum + n.actualHours, 0);
+    const totalBudget = nodesToAnalyze.reduce((sum, n) => sum + n.budget, 0);
+    const actualCost = nodesToAnalyze.reduce((sum, n) => sum + n.actualCost, 0);
+    const totalEstimatedHours = nodesToAnalyze.reduce((sum, n) => sum + n.estimatedHours, 0);
+    const totalActualHours = nodesToAnalyze.reduce((sum, n) => sum + n.actualHours, 0);
 
     return {
       totalTasks,
@@ -140,6 +249,7 @@ const SiteDevWBS: React.FC = () => {
   const phaseProgress = wbsNodes
     .filter((n) => n.level === 0)
     .map((phase) => ({
+      id: phase.id,
       name: phase.name,
       progress: phase.progress,
       status: phase.status,
@@ -160,11 +270,169 @@ const SiteDevWBS: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* ヘッダー */}
-      <div>
-        <h2 className="text-2xl font-bold">サイト開発状況</h2>
-        <p className="text-muted-foreground mt-1">
-          Work Time Tracker の開発進捗をリアルタイムで確認
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold">サイト開発状況</h2>
+          <p className="text-muted-foreground mt-1">
+            Work Time Tracker の開発進捗をリアルタイムで確認
+          </p>
+        </div>
+
+        {/* フィルターボタン */}
+        <Popover open={showFilters} onOpenChange={setShowFilters}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              フィルター
+              {(filterSettings.status.length > 0 ||
+                filterSettings.level !== null ||
+                filterSettings.progressRange[0] > 0 ||
+                filterSettings.progressRange[1] < 100 ||
+                filterSettings.hasRisks !== null ||
+                filterSettings.phase !== null) && (
+                <Badge variant="secondary" className="ml-2">
+                  適用中
+                </Badge>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div className="space-y-4">
+              <div className="font-medium">フィルター設定</div>
+
+              {/* ステータスフィルター */}
+              <div className="space-y-2">
+                <Label>ステータス</Label>
+                <div className="flex flex-wrap gap-2">
+                  {['not-started', 'in-progress', 'completed', 'delayed', 'cancelled'].map(
+                    (status) => (
+                      <Badge
+                        key={status}
+                        variant={filterSettings.status.includes(status) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setFilterSettings((prev) => ({
+                            ...prev,
+                            status: prev.status.includes(status)
+                              ? prev.status.filter((s) => s !== status)
+                              : [...prev.status, status],
+                          }));
+                        }}
+                      >
+                        {status === 'not-started' && '未着手'}
+                        {status === 'in-progress' && '進行中'}
+                        {status === 'completed' && '完了'}
+                        {status === 'delayed' && '遅延'}
+                        {status === 'cancelled' && 'キャンセル'}
+                      </Badge>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* レベルフィルター */}
+              <div className="space-y-2">
+                <Label>階層レベル</Label>
+                <Select
+                  value={filterSettings.level?.toString() ?? 'all'}
+                  onValueChange={(value) => {
+                    setFilterSettings((prev) => ({
+                      ...prev,
+                      level: value === 'all' ? null : parseInt(value),
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">すべて</SelectItem>
+                    <SelectItem value="0">フェーズ</SelectItem>
+                    <SelectItem value="1">レベル1</SelectItem>
+                    <SelectItem value="2">レベル2</SelectItem>
+                    <SelectItem value="3">レベル3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 進捗フィルター */}
+              <div className="space-y-2">
+                <Label>
+                  進捗範囲: {filterSettings.progressRange[0]}% - {filterSettings.progressRange[1]}%
+                </Label>
+                <Slider
+                  value={filterSettings.progressRange}
+                  onValueChange={(value) => {
+                    setFilterSettings((prev) => ({
+                      ...prev,
+                      progressRange: value as [number, number],
+                    }));
+                  }}
+                  max={100}
+                  step={10}
+                />
+              </div>
+
+              {/* リスクフィルター */}
+              <div className="flex items-center justify-between">
+                <Label>リスクのあるタスクのみ</Label>
+                <Switch
+                  checked={filterSettings.hasRisks === true}
+                  onCheckedChange={(checked) => {
+                    setFilterSettings((prev) => ({
+                      ...prev,
+                      hasRisks: checked ? true : prev.hasRisks === true ? null : true,
+                    }));
+                  }}
+                />
+              </div>
+
+              {/* フェーズフィルター */}
+              <div className="space-y-2">
+                <Label>フェーズ</Label>
+                <Select
+                  value={filterSettings.phase ?? 'all'}
+                  onValueChange={(value) => {
+                    setFilterSettings((prev) => ({
+                      ...prev,
+                      phase: value === 'all' ? null : value,
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">すべて</SelectItem>
+                    {phaseProgress.map((phase) => (
+                      <SelectItem key={phase.id} value={phase.id}>
+                        {phase.name.split(':')[1]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* リセットボタン */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => {
+                  setFilterSettings({
+                    status: [],
+                    level: null,
+                    progressRange: [0, 100],
+                    hasRisks: null,
+                    phase: null,
+                  });
+                }}
+              >
+                フィルターをリセット
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* 全体進捗 */}
@@ -282,7 +550,7 @@ const SiteDevWBS: React.FC = () => {
         </Card>
       </div>
 
-      {/* ビューモード切り替え */}
+      {/* ビューモード切り替え（filteredNodesを使用） */}
       <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'gantt' | 'tree' | 'ai')}>
         <TabsList>
           <TabsTrigger value="gantt">ガントチャート</TabsTrigger>
@@ -297,7 +565,7 @@ const SiteDevWBS: React.FC = () => {
           <Card>
             <CardContent className="p-0">
               <WBSGanttChart
-                nodes={wbsNodes}
+                nodes={filteredNodes}
                 onNodeClick={(node) => {
                   setSelectedNode(node);
                   handleEditTask(node);
@@ -312,7 +580,7 @@ const SiteDevWBS: React.FC = () => {
           <Card>
             <CardContent>
               <WBSTreeView
-                nodes={wbsNodes}
+                nodes={filteredNodes}
                 onNodeClick={(node) => {
                   setSelectedNode(node);
                   handleEditTask(node);
@@ -325,7 +593,7 @@ const SiteDevWBS: React.FC = () => {
 
         <TabsContent value="ai" className="mt-4">
           <WBSAIAnalysis
-            nodes={wbsNodes}
+            nodes={filteredNodes}
             selectedNode={selectedNode}
             onOptimizationApply={async (nodeId: string, optimization: any) => {
               console.log('最適化を適用:', nodeId, optimization);
