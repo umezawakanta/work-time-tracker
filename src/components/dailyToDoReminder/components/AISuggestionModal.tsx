@@ -190,17 +190,12 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       const completedTodos = todos.filter((t) => t.completed);
       const currentGoals = ['生産性向上', 'スキルアップ', 'タスク効率化'];
 
+      // WBSノードのフィルタリング条件を修正
       const incompleteWBSTasks = wbsNodes.filter(
-        (node) => node.status !== 'completed' && node.level > 1
+        (node) => node.status !== 'completed' // level条件を削除
       );
 
-      const wbsContext = incompleteWBSTasks.map((node) => ({
-        name: node.name,
-        description: node.description,
-        deadline: node.endDate,
-        priority: node.estimatedHours > 8 ? 5 : 3,
-      }));
-
+      // 既存のAI提案を取得
       const todosForAI = completedTodos.map((todo) => ({
         ...todo,
         type: todo.type || 'input',
@@ -217,25 +212,28 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         deadline: s.deadline,
       }));
 
-      incompleteWBSTasks.slice(0, 3).forEach((node) => {
-        formattedSuggestions.push({
-          task: node.name,
-          type: 'output',
-          priority: node.estimatedHours > 8 ? 5 : 3,
-          estimatedDuration: node.estimatedHours * 60,
-          reason: `WBSタスク: ${node.description || 'プロジェクトの主要タスク'}`,
-          deadline: node.endDate,
-          wbsNodeId: node.id,
-          wbsNodeName: node.name,
-        });
-      });
+      // WBSタスクを提案の先頭に追加（最大5個）
+      const wbsSuggestions = incompleteWBSTasks.slice(0, 5).map((node) => ({
+        task: node.name,
+        type: 'output' as const,
+        priority: node.estimatedHours > 8 ? 5 : node.estimatedHours > 4 ? 4 : 3,
+        estimatedDuration: node.estimatedHours * 60,
+        reason: `WBSタスク: ${node.description || 'プロジェクトの重要なタスク'}`,
+        deadline: node.endDate,
+        wbsNodeId: node.id,
+        wbsNodeName: node.name,
+      }));
 
-      if (formattedSuggestions.length === 0) {
+      // WBSタスクを優先的に表示
+      const allSuggestions = [...wbsSuggestions, ...formattedSuggestions];
+
+      // 提案が少ない場合のフォールバック
+      if (allSuggestions.length === 0) {
         const needsMoreOutput =
           todos.filter((t) => t.type === 'input').length >
           todos.filter((t) => t.type === 'output').length * 1.5;
 
-        formattedSuggestions.push(
+        allSuggestions.push(
           {
             task: needsMoreOutput
               ? '学んだことをブログ記事やドキュメントにまとめる'
@@ -264,9 +262,11 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         );
       }
 
-      setSuggestions(formattedSuggestions);
+      setSuggestions(allSuggestions);
       setSelectedSuggestions(new Set());
-      toast.success(`${formattedSuggestions.length}個の提案を生成しました`);
+      toast.success(
+        `${allSuggestions.length}個の提案を生成しました（WBS: ${wbsSuggestions.length}個）`
+      );
     } catch (error) {
       console.error('AI suggestion error:', error);
       toast.error('提案の生成に失敗しました');
@@ -321,7 +321,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           console.log('User:', user);
 
           const wbsNode = {
-            projectId: 'site-dev-project',
+            projectId: selectedProject.id, // ハードコーディングを修正
             parentId: null,
             name: suggestion.task,
             description: `AI提案タスク: ${suggestion.reason || ''}`,
@@ -330,7 +330,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             startDate: new Date().toISOString(),
             endDate:
               suggestion.deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            duration: suggestion.estimatedDuration ? suggestion.estimatedDuration / 60 : 8,
+            duration: suggestion.estimatedDuration ? suggestion.estimatedDuration / 60 / 24 : 7, // 日数に変換
             progress: 0,
             status: 'not-started' as const,
             assignees: [user?.uid || 'unknown'],
@@ -407,7 +407,9 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         {wbsProjects.length > 0 && (
           <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
             <GitBranch className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">連携プロジェクト:</span>
+            <span className="text-sm text-muted-foreground">
+              連携プロジェクト: {wbsNodes.length}個のタスク
+            </span>
             <select
               aria-label="WBSプロジェクト選択"
               value={selectedProject?.id || ''}
