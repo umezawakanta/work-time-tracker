@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Sparkles, Plus, RefreshCw, Clock, Target, GitBranch } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -122,6 +123,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const [wbsProjects, setWbsProjects] = useState<WBSProject[]>([]);
   const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
   const [selectedProject, setSelectedProject] = useState<WBSProject | null>(null);
+  const [autoAddToWBS, setAutoAddToWBS] = useState(true);
 
   // ローカルストレージを使用してWBSタスクを管理
   const saveWBSTaskToLocal = (task: Partial<WBSNode>) => {
@@ -314,8 +316,8 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         ).unwrap();
         console.log('Task added to TodoList:', addedTodo);
 
-        // WBSへの追加処理（修正版）
-        if (!suggestion.wbsNodeId && selectedProject) {
+        // WBSへの追加処理（autoAddToWBSフラグをチェック）
+        if (!suggestion.wbsNodeId && selectedProject && autoAddToWBS) {
           console.log('Attempting to add task to WBS...');
           console.log('Selected project:', selectedProject);
           console.log('User:', user);
@@ -523,10 +525,28 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         </div>
 
         <div className="flex items-center justify-between gap-3 pt-4 border-t">
-          <Button variant="outline" onClick={generateSuggestions} disabled={loading} size="sm">
-            <RefreshCw className={cn('h-4 w-4 mr-2', loading && 'animate-spin')} />
-            再生成
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={generateSuggestions} disabled={loading} size="sm">
+              <RefreshCw className={cn('h-4 w-4 mr-2', loading && 'animate-spin')} />
+              再生成
+            </Button>
+
+            {selectedProject && (
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="auto-add-to-wbs"
+                  checked={autoAddToWBS}
+                  onCheckedChange={(checked) => setAutoAddToWBS(checked as boolean)}
+                />
+                <label
+                  htmlFor="auto-add-to-wbs"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  WBSに自動追加
+                </label>
+              </div>
+            )}
+          </div>
 
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
