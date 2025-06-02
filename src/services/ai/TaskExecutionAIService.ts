@@ -6,7 +6,7 @@ import WBSService from '../wbs/WBSService';
 export interface TaskExecutionResult {
   success: boolean;
   executionType: 'research' | 'documentation' | 'analysis' | 'not-executable';
-  result?: any;
+  result?: string;
   knowledgeEntries?: KnowledgeEntry[];
   error?: string;
 }
