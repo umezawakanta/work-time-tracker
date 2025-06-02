@@ -314,14 +314,14 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         ).unwrap();
         console.log('Task added to TodoList:', addedTodo);
 
-        // WBSへの追加処理
+        // WBSへの追加処理（修正版）
         if (!suggestion.wbsNodeId && selectedProject) {
           console.log('Attempting to add task to WBS...');
           console.log('Selected project:', selectedProject);
           console.log('User:', user);
 
-          const wbsNode = {
-            projectId: selectedProject.id, // ハードコーディングを修正
+          const wbsNode: Partial<WBSNode> = {
+            projectId: selectedProject.id,
             parentId: null,
             name: suggestion.task,
             description: `AI提案タスク: ${suggestion.reason || ''}`,
@@ -330,12 +330,16 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             startDate: new Date().toISOString(),
             endDate:
               suggestion.deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            duration: suggestion.estimatedDuration ? suggestion.estimatedDuration / 60 / 24 : 7, // 日数に変換
+            duration: suggestion.estimatedDuration
+              ? Math.ceil(suggestion.estimatedDuration / 60 / 24)
+              : 7,
             progress: 0,
             status: 'not-started' as const,
             assignees: [user?.uid || 'unknown'],
             dependencies: [],
-            estimatedHours: suggestion.estimatedDuration ? suggestion.estimatedDuration / 60 : 8,
+            estimatedHours: suggestion.estimatedDuration
+              ? Math.ceil(suggestion.estimatedDuration / 60)
+              : 8,
             actualHours: 0,
             budget: 0,
             actualCost: 0,
@@ -344,6 +348,9 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             createdBy: user?.uid || 'unknown',
+            // 追加: タスクタイプに応じた色とアイコン
+            color: suggestion.type === 'output' ? '#3b82f6' : '#10b981',
+            icon: suggestion.type === 'output' ? '📤' : '📥',
           };
 
           try {
@@ -354,22 +361,29 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
               toast.success(`タスク「${suggestion.task}」をローカルWBSに追加しました`);
             } else {
               console.log('Creating WBS node:', wbsNode);
-              const nodeId = await WBSService.createNode(wbsNode, user.uid);
-              console.log('WBS node created with ID:', nodeId);
+              const createdNode = await WBSService.createNode(wbsNode, user.uid);
+              console.log('WBS node created:', createdNode);
+
+              // ノードリストを更新して画面に反映
+              const newNode: WBSNode = {
+                ...(wbsNode as WBSNode),
+                id: createdNode, // createdNode is the ID string
+              };
+              setWbsNodes((prev) => [...prev, newNode]);
+
               toast.success(`タスク「${suggestion.task}」をWBSに追加しました`);
             }
           } catch (error) {
             console.error('Failed to add task to WBS:', error);
+            // エラーの詳細をログ出力
+            if (error instanceof Error) {
+              console.error('Error details:', error.message);
+            }
+
             // エラーが発生してもローカルに保存
             saveWBSTaskToLocal(wbsNode);
-            toast('WBSサーバーへの追加に失敗しました。ローカルに保存しました。', {
-              icon: '⚠️',
-            });
+            toast.error('WBSへの追加に失敗しました。ローカルに保存しました。');
           }
-        } else if (suggestion.wbsNodeId) {
-          console.log('Task already has WBS node ID:', suggestion.wbsNodeId);
-        } else {
-          console.log('No project selected, skipping WBS creation');
         }
       }
 
