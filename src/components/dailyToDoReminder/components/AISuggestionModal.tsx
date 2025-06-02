@@ -128,12 +128,31 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   // ローカルストレージを使用してWBSタスクを管理
   const saveWBSTaskToLocal = (task: Partial<WBSNode>) => {
     const existingTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
-    existingTasks.push({
+
+    // より完全なタスクデータを保存
+    const completeTask = {
       ...task,
-      id: `local-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-    });
+      id: task.id || `local-${Date.now()}-${Math.random()}`,
+      createdAt: task.createdAt || new Date().toISOString(),
+      // 必須フィールドを確実に含める
+      level: task.level || 1,
+      orderIndex: task.orderIndex || 999,
+      status: task.status || 'not-started',
+      progress: task.progress || 0,
+      assignees: task.assignees || [],
+      dependencies: task.dependencies || [],
+      estimatedHours: task.estimatedHours || 0,
+      actualHours: task.actualHours || 0,
+      budget: task.budget || 0,
+      actualCost: task.actualCost || 0,
+      deliverables: task.deliverables || [],
+      risks: task.risks || [],
+    };
+
+    existingTasks.push(completeTask);
     localStorage.setItem('wbs-tasks', JSON.stringify(existingTasks));
+
+    console.log('Saved task to localStorage:', completeTask);
   };
 
   useEffect(() => {
