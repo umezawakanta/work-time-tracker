@@ -71,48 +71,12 @@ const SiteDevWBS: React.FC = () => {
       try {
         setLoading(true);
 
-        // MongoDBからノードを取得
+        // MongoDBからノードを取得（ローカルストレージの処理を削除）
         const nodes = await WBSService.getProjectNodes('site-dev-project');
 
-        // ローカルストレージからタスクを取得
-        const localTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
-        console.log('Loading local WBS tasks:', localTasks.length);
+        console.log('Total WBS nodes from MongoDB:', nodes.length);
 
-        // ローカルタスクをWBSNode形式に変換
-        const localNodes: WBSNode[] = localTasks
-          .filter((task: any) => task.projectId === 'site-dev-project')
-          .map((task: any) => ({
-            ...task,
-            // 必須フィールドの確認
-            id: task.id || `local-${Date.now()}-${Math.random()}`,
-            level: task.level || 1,
-            orderIndex: task.orderIndex || 999,
-            status: task.status || 'not-started',
-            progress: task.progress || 0,
-            assignees: task.assignees || [],
-            dependencies: task.dependencies || [],
-            estimatedHours: task.estimatedHours || 0,
-            actualHours: task.actualHours || 0,
-            budget: task.budget || 0,
-            actualCost: task.actualCost || 0,
-            deliverables: task.deliverables || [],
-            risks: task.risks || [],
-          }));
-
-        // MongoDBのノードとローカルノードをマージ
-        // 重複を避けるため、ローカルIDのものだけを追加
-        const mergedNodes = [
-          ...nodes,
-          ...localNodes.filter(
-            (localNode) => !nodes.some((dbNode) => dbNode.name === localNode.name)
-          ),
-        ];
-
-        console.log('Total WBS nodes:', mergedNodes.length);
-        console.log('- From MongoDB:', nodes.length);
-        console.log('- From localStorage:', localNodes.length);
-
-        setWbsNodes(mergedNodes);
+        setWbsNodes(nodes);
       } catch (error) {
         console.error('WBSデータの取得に失敗しました:', error);
         toast.error('データの取得に失敗しました');

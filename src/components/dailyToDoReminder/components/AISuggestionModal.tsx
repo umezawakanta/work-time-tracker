@@ -125,36 +125,6 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const [selectedProject, setSelectedProject] = useState<WBSProject | null>(null);
   const [autoAddToWBS, setAutoAddToWBS] = useState(true);
 
-  // ローカルストレージを使用してWBSタスクを管理
-  const saveWBSTaskToLocal = (task: Partial<WBSNode>) => {
-    const existingTasks = JSON.parse(localStorage.getItem('wbs-tasks') || '[]');
-
-    // より完全なタスクデータを保存
-    const completeTask = {
-      ...task,
-      id: task.id || `local-${Date.now()}-${Math.random()}`,
-      createdAt: task.createdAt || new Date().toISOString(),
-      // 必須フィールドを確実に含める
-      level: task.level || 1,
-      orderIndex: task.orderIndex || 999,
-      status: task.status || 'not-started',
-      progress: task.progress || 0,
-      assignees: task.assignees || [],
-      dependencies: task.dependencies || [],
-      estimatedHours: task.estimatedHours || 0,
-      actualHours: task.actualHours || 0,
-      budget: task.budget || 0,
-      actualCost: task.actualCost || 0,
-      deliverables: task.deliverables || [],
-      risks: task.risks || [],
-    };
-
-    existingTasks.push(completeTask);
-    localStorage.setItem('wbs-tasks', JSON.stringify(existingTasks));
-
-    console.log('Saved task to localStorage:', completeTask);
-  };
-
   useEffect(() => {
     const loadWBSData = async () => {
       if (!open) return;
@@ -337,6 +307,12 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       return;
     }
 
+    // ユーザーが認証されていない場合は処理を中止
+    if (!user?.uid) {
+      toast.error('タスクを追加するにはログインが必要です');
+      return;
+    }
+
     try {
       for (const suggestion of tasksToAdd) {
         // TodoListに追加
@@ -357,9 +333,6 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
         console.log('suggestion.wbsNodeId:', suggestion.wbsNodeId);
         console.log('selectedProject:', selectedProject);
         console.log('autoAddToWBS:', autoAddToWBS);
-        console.log('Condition check: !suggestion.wbsNodeId =', !suggestion.wbsNodeId);
-        console.log('Condition check: selectedProject =', !!selectedProject);
-        console.log('Condition check: autoAddToWBS =', autoAddToWBS);
         console.log('Will add to WBS:', !suggestion.wbsNodeId && selectedProject && autoAddToWBS);
 
         // WBSへの追加処理（autoAddToWBSフラグをチェック）
@@ -367,7 +340,6 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           console.log('Attempting to add task to WBS...');
           console.log('Selected project:', selectedProject);
           console.log('User:', user);
-          console.log('User UID:', user?.uid);
 
           const wbsNode: Partial<WBSNode> = {
             projectId: selectedProject.id,
@@ -384,7 +356,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
               : 7,
             progress: 0,
             status: 'not-started' as const,
-            assignees: [user?.uid || 'unknown'],
+            assignees: [user.uid],
             dependencies: [],
             estimatedHours: suggestion.estimatedDuration
               ? Math.ceil(suggestion.estimatedDuration / 60)
@@ -396,7 +368,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
             risks: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            createdBy: user?.uid || 'unknown',
+            createdBy: user.uid,
             // 追加: タスクタイプに応じた色とアイコン
             color: suggestion.type === 'output' ? '#3b82f6' : '#10b981',
             icon: suggestion.type === 'output' ? '📤' : '📥',
@@ -405,49 +377,31 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           console.log('WBS Node to create:', JSON.stringify(wbsNode, null, 2));
 
           try {
-            // 環境チェックの詳細ログ
-            console.log('Environment check:');
-            console.log('NODE_ENV:', process.env.NODE_ENV);
-            console.log('Is development:', process.env.NODE_ENV === 'development');
-            console.log('Has user UID:', !!user?.uid);
-            console.log(
-              'Will use local storage:',
-              process.env.NODE_ENV === 'development' || !user?.uid
-            );
+            console.log('Creating WBS node via API...');
+            console.log('Calling WBSService.createNode with:', {
+              wbsNode: wbsNode,
+              userId: user.uid,
+            });
 
-            // 開発環境ではローカルストレージに保存
-            if (process.env.NODE_ENV === 'development' || !user?.uid) {
-              console.log('Saving WBS task to local storage');
-              saveWBSTaskToLocal(wbsNode);
-              toast.success(`タスク「${suggestion.task}」をローカルWBSに追加しました`);
-            } else {
-              console.log('Creating WBS node via API...');
-              console.log('Calling WBSService.createNode with:', {
-                wbsNode: wbsNode,
-                userId: user.uid,
-              });
+            const createdNode = await WBSService.createNode(wbsNode, user.uid);
+            console.log('WBS node created successfully!');
+            console.log('Created node ID:', createdNode);
 
-              const createdNode = await WBSService.createNode(wbsNode, user.uid);
-              console.log('WBS node created successfully!');
-              console.log('Created node ID:', createdNode);
-              console.log('Type of createdNode:', typeof createdNode);
+            // ノードリストを更新して画面に反映
+            const newNode: WBSNode = {
+              ...(wbsNode as WBSNode),
+              id: createdNode, // createdNode is the ID string
+            };
+            console.log('New node object:', newNode);
 
-              // ノードリストを更新して画面に反映
-              const newNode: WBSNode = {
-                ...(wbsNode as WBSNode),
-                id: createdNode, // createdNode is the ID string
-              };
-              console.log('New node object:', newNode);
+            setWbsNodes((prev) => {
+              console.log('Previous nodes count:', prev.length);
+              const updated = [...prev, newNode];
+              console.log('Updated nodes count:', updated.length);
+              return updated;
+            });
 
-              setWbsNodes((prev) => {
-                console.log('Previous nodes count:', prev.length);
-                const updated = [...prev, newNode];
-                console.log('Updated nodes count:', updated.length);
-                return updated;
-              });
-
-              toast.success(`タスク「${suggestion.task}」をWBSに追加しました`);
-            }
+            toast.success(`タスク「${suggestion.task}」をWBSに追加しました`);
           } catch (error) {
             console.error('Failed to add task to WBS:', error);
             console.error('Error type:', error?.constructor?.name);
@@ -464,9 +418,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
               console.error('Unknown error type:', error);
             }
 
-            // エラーが発生してもローカルに保存
-            saveWBSTaskToLocal(wbsNode);
-            toast.error('WBSへの追加に失敗しました。ローカルに保存しました。');
+            toast.error('WBSへの追加に失敗しました。もう一度お試しください。');
           }
         } else {
           console.log('Skipping WBS addition for this task');
