@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { LoadingSpinner } from './LoadingSpinner';
 import { WBSNode, WBSProject } from '@/types/wbs';
 import { useAuth } from '@/hooks/useAuth';
+import { RootState } from '@/store';
 
 interface AISuggestionModalProps {
   open: boolean;
@@ -115,11 +116,20 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const todos = useSelector(selectTodos);
   const _analysisSummary = useSelector(selectAnalysisSummary);
 
-  const { user } = useAuth();
+  // Get user ID from Redux store
+  const reduxUserId = useSelector((state: RootState) => state.user?.id);
+  const { user: authUser } = useAuth();
 
-  // 開発環境用のモックユーザー
+  // Create user object with consistent structure
+  const user = reduxUserId
+    ? { _id: reduxUserId, uid: reduxUserId }
+    : authUser
+      ? { _id: authUser.uid, uid: authUser.uid }
+      : null;
+
+  // 開発環境用のフォールバック
   const effectiveUser =
-    user || (process.env.NODE_ENV === 'development' ? { uid: 'dev-user' } : null);
+    user || (process.env.NODE_ENV === 'development' ? { uid: 'dev-user', _id: 'dev-user' } : null);
 
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
@@ -128,26 +138,32 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const [wbsNodes, setWbsNodes] = useState<WBSNode[]>([]);
   const [selectedProject, setSelectedProject] = useState<WBSProject | null>(null);
   const [autoAddToWBS, setAutoAddToWBS] = useState(true);
+  const [isWBSDataLoaded, setIsWBSDataLoaded] = useState(false); // 無限ループを防ぐフラグ
 
   useEffect(() => {
     const loadWBSData = async () => {
-      if (!open) return;
+      // モーダルが閉じているか、既に読み込み済みの場合はスキップ
+      if (!open || isWBSDataLoaded) return;
 
       console.log('Loading WBS data...');
       console.log('User:', effectiveUser);
+      console.log('Redux User:', reduxUserId);
+      console.log('Auth User:', authUser);
 
       try {
         // 開発環境またはユーザーが存在しない場合はモックデータを使用
-        if (!effectiveUser?.uid || process.env.NODE_ENV === 'development') {
+        if (!effectiveUser?._id || process.env.NODE_ENV === 'development') {
           console.log('Using mock WBS data for development');
           setWbsProjects([mockWBSProject]);
           setSelectedProject(mockWBSProject);
           setWbsNodes(mockWBSNodes);
+          setIsWBSDataLoaded(true);
           return;
         }
 
-        // MongoDBのユーザーIDを使用
-        const projects = await WBSService.getProjects(effectiveUser.uid);
+        // MongoDBのユーザーIDを使用（_idを使用）
+        const userId = effectiveUser._id || effectiveUser.uid;
+        const projects = await WBSService.getProjects(userId);
         console.log('Loaded WBS projects:', projects);
         setWbsProjects(projects);
 
@@ -157,18 +173,28 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
           console.log('Loaded WBS nodes:', nodes);
           setWbsNodes(nodes);
         }
+
+        setIsWBSDataLoaded(true);
       } catch (error) {
         console.error('Failed to load WBS data:', error);
         // エラーの場合もモックデータを使用
         setWbsProjects([mockWBSProject]);
         setSelectedProject(mockWBSProject);
         setWbsNodes(mockWBSNodes);
+        setIsWBSDataLoaded(true);
         toast.error('WBSデータの読み込みに失敗しました。モックデータを使用します。');
       }
     };
 
     loadWBSData();
-  }, [effectiveUser, open]);
+  }, [open, effectiveUser?._id, isWBSDataLoaded]); // 依存配列を修正
+
+  // モーダルが閉じたときにフラグをリセット
+  useEffect(() => {
+    if (!open) {
+      setIsWBSDataLoaded(false);
+    }
+  }, [open]);
 
   const generateSuggestions = useCallback(async () => {
     setLoading(true);
@@ -302,7 +328,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       return;
     }
 
-    const currentUserId = effectiveUser?.uid || 'dev-user';
+    const currentUserId = effectiveUser?._id || effectiveUser?.uid || 'dev-user';
 
     try {
       for (const suggestion of tasksToAdd) {
