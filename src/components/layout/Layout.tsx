@@ -719,6 +719,18 @@ export default function Layout({ children }: LayoutProps) {
         path: '/',
         description: 'ダッシュボードを表示します',
       },
+      // 管理者メニューを追加（管理者のみ表示）
+      ...(user?.isAdmin
+        ? [
+            {
+              icon: <Shield size={18} />,
+              label: '管理者ダッシュボード',
+              path: '/admin',
+              description: 'システム管理・ユーザー管理',
+              badge: 'ADMIN',
+            },
+          ]
+        : []),
       {
         icon: <Vote size={18} />,
         label: '選挙候補者',
@@ -778,7 +790,7 @@ export default function Layout({ children }: LayoutProps) {
         badge: 'NEW',
       },
     ],
-    []
+    [user?.isAdmin] // 依存配列にuser.isAdminを追加
   );
 
   // 現在のパスがアクティブかどうかをチェック

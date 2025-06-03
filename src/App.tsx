@@ -39,6 +39,8 @@ import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
 import ImprovementImplementation from './pages/ImprovementImplementation';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 import SystemDesignDocuments from './pages/SystemDesignDocuments';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminRoute from './components/admin/AdminRoute';
 
 const theme = createTheme({
   palette: {
@@ -95,6 +97,14 @@ export default function App() {
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
                   <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
                   <Route path="/system-design" element={<SystemDesignDocuments />} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <AdminDashboard />
+                      </AdminRoute>
+                    }
+                  />
                   <Route
                     path="/improvement-implementation/:projectId"
                     element={<ImprovementImplementation />}
