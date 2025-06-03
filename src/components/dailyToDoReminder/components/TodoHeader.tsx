@@ -165,6 +165,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
           <div className="todo-header-info flex-1">
             <StaticCardTitle />
             <StaticCardDescription />
+            <StreakDisplay streakCount={streakCount} />
             {hasPremium && totalToday > 0 && <TodoHeaderMetrics {...metricsData} />}
           </div>
 
