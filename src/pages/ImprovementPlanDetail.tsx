@@ -551,6 +551,7 @@ const ImprovementPlanDetail: React.FC = () => {
         <Button
           size="lg"
           className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+          onClick={() => navigate('/improvement-plan/implementation')}
         >
           <Rocket className="h-4 w-4 mr-2" />
           実装を開始する

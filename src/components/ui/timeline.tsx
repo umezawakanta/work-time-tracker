@@ -18,7 +18,7 @@ type TimelineComponent = React.ForwardRefExoticComponent<
 
 const Timeline = React.forwardRef<HTMLOListElement, React.HTMLAttributes<HTMLOListElement>>(
   ({ className, ...props }, ref) => <ol ref={ref} className={cn('', className)} {...props} />
-);
+) as TimelineComponent;
 Timeline.displayName = 'Timeline';
 
 interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {

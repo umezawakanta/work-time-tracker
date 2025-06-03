@@ -36,6 +36,7 @@ import GuitarPracticePage from './pages/GuitarPracticePage';
 import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 import SiteImprovementPlan from './pages/SiteImprovementPlan';
 import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
+import ImprovementImplementation from './pages/ImprovementImplementation';
 
 const theme = createTheme({
   palette: {
@@ -90,6 +91,10 @@ export default function App() {
                   {/* 新しく追加されたルート */}
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
                   <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
+                  <Route
+                    path="/improvement-plan/implementation"
+                    element={<ImprovementImplementation />}
+                  />
                 </Route>
                 <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />
