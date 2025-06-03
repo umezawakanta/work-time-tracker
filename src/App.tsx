@@ -38,6 +38,7 @@ import SiteImprovementPlan from './pages/SiteImprovementPlan';
 import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
 import ImprovementImplementation from './pages/ImprovementImplementation';
 import IntegratedDashboard from './pages/IntegratedDashboard';
+import SystemDesignDocuments from './pages/SystemDesignDocuments';
 
 const theme = createTheme({
   palette: {
@@ -93,6 +94,7 @@ export default function App() {
                   {/* 新しく追加されたルート */}
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
                   <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
+                  <Route path="/system-design" element={<SystemDesignDocuments />} />
                   <Route
                     path="/improvement-implementation/:projectId"
                     element={<ImprovementImplementation />}

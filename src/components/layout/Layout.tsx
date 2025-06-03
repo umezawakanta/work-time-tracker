@@ -34,6 +34,7 @@ import {
   Shield,
   Palette,
   BarChart3,
+  FileText,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -767,6 +768,13 @@ export default function Layout({ children }: LayoutProps) {
         label: 'サイト改善計画',
         path: '/improvement-plan',
         description: 'サイトの技術的改善計画と進捗を確認',
+        badge: 'NEW',
+      },
+      {
+        icon: <FileText size={18} />,
+        label: 'システム設計書',
+        path: '/system-design',
+        description: 'アプリケーションの技術仕様書と設計ドキュメント',
         badge: 'NEW',
       },
     ],
