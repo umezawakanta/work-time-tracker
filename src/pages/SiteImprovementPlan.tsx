@@ -352,7 +352,6 @@ const SiteImprovementPlan: React.FC = () => {
   }
 
   const startImplementation = async (item: ImprovementItem) => {
-    setIsLoading(true);
     try {
       const success = await createTaskFromImprovement(item);
       if (success) {
