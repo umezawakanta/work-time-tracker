@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Dialog,
@@ -121,15 +121,21 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
   const { user: authUser } = useAuth();
 
   // Create user object with consistent structure
-  const user = reduxUserId
-    ? { _id: reduxUserId, uid: reduxUserId }
-    : authUser
-      ? { _id: authUser.uid, uid: authUser.uid }
-      : null;
+  const user = useMemo(() => {
+    return reduxUserId
+      ? { _id: reduxUserId, uid: reduxUserId }
+      : authUser
+        ? { _id: authUser.uid, uid: authUser.uid }
+        : null;
+  }, [reduxUserId, authUser]);
 
   // 開発環境用のフォールバック
-  const effectiveUser =
-    user || (process.env.NODE_ENV === 'development' ? { uid: 'dev-user', _id: 'dev-user' } : null);
+  const effectiveUser = useMemo(
+    () =>
+      user ||
+      (process.env.NODE_ENV === 'development' ? { uid: 'dev-user', _id: 'dev-user' } : null),
+    [user]
+  );
 
   const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
@@ -187,7 +193,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     };
 
     loadWBSData();
-  }, [open, effectiveUser, isWBSDataLoaded]); // 依存配列を修正
+  }, [open, effectiveUser, isWBSDataLoaded, authUser, reduxUserId]); // 依存配列を修正
 
   // モーダルが閉じたときにフラグをリセット
   useEffect(() => {
