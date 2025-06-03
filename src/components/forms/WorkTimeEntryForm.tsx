@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addWorkTimeEntry, createWorkTimeEntry, fetchWorkTimeEntries } from '@/store/workTimeSlice';
+import { createWorkTimeEntry, fetchWorkTimeEntries } from '@/store/workTimeSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
