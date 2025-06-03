@@ -277,9 +277,12 @@ const SiteDevWBS: React.FC = () => {
     mergedNodes: Array<{ from: string[]; to: string }>
   ) => {
     try {
+      const deletedSet = new Set<string>();
+
       // 削除処理
       for (const nodeId of deletedNodeIds) {
         await WBSService.deleteNode(nodeId);
+        deletedSet.add(nodeId);
       }
 
       // 統合処理
@@ -306,9 +309,12 @@ const SiteDevWBS: React.FC = () => {
             .join('\n')}`,
         });
 
-        // 統合元を削除
+        // 統合元を削除（既に削除済みのものはスキップ）
         for (const sourceId of merge.from) {
-          await WBSService.deleteNode(sourceId);
+          if (!deletedSet.has(sourceId)) {
+            await WBSService.deleteNode(sourceId);
+            deletedSet.add(sourceId);
+          }
         }
       }
 
