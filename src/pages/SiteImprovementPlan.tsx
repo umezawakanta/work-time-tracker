@@ -23,6 +23,12 @@ import {
   Palette,
   Database,
   Globe,
+  Play,
+  Timer,
+  Calendar,
+  Bell,
+  Users,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,10 +45,78 @@ interface ImprovementItem {
 }
 
 const SiteImprovementPlan: React.FC = () => {
-  const [selectedPhase, setSelectedPhase] = useState<'phase1' | 'phase2' | 'phase3'>('phase1');
+  const [selectedPhase, setSelectedPhase] = useState<'phase0' | 'phase1' | 'phase2' | 'phase3'>(
+    'phase0'
+  );
   const navigate = useNavigate();
 
   const improvements: Record<string, ImprovementItem[]> = {
+    phase0: [
+      {
+        id: 'realtime-clock',
+        title: 'リアルタイム打刻機能',
+        description: 'ワンクリック出勤・退勤、現在の勤務状態表示、自動時間計算、休憩時間管理',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 5,
+        progress: 0,
+      },
+      {
+        id: 'daily-summary',
+        title: '日次勤務状況の可視化',
+        description: '当日の出勤・退勤時間、実働時間と休憩時間の分離、残業時間の計算',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 3,
+        progress: 0,
+        dependencies: ['realtime-clock'],
+      },
+      {
+        id: 'monthly-timesheet',
+        title: '月次勤怠集計',
+        description: '月次総労働時間、残業時間集計、有給・欠勤管理、CSV/PDFエクスポート',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 4,
+        progress: 0,
+        dependencies: ['daily-summary'],
+      },
+      {
+        id: 'work-patterns',
+        title: '勤務パターン設定',
+        description: '標準勤務時間の設定、休憩時間の設定、残業の自動計算基準、労働時間上限設定',
+        status: 'planned',
+        priority: 'high',
+        category: 'feature',
+        estimatedDays: 3,
+        progress: 0,
+      },
+      {
+        id: 'alert-notifications',
+        title: 'アラート・通知機能',
+        description: '出勤打刻忘れアラート、退勤時間のリマインダー、残業時間の警告、労働時間通知',
+        status: 'planned',
+        priority: 'high',
+        category: 'feature',
+        estimatedDays: 3,
+        progress: 0,
+        dependencies: ['work-patterns'],
+      },
+      {
+        id: 'approval-workflow',
+        title: '承認ワークフロー',
+        description: '勤怠データの承認申請、管理者による承認・差し戻し、修正申請機能',
+        status: 'planned',
+        priority: 'medium',
+        category: 'feature',
+        estimatedDays: 7,
+        progress: 0,
+        dependencies: ['monthly-timesheet'],
+      },
+    ],
     phase1: [
       {
         id: 'ui-unification',
@@ -154,6 +228,12 @@ const SiteImprovementPlan: React.FC = () => {
       impact: 'high',
     },
     {
+      icon: <Timer className="h-5 w-5" />,
+      title: '勤怠管理機能が不完全',
+      description: '手動入力のみで、実用的な打刻・承認機能が不足',
+      impact: 'critical',
+    },
+    {
       icon: <Layers className="h-5 w-5" />,
       title: 'UIライブラリの混在',
       description: 'Material-UI、Radix UI、Tailwind CSS、shadcn-uiが混在し、統一性が欠如',
@@ -228,6 +308,11 @@ const SiteImprovementPlan: React.FC = () => {
   };
 
   const phaseData = {
+    phase0: {
+      title: 'Phase 0: MVP機能完成',
+      duration: '2-3週間',
+      description: '勤怠管理アプリとして必要最低限の機能を実装してリリース',
+    },
     phase1: {
       title: 'Phase 1: 基盤整備',
       duration: '1-2週間',
@@ -250,9 +335,20 @@ const SiteImprovementPlan: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">サイト改善計画</h1>
         <p className="text-muted-foreground">
-          Work Time Trackerの技術的負債を解消し、スケーラブルなアーキテクチャへ移行
+          Work Time
+          Trackerをまず実用的な勤怠管理アプリとして完成させ、その後技術的負債を解消してスケーラブルなアーキテクチャへ移行
         </p>
       </div>
+
+      {/* MVP重要性の説明 */}
+      <Alert className="mb-8 border-blue-200 bg-blue-50">
+        <Rocket className="h-4 w-4 text-blue-600" />
+        <AlertTitle className="text-blue-800">MVP（Minimum Viable Product）優先</AlertTitle>
+        <AlertDescription className="text-blue-700">
+          技術的改善の前に、まず勤怠管理アプリとしての基本機能を完成させてリリースすることを最優先とします。
+          実用的な価値を提供してからアーキテクチャの改善に取り組みます。
+        </AlertDescription>
+      </Alert>
 
       {/* 現状の問題点 */}
       <Card className="mb-8">
@@ -261,7 +357,7 @@ const SiteImprovementPlan: React.FC = () => {
             <AlertCircle className="h-5 w-5 text-orange-500" />
             現状の問題点
           </CardTitle>
-          <CardDescription>解決すべき技術的課題の一覧</CardDescription>
+          <CardDescription>解決すべき技術的課題と機能的課題の一覧</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
@@ -277,12 +373,19 @@ const SiteImprovementPlan: React.FC = () => {
                   <Badge
                     variant="outline"
                     className={`mt-2 text-xs ${
-                      problem.impact === 'high'
+                      problem.impact === 'critical'
                         ? 'border-red-200 text-red-700'
-                        : 'border-orange-200 text-orange-700'
+                        : problem.impact === 'high'
+                          ? 'border-red-200 text-red-700'
+                          : 'border-orange-200 text-orange-700'
                     }`}
                   >
-                    影響度: {problem.impact === 'high' ? '高' : '中'}
+                    影響度:{' '}
+                    {problem.impact === 'critical'
+                      ? '最重要'
+                      : problem.impact === 'high'
+                        ? '高'
+                        : '中'}
                   </Badge>
                 </div>
               </div>
@@ -335,11 +438,17 @@ const SiteImprovementPlan: React.FC = () => {
             <Zap className="h-5 w-5 text-blue-500" />
             段階的移行計画
           </CardTitle>
-          <CardDescription>3つのフェーズで段階的に改善を実施</CardDescription>
+          <CardDescription>4つのフェーズで段階的に改善を実施</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={selectedPhase} onValueChange={(v) => setSelectedPhase(v as any)}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="phase0" className="text-xs">
+                <div className="flex items-center gap-1">
+                  <Play className="h-3 w-3" />
+                  MVP
+                </div>
+              </TabsTrigger>
               <TabsTrigger value="phase1">Phase 1</TabsTrigger>
               <TabsTrigger value="phase2">Phase 2</TabsTrigger>
               <TabsTrigger value="phase3">Phase 3</TabsTrigger>
@@ -347,10 +456,12 @@ const SiteImprovementPlan: React.FC = () => {
 
             {Object.entries(phaseData).map(([phase, data]) => (
               <TabsContent key={phase} value={phase} className="space-y-4">
-                <Alert>
-                  <Clock className="h-4 w-4" />
-                  <AlertTitle>{data.title}</AlertTitle>
-                  <AlertDescription>
+                <Alert className={phase === 'phase0' ? 'border-green-200 bg-green-50' : ''}>
+                  <Clock className={`h-4 w-4 ${phase === 'phase0' ? 'text-green-600' : ''}`} />
+                  <AlertTitle className={phase === 'phase0' ? 'text-green-800' : ''}>
+                    {data.title}
+                  </AlertTitle>
+                  <AlertDescription className={phase === 'phase0' ? 'text-green-700' : ''}>
                     <p>{data.description}</p>
                     <p className="mt-1 font-semibold">推定期間: {data.duration}</p>
                   </AlertDescription>
@@ -409,12 +520,16 @@ const SiteImprovementPlan: React.FC = () => {
       </Card>
 
       {/* アクションボタン */}
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex justify-center gap-4">
         <Button
           size="lg"
-          className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
-          onClick={() => navigate('/improvement-plan/detail')}
+          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+          onClick={() => navigate('/improvement-plan/implementation')}
         >
+          <Play className="mr-2 h-4 w-4" />
+          MVP実装を開始
+        </Button>
+        <Button size="lg" variant="outline" onClick={() => navigate('/improvement-plan/detail')}>
           改善計画の詳細を見る
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
