@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Task, ImprovementItem } from '@/types/implementation';
 import { implementationService, ImplementationLog } from '@/services/implementationService';
 import { toast } from 'react-hot-toast';
@@ -26,33 +26,29 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addLog = async (
-    action: string,
-    details: string,
-    userId: string,
-    userName: string
-  ): Promise<boolean> => {
-    try {
-      const logData: ImplementationLog = {
-        id: `log-${Date.now()}`,
-        action,
-        details,
-        projectId: projectId || 'site-improvement-2024',
-        userId,
-        user: userName,
-        timestamp: new Date().toISOString(),
-      };
+  const addLog = useCallback(
+    async (action: string, details: string, userId: string, userName: string): Promise<boolean> => {
+      try {
+        const logData: ImplementationLog = {
+          id: `log-${Date.now()}`,
+          action,
+          details,
+          projectId: projectId || 'site-improvement-2024',
+          userId,
+          user: userName,
+          timestamp: new Date().toISOString(),
+        };
 
-      await implementationService.addLog(logData);
-
-      setLogs((prev) => [logData, ...prev]);
-
-      return true;
-    } catch (error) {
-      console.error('Add log error:', error);
-      return false;
-    }
-  };
+        await implementationService.addLog(logData);
+        setLogs((prev) => [logData, ...prev]);
+        return true;
+      } catch (error) {
+        console.error('Add log error:', error);
+        return false;
+      }
+    },
+    [projectId]
+  );
 
   const createTask = async (taskData: any): Promise<boolean> => {
     setIsLoading(true);
@@ -141,10 +137,18 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     }
   };
 
-  const refreshData = async (): Promise<void> => {
-    // TODO: 実際のデータ取得処理
-    console.log('Refreshing data for project:', projectId);
-  };
+  const refreshData = useCallback(async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      // TODO: 実際のデータ取得処理
+      console.log('Refreshing data for project:', projectId);
+    } catch (error) {
+      console.error('Refresh data error:', error);
+      setError('データの更新に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId]);
 
   const createTaskFromImprovement = async (item: ImprovementItem): Promise<boolean> => {
     const taskData = {
@@ -167,7 +171,7 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     return await createTask(taskData);
   };
 
-  const loadProject = async (projectId: string): Promise<boolean> => {
+  const loadProject = useCallback(async (projectId: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       // TODO: 実際のプロジェクトデータ取得
@@ -179,7 +183,14 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Load project data on mount
+  useEffect(() => {
+    if (projectId) {
+      loadProject(projectId);
+    }
+  }, [projectId, loadProject]);
 
   return {
     tasks,

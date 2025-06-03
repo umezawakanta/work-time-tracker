@@ -94,7 +94,7 @@ export default function App() {
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
                   <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
                   <Route
-                    path="/improvement-plan/implementation"
+                    path="/improvement-implementation/:projectId"
                     element={<ImprovementImplementation />}
                   />
                 </Route>

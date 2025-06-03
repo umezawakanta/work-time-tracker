@@ -68,6 +68,20 @@ const SiteImprovementPlan: React.FC = () => {
     refreshData,
   } = useImplementation(currentProjectId);
 
+  // Load project data on mount
+  useEffect(() => {
+    if (currentProjectId) {
+      loadProject(currentProjectId);
+    }
+  }, [currentProjectId, loadProject]);
+
+  // Refresh data when needed
+  useEffect(() => {
+    if (currentProjectId) {
+      refreshData();
+    }
+  }, [currentProjectId, refreshData]);
+
   // 改善項目データ
   const improvements: Record<string, ImprovementItem[]> = {
     phase0: [
@@ -335,10 +349,6 @@ const SiteImprovementPlan: React.FC = () => {
   };
 
   // ユーティリティ関数
-  useEffect(() => {
-    loadProject(currentProjectId);
-  }, [loadProject, currentProjectId]);
-
   function calculatePhaseProgress(phase: string): number {
     const phaseItems = improvements[phase] || [];
     if (phaseItems.length === 0) return 0;
