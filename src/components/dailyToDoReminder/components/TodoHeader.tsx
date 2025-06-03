@@ -163,7 +163,10 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
       <>
         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
           <div className="todo-header-info flex-1">
-            <StaticCardTitle />
+            <div className="flex items-center gap-2">
+              <StaticCardTitle />
+              {hasPremium && <PremiumBadge />}
+            </div>
             <StaticCardDescription />
             <StreakDisplay streakCount={streakCount} />
             {hasPremium && totalToday > 0 && <TodoHeaderMetrics {...metricsData} />}

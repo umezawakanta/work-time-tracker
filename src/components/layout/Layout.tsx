@@ -299,23 +299,23 @@ export default function Layout({ children }: LayoutProps) {
 
     const maxReconnectAttempts = 5;
     const reconnectDelay = 3000;
+    const isDevelopment = window.location.hostname === 'localhost';
 
-    // WebSocket接続関数 - 修正版
+    // WebSocket接続関数 - 開発環境でのみ有効
     const connectWebSocket = () => {
+      // 本番環境ではWebSocket接続をスキップ
+      if (!isDevelopment) {
+        console.log('[WebSocket] 本番環境ではWebSocket接続をスキップします');
+        return;
+      }
+
       // 既存の接続があればクローズ
       if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
         wsRef.current.close();
       }
 
       try {
-        let wsUrl = '';
-        const apiDomain = window.location.hostname;
-
-        if (apiDomain === 'localhost') {
-          wsUrl = 'ws://localhost:3001/notifications';
-        } else {
-          wsUrl = `wss://${apiDomain}/notifications`;
-        }
+        const wsUrl = 'ws://localhost:3001/notifications';
 
         console.log('[WebSocket] 接続試行:', wsUrl);
         wsRef.current = new WebSocket(wsUrl);
@@ -394,8 +394,8 @@ export default function Layout({ children }: LayoutProps) {
             `[WebSocket] 接続が閉じられました: コード=${event.code}, 理由=${event.reason || '理由なし'}`
           );
 
-          // 再接続を試みる
-          if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+          // 開発環境でのみ再接続を試みる
+          if (isDevelopment && reconnectAttemptsRef.current < maxReconnectAttempts) {
             reconnectAttemptsRef.current++;
             console.log(
               `[WebSocket] 再接続を試みます (${reconnectAttemptsRef.current}/${maxReconnectAttempts})...`
@@ -408,6 +408,8 @@ export default function Layout({ children }: LayoutProps) {
 
             const delay = reconnectDelay * Math.pow(1.5, reconnectAttemptsRef.current - 1);
             reconnectTimerRef.current = setTimeout(connectWebSocket, delay);
+          } else if (!isDevelopment) {
+            console.log('[WebSocket] 本番環境では再接続を行いません');
           } else {
             console.error('[WebSocket] 最大再接続試行回数に達しました');
           }
@@ -417,13 +419,18 @@ export default function Layout({ children }: LayoutProps) {
       }
     };
 
-    // WebSocket接続を開始
-    connectWebSocket();
+    // 開発環境でのみWebSocket接続を開始
+    if (isDevelopment) {
+      connectWebSocket();
+    } else {
+      console.log('[WebSocket] 本番環境ではHTTPポーリングのみを使用します');
+    }
 
-    // 定期的な通知更新（フォールバック）
+    // 定期的な通知更新（本番環境でのメイン手段、開発環境でのフォールバック）
+    const pollingInterval = isDevelopment ? 300000 : 30000; // 開発:5分、本番:30秒
     const intervalId = setInterval(() => {
       fetchNotifications().catch(handleApiError);
-    }, 300000); // 5分ごと
+    }, pollingInterval);
 
     // クリーンアップ関数
     return () => {
@@ -434,8 +441,8 @@ export default function Layout({ children }: LayoutProps) {
         clearTimeout(reconnectTimerRef.current);
       }
 
-      // WebSocket接続をクローズ
-      if (wsRef.current) {
+      // WebSocket接続をクローズ（開発環境でのみ）
+      if (wsRef.current && isDevelopment) {
         console.log('[WebSocket] 接続をクローズします');
         wsRef.current.close();
         wsRef.current = null;
