@@ -2,6 +2,7 @@ import { WBSNode } from '@/types/wbs';
 import { KnowledgeEntry } from '@/types/knowledge';
 import AdvancedAIService from './AdvancedAIService';
 import WBSService from '../wbs/WBSService';
+import KnowledgeService from '../knowledge/KnowledgeService';
 
 export interface TaskExecutionResult {
   success: boolean;
@@ -97,14 +98,26 @@ class TaskExecutionAIService {
     let aiResponse: string;
 
     try {
-      // First, add the missing method to AdvancedAIService (see below)
-      // For now, use a fallback
       if (!this.aiService.getCurrentProvider()) {
         // AIプロバイダーが設定されていない場合のフォールバック
         aiResponse = this.generateLocalResearchResponse(searchTerm);
       } else {
-        const prompt = `「${searchTerm}」について詳しく調査し...`;
-        // This method needs to be added to AdvancedAIService
+        const prompt = `「${searchTerm}」について詳しく調査し、以下の形式で回答してください：
+
+1. 定義・概要
+${searchTerm}の基本的な定義と概要を説明してください。
+
+2. 主な特徴
+${searchTerm}の重要な特徴や要素を箇条書きで説明してください。
+
+3. 重要性・メリット
+なぜ${searchTerm}が重要なのか、どのようなメリットがあるのかを説明してください。
+
+4. 実践例・使用方法
+${searchTerm}の具体的な実践例や使用方法を説明してください。
+
+5. 関連用語
+${searchTerm}に関連する重要な用語を3-5個挙げ`;
         aiResponse = await this.aiService.generateResponse(prompt);
       }
     } catch (error) {
