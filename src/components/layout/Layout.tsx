@@ -131,36 +131,78 @@ export default function Layout({ children }: LayoutProps) {
                 const subscriptionData = {
                   userId: user.id,
                   planId: 'free',
-                  status: 'active' as const, // const assertionを使用
+                  status: 'active' as const,
                   currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
                   cancelAtPeriodEnd: false,
                 };
 
                 console.log('作成するサブスクリプションデータ:', subscriptionData);
-                const createResponse =
-                  await userSubscriptionApi.createUserSubscription(subscriptionData);
-                console.log('サブスクリプション作成成功:', createResponse);
 
-                // プレミアムではない状態に設定
-                setIsPremium(false);
+                // ここで既存のサブスクリプションをチェック
+                try {
+                  // 既存のサブスクリプションがあるかどうかを再確認
+                  await userSubscriptionApi.getUserSubscription(user.id);
+
+                  // もし取得できた場合は、既に存在するのでプレミアムではない状態に設定
+                  console.log('サブスクリプション情報が既に存在します');
+                  setIsPremium(false);
+                } catch (secondError) {
+                  if (axios.isAxiosError(secondError) && secondError.response?.status === 404) {
+                    // 本当に存在しない場合は作成
+                    const createResponse =
+                      await userSubscriptionApi.createUserSubscription(subscriptionData);
+                    console.log('サブスクリプション作成成功:', createResponse);
+                    setIsPremium(false);
+                  } else {
+                    throw secondError;
+                  }
+                }
               } catch (unknownCreateError) {
                 // 型ガードを使用してAxiosErrorかどうかを確認
                 if (axios.isAxiosError(unknownCreateError)) {
-                  const createError = unknownCreateError; // 自動的にAxiosError型になる
+                  const createError = unknownCreateError;
                   console.error('サブスクリプション作成エラー:', createError);
 
                   // エラーメッセージをより詳細に表示
                   if (createError.response) {
                     console.error('エラーレスポンス:', createError.response.data);
+
+                    // 既に存在する場合のエラーハンドリング
+                    if (
+                      createError.response.status === 400 &&
+                      createError.response.data.message?.includes(
+                        '既にサブスクリプションに登録されています'
+                      )
+                    ) {
+                      console.log('ユーザーは既にサブスクリプションに登録済みです');
+                      // 既存のサブスクリプション情報を再取得
+                      try {
+                        const response = await userSubscriptionApi.getUserSubscription(user.id);
+                        const subscription = response.data;
+                        setIsPremium(
+                          subscription &&
+                            subscription.status === 'active' &&
+                            subscription.planId !== 'free'
+                        );
+                      } catch (refetchError) {
+                        console.error('サブスクリプション再取得エラー:', refetchError);
+                        setIsPremium(false);
+                      }
+                    } else {
+                      // その他の400エラー
+                      setIsPremium(false);
+                    }
+                  } else {
+                    setIsPremium(false);
                   }
                 } else {
                   // AxiosError以外のエラー
                   console.error('サブスクリプション作成エラー:', unknownCreateError);
+                  setIsPremium(false);
                 }
-
-                setIsPremium(false);
               }
             } else {
+              // 404以外のエラー
               console.error('サブスクリプション確認エラー:', error);
               if (error.response) {
                 console.error('エラーレスポンス:', error.response.data);
@@ -168,6 +210,9 @@ export default function Layout({ children }: LayoutProps) {
               setIsPremium(false);
             }
           }
+        } catch (error) {
+          console.error('チェック処理全体のエラー:', error);
+          setIsPremium(false);
         } finally {
           setIsSubscriptionChecking(false);
         }
