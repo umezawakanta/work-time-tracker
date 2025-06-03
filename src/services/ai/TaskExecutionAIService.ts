@@ -117,16 +117,26 @@ ${searchTerm}の重要な特徴や要素を箇条書きで説明してくださ�
 ${searchTerm}の具体的な実践例や使用方法を説明してください。
 
 5. 関連用語
-${searchTerm}に関連する重要な用語を3-5個挙げ`;
+${searchTerm}に関連する重要な用語を3-5個挙げて、簡潔に説明してください。`;
+
         aiResponse = await this.aiService.generateResponse(prompt);
       }
     } catch (error) {
+      console.error('AI調査エラー:', error);
       // エラー時のフォールバック
       aiResponse = this.generateLocalResearchResponse(searchTerm);
     }
 
     // レスポンスを解析して知識エントリーを作成
     const knowledgeEntries = this.parseResearchResponse(searchTerm, aiResponse, task.id);
+
+    // 知識エントリーをナレッジベースに保存
+    try {
+      await KnowledgeService.save(knowledgeEntries);
+      console.log('ナレッジエントリーを保存しました:', knowledgeEntries.length, '件');
+    } catch (error) {
+      console.error('ナレッジ保存エラー:', error);
+    }
 
     return {
       success: true,
@@ -137,9 +147,9 @@ ${searchTerm}に関連する重要な用語を3-5個挙げ`;
   }
 
   /**
-   * 調査対象の抽出
+   * 調査対象の抽出（公開メソッド）
    */
-  private extractSearchTerm(task: WBSNode): string {
+  public extractSearchTerm(task: WBSNode): string {
     const patterns = [/「(.+?)」/, /『(.+?)』/, /【(.+?)】/, /について|を理解|を調査|を研究/];
 
     for (const pattern of patterns) {
