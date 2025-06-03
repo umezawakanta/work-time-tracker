@@ -616,12 +616,12 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
               「{task?.name}」を削除してもよろしいですか？
               <br />
               この操作は取り消すことができません。
-              {task && task.level < 3 && (
-                <div className="mt-2 text-destructive">
-                  注意：このタスクに関連する子タスクも削除される可能性があります。
-                </div>
-              )}
             </AlertDialogDescription>
+            {task && task.level < 3 && (
+              <div className="mt-2 text-destructive text-sm">
+                注意：このタスクに関連する子タスクも削除される可能性があります。
+              </div>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>キャンセル</AlertDialogCancel>
