@@ -35,6 +35,7 @@ import ImpulseTrackerPage from './pages/ImpulseTrackerPage'; // 新しく追加
 import GuitarPracticePage from './pages/GuitarPracticePage';
 import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 import SiteImprovementPlan from './pages/SiteImprovementPlan';
+import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
 
 const theme = createTheme({
   palette: {
@@ -88,6 +89,7 @@ export default function App() {
                   <Route path="/impulse-tracker" element={<ImpulseTrackerPage />} />{' '}
                   {/* 新しく追加されたルート */}
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
+                  <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
                 </Route>
                 <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />

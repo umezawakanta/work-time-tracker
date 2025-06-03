@@ -24,6 +24,7 @@ import {
   Database,
   Globe,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ImprovementItem {
   id: string;
@@ -39,6 +40,7 @@ interface ImprovementItem {
 
 const SiteImprovementPlan: React.FC = () => {
   const [selectedPhase, setSelectedPhase] = useState<'phase1' | 'phase2' | 'phase3'>('phase1');
+  const navigate = useNavigate();
 
   const improvements: Record<string, ImprovementItem[]> = {
     phase1: [
@@ -411,6 +413,7 @@ const SiteImprovementPlan: React.FC = () => {
         <Button
           size="lg"
           className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
+          onClick={() => navigate('/improvement-plan/detail')}
         >
           改善計画の詳細を見る
           <ArrowRight className="ml-2 h-4 w-4" />
