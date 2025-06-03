@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Target,
   Package,
@@ -29,27 +37,37 @@ import {
   Bell,
   Users,
   FileSpreadsheet,
+  Settings,
+  Plus,
+  ExternalLink,
+  Activity,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface ImprovementItem {
-  id: string;
-  title: string;
-  description: string;
-  status: 'planned' | 'in-progress' | 'completed' | 'deferred';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  category: string;
-  estimatedDays?: number;
-  progress?: number;
-  dependencies?: string[];
-}
+import { toast } from 'react-hot-toast';
+import { ImprovementItem, PhaseData } from '@/types/implementation';
+import { useImplementation } from '@/hooks/useImplementation';
 
 const SiteImprovementPlan: React.FC = () => {
   const [selectedPhase, setSelectedPhase] = useState<'phase0' | 'phase1' | 'phase2' | 'phase3'>(
     'phase0'
   );
-  const navigate = useNavigate();
+  const [showImplementationDialog, setShowImplementationDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ImprovementItem | null>(null);
+  const [currentProjectId, setCurrentProjectId] = useState<string>('site-improvement-2024');
 
+  const navigate = useNavigate();
+  const {
+    tasks,
+    logs,
+    currentProject,
+    isLoading,
+    error,
+    createTaskFromImprovement,
+    loadProject,
+    refreshData,
+  } = useImplementation(currentProjectId);
+
+  // 改善項目データ
   const improvements: Record<string, ImprovementItem[]> = {
     phase0: [
       {
@@ -123,11 +141,11 @@ const SiteImprovementPlan: React.FC = () => {
         title: 'UIライブラリの統一',
         description:
           'Material-UI、Radix UI、shadcn-uiが混在している状態をshadcn-ui + Tailwind CSSに統一',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'high',
         category: 'architecture',
         estimatedDays: 7,
-        progress: 0,
+        progress: 25,
       },
       {
         id: 'remove-deps',
@@ -220,6 +238,7 @@ const SiteImprovementPlan: React.FC = () => {
     ],
   };
 
+  // 現状の問題点
   const currentProblems = [
     {
       icon: <Target className="h-5 w-5" />,
@@ -253,6 +272,7 @@ const SiteImprovementPlan: React.FC = () => {
     },
   ];
 
+  // 提案するアーキテクチャ
   const proposedArchitecture = [
     {
       name: 'Work Management Suite',
@@ -276,6 +296,68 @@ const SiteImprovementPlan: React.FC = () => {
       color: 'from-green-500 to-emerald-500',
     },
   ];
+
+  // フェーズデータ
+  const phaseData: Record<string, PhaseData> = {
+    phase0: {
+      id: 'phase0',
+      title: 'Phase 0: MVP機能完成',
+      duration: '2-3週間',
+      description: '勤怠管理アプリとして必要最低限の機能を実装してリリース',
+      status: 'in-progress',
+      progress: calculatePhaseProgress('phase0'),
+    },
+    phase1: {
+      id: 'phase1',
+      title: 'Phase 1: 基盤整備',
+      duration: '1-2週間',
+      description: 'UIライブラリの統一と不要な依存関係の削除',
+      status: 'not-started',
+      progress: calculatePhaseProgress('phase1'),
+    },
+    phase2: {
+      id: 'phase2',
+      title: 'Phase 2: 構造改善',
+      duration: '2-4週間',
+      description: 'フォルダ構造の再編成とテストの追加',
+      status: 'not-started',
+      progress: calculatePhaseProgress('phase2'),
+    },
+    phase3: {
+      id: 'phase3',
+      title: 'Phase 3: アーキテクチャ刷新',
+      duration: '1-2ヶ月',
+      description: 'モノレポ構造への移行と機能の分離',
+      status: 'not-started',
+      progress: calculatePhaseProgress('phase3'),
+    },
+  };
+
+  // ユーティリティ関数
+  useEffect(() => {
+    loadProject(currentProjectId);
+  }, [loadProject, currentProjectId]);
+
+  function calculatePhaseProgress(phase: string): number {
+    const phaseItems = improvements[phase] || [];
+    if (phaseItems.length === 0) return 0;
+
+    const totalProgress = phaseItems.reduce((sum, item) => sum + (item.progress || 0), 0);
+    return Math.round(totalProgress / phaseItems.length);
+  }
+
+  function hasImplementationTasks(itemId: string): boolean {
+    return tasks.some((task) => task.tags.includes(itemId) || task.title.includes(itemId));
+  }
+
+  const startImplementation = async (item: ImprovementItem) => {
+    const success = await createTaskFromImprovement(item);
+    if (success) {
+      setShowImplementationDialog(false);
+      item.status = 'in-progress';
+      refreshData();
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -305,29 +387,6 @@ const SiteImprovementPlan: React.FC = () => {
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  };
-
-  const phaseData = {
-    phase0: {
-      title: 'Phase 0: MVP機能完成',
-      duration: '2-3週間',
-      description: '勤怠管理アプリとして必要最低限の機能を実装してリリース',
-    },
-    phase1: {
-      title: 'Phase 1: 基盤整備',
-      duration: '1-2週間',
-      description: 'UIライブラリの統一と不要な依存関係の削除',
-    },
-    phase2: {
-      title: 'Phase 2: 構造改善',
-      duration: '2-4週間',
-      description: 'フォルダ構造の再編成とテストの追加',
-    },
-    phase3: {
-      title: 'Phase 3: アーキテクチャ刷新',
-      duration: '1-2ヶ月',
-      description: 'モノレポ構造への移行と機能の分離',
-    },
   };
 
   return (
