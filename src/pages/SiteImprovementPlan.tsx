@@ -54,6 +54,7 @@ const SiteImprovementPlan: React.FC = () => {
   const [showImplementationDialog, setShowImplementationDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ImprovementItem | null>(null);
   const [currentProjectId, setCurrentProjectId] = useState<string>('site-improvement-2024');
+  const [improvementStatuses, setImprovementStatuses] = useState<Record<string, string>>({});
 
   const navigate = useNavigate();
   const {
@@ -351,12 +352,31 @@ const SiteImprovementPlan: React.FC = () => {
   }
 
   const startImplementation = async (item: ImprovementItem) => {
-    const success = await createTaskFromImprovement(item);
-    if (success) {
-      setShowImplementationDialog(false);
-      item.status = 'in-progress';
-      refreshData();
+    setIsLoading(true);
+    try {
+      const success = await createTaskFromImprovement(item);
+      if (success) {
+        setShowImplementationDialog(false);
+        setImprovementStatuses((prev) => ({
+          ...prev,
+          [item.id]: 'in-progress',
+        }));
+        await refreshData();
+        toast.success(`「${item.title}」の実装タスクを作成しました`);
+
+        const shouldNavigate = window.confirm('実装タスクページに移動しますか？');
+        if (shouldNavigate) {
+          navigate(`/improvement-implementation/${currentProjectId}`);
+        }
+      }
+    } catch (error) {
+      console.error('Implementation start error:', error);
+      toast.error('実装タスクの作成に失敗しました');
     }
+  };
+
+  const getItemStatus = (item: ImprovementItem): string => {
+    return improvementStatuses[item.id] || item.status;
   };
 
   const getStatusIcon = (status: string) => {
@@ -535,7 +555,7 @@ const SiteImprovementPlan: React.FC = () => {
                     <Card key={item.id} className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-start gap-3">
-                          {getStatusIcon(item.status)}
+                          {getStatusIcon(getItemStatus(item))}
                           <div className="flex-1">
                             <h4 className="font-semibold text-sm">{item.title}</h4>
                             <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
@@ -548,7 +568,8 @@ const SiteImprovementPlan: React.FC = () => {
                             {item.priority === 'medium' && '中'}
                             {item.priority === 'low' && '低'}
                           </Badge>
-                          {hasImplementationTasks(item.id) ? (
+                          {hasImplementationTasks(item.id) ||
+                          getItemStatus(item) === 'in-progress' ? (
                             <Badge variant="outline" className="bg-green-100 text-green-800">
                               実装中
                             </Badge>
