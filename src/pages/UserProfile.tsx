@@ -13,12 +13,15 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
 import { promoteToAdmin } from '@/services/api/authApi';
+import { Badge } from '@/components/ui/badge';
+import { Crown, User as UserIcon } from 'lucide-react';
 
 export default function UserProfile() {
   const { user, fetchUser, updateProfile, setUser } = useAuth();
   const [formName, setFormName] = useState(user?.name || '');
   const [formEmail, setFormEmail] = useState(user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [isPromoting, setIsPromoting] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -61,12 +64,18 @@ export default function UserProfile() {
   };
 
   const handlePromoteToAdmin = async () => {
+    setIsPromoting(true);
     try {
       const response = await promoteToAdmin();
       setUser(response);
       toast.success('管理者権限を付与しました');
+      // 最新の情報を取得して状態を同期
+      await fetchUser();
     } catch (error) {
+      console.error('Admin promotion error:', error);
       toast.error('権限の付与に失敗しました');
+    } finally {
+      setIsPromoting(false);
     }
   };
 
@@ -86,11 +95,43 @@ export default function UserProfile() {
     <div className="container mx-auto px-4 py-8">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
-          <CardTitle>ユーザープロフィール</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            ユーザープロフィール
+            {user?.isAdmin && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Crown className="h-3 w-3" />
+                管理者
+              </Badge>
+            )}
+            {!user?.isAdmin && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <UserIcon className="h-3 w-3" />
+                一般ユーザー
+              </Badge>
+            )}
+          </CardTitle>
           <CardDescription>あなたの情報を表示・更新します</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            {/* 権限レベル表示 */}
+            <div className="space-y-2">
+              <Label>権限レベル</Label>
+              <div className="p-3 bg-muted rounded-md">
+                {user?.isAdmin ? (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Crown className="h-4 w-4" />
+                    <span className="font-medium">管理者権限</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <UserIcon className="h-4 w-4" />
+                    <span className="font-medium">一般ユーザー</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="name">名前</Label>
               <Input
@@ -113,13 +154,26 @@ export default function UserProfile() {
               />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-2">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? '更新中...' : '更新'}
             </Button>
-            <Button onClick={handlePromoteToAdmin} variant="destructive">
-              管理者権限を付与（開発用）
-            </Button>
+            {!user?.isAdmin && (
+              <Button
+                type="button"
+                onClick={handlePromoteToAdmin}
+                variant="destructive"
+                className="w-full"
+                disabled={isPromoting}
+              >
+                {isPromoting ? '権限付与中...' : '管理者権限を付与（開発用）'}
+              </Button>
+            )}
+            {user?.isAdmin && (
+              <div className="text-center text-sm text-green-600 font-medium">
+                ✓ 管理者権限が付与されています
+              </div>
+            )}
           </CardFooter>
         </form>
       </Card>
