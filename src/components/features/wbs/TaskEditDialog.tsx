@@ -824,81 +824,83 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
               <Bot className="h-5 w-5 text-blue-500" />
               AI実行の確認
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4">
-              <p>「{task?.name}」をAIで実行しますか？</p>
-
-              <div className="space-y-3">
-                <p className="text-sm font-medium">実行オプション:</p>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="research"
-                      checked={aiOptions.includeResearch}
-                      onCheckedChange={(checked) =>
-                        setAiOptions((prev) => ({ ...prev, includeResearch: checked as boolean }))
-                      }
-                    />
-                    <Label htmlFor="research" className="text-sm">
-                      詳細調査を含む
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="deliverables"
-                      checked={aiOptions.generateDeliverables}
-                      onCheckedChange={(checked) =>
-                        setAiOptions((prev) => ({
-                          ...prev,
-                          generateDeliverables: checked as boolean,
-                        }))
-                      }
-                    />
-                    <Label htmlFor="deliverables" className="text-sm">
-                      成果物を自動生成
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="progress"
-                      checked={aiOptions.updateProgress}
-                      onCheckedChange={(checked) =>
-                        setAiOptions((prev) => ({ ...prev, updateProgress: checked as boolean }))
-                      }
-                    />
-                    <Label htmlFor="progress" className="text-sm">
-                      進捗を100%に更新
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="complete"
-                      checked={aiOptions.autoComplete}
-                      onCheckedChange={(checked) =>
-                        setAiOptions((prev) => ({ ...prev, autoComplete: checked as boolean }))
-                      }
-                    />
-                    <Label htmlFor="complete" className="text-sm">
-                      自動的に完了状態にする
-                    </Label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
-                  <div className="text-sm text-yellow-800">
-                    <p className="font-medium">注意事項:</p>
-                    <ul className="list-disc list-inside mt-1 space-y-1">
-                      <li>AI実行には数分かかる場合があります</li>
-                      <li>実行結果は事前にプレビューできます</li>
-                      <li>必要に応じて手動で調整できます</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </AlertDialogDescription>
+            <AlertDialogDescription>「{task?.name}」をAIで実行しますか？</AlertDialogDescription>
           </AlertDialogHeader>
+
+          {/* Move complex content outside AlertDialogDescription */}
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <p className="text-sm font-medium">実行オプション:</p>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="research"
+                    checked={aiOptions.includeResearch}
+                    onCheckedChange={(checked) =>
+                      setAiOptions((prev) => ({ ...prev, includeResearch: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="research" className="text-sm">
+                    詳細調査を含む
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="deliverables"
+                    checked={aiOptions.generateDeliverables}
+                    onCheckedChange={(checked) =>
+                      setAiOptions((prev) => ({
+                        ...prev,
+                        generateDeliverables: checked as boolean,
+                      }))
+                    }
+                  />
+                  <Label htmlFor="deliverables" className="text-sm">
+                    成果物を自動生成
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="progress"
+                    checked={aiOptions.updateProgress}
+                    onCheckedChange={(checked) =>
+                      setAiOptions((prev) => ({ ...prev, updateProgress: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="progress" className="text-sm">
+                    進捗を100%に更新
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="complete"
+                    checked={aiOptions.autoComplete}
+                    onCheckedChange={(checked) =>
+                      setAiOptions((prev) => ({ ...prev, autoComplete: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="complete" className="text-sm">
+                    自動的に完了状態にする
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
+                <div className="text-sm text-yellow-800">
+                  <p className="font-medium">注意事項:</p>
+                  <div className="mt-1 space-y-1">
+                    <div>• AI実行には数分かかる場合があります</div>
+                    <div>• 実行結果は事前にプレビューできます</div>
+                    <div>• 必要に応じて手動で調整できます</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <AlertDialogFooter>
             <AlertDialogCancel>キャンセル</AlertDialogCancel>
             <AlertDialogAction onClick={handleAIExecute}>実行開始</AlertDialogAction>
