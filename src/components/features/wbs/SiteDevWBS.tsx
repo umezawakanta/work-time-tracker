@@ -14,6 +14,7 @@ import {
   Filter,
   Sparkles,
   Trash,
+  RefreshCw,
 } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
@@ -82,7 +83,7 @@ const SiteDevWBS: React.FC = () => {
       try {
         setLoading(true);
 
-        // MongoDBからノードを取得（ローカルストレージの処理を削除）
+        // MongoDBからノードを取得
         const nodes = await WBSService.getProjectNodes('site-dev-project');
 
         console.log('Total WBS nodes from MongoDB:', nodes.length);
@@ -97,15 +98,19 @@ const SiteDevWBS: React.FC = () => {
       }
     };
 
+    // 初回のみ実行
     fetchWBSNodes();
 
-    // ポーリング間隔を5秒に短縮
-    const interval = setInterval(fetchWBSNodes, 5000);
+    // ポーリングを削除または大幅に間隔を延長
+    // const interval = setInterval(fetchWBSNodes, 5000); // ← これを削除
+
+    // 必要に応じて長い間隔（例: 5分）でポーリング
+    const interval = setInterval(fetchWBSNodes, 300000); // 5分間隔
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, []); // 空の依存配列で初回のみ実行
 
   // ノードを更新する関数（エラーハンドリング強化）
   const handleNodeUpdate = async (nodeId: string, updates: Partial<WBSNode>) => {
@@ -365,6 +370,37 @@ const SiteDevWBS: React.FC = () => {
     }
   };
 
+  // 手動更新関数を追加
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const nodes = await WBSService.getProjectNodes('site-dev-project');
+      setWbsNodes(nodes);
+      toast.success('データを更新しました');
+    } catch (error) {
+      console.error('更新エラー:', error);
+      toast.error('データの更新に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // タスク保存後にデータを更新
+  const handleTaskSave = async (nodeId: string, updates: Partial<WBSNode>) => {
+    try {
+      await WBSService.updateNode(nodeId, updates);
+
+      // 保存後にデータを再取得
+      const nodes = await WBSService.getProjectNodes('site-dev-project');
+      setWbsNodes(nodes);
+
+      toast.success('タスクが更新されました');
+    } catch (error) {
+      console.error('更新エラー:', error);
+      toast.error('タスクの更新に失敗しました');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -388,6 +424,12 @@ const SiteDevWBS: React.FC = () => {
         </div>
 
         <div className="flex gap-2">
+          {/* 手動更新ボタンを追加 */}
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            更新
+          </Button>
+
           {/* AI整理ボタンを追加 */}
           <Button variant="outline" size="sm" onClick={() => setCleanupDialogOpen(true)}>
             <Sparkles className="h-4 w-4 mr-2" />
@@ -841,9 +883,9 @@ const SiteDevWBS: React.FC = () => {
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         task={editingTask}
-        onSave={handleNodeUpdate}
+        onSave={handleTaskSave}
         onDelete={handleDeleteTask}
-        onAIAnalyze={handleAIAnalyzeTask}
+        onAIAnalyze={setAIAnalysisTask}
       />
 
       {/* AI分析ダイアログ */}
