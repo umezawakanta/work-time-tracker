@@ -1,56 +1,74 @@
-import React, { useState, useEffect } from 'react'
-import { useAuth } from '@/context/useAuth'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from 'react-hot-toast'
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/context/useAuth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
+import { promoteToAdmin } from '@/services/api/authApi';
 
 export default function UserProfile() {
-  const { user, fetchUser, updateProfile } = useAuth()
-  const [formName, setFormName] = useState(user?.name || '')
-  const [formEmail, setFormEmail] = useState(user?.email || '')
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, fetchUser, updateProfile } = useAuth();
+  const [formName, setFormName] = useState(user?.name || '');
+  const [formEmail, setFormEmail] = useState(user?.email || '');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        await fetchUser()
+        await fetchUser();
       } catch (error) {
-        console.error('Error fetching user data:', error)
-        toast.error('ユーザー情報の取得に失敗しました')
+        console.error('Error fetching user data:', error);
+        toast.error('ユーザー情報の取得に失敗しました');
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
     if (!user) {
-      loadUserData()
+      loadUserData();
     }
-  }, [fetchUser, user])
+  }, [fetchUser, user]);
 
   useEffect(() => {
     if (user) {
-      setFormName(user.name || '')
-      setFormEmail(user.email || '')
+      setFormName(user.name || '');
+      setFormEmail(user.email || '');
     }
-  }, [user])
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      await updateProfile({ name: formName, email: formEmail })
-      toast.success('プロフィールが更新されました')
-      await fetchUser() // プロフィール更新後に最新のユーザー情報を取得
+      await updateProfile({ name: formName, email: formEmail });
+      toast.success('プロフィールが更新されました');
+      await fetchUser(); // プロフィール更新後に最新のユーザー情報を取得
     } catch (error) {
-      console.error('Profile update error:', error)
-      toast.error('プロフィールの更新に失敗しました')
+      console.error('Profile update error:', error);
+      toast.error('プロフィールの更新に失敗しました');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handlePromoteToAdmin = async () => {
+    try {
+      const updatedUser = await promoteToAdmin();
+      setUser(updatedUser);
+      toast.success('管理者権限を付与しました');
+    } catch (error) {
+      toast.error('権限の付与に失敗しました');
+    }
+  };
 
   if (isLoading && !user) {
     return (
@@ -61,7 +79,7 @@ export default function UserProfile() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -99,9 +117,12 @@ export default function UserProfile() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? '更新中...' : '更新'}
             </Button>
+            <Button onClick={handlePromoteToAdmin} variant="destructive">
+              管理者権限を付与（開発用）
+            </Button>
           </CardFooter>
         </form>
       </Card>
     </div>
-  )
+  );
 }

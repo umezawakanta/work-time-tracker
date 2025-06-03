@@ -22,6 +22,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUser = useCallback(async () => {
     try {
       const userData = await fetchUserData();
+
+      // 環境変数で指定されたメールアドレスのユーザーを管理者にする
+      const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+      if (adminEmails.includes(userData.email)) {
+        userData.isAdmin = true;
+      }
+
       setUser(userData);
     } catch (error) {
       console.error('Failed to fetch user data:', error);
@@ -66,14 +73,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     setUser,
     fetchUser,
-    updateProfile
+    updateProfile,
   };
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;
