@@ -12,6 +12,7 @@ import {
   Edit,
   Brain,
   Filter,
+  Sparkles,
 } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
@@ -36,6 +37,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import WBSCleanupDialog from './WBSCleanupDialog';
 
 // フィルター設定の型定義
 interface FilterSettings {
@@ -46,6 +48,13 @@ interface FilterSettings {
   phase: string | null;
 }
 
+// Add this type definition near the top of the file after the imports
+type OptimizationType =
+  | { type: 'schedule'; startDate: string; endDate: string }
+  | { type: 'resource'; estimatedHours: number; assignees: string[] }
+  | { type: 'risk'; newRisk: any }
+  | { type: 'optimization'; title: string; impact: string };
+
 const SiteDevWBS: React.FC = () => {
   const [viewMode, setViewMode] = useState<'gantt' | 'tree' | 'ai'>('gantt');
   const [selectedNode, setSelectedNode] = useState<WBSNode | null>(null);
@@ -54,6 +63,7 @@ const SiteDevWBS: React.FC = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<WBSNode | null>(null);
   const [aiAnalysisTask, setAIAnalysisTask] = useState<WBSNode | null>(null);
+  const [cleanupDialogOpen, setCleanupDialogOpen] = useState(false);
 
   // フィルター設定の状態
   const [filterSettings, setFilterSettings] = useState<FilterSettings>({
@@ -261,6 +271,58 @@ const SiteDevWBS: React.FC = () => {
       color: phase.color || '#6b7280',
     }));
 
+  // クリーンアップ完了時の処理
+  const handleCleanupComplete = async (
+    deletedNodeIds: string[],
+    mergedNodes: Array<{ from: string[]; to: string }>
+  ) => {
+    try {
+      // 削除処理
+      for (const nodeId of deletedNodeIds) {
+        await WBSService.deleteNode(nodeId);
+      }
+
+      // 統合処理
+      for (const merge of mergedNodes) {
+        const targetNode = wbsNodes.find((n) => n.id === merge.to);
+        if (!targetNode) continue;
+
+        // 統合元のタスクの情報を統合先に追加
+        const sourceNodes = wbsNodes.filter((n) => merge.from.includes(n.id));
+        const additionalHours = sourceNodes.reduce((sum, n) => sum + n.estimatedHours, 0);
+        const additionalBudget = sourceNodes.reduce((sum, n) => sum + n.budget, 0);
+        const allDeliverables = [
+          ...targetNode.deliverables,
+          ...sourceNodes.flatMap((n) => n.deliverables),
+        ].filter((v, i, a) => a.indexOf(v) === i); // 重複を除去
+
+        // 統合先を更新
+        await WBSService.updateNode(merge.to, {
+          estimatedHours: targetNode.estimatedHours + additionalHours,
+          budget: targetNode.budget + additionalBudget,
+          deliverables: allDeliverables,
+          description: `${targetNode.description}\n\n統合されたタスク:\n${sourceNodes
+            .map((n) => `- ${n.name}`)
+            .join('\n')}`,
+        });
+
+        // 統合元を削除
+        for (const sourceId of merge.from) {
+          await WBSService.deleteNode(sourceId);
+        }
+      }
+
+      // WBSノードリストを再取得
+      const nodes = await WBSService.getProjectNodes('site-dev-project');
+      setWbsNodes(nodes);
+
+      toast.success('WBSの整理が完了しました');
+    } catch (error) {
+      console.error('クリーンアップエラー:', error);
+      toast.error('一部の処理に失敗しました');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -283,161 +345,170 @@ const SiteDevWBS: React.FC = () => {
           </p>
         </div>
 
-        {/* フィルターボタン */}
-        <Popover open={showFilters} onOpenChange={setShowFilters}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              フィルター
-              {(filterSettings.status.length > 0 ||
-                filterSettings.level !== null ||
-                filterSettings.progressRange[0] > 0 ||
-                filterSettings.progressRange[1] < 100 ||
-                filterSettings.hasRisks !== null ||
-                filterSettings.phase !== null) && (
-                <Badge variant="secondary" className="ml-2">
-                  適用中
-                </Badge>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="space-y-4">
-              <div className="font-medium">フィルター設定</div>
+        <div className="flex gap-2">
+          {/* AI整理ボタンを追加 */}
+          <Button variant="outline" size="sm" onClick={() => setCleanupDialogOpen(true)}>
+            <Sparkles className="h-4 w-4 mr-2" />
+            AI整理
+          </Button>
 
-              {/* ステータスフィルター */}
-              <div className="space-y-2">
-                <Label>ステータス</Label>
-                <div className="flex flex-wrap gap-2">
-                  {['not-started', 'in-progress', 'completed', 'delayed', 'cancelled'].map(
-                    (status) => (
-                      <Badge
-                        key={status}
-                        variant={filterSettings.status.includes(status) ? 'default' : 'outline'}
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setFilterSettings((prev) => ({
-                            ...prev,
-                            status: prev.status.includes(status)
-                              ? prev.status.filter((s) => s !== status)
-                              : [...prev.status, status],
-                          }));
-                        }}
-                      >
-                        {status === 'not-started' && '未着手'}
-                        {status === 'in-progress' && '進行中'}
-                        {status === 'completed' && '完了'}
-                        {status === 'delayed' && '遅延'}
-                        {status === 'cancelled' && 'キャンセル'}
-                      </Badge>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* レベルフィルター */}
-              <div className="space-y-2">
-                <Label>階層レベル</Label>
-                <Select
-                  value={filterSettings.level?.toString() ?? 'all'}
-                  onValueChange={(value) => {
-                    setFilterSettings((prev) => ({
-                      ...prev,
-                      level: value === 'all' ? null : parseInt(value),
-                    }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">すべて</SelectItem>
-                    <SelectItem value="0">フェーズ</SelectItem>
-                    <SelectItem value="1">レベル1</SelectItem>
-                    <SelectItem value="2">レベル2</SelectItem>
-                    <SelectItem value="3">レベル3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 進捗フィルター */}
-              <div className="space-y-2">
-                <Label>
-                  進捗範囲: {filterSettings.progressRange[0]}% - {filterSettings.progressRange[1]}%
-                </Label>
-                <Slider
-                  value={filterSettings.progressRange}
-                  onValueChange={(value) => {
-                    setFilterSettings((prev) => ({
-                      ...prev,
-                      progressRange: value as [number, number],
-                    }));
-                  }}
-                  max={100}
-                  step={10}
-                />
-              </div>
-
-              {/* リスクフィルター */}
-              <div className="flex items-center justify-between">
-                <Label>リスクのあるタスクのみ</Label>
-                <Switch
-                  checked={filterSettings.hasRisks === true}
-                  onCheckedChange={(checked) => {
-                    setFilterSettings((prev) => ({
-                      ...prev,
-                      hasRisks: checked ? true : prev.hasRisks === true ? null : true,
-                    }));
-                  }}
-                />
-              </div>
-
-              {/* フェーズフィルター */}
-              <div className="space-y-2">
-                <Label>フェーズ</Label>
-                <Select
-                  value={filterSettings.phase ?? 'all'}
-                  onValueChange={(value) => {
-                    setFilterSettings((prev) => ({
-                      ...prev,
-                      phase: value === 'all' ? null : value,
-                    }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">すべて</SelectItem>
-                    {phaseProgress.map((phase) => (
-                      <SelectItem key={phase.id} value={phase.id}>
-                        {phase.name.split(':')[1]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* リセットボタン */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  setFilterSettings({
-                    status: [],
-                    level: null,
-                    progressRange: [0, 100],
-                    hasRisks: null,
-                    phase: null,
-                  });
-                }}
-              >
-                フィルターをリセット
+          {/* 既存のフィルターボタン */}
+          <Popover open={showFilters} onOpenChange={setShowFilters}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="h-4 w-4 mr-2" />
+                フィルター
+                {(filterSettings.status.length > 0 ||
+                  filterSettings.level !== null ||
+                  filterSettings.progressRange[0] > 0 ||
+                  filterSettings.progressRange[1] < 100 ||
+                  filterSettings.hasRisks !== null ||
+                  filterSettings.phase !== null) && (
+                  <Badge variant="secondary" className="ml-2">
+                    適用中
+                  </Badge>
+                )}
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div className="font-medium">フィルター設定</div>
+
+                {/* ステータスフィルター */}
+                <div className="space-y-2">
+                  <Label>ステータス</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {['not-started', 'in-progress', 'completed', 'delayed', 'cancelled'].map(
+                      (status) => (
+                        <Badge
+                          key={status}
+                          variant={filterSettings.status.includes(status) ? 'default' : 'outline'}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setFilterSettings((prev) => ({
+                              ...prev,
+                              status: prev.status.includes(status)
+                                ? prev.status.filter((s) => s !== status)
+                                : [...prev.status, status],
+                            }));
+                          }}
+                        >
+                          {status === 'not-started' && '未着手'}
+                          {status === 'in-progress' && '進行中'}
+                          {status === 'completed' && '完了'}
+                          {status === 'delayed' && '遅延'}
+                          {status === 'cancelled' && 'キャンセル'}
+                        </Badge>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* レベルフィルター */}
+                <div className="space-y-2">
+                  <Label>階層レベル</Label>
+                  <Select
+                    value={filterSettings.level?.toString() ?? 'all'}
+                    onValueChange={(value) => {
+                      setFilterSettings((prev) => ({
+                        ...prev,
+                        level: value === 'all' ? null : parseInt(value),
+                      }));
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">すべて</SelectItem>
+                      <SelectItem value="0">フェーズ</SelectItem>
+                      <SelectItem value="1">レベル1</SelectItem>
+                      <SelectItem value="2">レベル2</SelectItem>
+                      <SelectItem value="3">レベル3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* 進捗フィルター */}
+                <div className="space-y-2">
+                  <Label>
+                    進捗範囲: {filterSettings.progressRange[0]}% - {filterSettings.progressRange[1]}
+                    %
+                  </Label>
+                  <Slider
+                    value={filterSettings.progressRange}
+                    onValueChange={(value) => {
+                      setFilterSettings((prev) => ({
+                        ...prev,
+                        progressRange: value as [number, number],
+                      }));
+                    }}
+                    max={100}
+                    step={10}
+                  />
+                </div>
+
+                {/* リスクフィルター */}
+                <div className="flex items-center justify-between">
+                  <Label>リスクのあるタスクのみ</Label>
+                  <Switch
+                    checked={filterSettings.hasRisks === true}
+                    onCheckedChange={(checked) => {
+                      setFilterSettings((prev) => ({
+                        ...prev,
+                        hasRisks: checked ? true : prev.hasRisks === true ? null : true,
+                      }));
+                    }}
+                  />
+                </div>
+
+                {/* フェーズフィルター */}
+                <div className="space-y-2">
+                  <Label>フェーズ</Label>
+                  <Select
+                    value={filterSettings.phase ?? 'all'}
+                    onValueChange={(value) => {
+                      setFilterSettings((prev) => ({
+                        ...prev,
+                        phase: value === 'all' ? null : value,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">すべて</SelectItem>
+                      {phaseProgress.map((phase) => (
+                        <SelectItem key={phase.id} value={phase.id}>
+                          {phase.name.split(':')[1]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* リセットボタン */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setFilterSettings({
+                      status: [],
+                      level: null,
+                      progressRange: [0, 100],
+                      hasRisks: null,
+                      phase: null,
+                    });
+                  }}
+                >
+                  フィルターをリセット
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* 全体進捗 */}
@@ -600,7 +671,7 @@ const SiteDevWBS: React.FC = () => {
           <WBSAIAnalysis
             nodes={filteredNodes}
             selectedNode={selectedNode}
-            onOptimizationApply={async (nodeId: string, optimization: any) => {
+            onOptimizationApply={async (nodeId: string, optimization: OptimizationType) => {
               console.log('最適化を適用:', nodeId, optimization);
               // 最適化の適用ロジックを実装
               try {
@@ -730,6 +801,14 @@ const SiteDevWBS: React.FC = () => {
           onSubtasksCreated={handleSubtasksCreated}
         />
       )}
+
+      {/* WBS整理ダイアログ */}
+      <WBSCleanupDialog
+        open={cleanupDialogOpen}
+        onOpenChange={setCleanupDialogOpen}
+        nodes={wbsNodes}
+        onCleanupComplete={handleCleanupComplete}
+      />
     </div>
   );
 };

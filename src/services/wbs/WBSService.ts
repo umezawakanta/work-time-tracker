@@ -77,11 +77,27 @@ class WBSService {
     if (!response.ok) throw new Error('Failed to update WBS node');
   }
 
+  /**
+   * ノードを削除
+   */
   async deleteNode(nodeId: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${nodeId}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) throw new Error('Failed to delete WBS node');
+    try {
+      const response = await fetch(`${this.baseUrl}/${nodeId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete node: ${response.statusText}`);
+      }
+
+      console.log('Node deleted successfully:', nodeId);
+    } catch (error) {
+      console.error('Error deleting node:', error);
+      throw error;
+    }
   }
 
   // リアルタイム監視（ポーリング）
