@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -123,9 +123,12 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
     autoComplete: false,
   });
 
-  // タスクが変更されたらフォームデータを更新
+  const { toast } = useToast();
+
+  // タスクが変更されたらフォームデータを更新（最適化）
   useEffect(() => {
-    if (task) {
+    if (task && open) {
+      // openの時のみ実行
       setFormData({
         name: task.name,
         description: task.description,
@@ -143,41 +146,57 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
         icon: task.icon,
       });
     }
-  }, [task]);
+  }, [task?.id, open]); // task全体ではなくidのみ監視
 
-  // タスクが変更されたらAI実行可能かチェック
+  // AI実行可能チェック（最適化）
   useEffect(() => {
+    let isMounted = true;
+
     const checkAIExecutability = async () => {
-      if (task) {
-        const canExecute = await TaskExecutionAIService.canExecuteTask(task);
-        setCanExecuteWithAI(canExecute);
+      if (task && open && isMounted) {
+        try {
+          const canExecute = await TaskExecutionAIService.canExecuteTask(task);
+          if (isMounted) {
+            setCanExecuteWithAI(canExecute);
+          }
+        } catch (error) {
+          console.error('AI実行可能性チェックエラー:', error);
+        }
       }
     };
+
     checkAIExecutability();
-  }, [task]);
 
-  // フォームフィールドの更新
-  const updateField = (field: keyof WBSNode, value: any) => {
+    return () => {
+      isMounted = false;
+    };
+  }, [task?.id, open]); // task全体ではなくidのみ監視
+
+  // フォームフィールドの更新（メモ化）
+  const updateField = useCallback((field: keyof WBSNode, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
-  // 成果物の追加
-  const addDeliverable = () => {
+  // 成果物の追加（メモ化）
+  const addDeliverable = useCallback(() => {
     if (newDeliverable.trim()) {
       updateField('deliverables', [...(formData.deliverables || []), newDeliverable.trim()]);
       setNewDeliverable('');
     }
-  };
+  }, [newDeliverable, formData.deliverables, updateField]);
 
-  // 成果物の削除
-  const removeDeliverable = (index: number) => {
-    const updated = [...(formData.deliverables || [])];
-    updated.splice(index, 1);
-    updateField('deliverables', updated);
-  };
+  // 成果物の削除（メモ化）
+  const removeDeliverable = useCallback(
+    (index: number) => {
+      const updated = [...(formData.deliverables || [])];
+      updated.splice(index, 1);
+      updateField('deliverables', updated);
+    },
+    [formData.deliverables, updateField]
+  );
 
-  // リスクの追加
-  const addRisk = () => {
+  // リスクの追加（メモ化）
+  const addRisk = useCallback(() => {
     if (newRisk.description?.trim()) {
       const risk: WBSRisk = {
         id: `risk-${Date.now()}`,
@@ -196,16 +215,19 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
         owner: '',
       });
     }
-  };
+  }, [newRisk, formData.risks, updateField]);
 
-  // リスクの削除
-  const removeRisk = (riskId: string) => {
-    const updated = (formData.risks || []).filter((r) => r.id !== riskId);
-    updateField('risks', updated);
-  };
+  // リスクの削除（メモ化）
+  const removeRisk = useCallback(
+    (riskId: string) => {
+      const updated = (formData.risks || []).filter((r) => r.id !== riskId);
+      updateField('risks', updated);
+    },
+    [formData.risks, updateField]
+  );
 
-  // 保存処理
-  const handleSave = async () => {
+  // 保存処理（メモ化）
+  const handleSave = useCallback(async () => {
     if (!task) return;
 
     setSaving(true);
@@ -214,18 +236,24 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       onOpenChange(false);
     } catch (error) {
       console.error('保存エラー:', error);
+      toast({
+        variant: 'destructive',
+        title: '保存エラー',
+        description: '保存中にエラーが発生しました。',
+        duration: 5000,
+      });
     } finally {
       setSaving(false);
     }
-  };
+  }, [task, formData, onSave, onOpenChange, toast]);
 
-  // AI実行確認処理
-  const handleAIExecuteConfirm = () => {
+  // AI実行確認処理（メモ化）
+  const handleAIExecuteConfirm = useCallback(() => {
     setShowAIConfirm(true);
-  };
+  }, []);
 
-  // AI実行メイン処理（改善版）
-  const handleAIExecute = async () => {
+  // AI実行メイン処理（メモ化）
+  const handleAIExecute = useCallback(async () => {
     if (!task) return;
 
     setShowAIConfirm(false);
@@ -244,7 +272,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       setAiCurrentStep('タスクを分析中...');
       setAiProgress(20);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 実際の処理をシミュレート
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (abortControllerRef.current?.signal.aborted) {
         throw new Error('実行がキャンセルされました');
@@ -265,21 +293,18 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       setAiProgress(80);
 
       if (result.success) {
-        // AI実行結果を詳細に処理
         const enhancedResult = await processAIResult(result, task);
         setAiResult(enhancedResult);
 
         setAiCurrentStep('完了');
         setAiProgress(100);
 
-        // 成功トースト
         toast({
           title: 'AI実行完了',
           description: `「${task.name}」のAI実行が正常に完了しました。`,
           duration: 5000,
         });
 
-        // 結果プレビューを表示
         setShowAIProgress(false);
         setShowAIResult(true);
       } else {
@@ -287,10 +312,8 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       }
     } catch (error: any) {
       console.error('AI実行エラー:', error);
-
       setShowAIProgress(false);
 
-      // エラートースト
       toast({
         variant: 'destructive',
         title: 'AI実行エラー',
@@ -302,39 +325,41 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       setAiExecutionId(null);
       abortControllerRef.current = null;
     }
-  };
+  }, [task, aiOptions, formData, toast]);
 
-  // AI実行結果の処理
-  const processAIResult = async (result: any, task: WBSNode) => {
-    const enhancements: any = {
-      originalResult: result,
-      suggestedUpdates: {},
-      confidence: 0.85,
-      timestamp: new Date().toISOString(),
-    };
+  // AI実行結果の処理（メモ化）
+  const processAIResult = useCallback(
+    async (result: any, task: WBSNode) => {
+      const enhancements: any = {
+        originalResult: result,
+        suggestedUpdates: {},
+        confidence: 0.85,
+        timestamp: new Date().toISOString(),
+      };
 
-    // オプションに基づいて更新内容を決定
-    if (aiOptions.generateDeliverables && result.knowledgeEntries) {
-      enhancements.suggestedUpdates.deliverables = [
-        ...(formData.deliverables || []),
-        ...result.knowledgeEntries.map((entry: any) => `AI生成: ${entry.term}`),
-      ];
-    }
+      if (aiOptions.generateDeliverables && result.knowledgeEntries) {
+        enhancements.suggestedUpdates.deliverables = [
+          ...(formData.deliverables || []),
+          ...result.knowledgeEntries.map((entry: any) => `AI生成: ${entry.term}`),
+        ];
+      }
 
-    if (aiOptions.updateProgress) {
-      enhancements.suggestedUpdates.progress = 100;
-      enhancements.suggestedUpdates.status = 'completed';
-    }
+      if (aiOptions.updateProgress) {
+        enhancements.suggestedUpdates.progress = 100;
+        enhancements.suggestedUpdates.status = 'completed';
+      }
 
-    if (aiOptions.autoComplete) {
-      enhancements.suggestedUpdates.actualHours = formData.estimatedHours || 1;
-    }
+      if (aiOptions.autoComplete) {
+        enhancements.suggestedUpdates.actualHours = formData.estimatedHours || 1;
+      }
 
-    return enhancements;
-  };
+      return enhancements;
+    },
+    [aiOptions, formData.deliverables, formData.estimatedHours]
+  );
 
-  // AI実行のキャンセル
-  const handleAICancel = () => {
+  // AI実行のキャンセル（メモ化）
+  const handleAICancel = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       setShowAIProgress(false);
@@ -346,10 +371,10 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
         duration: 3000,
       });
     }
-  };
+  }, [toast]);
 
-  // AI実行結果の適用
-  const handleApplyAIResult = async () => {
+  // AI実行結果の適用（メモ化）
+  const handleApplyAIResult = useCallback(async () => {
     if (!task || !aiResult?.suggestedUpdates) return;
 
     try {
@@ -371,18 +396,18 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
         duration: 5000,
       });
     }
-  };
+  }, [task, aiResult, onSave, onOpenChange, toast]);
 
-  // AI分析を開く
-  const handleAIAnalyze = () => {
+  // AI分析を開く（メモ化）
+  const handleAIAnalyze = useCallback(() => {
     if (task && onAIAnalyze) {
       onAIAnalyze(task);
       onOpenChange(false);
     }
-  };
+  }, [task, onAIAnalyze, onOpenChange]);
 
-  // 削除処理
-  const handleDelete = async () => {
+  // 削除処理（メモ化）
+  const handleDelete = useCallback(async () => {
     if (!task || !onDelete) return;
 
     setDeleting(true);
@@ -392,14 +417,39 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       onOpenChange(false);
     } catch (error) {
       console.error('削除エラー:', error);
-      // エラー処理
+      toast({
+        variant: 'destructive',
+        title: '削除エラー',
+        description: '削除中にエラーが発生しました。',
+        duration: 5000,
+      });
     } finally {
       setDeleting(false);
     }
-  };
+  }, [task, onDelete, onOpenChange, toast]);
 
-  const { toast } = useToast();
+  // ダイアログを閉じる際のクリーンアップ
+  useEffect(() => {
+    if (!open) {
+      // ダイアログが閉じられた時のクリーンアップ
+      setActiveTab('basic');
+      setShowAIConfirm(false);
+      setShowAIProgress(false);
+      setShowAIResult(false);
+      setExecutingAI(false);
+      setAiProgress(0);
+      setAiCurrentStep('');
+      setAiResult(null);
 
+      // AI実行をキャンセル
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    }
+  }, [open]);
+
+  // メモ化されたコンポーネントの条件付きレンダリング
   if (!task) return null;
 
   return (
@@ -1026,4 +1076,14 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   );
 };
 
-export default TaskEditDialog;
+// React.memoでコンポーネント全体をメモ化
+export default React.memo(TaskEditDialog, (prevProps, nextProps) => {
+  // 必要なプロパティのみを比較
+  return (
+    prevProps.open === nextProps.open &&
+    prevProps.task?.id === nextProps.task?.id &&
+    prevProps.task?.name === nextProps.task?.name &&
+    prevProps.task?.status === nextProps.task?.status &&
+    prevProps.task?.progress === nextProps.task?.progress
+  );
+});
