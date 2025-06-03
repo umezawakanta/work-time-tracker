@@ -52,13 +52,21 @@ import {
   CheckSquare,
   Info,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Task, SuggestedTask, TeamMember } from '@/types/implementation';
 import { useImplementation } from '@/hooks/useImplementation';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
+import { useAuth } from '@/hooks/useAuth';
+import { useResources } from '@/hooks/useResources';
+import AdvancedAIService from '@/services/ai/AdvancedAIService';
+import { githubService } from '@/services/githubService';
 
 const ImprovementImplementation: React.FC = () => {
   const navigate = useNavigate();
+  const { projectId } = useParams<{ projectId: string }>();
+  const { user } = useAuth();
+
   const [activePhase, setActivePhase] = useState('phase1');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newNote, setNewNote] = useState('');
@@ -74,8 +82,8 @@ const ImprovementImplementation: React.FC = () => {
     assignee: '',
   });
 
-  // プロジェクトIDを設定（実際の実装では動的に取得）
-  const currentProjectId = 'site-improvement-2024';
+  // 動的にプロジェクトIDを取得
+  const currentProjectId = projectId || 'site-improvement-2024';
 
   // カスタムフックを使用
   const {
@@ -91,68 +99,29 @@ const ImprovementImplementation: React.FC = () => {
     refreshData,
   } = useImplementation(currentProjectId);
 
-  // チームメンバー（実際の実装では、プロジェクトから取得またはユーザー管理から取得）
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    {
-      id: 'user1',
-      name: '田中 太郎',
-      email: 'tanaka@example.com',
-      avatar: '',
-      role: 'フロントエンド',
-      skills: ['React', 'TypeScript', 'UI/UX'],
-      availability: 'available',
-      workload: 70,
-    },
-    {
-      id: 'user2',
-      name: '佐藤 花子',
-      email: 'sato@example.com',
-      avatar: '',
-      role: 'バックエンド',
-      skills: ['Node.js', 'Firebase', 'API'],
-      availability: 'busy',
-      workload: 90,
-    },
-    {
-      id: 'user3',
-      name: '鈴木 一郎',
-      email: 'suzuki@example.com',
-      avatar: '',
-      role: 'フルスタック',
-      skills: ['React', 'Node.js', 'DevOps'],
-      availability: 'available',
-      workload: 50,
-    },
-  ]);
+  // チームメンバーを実データから取得
+  const {
+    teamMembers,
+    isLoading: membersLoading,
+    error: membersError,
+    refreshMembers,
+  } = useTeamMembers(currentProjectId);
 
-  // 実装リソース
-  const resources = [
-    {
-      title: 'shadcn-ui ドキュメント',
-      url: 'https://ui.shadcn.com/',
-      icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      title: 'Next.js 15 移行ガイド',
-      url: 'https://nextjs.org/docs/app/building-your-application/upgrading',
-      icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      title: '社内コーディング規約',
-      url: '#',
-      icon: <Code className="h-4 w-4" />,
-    },
-    {
-      title: 'モノレポ構築ガイド',
-      url: '#',
-      icon: <GitBranch className="h-4 w-4" />,
-    },
-  ];
+  // 実装リソースを設定から取得
+  const {
+    resources,
+    isLoading: resourcesLoading,
+    refreshResources,
+  } = useResources('implementation');
 
   // 初期化
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    if (currentProjectId && user) {
+      refreshData();
+      refreshMembers();
+      refreshResources();
+    }
+  }, [currentProjectId, user, refreshData, refreshMembers, refreshResources]);
 
   // フェーズごとの進捗計算
   const calculatePhaseProgress = (phase: string) => {
@@ -188,19 +157,16 @@ const ImprovementImplementation: React.FC = () => {
 
   // ノートの追加
   const addNote = async () => {
-    if (!newNote.trim()) return;
+    if (!newNote.trim() || !user) return;
 
-    // 実装ログとしてメモを追加
     try {
-      // implementationServiceのaddLogを直接呼び出す
-      await import('@/services/implementationService').then(({ implementationService }) => {
-        return implementationService.addLog({
-          action: 'note_added',
-          details: newNote,
-          projectId: currentProjectId,
-          userId: 'current-user', // 実際の実装では認証情報から取得
-          user: 'Current User',
-        });
+      const { implementationService } = await import('@/services/implementationService');
+      await implementationService.addLog({
+        action: 'note_added',
+        details: newNote,
+        projectId: currentProjectId,
+        userId: user.uid,
+        user: user.displayName || user.email || 'Unknown User',
       });
 
       setNewNote('');
@@ -208,163 +174,182 @@ const ImprovementImplementation: React.FC = () => {
       refreshData();
     } catch (error) {
       toast.error('メモの追加に失敗しました');
+      console.error('Add note error:', error);
     }
   };
 
-  // GitHubブランチの作成（実装予定）
+  // GitHubブランチの作成
   const createBranch = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
+    if (!task || !user) return;
 
     try {
-      // GitHub Service を使用してブランチを作成
-      // const branchName = `feature/${task.id}`;
-      // const result = await githubService.createBranch(branchName);
+      const branchName = `feature/${task.id}`;
+      const result = await githubService.createBranch(branchName, {
+        projectId: currentProjectId,
+        taskId: task.id,
+        description: task.description,
+      });
 
-      // モックとして更新
       await updateTask(taskId, {
-        branch: `feature/${task.id}`,
+        branch: branchName,
         notes: task.notes + '\nGitHubブランチを作成しました',
       });
 
       toast.success('GitHubブランチを作成しました');
     } catch (error) {
       toast.error('ブランチの作成に失敗しました');
+      console.error('Branch creation error:', error);
     }
   };
 
-  // プルリクエストの作成（実装予定）
+  // プルリクエストの作成
   const createPR = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
+    if (!task || !task.branch || !user) return;
 
     try {
-      // GitHub Service を使用してPRを作成
-      const prUrl = `https://github.com/example/repo/pull/${Math.floor(Math.random() * 1000)}`;
+      const prResult = await githubService.createPullRequest({
+        branchName: task.branch,
+        title: task.title,
+        description: task.description,
+        projectId: currentProjectId,
+      });
 
       await updateTask(taskId, {
-        pr: prUrl,
+        pr: prResult.url,
         notes: task.notes + '\nプルリクエストを作成しました',
       });
 
       toast.success('プルリクエストを作成しました');
     } catch (error) {
       toast.error('プルリクエストの作成に失敗しました');
+      console.error('PR creation error:', error);
     }
   };
 
-  // AI分析とタスク提案のロジック
+  // AI分析とタスク提案のロジック（実装）
   const analyzeTasks = async () => {
+    if (!user) {
+      toast.error('ユーザー認証が必要です');
+      return;
+    }
+
     setIsAnalyzing(true);
 
     try {
-      // 実際の実装では、AI分析サービスを使用
-      // const result = await aiImplementationService.analyzeTasks(tasks, 'UIライブラリ統一プロジェクト');
+      // 実際のAI分析サービスを使用
+      const aiService = AdvancedAIService;
 
-      // モックデータを使用
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // タスク分析データを準備
+      const analysisData = {
+        tasks: tasks,
+        currentPhase: activePhase,
+        projectId: currentProjectId,
+        teamMembers: teamMembers,
+        completedTasks: tasks.filter((t) => t.status === 'completed'),
+        inProgressTasks: tasks.filter((t) => t.status === 'in-progress'),
+      };
 
-      const suggestions: SuggestedTask[] = [
-        {
-          id: 'sg-1',
-          title: 'UIコンポーネントのテスト戦略策定',
-          description: '新しいUIライブラリに移行後のテスト方針とテストケースの整備',
-          reason: '既存タスクにテスト関連の詳細が不足しています。品質保証のために必要です。',
-          estimatedHours: 12,
-          priority: 'high',
-          dependencies: ['ui-audit', 'button-migration'],
-          checklist: [
-            'ユニットテストフレームワークの選定',
-            'コンポーネントテストのベストプラクティス文書化',
-            'スナップショットテストの導入検討',
-            'E2Eテストの影響範囲確認',
-          ],
+      // AI分析を実行
+      const analysisResult = await aiService.analyzeImplementationTasks(analysisData);
+
+      // 分析結果をSuggestedTask形式に変換
+      const suggestions: SuggestedTask[] = analysisResult.taskSuggestions.map(
+        (suggestion, index) => ({
+          id: `ai-suggestion-${Date.now()}-${index}`,
+          title: suggestion.title,
+          description: suggestion.description,
+          reason: suggestion.reason,
+          estimatedHours: suggestion.estimatedHours,
+          priority: suggestion.priority,
+          dependencies: suggestion.dependencies || [],
+          checklist: suggestion.checklist || [],
           phase: activePhase,
-          tags: ['testing', 'quality'],
-          confidence: 0.9,
+          tags: suggestion.tags || ['ai-generated'],
+          confidence: suggestion.confidence || 0.8,
           source: 'ai_analysis',
-        },
-        {
-          id: 'sg-2',
-          title: 'デザインシステムドキュメントの更新',
-          description: 'shadcn-ui移行に伴うデザインシステムドキュメントの更新',
-          reason: 'UIライブラリの変更により、デザインガイドラインの更新が必要です。',
-          estimatedHours: 8,
-          priority: 'medium',
-          dependencies: [],
-          checklist: [
-            'コンポーネントカタログの更新',
-            'デザイントークンの整理',
-            'Storybookの設定更新',
-            '開発者向けガイドの作成',
-          ],
-          phase: activePhase,
-          tags: ['documentation', 'design'],
-          confidence: 0.8,
-          source: 'ai_analysis',
-        },
-        {
-          id: 'sg-3',
-          title: 'パフォーマンス計測基準の設定',
-          description: 'UIライブラリ移行前後のパフォーマンス比較のための計測環境構築',
-          reason: '移行の効果を定量的に測定するために必要です。',
-          estimatedHours: 6,
-          priority: 'medium',
-          dependencies: ['ui-audit'],
-          checklist: [
-            'Lighthouse CI の設定',
-            '主要ページのベンチマーク取得',
-            'バンドルサイズの計測',
-            'ランタイムパフォーマンスの測定',
-          ],
-          phase: activePhase,
-          tags: ['performance', 'metrics'],
-          confidence: 0.7,
-          source: 'ai_analysis',
-        },
-        {
-          id: 'sg-4',
-          title: '段階的移行のためのラッパーコンポーネント作成',
-          description: '既存コンポーネントから新UIライブラリへの段階的移行を支援するラッパー',
-          reason: '大規模な移行をリスクを抑えて実施するために推奨されます。',
-          estimatedHours: 16,
-          priority: 'high',
-          dependencies: [],
-          checklist: [
-            'ラッパーコンポーネントの設計',
-            'APIの互換性マッピング',
-            '移行ヘルパー関数の実装',
-            '段階的廃止計画の策定',
-          ],
-          phase: activePhase,
-          tags: ['migration', 'components'],
-          confidence: 0.85,
-          source: 'ai_analysis',
-        },
-      ];
+        })
+      );
 
       setSuggestedTasks(suggestions);
       setShowAISuggestionsDialog(true);
 
       // ログに記録
-      await import('@/services/implementationService').then(({ implementationService }) => {
-        return implementationService.addLog({
-          action: 'ai_analysis',
-          details: `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
-          projectId: currentProjectId,
-          userId: 'current-user',
-          user: 'Current User',
-        });
+      const { implementationService } = await import('@/services/implementationService');
+      await implementationService.addLog({
+        action: 'ai_analysis',
+        details: `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
+        projectId: currentProjectId,
+        userId: user.uid,
+        user: user.displayName || user.email || 'Unknown User',
       });
+
+      refreshData();
     } catch (error) {
-      toast.error('AI分析でエラーが発生しました');
+      console.error('AI analysis error:', error);
+
+      // フォールバック：ローカル分析を実行
+      const fallbackSuggestions = await generateFallbackSuggestions();
+      setSuggestedTasks(fallbackSuggestions);
+      setShowAISuggestionsDialog(true);
+
+      toast.success('タスク分析が完了しました（ローカル分析）');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
+  // フォールバック分析（AIが利用できない場合）
+  const generateFallbackSuggestions = async (): Promise<SuggestedTask[]> => {
+    const currentTasks = tasks.filter((t) => t.phase === activePhase);
+    const completedTasks = currentTasks.filter((t) => t.status === 'completed');
+    const inProgressTasks = currentTasks.filter((t) => t.status === 'in-progress');
+
+    const suggestions: SuggestedTask[] = [];
+
+    // 既存タスクの分析に基づく提案
+    if (completedTasks.length === 0 && inProgressTasks.length === 0) {
+      suggestions.push({
+        id: 'fb-1',
+        title: 'プロジェクト開始準備',
+        description: '開発環境のセットアップと要件定義の確認',
+        reason: 'まだタスクが開始されていないため、準備作業が必要です',
+        estimatedHours: 4,
+        priority: 'high',
+        dependencies: [],
+        checklist: ['開発環境確認', '要件書レビュー', 'チーム体制確認'],
+        phase: activePhase,
+        tags: ['setup', 'preparation'],
+        confidence: 0.9,
+        source: 'ai_analysis',
+      });
+    }
+
+    if (inProgressTasks.length > 0 && !tasks.some((t) => t.tags.includes('testing'))) {
+      suggestions.push({
+        id: 'fb-2',
+        title: 'テスト戦略の策定',
+        description: '実装中のタスクに対するテスト方針の策定',
+        reason: '実装が進んでいますが、テスト関連のタスクが不足しています',
+        estimatedHours: 6,
+        priority: 'medium',
+        dependencies: inProgressTasks.map((t) => t.id),
+        checklist: ['テストフレームワーク選定', 'テストケース作成', 'CI/CD設定'],
+        phase: activePhase,
+        tags: ['testing', 'quality'],
+        confidence: 0.8,
+        source: 'ai_analysis',
+      });
+    }
+
+    return suggestions;
+  };
+
   // 選択された提案タスクを追加
   const addSuggestedTasks = async () => {
+    if (!user) return;
+
     const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
 
     try {
@@ -387,6 +372,7 @@ const ImprovementImplementation: React.FC = () => {
           tags: suggestionTask.tags,
           dependencies: suggestionTask.dependencies,
           notes: `AI提案: ${suggestionTask.reason}`,
+          createdBy: user.uid,
         };
 
         await createTask(taskData);
@@ -398,6 +384,7 @@ const ImprovementImplementation: React.FC = () => {
       setSuggestedTasks([]);
     } catch (error) {
       toast.error('タスクの追加でエラーが発生しました');
+      console.error('Add suggested tasks error:', error);
     }
   };
 
@@ -405,6 +392,11 @@ const ImprovementImplementation: React.FC = () => {
   const handleCreateTask = async () => {
     if (!newTaskData.title.trim()) {
       toast.error('タスク名を入力してください');
+      return;
+    }
+
+    if (!user) {
+      toast.error('ユーザー認証が必要です');
       return;
     }
 
@@ -422,6 +414,7 @@ const ImprovementImplementation: React.FC = () => {
       dependencies: [],
       notes: '',
       assignee: newTaskData.assignee || undefined,
+      createdBy: user.uid,
     };
 
     const success = await createTask(taskData);
@@ -460,7 +453,9 @@ const ImprovementImplementation: React.FC = () => {
             詳細に戻る
           </Button>
           <h1 className="text-3xl font-bold mb-2">実装管理ダッシュボード</h1>
-          <p className="text-muted-foreground">サイト改善計画の実装進捗を管理</p>
+          <p className="text-muted-foreground">
+            {currentProject?.name || 'サイト改善計画'}の実装進捗を管理
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <Badge variant="outline" className="text-lg px-4 py-2">
@@ -479,11 +474,11 @@ const ImprovementImplementation: React.FC = () => {
       </div>
 
       {/* エラー表示 */}
-      {error && (
+      {(error || membersError) && (
         <Alert className="mb-6 border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4 text-red-600" />
           <AlertTitle className="text-red-800">エラー</AlertTitle>
-          <AlertDescription className="text-red-700">{error}</AlertDescription>
+          <AlertDescription className="text-red-700">{error || membersError}</AlertDescription>
         </Alert>
       )}
 
@@ -523,7 +518,7 @@ const ImprovementImplementation: React.FC = () => {
                         size="sm"
                         variant="outline"
                         onClick={analyzeTasks}
-                        disabled={isAnalyzing}
+                        disabled={isAnalyzing || !user}
                       >
                         {isAnalyzing ? (
                           <>
@@ -619,6 +614,11 @@ const ImprovementImplementation: React.FC = () => {
                                 {task.assignee && (
                                   <div className="flex items-center gap-2">
                                     <Avatar className="h-6 w-6">
+                                      <AvatarImage
+                                        src={
+                                          teamMembers.find((m) => m.id === task.assignee)?.avatar
+                                        }
+                                      />
                                       <AvatarFallback>
                                         {teamMembers
                                           .find((m) => m.id === task.assignee)
@@ -704,6 +704,7 @@ const ImprovementImplementation: React.FC = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => createBranch(selectedTask.id)}
+                          disabled={!user}
                         >
                           <GitBranch className="h-4 w-4 mr-2" />
                           ブランチ作成
@@ -714,6 +715,7 @@ const ImprovementImplementation: React.FC = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => createPR(selectedTask.id)}
+                          disabled={!user}
                         >
                           <Github className="h-4 w-4 mr-2" />
                           PR作成
@@ -744,36 +746,48 @@ const ImprovementImplementation: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {teamMembers.map((member) => (
-                    <div key={member.id} className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.role}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${
-                              member.availability === 'available'
-                                ? 'text-green-700 border-green-200'
-                                : member.availability === 'busy'
-                                  ? 'text-red-700 border-red-200'
-                                  : 'text-gray-700 border-gray-200'
-                            }`}
-                          >
-                            {member.availability === 'available' && '空き'}
-                            {member.availability === 'busy' && '多忙'}
-                            {member.availability === 'unavailable' && '不在'}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            負荷: {member.workload}%
-                          </span>
+                  {membersLoading ? (
+                    <div className="text-center py-4">
+                      <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">読み込み中...</p>
+                    </div>
+                  ) : teamMembers.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      チームメンバーが登録されていません
+                    </p>
+                  ) : (
+                    teamMembers.map((member) => (
+                      <div key={member.id} className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={member.avatar} />
+                          <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{member.name}</p>
+                          <p className="text-xs text-muted-foreground">{member.role}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge
+                              variant="outline"
+                              className={`text-xs ${
+                                member.availability === 'available'
+                                  ? 'text-green-700 border-green-200'
+                                  : member.availability === 'busy'
+                                    ? 'text-red-700 border-red-200'
+                                    : 'text-gray-700 border-gray-200'
+                              }`}
+                            >
+                              {member.availability === 'available' && '空き'}
+                              {member.availability === 'busy' && '多忙'}
+                              {member.availability === 'unavailable' && '不在'}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              負荷: {member.workload}%
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </CardContent>
               </Card>
 
@@ -786,19 +800,30 @@ const ImprovementImplementation: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {resources.map((resource, index) => (
-                    <a
-                      key={index}
-                      href={resource.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                    >
-                      {resource.icon}
-                      <span>{resource.title}</span>
-                      <ExternalLink className="h-3 w-3 ml-auto" />
-                    </a>
-                  ))}
+                  {resourcesLoading ? (
+                    <div className="text-center py-4">
+                      <RefreshCw className="h-4 w-4 animate-spin mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">読み込み中...</p>
+                    </div>
+                  ) : resources.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      リソースが登録されていません
+                    </p>
+                  ) : (
+                    resources.map((resource, index) => (
+                      <a
+                        key={index}
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                      >
+                        {resource.icon}
+                        <span>{resource.title}</span>
+                        <ExternalLink className="h-3 w-3 ml-auto" />
+                      </a>
+                    ))
+                  )}
                 </CardContent>
               </Card>
 
@@ -822,7 +847,7 @@ const ImprovementImplementation: React.FC = () => {
                       size="sm"
                       onClick={addNote}
                       className="w-full"
-                      disabled={!newNote.trim()}
+                      disabled={!newNote.trim() || !user}
                     >
                       メモを追加
                     </Button>
