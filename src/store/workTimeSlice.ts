@@ -1,195 +1,173 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { WorkTimeEntry } from "../types/workTimeEntry";
-import { workTimeApi } from "../services/api";
-import { WorkTimeApiResponse, WorkState } from "@/types";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { WorkTimeEntry } from '../types/workTimeEntry';
+import { workTimeApi } from '../services/api/workTimeApi';
+import { WorkTimeApiResponse, WorkState } from '@/types';
 
-export const fetchWorkTimeEntries = createAsyncThunk<
-  WorkTimeEntry[],
-  void,
-  { rejectValue: string }
->("workTime/fetchEntries", async (_, { rejectWithValue }) => {
-  try {
-    const response = await workTimeApi.getAll();
-    return response.data;
-  } catch (error) {
-    console.error("エントリーの取得中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "エントリーの取得に失敗しました"
-    );
+export const fetchWorkTimeEntries = createAsyncThunk(
+  'workTime/fetchEntries',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await workTimeApi.getAll();
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch work time entries');
+    }
   }
-});
+);
 
-export const addWorkTimeEntry = createAsyncThunk<
-  WorkTimeEntry,
-  Omit<WorkTimeEntry, "_id">,
-  { rejectValue: string }
->("workTime/addEntry", async (entry, { rejectWithValue }) => {
-  try {
-    const response = await workTimeApi.create(entry);
-    return (response.data as WorkTimeApiResponse).workTime;
-  } catch (error) {
-    console.error("エントリーの追加中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "エントリーの追加に失敗しました"
-    );
+export const createWorkTimeEntry = createAsyncThunk(
+  'workTime/createEntry',
+  async (entry: Omit<WorkTimeEntry, '_id' | 'userId'>, { rejectWithValue }) => {
+    try {
+      const response = await workTimeApi.create(entry);
+      return response.data.workTime;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create work time entry');
+    }
   }
-});
+);
 
 export const updateWorkTimeEntry = createAsyncThunk<
   WorkTimeEntry,
   { id: string; entry: Partial<WorkTimeEntry> },
   { rejectValue: string }
->("workTime/updateEntry", async ({ id, entry }, { rejectWithValue }) => {
+>('workTime/updateEntry', async ({ id, entry }, { rejectWithValue }) => {
   try {
     const response = await workTimeApi.update(id, entry);
     return (response.data as WorkTimeApiResponse).workTime;
   } catch (error) {
-    console.error("エントリーの更新中にエラーが発生しました:", error);
+    console.error('エントリーの更新中にエラーが発生しました:', error);
     return rejectWithValue(
-      error instanceof Error ? error.message : "エントリーの更新に失敗しました"
+      error instanceof Error ? error.message : 'エントリーの更新に失敗しました'
     );
   }
 });
 
-export const deleteWorkTimeEntry = createAsyncThunk<
-  string,
-  string,
-  { rejectValue: string }
->("workTime/deleteEntry", async (id, { rejectWithValue }) => {
-  try {
-    await workTimeApi.delete(id);
-    return id;
-  } catch (error) {
-    console.error("エントリーの削除中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "エントリーの削除に失敗しました"
-    );
+export const deleteWorkTimeEntry = createAsyncThunk<string, string, { rejectValue: string }>(
+  'workTime/deleteEntry',
+  async (id, { rejectWithValue }) => {
+    try {
+      await workTimeApi.delete(id);
+      return id;
+    } catch (error) {
+      console.error('エントリーの削除中にエラーが発生しました:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'エントリーの削除に失敗しました'
+      );
+    }
   }
-});
+);
 
 // 状態を取得するThunk
 export const fetchWorkState = createAsyncThunk<
   WorkState | null,
   string, // userId
   { rejectValue: string }
->("workTime/fetchWorkState", async (userId, { rejectWithValue }) => {
+>('workTime/fetchWorkState', async (userId, { rejectWithValue }) => {
   try {
     const response = await workTimeApi.getWorkState(userId);
     return response.data;
   } catch (error) {
-    console.error("作業状態の取得中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "作業状態の取得に失敗しました"
-    );
+    console.error('作業状態の取得中にエラーが発生しました:', error);
+    return rejectWithValue(error instanceof Error ? error.message : '作業状態の取得に失敗しました');
   }
 });
 
 // 状態を保存するThunk
-export const saveWorkState = createAsyncThunk<
-  WorkState,
-  WorkState,
-  { rejectValue: string }
->("workTime/saveWorkState", async (workState, { rejectWithValue }) => {
-  try {
-    const response = await workTimeApi.saveWorkState(workState);
-    return response.data.workState;
-  } catch (error) {
-    console.error("作業状態の保存中にエラーが発生しました:", error);
-    return rejectWithValue(
-      error instanceof Error ? error.message : "作業状態の保存に失敗しました"
-    );
+export const saveWorkState = createAsyncThunk<WorkState, WorkState, { rejectValue: string }>(
+  'workTime/saveWorkState',
+  async (workState, { rejectWithValue }) => {
+    try {
+      const response = await workTimeApi.saveWorkState(workState);
+      return response.data.workState;
+    } catch (error) {
+      console.error('作業状態の保存中にエラーが発生しました:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : '作業状態の保存に失敗しました'
+      );
+    }
   }
-});
+);
 
 interface WorkTimeState {
   entries: WorkTimeEntry[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  isLoading: boolean;
   error: string | null;
-  workState: WorkState | null; // 追加
+  workState: WorkState | null;
 }
 
 const initialState: WorkTimeState = {
   entries: [],
-  status: "idle",
+  isLoading: false,
   error: null,
-  workState: null, // 初期値を追加
+  workState: null,
 };
 
 const workTimeSlice = createSlice({
-  name: "workTime",
+  name: 'workTime',
   initialState,
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchWorkTimeEntries.pending, (state) => {
-        state.status = "loading";
+        state.isLoading = true;
         state.error = null;
       })
-      .addCase(
-        fetchWorkTimeEntries.fulfilled,
-        (state, action: PayloadAction<WorkTimeEntry[]>) => {
-          state.status = "succeeded";
-          state.entries = action.payload;
-          state.error = null;
-        }
-      )
+      .addCase(fetchWorkTimeEntries.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.entries = action.payload;
+      })
       .addCase(fetchWorkTimeEntries.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload || "エントリーの取得に失敗しました";
+        state.isLoading = false;
+        state.error = action.payload as string;
       })
-      .addCase(
-        addWorkTimeEntry.fulfilled,
-        (state, action: PayloadAction<WorkTimeEntry>) => {
-          state.entries.push(action.payload);
-          state.error = null;
-        }
-      )
-      .addCase(addWorkTimeEntry.rejected, (state, action) => {
-        state.error = action.payload || "エントリーの追加に失敗しました";
+      .addCase(createWorkTimeEntry.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(
-        updateWorkTimeEntry.fulfilled,
-        (state, action: PayloadAction<WorkTimeEntry>) => {
-          const index = state.entries.findIndex(
-            (entry) => entry._id === action.payload._id
-          );
-          if (index !== -1) {
-            state.entries[index] = action.payload;
-          }
-          state.error = null;
+      .addCase(createWorkTimeEntry.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.entries.unshift(action.payload);
+      })
+      .addCase(createWorkTimeEntry.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateWorkTimeEntry.fulfilled, (state, action: PayloadAction<WorkTimeEntry>) => {
+        const index = state.entries.findIndex((entry) => entry._id === action.payload._id);
+        if (index !== -1) {
+          state.entries[index] = action.payload;
         }
-      )
+        state.error = null;
+      })
       .addCase(updateWorkTimeEntry.rejected, (state, action) => {
-        state.error = action.payload || "エントリーの更新に失敗しました";
+        state.error = action.payload || 'エントリーの更新に失敗しました';
       })
-      .addCase(
-        deleteWorkTimeEntry.fulfilled,
-        (state, action: PayloadAction<string>) => {
-          state.entries = state.entries.filter(
-            (entry) => entry._id !== action.payload
-          );
-          state.error = null;
-        }
-      )
+      .addCase(deleteWorkTimeEntry.fulfilled, (state, action: PayloadAction<string>) => {
+        state.entries = state.entries.filter((entry) => entry._id !== action.payload);
+        state.error = null;
+      })
       .addCase(deleteWorkTimeEntry.rejected, (state, action) => {
-        state.error = action.payload || "エントリーの削除に失敗しました";
-      });
-      builder
+        state.error = action.payload || 'エントリーの削除に失敗しました';
+      })
       .addCase(fetchWorkState.fulfilled, (state, action) => {
         state.workState = action.payload;
       })
       .addCase(fetchWorkState.rejected, (state) => {
         state.workState = null;
       })
-      
-      // 作業状態の保存に関するReducer
       .addCase(saveWorkState.fulfilled, (state, action) => {
         state.workState = action.payload;
       })
       .addCase(saveWorkState.rejected, (state, action) => {
-        state.error = action.payload || "作業状態の保存に失敗しました";
+        state.error = action.payload || '作業状態の保存に失敗しました';
       });
   },
 });
 
+export const { clearError } = workTimeSlice.actions;
 export default workTimeSlice.reducer;

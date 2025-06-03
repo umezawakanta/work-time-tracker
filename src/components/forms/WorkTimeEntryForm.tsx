@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addWorkTimeEntry } from "@/store/workTimeSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addWorkTimeEntry, createWorkTimeEntry, fetchWorkTimeEntries } from '@/store/workTimeSlice';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Card,
   CardHeader,
@@ -13,14 +13,14 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -28,12 +28,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { WorkTimeEntry } from "@/types/workTimeEntry";
-import { AppDispatch, RootState } from "@/store";
-import { useToast } from "@/components/ui/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { WorkTimeEntry } from '@/types/workTimeEntry';
+import { AppDispatch, RootState } from '@/store';
+import { useToast } from '@/components/ui/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -43,21 +43,17 @@ import {
   ReloadIcon,
   CalendarIcon,
   ClockIcon,
-} from "@radix-ui/react-icons";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format, isToday } from "date-fns";
-import { ja } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/useAuth";
-import userSubscriptionApi from "@/services/api/userSubscriptionApi";
-import projectApi from "@/services/api/projectApi";
-import presetApi from "@/services/api/presetApi";
+} from '@radix-ui/react-icons';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, isToday } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/useAuth';
+import userSubscriptionApi from '@/services/api/userSubscriptionApi';
+import projectApi from '@/services/api/projectApi';
+import presetApi from '@/services/api/presetApi';
 
 // プロジェクトのインターフェース定義
 interface Project {
@@ -83,7 +79,7 @@ interface UserSubscription {
   _id: string;
   userId: string;
   planId: string;
-  status: "active" | "inactive" | "canceled";
+  status: 'active' | 'inactive' | 'canceled';
   currentPeriodEnd: Date;
   cancelAtPeriodEnd: boolean;
 }
@@ -95,41 +91,35 @@ export default function WorkTimeEntryForm() {
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
-  const recentEntries = useSelector((state: RootState) =>
-    state.workTime.entries.slice(0, 5)
-  );
+  const recentEntries = useSelector((state: RootState) => state.workTime.entries.slice(0, 5));
 
   // ローカル状態
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [projectName, setProjectName] = useState('');
+  const [description, setDescription] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [workStartTime, setWorkStartTime] = useState<Date | null>(null);
-  const [activeTab, setActiveTab] = useState("auto");
+  const [activeTab, setActiveTab] = useState('auto');
   const [showPresets, setShowPresets] = useState(false);
   const [presetDuration, setPresetDuration] = useState(30); // 分単位
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
 
   // データ状態
   const [projects, setProjects] = useState<Project[]>([]);
   const [presets, setPresets] = useState<WorkPreset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [subscription, setSubscription] = useState<UserSubscription | null>(
-    null
-  );
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
-  const [newProjectName, setNewProjectName] = useState("");
-  const [newProjectColor, setNewProjectColor] = useState("bg-blue-500");
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectColor, setNewProjectColor] = useState('bg-blue-500');
   const [isNewPresetDialogOpen, setIsNewPresetDialogOpen] = useState(false);
-  const [newPresetName, setNewPresetName] = useState("");
-  const [newPresetDescription, setNewPresetDescription] = useState("");
-  const [newPresetProjectId, setNewPresetProjectId] = useState("");
+  const [newPresetName, setNewPresetName] = useState('');
+  const [newPresetDescription, setNewPresetDescription] = useState('');
+  const [newPresetProjectId, setNewPresetProjectId] = useState('');
   const [newPresetDuration, setNewPresetDuration] = useState(30);
 
   // ルーティング
@@ -157,8 +147,8 @@ export default function WorkTimeEntryForm() {
         if (!projectResponse.data || projectResponse.data.length === 0) {
           // デフォルトプロジェクトの作成
           const defaultProject = await projectApi.createProject({
-            name: "マイプロジェクト",
-            color: "bg-blue-500",
+            name: 'マイプロジェクト',
+            color: 'bg-blue-500',
             userId: user.id,
             lastUsed: new Date(),
           });
@@ -167,9 +157,7 @@ export default function WorkTimeEntryForm() {
         } else {
           // 最後に使用したプロジェクトを初期値に設定
           const sortedProjects = [...projectResponse.data].sort(
-            (a, b) =>
-              new Date(b.lastUsed || 0).getTime() -
-              new Date(a.lastUsed || 0).getTime()
+            (a, b) => new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
           );
           if (sortedProjects.length > 0) {
             setProjectName(sortedProjects[0].name);
@@ -177,33 +165,32 @@ export default function WorkTimeEntryForm() {
         }
         // サブスクリプション情報の取得
         try {
-          const subscriptionResponse =
-            await userSubscriptionApi.getUserSubscription(user.id);
+          const subscriptionResponse = await userSubscriptionApi.getUserSubscription(user.id);
           setSubscription(subscriptionResponse.data);
         } catch (subscriptionError) {
-          console.warn("サブスクリプション情報取得エラー:", subscriptionError);
+          console.warn('サブスクリプション情報取得エラー:', subscriptionError);
           // サブスクリプション情報がなくても主要機能に影響しないため、エラーを表示せず続行
         }
       } catch (error) {
         // エラーハンドリングを改善
-        console.error("プロジェクト取得エラー:", error);
+        console.error('プロジェクト取得エラー:', error);
 
         // APIエラーの場合は、デフォルトプロジェクトを作成
         try {
           const defaultProject = await projectApi.createProject({
-            name: "マイプロジェクト",
-            color: "bg-blue-500",
+            name: 'マイプロジェクト',
+            color: 'bg-blue-500',
             userId: user.id,
             lastUsed: new Date(),
           });
           setProjects([defaultProject.data]);
           setProjectName(defaultProject.data.name);
         } catch (e) {
-          console.error("デフォルトプロジェクト作成エラー:", e);
+          console.error('デフォルトプロジェクト作成エラー:', e);
           toast({
-            title: "エラー",
-            description: "プロジェクト情報の取得と作成に失敗しました。",
-            variant: "destructive",
+            title: 'エラー',
+            description: 'プロジェクト情報の取得と作成に失敗しました。',
+            variant: 'destructive',
           });
         }
       } finally {
@@ -214,13 +201,19 @@ export default function WorkTimeEntryForm() {
     fetchData();
   }, [isAuthenticated, user, toast]);
 
+  useEffect(() => {
+    // コンポーネント読み込み時に作業時間を取得
+    if (isAuthenticated && user) {
+      dispatch(fetchWorkTimeEntries());
+    }
+  }, [isAuthenticated, user, dispatch]);
+
   // 作業状態の復元 (アプリが閉じられても作業状態を保持)
   useEffect(() => {
-    const savedWorkState = localStorage.getItem("workState");
+    const savedWorkState = localStorage.getItem('workState');
     if (savedWorkState) {
       try {
-        const { isWorking, startTime, projectName, description } =
-          JSON.parse(savedWorkState);
+        const { isWorking, startTime, projectName, description } = JSON.parse(savedWorkState);
         if (isWorking) {
           setIsWorking(true);
           setWorkStartTime(new Date(startTime));
@@ -229,7 +222,7 @@ export default function WorkTimeEntryForm() {
           setStartTime(new Date(startTime).toISOString().slice(0, 16));
         }
       } catch (e) {
-        console.error("作業状態の復元エラー:", e);
+        console.error('作業状態の復元エラー:', e);
       }
     }
   }, []);
@@ -240,9 +233,7 @@ export default function WorkTimeEntryForm() {
       timerRef.current = setInterval(() => {
         if (workStartTime) {
           const now = new Date();
-          const duration = Math.floor(
-            (now.getTime() - workStartTime.getTime()) / 1000
-          );
+          const duration = Math.floor((now.getTime() - workStartTime.getTime()) / 1000);
           document.title = `⏱️ ${formatDuration(duration)} | 作業中`;
         }
       }, 1000);
@@ -250,7 +241,7 @@ export default function WorkTimeEntryForm() {
       // 作業状態を保存
       if (workStartTime) {
         localStorage.setItem(
-          "workState",
+          'workState',
           JSON.stringify({
             isWorking,
             startTime: workStartTime.toISOString(),
@@ -263,13 +254,13 @@ export default function WorkTimeEntryForm() {
       return () => {
         if (timerRef.current) {
           clearInterval(timerRef.current);
-          document.title = "Work Time Tracker";
+          document.title = 'Work Time Tracker';
         }
       };
     } else {
       // 作業状態クリア
-      localStorage.removeItem("workState");
-      document.title = "Work Time Tracker";
+      localStorage.removeItem('workState');
+      document.title = 'Work Time Tracker';
     }
   }, [isWorking, workStartTime, projectName, description]);
 
@@ -278,9 +269,9 @@ export default function WorkTimeEntryForm() {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes
+    return `${hours.toString().padStart(2, '0')}:${minutes
       .toString()
-      .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+      .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   // 現在の作業時間を計算
@@ -293,7 +284,7 @@ export default function WorkTimeEntryForm() {
   // 作業開始
   const handleStartWork = () => {
     if (!projectName) {
-      setError("プロジェクト名を入力してください。");
+      setError('プロジェクト名を入力してください。');
       return;
     }
 
@@ -305,7 +296,7 @@ export default function WorkTimeEntryForm() {
 
     // 作業開始通知
     toast({
-      title: "作業開始",
+      title: '作業開始',
       description: `${projectName}の作業を開始しました。`,
       duration: 3000,
     });
@@ -332,7 +323,7 @@ export default function WorkTimeEntryForm() {
     }
 
     if (!projectName || !startTime || !endTime) {
-      setError("すべての必須フィールドを入力してください。");
+      setError('すべての必須フィールドを入力してください。');
       return;
     }
 
@@ -340,12 +331,12 @@ export default function WorkTimeEntryForm() {
     const end = new Date(endTime);
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      setError("有効な開始時間と終了時間を入力してください。");
+      setError('有効な開始時間と終了時間を入力してください。');
       return;
     }
 
     if (end <= start) {
-      setError("終了時間は開始時間より後でなければなりません。");
+      setError('終了時間は開始時間より後でなければなりません。');
       return;
     }
 
@@ -370,10 +361,10 @@ export default function WorkTimeEntryForm() {
     setEndTime(end.toISOString().slice(0, 16));
 
     // プリセットを直接送信するか、フォームに入力して確認してから送信
-    if (activeTab === "presets") {
+    if (activeTab === 'presets') {
       await submitWorkTimeEntry(start, end);
     } else {
-      setActiveTab("manual");
+      setActiveTab('manual');
     }
 
     setShowPresets(false);
@@ -381,69 +372,52 @@ export default function WorkTimeEntryForm() {
 
   // 作業記録の送信
   const submitWorkTimeEntry = async (start: Date, end: Date) => {
-    // サブスクリプションチェック（特定の機能が有料プランのみの場合）
-    const isPremium =
-      subscription &&
-      subscription.status === "active" &&
-      subscription.planId !== "free";
-
-    // 制限チェック
-    if (!isPremium && recentEntries.length >= 10) {
-      setError(
-        "フリープランでは10件までの記録しか保存できません。プレミアムプランにアップグレードしてください。"
-      );
-      toast({
-        title: "制限に達しました",
-        description:
-          "フリープランの制限に達しました。プレミアムプランへのアップグレードをご検討ください。",
-        variant: "destructive",
-      });
+    if (!projectName.trim() || !description.trim()) {
+      setError('プロジェクト名と説明は必須項目です');
       return;
     }
 
-    const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
-
-    const newEntry: Omit<WorkTimeEntry, "_id"> = {
-      projectName,
-      description: description || `作業時間: ${formatDuration(duration)}`,
-      startTime: start.toISOString(),
-      endTime: end.toISOString(),
-      duration,
-      date: start.toISOString().split("T")[0],
-      userId: user?.id || "",
-    };
-
-    setIsSubmitting(true);
-
     try {
-      await dispatch(addWorkTimeEntry(newEntry)).unwrap();
+      setIsSubmitting(true);
 
-      // 最終使用プロジェクトを更新
-      updateLastUsedProject(projectName);
+      const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
+
+      const entryData = {
+        projectName: projectName.trim(),
+        description: description.trim(),
+        startTime: start.toISOString(),
+        endTime: end.toISOString(),
+        duration,
+        date: start.toISOString().split('T')[0],
+      };
+
+      // Redux経由で作業時間を作成
+      await dispatch(createWorkTimeEntry(entryData)).unwrap();
 
       toast({
-        title: "記録完了",
-        description: `${formatDuration(duration)}の作業を記録しました。`,
-        duration: 5000,
+        title: '作業時間が記録されました',
+        description: `${projectName} - ${formatDuration(duration)}`,
       });
 
-      // 成功したら報告ページへ
-      navigate("/work-time-reports");
+      resetForm();
     } catch (error) {
-      console.error("作業時間エントリーの作成エラー:", error);
-      setError(`作業時間エントリーの作成に失敗しました: ${error}`);
+      setError(error as string);
+      toast({
+        title: 'エラー',
+        description: error as string,
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
-      resetForm();
     }
   };
 
   // フォームリセット
   const resetForm = () => {
     setWorkStartTime(null);
-    setDescription("");
-    setStartTime("");
-    setEndTime("");
+    setDescription('');
+    setStartTime('');
+    setEndTime('');
   };
 
   // 最終使用プロジェクトの更新
@@ -457,13 +431,11 @@ export default function WorkTimeEntryForm() {
         });
 
         setProjects((prev) =>
-          prev.map((p) =>
-            p._id === updatedProject.data._id ? updatedProject.data : p
-          )
+          prev.map((p) => (p._id === updatedProject.data._id ? updatedProject.data : p))
         );
       }
     } catch (error) {
-      console.error("プロジェクト更新エラー:", error);
+      console.error('プロジェクト更新エラー:', error);
     }
   };
 
@@ -487,9 +459,9 @@ export default function WorkTimeEntryForm() {
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) {
       toast({
-        title: "エラー",
-        description: "プロジェクト名を入力してください。",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'プロジェクト名を入力してください。',
+        variant: 'destructive',
       });
       return;
     }
@@ -500,25 +472,25 @@ export default function WorkTimeEntryForm() {
       const newProject = await projectApi.createProject({
         name: newProjectName,
         color: newProjectColor,
-        userId: user?.id || "",
+        userId: user?.id || '',
         lastUsed: new Date(),
       });
 
       setProjects((prev) => [...prev, newProject.data]);
       setProjectName(newProject.data.name);
       setIsNewProjectDialogOpen(false);
-      setNewProjectName("");
+      setNewProjectName('');
 
       toast({
-        title: "プロジェクト作成",
+        title: 'プロジェクト作成',
         description: `「${newProject.data.name}」プロジェクトを作成しました。`,
       });
     } catch (error) {
-      console.error("プロジェクト作成エラー:", error);
+      console.error('プロジェクト作成エラー:', error);
       toast({
-        title: "エラー",
-        description: "プロジェクトの作成に失敗しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'プロジェクトの作成に失敗しました。',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -527,10 +499,10 @@ export default function WorkTimeEntryForm() {
 
   // 新規プリセット作成
   const handleCreatePreset = async () => {
-    if (activeTab === "manual") {
+    if (activeTab === 'manual') {
       // 手動入力モードからプリセット作成開始時は現在の値を設定
-      setNewPresetName(description || "新しいプリセット");
-      setNewPresetDescription(description || "");
+      setNewPresetName(description || '新しいプリセット');
+      setNewPresetDescription(description || '');
       const selectedProject = projects.find((p) => p.name === projectName);
       if (selectedProject) {
         setNewPresetProjectId(selectedProject._id);
@@ -545,9 +517,9 @@ export default function WorkTimeEntryForm() {
   const handleSavePreset = async () => {
     if (!newPresetName.trim() || !newPresetProjectId) {
       toast({
-        title: "エラー",
-        description: "プリセット名とプロジェクトを入力してください。",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'プリセット名とプロジェクトを入力してください。',
+        variant: 'destructive',
       });
       return;
     }
@@ -560,22 +532,22 @@ export default function WorkTimeEntryForm() {
         description: newPresetDescription,
         projectId: newPresetProjectId,
         duration: newPresetDuration,
-        userId: user?.id || "",
+        userId: user?.id || '',
       });
 
       setPresets((prev) => [...prev, newPreset.data]);
       setIsNewPresetDialogOpen(false);
 
       toast({
-        title: "プリセット作成",
+        title: 'プリセット作成',
         description: `「${newPreset.data.name}」(${newPresetDuration}分)のプリセットを作成しました。`,
       });
     } catch (error) {
-      console.error("プリセット作成エラー:", error);
+      console.error('プリセット作成エラー:', error);
       toast({
-        title: "エラー",
-        description: "プリセットの作成に失敗しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'プリセットの作成に失敗しました。',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -584,17 +556,15 @@ export default function WorkTimeEntryForm() {
 
   // プレミアムプラン確認
   const isPremium =
-    subscription &&
-    subscription.status === "active" &&
-    subscription.planId !== "free";
+    subscription && subscription.status === 'active' && subscription.planId !== 'free';
 
   // プレミアム機能へのアクセス確認
   const checkPremiumAccess = (featureName: string) => {
     if (!isPremium) {
       toast({
-        title: "プレミアム機能",
+        title: 'プレミアム機能',
         description: `${featureName}はプレミアムプラン限定の機能です。アップグレードしてご利用ください。`,
-        variant: "default",
+        variant: 'default',
       });
       return false;
     }
@@ -603,7 +573,7 @@ export default function WorkTimeEntryForm() {
 
   // プレミアムプランへのアップグレード
   const handleUpgradeToPremium = () => {
-    navigate("/subscription");
+    navigate('/subscription');
   };
 
   // ローディング表示
@@ -620,14 +590,14 @@ export default function WorkTimeEntryForm() {
 
   // カラーオプションの定義
   const colorOptions = [
-    { id: "bg-blue-500", name: "青", color: "blue-500" },
-    { id: "bg-green-500", name: "緑", color: "green-500" },
-    { id: "bg-red-500", name: "赤", color: "red-500" },
-    { id: "bg-yellow-500", name: "黄", color: "yellow-500" },
-    { id: "bg-purple-500", name: "紫", color: "purple-500" },
-    { id: "bg-pink-500", name: "ピンク", color: "pink-500" },
-    { id: "bg-indigo-500", name: "藍", color: "indigo-500" },
-    { id: "bg-gray-500", name: "灰色", color: "gray-500" },
+    { id: 'bg-blue-500', name: '青', color: 'blue-500' },
+    { id: 'bg-green-500', name: '緑', color: 'green-500' },
+    { id: 'bg-red-500', name: '赤', color: 'red-500' },
+    { id: 'bg-yellow-500', name: '黄', color: 'yellow-500' },
+    { id: 'bg-purple-500', name: '紫', color: 'purple-500' },
+    { id: 'bg-pink-500', name: 'ピンク', color: 'pink-500' },
+    { id: 'bg-indigo-500', name: '藍', color: 'indigo-500' },
+    { id: 'bg-gray-500', name: '灰色', color: 'gray-500' },
   ];
 
   return (
@@ -637,9 +607,7 @@ export default function WorkTimeEntryForm() {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl mb-1">作業時間の記録</CardTitle>
-              <CardDescription>
-                簡単に作業時間を記録・管理できます
-              </CardDescription>
+              <CardDescription>簡単に作業時間を記録・管理できます</CardDescription>
             </div>
 
             {isWorking && workStartTime && (
@@ -657,32 +625,27 @@ export default function WorkTimeEntryForm() {
         <CardContent>
           {/* 最近使用したプロジェクト */}
           <div className="mb-6">
-            <div className="text-sm font-medium mb-2 text-muted-foreground">
-              最近のプロジェクト
-            </div>
+            <div className="text-sm font-medium mb-2 text-muted-foreground">最近のプロジェクト</div>
             <div className="flex flex-wrap gap-2">
               {projects
                 .sort(
                   (a, b) =>
-                    new Date(b.lastUsed || 0).getTime() -
-                    new Date(a.lastUsed || 0).getTime()
+                    new Date(b.lastUsed || 0).getTime() - new Date(a.lastUsed || 0).getTime()
                 )
                 .map((project) => (
                   <button
                     key={project._id}
                     onClick={() => handleSelectProject(project)}
                     className={cn(
-                      "px-3 py-1.5 rounded-full text-xs font-medium transition-colors",
-                      "border hover:bg-muted",
+                      'px-3 py-1.5 rounded-full text-xs font-medium transition-colors',
+                      'border hover:bg-muted',
                       projectName === project.name
-                        ? "bg-primary/10 border-primary/30"
-                        : "bg-muted/40"
+                        ? 'bg-primary/10 border-primary/30'
+                        : 'bg-muted/40'
                     )}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div
-                        className={`w-2 h-2 rounded-full ${project.color}`}
-                      ></div>
+                      <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                       <span>{project.name}</span>
                     </div>
                   </button>
@@ -701,15 +664,10 @@ export default function WorkTimeEntryForm() {
           {/* 最近の作業記録 */}
           {recentEntries.length > 0 && (
             <div className="mb-6 space-y-2">
-              <div className="text-sm font-medium text-muted-foreground">
-                最近の記録
-              </div>
+              <div className="text-sm font-medium text-muted-foreground">最近の記録</div>
               <div className="space-y-2">
                 {recentEntries.map((entry) => (
-                  <Card
-                    key={entry._id}
-                    className="p-3 hover:bg-muted/20 cursor-pointer"
-                  >
+                  <Card key={entry._id} className="p-3 hover:bg-muted/20 cursor-pointer">
                     <div className="flex justify-between">
                       <div>
                         <div className="font-medium">{entry.projectName}</div>
@@ -723,8 +681,8 @@ export default function WorkTimeEntryForm() {
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {isToday(new Date(entry.startTime))
-                            ? format(new Date(entry.startTime), "HH:mm")
-                            : format(new Date(entry.startTime), "MM/dd")}
+                            ? format(new Date(entry.startTime), 'HH:mm')
+                            : format(new Date(entry.startTime), 'MM/dd')}
                         </div>
                       </div>
                     </div>
@@ -747,7 +705,7 @@ export default function WorkTimeEntryForm() {
                 value="presets"
                 onClick={() => {
                   if (!isPremium && presets.length >= 3) {
-                    checkPremiumAccess("3つ以上のプリセット");
+                    checkPremiumAccess('3つ以上のプリセット');
                   }
                 }}
               >
@@ -764,9 +722,7 @@ export default function WorkTimeEntryForm() {
                     value={projectName}
                     onValueChange={(value) => {
                       setProjectName(value);
-                      const selectedProject = projects.find(
-                        (p) => p.name === value
-                      );
+                      const selectedProject = projects.find((p) => p.name === value);
                       if (selectedProject) {
                         updateLastUsedProject(selectedProject.name);
                       }
@@ -780,9 +736,7 @@ export default function WorkTimeEntryForm() {
                       {projects.map((project) => (
                         <SelectItem key={project._id} value={project.name}>
                           <div className="flex items-center gap-2">
-                            <div
-                              className={`w-2 h-2 rounded-full ${project.color}`}
-                            ></div>
+                            <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                             <span>{project.name}</span>
                           </div>
                         </SelectItem>
@@ -805,38 +759,24 @@ export default function WorkTimeEntryForm() {
                 {isWorking && workStartTime && (
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <div className="text-center mb-6">
-                      <div className="text-sm text-muted-foreground">
-                        経過時間
-                      </div>
+                      <div className="text-sm text-muted-foreground">経過時間</div>
                       <div className="text-3xl font-bold text-blue-700">
                         {formatDuration(getCurrentDuration())}
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        {format(workStartTime, "HH:mm")}から作業中
+                        {format(workStartTime, 'HH:mm')}から作業中
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <div className="flex justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleQuickDuration(15)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleQuickDuration(15)}>
                           +15分
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleQuickDuration(30)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleQuickDuration(30)}>
                           +30分
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleQuickDuration(60)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleQuickDuration(60)}>
                           +1時間
                         </Button>
                       </div>
@@ -846,11 +786,7 @@ export default function WorkTimeEntryForm() {
 
                 <div className="flex justify-between space-x-4 pt-2">
                   {!isWorking ? (
-                    <Button
-                      onClick={handleStartWork}
-                      disabled={isSubmitting}
-                      className="w-full"
-                    >
+                    <Button onClick={handleStartWork} disabled={isSubmitting} className="w-full">
                       <TimerIcon className="mr-2 h-4 w-4" />
                       作業開始
                     </Button>
@@ -883,7 +819,7 @@ export default function WorkTimeEntryForm() {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {selectedDate ? (
-                          format(selectedDate, "yyyy年MM月dd日", { locale: ja })
+                          format(selectedDate, 'yyyy年MM月dd日', { locale: ja })
                         ) : (
                           <span>日付を選択</span>
                         )}
@@ -912,7 +848,7 @@ export default function WorkTimeEntryForm() {
                       className="h-8 gap-1 text-xs"
                       onClick={() => setShowPresets(!showPresets)}
                     >
-                      <span>{showPresets ? "簡易表示" : "詳細表示"}</span>
+                      <span>{showPresets ? '簡易表示' : '詳細表示'}</span>
                     </Button>
                   </div>
 
@@ -926,9 +862,7 @@ export default function WorkTimeEntryForm() {
                       </div>
                     ) : (
                       presets.map((preset) => {
-                        const project = projects.find(
-                          (p) => p._id === preset.projectId
-                        );
+                        const project = projects.find((p) => p._id === preset.projectId);
 
                         return showPresets ? (
                           <Card key={preset._id} className="p-3">
@@ -936,9 +870,7 @@ export default function WorkTimeEntryForm() {
                               <div>
                                 <div className="font-medium flex items-center gap-2">
                                   {project && (
-                                    <div
-                                      className={`w-2 h-2 rounded-full ${project.color}`}
-                                    ></div>
+                                    <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                                   )}
                                   {preset.name}
                                 </div>
@@ -948,13 +880,8 @@ export default function WorkTimeEntryForm() {
                               </div>
 
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline">
-                                  {preset.duration}分
-                                </Badge>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handlePresetSubmit(preset)}
-                                >
+                                <Badge variant="outline">{preset.duration}分</Badge>
+                                <Button size="sm" onClick={() => handlePresetSubmit(preset)}>
                                   適用
                                 </Button>
                               </div>
@@ -968,9 +895,7 @@ export default function WorkTimeEntryForm() {
                           >
                             <div className="flex items-center gap-2">
                               {project && (
-                                <div
-                                  className={`w-2 h-2 rounded-full ${project.color}`}
-                                ></div>
+                                <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                               )}
                               <span>{preset.name}</span>
                             </div>
@@ -987,9 +912,9 @@ export default function WorkTimeEntryForm() {
                     variant="outline"
                     className="w-full gap-1"
                     onClick={() => {
-                      setNewPresetName("");
-                      setNewPresetDescription("");
-                      setNewPresetProjectId(projects[0]?._id || "");
+                      setNewPresetName('');
+                      setNewPresetDescription('');
+                      setNewPresetProjectId(projects[0]?._id || '');
                       setNewPresetDuration(30);
                       setIsNewPresetDialogOpen(true);
                     }}
@@ -1010,9 +935,7 @@ export default function WorkTimeEntryForm() {
                     value={projectName}
                     onValueChange={(value) => {
                       setProjectName(value);
-                      const selectedProject = projects.find(
-                        (p) => p.name === value
-                      );
+                      const selectedProject = projects.find((p) => p.name === value);
                       if (selectedProject) {
                         updateLastUsedProject(selectedProject.name);
                       }
@@ -1025,9 +948,7 @@ export default function WorkTimeEntryForm() {
                       {projects.map((project) => (
                         <SelectItem key={project._id} value={project.name}>
                           <div className="flex items-center gap-2">
-                            <div
-                              className={`w-2 h-2 rounded-full ${project.color}`}
-                            ></div>
+                            <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                             <span>{project.name}</span>
                           </div>
                         </SelectItem>
@@ -1076,9 +997,7 @@ export default function WorkTimeEntryForm() {
                     <div className="flex items-center justify-between">
                       <Label htmlFor="manualEndTime">終了時間</Label>
                       <div className="space-y-2 mt-4">
-                        <Label htmlFor="presetDuration">
-                          プリセット用の期間（分）
-                        </Label>
+                        <Label htmlFor="presetDuration">プリセット用の期間（分）</Label>
                         <div className="flex items-center gap-2">
                           <Input
                             id="presetDuration"
@@ -1087,14 +1006,10 @@ export default function WorkTimeEntryForm() {
                             max="180"
                             step="5"
                             value={presetDuration}
-                            onChange={(e) =>
-                              setPresetDuration(parseInt(e.target.value))
-                            }
+                            onChange={(e) => setPresetDuration(parseInt(e.target.value))}
                             className="flex-1"
                           />
-                          <span className="w-16 text-center">
-                            {presetDuration}分
-                          </span>
+                          <span className="w-16 text-center">{presetDuration}分</span>
                         </div>
                       </div>
                       <Button
@@ -1138,7 +1053,7 @@ export default function WorkTimeEntryForm() {
                         送信中...
                       </>
                     ) : (
-                      "記録を保存"
+                      '記録を保存'
                     )}
                   </Button>
                 </div>
@@ -1180,7 +1095,7 @@ export default function WorkTimeEntryForm() {
         <CardFooter className="flex justify-center border-t pt-6">
           <Button
             variant="outline"
-            onClick={() => navigate("/work-time-reports")}
+            onClick={() => navigate('/work-time-reports')}
             className="gap-2"
           >
             <ClockIcon className="h-4 w-4" />
@@ -1190,10 +1105,7 @@ export default function WorkTimeEntryForm() {
       </Card>
 
       {/* 新規プロジェクト作成ダイアログ */}
-      <Dialog
-        open={isNewProjectDialogOpen}
-        onOpenChange={setIsNewProjectDialogOpen}
-      >
+      <Dialog open={isNewProjectDialogOpen} onOpenChange={setIsNewProjectDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>新しいプロジェクトを作成</DialogTitle>
@@ -1223,11 +1135,9 @@ export default function WorkTimeEntryForm() {
                     type="button"
                     aria-label={`${colorOption.name}色を選択`}
                     className={cn(
-                      "w-8 h-8 rounded-full",
+                      'w-8 h-8 rounded-full',
                       colorOption.id,
-                      newProjectColor === colorOption.id
-                        ? "ring-2 ring-offset-2 ring-primary"
-                        : ""
+                      newProjectColor === colorOption.id ? 'ring-2 ring-offset-2 ring-primary' : ''
                     )}
                     onClick={() => setNewProjectColor(colorOption.id)}
                   />
@@ -1237,10 +1147,7 @@ export default function WorkTimeEntryForm() {
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsNewProjectDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setIsNewProjectDialogOpen(false)}>
               キャンセル
             </Button>
             <Button onClick={handleCreateProject} disabled={isSubmitting}>
@@ -1250,7 +1157,7 @@ export default function WorkTimeEntryForm() {
                   作成中...
                 </>
               ) : (
-                "作成"
+                '作成'
               )}
             </Button>
           </DialogFooter>
@@ -1258,16 +1165,11 @@ export default function WorkTimeEntryForm() {
       </Dialog>
 
       {/* 新規プリセット作成ダイアログ */}
-      <Dialog
-        open={isNewPresetDialogOpen}
-        onOpenChange={setIsNewPresetDialogOpen}
-      >
+      <Dialog open={isNewPresetDialogOpen} onOpenChange={setIsNewPresetDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>新しいプリセットを作成</DialogTitle>
-            <DialogDescription>
-              よく使う作業内容をプリセットとして保存できます。
-            </DialogDescription>
+            <DialogDescription>よく使う作業内容をプリセットとして保存できます。</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -1294,10 +1196,7 @@ export default function WorkTimeEntryForm() {
 
             <div className="space-y-2">
               <Label htmlFor="newPresetProjectId">プロジェクト</Label>
-              <Select
-                value={newPresetProjectId}
-                onValueChange={setNewPresetProjectId}
-              >
+              <Select value={newPresetProjectId} onValueChange={setNewPresetProjectId}>
                 <SelectTrigger id="newPresetProjectId">
                   <SelectValue placeholder="プロジェクトを選択" />
                 </SelectTrigger>
@@ -1305,9 +1204,7 @@ export default function WorkTimeEntryForm() {
                   {projects.map((project) => (
                     <SelectItem key={project._id} value={project._id}>
                       <div className="flex items-center gap-2">
-                        <div
-                          className={`w-2 h-2 rounded-full ${project.color}`}
-                        ></div>
+                        <div className={`w-2 h-2 rounded-full ${project.color}`}></div>
                         <span>{project.name}</span>
                       </div>
                     </SelectItem>
@@ -1330,10 +1227,7 @@ export default function WorkTimeEntryForm() {
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsNewPresetDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setIsNewPresetDialogOpen(false)}>
               キャンセル
             </Button>
             <Button onClick={handleSavePreset} disabled={isSubmitting}>
@@ -1343,7 +1237,7 @@ export default function WorkTimeEntryForm() {
                   保存中...
                 </>
               ) : (
-                "保存"
+                '保存'
               )}
             </Button>
           </DialogFooter>
