@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -54,200 +54,76 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  phase: string;
-  status: 'not-started' | 'in-progress' | 'completed' | 'blocked';
-  assignee?: string;
-  checklist: ChecklistItem[];
-  startDate?: string;
-  completedDate?: string;
-  estimatedHours: number;
-  actualHours: number;
-  branch?: string;
-  pr?: string;
-}
-
-interface ChecklistItem {
-  id: string;
-  label: string;
-  completed: boolean;
-}
-
-interface ImplementationLog {
-  id: string;
-  timestamp: string;
-  user: string;
-  action: string;
-  details?: string;
-}
-
-// AI提案タスクのインターフェース
-interface SuggestedTask {
-  id: string;
-  title: string;
-  description: string;
-  reason: string;
-  estimatedHours: number;
-  priority: 'high' | 'medium' | 'low';
-  dependencies?: string[];
-  checklist: string[];
-}
+import { Task, SuggestedTask, TeamMember } from '@/types/implementation';
+import { useImplementation } from '@/hooks/useImplementation';
 
 const ImprovementImplementation: React.FC = () => {
   const navigate = useNavigate();
   const [activePhase, setActivePhase] = useState('phase1');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [implementationLogs, setImplementationLogs] = useState<ImplementationLog[]>([]);
   const [newNote, setNewNote] = useState('');
   const [showTaskDialog, setShowTaskDialog] = useState(false);
   const [showAISuggestionsDialog, setShowAISuggestionsDialog] = useState(false);
   const [suggestedTasks, setSuggestedTasks] = useState<SuggestedTask[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [newTaskData, setNewTaskData] = useState({
+    title: '',
+    description: '',
+    estimatedHours: 8,
+    assignee: '',
+  });
 
-  // タスクデータ（実際の実装では、バックエンドから取得）
-  const [tasks, setTasks] = useState<Task[]>([
+  // プロジェクトIDを設定（実際の実装では動的に取得）
+  const currentProjectId = 'site-improvement-2024';
+
+  // カスタムフックを使用
+  const {
+    tasks,
+    logs: implementationLogs,
+    currentProject,
+    isLoading,
+    error,
+    createTask,
+    updateTask,
+    updateTaskStatus,
+    updateChecklist,
+    refreshData,
+  } = useImplementation(currentProjectId);
+
+  // チームメンバー（実際の実装では、プロジェクトから取得またはユーザー管理から取得）
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     {
-      id: 'ui-audit',
-      title: 'UIコンポーネント監査',
-      description: '全てのコンポーネントをリストアップし、使用しているUIライブラリを特定',
-      phase: 'phase1',
-      status: 'in-progress',
-      assignee: 'user1',
-      estimatedHours: 16,
-      actualHours: 8,
-      checklist: [
-        { id: 'c1', label: 'Material-UIコンポーネントのリストアップ', completed: true },
-        { id: 'c2', label: 'Radix UIコンポーネントのマッピング', completed: true },
-        { id: 'c3', label: 'shadcn-ui相当品の特定', completed: false },
-        { id: 'c4', label: '移行優先順位の決定', completed: false },
-      ],
-      startDate: '2024-02-01',
-      branch: 'feature/ui-library-audit',
+      id: 'user1',
+      name: '田中 太郎',
+      email: 'tanaka@example.com',
+      avatar: '',
+      role: 'フロントエンド',
+      skills: ['React', 'TypeScript', 'UI/UX'],
+      availability: 'available',
+      workload: 70,
     },
     {
-      id: 'button-migration',
-      title: 'ボタンコンポーネントの移行',
-      description: 'Material-UIのButtonコンポーネントをshadcn-uiに置き換え',
-      phase: 'phase1',
-      status: 'not-started',
-      estimatedHours: 8,
-      actualHours: 0,
-      checklist: [
-        { id: 'b1', label: 'ボタンコンポーネントの使用箇所特定', completed: false },
-        { id: 'b2', label: 'shadcn-ui Buttonの実装', completed: false },
-        { id: 'b3', label: 'スタイルの調整', completed: false },
-        { id: 'b4', label: 'テストの更新', completed: false },
-      ],
+      id: 'user2',
+      name: '佐藤 花子',
+      email: 'sato@example.com',
+      avatar: '',
+      role: 'バックエンド',
+      skills: ['Node.js', 'Firebase', 'API'],
+      availability: 'busy',
+      workload: 90,
+    },
+    {
+      id: 'user3',
+      name: '鈴木 一郎',
+      email: 'suzuki@example.com',
+      avatar: '',
+      role: 'フルスタック',
+      skills: ['React', 'Node.js', 'DevOps'],
+      availability: 'available',
+      workload: 50,
     },
   ]);
-
-  // フェーズごとの進捗計算
-  const calculatePhaseProgress = (phase: string) => {
-    const phaseTasks = tasks.filter((t) => t.phase === phase);
-    if (phaseTasks.length === 0) return 0;
-
-    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
-    return Math.round((completedTasks / phaseTasks.length) * 100);
-  };
-
-  // タスクの進捗計算
-  const calculateTaskProgress = (task: Task) => {
-    if (task.checklist.length === 0) return 0;
-    const completed = task.checklist.filter((item) => item.completed).length;
-    return Math.round((completed / task.checklist.length) * 100);
-  };
-
-  // チェックリストの更新
-  const updateChecklist = (taskId: string, checklistId: string, completed: boolean) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            checklist: task.checklist.map((item) =>
-              item.id === checklistId ? { ...item, completed } : item
-            ),
-          };
-        }
-        return task;
-      })
-    );
-
-    // ログに記録
-    addLog('checklist_update', `チェックリスト項目を${completed ? '完了' : '未完了'}に更新`);
-  };
-
-  // タスクステータスの更新
-  const updateTaskStatus = (taskId: string, status: Task['status']) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          const updates: Partial<Task> = { status };
-          if (status === 'in-progress' && !task.startDate) {
-            updates.startDate = new Date().toISOString().split('T')[0];
-          }
-          if (status === 'completed') {
-            updates.completedDate = new Date().toISOString().split('T')[0];
-          }
-          return { ...task, ...updates };
-        }
-        return task;
-      })
-    );
-
-    const task = tasks.find((t) => t.id === taskId);
-    addLog('status_update', `「${task?.title}」のステータスを${status}に更新`);
-    toast.success('タスクステータスを更新しました');
-  };
-
-  // ログの追加
-  const addLog = (action: string, details?: string) => {
-    const newLog: ImplementationLog = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      user: 'current-user', // 実際の実装では認証情報から取得
-      action,
-      details,
-    };
-    setImplementationLogs((prev) => [newLog, ...prev]);
-  };
-
-  // ノートの追加
-  const addNote = () => {
-    if (!newNote.trim()) return;
-    addLog('note_added', newNote);
-    setNewNote('');
-    toast.success('メモを追加しました');
-  };
-
-  // GitHubブランチの作成（モック）
-  const createBranch = (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    const branchName = `feature/${task.id}`;
-    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, branch: branchName } : t)));
-
-    addLog('branch_created', `ブランチ「${branchName}」を作成`);
-    toast.success('GitHubブランチを作成しました');
-  };
-
-  // プルリクエストの作成（モック）
-  const createPR = (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    const prUrl = `https://github.com/example/repo/pull/${Math.floor(Math.random() * 1000)}`;
-    setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, pr: prUrl } : t)));
-
-    addLog('pr_created', `「${task.title}」のPRを作成`);
-    toast.success('プルリクエストを作成しました');
-  };
 
   // 実装リソース
   const resources = [
@@ -273,116 +149,291 @@ const ImprovementImplementation: React.FC = () => {
     },
   ];
 
-  // チームメンバー（モック）
-  const teamMembers = [
-    { id: 'user1', name: '田中 太郎', avatar: '', role: 'フロントエンド' },
-    { id: 'user2', name: '佐藤 花子', avatar: '', role: 'バックエンド' },
-    { id: 'user3', name: '鈴木 一郎', avatar: '', role: 'フルスタック' },
-  ];
+  // 初期化
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  // フェーズごとの進捗計算
+  const calculatePhaseProgress = (phase: string) => {
+    const phaseTasks = tasks.filter((t) => t.phase === phase);
+    if (phaseTasks.length === 0) return 0;
+
+    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
+    return Math.round((completedTasks / phaseTasks.length) * 100);
+  };
+
+  // タスクの進捗計算
+  const calculateTaskProgress = (task: Task) => {
+    if (task.checklist.length === 0) return 0;
+    const completed = task.checklist.filter((item) => item.completed).length;
+    return Math.round((completed / task.checklist.length) * 100);
+  };
+
+  // チェックリストの更新
+  const handleUpdateChecklist = async (taskId: string, checklistId: string, completed: boolean) => {
+    const success = await updateChecklist(taskId, checklistId, completed);
+    if (success) {
+      // UIは自動的に更新される（リアルタイム監視により）
+    }
+  };
+
+  // タスクステータスの更新
+  const handleUpdateTaskStatus = async (taskId: string, status: Task['status']) => {
+    const success = await updateTaskStatus(taskId, status);
+    if (success) {
+      // UIは自動的に更新される
+    }
+  };
+
+  // ノートの追加
+  const addNote = async () => {
+    if (!newNote.trim()) return;
+
+    // 実装ログとしてメモを追加
+    try {
+      // implementationServiceのaddLogを直接呼び出す
+      await import('@/services/implementationService').then(({ implementationService }) => {
+        return implementationService.addLog({
+          action: 'note_added',
+          details: newNote,
+          projectId: currentProjectId,
+          userId: 'current-user', // 実際の実装では認証情報から取得
+          user: 'Current User',
+        });
+      });
+
+      setNewNote('');
+      toast.success('メモを追加しました');
+      refreshData();
+    } catch (error) {
+      toast.error('メモの追加に失敗しました');
+    }
+  };
+
+  // GitHubブランチの作成（実装予定）
+  const createBranch = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    try {
+      // GitHub Service を使用してブランチを作成
+      // const branchName = `feature/${task.id}`;
+      // const result = await githubService.createBranch(branchName);
+
+      // モックとして更新
+      await updateTask(taskId, {
+        branch: `feature/${task.id}`,
+        notes: task.notes + '\nGitHubブランチを作成しました',
+      });
+
+      toast.success('GitHubブランチを作成しました');
+    } catch (error) {
+      toast.error('ブランチの作成に失敗しました');
+    }
+  };
+
+  // プルリクエストの作成（実装予定）
+  const createPR = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    try {
+      // GitHub Service を使用してPRを作成
+      const prUrl = `https://github.com/example/repo/pull/${Math.floor(Math.random() * 1000)}`;
+
+      await updateTask(taskId, {
+        pr: prUrl,
+        notes: task.notes + '\nプルリクエストを作成しました',
+      });
+
+      toast.success('プルリクエストを作成しました');
+    } catch (error) {
+      toast.error('プルリクエストの作成に失敗しました');
+    }
+  };
 
   // AI分析とタスク提案のロジック
   const analyzeTasks = async () => {
     setIsAnalyzing(true);
 
-    // 実際の実装では、ここでAI APIを呼び出す
-    // 現在のタスクを分析して、不足しているタスクや関連タスクを提案
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // シミュレート
+    try {
+      // 実際の実装では、AI分析サービスを使用
+      // const result = await aiImplementationService.analyzeTasks(tasks, 'UIライブラリ統一プロジェクト');
 
-    const suggestions: SuggestedTask[] = [
-      {
-        id: 'sg-1',
-        title: 'UIコンポーネントのテスト戦略策定',
-        description: '新しいUIライブラリに移行後のテスト方針とテストケースの整備',
-        reason: '既存タスクにテスト関連の詳細が不足しています。品質保証のために必要です。',
-        estimatedHours: 12,
-        priority: 'high',
-        dependencies: ['ui-audit', 'button-migration'],
-        checklist: [
-          'ユニットテストフレームワークの選定',
-          'コンポーネントテストのベストプラクティス文書化',
-          'スナップショットテストの導入検討',
-          'E2Eテストの影響範囲確認',
-        ],
-      },
-      {
-        id: 'sg-2',
-        title: 'デザインシステムドキュメントの更新',
-        description: 'shadcn-ui移行に伴うデザインシステムドキュメントの更新',
-        reason: 'UIライブラリの変更により、デザインガイドラインの更新が必要です。',
-        estimatedHours: 8,
-        priority: 'medium',
-        checklist: [
-          'コンポーネントカタログの更新',
-          'デザイントークンの整理',
-          'Storybookの設定更新',
-          '開発者向けガイドの作成',
-        ],
-      },
-      {
-        id: 'sg-3',
-        title: 'パフォーマンス計測基準の設定',
-        description: 'UIライブラリ移行前後のパフォーマンス比較のための計測環境構築',
-        reason: '移行の効果を定量的に測定するために必要です。',
-        estimatedHours: 6,
-        priority: 'medium',
-        dependencies: ['ui-audit'],
-        checklist: [
-          'Lighthouse CI の設定',
-          '主要ページのベンチマーク取得',
-          'バンドルサイズの計測',
-          'ランタイムパフォーマンスの測定',
-        ],
-      },
-      {
-        id: 'sg-4',
-        title: '段階的移行のためのラッパーコンポーネント作成',
-        description: '既存コンポーネントから新UIライブラリへの段階的移行を支援するラッパー',
-        reason: '大規模な移行をリスクを抑えて実施するために推奨されます。',
-        estimatedHours: 16,
-        priority: 'high',
-        checklist: [
-          'ラッパーコンポーネントの設計',
-          'APIの互換性マッピング',
-          '移行ヘルパー関数の実装',
-          '段階的廃止計画の策定',
-        ],
-      },
-    ];
+      // モックデータを使用
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    setSuggestedTasks(suggestions);
-    setIsAnalyzing(false);
-    setShowAISuggestionsDialog(true);
+      const suggestions: SuggestedTask[] = [
+        {
+          id: 'sg-1',
+          title: 'UIコンポーネントのテスト戦略策定',
+          description: '新しいUIライブラリに移行後のテスト方針とテストケースの整備',
+          reason: '既存タスクにテスト関連の詳細が不足しています。品質保証のために必要です。',
+          estimatedHours: 12,
+          priority: 'high',
+          dependencies: ['ui-audit', 'button-migration'],
+          checklist: [
+            'ユニットテストフレームワークの選定',
+            'コンポーネントテストのベストプラクティス文書化',
+            'スナップショットテストの導入検討',
+            'E2Eテストの影響範囲確認',
+          ],
+          phase: activePhase,
+          tags: ['testing', 'quality'],
+          confidence: 0.9,
+          source: 'ai_analysis',
+        },
+        {
+          id: 'sg-2',
+          title: 'デザインシステムドキュメントの更新',
+          description: 'shadcn-ui移行に伴うデザインシステムドキュメントの更新',
+          reason: 'UIライブラリの変更により、デザインガイドラインの更新が必要です。',
+          estimatedHours: 8,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            'コンポーネントカタログの更新',
+            'デザイントークンの整理',
+            'Storybookの設定更新',
+            '開発者向けガイドの作成',
+          ],
+          phase: activePhase,
+          tags: ['documentation', 'design'],
+          confidence: 0.8,
+          source: 'ai_analysis',
+        },
+        {
+          id: 'sg-3',
+          title: 'パフォーマンス計測基準の設定',
+          description: 'UIライブラリ移行前後のパフォーマンス比較のための計測環境構築',
+          reason: '移行の効果を定量的に測定するために必要です。',
+          estimatedHours: 6,
+          priority: 'medium',
+          dependencies: ['ui-audit'],
+          checklist: [
+            'Lighthouse CI の設定',
+            '主要ページのベンチマーク取得',
+            'バンドルサイズの計測',
+            'ランタイムパフォーマンスの測定',
+          ],
+          phase: activePhase,
+          tags: ['performance', 'metrics'],
+          confidence: 0.7,
+          source: 'ai_analysis',
+        },
+        {
+          id: 'sg-4',
+          title: '段階的移行のためのラッパーコンポーネント作成',
+          description: '既存コンポーネントから新UIライブラリへの段階的移行を支援するラッパー',
+          reason: '大規模な移行をリスクを抑えて実施するために推奨されます。',
+          estimatedHours: 16,
+          priority: 'high',
+          dependencies: [],
+          checklist: [
+            'ラッパーコンポーネントの設計',
+            'APIの互換性マッピング',
+            '移行ヘルパー関数の実装',
+            '段階的廃止計画の策定',
+          ],
+          phase: activePhase,
+          tags: ['migration', 'components'],
+          confidence: 0.85,
+          source: 'ai_analysis',
+        },
+      ];
 
-    addLog('ai_analysis', 'AIがタスクを分析し、4件の追加タスクを提案しました');
+      setSuggestedTasks(suggestions);
+      setShowAISuggestionsDialog(true);
+
+      // ログに記録
+      await import('@/services/implementationService').then(({ implementationService }) => {
+        return implementationService.addLog({
+          action: 'ai_analysis',
+          details: `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
+          projectId: currentProjectId,
+          userId: 'current-user',
+          user: 'Current User',
+        });
+      });
+    } catch (error) {
+      toast.error('AI分析でエラーが発生しました');
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   // 選択された提案タスクを追加
-  const addSuggestedTasks = () => {
-    const tasksToAdd = suggestedTasks
-      .filter((st) => selectedSuggestions.includes(st.id))
-      .map((st) => ({
-        id: `task-${Date.now()}-${st.id}`,
-        title: st.title,
-        description: st.description,
-        phase: activePhase,
-        status: 'not-started' as const,
-        estimatedHours: st.estimatedHours,
-        actualHours: 0,
-        checklist: st.checklist.map((item, index) => ({
-          id: `cl-${Date.now()}-${index}`,
-          label: item,
-          completed: false,
-        })),
-      }));
+  const addSuggestedTasks = async () => {
+    const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
 
-    setTasks((prev) => [...prev, ...tasksToAdd]);
+    try {
+      for (const suggestionTask of tasksToAdd) {
+        const taskData = {
+          title: suggestionTask.title,
+          description: suggestionTask.description,
+          phase: suggestionTask.phase,
+          status: 'not-started' as const,
+          estimatedHours: suggestionTask.estimatedHours,
+          actualHours: 0,
+          projectId: currentProjectId,
+          checklist: suggestionTask.checklist.map((item, index) => ({
+            id: `cl-${Date.now()}-${index}`,
+            label: item,
+            completed: false,
+            createdAt: new Date().toISOString(),
+          })),
+          priority: suggestionTask.priority as Task['priority'],
+          tags: suggestionTask.tags,
+          dependencies: suggestionTask.dependencies,
+          notes: `AI提案: ${suggestionTask.reason}`,
+        };
 
-    addLog('tasks_added', `AIの提案から${tasksToAdd.length}件のタスクを追加しました`);
-    toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
+        await createTask(taskData);
+      }
 
-    setShowAISuggestionsDialog(false);
-    setSelectedSuggestions([]);
-    setSuggestedTasks([]);
+      toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
+      setShowAISuggestionsDialog(false);
+      setSelectedSuggestions([]);
+      setSuggestedTasks([]);
+    } catch (error) {
+      toast.error('タスクの追加でエラーが発生しました');
+    }
+  };
+
+  // 新しいタスクの作成
+  const handleCreateTask = async () => {
+    if (!newTaskData.title.trim()) {
+      toast.error('タスク名を入力してください');
+      return;
+    }
+
+    const taskData = {
+      title: newTaskData.title,
+      description: newTaskData.description,
+      phase: activePhase,
+      status: 'not-started' as const,
+      estimatedHours: newTaskData.estimatedHours,
+      actualHours: 0,
+      projectId: currentProjectId,
+      checklist: [],
+      priority: 'medium' as const,
+      tags: [activePhase],
+      dependencies: [],
+      notes: '',
+      assignee: newTaskData.assignee || undefined,
+    };
+
+    const success = await createTask(taskData);
+    if (success) {
+      setShowTaskDialog(false);
+      setNewTaskData({
+        title: '',
+        description: '',
+        estimatedHours: 8,
+        assignee: '',
+      });
+    }
   };
 
   // 提案の選択/解除
@@ -413,7 +464,12 @@ const ImprovementImplementation: React.FC = () => {
         </div>
         <div className="flex items-center gap-4">
           <Badge variant="outline" className="text-lg px-4 py-2">
-            全体進捗: 25%
+            全体進捗:{' '}
+            {Math.round(
+              (tasks.filter((t) => t.status === 'completed').length / Math.max(tasks.length, 1)) *
+                100
+            )}
+            %
           </Badge>
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
@@ -421,6 +477,15 @@ const ImprovementImplementation: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* エラー表示 */}
+      {error && (
+        <Alert className="mb-6 border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertTitle className="text-red-800">エラー</AlertTitle>
+          <AlertDescription className="text-red-700">{error}</AlertDescription>
+        </Alert>
+      )}
 
       {/* フェーズ選択タブ */}
       <Tabs value={activePhase} onValueChange={setActivePhase} className="space-y-6">
@@ -434,13 +499,13 @@ const ImprovementImplementation: React.FC = () => {
           <TabsTrigger value="phase2" disabled>
             Phase 2
             <Badge variant="outline" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
-              0%
+              {calculatePhaseProgress('phase2')}%
             </Badge>
           </TabsTrigger>
           <TabsTrigger value="phase3" disabled>
             Phase 3
             <Badge variant="outline" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
-              0%
+              {calculatePhaseProgress('phase3')}%
             </Badge>
           </TabsTrigger>
         </TabsList>
@@ -481,99 +546,121 @@ const ImprovementImplementation: React.FC = () => {
                   <CardDescription>Material-UI、Radix UI、shadcn-uiの統合作業</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {tasks
-                    .filter((task) => task.phase === activePhase)
-                    .map((task) => (
-                      <Card
-                        key={task.id}
-                        className={`p-4 cursor-pointer transition-colors ${
-                          selectedTask?.id === task.id ? 'border-primary' : ''
-                        }`}
-                        onClick={() => setSelectedTask(task)}
+                  {isLoading ? (
+                    <div className="text-center py-8">
+                      <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2" />
+                      <p className="text-muted-foreground">タスクを読み込み中...</p>
+                    </div>
+                  ) : tasks.filter((task) => task.phase === activePhase).length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">
+                        このフェーズにはまだタスクがありません
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowTaskDialog(true)}
+                        className="mt-2"
                       >
-                        <div className="space-y-3">
-                          <div className="flex items-start justify-between">
+                        <Plus className="h-4 w-4 mr-2" />
+                        最初のタスクを追加
+                      </Button>
+                    </div>
+                  ) : (
+                    tasks
+                      .filter((task) => task.phase === activePhase)
+                      .map((task) => (
+                        <Card
+                          key={task.id}
+                          className={`p-4 cursor-pointer transition-colors ${
+                            selectedTask?.id === task.id ? 'border-primary' : ''
+                          }`}
+                          onClick={() => setSelectedTask(task)}
+                        >
+                          <div className="space-y-3">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-1">
+                                <h4 className="font-semibold flex items-center gap-2">
+                                  {task.status === 'completed' && (
+                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                  )}
+                                  {task.status === 'in-progress' && (
+                                    <Clock className="h-4 w-4 text-blue-500" />
+                                  )}
+                                  {task.status === 'blocked' && (
+                                    <AlertCircle className="h-4 w-4 text-red-500" />
+                                  )}
+                                  {task.title}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{task.description}</p>
+                              </div>
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <Select
+                                  value={task.status}
+                                  onValueChange={(value) =>
+                                    handleUpdateTaskStatus(task.id, value as Task['status'])
+                                  }
+                                >
+                                  <SelectTrigger className="w-32 h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="not-started">未着手</SelectItem>
+                                    <SelectItem value="in-progress">進行中</SelectItem>
+                                    <SelectItem value="completed">完了</SelectItem>
+                                    <SelectItem value="blocked">ブロック</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-4">
+                                {task.assignee && (
+                                  <div className="flex items-center gap-2">
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarFallback>
+                                        {teamMembers
+                                          .find((m) => m.id === task.assignee)
+                                          ?.name.charAt(0)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-muted-foreground">
+                                      {teamMembers.find((m) => m.id === task.assignee)?.name}
+                                    </span>
+                                  </div>
+                                )}
+                                <span className="text-muted-foreground">
+                                  {task.actualHours}/{task.estimatedHours}h
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {task.branch && (
+                                  <Badge variant="outline" className="text-xs">
+                                    <GitBranch className="h-3 w-3 mr-1" />
+                                    {task.branch}
+                                  </Badge>
+                                )}
+                                {task.pr && (
+                                  <Badge variant="outline" className="text-xs">
+                                    <Github className="h-3 w-3 mr-1" />
+                                    PR
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
                             <div className="space-y-1">
-                              <h4 className="font-semibold flex items-center gap-2">
-                                {task.status === 'completed' && (
-                                  <CheckCircle className="h-4 w-4 text-green-500" />
-                                )}
-                                {task.status === 'in-progress' && (
-                                  <Clock className="h-4 w-4 text-blue-500" />
-                                )}
-                                {task.status === 'blocked' && (
-                                  <AlertCircle className="h-4 w-4 text-red-500" />
-                                )}
-                                {task.title}
-                              </h4>
-                              <p className="text-sm text-muted-foreground">{task.description}</p>
-                            </div>
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <Select
-                                value={task.status}
-                                onValueChange={(value) =>
-                                  updateTaskStatus(task.id, value as Task['status'])
-                                }
-                              >
-                                <SelectTrigger className="w-32 h-8">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="not-started">未着手</SelectItem>
-                                  <SelectItem value="in-progress">進行中</SelectItem>
-                                  <SelectItem value="completed">完了</SelectItem>
-                                  <SelectItem value="blocked">ブロック</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <div className="flex justify-between text-xs mb-1">
+                                <span>進捗</span>
+                                <span>{calculateTaskProgress(task)}%</span>
+                              </div>
+                              <Progress value={calculateTaskProgress(task)} className="h-2" />
                             </div>
                           </div>
-
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-4">
-                              {task.assignee && (
-                                <div className="flex items-center gap-2">
-                                  <Avatar className="h-6 w-6">
-                                    <AvatarFallback>
-                                      {teamMembers
-                                        .find((m) => m.id === task.assignee)
-                                        ?.name.charAt(0)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span className="text-muted-foreground">
-                                    {teamMembers.find((m) => m.id === task.assignee)?.name}
-                                  </span>
-                                </div>
-                              )}
-                              <span className="text-muted-foreground">
-                                {task.actualHours}/{task.estimatedHours}h
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {task.branch && (
-                                <Badge variant="outline" className="text-xs">
-                                  <GitBranch className="h-3 w-3 mr-1" />
-                                  {task.branch}
-                                </Badge>
-                              )}
-                              {task.pr && (
-                                <Badge variant="outline" className="text-xs">
-                                  <Github className="h-3 w-3 mr-1" />
-                                  PR
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-xs mb-1">
-                              <span>進捗</span>
-                              <span>{calculateTaskProgress(task)}%</span>
-                            </div>
-                            <Progress value={calculateTaskProgress(task)} className="h-2" />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      ))
+                  )}
                 </CardContent>
               </Card>
 
@@ -586,21 +673,27 @@ const ImprovementImplementation: React.FC = () => {
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <h4 className="font-semibold">チェックリスト</h4>
-                      {selectedTask.checklist.map((item) => (
-                        <label key={item.id} className="flex items-center gap-2 cursor-pointer">
-                          <Checkbox
-                            checked={item.completed}
-                            onCheckedChange={(checked) =>
-                              updateChecklist(selectedTask.id, item.id, checked as boolean)
-                            }
-                          />
-                          <span
-                            className={item.completed ? 'line-through text-muted-foreground' : ''}
-                          >
-                            {item.label}
-                          </span>
-                        </label>
-                      ))}
+                      {selectedTask.checklist.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          チェックリスト項目がありません
+                        </p>
+                      ) : (
+                        selectedTask.checklist.map((item) => (
+                          <label key={item.id} className="flex items-center gap-2 cursor-pointer">
+                            <Checkbox
+                              checked={item.completed}
+                              onCheckedChange={(checked) =>
+                                handleUpdateChecklist(selectedTask.id, item.id, checked as boolean)
+                              }
+                            />
+                            <span
+                              className={item.completed ? 'line-through text-muted-foreground' : ''}
+                            >
+                              {item.label}
+                            </span>
+                          </label>
+                        ))
+                      )}
                     </div>
 
                     <Separator />
@@ -656,9 +749,28 @@ const ImprovementImplementation: React.FC = () => {
                       <Avatar>
                         <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div>
+                      <div className="flex-1">
                         <p className="text-sm font-medium">{member.name}</p>
                         <p className="text-xs text-muted-foreground">{member.role}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${
+                              member.availability === 'available'
+                                ? 'text-green-700 border-green-200'
+                                : member.availability === 'busy'
+                                  ? 'text-red-700 border-red-200'
+                                  : 'text-gray-700 border-gray-200'
+                            }`}
+                          >
+                            {member.availability === 'available' && '空き'}
+                            {member.availability === 'busy' && '多忙'}
+                            {member.availability === 'unavailable' && '不在'}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            負荷: {member.workload}%
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -706,7 +818,12 @@ const ImprovementImplementation: React.FC = () => {
                       onChange={(e) => setNewNote(e.target.value)}
                       className="min-h-[80px]"
                     />
-                    <Button size="sm" onClick={addNote} className="w-full">
+                    <Button
+                      size="sm"
+                      onClick={addNote}
+                      className="w-full"
+                      disabled={!newNote.trim()}
+                    >
                       メモを追加
                     </Button>
                   </div>
@@ -754,7 +871,7 @@ const ImprovementImplementation: React.FC = () => {
         </TabsContent>
       </Tabs>
 
-      {/* タスク追加ダイアログ（簡易版） */}
+      {/* タスク追加ダイアログ */}
       <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
         <DialogContent>
           <DialogHeader>
@@ -768,11 +885,18 @@ const ImprovementImplementation: React.FC = () => {
                 id="task-title"
                 className="w-full px-3 py-2 border rounded-md"
                 placeholder="例: フォームコンポーネントの移行"
+                value={newTaskData.title}
+                onChange={(e) => setNewTaskData({ ...newTaskData, title: e.target.value })}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="task-description">説明</Label>
-              <Textarea id="task-description" placeholder="タスクの詳細な説明を入力..." />
+              <Textarea
+                id="task-description"
+                placeholder="タスクの詳細な説明を入力..."
+                value={newTaskData.description}
+                onChange={(e) => setNewTaskData({ ...newTaskData, description: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -782,11 +906,21 @@ const ImprovementImplementation: React.FC = () => {
                   type="number"
                   className="w-full px-3 py-2 border rounded-md"
                   placeholder="8"
+                  value={newTaskData.estimatedHours}
+                  onChange={(e) =>
+                    setNewTaskData({
+                      ...newTaskData,
+                      estimatedHours: parseInt(e.target.value) || 8,
+                    })
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="assignee">担当者</Label>
-                <Select>
+                <Select
+                  value={newTaskData.assignee}
+                  onValueChange={(value) => setNewTaskData({ ...newTaskData, assignee: value })}
+                >
                   <SelectTrigger id="assignee">
                     <SelectValue placeholder="選択..." />
                   </SelectTrigger>
@@ -805,13 +939,8 @@ const ImprovementImplementation: React.FC = () => {
             <Button variant="outline" onClick={() => setShowTaskDialog(false)}>
               キャンセル
             </Button>
-            <Button
-              onClick={() => {
-                setShowTaskDialog(false);
-                toast.success('タスクを追加しました');
-              }}
-            >
-              追加
+            <Button onClick={handleCreateTask} disabled={isLoading}>
+              {isLoading ? '作成中...' : '追加'}
             </Button>
           </DialogFooter>
         </DialogContent>
