@@ -523,6 +523,10 @@ const SiteImprovementPlan: React.FC = () => {
                   <AlertDescription className={phase === 'phase0' ? 'text-green-700' : ''}>
                     <p>{data.description}</p>
                     <p className="mt-1 font-semibold">推定期間: {data.duration}</p>
+                    <div className="mt-2">
+                      <Progress value={data.progress} className="w-full" />
+                      <p className="text-xs mt-1">進捗: {data.progress}%</p>
+                    </div>
                   </AlertDescription>
                 </Alert>
 
@@ -532,41 +536,53 @@ const SiteImprovementPlan: React.FC = () => {
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-start gap-3">
                           {getStatusIcon(item.status)}
-                          <div>
+                          <div className="flex-1">
                             <h4 className="font-semibold text-sm">{item.title}</h4>
                             <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                           </div>
                         </div>
-                        <Badge
-                          variant="outline"
-                          className={`ml-2 ${getPriorityColor(item.priority)}`}
-                        >
-                          {item.priority === 'critical' && '最重要'}
-                          {item.priority === 'high' && '重要'}
-                          {item.priority === 'medium' && '中'}
-                          {item.priority === 'low' && '低'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={`${getPriorityColor(item.priority)}`}>
+                            {item.priority === 'critical' && '最重要'}
+                            {item.priority === 'high' && '重要'}
+                            {item.priority === 'medium' && '中'}
+                            {item.priority === 'low' && '低'}
+                          </Badge>
+                          {hasImplementationTasks(item.id) ? (
+                            <Badge variant="outline" className="bg-green-100 text-green-800">
+                              実装中
+                            </Badge>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedItem(item);
+                                setShowImplementationDialog(true);
+                              }}
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              実装開始
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
-                      {item.estimatedDays && (
-                        <div className="text-xs text-muted-foreground mt-2">
+                      <div className="flex items-center justify-between text-sm mt-3">
+                        <div className="text-muted-foreground">
                           推定作業日数: {item.estimatedDays}日
                         </div>
-                      )}
+                        {item.progress !== undefined && item.progress > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Progress value={item.progress} className="w-20 h-2" />
+                            <span className="text-xs text-muted-foreground">{item.progress}%</span>
+                          </div>
+                        )}
+                      </div>
 
                       {item.dependencies && item.dependencies.length > 0 && (
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="text-xs text-muted-foreground mt-2">
                           依存: {item.dependencies.join(', ')}
-                        </div>
-                      )}
-
-                      {item.progress !== undefined && item.status === 'in-progress' && (
-                        <div className="mt-3">
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>進捗</span>
-                            <span>{item.progress}%</span>
-                          </div>
-                          <Progress value={item.progress} className="h-2" />
                         </div>
                       )}
                     </Card>
@@ -578,21 +594,61 @@ const SiteImprovementPlan: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* アクションボタン */}
-      <div className="mt-8 flex justify-center gap-4">
-        <Button
-          size="lg"
-          className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-          onClick={() => navigate('/improvement-plan/implementation')}
-        >
-          <Play className="mr-2 h-4 w-4" />
-          MVP実装を開始
-        </Button>
-        <Button size="lg" variant="outline" onClick={() => navigate('/improvement-plan/detail')}>
-          改善計画の詳細を見る
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      {/* 実装開始ダイアログ */}
+      <Dialog open={showImplementationDialog} onOpenChange={setShowImplementationDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>実装タスクの作成</DialogTitle>
+            <DialogDescription>
+              改善項目「{selectedItem?.title}」の実装タスクを作成します
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {selectedItem && (
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold">概要</h4>
+                  <p className="text-sm text-muted-foreground">{selectedItem.description}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-semibold text-sm">推定期間</h4>
+                    <p className="text-sm">{selectedItem.estimatedDays}日</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm">優先度</h4>
+                    <Badge className={getPriorityColor(selectedItem.priority)}>
+                      {selectedItem.priority === 'critical' && '最重要'}
+                      {selectedItem.priority === 'high' && '重要'}
+                      {selectedItem.priority === 'medium' && '中'}
+                      {selectedItem.priority === 'low' && '低'}
+                    </Badge>
+                  </div>
+                </div>
+                {selectedItem.dependencies && selectedItem.dependencies.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-sm">依存関係</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedItem.dependencies.join(', ')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImplementationDialog(false)}>
+              キャンセル
+            </Button>
+            <Button
+              onClick={() => selectedItem && startImplementation(selectedItem)}
+              disabled={isLoading}
+            >
+              {isLoading ? '作成中...' : '実装タスクを作成'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
