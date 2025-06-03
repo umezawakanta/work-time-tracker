@@ -32,6 +32,7 @@ import {
   TrendingUp,
   Zap,
   Shield,
+  Palette,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -752,6 +753,13 @@ export default function Layout({ children }: LayoutProps) {
         label: 'ヘルプ',
         path: '/help',
         description: '使い方ガイドとよくある質問',
+      },
+      {
+        icon: <Palette size={18} />,
+        label: 'サイト改善計画',
+        path: '/improvement-plan',
+        description: 'サイトの技術的改善計画と進捗を確認',
+        badge: 'NEW',
       },
     ],
     []
