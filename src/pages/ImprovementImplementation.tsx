@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -819,7 +820,7 @@ const ImprovementImplementation: React.FC = () => {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
                       >
-                        {resource.icon}
+                        {resource.icon || <FileText className="h-3 w-3" />}
                         <span>{resource.title}</span>
                         <ExternalLink className="h-3 w-3 ml-auto" />
                       </a>
@@ -907,9 +908,8 @@ const ImprovementImplementation: React.FC = () => {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="task-title">タスク名</Label>
-              <input
+              <Input
                 id="task-title"
-                className="w-full px-3 py-2 border rounded-md"
                 placeholder="例: フォームコンポーネントの移行"
                 value={newTaskData.title}
                 onChange={(e) => setNewTaskData({ ...newTaskData, title: e.target.value })}
@@ -927,12 +927,11 @@ const ImprovementImplementation: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="estimated-hours">予定工数（時間）</Label>
-                <input
+                <Input
                   id="estimated-hours"
                   type="number"
-                  className="w-full px-3 py-2 border rounded-md"
                   placeholder="8"
-                  value={newTaskData.estimatedHours}
+                  value={newTaskData.estimatedHours.toString()}
                   onChange={(e) =>
                     setNewTaskData({
                       ...newTaskData,
