@@ -40,7 +40,12 @@ export const useAuth = (): UseAuthReturn => {
             preferences: {
               theme: 'light',
               language: 'ja',
-              notifications: true,
+              notifications: {
+                email: true,
+                push: true,
+                daily: true,
+                weekly: true,
+              },
               currency: 'JPY',
               dateFormat: 'yyyy-MM-dd',
               timeFormat: '24h',
@@ -79,7 +84,12 @@ export const useAuth = (): UseAuthReturn => {
         preferences: {
           theme: 'light',
           language: 'ja',
-          notifications: true,
+          notifications: {
+            email: true,
+            push: true,
+            daily: true,
+            weekly: true,
+          },
           currency: 'JPY',
           dateFormat: 'yyyy-MM-dd',
           timeFormat: '24h',
