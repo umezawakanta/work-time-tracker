@@ -46,6 +46,7 @@ export const useAuth = (): UseAuthReturn => {
                 daily: true,
                 weekly: true,
               },
+              timezone: 'Asia/Tokyo',
             },
           });
         }
@@ -86,6 +87,7 @@ export const useAuth = (): UseAuthReturn => {
             daily: true,
             weekly: true,
           },
+          timezone: 'Asia/Tokyo',
         },
       };
 
