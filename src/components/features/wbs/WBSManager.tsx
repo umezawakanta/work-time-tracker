@@ -71,7 +71,7 @@ const WBSManager: React.FC = () => {
   const handleNodeUpdate = async (nodeId: string, updates: Partial<WBSNode>) => {
     if (!user) return;
 
-    await WBSService.updateNode(nodeId, updates, user.uid);
+    await WBSService.updateNode(nodeId, updates);
   };
 
   const handleProgressUpdate = async (nodeId: string, progress: number) => {

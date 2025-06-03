@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { checkAuth, getUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
 
-export function useAuthStatus() {  // 関数名も変更
+export function useAuthStatus() {
+  // 関数名も変更
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -18,11 +19,11 @@ export function useAuthStatus() {  // 関数名も変更
         // 認証されている場合はユーザープロファイルを取得
         if (authStatus) {
           const profile = await getUserProfile();
-          setUser(profile.user);
-          
+          setUser(profile);
+
           // 管理者は常にサブスクリプション有効として扱う
           // または、サブスクリプションが実際に有効なユーザー
-          setIsSubscribed(profile.user.isAdmin || profile.subscription?.isActive || false);
+          setIsSubscribed(profile.isAdmin || false);
         }
       } catch (error) {
         console.error('Error checking authentication:', error);

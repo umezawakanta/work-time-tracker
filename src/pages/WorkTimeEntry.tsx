@@ -1,25 +1,19 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addWorkTimeEntry } from "../store/workTimeSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { WorkTimeEntry } from "@/types/workTimeEntry";
-import { AppDispatch } from "@/store";
-import { useAuth } from "@/context/useAuth";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { createWorkTimeEntry } from '../store/workTimeSlice';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { WorkTimeEntry } from '@/types/workTimeEntry';
+import { AppDispatch } from '@/store';
+import { useAuth } from '@/context/useAuth';
 
 const WorkTimeEntryForm: React.FC = () => {
-  const [projectName, setProjectName] = useState("");
-  const [description, setDescription] = useState("");
+  const [projectName, setProjectName] = useState('');
+  const [description, setDescription] = useState('');
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [endTime, setEndTime] = useState<Date>(new Date());
   const navigate = useNavigate();
@@ -28,26 +22,26 @@ const WorkTimeEntryForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // ユーザーが認証されていない場合の処理
     if (!user) {
       // エラーハンドリングや通知を表示するなど
-      console.error("ユーザーが認証されていません");
+      console.error('ユーザーが認証されていません');
       return;
     }
-    
-    const newEntry: Omit<WorkTimeEntry, "_id"> = {
+
+    const newEntry: Omit<WorkTimeEntry, '_id'> = {
       projectName,
       description,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       duration: (endTime.getTime() - startTime.getTime()) / 1000, // 秒単位で計算
-      date: startTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
+      date: startTime.toISOString().split('T')[0], // YYYY-MM-DD形式の日付
       userId: user.id, // 認証されたユーザーのID
     };
-    
-    dispatch(addWorkTimeEntry(newEntry));
-    navigate("/reports");
+
+    dispatch(createWorkTimeEntry(newEntry));
+    navigate('/reports');
   };
 
   return (
@@ -58,7 +52,7 @@ const WorkTimeEntryForm: React.FC = () => {
             <CardTitle className="text-2xl">作業時間の記録</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-          <div className="space-y-2">
+            <div className="space-y-2">
               <Label htmlFor="projectName">プロジェクト名</Label>
               <Input
                 id="projectName"

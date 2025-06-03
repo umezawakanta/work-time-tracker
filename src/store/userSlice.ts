@@ -21,7 +21,7 @@ export const fetchUserProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await getUserProfile();
-      return response.user;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -36,7 +36,7 @@ export const updateProfile = createAsyncThunk(
   async (userData: { name: string; email: string }, { rejectWithValue }) => {
     try {
       const response = await updateUserProfile(userData);
-      return response.user;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -62,7 +62,7 @@ const userSlice = createSlice({
     },
     setTrialActivated: (state, action) => {
       state.trialActivated = action.payload;
-      
+
       // トライアルの開始時には14日後の期限日も設定する
       if (action.payload) {
         const expiryDate = new Date();
@@ -86,16 +86,6 @@ const userSlice = createSlice({
           state.name = action.payload.name || '';
           state.email = action.payload.email || '';
           state.isLoggedIn = true; // プロフィール取得成功時はログイン状態を設定
-          // サーバーからのレスポンスに含まれる場合
-          if (action.payload.hasActiveSubscription !== undefined) {
-            state.hasActiveSubscription = action.payload.hasActiveSubscription;
-          }
-          if (action.payload.trialActivated !== undefined) {
-            state.trialActivated = action.payload.trialActivated;
-          }
-          if (action.payload.trialExpiryDate) {
-            state.trialExpiryDate = action.payload.trialExpiryDate;
-          }
         }
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -122,11 +112,7 @@ const userSlice = createSlice({
 });
 
 // アクションをエクスポート
-export const { 
-  updateLastReminderDate, 
-  setLoggedIn, 
-  setActiveSubscription, 
-  setTrialActivated 
-} = userSlice.actions;
+export const { updateLastReminderDate, setLoggedIn, setActiveSubscription, setTrialActivated } =
+  userSlice.actions;
 
 export default userSlice.reducer;

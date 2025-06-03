@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Timeline, TimelineItem, TimelineConnector, TimelineContent, TimelineDot, TimelineOppositeContent, TimelineSeparator } from "@/components/ui/timeline";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, Megaphone, Newspaper, Award, Users, MapPin } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Timeline,
+  TimelineItem,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineOppositeContent,
+  TimelineSeparator,
+} from '@/components/ui/timeline';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Calendar, Megaphone, Newspaper, Award, Users, MapPin } from 'lucide-react';
 
 interface TimelineEvent {
   _id: string;
   candidateId: string;
   date: string;
-  eventType: "speech" | "media" | "endorsement" | "rally" | "other";
+  eventType: 'speech' | 'media' | 'endorsement' | 'rally' | 'other';
   title: string;
   description?: string;
   location?: string;
@@ -39,54 +47,54 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
         // デモデータを使用
         const demoData: TimelineEvent[] = [
           {
-            _id: "1",
+            _id: '1',
             candidateId,
             date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-            eventType: "speech",
-            title: "政策演説会",
-            description: "経済政策と雇用創出についての公開演説を行いました。",
-            location: "東京都渋谷区",
+            eventType: 'speech',
+            title: '政策演説会',
+            description: '経済政策と雇用創出についての公開演説を行いました。',
+            location: '東京都渋谷区',
           },
           {
-            _id: "2",
+            _id: '2',
             candidateId,
             date: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-            eventType: "media",
-            title: "テレビ出演",
-            description: "NHK「政治フォーラム」に出演し、政策について議論しました。",
-            url: "https://example.com/news/1",
+            eventType: 'media',
+            title: 'テレビ出演',
+            description: 'NHK「政治フォーラム」に出演し、政策について議論しました。',
+            url: 'https://example.com/news/1',
           },
           {
-            _id: "3",
+            _id: '3',
             candidateId,
             date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            eventType: "endorsement",
-            title: "業界団体からの支持表明",
-            description: "全国中小企業協会から支持を受けました。",
+            eventType: 'endorsement',
+            title: '業界団体からの支持表明',
+            description: '全国中小企業協会から支持を受けました。',
           },
           {
-            _id: "4",
+            _id: '4',
             candidateId,
             date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            eventType: "rally",
-            title: "選挙集会",
-            description: "支持者と共に選挙キャンペーンの集会を開催しました。",
-            location: "東京都新宿区",
+            eventType: 'rally',
+            title: '選挙集会',
+            description: '支持者と共に選挙キャンペーンの集会を開催しました。',
+            location: '東京都新宿区',
           },
           {
-            _id: "5",
+            _id: '5',
             candidateId,
             date: new Date().toISOString(),
-            eventType: "other",
-            title: "政策文書公開",
-            description: "新たな環境政策提言を公式ウェブサイトで発表しました。",
-            url: "https://example.com/policy-doc",
+            eventType: 'other',
+            title: '政策文書公開',
+            description: '新たな環境政策提言を公式ウェブサイトで発表しました。',
+            url: 'https://example.com/policy-doc',
           },
         ];
 
         setEvents(demoData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "予期せぬエラーが発生しました");
+        setError(err instanceof Error ? err.message : '予期せぬエラーが発生しました');
       } finally {
         setLoading(false);
       }
@@ -99,13 +107,13 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
 
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
-      case "speech":
+      case 'speech':
         return <Megaphone className="h-4 w-4" />;
-      case "media":
+      case 'media':
         return <Newspaper className="h-4 w-4" />;
-      case "endorsement":
+      case 'endorsement':
         return <Award className="h-4 w-4" />;
-      case "rally":
+      case 'rally':
         return <Users className="h-4 w-4" />;
       default:
         return <Calendar className="h-4 w-4" />;
@@ -114,16 +122,16 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
 
   const getEventTypeText = (eventType: string) => {
     switch (eventType) {
-      case "speech":
-        return "演説";
-      case "media":
-        return "メディア";
-      case "endorsement":
-        return "支持表明";
-      case "rally":
-        return "集会";
+      case 'speech':
+        return '演説';
+      case 'media':
+        return 'メディア';
+      case 'endorsement':
+        return '支持表明';
+      case 'rally':
+        return '集会';
       default:
-        return "その他";
+        return 'その他';
     }
   };
 
@@ -149,12 +157,10 @@ const CandidateTimeline: React.FC<CandidateTimelineProps> = ({ candidateId }) =>
         {events.map((event, index) => (
           <TimelineItem key={event._id}>
             <TimelineOppositeContent color="text.secondary">
-              {new Date(event.date).toLocaleDateString("ja-JP")}
+              {new Date(event.date).toLocaleDateString('ja-JP')}
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot variant="filled" color="primary">
-                {getEventIcon(event.eventType)}
-              </TimelineDot>
+              <TimelineDot>{getEventIcon(event.eventType)}</TimelineDot>
               {index < events.length - 1 && <TimelineConnector />}
             </TimelineSeparator>
             <TimelineContent>
