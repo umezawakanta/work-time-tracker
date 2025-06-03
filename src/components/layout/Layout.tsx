@@ -112,7 +112,7 @@ export default function Layout({ children }: LayoutProps) {
           setIsSubscriptionChecking(true);
           try {
             // サブスクリプション情報の取得を試みる
-            const response = await userSubscriptionApi.getUserSubscription(user.id);
+            const response = await userSubscriptionApi.getUserSubscription(user._id || user.id);
             const subscription = response.data;
 
             setIsPremium(
@@ -129,7 +129,7 @@ export default function Layout({ children }: LayoutProps) {
               try {
                 // デフォルトのフリープランを作成
                 const subscriptionData = {
-                  userId: user.id,
+                  userId: user._id || user.id,
                   planId: 'free',
                   status: 'active' as const,
                   currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
@@ -141,7 +141,7 @@ export default function Layout({ children }: LayoutProps) {
                 // ここで既存のサブスクリプションをチェック
                 try {
                   // 既存のサブスクリプションがあるかどうかを再確認
-                  await userSubscriptionApi.getUserSubscription(user.id);
+                  await userSubscriptionApi.getUserSubscription(user._id || user.id);
 
                   // もし取得できた場合は、既に存在するのでプレミアムではない状態に設定
                   console.log('サブスクリプション情報が既に存在します');
@@ -177,7 +177,9 @@ export default function Layout({ children }: LayoutProps) {
                       console.log('ユーザーは既にサブスクリプションに登録済みです');
                       // 既存のサブスクリプション情報を再取得
                       try {
-                        const response = await userSubscriptionApi.getUserSubscription(user.id);
+                        const response = await userSubscriptionApi.getUserSubscription(
+                          user._id || user.id
+                        );
                         const subscription = response.data;
                         setIsPremium(
                           subscription &&
@@ -232,11 +234,13 @@ export default function Layout({ children }: LayoutProps) {
         setIsLoadingNotifications(true);
 
         // 通知一覧を取得
-        const response = await notificationApi.getUserNotifications(user.id);
+        const response = await notificationApi.getUserNotifications(user._id || user.id);
         setNotifications(response.data);
 
         // 未読通知数を取得
-        const unreadResponse = await notificationApi.getUnreadNotificationsCount(user.id);
+        const unreadResponse = await notificationApi.getUnreadNotificationsCount(
+          user._id || user.id
+        );
         setUnreadNotifications(unreadResponse.data.count);
       } catch (error) {
         console.error('通知取得エラー:', error);
@@ -324,11 +328,11 @@ export default function Layout({ children }: LayoutProps) {
           // 認証情報を送信
           const token = localStorage.getItem('token');
           if (token && wsRef.current) {
-            console.log('[WebSocket] 認証情報を送信します - ユーザーID:', user.id);
+            console.log('[WebSocket] 認証情報を送信します - ユーザーID:', user._id || user.id);
             wsRef.current.send(
               JSON.stringify({
                 type: 'auth',
-                userId: user.id,
+                userId: user._id || user.id,
                 token: token,
               })
             );
@@ -429,7 +433,14 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, user?.id, fetchNotifications, navigate, setIsAuthenticated, handleApiError]);
+  }, [
+    isAuthenticated,
+    user?._id || user?.id,
+    fetchNotifications,
+    navigate,
+    setIsAuthenticated,
+    handleApiError,
+  ]);
 
   // 通知タイプに応じたアイコンを取得する関数
   const getNotificationTypeIcon = (type: string) => {
@@ -474,7 +485,7 @@ export default function Layout({ children }: LayoutProps) {
       if (!user) return;
 
       // すべての通知を既読にするAPIを呼び出し
-      await notificationApi.markAllNotificationsAsRead(user.id);
+      await notificationApi.markAllNotificationsAsRead(user._id || user.id);
 
       // ローカルの状態を更新
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
@@ -522,7 +533,7 @@ export default function Layout({ children }: LayoutProps) {
       }
 
       // すべての通知を削除するAPIを呼び出し
-      await notificationApi.deleteAllNotifications(user.id);
+      await notificationApi.deleteAllNotifications(user._id || user.id);
 
       // ローカルの状態を更新
       setNotifications([]);

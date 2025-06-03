@@ -70,14 +70,10 @@ export default function UserProfile() {
       const response = await promoteToAdmin();
       console.log('管理者権限付与レスポンス:', response);
 
-      setUser(response);
-      toast.success('管理者権限を付与しました');
-
-      // 最新の情報を取得して状態を同期
+      // fetchUser()を先に呼び出して最新のユーザー情報を取得
       await fetchUser();
 
-      // デバッグ: 更新後のユーザー状態を確認
-      console.log('権限付与後のユーザー状態:', response);
+      toast.success('管理者権限を付与しました');
     } catch (error) {
       console.error('Admin promotion error:', error);
       toast.error('権限の付与に失敗しました');
@@ -121,7 +117,7 @@ export default function UserProfile() {
           {/* デバッグ情報を表示 */}
           {process.env.NODE_ENV === 'development' && (
             <div className="text-xs text-gray-500 mt-2">
-              Debug: isAdmin = {String(user?.isAdmin)}, userId = {user?.id}
+              Debug: isAdmin = {String(user?.isAdmin)}, userId = {user?._id || user?.id}
             </div>
           )}
         </CardHeader>
