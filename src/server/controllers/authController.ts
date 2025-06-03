@@ -146,21 +146,29 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
 };
 
 export const getUserData = async (req: AuthRequest, res: Response): Promise<void> => {
-  // 戻り値の型を追加
   try {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: '認証されていません' });
-      return; // return文を修正
+      return;
     }
 
     const user = await User.findById(userId).select('-password');
     if (!user) {
       res.status(404).json({ message: 'ユーザーが見つかりません' });
-      return; // return文を修正
+      return;
     }
 
-    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+    // isAdminプロパティを含めてレスポンスを返す
+    res.json({
+      user: {
+        id: user._id,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin || false,
+      },
+    });
   } catch (error) {
     console.error('Get user data error:', error);
     res.status(500).json({ message: 'ユーザーデータの取得中にエラーが発生しました' });
