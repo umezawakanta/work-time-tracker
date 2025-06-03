@@ -187,7 +187,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     };
 
     loadWBSData();
-  }, [open, effectiveUser?._id, isWBSDataLoaded]); // 依存配列を修正
+  }, [open, effectiveUser, isWBSDataLoaded]); // 依存配列を修正
 
   // モーダルが閉じたときにフラグをリセット
   useEffect(() => {
