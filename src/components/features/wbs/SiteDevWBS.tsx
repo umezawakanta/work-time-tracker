@@ -13,6 +13,7 @@ import {
   Brain,
   Filter,
   Sparkles,
+  Trash,
 } from 'lucide-react';
 import WBSGanttChart from './WBSGanttChart';
 import WBSTreeView from './WBSTreeView';
@@ -331,6 +332,36 @@ const SiteDevWBS: React.FC = () => {
     } catch (error) {
       console.error('クリーンアップエラー:', error);
       toast.error('一部の処理に失敗しました');
+    }
+  };
+
+  // タスク削除処理
+  const handleDeleteTask = async (nodeId: string) => {
+    try {
+      // 子タスクも含めて削除対象を収集
+      const nodesToDelete = [nodeId];
+      const findChildNodes = (parentId: string) => {
+        const children = wbsNodes.filter((n) => n.parentId === parentId);
+        children.forEach((child) => {
+          nodesToDelete.push(child.id);
+          findChildNodes(child.id);
+        });
+      };
+      findChildNodes(nodeId);
+
+      // 削除実行
+      for (const id of nodesToDelete) {
+        await WBSService.deleteNode(id);
+      }
+
+      // WBSノードリストを再取得
+      const nodes = await WBSService.getProjectNodes('site-dev-project');
+      setWbsNodes(nodes);
+
+      toast.success(`タスクを削除しました（${nodesToDelete.length}個）`);
+    } catch (error) {
+      console.error('タスク削除エラー:', error);
+      toast.error('タスクの削除に失敗しました');
     }
   };
 
@@ -731,6 +762,18 @@ const SiteDevWBS: React.FC = () => {
                   <Brain className="h-4 w-4 mr-2" />
                   AI分析
                 </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => {
+                    if (confirm(`「${selectedNode.name}」を削除してもよろしいですか？`)) {
+                      handleDeleteTask(selectedNode.id);
+                    }
+                  }}
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  削除
+                </Button>
               </div>
             </CardTitle>
           </CardHeader>
@@ -799,6 +842,7 @@ const SiteDevWBS: React.FC = () => {
         onOpenChange={setEditDialogOpen}
         task={editingTask}
         onSave={handleNodeUpdate}
+        onDelete={handleDeleteTask}
         onAIAnalyze={handleAIAnalyzeTask}
       />
 
