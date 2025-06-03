@@ -279,10 +279,15 @@ const SiteDevWBS: React.FC = () => {
     try {
       const deletedSet = new Set<string>();
 
-      // 削除処理
+      // Collect all merge targets to exclude from deletion
+      const mergeTargets = new Set(mergedNodes.map((m) => m.to));
+
+      // 削除処理（マージ先は除外）
       for (const nodeId of deletedNodeIds) {
-        await WBSService.deleteNode(nodeId);
-        deletedSet.add(nodeId);
+        if (!mergeTargets.has(nodeId)) {
+          await WBSService.deleteNode(nodeId);
+          deletedSet.add(nodeId);
+        }
       }
 
       // 統合処理
