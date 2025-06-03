@@ -15,7 +15,7 @@ import { toast } from 'react-hot-toast';
 import { promoteToAdmin } from '@/services/api/authApi';
 
 export default function UserProfile() {
-  const { user, fetchUser, updateProfile } = useAuth();
+  const { user, fetchUser, updateProfile, setUser } = useAuth();
   const [formName, setFormName] = useState(user?.name || '');
   const [formEmail, setFormEmail] = useState(user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -62,8 +62,8 @@ export default function UserProfile() {
 
   const handlePromoteToAdmin = async () => {
     try {
-      const updatedUser = await promoteToAdmin();
-      setUser(updatedUser);
+      const response = await promoteToAdmin();
+      setUser(response);
       toast.success('管理者権限を付与しました');
     } catch (error) {
       toast.error('権限の付与に失敗しました');

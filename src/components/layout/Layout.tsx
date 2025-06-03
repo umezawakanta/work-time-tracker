@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/hooks/useLocale';
@@ -92,6 +92,11 @@ export default function Layout({ children }: LayoutProps) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
+  // WebSocket ref to prevent multiple connections
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // ユーザー情報の取得
   useEffect(() => {
     if (isAuthenticated && !user) {
@@ -176,7 +181,6 @@ export default function Layout({ children }: LayoutProps) {
   }, [isAuthenticated, user]);
 
   // 通知取得の関数
-  // 通知取得の関数
   const fetchNotifications = useCallback(async () => {
     if (isAuthenticated && user) {
       try {
@@ -227,279 +231,160 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []);
 
-  // 通知の取得
+  // 通知の取得とWebSocket接続 - 修正版
   useEffect(() => {
     fetchNotifications();
 
-    // WebSocketを使用したリアルタイム通知の実装
-    let ws: WebSocket | null = null;
-    let reconnectAttempts = 0;
-    const maxReconnectAttempts = 5;
-    const reconnectDelay = 3000; // 3秒
-    let reconnectTimer: NodeJS.Timeout | null = null;
-    let isOfflineMode = false; // オフラインモードフラグ
+    // ユーザーが認証済みでない場合は WebSocket接続しない
+    if (!isAuthenticated || !user) {
+      return;
+    }
 
-    // WebSocket接続関数
+    const maxReconnectAttempts = 5;
+    const reconnectDelay = 3000;
+
+    // WebSocket接続関数 - 修正版
     const connectWebSocket = () => {
+      // 既存の接続があればクローズ
+      if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
+        wsRef.current.close();
+      }
+
       try {
-        // サーバーのURLを環境に応じて設定
-        // 本番環境ではVercelのドメインを、開発環境ではlocalhostを使用
         let wsUrl = '';
         const apiDomain = window.location.hostname;
 
         if (apiDomain === 'localhost') {
-          wsUrl = 'ws://localhost:3001';
+          wsUrl = 'ws://localhost:3001/notifications';
         } else {
-          // Vercel上で動作している場合、同じドメインでWebSocketも提供
-          wsUrl = `wss://${apiDomain}`;
+          wsUrl = `wss://${apiDomain}/notifications`;
         }
 
         console.log('[WebSocket] 接続試行:', wsUrl);
+        wsRef.current = new WebSocket(wsUrl);
 
-        // WebSocketの接続
-        ws = new WebSocket(`${wsUrl}/notifications`);
+        // 接続タイムアウト処理
+        const connectionTimeout = setTimeout(() => {
+          if (wsRef.current && wsRef.current.readyState !== WebSocket.OPEN) {
+            console.log('[WebSocket] 接続タイムアウト');
+            wsRef.current.close();
+          }
+        }, 5000);
 
-        // 型ガードの一環として、wsがnullでないことを確認
-        if (ws) {
-          // 接続タイムアウト処理（5秒後にタイムアウト）
-          const connectionTimeout = setTimeout(() => {
-            if (ws && ws.readyState !== WebSocket.OPEN) {
-              console.log('[WebSocket] 接続タイムアウト');
-              ws.close();
-              // タイムアウトした場合も再接続を試みる
-              attemptReconnect();
-            }
-          }, 5000);
+        wsRef.current.onopen = () => {
+          console.log('[WebSocket] 接続が確立されました');
+          clearTimeout(connectionTimeout);
+          reconnectAttemptsRef.current = 0;
 
-          ws.onopen = () => {
-            console.log('[WebSocket] 接続が確立されました');
-            // タイムアウトタイマーをクリア
-            clearTimeout(connectionTimeout);
-            // 接続成功したらリトライカウントをリセット
-            reconnectAttempts = 0;
-            // オフラインモードフラグをリセット
-            if (isOfflineMode) {
-              isOfflineMode = false;
-              toast.success('通知サーバーに再接続しました', {
-                id: 'websocket-reconnected',
-                duration: 3000,
-              });
-            }
+          // 認証情報を送信
+          const token = localStorage.getItem('token');
+          if (token && wsRef.current) {
+            console.log('[WebSocket] 認証情報を送信します - ユーザーID:', user.id);
+            wsRef.current.send(
+              JSON.stringify({
+                type: 'auth',
+                userId: user.id,
+                token: token,
+              })
+            );
+          }
+        };
 
-            if (ws) {
-              // 認証情報を送信
-              const token = localStorage.getItem('token');
-              if (!token) {
-                console.error('[WebSocket] 認証トークンが見つかりません');
-                return;
+        wsRef.current.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('[WebSocket] メッセージを受信:', data.type);
+
+            if (data.type === 'auth_success') {
+              console.log('[WebSocket] 認証に成功しました');
+            } else if (data.type === 'error') {
+              console.error('[WebSocket] エラーメッセージを受信:', data.message);
+
+              if (
+                data.message.includes('無効な認証情報') ||
+                data.message.includes('無効なトークン') ||
+                data.message.includes('jwt expired')
+              ) {
+                toast.error('セッションの有効期限が切れました。再ログインしてください。');
+                setTimeout(() => {
+                  localStorage.removeItem('token');
+                  setIsAuthenticated(false);
+                  navigate('/login');
+                }, 2000);
               }
+            } else if (data.type === 'notification') {
+              // 新しい通知を処理
+              const newNotification = data.notification;
+              setNotifications((prev) => [newNotification, ...prev]);
+              setUnreadNotifications((prev) => prev + 1);
 
-              console.log('[WebSocket] 認証情報を送信します - ユーザーID:', user?.id);
-              ws.send(
-                JSON.stringify({
-                  type: 'auth',
-                  userId: user?.id,
-                  token: token,
-                })
-              );
+              // トースト通知を表示（簡略化）
+              toast.success(newNotification.title);
             }
-          };
+          } catch (error) {
+            console.error('[WebSocket] メッセージの処理エラー:', error);
+          }
+        };
 
-          ws.onmessage = (event) => {
-            try {
-              const data = JSON.parse(event.data);
-              console.log('[WebSocket] メッセージを受信:', data.type);
+        wsRef.current.onerror = (error) => {
+          clearTimeout(connectionTimeout);
+          console.error('[WebSocket] エラーが発生しました:', error);
+        };
 
-              if (data.type === 'auth_success') {
-                console.log('[WebSocket] 認証に成功しました');
-              } else if (data.type === 'error') {
-                console.error('[WebSocket] エラーメッセージを受信:', data.message);
+        wsRef.current.onclose = (event) => {
+          clearTimeout(connectionTimeout);
+          console.log(
+            `[WebSocket] 接続が閉じられました: コード=${event.code}, 理由=${event.reason || '理由なし'}`
+          );
 
-                // 認証エラーの場合はトークンの更新を試みる
-                if (
-                  data.message.includes('無効な認証情報') ||
-                  data.message.includes('無効なトークン') ||
-                  data.message.includes('jwt expired')
-                ) {
-                  console.log('[WebSocket] トークンエラーのため再認証が必要です');
-
-                  // 自動的にユーザーを再認証させる（オプション）
-                  toast.error('セッションの有効期限が切れました。再ログインしてください。', {
-                    duration: 5000,
-                    id: 'session-expired',
-                  });
-
-                  // ログイン画面にリダイレクト
-                  setTimeout(() => {
-                    localStorage.removeItem('token');
-                    setIsAuthenticated(false);
-                    navigate('/login');
-                  }, 2000);
-                }
-              } else if (data.type === 'notification') {
-                // 新しい通知を受信した場合
-                const newNotification = data.notification;
-                console.log('[WebSocket] 新しい通知を受信:', newNotification.title);
-
-                // 通知リストに追加
-                setNotifications((prev) => [newNotification, ...prev]);
-
-                // 未読通知数を更新
-                setUnreadNotifications((prev) => prev + 1);
-
-                // トースト通知を表示
-                toast.custom(
-                  (t) => (
-                    <div
-                      className={`${
-                        t.visible ? 'animate-enter' : 'animate-leave'
-                      } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-                    >
-                      <div className="flex-1 p-4">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 pt-0.5">
-                            {getNotificationTypeIcon(newNotification.type)}
-                          </div>
-                          <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-gray-900">
-                              {newNotification.title}
-                            </p>
-                            <p className="mt-1 text-sm text-gray-500">{newNotification.message}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex border-l border-gray-200">
-                        <button
-                          onClick={() => {
-                            toast.dismiss(t.id);
-                            handleNotificationRead(newNotification.id);
-                          }}
-                          className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        >
-                          既読にする
-                        </button>
-                      </div>
-                    </div>
-                  ),
-                  { duration: 5000 }
-                );
-              }
-            } catch (error) {
-              console.error('[WebSocket] メッセージの処理エラー:', error);
-            }
-          };
-
-          ws.onerror = (error) => {
-            // タイムアウトタイマーをクリア
-            clearTimeout(connectionTimeout);
-            console.error('[WebSocket] エラーが発生しました:', error);
-          };
-
-          ws.onclose = (event) => {
-            // タイムアウトタイマーをクリア
-            clearTimeout(connectionTimeout);
-
+          // 再接続を試みる
+          if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+            reconnectAttemptsRef.current++;
             console.log(
-              `[WebSocket] 接続が閉じられました: コード=${event.code}, 理由=${
-                event.reason || '理由なし'
-              }`
+              `[WebSocket] 再接続を試みます (${reconnectAttemptsRef.current}/${maxReconnectAttempts})...`
             );
 
-            // コード1006は異常終了（サーバーに到達できない）
-            if (event.code === 1006) {
-              console.log(
-                '[WebSocket] サーバーに到達できません。MongoDB接続が原因の可能性があります。'
-              );
+            // 前回のタイマーをクリア
+            if (reconnectTimerRef.current) {
+              clearTimeout(reconnectTimerRef.current);
             }
 
-            // 初回の接続失敗の場合はサイレントに、それ以外は通知
-            if (reconnectAttempts > 0 && !isOfflineMode) {
-              isOfflineMode = true;
-              toast.error('通知サーバーへの接続が失われました。自動的に再接続を試みています...', {
-                id: 'websocket-disconnected',
-                duration: 5000,
-              });
-            }
-
-            // 再接続を試みる
-            attemptReconnect();
-          };
-        }
+            const delay = reconnectDelay * Math.pow(1.5, reconnectAttemptsRef.current - 1);
+            reconnectTimerRef.current = setTimeout(connectWebSocket, delay);
+          } else {
+            console.error('[WebSocket] 最大再接続試行回数に達しました');
+          }
+        };
       } catch (error) {
         console.error('[WebSocket] 接続エラー:', error);
-        // エラー発生時も再接続を試みる
-        attemptReconnect();
       }
     };
 
-    // 再接続を試みる関数
-    const attemptReconnect = () => {
-      if (reconnectAttempts < maxReconnectAttempts) {
-        reconnectAttempts++;
-        console.log(
-          `[WebSocket] 再接続を試みます (${reconnectAttempts}/${maxReconnectAttempts})...`
-        );
+    // WebSocket接続を開始
+    connectWebSocket();
 
-        // 前回のタイマーをクリア
-        if (reconnectTimer) {
-          clearTimeout(reconnectTimer);
-        }
-
-        // 指数バックオフ（再試行間隔を徐々に長くする）
-        const delay = reconnectDelay * Math.pow(1.5, reconnectAttempts - 1);
-        reconnectTimer = setTimeout(connectWebSocket, delay);
-      } else {
-        console.error('[WebSocket] 最大再接続試行回数に達しました。手動での更新が必要です。');
-
-        // 全ての再接続が失敗した場合のみユーザーに通知
-        if (!isOfflineMode) {
-          isOfflineMode = true;
-          toast.error('通知システムに接続できません。ページを更新してください。', {
-            duration: 10000,
-            id: 'websocket-max-retry',
-          });
-        }
-
-        // オフラインモードを有効化
-        handleOfflineMode();
-      }
-    };
-
-    // オフラインモード処理
-    const handleOfflineMode = () => {
-      // ポーリングによる定期的な通知取得（WebSocketのフォールバック）
-      console.log('[WebSocket] オフラインモードで動作します。ポーリングを開始します。');
-
-      // すでに5分ごとのポーリングがsetIntervalで設定されているため、
-      // ここでは特別な処理は不要だが、必要に応じて頻度を上げることも可能
-    };
-
-    // ユーザーが認証済みの場合のみWebSocket接続を開始
-    if (isAuthenticated && user) {
-      connectWebSocket();
-    }
-
-    // 定期的に通知を更新（WebSocketのフォールバックとして）
+    // 定期的な通知更新（フォールバック）
     const intervalId = setInterval(() => {
       fetchNotifications().catch(handleApiError);
-    }, 300000); // 5分ごとに更新
+    }, 300000); // 5分ごと
 
     // クリーンアップ関数
     return () => {
       clearInterval(intervalId);
 
       // 再接続タイマーをクリア
-      if (reconnectTimer) {
-        clearTimeout(reconnectTimer);
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
       }
 
-      // WebSocket接続を閉じる
-      if (ws !== null) {
+      // WebSocket接続をクローズ
+      if (wsRef.current) {
         console.log('[WebSocket] 接続をクローズします');
-        ws.close();
+        wsRef.current.close();
+        wsRef.current = null;
       }
     };
-  }, [isAuthenticated, user, fetchNotifications, navigate, setIsAuthenticated, handleApiError]);
+  }, [isAuthenticated, user?.id, fetchNotifications, navigate, setIsAuthenticated, handleApiError]);
 
   // 通知タイプに応じたアイコンを取得する関数
   const getNotificationTypeIcon = (type: string) => {

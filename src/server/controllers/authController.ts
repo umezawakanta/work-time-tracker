@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // パスワードが文字列であることを確認
     const passwordStr = String(password);
 
-    const user = await User.findOne({ email }) as IUser | null;
+    const user = (await User.findOne({ email })) as IUser | null;
     console.log('User found:', user ? 'Yes' : 'No');
 
     if (!user) {
@@ -60,17 +60,20 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof Error) {
-      res.status(500).json({ message: 'Server error during login', error: error.message, stack: error.stack });
+      res
+        .status(500)
+        .json({ message: 'Server error during login', error: error.message, stack: error.stack });
     } else {
       res.status(500).json({ message: 'Server error during login', error: 'Unknown error' });
     }
   }
 };
 
-export const register = async (req: Request, res: Response): Promise<void> => { // 戻り値の型を追加
+export const register = async (req: Request, res: Response): Promise<void> => {
+  // 戻り値の型を追加
   try {
     const { name, email, password } = req.body;
-    let user = await User.findOne({ email }) as IUser | null;
+    let user = (await User.findOne({ email })) as IUser | null;
     if (user) {
       res.status(400).json({ message: 'User already exists' });
       return; // return文を修正
@@ -86,7 +89,8 @@ export const register = async (req: Request, res: Response): Promise<void> => { 
   }
 };
 
-export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
+export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> => {
+  // 戻り値の型を追加
   try {
     if (!req.user) {
       res.status(401).json({ isAuthenticated: false });
@@ -104,8 +108,8 @@ export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> 
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error('Check auth error:', error);
@@ -113,7 +117,8 @@ export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> 
   }
 };
 
-export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  // 戻り値の型を追加
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -140,7 +145,8 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
-export const getUserData = async (req: AuthRequest, res: Response): Promise<void> => { // 戻り値の型を追加
+export const getUserData = async (req: AuthRequest, res: Response): Promise<void> => {
+  // 戻り値の型を追加
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -159,4 +165,8 @@ export const getUserData = async (req: AuthRequest, res: Response): Promise<void
     console.error('Get user data error:', error);
     res.status(500).json({ message: 'ユーザーデータの取得中にエラーが発生しました' });
   }
+};
+
+export const updateUserToAdmin = async (userId: string) => {
+  return await User.findByIdAndUpdate(userId, { isAdmin: true }, { new: true }).select('-password');
 };

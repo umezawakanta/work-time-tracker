@@ -1,7 +1,15 @@
-import * as express from "express";
+import * as express from 'express';
 import { Request, Response } from 'express';
-import { login, register, checkAuth, updateProfile, getUserData } from '../controllers/authController.js';
+import {
+  login,
+  register,
+  checkAuth,
+  updateProfile,
+  getUserData,
+  updateUserToAdmin,
+} from '../controllers/authController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
+import { User } from '../models/User.js';
 
 const router = express.Router();
 
@@ -13,5 +21,39 @@ router.get('/profile', authMiddleware, (req: Request, res: Response): void => {
 });
 router.put('/profile', authMiddleware, updateProfile);
 router.get('/user', authMiddleware, getUserData);
+
+// 管理者権限付与エンドポイント（開発用）
+router.post(
+  '/promote-admin',
+  authMiddleware,
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      // 環境が開発環境の場合のみ許可
+      if (process.env.NODE_ENV === 'production') {
+        res.status(403).json({ message: '本番環境では管理者権限の付与はできません' });
+        return;
+      }
+
+      // ユーザー認証チェック
+      if (!req.user) {
+        res.status(401).json({ message: '認証が必要です' });
+        return;
+      }
+
+      // ユーザーを管理者にする処理をここに実装
+      // req.user を使用してユーザー情報を更新
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        { isAdmin: true },
+        { new: true }
+      ).select('-password');
+
+      res.json({ user: updatedUser, message: '管理者権限を付与しました' });
+    } catch (error) {
+      console.error('Admin promotion error:', error);
+      res.status(500).json({ message: '管理者権限の付与に失敗しました' });
+    }
+  }
+);
 
 export default router;
