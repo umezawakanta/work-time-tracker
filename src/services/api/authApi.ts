@@ -164,6 +164,12 @@ export const verifyEmail = async (token: string): Promise<{ message: string }> =
 
 // 自分自身を管理者にする（初回セットアップ用）
 export const promoteToAdmin = async (): Promise<User> => {
-  const response = await api.post('/auth/promote-admin');
-  return response.data;
+  try {
+    const response = await api.post<{ user: User; message: string }>('/auth/promote-admin');
+    console.log('Promote to admin response:', response.data);
+    return response.data.user;
+  } catch (error) {
+    console.error('Promote to admin error:', error);
+    throw error;
+  }
 };

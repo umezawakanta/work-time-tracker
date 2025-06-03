@@ -66,11 +66,18 @@ export default function UserProfile() {
   const handlePromoteToAdmin = async () => {
     setIsPromoting(true);
     try {
+      console.log('現在のユーザー状態:', user);
       const response = await promoteToAdmin();
+      console.log('管理者権限付与レスポンス:', response);
+
       setUser(response);
       toast.success('管理者権限を付与しました');
+
       // 最新の情報を取得して状態を同期
       await fetchUser();
+
+      // デバッグ: 更新後のユーザー状態を確認
+      console.log('権限付与後のユーザー状態:', response);
     } catch (error) {
       console.error('Admin promotion error:', error);
       toast.error('権限の付与に失敗しました');
@@ -111,6 +118,12 @@ export default function UserProfile() {
             )}
           </CardTitle>
           <CardDescription>あなたの情報を表示・更新します</CardDescription>
+          {/* デバッグ情報を表示 */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-500 mt-2">
+              Debug: isAdmin = {String(user?.isAdmin)}, userId = {user?.id}
+            </div>
+          )}
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
