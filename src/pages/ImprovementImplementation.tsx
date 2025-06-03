@@ -47,6 +47,10 @@ import {
   Upload,
   Code,
   RefreshCw,
+  Sparkles,
+  Brain,
+  CheckSquare,
+  Info,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -81,6 +85,18 @@ interface ImplementationLog {
   details?: string;
 }
 
+// AI提案タスクのインターフェース
+interface SuggestedTask {
+  id: string;
+  title: string;
+  description: string;
+  reason: string;
+  estimatedHours: number;
+  priority: 'high' | 'medium' | 'low';
+  dependencies?: string[];
+  checklist: string[];
+}
+
 const ImprovementImplementation: React.FC = () => {
   const navigate = useNavigate();
   const [activePhase, setActivePhase] = useState('phase1');
@@ -88,6 +104,10 @@ const ImprovementImplementation: React.FC = () => {
   const [implementationLogs, setImplementationLogs] = useState<ImplementationLog[]>([]);
   const [newNote, setNewNote] = useState('');
   const [showTaskDialog, setShowTaskDialog] = useState(false);
+  const [showAISuggestionsDialog, setShowAISuggestionsDialog] = useState(false);
+  const [suggestedTasks, setSuggestedTasks] = useState<SuggestedTask[]>([]);
+  const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // タスクデータ（実際の実装では、バックエンドから取得）
   const [tasks, setTasks] = useState<Task[]>([
@@ -260,6 +280,120 @@ const ImprovementImplementation: React.FC = () => {
     { id: 'user3', name: '鈴木 一郎', avatar: '', role: 'フルスタック' },
   ];
 
+  // AI分析とタスク提案のロジック
+  const analyzeTasks = async () => {
+    setIsAnalyzing(true);
+
+    // 実際の実装では、ここでAI APIを呼び出す
+    // 現在のタスクを分析して、不足しているタスクや関連タスクを提案
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // シミュレート
+
+    const suggestions: SuggestedTask[] = [
+      {
+        id: 'sg-1',
+        title: 'UIコンポーネントのテスト戦略策定',
+        description: '新しいUIライブラリに移行後のテスト方針とテストケースの整備',
+        reason: '既存タスクにテスト関連の詳細が不足しています。品質保証のために必要です。',
+        estimatedHours: 12,
+        priority: 'high',
+        dependencies: ['ui-audit', 'button-migration'],
+        checklist: [
+          'ユニットテストフレームワークの選定',
+          'コンポーネントテストのベストプラクティス文書化',
+          'スナップショットテストの導入検討',
+          'E2Eテストの影響範囲確認',
+        ],
+      },
+      {
+        id: 'sg-2',
+        title: 'デザインシステムドキュメントの更新',
+        description: 'shadcn-ui移行に伴うデザインシステムドキュメントの更新',
+        reason: 'UIライブラリの変更により、デザインガイドラインの更新が必要です。',
+        estimatedHours: 8,
+        priority: 'medium',
+        checklist: [
+          'コンポーネントカタログの更新',
+          'デザイントークンの整理',
+          'Storybookの設定更新',
+          '開発者向けガイドの作成',
+        ],
+      },
+      {
+        id: 'sg-3',
+        title: 'パフォーマンス計測基準の設定',
+        description: 'UIライブラリ移行前後のパフォーマンス比較のための計測環境構築',
+        reason: '移行の効果を定量的に測定するために必要です。',
+        estimatedHours: 6,
+        priority: 'medium',
+        dependencies: ['ui-audit'],
+        checklist: [
+          'Lighthouse CI の設定',
+          '主要ページのベンチマーク取得',
+          'バンドルサイズの計測',
+          'ランタイムパフォーマンスの測定',
+        ],
+      },
+      {
+        id: 'sg-4',
+        title: '段階的移行のためのラッパーコンポーネント作成',
+        description: '既存コンポーネントから新UIライブラリへの段階的移行を支援するラッパー',
+        reason: '大規模な移行をリスクを抑えて実施するために推奨されます。',
+        estimatedHours: 16,
+        priority: 'high',
+        checklist: [
+          'ラッパーコンポーネントの設計',
+          'APIの互換性マッピング',
+          '移行ヘルパー関数の実装',
+          '段階的廃止計画の策定',
+        ],
+      },
+    ];
+
+    setSuggestedTasks(suggestions);
+    setIsAnalyzing(false);
+    setShowAISuggestionsDialog(true);
+
+    addLog('ai_analysis', 'AIがタスクを分析し、4件の追加タスクを提案しました');
+  };
+
+  // 選択された提案タスクを追加
+  const addSuggestedTasks = () => {
+    const tasksToAdd = suggestedTasks
+      .filter((st) => selectedSuggestions.includes(st.id))
+      .map((st) => ({
+        id: `task-${Date.now()}-${st.id}`,
+        title: st.title,
+        description: st.description,
+        phase: activePhase,
+        status: 'not-started' as const,
+        estimatedHours: st.estimatedHours,
+        actualHours: 0,
+        checklist: st.checklist.map((item, index) => ({
+          id: `cl-${Date.now()}-${index}`,
+          label: item,
+          completed: false,
+        })),
+      }));
+
+    setTasks((prev) => [...prev, ...tasksToAdd]);
+
+    addLog('tasks_added', `AIの提案から${tasksToAdd.length}件のタスクを追加しました`);
+    toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
+
+    setShowAISuggestionsDialog(false);
+    setSelectedSuggestions([]);
+    setSuggestedTasks([]);
+  };
+
+  // 提案の選択/解除
+  const toggleSuggestionSelection = (suggestionId: string) => {
+    setSelectedSuggestions((prev) =>
+      prev.includes(suggestionId)
+        ? prev.filter((id) => id !== suggestionId)
+        : [...prev, suggestionId]
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* ヘッダー */}
@@ -319,10 +453,30 @@ const ImprovementImplementation: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Phase 1: UIライブラリの統一</span>
-                    <Button size="sm" onClick={() => setShowTaskDialog(true)}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      タスク追加
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={analyzeTasks}
+                        disabled={isAnalyzing}
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                            分析中...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            AI提案
+                          </>
+                        )}
+                      </Button>
+                      <Button size="sm" onClick={() => setShowTaskDialog(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        タスク追加
+                      </Button>
+                    </div>
                   </CardTitle>
                   <CardDescription>Material-UI、Radix UI、shadcn-uiの統合作業</CardDescription>
                 </CardHeader>
@@ -659,6 +813,121 @@ const ImprovementImplementation: React.FC = () => {
             >
               追加
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI提案ダイアログ */}
+      <Dialog open={showAISuggestionsDialog} onOpenChange={setShowAISuggestionsDialog}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              AIによるタスク提案
+            </DialogTitle>
+            <DialogDescription>
+              現在のタスクを分析し、以下の追加タスクを提案します
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {suggestedTasks.map((suggestion) => (
+              <Card
+                key={suggestion.id}
+                className={`cursor-pointer transition-colors ${
+                  selectedSuggestions.includes(suggestion.id) ? 'border-primary' : ''
+                }`}
+                onClick={() => toggleSuggestionSelection(suggestion.id)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        checked={selectedSuggestions.includes(suggestion.id)}
+                        onCheckedChange={() => toggleSuggestionSelection(suggestion.id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div>
+                        <CardTitle className="text-base">{suggestion.title}</CardTitle>
+                        <CardDescription className="mt-1">{suggestion.description}</CardDescription>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          suggestion.priority === 'high'
+                            ? 'destructive'
+                            : suggestion.priority === 'medium'
+                              ? 'default'
+                              : 'secondary'
+                        }
+                      >
+                        {suggestion.priority === 'high'
+                          ? '高'
+                          : suggestion.priority === 'medium'
+                            ? '中'
+                            : '低'}
+                        優先度
+                      </Badge>
+                      <Badge variant="outline">{suggestion.estimatedHours}h</Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <Alert className="py-2">
+                      <Info className="h-4 w-4" />
+                      <AlertDescription className="text-sm">{suggestion.reason}</AlertDescription>
+                    </Alert>
+
+                    {suggestion.dependencies && suggestion.dependencies.length > 0 && (
+                      <div className="text-sm">
+                        <span className="font-medium">依存タスク: </span>
+                        <span className="text-muted-foreground">
+                          {suggestion.dependencies
+                            .map((dep) => tasks.find((t) => t.id === dep)?.title || dep)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium flex items-center gap-2">
+                        <CheckSquare className="h-4 w-4" />
+                        予定される作業内容
+                      </p>
+                      <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                        {suggestion.checklist.map((item, index) => (
+                          <li key={index} className="list-disc">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <DialogFooter className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {selectedSuggestions.length}件のタスクを選択中
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowAISuggestionsDialog(false);
+                  setSelectedSuggestions([]);
+                }}
+              >
+                キャンセル
+              </Button>
+              <Button onClick={addSuggestedTasks} disabled={selectedSuggestions.length === 0}>
+                選択したタスクを追加
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
