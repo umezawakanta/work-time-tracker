@@ -114,6 +114,9 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   const [aiResult, setAiResult] = useState<any>(null);
   const [aiExecutionId, setAiExecutionId] = useState<string | null>(null);
 
+  // Add this missing line:
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // AI実行オプション
   const [aiOptions, setAiOptions] = useState({
     includeResearch: true,
