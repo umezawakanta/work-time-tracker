@@ -10,7 +10,7 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import { ArrowBack, Share } from '@mui/icons-material';
+import { ArrowLeft, Share } from 'lucide-react';
 
 interface BlogPost {
   id: string;
@@ -90,7 +90,7 @@ const BlogPostDetail: React.FC = () => {
           <Typography variant="h4" component="h1">
             記事が見つかりません
           </Typography>
-          <Button startIcon={<ArrowBack />} onClick={() => navigate('/blog')} sx={{ mt: 2 }}>
+          <Button startIcon={<ArrowLeft />} onClick={() => navigate('/blog')} sx={{ mt: 2 }}>
             ブログ一覧に戻る
           </Button>
         </Box>
@@ -103,7 +103,7 @@ const BlogPostDetail: React.FC = () => {
       <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button
-            startIcon={<ArrowBack />}
+            startIcon={<ArrowLeft />}
             onClick={() => navigate('/blog')}
             variant="outlined"
             size="small"
