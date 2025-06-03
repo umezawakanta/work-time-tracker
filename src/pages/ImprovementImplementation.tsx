@@ -60,7 +60,7 @@ import { useImplementation } from '@/hooks/useImplementation';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { useAuth } from '@/hooks/useAuth';
 import { useResources } from '@/hooks/useResources';
-import AdvancedAIService from '@/services/ai/AdvancedAIService';
+import { implementationService } from '@/services/implementationService';
 import { githubService } from '@/services/githubService';
 
 const ImprovementImplementation: React.FC = () => {
@@ -98,6 +98,7 @@ const ImprovementImplementation: React.FC = () => {
     updateTaskStatus,
     updateChecklist,
     refreshData,
+    addLog,
   } = useImplementation(currentProjectId);
 
   // チームメンバーを実データから取得
@@ -161,18 +162,19 @@ const ImprovementImplementation: React.FC = () => {
     if (!newNote.trim() || !user) return;
 
     try {
-      const { implementationService } = await import('@/services/implementationService');
-      await implementationService.addLog({
-        action: 'note_added',
-        details: newNote,
-        projectId: currentProjectId,
-        userId: user.uid,
-        user: user.displayName || user.email || 'Unknown User',
-      });
+      const success = await addLog(
+        'note_added',
+        newNote,
+        user.uid,
+        user.displayName || user.email || 'Unknown User'
+      );
 
-      setNewNote('');
-      toast.success('メモを追加しました');
-      refreshData();
+      if (success) {
+        setNewNote('');
+        toast.success('メモを追加しました');
+      } else {
+        toast.error('メモの追加に失敗しました');
+      }
     } catch (error) {
       toast.error('メモの追加に失敗しました');
       console.error('Add note error:', error);
@@ -278,14 +280,12 @@ const ImprovementImplementation: React.FC = () => {
       setShowAISuggestionsDialog(true);
 
       // ログに記録
-      const { implementationService } = await import('@/services/implementationService');
-      await implementationService.addLog({
-        action: 'ai_analysis',
-        details: `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
-        projectId: currentProjectId,
-        userId: user.uid,
-        user: user.displayName || user.email || 'Unknown User',
-      });
+      await addLog(
+        'ai_analysis',
+        `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
+        user.uid,
+        user.displayName || user.email || 'Unknown User'
+      );
 
       refreshData();
     } catch (error) {
@@ -877,7 +877,7 @@ const ImprovementImplementation: React.FC = () => {
                   implementationLogs.map((log) => (
                     <div key={log.id} className="flex gap-3 text-sm">
                       <span className="text-muted-foreground whitespace-nowrap">
-                        {new Date(log.timestamp).toLocaleString('ja-JP', {
+                        {new Date(log.timestamp || Date.now()).toLocaleString('ja-JP', {
                           month: '2-digit',
                           day: '2-digit',
                           hour: '2-digit',

@@ -9,10 +9,34 @@ export interface ImplementationLog {
 }
 
 class ImplementationService {
+  private logs: ImplementationLog[] = []; // ローカルストレージ
+
   async addLog(logData: ImplementationLog): Promise<void> {
-    // Mock implementation - just log to console
-    console.log('Implementation log:', logData);
-    // In real implementation, this would save to Firebase/database
+    try {
+      // タイムスタンプを追加
+      const logWithTimestamp = {
+        ...logData,
+        id: logData.id || `log-${Date.now()}`,
+        timestamp: logData.timestamp || new Date().toISOString(),
+      };
+
+      // ローカルストレージに保存
+      this.logs.unshift(logWithTimestamp);
+
+      // コンソールにログ出力（デバッグ用）
+      console.log('Implementation log added:', logWithTimestamp);
+
+      // 実際の実装では、ここでFirebaseやAPIに送信
+      // await this.saveToDatabase(logWithTimestamp);
+    } catch (error) {
+      console.error('Failed to add log:', error);
+      throw error;
+    }
+  }
+
+  async getLogs(projectId: string): Promise<ImplementationLog[]> {
+    // プロジェクトIDでフィルタリング
+    return this.logs.filter((log) => log.projectId === projectId);
   }
 }
 

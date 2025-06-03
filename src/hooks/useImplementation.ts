@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Task, ImprovementItem } from '@/types/implementation';
+import { implementationService, ImplementationLog } from '@/services/implementationService';
 import { toast } from 'react-hot-toast';
 
 export interface UseImplementationResult {
   tasks: Task[];
-  logs: any[];
+  logs: ImplementationLog[];
   currentProject: any;
   isLoading: boolean;
   error: string | null;
@@ -15,14 +16,43 @@ export interface UseImplementationResult {
   refreshData: () => Promise<void>;
   createTaskFromImprovement: (item: ImprovementItem) => Promise<boolean>;
   loadProject: (projectId: string) => Promise<boolean>;
+  addLog: (action: string, details: string, userId: string, userName: string) => Promise<boolean>;
 }
 
 export const useImplementation = (projectId?: string): UseImplementationResult => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<ImplementationLog[]>([]);
   const [currentProject, setCurrentProject] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const addLog = async (
+    action: string,
+    details: string,
+    userId: string,
+    userName: string
+  ): Promise<boolean> => {
+    try {
+      const logData: ImplementationLog = {
+        id: `log-${Date.now()}`,
+        action,
+        details,
+        projectId: projectId || 'site-improvement-2024',
+        userId,
+        user: userName,
+        timestamp: new Date().toISOString(),
+      };
+
+      await implementationService.addLog(logData);
+
+      setLogs((prev) => [logData, ...prev]);
+
+      return true;
+    } catch (error) {
+      console.error('Add log error:', error);
+      return false;
+    }
+  };
 
   const createTask = async (taskData: any): Promise<boolean> => {
     setIsLoading(true);
@@ -40,31 +70,26 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
         projectId: projectId || 'site-improvement-2024',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        createdBy: 'current-user', // TODO: 実際のユーザーIDを取得
+        createdBy: 'current-user',
         priority: taskData.priority || 'medium',
         tags: taskData.tags || [],
         dependencies: taskData.dependencies || [],
         notes: taskData.notes || '',
       };
 
-      // タスクをローカル状態に追加
       setTasks((prev) => [...prev, newTask]);
 
-      // ログを追加
-      const newLog = {
-        id: `log-${Date.now()}`,
-        action: 'task_created',
-        details: `タスク「${newTask.title}」を作成しました`,
-        timestamp: new Date().toISOString(),
-        user: '現在のユーザー', // TODO: 実際のユーザー名を取得
-      };
-      setLogs((prev) => [newLog, ...prev]);
+      await addLog(
+        'task_created',
+        `タスク「${newTask.title}」を作成しました`,
+        'current-user',
+        '現在のユーザー'
+      );
 
-      toast.success('タスクを作成しました');
       return true;
     } catch (error) {
       console.error('Task creation error:', error);
-      toast.error('タスクの作成に失敗しました');
+      setError('タスクの作成に失敗しました');
       return false;
     } finally {
       setIsLoading(false);
@@ -169,5 +194,6 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     refreshData,
     createTaskFromImprovement,
     loadProject,
+    addLog,
   };
 };
