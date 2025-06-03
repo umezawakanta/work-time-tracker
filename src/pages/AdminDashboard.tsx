@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Badge, Separator } from '@/components/ui';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const AdminDashboard: React.FC = () => {
   const user = useMemo(
