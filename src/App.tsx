@@ -37,6 +37,7 @@ import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 import SiteImprovementPlan from './pages/SiteImprovementPlan';
 import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
 import ImprovementImplementation from './pages/ImprovementImplementation';
+import IntegratedDashboard from './pages/IntegratedDashboard';
 
 const theme = createTheme({
   palette: {
@@ -71,6 +72,7 @@ export default function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/" element={<Home />} />
+                  <Route path="/integrated-dashboard" element={<IntegratedDashboard />} />
                   <Route path="/work-time" element={<WorkTimeEntryForm />} />
                   <Route path="/work-time-reports" element={<WorkTimeReports />} />
                   <Route path="/asset-liability-report" element={<AssetLiabilityReportPage />} />

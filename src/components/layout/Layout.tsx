@@ -33,6 +33,7 @@ import {
   Zap,
   Shield,
   Palette,
+  BarChart3,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -626,6 +627,13 @@ export default function Layout({ children }: LayoutProps) {
   // メニュー項目の定義
   const frequentMenuItems = useMemo<MenuItem[]>(
     () => [
+      {
+        icon: <BarChart3 size={18} />,
+        label: '統合ダッシュボード',
+        path: '/integrated-dashboard',
+        description: 'サイト改善・WBS・ToDoの進捗を一元管理',
+        badge: 'NEW',
+      },
       {
         icon: <Clock size={18} />,
         label: '作業時間入力',
