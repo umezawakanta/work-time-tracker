@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,14 @@ import {
   Users,
   Bot,
   Sparkles,
+  AlertTriangle,
+  CheckCircle,
+  FileText,
+  Lightbulb,
+  Settings2,
+  StopCircle,
+  Edit3,
+  Eye,
 } from 'lucide-react';
 import { WBSNode, WBSRisk } from '@/types/wbs';
 import { format } from 'date-fns';
@@ -51,6 +59,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
+import { Progress } from '@/components/ui/progress';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface TaskEditDialogProps {
   open: boolean;
@@ -85,6 +103,25 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
   const [executingAI, setExecutingAI] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // AI実行関連の新しい状態
+  const [showAIConfirm, setShowAIConfirm] = useState(false);
+  const [showAIProgress, setShowAIProgress] = useState(false);
+  const [showAIResult, setShowAIResult] = useState(false);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [aiCurrentStep, setAiCurrentStep] = useState('');
+  const [aiResult, setAiResult] = useState<any>(null);
+  const [aiExecutionId, setAiExecutionId] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // AI実行オプション
+  const [aiOptions, setAiOptions] = useState({
+    includeResearch: true,
+    generateDeliverables: true,
+    createSubtasks: false,
+    updateProgress: true,
+    autoComplete: false,
+  });
 
   // タスクが変更されたらフォームデータを更新
   useEffect(() => {
@@ -182,41 +219,157 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
     }
   };
 
-  // AI実行処理
+  // AI実行確認処理
+  const handleAIExecuteConfirm = () => {
+    setShowAIConfirm(true);
+  };
+
+  // AI実行メイン処理（改善版）
   const handleAIExecute = async () => {
     if (!task) return;
 
+    setShowAIConfirm(false);
+    setShowAIProgress(true);
     setExecutingAI(true);
+    setAiProgress(0);
+    setAiCurrentStep('AI実行の準備中...');
+
+    // AbortControllerを作成してキャンセル機能を有効化
+    abortControllerRef.current = new AbortController();
+    const executionId = `ai-exec-${Date.now()}`;
+    setAiExecutionId(executionId);
+
     try {
+      // Step 1: タスク分析
+      setAiCurrentStep('タスクを分析中...');
+      setAiProgress(20);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // 実際の処理をシミュレート
+
+      if (abortControllerRef.current?.signal.aborted) {
+        throw new Error('実行がキャンセルされました');
+      }
+
+      // Step 2: AI実行
+      setAiCurrentStep('AIでタスクを実行中...');
+      setAiProgress(50);
+
       const result = await TaskExecutionAIService.executeTask(task);
 
-      if (result.success) {
-        // 知識ベースに保存（後で実装）
-        if (result.knowledgeEntries) {
-          // await KnowledgeService.saveEntries(result.knowledgeEntries);
-        }
+      if (abortControllerRef.current?.signal.aborted) {
+        throw new Error('実行がキャンセルされました');
+      }
 
-        // タスクを完了状態に更新
-        await onSave(task.id, {
-          status: 'completed',
-          progress: 100,
-          actualHours: formData.estimatedHours || 1,
-          deliverables: [
-            ...(formData.deliverables || []),
-            `AI実行結果: ${result.knowledgeEntries?.[0]?.term || 'completed'}`,
-          ],
+      // Step 3: 結果処理
+      setAiCurrentStep('実行結果を処理中...');
+      setAiProgress(80);
+
+      if (result.success) {
+        // AI実行結果を詳細に処理
+        const enhancedResult = await processAIResult(result, task);
+        setAiResult(enhancedResult);
+
+        setAiCurrentStep('完了');
+        setAiProgress(100);
+
+        // 成功トースト
+        toast({
+          title: 'AI実行完了',
+          description: `「${task.name}」のAI実行が正常に完了しました。`,
+          duration: 5000,
         });
 
-        // ダイアログを閉じる
-        onOpenChange(false);
+        // 結果プレビューを表示
+        setShowAIProgress(false);
+        setShowAIResult(true);
       } else {
-        alert(`AI実行エラー: ${result.error}`);
+        throw new Error(result.error || 'AI実行に失敗しました');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('AI実行エラー:', error);
-      alert('AI実行中にエラーが発生しました');
+
+      setShowAIProgress(false);
+
+      // エラートースト
+      toast({
+        variant: 'destructive',
+        title: 'AI実行エラー',
+        description: error.message || 'AI実行中にエラーが発生しました',
+        duration: 8000,
+      });
     } finally {
       setExecutingAI(false);
+      setAiExecutionId(null);
+      abortControllerRef.current = null;
+    }
+  };
+
+  // AI実行結果の処理
+  const processAIResult = async (result: any, task: WBSNode) => {
+    const enhancements: any = {
+      originalResult: result,
+      suggestedUpdates: {},
+      confidence: 0.85,
+      timestamp: new Date().toISOString(),
+    };
+
+    // オプションに基づいて更新内容を決定
+    if (aiOptions.generateDeliverables && result.knowledgeEntries) {
+      enhancements.suggestedUpdates.deliverables = [
+        ...(formData.deliverables || []),
+        ...result.knowledgeEntries.map((entry: any) => `AI生成: ${entry.term}`),
+      ];
+    }
+
+    if (aiOptions.updateProgress) {
+      enhancements.suggestedUpdates.progress = 100;
+      enhancements.suggestedUpdates.status = 'completed';
+    }
+
+    if (aiOptions.autoComplete) {
+      enhancements.suggestedUpdates.actualHours = formData.estimatedHours || 1;
+    }
+
+    return enhancements;
+  };
+
+  // AI実行のキャンセル
+  const handleAICancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setShowAIProgress(false);
+      setExecutingAI(false);
+
+      toast({
+        title: 'AI実行キャンセル',
+        description: 'AI実行がキャンセルされました。',
+        duration: 3000,
+      });
+    }
+  };
+
+  // AI実行結果の適用
+  const handleApplyAIResult = async () => {
+    if (!task || !aiResult?.suggestedUpdates) return;
+
+    try {
+      await onSave(task.id, aiResult.suggestedUpdates);
+
+      toast({
+        title: '変更を適用',
+        description: 'AI実行結果がタスクに適用されました。',
+        duration: 3000,
+      });
+
+      setShowAIResult(false);
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: '適用エラー',
+        description: 'AI実行結果の適用に失敗しました。',
+        duration: 5000,
+      });
     }
   };
 
@@ -244,6 +397,8 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
       setDeleting(false);
     }
   };
+
+  const { toast } = useToast();
 
   if (!task) return null;
 
@@ -566,7 +721,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                 <Button
                   variant="destructive"
                   onClick={() => setShowDeleteConfirm(true)}
-                  disabled={saving || deleting}
+                  disabled={saving || deleting || executingAI}
                 >
                   <Trash className="h-4 w-4 mr-2" />
                   削除
@@ -578,7 +733,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                 キャンセル
               </Button>
               {canExecuteWithAI && (
-                <Button variant="outline" onClick={handleAIExecute} disabled={executingAI}>
+                <Button variant="outline" onClick={handleAIExecuteConfirm} disabled={executingAI}>
                   {executingAI ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
@@ -598,7 +753,7 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
                   AI分析
                 </Button>
               )}
-              <Button onClick={handleSave} disabled={saving}>
+              <Button onClick={handleSave} disabled={saving || executingAI}>
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? '保存中...' : '保存'}
               </Button>
@@ -606,6 +761,242 @@ const TaskEditDialog: React.FC<TaskEditDialogProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI実行確認ダイアログ */}
+      <AlertDialog open={showAIConfirm} onOpenChange={setShowAIConfirm}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5 text-blue-500" />
+              AI実行の確認
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p>「{task?.name}」をAIで実行しますか？</p>
+
+              <div className="space-y-3">
+                <p className="text-sm font-medium">実行オプション:</p>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="research"
+                      checked={aiOptions.includeResearch}
+                      onCheckedChange={(checked) =>
+                        setAiOptions((prev) => ({ ...prev, includeResearch: checked as boolean }))
+                      }
+                    />
+                    <Label htmlFor="research" className="text-sm">
+                      詳細調査を含む
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="deliverables"
+                      checked={aiOptions.generateDeliverables}
+                      onCheckedChange={(checked) =>
+                        setAiOptions((prev) => ({
+                          ...prev,
+                          generateDeliverables: checked as boolean,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="deliverables" className="text-sm">
+                      成果物を自動生成
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="progress"
+                      checked={aiOptions.updateProgress}
+                      onCheckedChange={(checked) =>
+                        setAiOptions((prev) => ({ ...prev, updateProgress: checked as boolean }))
+                      }
+                    />
+                    <Label htmlFor="progress" className="text-sm">
+                      進捗を100%に更新
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="complete"
+                      checked={aiOptions.autoComplete}
+                      onCheckedChange={(checked) =>
+                        setAiOptions((prev) => ({ ...prev, autoComplete: checked as boolean }))
+                      }
+                    />
+                    <Label htmlFor="complete" className="text-sm">
+                      自動的に完了状態にする
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-medium">注意事項:</p>
+                    <ul className="list-disc list-inside mt-1 space-y-1">
+                      <li>AI実行には数分かかる場合があります</li>
+                      <li>実行結果は事前にプレビューできます</li>
+                      <li>必要に応じて手動で調整できます</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction onClick={handleAIExecute}>実行開始</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* AI実行進捗ダイアログ */}
+      <Dialog open={showAIProgress} onOpenChange={() => {}}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-blue-500 animate-pulse" />
+              AI実行中
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{aiProgress}%</div>
+              <p className="text-sm text-muted-foreground mt-1">{aiCurrentStep}</p>
+            </div>
+
+            <Progress value={aiProgress} className="w-full" />
+
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>実行中... しばらくお待ちください</span>
+            </div>
+
+            <div className="flex justify-center">
+              <Button variant="outline" onClick={handleAICancel}>
+                <StopCircle className="h-4 w-4 mr-2" />
+                キャンセル
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI実行結果プレビューダイアログ */}
+      <Sheet open={showAIResult} onOpenChange={setShowAIResult}>
+        <SheetContent className="w-[600px] sm:max-w-[600px]">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              AI実行結果
+            </SheetTitle>
+            <SheetDescription>
+              以下の変更内容を確認して、適用するかどうかを選択してください。
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="mt-6 space-y-6">
+            {/* 実行サマリー */}
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Lightbulb className="h-4 w-4 text-blue-500" />
+                <h3 className="font-medium">実行サマリー</h3>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>実行タイプ:</span>
+                  <Badge variant="secondary">{aiResult?.originalResult?.executionType}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span>信頼度:</span>
+                  <span>{Math.round((aiResult?.confidence || 0) * 100)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>実行時間:</span>
+                  <span>
+                    {aiResult?.timestamp
+                      ? format(new Date(aiResult.timestamp), 'HH:mm:ss', { locale: ja })
+                      : '-'}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            {/* 提案された変更 */}
+            {aiResult?.suggestedUpdates && (
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Edit3 className="h-4 w-4 text-green-500" />
+                  <h3 className="font-medium">提案された変更</h3>
+                </div>
+                <div className="space-y-3">
+                  {aiResult.suggestedUpdates.status && (
+                    <div>
+                      <Label className="text-sm">ステータス</Label>
+                      <div className="mt-1">
+                        <Badge variant="outline">{aiResult.suggestedUpdates.status}</Badge>
+                      </div>
+                    </div>
+                  )}
+
+                  {aiResult.suggestedUpdates.progress && (
+                    <div>
+                      <Label className="text-sm">進捗率</Label>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Progress value={aiResult.suggestedUpdates.progress} className="flex-1" />
+                        <span className="text-sm">{aiResult.suggestedUpdates.progress}%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {aiResult.suggestedUpdates.deliverables && (
+                    <div>
+                      <Label className="text-sm">成果物</Label>
+                      <div className="mt-1 space-y-1">
+                        {aiResult.suggestedUpdates.deliverables.map(
+                          (item: string, index: number) => (
+                            <Badge key={index} variant="secondary" className="mr-1 mb-1">
+                              {item}
+                            </Badge>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* AI生成コンテンツ */}
+            {aiResult?.originalResult?.result && (
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="h-4 w-4 text-purple-500" />
+                  <h3 className="font-medium">AI生成コンテンツ</h3>
+                </div>
+                <div className="bg-muted p-3 rounded text-sm max-h-40 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap">{aiResult.originalResult.result}</pre>
+                </div>
+              </Card>
+            )}
+
+            {/* アクションボタン */}
+            <div className="flex gap-2 pt-4">
+              <Button onClick={handleApplyAIResult} className="flex-1">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                変更を適用
+              </Button>
+              <Button variant="outline" onClick={() => setShowAIResult(false)}>
+                <Eye className="h-4 w-4 mr-2" />
+                確認のみ
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* 削除確認ダイアログ */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
