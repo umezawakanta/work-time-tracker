@@ -110,6 +110,14 @@ export default function Layout({ children }: LayoutProps) {
       if (isAuthenticated && user) {
         try {
           setIsSubscriptionChecking(true);
+
+          // 管理者の場合は常にプレミアム機能を有効にする
+          if (user.isAdmin) {
+            setIsPremium(true);
+            setIsSubscriptionChecking(false);
+            return;
+          }
+
           try {
             // サブスクリプション情報の取得を試みる
             const response = await userSubscriptionApi.getUserSubscription(user._id || user.id);
@@ -743,7 +751,8 @@ export default function Layout({ children }: LayoutProps) {
   const renderMenuItem = (item: MenuItem, mobile: boolean = false) => {
     const isItemActive = isActive(item.path);
     const isPremiumItem = item.isPremium && !isSubscriptionChecking;
-    const needsUpgrade = isPremiumItem && !isPremium;
+    // 管理者の場合はプレミアム制限を無視
+    const needsUpgrade = isPremiumItem && !isPremium && !user?.isAdmin;
 
     const linkClasses = cn(
       'group relative flex items-center px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200',
@@ -765,7 +774,19 @@ export default function Layout({ children }: LayoutProps) {
           {item.icon}
         </span>
         <span className="ml-3">{item.label}</span>
-        {isPremiumItem && <Crown size={14} className="ml-2 text-amber-500 animate-pulse" />}
+        {/* 管理者の場合は管理者バッジを表示、それ以外はプレミアムバッジ */}
+        {isPremiumItem && user?.isAdmin && (
+          <Badge
+            variant="secondary"
+            className="ml-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0"
+          >
+            <Shield size={12} className="mr-1" />
+            管理者
+          </Badge>
+        )}
+        {isPremiumItem && !user?.isAdmin && (
+          <Crown size={14} className="ml-2 text-amber-500 animate-pulse" />
+        )}
         {item.badge && (
           <Badge
             variant="secondary"
@@ -780,7 +801,7 @@ export default function Layout({ children }: LayoutProps) {
       </>
     );
 
-    // プレミアム機能へのアクセス制御
+    // プレミアム機能へのアクセス制御（管理者は除く）
     if (needsUpgrade) {
       return (
         <TooltipProvider key={item.path}>
@@ -842,13 +863,13 @@ export default function Layout({ children }: LayoutProps) {
                   </span>
                   <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-lg opacity-20 blur group-hover:opacity-30 transition-opacity duration-300" />
                 </div>
-                {isPremium && (
+                {(isPremium || user?.isAdmin) && (
                   <Badge
                     variant="secondary"
                     className="mt-2 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-white border-0 shadow-lg shadow-amber-500/30 animate-shimmer"
                   >
                     <Sparkles size={12} className="mr-1" />
-                    プレミアム
+                    {user?.isAdmin ? '管理者' : 'プレミアム'}
                   </Badge>
                 )}
               </div>
@@ -1121,9 +1142,9 @@ export default function Layout({ children }: LayoutProps) {
                   {frequentMenuItems.slice(7).map((item) => (
                     <DropdownMenuItem
                       key={item.path}
-                      disabled={item.isPremium && !isPremium}
+                      disabled={item.isPremium && !isPremium && !user?.isAdmin}
                       onClick={() => {
-                        if (item.isPremium && !isPremium) {
+                        if (item.isPremium && !isPremium && !user?.isAdmin) {
                           toast.error('この機能はプレミアムプラン限定です');
                           navigate('/subscription-management');
                           return;
@@ -1133,7 +1154,14 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       {item.icon}
                       <span className="ml-2">{item.label}</span>
-                      {item.isPremium && <Crown size={14} className="ml-1 text-amber-500" />}
+                      {item.isPremium && user?.isAdmin && (
+                        <Badge variant="secondary" className="ml-1 bg-blue-500 text-white">
+                          管理者
+                        </Badge>
+                      )}
+                      {item.isPremium && !user?.isAdmin && (
+                        <Crown size={14} className="ml-1 text-amber-500" />
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -1143,9 +1171,9 @@ export default function Layout({ children }: LayoutProps) {
                   {otherMenuItems.map((item) => (
                     <DropdownMenuItem
                       key={item.path}
-                      disabled={item.isPremium && !isPremium}
+                      disabled={item.isPremium && !isPremium && !user?.isAdmin}
                       onClick={() => {
-                        if (item.isPremium && !isPremium) {
+                        if (item.isPremium && !isPremium && !user?.isAdmin) {
                           toast.error('この機能はプレミアムプラン限定です');
                           navigate('/subscription-management');
                           return;
@@ -1155,7 +1183,14 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       {item.icon}
                       <span className="ml-2">{item.label}</span>
-                      {item.isPremium && <Crown size={14} className="ml-1 text-amber-500" />}
+                      {item.isPremium && user?.isAdmin && (
+                        <Badge variant="secondary" className="ml-1 bg-blue-500 text-white">
+                          管理者
+                        </Badge>
+                      )}
+                      {item.isPremium && !user?.isAdmin && (
+                        <Crown size={14} className="ml-1 text-amber-500" />
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuGroup>
@@ -1406,7 +1441,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
           )}
 
-        {isAuthenticated && !isPremium && (
+        {isAuthenticated && !isPremium && !user?.isAdmin && (
           <div className="bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 border border-amber-200/50 p-5 mb-6 rounded-2xl shadow-sm hidden md:block">
             <div className="flex justify-between items-center">
               <div className="flex">
