@@ -46,10 +46,6 @@ export const useAuth = (): UseAuthReturn => {
                 daily: true,
                 weekly: true,
               },
-              currency: 'JPY',
-              dateFormat: 'yyyy-MM-dd',
-              timeFormat: '24h',
-              weekStartsOn: 1,
             },
           });
         }
@@ -90,10 +86,6 @@ export const useAuth = (): UseAuthReturn => {
             daily: true,
             weekly: true,
           },
-          currency: 'JPY',
-          dateFormat: 'yyyy-MM-dd',
-          timeFormat: '24h',
-          weekStartsOn: 1,
         },
       };
 
