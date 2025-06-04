@@ -214,12 +214,15 @@ const UpdateHistoryPage: React.FC = () => {
 
                 <div className="space-y-2">
                   <Label>作者</Label>
-                  <Select value={authorFilter} onValueChange={setAuthorFilter}>
+                  <Select
+                    value={authorFilter}
+                    onValueChange={(value) => setAuthorFilter(value === 'all-authors' ? '' : value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="すべての作者" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">すべての作者</SelectItem>
+                      <SelectItem value="all-authors">すべての作者</SelectItem>
                       {uniqueAuthors.map((author) => (
                         <SelectItem key={author} value={author}>
                           {author}
