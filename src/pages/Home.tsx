@@ -26,6 +26,8 @@ import {
   Lock,
   Sparkles,
   Star,
+  Package,
+  ShoppingBag,
 } from 'lucide-react';
 import {
   Dialog,
@@ -40,7 +42,8 @@ import { setTrialActivated } from '@/store/userSlice';
 import BalanceUpdateReminder from '@/components/BalanceUpdateReminder';
 import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
 import HabitTracker from '@/components/habitTracker/HabitTracker';
-import { FeatureCard, FeatureCardVariant, PricingCard } from '@/components/FeatureCard'; // 改善版コンポーネントのインポート
+import { FeatureCard, FeatureCardVariant, PricingCard } from '@/components/FeatureCard';
+import { Badge } from '@/components/ui/badge';
 
 // プラン比較コンポーネント
 const PlanComparisonTable = () => (
@@ -148,7 +151,7 @@ const PlanComparisonTable = () => (
   </div>
 );
 
-export default function Home() {
+const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
@@ -322,6 +325,57 @@ export default function Home() {
     ],
     []
   );
+
+  // おすすめ商品のサンプルデータ
+  const featuredProducts = [
+    {
+      id: '1',
+      name: 'プレミアム ワイヤレスヘッドフォン',
+      price: 29800,
+      salePrice: 24800,
+      image: '/images/headphones-1.jpg',
+      rating: 4.5,
+      reviews: 128,
+    },
+    {
+      id: '2',
+      name: 'スマートウォッチ Pro',
+      price: 39800,
+      image: '/images/smartwatch-1.jpg',
+      rating: 4.2,
+      reviews: 89,
+    },
+    {
+      id: '3',
+      name: 'オーガニック コーヒー豆',
+      price: 2980,
+      salePrice: 2480,
+      image: '/images/coffee-1.jpg',
+      rating: 4.7,
+      reviews: 234,
+    },
+  ];
+
+  // 価格フォーマット
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency: 'JPY',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  // 評価の星表示
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <Star
+        key={index}
+        className={`h-4 w-4 ${
+          index < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+        }`}
+      />
+    ));
+  };
 
   // 「今すぐ始める」ボタンのハンドラー - useCallbackで最適化
   const handleGetStarted = useCallback(() => {
@@ -587,124 +641,174 @@ export default function Home() {
   }, [currentDialogStep, handleSelectPlan, handleStartTrial, pricingPlans, selectedPlan, navigate]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen">
       {/* ヒーローセクション */}
-      <section className="mb-12 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 shadow-sm">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            作業時間トラッカーへようこそ
+      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold mb-6">
+            あなたの生活をサポートする
+            <br />
+            プレミアムな商品
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-            あなたの時間を最大限に活用し、生産性を向上させるための総合ツールです。
-            作業時間の記録から分析、資産管理、様々なトラッキングまで、すべてを一つのアプリで。
+          <p className="text-xl mb-8 opacity-90">
+            仕事効率化ツールから日用品まで、厳選された商品をお届けします
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="rounded-full gap-2" onClick={handleGetStarted}>
-              <Clock className="h-5 w-5" aria-hidden="true" /> 今すぐ始める
+          <div className="space-x-4">
+            <Button
+              size="lg"
+              onClick={() => navigate('/products')}
+              className="bg-white text-blue-600 hover:bg-gray-100"
+            >
+              <ShoppingBag className="mr-2 h-5 w-5" />
+              商品を見る
             </Button>
-            <Button size="lg" variant="outline" className="rounded-full gap-2">
-              <Eye className="h-5 w-5" aria-hidden="true" /> ツアーを見る
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+            >
+              サービスについて
             </Button>
           </div>
         </div>
       </section>
 
-      {/* リマインダーセクション */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-center">日々のタスク管理</h2>
-        
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* 習慣トラッカー */}
-          <Card className="shadow-sm border-primary/20 hover:shadow-md transition-shadow">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Activity className="h-5 w-5 text-primary" aria-hidden="true" />
-                習慣トラッカー
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <HabitTracker />
-            </CardContent>
-          </Card>
+      {/* おすすめ商品セクション */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">おすすめ商品</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">人気の商品やセール商品をご紹介します</p>
+          </div>
 
-          {/* 残高更新リマインダー */}
-          <Card className="shadow-sm border-primary/20 hover:shadow-md transition-shadow">
-            <CardContent className="pt-6">
-              <BalanceUpdateReminder assetEntries={assetEntries} debtEntries={debtEntries} />
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {featuredProducts.map((product) => (
+              <Card
+                key={product.id}
+                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/products/${product.id}`)}
+              >
+                <div className="aspect-square bg-gray-100 relative">
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiA4VjE2TTE2IDEySDhIMTZaIiBzdHJva2U9IiM5Q0EzQUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Package className="h-16 w-16 text-gray-300" />
+                    </div>
+                  )}
 
-          {/* 本日のToDoリスト */}
-          <DailyTodoReminder isPremium={hasActiveSubscription || trialActivated} />
+                  {product.salePrice && (
+                    <Badge className="absolute top-2 left-2 bg-red-500 text-white">セール</Badge>
+                  )}
+                </div>
+
+                <CardContent className="p-4">
+                  <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+
+                  {/* 評価 */}
+                  <div className="flex items-center gap-1 mb-2">
+                    <div className="flex">{renderStars(product.rating)}</div>
+                    <span className="text-sm text-gray-500">({product.reviews})</span>
+                  </div>
+
+                  {/* 価格 */}
+                  <div className="mb-3">
+                    {product.salePrice ? (
+                      <div>
+                        <span className="text-lg font-bold text-red-600">
+                          {formatPrice(product.salePrice)}
+                        </span>
+                        <span className="text-sm text-gray-500 line-through ml-2">
+                          {formatPrice(product.price)}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-lg font-bold text-gray-900">
+                        {formatPrice(product.price)}
+                      </span>
+                    )}
+                  </div>
+
+                  <Button
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/products/${product.id}`);
+                    }}
+                  >
+                    詳細を見る
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button size="lg" onClick={() => navigate('/products')}>
+              すべての商品を見る
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* 機能タブセクション */}
-      <section>
-        <h2 className="text-3xl font-bold mb-6 text-center">あなたのためのツール</h2>
-
-        <Tabs defaultValue="productivity" className="w-full">
-          <div className="flex justify-center mb-8">
-            <TabsList className="grid grid-cols-4 w-full max-w-2xl" aria-label="機能カテゴリ">
-              <TabsTrigger value="productivity" className="flex items-center gap-2">
-                <Clock className="h-4 w-4" aria-hidden="true" /> 生産性
-              </TabsTrigger>
-              <TabsTrigger value="finance" className="flex items-center gap-2">
-                <LineChart className="h-4 w-4" aria-hidden="true" /> 資産管理
-              </TabsTrigger>
-              <TabsTrigger value="political" className="flex items-center gap-2">
-                <PieChart className="h-4 w-4" aria-hidden="true" /> 政治分析
-              </TabsTrigger>
-              <TabsTrigger value="personal" className="flex items-center gap-2">
-                <UserCircle className="h-4 w-4" aria-hidden="true" /> パーソナル
-              </TabsTrigger>
-            </TabsList>
+      {/* 機能紹介セクション */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">なぜ当ストアを選ぶのか</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              お客様の満足度を最優先に、安心・安全なショッピング体験を提供します
+            </p>
           </div>
 
-          <TabsContent value="productivity">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {productivityTools.map((tool, index) => (
-                <FeatureCard key={`productivity-${index}`} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card>
+              <CardContent className="text-center p-6">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">厳選された商品</h3>
+                <p className="text-gray-600">
+                  品質と機能性を重視して厳選した商品のみを取り扱っています
+                </p>
+              </CardContent>
+            </Card>
 
-          <TabsContent value="finance">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {financeTools.map((tool, index) => (
-                <FeatureCard key={`finance-${index}`} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
+            <Card>
+              <CardContent className="text-center p-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">迅速な配送</h3>
+                <p className="text-gray-600">
+                  5,000円以上のご注文で送料無料。迅速かつ安全にお届けします
+                </p>
+              </CardContent>
+            </Card>
 
-          <TabsContent value="political">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {politicalTools.map((tool, index) => (
-                <FeatureCard key={`political-${index}`} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="personal">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {personalTools.map((tool, index) => (
-                <FeatureCard key={`personal-${index}`} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+            <Card>
+              <CardContent className="text-center p-6">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">安心のサポート</h3>
+                <p className="text-gray-600">30日間の返品保証と充実したカスタマーサポートを提供</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </section>
 
-      {/* CTAセクション */}
-      <section className="mt-16 text-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8">
-        <h2 className="text-3xl font-bold mb-4">もっと効率的な日々へ</h2>
-        <p className="text-lg mb-6 max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-          ワンクリックであなたの生活を最適化。今すぐ始めて、時間の使い方をコントロールしましょう。
-        </p>
-        <Button size="lg" className="rounded-full" onClick={handleGetStarted}>
-          今すぐ始める
-        </Button>
-      </section>
+      {/* 既存のコンテンツ（勤怠管理など）... */}
 
       {/* プレミアムプラン案内ダイアログ */}
       <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>
@@ -712,4 +816,6 @@ export default function Home() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default Home;

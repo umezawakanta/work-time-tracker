@@ -31,7 +31,7 @@ import TwitterPage from './pages/TwitterPage';
 import PoliticalTrends from './pages/PoliticalTrends';
 import CalendarPage from './pages/CalendarPage';
 import DiaryPage from './pages/DiaryPage';
-import ImpulseTrackerPage from './pages/ImpulseTrackerPage'; // 新しく追加
+import ImpulseTrackerPage from './pages/ImpulseTrackerPage';
 import GuitarPracticePage from './pages/GuitarPracticePage';
 import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 import SiteImprovementPlan from './pages/SiteImprovementPlan';
@@ -41,6 +41,9 @@ import IntegratedDashboard from './pages/IntegratedDashboard';
 import SystemDesignDocuments from './pages/SystemDesignDocuments';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminRoute from './components/admin/AdminRoute';
+import ProductsPage from '@/pages/ProductsPage';
+import ProductDetailPage from '@/pages/ProductDetailPage';
+import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 
 const theme = createTheme({
   palette: {
@@ -92,8 +95,7 @@ export default function App() {
                   <Route path="/profile" element={<UserProfile />} />
                   <Route path="/wbs-creator" element={<WBSCreatorPage />} />
                   <Route path="/diary" element={<DiaryPage />} />
-                  <Route path="/impulse-tracker" element={<ImpulseTrackerPage />} />{' '}
-                  {/* 新しく追加されたルート */}
+                  <Route path="/impulse-tracker" element={<ImpulseTrackerPage />} />
                   <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
                   <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
                   <Route path="/system-design" element={<SystemDesignDocuments />} />
@@ -112,6 +114,8 @@ export default function App() {
                 </Route>
                 <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Routes>
             </Layout>

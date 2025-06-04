@@ -35,6 +35,8 @@ import {
   Palette,
   BarChart3,
   FileText,
+  Package,
+  ShoppingBag,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -65,6 +67,7 @@ import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 import notificationApi from '@/services/api/notificationApi';
 import NotificationItem from '@/components/notifications/NotificationItem';
 import axios, { AxiosError } from 'axios';
+import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -853,6 +856,21 @@ export default function Layout({ children }: LayoutProps) {
       </TooltipProvider>
     );
   };
+
+  // ナビゲーションメニューにECサイト関連を追加
+  const menuItems = [
+    // ... 既存のメニューアイテム
+    {
+      label: '商品一覧',
+      href: '/products',
+      icon: Package,
+    },
+    {
+      label: 'カテゴリ',
+      href: '/categories',
+      icon: ShoppingBag,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50">
