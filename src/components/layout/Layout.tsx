@@ -749,6 +749,13 @@ export default function Layout({ children }: LayoutProps) {
         description: 'アプリケーションの技術仕様書と設計ドキュメント',
         badge: 'NEW',
       },
+      {
+        icon: <GitCommit size={18} />,
+        label: '更新履歴',
+        path: '/update-history',
+        description: 'GitHubリポジトリのコミット履歴をリアルタイムで表示',
+        badge: 'NEW',
+      },
     ],
     [user?.isAdmin] // 依存配列にuser.isAdminを追加
   );
