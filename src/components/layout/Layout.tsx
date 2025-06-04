@@ -37,6 +37,7 @@ import {
   FileText,
   Package,
   ShoppingBag,
+  GitCommit,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -869,6 +870,11 @@ export default function Layout({ children }: LayoutProps) {
       label: 'カテゴリ',
       href: '/categories',
       icon: ShoppingBag,
+    },
+    {
+      label: '更新履歴',
+      href: '/update-history',
+      icon: GitCommit,
     },
   ];
 

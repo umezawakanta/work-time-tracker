@@ -44,6 +44,8 @@ import AdminRoute from './components/admin/AdminRoute';
 import ProductsPage from '@/pages/ProductsPage';
 import ProductDetailPage from '@/pages/ProductDetailPage';
 import ShoppingCart from '@/components/ecommerce/ShoppingCart';
+import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
+import CheckoutPage from '@/pages/CheckoutPage';
 
 const theme = createTheme({
   palette: {
@@ -116,6 +118,8 @@ export default function App() {
                 <Route path="/404" element={<NotFound />} />
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/update-history" element={<UpdateHistoryPage />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Routes>
             </Layout>
