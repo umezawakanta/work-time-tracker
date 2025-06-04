@@ -1,3 +1,5 @@
+import { Task } from '@/types/implementation';
+
 export interface ImplementationLog {
   id?: string;
   action: string;
@@ -9,34 +11,152 @@ export interface ImplementationLog {
 }
 
 class ImplementationService {
-  private logs: ImplementationLog[] = []; // ローカルストレージ
+  private baseUrl = '/api/implementation';
 
-  async addLog(logData: ImplementationLog): Promise<void> {
+  // タスク関連
+  async getTasks(projectId: string): Promise<Task[]> {
     try {
-      // タイムスタンプを追加
-      const logWithTimestamp = {
-        ...logData,
-        id: logData.id || `log-${Date.now()}`,
-        timestamp: logData.timestamp || new Date().toISOString(),
-      };
+      const response = await fetch(`${this.baseUrl}/tasks/${projectId}`, {
+        credentials: 'include',
+      });
 
-      // ローカルストレージに保存
-      this.logs.unshift(logWithTimestamp);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
 
-      // コンソールにログ出力（デバッグ用）
-      console.log('Implementation log added:', logWithTimestamp);
-
-      // 実際の実装では、ここでFirebaseやAPIに送信
-      // await this.saveToDatabase(logWithTimestamp);
+      return await response.json();
     } catch (error) {
-      console.error('Failed to add log:', error);
+      console.error('Get tasks error:', error);
       throw error;
     }
   }
 
-  async getLogs(projectId: string): Promise<ImplementationLog[]> {
-    // プロジェクトIDでフィルタリング
-    return this.logs.filter((log) => log.projectId === projectId);
+  async createTask(taskData: any): Promise<Task> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(taskData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Create task error:', error);
+      throw error;
+    }
+  }
+
+  async updateTask(taskId: string, updates: any): Promise<Task> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Update task error:', error);
+      throw error;
+    }
+  }
+
+  async updateTaskStatus(taskId: string, status: Task['status']): Promise<Task> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${taskId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update task status');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Update task status error:', error);
+      throw error;
+    }
+  }
+
+  async updateChecklist(taskId: string, checklistId: string, completed: boolean): Promise<Task> {
+    try {
+      const response = await fetch(`${this.baseUrl}/tasks/${taskId}/checklist/${checklistId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ completed }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update checklist');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Update checklist error:', error);
+      throw error;
+    }
+  }
+
+  // ログ関連
+  async getLogs(projectId: string, limit: number = 50): Promise<ImplementationLog[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/logs/${projectId}?limit=${limit}`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch logs');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Get logs error:', error);
+      throw error;
+    }
+  }
+
+  async addLog(logData: ImplementationLog): Promise<ImplementationLog> {
+    try {
+      const response = await fetch(`${this.baseUrl}/logs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(logData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add log');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Add log error:', error);
+      throw error;
+    }
   }
 }
 

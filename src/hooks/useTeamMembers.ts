@@ -1,11 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TeamMember } from '@/types/implementation';
+import { teamMemberService } from '@/services/teamMemberService';
 
 interface UseTeamMembersReturn {
   teamMembers: TeamMember[];
   isLoading: boolean;
   error: string | null;
   refreshMembers: () => Promise<void>;
+  addMember: (memberData: Omit<TeamMember, 'id'>) => Promise<boolean>;
+  updateMember: (memberId: string, updates: Partial<TeamMember>) => Promise<boolean>;
+  removeMember: (memberId: string) => Promise<boolean>;
 }
 
 export const useTeamMembers = (projectId: string): UseTeamMembersReturn => {
@@ -20,38 +24,52 @@ export const useTeamMembers = (projectId: string): UseTeamMembersReturn => {
     setError(null);
 
     try {
-      // TODO: Replace with actual API call
-      // For now, return mock data
-      const mockMembers: TeamMember[] = [
-        {
-          id: 'user1',
-          name: '田中 太郎',
-          email: 'tanaka@example.com',
-          avatar: '',
-          role: 'フロントエンド',
-          skills: ['React', 'TypeScript', 'UI/UX'],
-          availability: 'available',
-          workload: 70,
-        },
-        {
-          id: 'user2',
-          name: '佐藤 花子',
-          email: 'sato@example.com',
-          avatar: '',
-          role: 'バックエンド',
-          skills: ['Node.js', 'Firebase', 'API'],
-          availability: 'busy',
-          workload: 90,
-        },
-      ];
-
-      setTeamMembers(mockMembers);
+      const members = await teamMemberService.getTeamMembers(projectId);
+      setTeamMembers(members);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'チームメンバーの取得に失敗しました');
     } finally {
       setIsLoading(false);
     }
   }, [projectId]);
+
+  const addMember = useCallback(async (memberData: Omit<TeamMember, 'id'>): Promise<boolean> => {
+    try {
+      const newMember = await teamMemberService.createTeamMember(memberData);
+      setTeamMembers((prev) => [...prev, newMember]);
+      return true;
+    } catch (error) {
+      console.error('Add member error:', error);
+      return false;
+    }
+  }, []);
+
+  const updateMember = useCallback(
+    async (memberId: string, updates: Partial<TeamMember>): Promise<boolean> => {
+      try {
+        const updatedMember = await teamMemberService.updateTeamMember(memberId, updates);
+        setTeamMembers((prev) =>
+          prev.map((member) => (member.id === memberId ? updatedMember : member))
+        );
+        return true;
+      } catch (error) {
+        console.error('Update member error:', error);
+        return false;
+      }
+    },
+    []
+  );
+
+  const removeMember = useCallback(async (memberId: string): Promise<boolean> => {
+    try {
+      await teamMemberService.deleteTeamMember(memberId);
+      setTeamMembers((prev) => prev.filter((member) => member.id !== memberId));
+      return true;
+    } catch (error) {
+      console.error('Remove member error:', error);
+      return false;
+    }
+  }, []);
 
   useEffect(() => {
     refreshMembers();
@@ -62,5 +80,8 @@ export const useTeamMembers = (projectId: string): UseTeamMembersReturn => {
     isLoading,
     error,
     refreshMembers,
+    addMember,
+    updateMember,
+    removeMember,
   };
 };

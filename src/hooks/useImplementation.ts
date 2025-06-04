@@ -26,21 +26,97 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const refreshData = useCallback(async (): Promise<void> => {
+    if (!projectId) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const [tasksData, logsData] = await Promise.all([
+        implementationService.getTasks(projectId),
+        implementationService.getLogs(projectId),
+      ]);
+
+      setTasks(tasksData);
+      setLogs(logsData);
+    } catch (error) {
+      console.error('Refresh data error:', error);
+      setError('データの更新に失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [projectId]);
+
+  const createTask = useCallback(async (taskData: any): Promise<boolean> => {
+    try {
+      const newTask = await implementationService.createTask(taskData);
+      setTasks((prev) => [newTask, ...prev]);
+      return true;
+    } catch (error) {
+      console.error('Create task error:', error);
+      return false;
+    }
+  }, []);
+
+  const updateTask = useCallback(async (taskId: string, updates: any): Promise<boolean> => {
+    try {
+      const updatedTask = await implementationService.updateTask(taskId, updates);
+      setTasks((prev) => prev.map((task) => (task.id === taskId ? updatedTask : task)));
+      return true;
+    } catch (error) {
+      console.error('Update task error:', error);
+      return false;
+    }
+  }, []);
+
+  const updateTaskStatus = useCallback(
+    async (taskId: string, status: Task['status']): Promise<boolean> => {
+      try {
+        const updatedTask = await implementationService.updateTaskStatus(taskId, status);
+        setTasks((prev) => prev.map((task) => (task.id === taskId ? updatedTask : task)));
+        return true;
+      } catch (error) {
+        console.error('Update task status error:', error);
+        return false;
+      }
+    },
+    []
+  );
+
+  const updateChecklist = useCallback(
+    async (taskId: string, checklistId: string, completed: boolean): Promise<boolean> => {
+      try {
+        const updatedTask = await implementationService.updateChecklist(
+          taskId,
+          checklistId,
+          completed
+        );
+        setTasks((prev) => prev.map((task) => (task.id === taskId ? updatedTask : task)));
+        return true;
+      } catch (error) {
+        console.error('Update checklist error:', error);
+        return false;
+      }
+    },
+    []
+  );
+
   const addLog = useCallback(
     async (action: string, details: string, userId: string, userName: string): Promise<boolean> => {
+      if (!projectId) return false;
+
       try {
         const logData: ImplementationLog = {
-          id: `log-${Date.now()}`,
           action,
           details,
-          projectId: projectId || 'site-improvement-2024',
+          projectId,
           userId,
           user: userName,
-          timestamp: new Date().toISOString(),
         };
 
-        await implementationService.addLog(logData);
-        setLogs((prev) => [logData, ...prev]);
+        const newLog = await implementationService.addLog(logData);
+        setLogs((prev) => [newLog, ...prev]);
         return true;
       } catch (error) {
         console.error('Add log error:', error);
@@ -50,131 +126,50 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     [projectId]
   );
 
-  const createTask = async (taskData: any): Promise<boolean> => {
-    setIsLoading(true);
-    try {
-      const newTask: Task = {
-        id: `task-${Date.now()}`,
-        title: taskData.title,
-        description: taskData.description,
-        phase: taskData.phase || 'phase0',
-        status: 'not-started',
-        assignee: taskData.assignee,
-        checklist: taskData.checklist || [],
-        estimatedHours: taskData.estimatedHours || 8,
-        actualHours: 0,
-        projectId: projectId || 'site-improvement-2024',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: 'current-user',
-        priority: taskData.priority || 'medium',
-        tags: taskData.tags || [],
-        dependencies: taskData.dependencies || [],
-        notes: taskData.notes || '',
+  const createTaskFromImprovement = useCallback(
+    async (item: ImprovementItem): Promise<boolean> => {
+      const taskData = {
+        title: item.title,
+        description: item.description,
+        phase: 'phase0',
+        estimatedHours: (item.estimatedDays || 1) * 8,
+        priority: item.priority,
+        tags: [item.id, item.category, 'improvement'],
+        dependencies: item.dependencies || [],
+        checklist: [
+          {
+            id: 'analysis',
+            label: '要件分析',
+            completed: false,
+            createdAt: new Date().toISOString(),
+          },
+          { id: 'design', label: '設計', completed: false, createdAt: new Date().toISOString() },
+          {
+            id: 'implementation',
+            label: '実装',
+            completed: false,
+            createdAt: new Date().toISOString(),
+          },
+          { id: 'testing', label: 'テスト', completed: false, createdAt: new Date().toISOString() },
+          {
+            id: 'review',
+            label: 'レビュー',
+            completed: false,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        projectId,
       };
 
-      setTasks((prev) => [...prev, newTask]);
-
-      await addLog(
-        'task_created',
-        `タスク「${newTask.title}」を作成しました`,
-        'current-user',
-        '現在のユーザー'
-      );
-
-      return true;
-    } catch (error) {
-      console.error('Task creation error:', error);
-      setError('タスクの作成に失敗しました');
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateTask = async (taskId: string, updates: any): Promise<boolean> => {
-    try {
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId ? { ...task, ...updates, updatedAt: new Date().toISOString() } : task
-        )
-      );
-      return true;
-    } catch (error) {
-      console.error('Task update error:', error);
-      return false;
-    }
-  };
-
-  const updateTaskStatus = async (taskId: string, status: Task['status']): Promise<boolean> => {
-    return updateTask(taskId, { status });
-  };
-
-  const updateChecklist = async (
-    taskId: string,
-    checklistId: string,
-    completed: boolean
-  ): Promise<boolean> => {
-    try {
-      setTasks((prev) =>
-        prev.map((task) => {
-          if (task.id === taskId) {
-            return {
-              ...task,
-              checklist: task.checklist.map((item) =>
-                item.id === checklistId ? { ...item, completed } : item
-              ),
-              updatedAt: new Date().toISOString(),
-            };
-          }
-          return task;
-        })
-      );
-      return true;
-    } catch (error) {
-      console.error('Checklist update error:', error);
-      return false;
-    }
-  };
-
-  const refreshData = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // TODO: 実際のデータ取得処理
-      console.log('Refreshing data for project:', projectId);
-    } catch (error) {
-      console.error('Refresh data error:', error);
-      setError('データの更新に失敗しました');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [projectId]);
-
-  const createTaskFromImprovement = async (item: ImprovementItem): Promise<boolean> => {
-    const taskData = {
-      title: item.title,
-      description: item.description,
-      phase: 'phase0', // 改善項目は通常Phase 0
-      estimatedHours: (item.estimatedDays || 1) * 8, // 日数を時間に変換
-      priority: item.priority,
-      tags: [item.id, item.category, 'improvement'],
-      dependencies: item.dependencies || [],
-      checklist: [
-        { id: 'analysis', task: '要件分析', completed: false },
-        { id: 'design', task: '設計', completed: false },
-        { id: 'implementation', task: '実装', completed: false },
-        { id: 'testing', task: 'テスト', completed: false },
-        { id: 'review', task: 'レビュー', completed: false },
-      ],
-    };
-
-    return await createTask(taskData);
-  };
+      return await createTask(taskData);
+    },
+    [createTask, projectId]
+  );
 
   const loadProject = useCallback(async (projectId: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // TODO: 実際のプロジェクトデータ取得
+      // プロジェクト情報の読み込み（必要に応じてAPIを作成）
       setCurrentProject({ id: projectId, name: 'Site Improvement Project' });
       return true;
     } catch (error) {
@@ -185,12 +180,13 @@ export const useImplementation = (projectId?: string): UseImplementationResult =
     }
   }, []);
 
-  // Load project data on mount
+  // プロジェクトIDが変更された際にデータを再取得
   useEffect(() => {
     if (projectId) {
       loadProject(projectId);
+      refreshData();
     }
-  }, [projectId, loadProject]);
+  }, [projectId, loadProject, refreshData]);
 
   return {
     tasks,
