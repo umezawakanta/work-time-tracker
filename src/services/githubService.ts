@@ -259,15 +259,14 @@ let githubServiceInstance: GitHubService | null = null;
 
 export const getGitHubService = (): GitHubService => {
   if (!githubServiceInstance) {
-    // 環境変数から設定を読み込み
-    const config: GitHubApiConfig = {
-      owner: import.meta.env.VITE_GITHUB_OWNER || 'your-username',
-      repo: import.meta.env.VITE_GITHUB_REPO || 'work-time-tracker',
-      accessToken: import.meta.env.VITE_GITHUB_ACCESS_TOKEN, // オプション
-    };
-
-    githubServiceInstance = new GitHubService(config);
+    githubServiceInstance = new GitHubService({
+      owner: 'umezawakanta', // あなたのGitHubユーザー名
+      repo: 'work-time-tracker', // リポジトリ名
+      accessToken: import.meta.env.VITE_GITHUB_TOKEN, // 環境変数からトークンを取得
+    });
   }
-
   return githubServiceInstance;
 };
+
+// 直接インポートできるシングルトンインスタンス
+export const githubService = getGitHubService();
