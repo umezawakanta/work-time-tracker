@@ -128,6 +128,7 @@ const ImprovementImplementation: React.FC = () => {
     assignee: '',
     priority: 'medium',
   });
+  const [isAddingTasks, setIsAddingTasks] = useState(false);
 
   // プロジェクトIDを安全に取得
   const currentProjectId = useMemo(() => projectId || 'site-improvement-2024', [projectId]);
@@ -425,6 +426,355 @@ const ImprovementImplementation: React.FC = () => {
   );
 
   // AI分析とタスク提案のロジック
+  const generateTaskSuggestions = useCallback(
+    async (
+      currentTasks: Task[],
+      phase: keyof typeof PHASE_CONFIG,
+      members: TeamMember[]
+    ): Promise<SuggestedTask[]> => {
+      const completedTasks = currentTasks.filter((t) => t.status === 'completed');
+      const inProgressTasks = currentTasks.filter((t) => t.status === 'in-progress');
+      const blockedTasks = currentTasks.filter((t) => t.status === 'blocked');
+      const suggestions: SuggestedTask[] = [];
+
+      // フェーズ固有の提案ロジック
+      if (phase === 'phase1') {
+        // Phase 1: UIライブラリ統一の提案
+        if (currentTasks.length === 0) {
+          suggestions.push({
+            id: `suggestion-${Date.now()}-1`,
+            title: 'UIライブラリ調査',
+            description: '既存のUIコンポーネントライブラリの使用状況を調査し、統合方針を策定する',
+            reason: 'まず現状把握から始める必要があります。効率的な統合計画を立てるため',
+            estimatedHours: 8,
+            priority: 'high',
+            dependencies: [],
+            checklist: [
+              'Material-UI使用箇所の特定と調査',
+              'Radix UI使用箇所の特定と調査',
+              'shadcn-ui使用箇所の特定と調査',
+              '各ライブラリの依存関係分析',
+              '統合方針の策定とドキュメント化',
+              'チームメンバーへの共有',
+            ],
+            phase,
+            tags: ['research', 'ui-library', 'planning'],
+            confidence: 0.95,
+            source: 'ai_analysis',
+          });
+        }
+
+        if (!currentTasks.some((t) => t.tags.includes('design-system'))) {
+          suggestions.push({
+            id: `suggestion-${Date.now()}-2`,
+            title: 'デザインシステム構築',
+            description:
+              'shadcn-uiベースの統一デザインシステムを構築し、再利用可能なコンポーネントライブラリを作成',
+            reason: 'UIライブラリ統一にはデザインシステムが必要です。開発効率と品質向上のため',
+            estimatedHours: 16,
+            priority: 'high',
+            dependencies: [],
+            checklist: [
+              'デザイントークンの定義（カラー、フォント、スペーシング）',
+              'コンポーネント一覧の作成',
+              'shadcn-uiベースのコンポーネント実装',
+              'Storybookの設定と文書化',
+              '使用ガイドラインの作成',
+              'チーム向けの勉強会開催',
+            ],
+            phase,
+            tags: ['design-system', 'documentation', 'components'],
+            confidence: 0.9,
+            source: 'ai_analysis',
+          });
+        }
+
+        // 既存タスクの状況に応じた追加提案
+        if (completedTasks.length > 0) {
+          suggestions.push({
+            id: `suggestion-${Date.now()}-7`,
+            title: 'コンポーネント移行計画',
+            description: '既存コンポーネントを新しいデザインシステムに段階的に移行する計画を策定',
+            reason: '調査が完了したため、具体的な移行計画が必要です',
+            estimatedHours: 6,
+            priority: 'medium',
+            dependencies: completedTasks.map((t) => t.id),
+            checklist: [
+              '移行優先度の設定',
+              '移行スケジュールの作成',
+              'リスク評価と対策',
+              'テスト計画の策定',
+            ],
+            phase,
+            tags: ['migration', 'planning'],
+            confidence: 0.85,
+            source: 'ai_analysis',
+          });
+        }
+      }
+
+      if (phase === 'phase2') {
+        // Phase 2: パフォーマンス最適化の提案
+        suggestions.push({
+          id: `suggestion-${Date.now()}-3`,
+          title: 'バンドル分析とサイズ最適化',
+          description: 'webpack-bundle-analyzerを使用したバンドルサイズ分析と最適化施策の実施',
+          reason: 'パフォーマンス最適化には現状分析が必要です。ユーザー体験向上のため',
+          estimatedHours: 6,
+          priority: 'high',
+          dependencies: [],
+          checklist: [
+            'webpack-bundle-analyzerの導入',
+            'バンドルサイズの現状測定',
+            '大きなライブラリの特定',
+            'tree-shakingの設定確認',
+            'コード分割の実装',
+            '最適化結果の測定とレポート作成',
+          ],
+          phase,
+          tags: ['performance', 'analysis', 'optimization'],
+          confidence: 0.9,
+          source: 'ai_analysis',
+        });
+
+        suggestions.push({
+          id: `suggestion-${Date.now()}-8`,
+          title: 'レンダリング最適化',
+          description: 'React.memo、useMemo、useCallbackを活用したレンダリングパフォーマンスの改善',
+          reason: 'UIライブラリ統合後のパフォーマンス回復が必要です',
+          estimatedHours: 8,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            'React DevToolsでのプロファイリング',
+            '無駄な再レンダリングの特定',
+            'メモ化の適用',
+            'カスタムフックの最適化',
+            'パフォーマンステストの実行',
+          ],
+          phase,
+          tags: ['performance', 'react', 'optimization'],
+          confidence: 0.8,
+          source: 'ai_analysis',
+        });
+      }
+
+      if (phase === 'phase3') {
+        // Phase 3: リファクタリングの提案
+        suggestions.push({
+          id: `suggestion-${Date.now()}-9`,
+          title: 'TypeScript型強化',
+          description: 'any型の排除と厳密な型定義による型安全性の向上',
+          reason: 'コードの保守性と品質向上のため',
+          estimatedHours: 10,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            'any型の使用箇所を特定',
+            'インターフェースの定義',
+            'ジェネリクスの活用',
+            'ESLintルールの強化',
+            '型エラーの修正',
+          ],
+          phase,
+          tags: ['typescript', 'refactoring', 'quality'],
+          confidence: 0.8,
+          source: 'ai_analysis',
+        });
+      }
+
+      // 共通の提案ロジック
+      if (inProgressTasks.length > 0 && !currentTasks.some((t) => t.tags.includes('testing'))) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-4`,
+          title: 'テスト戦略の策定と実装',
+          description: '実装中のタスクに対する包括的なテスト方針の策定と自動テストの実装',
+          reason: '実装が進んでいますが、テスト関連のタスクが不足しています。品質保証のため',
+          estimatedHours: 12,
+          priority: 'medium',
+          dependencies: inProgressTasks.map((t) => t.id),
+          checklist: [
+            'テストフレームワークの選定（Jest, Testing Library等）',
+            'テストケース設計とカバレッジ目標設定',
+            'ユニットテストの実装',
+            '統合テストの実装',
+            'CI/CDパイプラインでの自動テスト設定',
+            'テストドキュメントの作成',
+          ],
+          phase,
+          tags: ['testing', 'quality', 'automation'],
+          confidence: 0.8,
+          source: 'ai_analysis',
+        });
+      }
+
+      if (blockedTasks.length > 0) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-5`,
+          title: 'ブロック解除アクション実行',
+          description: 'ブロックされたタスクの根本原因分析と具体的な解決策の実行',
+          reason: `${blockedTasks.length}件のブロックタスクがあります。プロジェクト進行のため早急な対応が必要`,
+          estimatedHours: 4,
+          priority: 'high',
+          dependencies: [],
+          checklist: [
+            'ブロック要因の詳細分析',
+            'ステークホルダーとの問題共有',
+            '代替解決策の検討',
+            '外部依存の解決',
+            'リスク対策の実施',
+            '進捗の定期確認',
+          ],
+          phase,
+          tags: ['blocked', 'resolution', 'risk-management'],
+          confidence: 0.7,
+          source: 'ai_analysis',
+        });
+      }
+
+      // チームメンバーの負荷に基づく提案
+      const overloadedMembers = members.filter((m) => m.workload > 80);
+      if (overloadedMembers.length > 0) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-6`,
+          title: 'チーム負荷調整とリソース最適化',
+          description: '過負荷メンバーからのタスク再配分とチーム全体のワークロード最適化',
+          reason: `${overloadedMembers.length}名のメンバーが過負荷状態です。チーム効率とメンバーの健康のため`,
+          estimatedHours: 3,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            '各メンバーの現在の負荷状況詳細分析',
+            'タスクの優先度再評価',
+            '負荷軽減のための再配分案作成',
+            'メンバーとの1on1面談実施',
+            '新しい配分での進捗見直し',
+            '今後の負荷管理ルール策定',
+          ],
+          phase,
+          tags: ['workload', 'team-management', 'resource-optimization'],
+          confidence: 0.75,
+          source: 'ai_analysis',
+        });
+      }
+
+      // プロジェクト進捗に応じた追加提案
+      const overallTaskProgress =
+        currentTasks.length > 0 ? (completedTasks.length / currentTasks.length) * 100 : 0;
+
+      if (overallTaskProgress > 70) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-10`,
+          title: '品質レビューと最終調整',
+          description: 'プロジェクト完了に向けた品質レビューと最終調整作業',
+          reason: 'プロジェクトが70%以上完了しているため、品質担保が重要です',
+          estimatedHours: 6,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            'コードレビューの実施',
+            'セキュリティチェック',
+            'パフォーマンステスト',
+            'ユーザビリティテスト',
+            'ドキュメント最終確認',
+          ],
+          phase,
+          tags: ['quality', 'review', 'finalization'],
+          confidence: 0.85,
+          source: 'ai_analysis',
+        });
+      }
+
+      return suggestions.slice(0, 8); // 最大8つまでの提案に制限
+    },
+    []
+  );
+
+  // 選択された提案タスクを追加（エラーハンドリング強化）
+  const addSuggestedTasks = useCallback(async () => {
+    if (!user) {
+      toast.error('ユーザー認証が必要です');
+      return;
+    }
+
+    const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
+
+    if (tasksToAdd.length === 0) {
+      toast.error('追加するタスクを選択してください');
+      return;
+    }
+
+    setIsAddingTasks(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const suggestionTask of tasksToAdd) {
+        try {
+          const taskData: TaskCreationData = {
+            title: suggestionTask.title,
+            description: suggestionTask.description,
+            phase: suggestionTask.phase,
+            status: 'not-started',
+            estimatedHours: suggestionTask.estimatedHours,
+            actualHours: 0,
+            projectId: currentProjectId,
+            checklist: suggestionTask.checklist.map((item, index) => ({
+              id: `cl-${Date.now()}-${index}-${Math.random()}`,
+              label: item,
+              completed: false,
+              createdAt: new Date().toISOString(),
+            })),
+            priority: suggestionTask.priority,
+            tags: suggestionTask.tags,
+            dependencies: suggestionTask.dependencies,
+            notes: `AI提案 (信頼度: ${Math.round(suggestionTask.confidence * 100)}%)\n理由: ${suggestionTask.reason}\n作成日時: ${new Date().toLocaleString()}`,
+            createdBy: user.uid,
+          };
+
+          const success = await createTask(taskData);
+          if (success) {
+            successCount++;
+            // ログ記録
+            await addLog(
+              'ai_task_added',
+              `AI提案タスク「${suggestionTask.title}」を追加`,
+              user.uid,
+              user.displayName || user.email || 'Unknown User'
+            );
+          } else {
+            errorCount++;
+            console.error('Failed to create task:', suggestionTask.title);
+          }
+        } catch (taskError) {
+          errorCount++;
+          console.error('Error creating individual task:', taskError);
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(
+          `${successCount}件のタスクを正常に追加しました${errorCount > 0 ? `（${errorCount}件の追加に失敗）` : ''}`
+        );
+
+        // 成功した場合のみダイアログを閉じてリセット
+        if (errorCount === 0) {
+          setShowAISuggestionsDialog(false);
+          setSelectedSuggestions([]);
+          setSuggestedTasks([]);
+        }
+      } else {
+        toast.error('タスクの追加に失敗しました');
+      }
+    } catch (error) {
+      console.error('Add suggested tasks error:', error);
+      toast.error('タスクの追加でエラーが発生しました');
+    } finally {
+      setIsAddingTasks(false);
+    }
+  }, [user, suggestedTasks, selectedSuggestions, currentProjectId, createTask, addLog]);
+
+  // AI分析とタスク提案のロジック（エラーハンドリング強化）
   const analyzeTasks = useCallback(async () => {
     if (!user) {
       toast.error('ユーザー認証が必要です');
@@ -439,26 +789,87 @@ const ImprovementImplementation: React.FC = () => {
         activePhase,
         teamMembers
       );
+
       setSuggestedTasks(analysisResult);
-      setShowAISuggestionsDialog(true);
 
-      await addLog(
-        'ai_analysis',
-        `AIがタスクを分析し、${analysisResult.length}件の追加タスクを提案しました (Phase: ${activePhase})`,
-        user.uid,
-        user.displayName || user.email || 'Unknown User'
-      );
+      if (analysisResult.length > 0) {
+        setShowAISuggestionsDialog(true);
 
-      toast.success(`${analysisResult.length}件のタスク提案を生成しました`);
+        await addLog(
+          'ai_analysis',
+          `AIがタスクを分析し、${analysisResult.length}件の追加タスクを提案しました (Phase: ${activePhase})`,
+          user.uid,
+          user.displayName || user.email || 'Unknown User'
+        );
+
+        toast.success(`${analysisResult.length}件のタスク提案を生成しました`);
+      } else {
+        toast('現在のフェーズでは追加提案がありません', {
+          icon: 'ℹ️',
+        });
+      }
     } catch (error) {
       console.error('AI analysis error:', error);
       toast.error('タスク分析でエラーが発生しました');
     } finally {
       setIsAnalyzing(false);
     }
-  }, [user, currentPhaseTasks, activePhase, teamMembers, addLog]);
+  }, [user, currentPhaseTasks, activePhase, teamMembers, addLog, generateTaskSuggestions]);
 
-  // 新しいタスクの作成
+  // Add this function before the return statement
+  const exportReport = useCallback(async () => {
+    try {
+      const reportData = {
+        exportInfo: {
+          projectId: currentProjectId,
+          projectName: currentProject?.name || 'サイト改善計画',
+          exportDate: new Date().toISOString(),
+          exportedBy: user?.displayName || user?.email || 'Unknown User',
+        },
+        progress: {
+          overall: overallProgress,
+          phases: phaseProgress,
+        },
+        tasks: tasks.map((task) => ({
+          ...task,
+          progress: calculateTaskProgress(task),
+          assigneeName: teamMembers.find((m) => m.id === task.assignee)?.name,
+        })),
+        summary: {
+          totalTasks: tasks.length,
+          completedTasks: tasks.filter((t) => t.status === 'completed').length,
+          inProgressTasks: tasks.filter((t) => t.status === 'in-progress').length,
+          blockedTasks: tasks.filter((t) => t.status === 'blocked').length,
+        },
+      };
+
+      const dataStr = JSON.stringify(reportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `implementation-report-${currentProjectId}-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+      toast.success('レポートをエクスポートしました');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('レポートのエクスポートに失敗しました');
+    }
+  }, [
+    currentProjectId,
+    currentProject,
+    overallProgress,
+    phaseProgress,
+    tasks,
+    teamMembers,
+    calculateTaskProgress,
+    user,
+  ]);
+
+  // Add this function before the return statement
   const handleCreateTask = useCallback(async () => {
     if (!newTaskData.title.trim()) {
       toast.error('タスク名を入力してください');
@@ -501,7 +912,7 @@ const ImprovementImplementation: React.FC = () => {
     }
   }, [newTaskData, user, activePhase, currentProjectId, createTask]);
 
-  // 提案の選択/解除
+  // Add this function before the return statement
   const toggleSuggestionSelection = useCallback((suggestionId: string) => {
     setSelectedSuggestions((prev) =>
       prev.includes(suggestionId)
@@ -509,274 +920,6 @@ const ImprovementImplementation: React.FC = () => {
         : [...prev, suggestionId]
     );
   }, []);
-
-  // レポート出力
-  const exportReport = useCallback(async () => {
-    try {
-      const reportData = {
-        exportInfo: {
-          projectId: currentProjectId,
-          projectName: currentProject?.name || 'サイト改善計画',
-          exportDate: new Date().toISOString(),
-          exportedBy: user?.displayName || user?.email || 'Unknown User',
-        },
-        progress: {
-          overall: overallProgress,
-          phases: phaseProgress,
-        },
-        tasks: tasks.map((task) => ({
-          ...task,
-          progress: calculateTaskProgress(task),
-          assigneeName: teamMembers.find((m) => m.id === task.assignee)?.name,
-        })),
-        teamMetrics: teamMembers.map((member) => ({
-          ...member,
-          assignedTasks: tasks.filter((task) => task.assignee === member.id).length,
-          completedTasks: tasks.filter(
-            (task) => task.assignee === member.id && task.status === 'completed'
-          ).length,
-        })),
-        recentLogs: implementationLogs.slice(0, 50),
-        summary: {
-          totalTasks: tasks.length,
-          completedTasks: tasks.filter((t) => t.status === 'completed').length,
-          inProgressTasks: tasks.filter((t) => t.status === 'in-progress').length,
-          blockedTasks: tasks.filter((t) => t.status === 'blocked').length,
-          totalEstimatedHours: tasks.reduce((sum, task) => sum + task.estimatedHours, 0),
-          totalActualHours: tasks.reduce((sum, task) => sum + task.actualHours, 0),
-        },
-      };
-
-      const dataStr = JSON.stringify(reportData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `implementation-report-${currentProjectId}-${new Date().toISOString().split('T')[0]}.json`;
-      link.click();
-
-      URL.revokeObjectURL(url);
-
-      toast.success('レポートをエクスポートしました');
-
-      // ログに記録
-      await addLog(
-        'report_exported',
-        '実装レポートをエクスポートしました',
-        user?.uid || 'unknown',
-        user?.displayName || user?.email || 'Unknown User'
-      );
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('レポートのエクスポートに失敗しました');
-    }
-  }, [
-    currentProjectId,
-    currentProject,
-    overallProgress,
-    phaseProgress,
-    tasks,
-    teamMembers,
-    implementationLogs,
-    calculateTaskProgress,
-    user,
-    addLog,
-  ]);
-
-  // 改良されたタスク提案生成
-  const generateTaskSuggestions = useCallback(
-    async (
-      currentTasks: Task[],
-      phase: keyof typeof PHASE_CONFIG,
-      members: TeamMember[]
-    ): Promise<SuggestedTask[]> => {
-      const completedTasks = currentTasks.filter((t) => t.status === 'completed');
-      const inProgressTasks = currentTasks.filter((t) => t.status === 'in-progress');
-      const blockedTasks = currentTasks.filter((t) => t.status === 'blocked');
-      const suggestions: SuggestedTask[] = [];
-
-      // フェーズ固有の提案ロジック
-      if (phase === 'phase1') {
-        // Phase 1: UIライブラリ統一の提案
-        if (currentTasks.length === 0) {
-          suggestions.push({
-            id: `suggestion-${Date.now()}-1`,
-            title: 'UIライブラリ調査',
-            description: '既存のUIコンポーネントライブラリの使用状況を調査',
-            reason: 'まず現状把握から始める必要があります',
-            estimatedHours: 6,
-            priority: 'high',
-            dependencies: [],
-            checklist: [
-              'Material-UI使用箇所の特定',
-              'Radix UI使用箇所の特定',
-              'shadcn-ui使用箇所の特定',
-              '統合方針の策定',
-            ],
-            phase,
-            tags: ['research', 'ui-library'],
-            confidence: 0.95,
-            source: 'ai_analysis',
-          });
-        }
-
-        if (!currentTasks.some((t) => t.tags.includes('design-system'))) {
-          suggestions.push({
-            id: `suggestion-${Date.now()}-2`,
-            title: 'デザインシステム構築',
-            description: 'shadcn-uiベースの統一デザインシステムを構築',
-            reason: 'UIライブラリ統一にはデザインシステムが必要です',
-            estimatedHours: 12,
-            priority: 'high',
-            dependencies: [],
-            checklist: [
-              'カラーパレット定義',
-              'タイポグラフィ設定',
-              'コンポーネント仕様書作成',
-              'ドキュメント作成',
-            ],
-            phase,
-            tags: ['design-system', 'documentation'],
-            confidence: 0.9,
-            source: 'ai_analysis',
-          });
-        }
-      }
-
-      if (phase === 'phase2') {
-        // Phase 2: パフォーマンス最適化の提案
-        suggestions.push({
-          id: `suggestion-${Date.now()}-3`,
-          title: 'バンドル分析',
-          description: 'webpack-bundle-analyzerを使用したバンドルサイズ分析',
-          reason: 'パフォーマンス最適化には現状分析が必要です',
-          estimatedHours: 4,
-          priority: 'high',
-          dependencies: [],
-          checklist: ['分析ツール導入', 'バンドルサイズ測定', '改善箇所の特定', 'レポート作成'],
-          phase,
-          tags: ['performance', 'analysis'],
-          confidence: 0.9,
-          source: 'ai_analysis',
-        });
-      }
-
-      // 共通の提案ロジック
-      if (inProgressTasks.length > 0 && !currentTasks.some((t) => t.tags.includes('testing'))) {
-        suggestions.push({
-          id: `suggestion-${Date.now()}-4`,
-          title: 'テスト戦略の策定',
-          description: '実装中のタスクに対するテスト方針の策定',
-          reason: '実装が進んでいますが、テスト関連のタスクが不足しています',
-          estimatedHours: 8,
-          priority: 'medium',
-          dependencies: inProgressTasks.map((t) => t.id),
-          checklist: [
-            'テストフレームワーク選定',
-            'テストケース設計',
-            'CI/CD設定',
-            'カバレッジ目標設定',
-          ],
-          phase,
-          tags: ['testing', 'quality'],
-          confidence: 0.8,
-          source: 'ai_analysis',
-        });
-      }
-
-      if (blockedTasks.length > 0) {
-        suggestions.push({
-          id: `suggestion-${Date.now()}-5`,
-          title: 'ブロック解除アクション',
-          description: 'ブロックされたタスクの解決策検討',
-          reason: `${blockedTasks.length}件のブロックタスクがあります`,
-          estimatedHours: 4,
-          priority: 'high',
-          dependencies: [],
-          checklist: [
-            'ブロック要因の分析',
-            '解決策の検討',
-            'ステークホルダーとの調整',
-            'アクションプラン作成',
-          ],
-          phase,
-          tags: ['blocked', 'resolution'],
-          confidence: 0.7,
-          source: 'ai_analysis',
-        });
-      }
-
-      // チームメンバーの負荷に基づく提案
-      const overloadedMembers = members.filter((m) => m.workload > 80);
-      if (overloadedMembers.length > 0) {
-        suggestions.push({
-          id: `suggestion-${Date.now()}-6`,
-          title: 'タスク負荷分散',
-          description: '過負荷メンバーからのタスク再配分検討',
-          reason: `${overloadedMembers.length}名のメンバーが過負荷状態です`,
-          estimatedHours: 2,
-          priority: 'medium',
-          dependencies: [],
-          checklist: [
-            '負荷状況の分析',
-            'タスク再配分案の作成',
-            'メンバーとの相談',
-            '配分調整の実施',
-          ],
-          phase,
-          tags: ['workload', 'team-management'],
-          confidence: 0.75,
-          source: 'ai_analysis',
-        });
-      }
-
-      return suggestions;
-    },
-    []
-  );
-
-  // 選択された提案タスクを追加
-  const addSuggestedTasks = useCallback(async () => {
-    if (!user) return;
-
-    const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
-
-    try {
-      for (const suggestionTask of tasksToAdd) {
-        const taskData: TaskCreationData = {
-          title: suggestionTask.title,
-          description: suggestionTask.description,
-          phase: suggestionTask.phase,
-          status: 'not-started',
-          estimatedHours: suggestionTask.estimatedHours,
-          actualHours: 0,
-          projectId: currentProjectId,
-          checklist: suggestionTask.checklist.map((item, index) => ({
-            id: `cl-${Date.now()}-${index}`,
-            label: item,
-            completed: false,
-            createdAt: new Date().toISOString(),
-          })),
-          priority: suggestionTask.priority,
-          tags: suggestionTask.tags,
-          dependencies: suggestionTask.dependencies,
-          notes: `AI提案 (信頼度: ${Math.round(suggestionTask.confidence * 100)}%): ${suggestionTask.reason}`,
-          createdBy: user.uid,
-        };
-
-        await createTask(taskData);
-      }
-
-      toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
-      setShowAISuggestionsDialog(false);
-      setSelectedSuggestions([]);
-      setSuggestedTasks([]);
-    } catch (error) {
-      toast.error('タスクの追加でエラーが発生しました');
-      console.error('Add suggested tasks error:', error);
-    }
-  }, [user, suggestedTasks, selectedSuggestions, currentProjectId, createTask]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -1772,8 +1915,13 @@ const ImprovementImplementation: React.FC = () => {
               >
                 キャンセル
               </Button>
-              <Button onClick={addSuggestedTasks} disabled={selectedSuggestions.length === 0}>
-                選択したタスクを追加 ({selectedSuggestions.length})
+              <Button
+                onClick={addSuggestedTasks}
+                disabled={selectedSuggestions.length === 0 || isAddingTasks}
+              >
+                {isAddingTasks
+                  ? '追加中...'
+                  : `選択したタスクを追加 (${selectedSuggestions.length})`}
               </Button>
             </div>
           </DialogFooter>
