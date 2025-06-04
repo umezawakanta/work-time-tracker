@@ -1611,13 +1611,15 @@ const ImprovementImplementation: React.FC = () => {
               <Label htmlFor="assignee">担当者</Label>
               <Select
                 value={newTaskData.assignee}
-                onValueChange={(value) => setNewTaskData({ ...newTaskData, assignee: value })}
+                onValueChange={(value) =>
+                  setNewTaskData({ ...newTaskData, assignee: value === 'unassigned' ? '' : value })
+                }
               >
                 <SelectTrigger id="assignee">
                   <SelectValue placeholder="担当者を選択..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">未割り当て</SelectItem>
+                  <SelectItem value="unassigned">未割り当て</SelectItem>
                   {teamMembers.map((member) => (
                     <SelectItem key={member.id} value={member.id}>
                       {member.name} ({member.role})
