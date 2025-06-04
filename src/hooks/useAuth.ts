@@ -21,7 +21,35 @@ export const useAuth = (): UseAuthReturn => {
   const [error, setError] = useState<AuthError | null>(null);
 
   useEffect(() => {
-    // MongoDBベースの認証チェック
+    // 開発環境用のモックユーザー
+    if (process.env.NODE_ENV === 'development') {
+      setUser({
+        uid: 'dev-user-001',
+        email: 'developer@example.com',
+        displayName: '開発ユーザー',
+        photoURL: null,
+        emailVerified: true,
+        isPremium: false,
+        subscriptionStatus: 'free',
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+        preferences: {
+          theme: 'light',
+          language: 'ja',
+          notifications: {
+            email: true,
+            push: true,
+            daily: true,
+            weekly: true,
+          },
+          timezone: 'Asia/Tokyo',
+        },
+      });
+      setLoading(false);
+      return;
+    }
+
+    // 既存のMongoDBベースの認証チェック
     const checkAuth = async () => {
       try {
         const currentUser = authApi.getCurrentUser();

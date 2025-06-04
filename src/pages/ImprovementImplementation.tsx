@@ -1046,7 +1046,7 @@ const ImprovementImplementation: React.FC = () => {
                         size="sm"
                         variant="outline"
                         onClick={analyzeTasks}
-                        disabled={isAnalyzing || !user}
+                        disabled={isAnalyzing}
                       >
                         {isAnalyzing ? (
                           <>
