@@ -381,8 +381,8 @@ ${recentTasks}
     return false;
   }
 
-  getCurrentProvider(): string | null {
-    return this.currentProvider?.name || null;
+  getCurrentProvider(): AIProvider | null {
+    return this.currentProvider;
   }
 
   getAvailableProviders(): string[] {
@@ -391,9 +391,21 @@ ${recentTasks}
 
   async generateResponse(prompt: string): Promise<string> {
     if (!this.currentProvider) {
-      throw new Error('No AI provider configured');
+      throw new Error('AIプロバイダーが設定されていません');
     }
-    return this.callAIProvider(prompt);
+
+    try {
+      if (this.currentProvider.name === 'openai') {
+        return await this.callOpenAI(prompt);
+      } else if (this.currentProvider.name === 'anthropic') {
+        return await this.callAnthropic(prompt);
+      } else {
+        throw new Error(`サポートされていないプロバイダー: ${this.currentProvider.name}`);
+      }
+    } catch (error) {
+      console.error('AI応答生成エラー:', error);
+      throw error;
+    }
   }
 }
 

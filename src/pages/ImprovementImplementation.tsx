@@ -57,6 +57,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useResources } from '@/hooks/useResources';
 import { implementationService } from '@/services/implementationService';
 import { githubService } from '@/services/githubService';
+import ResearchTaskService from '@/services/ai/ResearchTaskService';
 
 // 新しいタスクデータの型定義
 interface NewTaskData {
@@ -129,6 +130,9 @@ const ImprovementImplementation: React.FC = () => {
     priority: 'medium',
   });
   const [isAddingTasks, setIsAddingTasks] = useState(false);
+  const [isExecutingResearch, setIsExecutingResearch] = useState(false);
+  const [showResearchDialog, setShowResearchDialog] = useState(false);
+  const [researchTask, setResearchTask] = useState<Task | null>(null);
 
   // プロジェクトIDを安全に取得
   const currentProjectId = useMemo(() => projectId || 'site-improvement-2024', [projectId]);
@@ -920,6 +924,59 @@ const ImprovementImplementation: React.FC = () => {
         : [...prev, suggestionId]
     );
   }, []);
+
+  // AI調査実行
+  const executeAIResearch = useCallback(
+    async (task: Task) => {
+      if (!user) {
+        toast.error('ユーザー認証が必要です');
+        return;
+      }
+
+      setIsExecutingResearch(true);
+
+      try {
+        const result = await ResearchTaskService.executeResearch(task, user.uid);
+
+        if (result.success) {
+          // タスクに調査結果を保存
+          const updatedTask = {
+            ...task,
+            researchResult: {
+              content: result.content,
+              knowledgeEntries: result.knowledgeEntries.map((entry) => entry.id),
+              executedAt: new Date().toISOString(),
+              executedBy: user.uid,
+              confidence: result.confidence,
+            },
+            status: 'completed' as Task['status'],
+            actualHours: task.estimatedHours, // 調査完了として工数を設定
+            completedDate: new Date().toISOString(),
+            notes:
+              task.notes +
+              `\n[${new Date().toLocaleString()}] AI調査を実行し、${result.knowledgeEntries.length}件のナレッジエントリーを生成しました。`,
+          };
+
+          const success = await updateTask(task.id, updatedTask);
+          if (success && user) {
+            await addLog(
+              'research_result_added',
+              `タスク「${task.title}」にAI調査結果を追加`,
+              user.uid,
+              user.displayName || user.email || 'Unknown User'
+            );
+            toast.success('AI調査結果をタスクに追加しました');
+          }
+        }
+      } catch (error) {
+        console.error('AI調査実行エラー:', error);
+        toast.error('AI調査実行中にエラーが発生しました');
+      } finally {
+        setIsExecutingResearch(false);
+      }
+    },
+    [user, tasks, updateTask, addLog]
+  );
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">

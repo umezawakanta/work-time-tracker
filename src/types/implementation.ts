@@ -20,6 +20,13 @@ export interface Task {
   tags: string[];
   dependencies: string[];
   notes: string;
+  researchResult?: {
+    content: string;
+    knowledgeEntries: string[];
+    executedAt: string;
+    executedBy: string;
+    confidence: number;
+  };
 }
 
 export interface ChecklistItem {
