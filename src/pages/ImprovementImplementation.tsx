@@ -28,7 +28,6 @@ import {
 } from '@/components/ui/select';
 import {
   ArrowLeft,
-  Play,
   Pause,
   CheckCircle,
   Clock,
