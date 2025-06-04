@@ -450,7 +450,9 @@ ${category.items.map((item) => `- ${item}`).join('\n')}
             </Button>
             <Button
               variant="outline"
-              onClick={() => window.open('https://github.com/your-repo', '_blank')}
+              onClick={() =>
+                window.open('https://github.com/umezawakanta/work-time-tracker', '_blank')
+              }
             >
               <ExternalLink className="w-4 h-4 mr-2" />
               GitHub で表示
