@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,6 @@ import {
 } from '@/components/ui/select';
 import {
   ArrowLeft,
-  Pause,
   CheckCircle,
   Clock,
   AlertCircle,
@@ -37,23 +36,21 @@ import {
   MessageSquare,
   FileText,
   Users,
-  Calendar,
-  TrendingUp,
-  Zap,
   Plus,
   ExternalLink,
   Download,
-  Upload,
-  Code,
   RefreshCw,
   Sparkles,
   Brain,
   CheckSquare,
   Info,
+  Save,
+  Settings,
+  BarChart3,
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { Task, SuggestedTask, TeamMember } from '@/types/implementation';
+import { Task, SuggestedTask, TeamMember, ChecklistItem } from '@/types/implementation';
 import { useImplementation } from '@/hooks/useImplementation';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { useAuth } from '@/hooks/useAuth';
@@ -61,12 +58,62 @@ import { useResources } from '@/hooks/useResources';
 import { implementationService } from '@/services/implementationService';
 import { githubService } from '@/services/githubService';
 
+// 新しいタスクデータの型定義
+interface NewTaskData {
+  title: string;
+  description: string;
+  estimatedHours: number;
+  assignee: string;
+  priority: Task['priority'];
+}
+
+// タスク作成データの型定義
+interface TaskCreationData {
+  title: string;
+  description: string;
+  phase: string;
+  status: Task['status'];
+  estimatedHours: number;
+  actualHours: number;
+  projectId: string;
+  checklist: ChecklistItem[];
+  priority: Task['priority'];
+  tags: string[];
+  dependencies: string[];
+  notes: string;
+  assignee?: string;
+  createdBy: string;
+}
+
+// フェーズ情報の定義
+const PHASE_CONFIG = {
+  phase1: {
+    title: 'UIライブラリの統一',
+    description: 'Material-UI、Radix UI、shadcn-uiの統合作業',
+    color: 'bg-blue-500',
+    unlockThreshold: 0,
+  },
+  phase2: {
+    title: 'パフォーマンス最適化',
+    description: 'バンドルサイズ最適化とレンダリング改善',
+    color: 'bg-green-500',
+    unlockThreshold: 80,
+  },
+  phase3: {
+    title: 'リファクタリング',
+    description: 'コードベースの整理と保守性向上',
+    color: 'bg-purple-500',
+    unlockThreshold: 80,
+  },
+} as const;
+
 const ImprovementImplementation: React.FC = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
   const { user } = useAuth();
 
-  const [activePhase, setActivePhase] = useState('phase1');
+  // State管理
+  const [activePhase, setActivePhase] = useState<keyof typeof PHASE_CONFIG>('phase1');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newNote, setNewNote] = useState('');
   const [showTaskDialog, setShowTaskDialog] = useState(false);
@@ -74,15 +121,16 @@ const ImprovementImplementation: React.FC = () => {
   const [suggestedTasks, setSuggestedTasks] = useState<SuggestedTask[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [newTaskData, setNewTaskData] = useState({
+  const [newTaskData, setNewTaskData] = useState<NewTaskData>({
     title: '',
     description: '',
     estimatedHours: 8,
     assignee: '',
+    priority: 'medium',
   });
 
-  // 動的にプロジェクトIDを取得
-  const currentProjectId = projectId || 'site-improvement-2024';
+  // プロジェクトIDを安全に取得
+  const currentProjectId = useMemo(() => projectId || 'site-improvement-2024', [projectId]);
 
   // カスタムフックを使用
   const {
@@ -114,49 +162,174 @@ const ImprovementImplementation: React.FC = () => {
     refreshResources,
   } = useResources('implementation');
 
-  // 初期化
-  useEffect(() => {
-    if (currentProjectId && user) {
-      refreshData();
-      refreshMembers();
-      refreshResources();
-    }
-  }, [currentProjectId, user, refreshData, refreshMembers, refreshResources]);
+  // メモ化された計算処理
+  const phaseProgress = useMemo(() => {
+    const calculateProgress = (phase: keyof typeof PHASE_CONFIG) => {
+      const phaseTasks = tasks.filter((t) => t.phase === phase);
+      if (phaseTasks.length === 0) return 0;
+      const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
+      return Math.round((completedTasks / phaseTasks.length) * 100);
+    };
 
-  // フェーズごとの進捗計算
-  const calculatePhaseProgress = (phase: string) => {
-    const phaseTasks = tasks.filter((t) => t.phase === phase);
-    if (phaseTasks.length === 0) return 0;
+    return {
+      phase1: calculateProgress('phase1'),
+      phase2: calculateProgress('phase2'),
+      phase3: calculateProgress('phase3'),
+    };
+  }, [tasks]);
 
-    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
-    return Math.round((completedTasks / phaseTasks.length) * 100);
-  };
+  const overallProgress = useMemo(() => {
+    if (tasks.length === 0) return 0;
+    const completedTasks = tasks.filter((t) => t.status === 'completed').length;
+    return Math.round((completedTasks / tasks.length) * 100);
+  }, [tasks]);
 
-  // タスクの進捗計算
-  const calculateTaskProgress = (task: Task) => {
+  const currentPhaseTasks = useMemo(
+    () => tasks.filter((task) => task.phase === activePhase),
+    [tasks, activePhase]
+  );
+
+  // フェーズのロック状態を判定
+  const isPhaseUnlocked = useCallback(
+    (phase: keyof typeof PHASE_CONFIG) => {
+      if (phase === 'phase1') return true;
+      const prevPhase = phase === 'phase2' ? 'phase1' : 'phase2';
+      return phaseProgress[prevPhase] >= PHASE_CONFIG[phase].unlockThreshold;
+    },
+    [phaseProgress]
+  );
+
+  // タスクの進捗計算をメモ化
+  const calculateTaskProgress = useCallback((task: Task) => {
     if (task.checklist.length === 0) return 0;
     const completed = task.checklist.filter((item) => item.completed).length;
     return Math.round((completed / task.checklist.length) * 100);
-  };
+  }, []);
+
+  // ステータス別タスク数の計算
+  const taskCounts = useMemo(() => {
+    const phaseTasks = currentPhaseTasks;
+    return {
+      total: phaseTasks.length,
+      notStarted: phaseTasks.filter((t) => t.status === 'not-started').length,
+      inProgress: phaseTasks.filter((t) => t.status === 'in-progress').length,
+      completed: phaseTasks.filter((t) => t.status === 'completed').length,
+      blocked: phaseTasks.filter((t) => t.status === 'blocked').length,
+    };
+  }, [currentPhaseTasks]);
+
+  // 初期化処理
+  useEffect(() => {
+    if (currentProjectId && user) {
+      Promise.all([refreshData(), refreshMembers(), refreshResources()]).catch((error) => {
+        console.error('Failed to initialize data:', error);
+        toast.error('データの初期化に失敗しました');
+      });
+    }
+  }, [currentProjectId, user, refreshData, refreshMembers, refreshResources]);
 
   // チェックリストの更新
-  const handleUpdateChecklist = async (taskId: string, checklistId: string, completed: boolean) => {
-    const success = await updateChecklist(taskId, checklistId, completed);
-    if (success) {
-      // UIは自動的に更新される（リアルタイム監視により）
-    }
-  };
+  const handleUpdateChecklist = useCallback(
+    async (taskId: string, checklistId: string, completed: boolean) => {
+      try {
+        const success = await updateChecklist(taskId, checklistId, completed);
+        if (success && user) {
+          const task = tasks.find((t) => t.id === taskId);
+          const checklistItem = task?.checklist.find((item) => item.id === checklistId);
+          const action = completed
+            ? 'チェックリスト項目を完了'
+            : 'チェックリスト項目を未完了に変更';
+          await addLog(
+            'checklist_updated',
+            `${task?.title}: ${checklistItem?.label} - ${action}`,
+            user.uid,
+            user.displayName || user.email || 'Unknown User'
+          );
+
+          // タスクの進捗が100%になった場合の自動ステータス更新提案
+          if (completed && task) {
+            const newProgress = calculateTaskProgress({
+              ...task,
+              checklist: task.checklist.map((item) =>
+                item.id === checklistId ? { ...item, completed } : item
+              ),
+            });
+
+            if (newProgress === 100 && task.status !== 'completed') {
+              toast.success('チェックリストが完了しました。タスクを完了状態にしますか？', {
+                duration: 5000,
+                icon: '🎉',
+              });
+              setTimeout(() => {
+                if (
+                  window.confirm(
+                    'すべてのチェックリストが完了しました。このタスクを完了状態にしますか？'
+                  )
+                ) {
+                  handleUpdateTaskStatus(taskId, 'completed');
+                }
+              }, 2000);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Checklist update error:', error);
+        toast.error('チェックリストの更新に失敗しました');
+      }
+    },
+    [updateChecklist, tasks, addLog, user, calculateTaskProgress]
+  );
 
   // タスクステータスの更新
-  const handleUpdateTaskStatus = async (taskId: string, status: Task['status']) => {
-    const success = await updateTaskStatus(taskId, status);
-    if (success) {
-      // UIは自動的に更新される
-    }
-  };
+  const handleUpdateTaskStatus = useCallback(
+    async (taskId: string, status: Task['status']) => {
+      try {
+        const success = await updateTaskStatus(taskId, status);
+        if (success && user) {
+          const task = tasks.find((t) => t.id === taskId);
+          await addLog(
+            'task_status_updated',
+            `タスク「${task?.title}」のステータスを「${status}」に変更`,
+            user.uid,
+            user.displayName || user.email || 'Unknown User'
+          );
+
+          // 完了時の特別処理
+          if (status === 'completed') {
+            toast.success('タスクが完了しました！🎉');
+
+            // フェーズ進捗をチェックして次フェーズのアンロック通知
+            const updatedPhaseProgress = calculatePhaseProgress(
+              activePhase,
+              tasks.map((t) => (t.id === taskId ? { ...t, status } : t))
+            );
+
+            if (updatedPhaseProgress >= 80) {
+              const nextPhase = activePhase === 'phase1' ? 'phase2' : 'phase3';
+              if (nextPhase in PHASE_CONFIG) {
+                toast.success(`🚀 Phase ${nextPhase.slice(-1)}がアンロックされました！`);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Task status update error:', error);
+        toast.error('タスクステータスの更新に失敗しました');
+      }
+    },
+    [updateTaskStatus, tasks, addLog, user, activePhase]
+  );
+
+  // フェーズ進捗の計算ヘルパー
+  const calculatePhaseProgress = useCallback((phase: string, taskList: Task[]) => {
+    const phaseTasks = taskList.filter((t) => t.phase === phase);
+    if (phaseTasks.length === 0) return 0;
+    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
+    return Math.round((completedTasks / phaseTasks.length) * 100);
+  }, []);
 
   // ノートの追加
-  const addNote = async () => {
+  const addNote = useCallback(async () => {
     if (!newNote.trim() || !user) return;
 
     try {
@@ -177,60 +350,82 @@ const ImprovementImplementation: React.FC = () => {
       toast.error('メモの追加に失敗しました');
       console.error('Add note error:', error);
     }
-  };
+  }, [newNote, user, addLog]);
 
   // GitHubブランチの作成
-  const createBranch = async (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task || !user) return;
+  const createBranch = useCallback(
+    async (taskId: string) => {
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task || !user) return;
 
-    try {
-      const branchName = `feature/${task.id}`;
-      const result = await githubService.createBranch(branchName, {
-        projectId: currentProjectId,
-        taskId: task.id,
-        description: task.description,
-      });
+      try {
+        const branchName = `feature/${task.id}-${task.title.toLowerCase().replace(/\s+/g, '-')}`;
+        await githubService.createBranch(branchName, {
+          projectId: currentProjectId,
+          taskId: task.id,
+          description: task.description,
+        });
 
-      await updateTask(taskId, {
-        branch: branchName,
-        notes: task.notes + '\nGitHubブランチを作成しました',
-      });
+        await updateTask(taskId, {
+          branch: branchName,
+          notes:
+            task.notes + `\n[${new Date().toLocaleString()}] GitHubブランチ「${branchName}」を作成`,
+        });
 
-      toast.success('GitHubブランチを作成しました');
-    } catch (error) {
-      toast.error('ブランチの作成に失敗しました');
-      console.error('Branch creation error:', error);
-    }
-  };
+        await addLog(
+          'branch_created',
+          `タスク「${task.title}」のGitHubブランチ「${branchName}」を作成`,
+          user.uid,
+          user.displayName || user.email || 'Unknown User'
+        );
+
+        toast.success('GitHubブランチを作成しました');
+      } catch (error) {
+        toast.error('ブランチの作成に失敗しました');
+        console.error('Branch creation error:', error);
+      }
+    },
+    [tasks, user, currentProjectId, updateTask, addLog]
+  );
 
   // プルリクエストの作成
-  const createPR = async (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task || !task.branch || !user) return;
+  const createPR = useCallback(
+    async (taskId: string) => {
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task || !task.branch || !user) return;
 
-    try {
-      const prResult = await githubService.createPullRequest({
-        branchName: task.branch,
-        title: task.title,
-        description: task.description,
-        projectId: currentProjectId,
-      });
+      try {
+        const prResult = await githubService.createPullRequest({
+          branchName: task.branch,
+          title: `${task.title} (#${task.id})`,
+          description: `${task.description}\n\n## チェックリスト\n${task.checklist.map((item) => `- [${item.completed ? 'x' : ' '}] ${item.label}`).join('\n')}`,
+          projectId: currentProjectId,
+        });
 
-      await updateTask(taskId, {
-        pr: prResult.url,
-        notes: task.notes + '\nプルリクエストを作成しました',
-      });
+        await updateTask(taskId, {
+          pr: prResult.url,
+          notes:
+            task.notes + `\n[${new Date().toLocaleString()}] プルリクエストを作成: ${prResult.url}`,
+        });
 
-      toast.success('プルリクエストを作成しました');
-    } catch (error) {
-      toast.error('プルリクエストの作成に失敗しました');
-      console.error('PR creation error:', error);
-    }
-  };
+        await addLog(
+          'pr_created',
+          `タスク「${task.title}」のプルリクエストを作成: ${prResult.url}`,
+          user.uid,
+          user.displayName || user.email || 'Unknown User'
+        );
 
-  // AI分析とタスク提案のロジック（実装）
-  const analyzeTasks = async () => {
+        toast.success('プルリクエストを作成しました');
+      } catch (error) {
+        toast.error('プルリクエストの作成に失敗しました');
+        console.error('PR creation error:', error);
+      }
+    },
+    [tasks, user, currentProjectId, updateTask, addLog]
+  );
+
+  // AI分析とタスク提案のロジック
+  const analyzeTasks = useCallback(async () => {
     if (!user) {
       toast.error('ユーザー認証が必要です');
       return;
@@ -239,157 +434,32 @@ const ImprovementImplementation: React.FC = () => {
     setIsAnalyzing(true);
 
     try {
-      // Create mock analysis result since the method doesn't exist
-      const analysisResult = {
-        taskSuggestions: [
-          {
-            title: 'UIコンポーネントの統一',
-            description: 'Material-UIからshadcn-uiへの移行',
-            reason: '一貫性のあるUIライブラリの使用が必要です',
-            estimatedHours: 8,
-            priority: 'high',
-            dependencies: [],
-            checklist: ['コンポーネント調査', '移行計画策定', '実装'],
-            tags: ['ui', 'migration'],
-            confidence: 0.9,
-          },
-        ],
-      };
-
-      // 分析結果をSuggestedTask形式に変換
-      const suggestions: SuggestedTask[] = analysisResult.taskSuggestions.map(
-        (suggestion, index) => ({
-          id: `ai-suggestion-${Date.now()}-${index}`,
-          title: suggestion.title,
-          description: suggestion.description,
-          reason: suggestion.reason,
-          estimatedHours: suggestion.estimatedHours,
-          priority: suggestion.priority as 'high' | 'medium' | 'low',
-          dependencies: suggestion.dependencies || [],
-          checklist: suggestion.checklist || [],
-          phase: activePhase,
-          tags: suggestion.tags || ['ai-generated'],
-          confidence: suggestion.confidence || 0.8,
-          source: 'ai_analysis',
-        })
+      const analysisResult = await generateTaskSuggestions(
+        currentPhaseTasks,
+        activePhase,
+        teamMembers
       );
-
-      setSuggestedTasks(suggestions);
+      setSuggestedTasks(analysisResult);
       setShowAISuggestionsDialog(true);
 
-      // ログに記録
       await addLog(
         'ai_analysis',
-        `AIがタスクを分析し、${suggestions.length}件の追加タスクを提案しました`,
+        `AIがタスクを分析し、${analysisResult.length}件の追加タスクを提案しました (Phase: ${activePhase})`,
         user.uid,
         user.displayName || user.email || 'Unknown User'
       );
 
-      refreshData();
+      toast.success(`${analysisResult.length}件のタスク提案を生成しました`);
     } catch (error) {
       console.error('AI analysis error:', error);
-
-      // フォールバック：ローカル分析を実行
-      const fallbackSuggestions = await generateFallbackSuggestions();
-      setSuggestedTasks(fallbackSuggestions);
-      setShowAISuggestionsDialog(true);
-
-      toast.success('タスク分析が完了しました（ローカル分析）');
+      toast.error('タスク分析でエラーが発生しました');
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  // フォールバック分析（AIが利用できない場合）
-  const generateFallbackSuggestions = async (): Promise<SuggestedTask[]> => {
-    const currentTasks = tasks.filter((t) => t.phase === activePhase);
-    const completedTasks = currentTasks.filter((t) => t.status === 'completed');
-    const inProgressTasks = currentTasks.filter((t) => t.status === 'in-progress');
-
-    const suggestions: SuggestedTask[] = [];
-
-    // 既存タスクの分析に基づく提案
-    if (completedTasks.length === 0 && inProgressTasks.length === 0) {
-      suggestions.push({
-        id: 'fb-1',
-        title: 'プロジェクト開始準備',
-        description: '開発環境のセットアップと要件定義の確認',
-        reason: 'まだタスクが開始されていないため、準備作業が必要です',
-        estimatedHours: 4,
-        priority: 'high',
-        dependencies: [],
-        checklist: ['開発環境確認', '要件書レビュー', 'チーム体制確認'],
-        phase: activePhase,
-        tags: ['setup', 'preparation'],
-        confidence: 0.9,
-        source: 'ai_analysis',
-      });
-    }
-
-    if (inProgressTasks.length > 0 && !tasks.some((t) => t.tags.includes('testing'))) {
-      suggestions.push({
-        id: 'fb-2',
-        title: 'テスト戦略の策定',
-        description: '実装中のタスクに対するテスト方針の策定',
-        reason: '実装が進んでいますが、テスト関連のタスクが不足しています',
-        estimatedHours: 6,
-        priority: 'medium',
-        dependencies: inProgressTasks.map((t) => t.id),
-        checklist: ['テストフレームワーク選定', 'テストケース作成', 'CI/CD設定'],
-        phase: activePhase,
-        tags: ['testing', 'quality'],
-        confidence: 0.8,
-        source: 'ai_analysis',
-      });
-    }
-
-    return suggestions;
-  };
-
-  // 選択された提案タスクを追加
-  const addSuggestedTasks = async () => {
-    if (!user) return;
-
-    const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
-
-    try {
-      for (const suggestionTask of tasksToAdd) {
-        const taskData = {
-          title: suggestionTask.title,
-          description: suggestionTask.description,
-          phase: suggestionTask.phase,
-          status: 'not-started' as const,
-          estimatedHours: suggestionTask.estimatedHours,
-          actualHours: 0,
-          projectId: currentProjectId,
-          checklist: suggestionTask.checklist.map((item, index) => ({
-            id: `cl-${Date.now()}-${index}`,
-            label: item,
-            completed: false,
-            createdAt: new Date().toISOString(),
-          })),
-          priority: suggestionTask.priority as Task['priority'],
-          tags: suggestionTask.tags,
-          dependencies: suggestionTask.dependencies,
-          notes: `AI提案: ${suggestionTask.reason}`,
-          createdBy: user.uid,
-        };
-
-        await createTask(taskData);
-      }
-
-      toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
-      setShowAISuggestionsDialog(false);
-      setSelectedSuggestions([]);
-      setSuggestedTasks([]);
-    } catch (error) {
-      toast.error('タスクの追加でエラーが発生しました');
-      console.error('Add suggested tasks error:', error);
-    }
-  };
+  }, [user, currentPhaseTasks, activePhase, teamMembers, addLog]);
 
   // 新しいタスクの作成
-  const handleCreateTask = async () => {
+  const handleCreateTask = useCallback(async () => {
     if (!newTaskData.title.trim()) {
       toast.error('タスク名を入力してください');
       return;
@@ -400,16 +470,16 @@ const ImprovementImplementation: React.FC = () => {
       return;
     }
 
-    const taskData = {
+    const taskData: TaskCreationData = {
       title: newTaskData.title,
       description: newTaskData.description,
       phase: activePhase,
-      status: 'not-started' as const,
+      status: 'not-started',
       estimatedHours: newTaskData.estimatedHours,
       actualHours: 0,
       projectId: currentProjectId,
       checklist: [],
-      priority: 'medium' as const,
+      priority: newTaskData.priority,
       tags: [activePhase],
       dependencies: [],
       notes: '',
@@ -425,18 +495,288 @@ const ImprovementImplementation: React.FC = () => {
         description: '',
         estimatedHours: 8,
         assignee: '',
+        priority: 'medium',
       });
+      toast.success('新しいタスクを追加しました');
     }
-  };
+  }, [newTaskData, user, activePhase, currentProjectId, createTask]);
 
   // 提案の選択/解除
-  const toggleSuggestionSelection = (suggestionId: string) => {
+  const toggleSuggestionSelection = useCallback((suggestionId: string) => {
     setSelectedSuggestions((prev) =>
       prev.includes(suggestionId)
         ? prev.filter((id) => id !== suggestionId)
         : [...prev, suggestionId]
     );
-  };
+  }, []);
+
+  // レポート出力
+  const exportReport = useCallback(async () => {
+    try {
+      const reportData = {
+        exportInfo: {
+          projectId: currentProjectId,
+          projectName: currentProject?.name || 'サイト改善計画',
+          exportDate: new Date().toISOString(),
+          exportedBy: user?.displayName || user?.email || 'Unknown User',
+        },
+        progress: {
+          overall: overallProgress,
+          phases: phaseProgress,
+        },
+        tasks: tasks.map((task) => ({
+          ...task,
+          progress: calculateTaskProgress(task),
+          assigneeName: teamMembers.find((m) => m.id === task.assignee)?.name,
+        })),
+        teamMetrics: teamMembers.map((member) => ({
+          ...member,
+          assignedTasks: tasks.filter((task) => task.assignee === member.id).length,
+          completedTasks: tasks.filter(
+            (task) => task.assignee === member.id && task.status === 'completed'
+          ).length,
+        })),
+        recentLogs: implementationLogs.slice(0, 50),
+        summary: {
+          totalTasks: tasks.length,
+          completedTasks: tasks.filter((t) => t.status === 'completed').length,
+          inProgressTasks: tasks.filter((t) => t.status === 'in-progress').length,
+          blockedTasks: tasks.filter((t) => t.status === 'blocked').length,
+          totalEstimatedHours: tasks.reduce((sum, task) => sum + task.estimatedHours, 0),
+          totalActualHours: tasks.reduce((sum, task) => sum + task.actualHours, 0),
+        },
+      };
+
+      const dataStr = JSON.stringify(reportData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `implementation-report-${currentProjectId}-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
+
+      URL.revokeObjectURL(url);
+
+      toast.success('レポートをエクスポートしました');
+
+      // ログに記録
+      await addLog(
+        'report_exported',
+        '実装レポートをエクスポートしました',
+        user?.uid || 'unknown',
+        user?.displayName || user?.email || 'Unknown User'
+      );
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('レポートのエクスポートに失敗しました');
+    }
+  }, [
+    currentProjectId,
+    currentProject,
+    overallProgress,
+    phaseProgress,
+    tasks,
+    teamMembers,
+    implementationLogs,
+    calculateTaskProgress,
+    user,
+    addLog,
+  ]);
+
+  // 改良されたタスク提案生成
+  const generateTaskSuggestions = useCallback(
+    async (
+      currentTasks: Task[],
+      phase: keyof typeof PHASE_CONFIG,
+      members: TeamMember[]
+    ): Promise<SuggestedTask[]> => {
+      const completedTasks = currentTasks.filter((t) => t.status === 'completed');
+      const inProgressTasks = currentTasks.filter((t) => t.status === 'in-progress');
+      const blockedTasks = currentTasks.filter((t) => t.status === 'blocked');
+      const suggestions: SuggestedTask[] = [];
+
+      // フェーズ固有の提案ロジック
+      if (phase === 'phase1') {
+        // Phase 1: UIライブラリ統一の提案
+        if (currentTasks.length === 0) {
+          suggestions.push({
+            id: `suggestion-${Date.now()}-1`,
+            title: 'UIライブラリ調査',
+            description: '既存のUIコンポーネントライブラリの使用状況を調査',
+            reason: 'まず現状把握から始める必要があります',
+            estimatedHours: 6,
+            priority: 'high',
+            dependencies: [],
+            checklist: [
+              'Material-UI使用箇所の特定',
+              'Radix UI使用箇所の特定',
+              'shadcn-ui使用箇所の特定',
+              '統合方針の策定',
+            ],
+            phase,
+            tags: ['research', 'ui-library'],
+            confidence: 0.95,
+            source: 'ai_analysis',
+          });
+        }
+
+        if (!currentTasks.some((t) => t.tags.includes('design-system'))) {
+          suggestions.push({
+            id: `suggestion-${Date.now()}-2`,
+            title: 'デザインシステム構築',
+            description: 'shadcn-uiベースの統一デザインシステムを構築',
+            reason: 'UIライブラリ統一にはデザインシステムが必要です',
+            estimatedHours: 12,
+            priority: 'high',
+            dependencies: [],
+            checklist: [
+              'カラーパレット定義',
+              'タイポグラフィ設定',
+              'コンポーネント仕様書作成',
+              'ドキュメント作成',
+            ],
+            phase,
+            tags: ['design-system', 'documentation'],
+            confidence: 0.9,
+            source: 'ai_analysis',
+          });
+        }
+      }
+
+      if (phase === 'phase2') {
+        // Phase 2: パフォーマンス最適化の提案
+        suggestions.push({
+          id: `suggestion-${Date.now()}-3`,
+          title: 'バンドル分析',
+          description: 'webpack-bundle-analyzerを使用したバンドルサイズ分析',
+          reason: 'パフォーマンス最適化には現状分析が必要です',
+          estimatedHours: 4,
+          priority: 'high',
+          dependencies: [],
+          checklist: ['分析ツール導入', 'バンドルサイズ測定', '改善箇所の特定', 'レポート作成'],
+          phase,
+          tags: ['performance', 'analysis'],
+          confidence: 0.9,
+          source: 'ai_analysis',
+        });
+      }
+
+      // 共通の提案ロジック
+      if (inProgressTasks.length > 0 && !currentTasks.some((t) => t.tags.includes('testing'))) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-4`,
+          title: 'テスト戦略の策定',
+          description: '実装中のタスクに対するテスト方針の策定',
+          reason: '実装が進んでいますが、テスト関連のタスクが不足しています',
+          estimatedHours: 8,
+          priority: 'medium',
+          dependencies: inProgressTasks.map((t) => t.id),
+          checklist: [
+            'テストフレームワーク選定',
+            'テストケース設計',
+            'CI/CD設定',
+            'カバレッジ目標設定',
+          ],
+          phase,
+          tags: ['testing', 'quality'],
+          confidence: 0.8,
+          source: 'ai_analysis',
+        });
+      }
+
+      if (blockedTasks.length > 0) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-5`,
+          title: 'ブロック解除アクション',
+          description: 'ブロックされたタスクの解決策検討',
+          reason: `${blockedTasks.length}件のブロックタスクがあります`,
+          estimatedHours: 4,
+          priority: 'high',
+          dependencies: [],
+          checklist: [
+            'ブロック要因の分析',
+            '解決策の検討',
+            'ステークホルダーとの調整',
+            'アクションプラン作成',
+          ],
+          phase,
+          tags: ['blocked', 'resolution'],
+          confidence: 0.7,
+          source: 'ai_analysis',
+        });
+      }
+
+      // チームメンバーの負荷に基づく提案
+      const overloadedMembers = members.filter((m) => m.workload > 80);
+      if (overloadedMembers.length > 0) {
+        suggestions.push({
+          id: `suggestion-${Date.now()}-6`,
+          title: 'タスク負荷分散',
+          description: '過負荷メンバーからのタスク再配分検討',
+          reason: `${overloadedMembers.length}名のメンバーが過負荷状態です`,
+          estimatedHours: 2,
+          priority: 'medium',
+          dependencies: [],
+          checklist: [
+            '負荷状況の分析',
+            'タスク再配分案の作成',
+            'メンバーとの相談',
+            '配分調整の実施',
+          ],
+          phase,
+          tags: ['workload', 'team-management'],
+          confidence: 0.75,
+          source: 'ai_analysis',
+        });
+      }
+
+      return suggestions;
+    },
+    []
+  );
+
+  // 選択された提案タスクを追加
+  const addSuggestedTasks = useCallback(async () => {
+    if (!user) return;
+
+    const tasksToAdd = suggestedTasks.filter((st) => selectedSuggestions.includes(st.id));
+
+    try {
+      for (const suggestionTask of tasksToAdd) {
+        const taskData: TaskCreationData = {
+          title: suggestionTask.title,
+          description: suggestionTask.description,
+          phase: suggestionTask.phase,
+          status: 'not-started',
+          estimatedHours: suggestionTask.estimatedHours,
+          actualHours: 0,
+          projectId: currentProjectId,
+          checklist: suggestionTask.checklist.map((item, index) => ({
+            id: `cl-${Date.now()}-${index}`,
+            label: item,
+            completed: false,
+            createdAt: new Date().toISOString(),
+          })),
+          priority: suggestionTask.priority,
+          tags: suggestionTask.tags,
+          dependencies: suggestionTask.dependencies,
+          notes: `AI提案 (信頼度: ${Math.round(suggestionTask.confidence * 100)}%): ${suggestionTask.reason}`,
+          createdBy: user.uid,
+        };
+
+        await createTask(taskData);
+      }
+
+      toast.success(`${tasksToAdd.length}件のタスクを追加しました`);
+      setShowAISuggestionsDialog(false);
+      setSelectedSuggestions([]);
+      setSuggestedTasks([]);
+    } catch (error) {
+      toast.error('タスクの追加でエラーが発生しました');
+      console.error('Add suggested tasks error:', error);
+    }
+  }, [user, suggestedTasks, selectedSuggestions, currentProjectId, createTask]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -459,16 +799,15 @@ const ImprovementImplementation: React.FC = () => {
         </div>
         <div className="flex items-center gap-4">
           <Badge variant="outline" className="text-lg px-4 py-2">
-            全体進捗:{' '}
-            {Math.round(
-              (tasks.filter((t) => t.status === 'completed').length / Math.max(tasks.length, 1)) *
-                100
-            )}
-            %
+            全体進捗: {overallProgress}%
           </Badge>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={exportReport}>
             <Download className="h-4 w-4 mr-2" />
             レポート出力
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate('/improvement-plan')}>
+            <Settings className="h-4 w-4 mr-2" />
+            計画設定
           </Button>
         </div>
       </div>
@@ -482,37 +821,83 @@ const ImprovementImplementation: React.FC = () => {
         </Alert>
       )}
 
+      {/* 統計サマリー */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">{taskCounts.total}</div>
+            <div className="text-sm text-muted-foreground">総タスク数</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-gray-600">{taskCounts.notStarted}</div>
+            <div className="text-sm text-muted-foreground">未着手</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-yellow-600">{taskCounts.inProgress}</div>
+            <div className="text-sm text-muted-foreground">進行中</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{taskCounts.completed}</div>
+            <div className="text-sm text-muted-foreground">完了</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-red-600">{taskCounts.blocked}</div>
+            <div className="text-sm text-muted-foreground">ブロック</div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* フェーズ選択タブ */}
-      <Tabs value={activePhase} onValueChange={setActivePhase} className="space-y-6">
+      <Tabs
+        value={activePhase}
+        onValueChange={(value) => setActivePhase(value as keyof typeof PHASE_CONFIG)}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="phase1" className="relative">
-            Phase 1
-            <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
-              {calculatePhaseProgress('phase1')}%
-            </Badge>
-          </TabsTrigger>
-          <TabsTrigger value="phase2" disabled>
-            Phase 2
-            <Badge variant="outline" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
-              {calculatePhaseProgress('phase2')}%
-            </Badge>
-          </TabsTrigger>
-          <TabsTrigger value="phase3" disabled>
-            Phase 3
-            <Badge variant="outline" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
-              {calculatePhaseProgress('phase3')}%
-            </Badge>
-          </TabsTrigger>
+          {Object.entries(PHASE_CONFIG).map(([phase, config]) => (
+            <TabsTrigger
+              key={phase}
+              value={phase}
+              className="relative"
+              disabled={!isPhaseUnlocked(phase as keyof typeof PHASE_CONFIG)}
+            >
+              Phase {phase.slice(-1)}
+              <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 justify-center text-xs">
+                {phaseProgress[phase as keyof typeof phaseProgress]}%
+              </Badge>
+              {!isPhaseUnlocked(phase as keyof typeof PHASE_CONFIG) && (
+                <div className="absolute inset-0 bg-gray-200 bg-opacity-75 rounded flex items-center justify-center">
+                  <span className="text-xs">🔒</span>
+                </div>
+              )}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value="phase1" className="space-y-6">
+        <TabsContent value={activePhase} className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-3">
             {/* タスク一覧 */}
             <div className="lg:col-span-2 space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Phase 1: UIライブラリの統一</span>
+                    <div>
+                      <span>{PHASE_CONFIG[activePhase].title}</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Progress value={phaseProgress[activePhase]} className="w-48 h-2" />
+                        <span className="text-sm text-muted-foreground">
+                          {phaseProgress[activePhase]}%
+                        </span>
+                      </div>
+                    </div>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -538,7 +923,7 @@ const ImprovementImplementation: React.FC = () => {
                       </Button>
                     </div>
                   </CardTitle>
-                  <CardDescription>Material-UI、Radix UI、shadcn-uiの統合作業</CardDescription>
+                  <CardDescription>{PHASE_CONFIG[activePhase].description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {isLoading ? (
@@ -546,7 +931,7 @@ const ImprovementImplementation: React.FC = () => {
                       <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2" />
                       <p className="text-muted-foreground">タスクを読み込み中...</p>
                     </div>
-                  ) : tasks.filter((task) => task.phase === activePhase).length === 0 ? (
+                  ) : currentPhaseTasks.length === 0 ? (
                     <div className="text-center py-8">
                       <p className="text-muted-foreground">
                         このフェーズにはまだタスクがありません
@@ -562,104 +947,144 @@ const ImprovementImplementation: React.FC = () => {
                       </Button>
                     </div>
                   ) : (
-                    tasks
-                      .filter((task) => task.phase === activePhase)
-                      .map((task) => (
-                        <Card
-                          key={task.id}
-                          className={`p-4 cursor-pointer transition-colors ${
-                            selectedTask?.id === task.id ? 'border-primary' : ''
-                          }`}
-                          onClick={() => setSelectedTask(task)}
-                        >
-                          <div className="space-y-3">
-                            <div className="flex items-start justify-between">
-                              <div className="space-y-1">
-                                <h4 className="font-semibold flex items-center gap-2">
-                                  {task.status === 'completed' && (
-                                    <CheckCircle className="h-4 w-4 text-green-500" />
-                                  )}
-                                  {task.status === 'in-progress' && (
-                                    <Clock className="h-4 w-4 text-blue-500" />
-                                  )}
-                                  {task.status === 'blocked' && (
-                                    <AlertCircle className="h-4 w-4 text-red-500" />
-                                  )}
-                                  {task.title}
-                                </h4>
-                                <p className="text-sm text-muted-foreground">{task.description}</p>
-                              </div>
-                              <div onClick={(e) => e.stopPropagation()}>
-                                <Select
-                                  value={task.status}
-                                  onValueChange={(value) =>
-                                    handleUpdateTaskStatus(task.id, value as Task['status'])
+                    currentPhaseTasks.map((task) => (
+                      <Card
+                        key={task.id}
+                        className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
+                          selectedTask?.id === task.id
+                            ? 'border-primary ring-2 ring-primary/20'
+                            : ''
+                        }`}
+                        onClick={() => setSelectedTask(task)}
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1 flex-1">
+                              <h4 className="font-semibold flex items-center gap-2">
+                                {task.status === 'completed' && (
+                                  <CheckCircle className="h-4 w-4 text-green-500" />
+                                )}
+                                {task.status === 'in-progress' && (
+                                  <Clock className="h-4 w-4 text-blue-500" />
+                                )}
+                                {task.status === 'blocked' && (
+                                  <AlertCircle className="h-4 w-4 text-red-500" />
+                                )}
+                                {task.status === 'not-started' && (
+                                  <div className="h-4 w-4 rounded-full border-2 border-gray-300" />
+                                )}
+                                {task.title}
+                                <Badge
+                                  variant={
+                                    task.priority === 'high'
+                                      ? 'destructive'
+                                      : task.priority === 'medium'
+                                        ? 'default'
+                                        : 'secondary'
                                   }
+                                  className="text-xs"
                                 >
-                                  <SelectTrigger className="w-32 h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="not-started">未着手</SelectItem>
-                                    <SelectItem value="in-progress">進行中</SelectItem>
-                                    <SelectItem value="completed">完了</SelectItem>
-                                    <SelectItem value="blocked">ブロック</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                                  {task.priority === 'high'
+                                    ? '高'
+                                    : task.priority === 'medium'
+                                      ? '中'
+                                      : '低'}
+                                </Badge>
+                              </h4>
+                              <p className="text-sm text-muted-foreground">{task.description}</p>
+                              {task.tags.length > 0 && (
+                                <div className="flex gap-1 mt-2">
+                                  {task.tags.slice(0, 3).map((tag, index) => (
+                                    <Badge key={index} variant="outline" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                  {task.tags.length > 3 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      +{task.tags.length - 3}
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
                             </div>
-
-                            <div className="flex items-center justify-between text-sm">
-                              <div className="flex items-center gap-4">
-                                {task.assignee && (
-                                  <div className="flex items-center gap-2">
-                                    <Avatar className="h-6 w-6">
-                                      <AvatarImage
-                                        src={
-                                          teamMembers.find((m) => m.id === task.assignee)?.avatar
-                                        }
-                                      />
-                                      <AvatarFallback>
-                                        {teamMembers
-                                          .find((m) => m.id === task.assignee)
-                                          ?.name.charAt(0)}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-muted-foreground">
-                                      {teamMembers.find((m) => m.id === task.assignee)?.name}
-                                    </span>
-                                  </div>
-                                )}
-                                <span className="text-muted-foreground">
-                                  {task.actualHours}/{task.estimatedHours}h
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {task.branch && (
-                                  <Badge variant="outline" className="text-xs">
-                                    <GitBranch className="h-3 w-3 mr-1" />
-                                    {task.branch}
-                                  </Badge>
-                                )}
-                                {task.pr && (
-                                  <Badge variant="outline" className="text-xs">
-                                    <Github className="h-3 w-3 mr-1" />
-                                    PR
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span>進捗</span>
-                                <span>{calculateTaskProgress(task)}%</span>
-                              </div>
-                              <Progress value={calculateTaskProgress(task)} className="h-2" />
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <Select
+                                value={task.status}
+                                onValueChange={(value) =>
+                                  handleUpdateTaskStatus(task.id, value as Task['status'])
+                                }
+                              >
+                                <SelectTrigger className="w-32 h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="not-started">未着手</SelectItem>
+                                  <SelectItem value="in-progress">進行中</SelectItem>
+                                  <SelectItem value="completed">完了</SelectItem>
+                                  <SelectItem value="blocked">ブロック</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
-                        </Card>
-                      ))
+
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-4">
+                              {task.assignee && (
+                                <div className="flex items-center gap-2">
+                                  <Avatar className="h-6 w-6">
+                                    <AvatarImage
+                                      src={teamMembers.find((m) => m.id === task.assignee)?.avatar}
+                                    />
+                                    <AvatarFallback>
+                                      {teamMembers
+                                        .find((m) => m.id === task.assignee)
+                                        ?.name.charAt(0)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <span className="text-muted-foreground">
+                                    {teamMembers.find((m) => m.id === task.assignee)?.name}
+                                  </span>
+                                </div>
+                              )}
+                              <span className="text-muted-foreground">
+                                {task.actualHours}/{task.estimatedHours}h
+                              </span>
+                              {task.estimatedHours > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  <span className="text-xs text-muted-foreground">
+                                    効率:{' '}
+                                    {Math.round((task.actualHours / task.estimatedHours) * 100)}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {task.branch && (
+                                <Badge variant="outline" className="text-xs">
+                                  <GitBranch className="h-3 w-3 mr-1" />
+                                  branch
+                                </Badge>
+                              )}
+                              {task.pr && (
+                                <Badge variant="outline" className="text-xs">
+                                  <Github className="h-3 w-3 mr-1" />
+                                  PR
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>進捗</span>
+                              <span>{calculateTaskProgress(task)}%</span>
+                            </div>
+                            <Progress value={calculateTaskProgress(task)} className="h-2" />
+                          </div>
+                        </div>
+                      </Card>
+                    ))
                   )}
                 </CardContent>
               </Card>
@@ -668,37 +1093,155 @@ const ImprovementImplementation: React.FC = () => {
               {selectedTask && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">タスク詳細</CardTitle>
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span>タスク詳細</span>
+                      <div className="flex gap-2">
+                        <Badge variant="outline" className="text-xs">
+                          ID: {selectedTask.id}
+                        </Badge>
+                        <Badge
+                          variant={
+                            selectedTask.priority === 'high'
+                              ? 'destructive'
+                              : selectedTask.priority === 'medium'
+                                ? 'default'
+                                : 'secondary'
+                          }
+                          className="text-xs"
+                        >
+                          {selectedTask.priority === 'high'
+                            ? '高優先度'
+                            : selectedTask.priority === 'medium'
+                              ? '中優先度'
+                              : '低優先度'}
+                        </Badge>
+                      </div>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* タスク基本情報 */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">作成日:</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {new Date(selectedTask.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium">更新日:</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {new Date(selectedTask.updatedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium">予定工数:</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {selectedTask.estimatedHours}時間
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium">実績工数:</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {selectedTask.actualHours}時間
+                        </span>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* チェックリスト */}
                     <div className="space-y-3">
-                      <h4 className="font-semibold">チェックリスト</h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">チェックリスト</h4>
+                        <span className="text-sm text-muted-foreground">
+                          {selectedTask.checklist.filter((item) => item.completed).length}/
+                          {selectedTask.checklist.length} 完了
+                        </span>
+                      </div>
                       {selectedTask.checklist.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
                           チェックリスト項目がありません
                         </p>
                       ) : (
-                        selectedTask.checklist.map((item) => (
-                          <label key={item.id} className="flex items-center gap-2 cursor-pointer">
-                            <Checkbox
-                              checked={item.completed}
-                              onCheckedChange={(checked) =>
-                                handleUpdateChecklist(selectedTask.id, item.id, checked as boolean)
-                              }
-                            />
-                            <span
-                              className={item.completed ? 'line-through text-muted-foreground' : ''}
+                        <div className="space-y-2">
+                          {selectedTask.checklist.map((item) => (
+                            <label
+                              key={item.id}
+                              className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-gray-50"
                             >
-                              {item.label}
-                            </span>
-                          </label>
-                        ))
+                              <Checkbox
+                                checked={item.completed}
+                                onCheckedChange={(checked) =>
+                                  handleUpdateChecklist(
+                                    selectedTask.id,
+                                    item.id,
+                                    checked as boolean
+                                  )
+                                }
+                              />
+                              <span
+                                className={`flex-1 ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                              >
+                                {item.label}
+                              </span>
+                              {item.completed && (
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(
+                                    item.completedAt || item.createdAt
+                                  ).toLocaleDateString()}
+                                </span>
+                              )}
+                            </label>
+                          ))}
+                        </div>
                       )}
                     </div>
 
                     <Separator />
 
-                    <div className="flex gap-2">
+                    {/* タグと依存関係 */}
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-semibold mb-2">タグ</h4>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedTask.tags.map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {selectedTask.dependencies.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2">依存タスク</h4>
+                          <div className="space-y-1">
+                            {selectedTask.dependencies.map((depId) => {
+                              const depTask = tasks.find((t) => t.id === depId);
+                              return depTask ? (
+                                <div key={depId} className="flex items-center gap-2 text-sm">
+                                  {depTask.status === 'completed' ? (
+                                    <CheckCircle className="h-3 w-3 text-green-500" />
+                                  ) : (
+                                    <Clock className="h-3 w-3 text-yellow-500" />
+                                  )}
+                                  <span>{depTask.title}</span>
+                                </div>
+                              ) : (
+                                <div key={depId} className="text-sm text-muted-foreground">
+                                  依存タスクが見つかりません: {depId}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <Separator />
+
+                    {/* GitHub連携アクション */}
+                    <div className="flex gap-2 flex-wrap">
                       {!selectedTask.branch && (
                         <Button
                           size="sm"
@@ -729,7 +1272,28 @@ const ImprovementImplementation: React.FC = () => {
                           </a>
                         </Button>
                       )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/wbs-creator?taskId=${selectedTask.id}`)}
+                      >
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        WBS詳細
+                      </Button>
                     </div>
+
+                    {/* ノート表示 */}
+                    {selectedTask.notes && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h4 className="font-semibold mb-2">メモ</h4>
+                          <div className="p-3 bg-gray-50 rounded text-sm whitespace-pre-wrap">
+                            {selectedTask.notes}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -752,41 +1316,70 @@ const ImprovementImplementation: React.FC = () => {
                       <p className="text-sm text-muted-foreground">読み込み中...</p>
                     </div>
                   ) : teamMembers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      チームメンバーが登録されていません
-                    </p>
+                    <div className="text-center py-4">
+                      <p className="text-sm text-muted-foreground">
+                        チームメンバーが登録されていません
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => navigate('/profile')}
+                      >
+                        プロフィール設定
+                      </Button>
+                    </div>
                   ) : (
-                    teamMembers.map((member) => (
-                      <div key={member.id} className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={member.avatar} />
-                          <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.role}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge
-                              variant="outline"
-                              className={`text-xs ${
-                                member.availability === 'available'
-                                  ? 'text-green-700 border-green-200'
-                                  : member.availability === 'busy'
-                                    ? 'text-red-700 border-red-200'
-                                    : 'text-gray-700 border-gray-200'
-                              }`}
-                            >
-                              {member.availability === 'available' && '空き'}
-                              {member.availability === 'busy' && '多忙'}
-                              {member.availability === 'unavailable' && '不在'}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
+                    teamMembers.map((member) => {
+                      const memberTasks = tasks.filter((task) => task.assignee === member.id);
+                      const memberCompletedTasks = memberTasks.filter(
+                        (task) => task.status === 'completed'
+                      );
+
+                      return (
+                        <div
+                          key={member.id}
+                          className="flex items-start gap-3 p-2 rounded hover:bg-gray-50"
+                        >
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.avatar} />
+                            <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{member.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{member.role}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${
+                                  member.availability === 'available'
+                                    ? 'text-green-700 border-green-200'
+                                    : member.availability === 'busy'
+                                      ? 'text-red-700 border-red-200'
+                                      : 'text-gray-700 border-gray-200'
+                                }`}
+                              >
+                                {member.availability === 'available' && '空き'}
+                                {member.availability === 'busy' && '多忙'}
+                                {member.availability === 'unavailable' && '不在'}
+                              </Badge>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              タスク: {memberCompletedTasks.length}/{memberTasks.length}(
+                              {memberTasks.length > 0
+                                ? Math.round(
+                                    (memberCompletedTasks.length / memberTasks.length) * 100
+                                  )
+                                : 0}
+                              %)
+                            </div>
+                            <div className="text-xs text-muted-foreground">
                               負荷: {member.workload}%
-                            </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </CardContent>
               </Card>
@@ -806,9 +1399,17 @@ const ImprovementImplementation: React.FC = () => {
                       <p className="text-sm text-muted-foreground">読み込み中...</p>
                     </div>
                   ) : resources.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      リソースが登録されていません
-                    </p>
+                    <div className="text-center py-4">
+                      <p className="text-sm text-muted-foreground">リソースが登録されていません</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => window.open('https://ui.shadcn.com/', '_blank')}
+                      >
+                        shadcn-ui ドキュメント
+                      </Button>
+                    </div>
                   ) : (
                     resources.map((resource, index) => (
                       <a
@@ -816,11 +1417,11 @@ const ImprovementImplementation: React.FC = () => {
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                        className="flex items-center gap-2 text-sm hover:text-primary transition-colors p-2 rounded hover:bg-gray-50"
                       >
                         {resource.icon || <FileText className="h-3 w-3" />}
-                        <span>{resource.title}</span>
-                        <ExternalLink className="h-3 w-3 ml-auto" />
+                        <span className="flex-1">{resource.title}</span>
+                        <ExternalLink className="h-3 w-3" />
                       </a>
                     ))
                   )}
@@ -841,7 +1442,7 @@ const ImprovementImplementation: React.FC = () => {
                       placeholder="実装に関するメモを追加..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                      className="min-h-[80px]"
+                      className="min-h-[80px] resize-none"
                     />
                     <Button
                       size="sm"
@@ -849,9 +1450,48 @@ const ImprovementImplementation: React.FC = () => {
                       className="w-full"
                       disabled={!newNote.trim() || !user}
                     >
+                      <Save className="h-4 w-4 mr-2" />
                       メモを追加
                     </Button>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* クイックアクション */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">クイックアクション</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => navigate('/improvement-plan')}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    改善計画に戻る
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => navigate('/wbs-creator')}
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    WBS作成ツール
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() =>
+                      window.open('https://github.com/umezawakanta/work-time-tracker', '_blank')
+                    }
+                  >
+                    <Github className="h-4 w-4 mr-2" />
+                    GitHubリポジトリ
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -860,9 +1500,14 @@ const ImprovementImplementation: React.FC = () => {
           {/* 実装ログ */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                実装ログ
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  実装ログ
+                </div>
+                <Button variant="outline" size="sm" onClick={refreshData} disabled={isLoading}>
+                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -873,8 +1518,8 @@ const ImprovementImplementation: React.FC = () => {
                   </p>
                 ) : (
                   implementationLogs.map((log) => (
-                    <div key={log.id} className="flex gap-3 text-sm">
-                      <span className="text-muted-foreground whitespace-nowrap">
+                    <div key={log.id} className="flex gap-3 text-sm p-2 rounded hover:bg-gray-50">
+                      <span className="text-muted-foreground whitespace-nowrap text-xs">
                         {new Date(log.timestamp || Date.now()).toLocaleString('ja-JP', {
                           month: '2-digit',
                           day: '2-digit',
@@ -882,10 +1527,10 @@ const ImprovementImplementation: React.FC = () => {
                           minute: '2-digit',
                         })}
                       </span>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <span className="font-medium">{log.user}</span>
                         <span className="text-muted-foreground"> が </span>
-                        <span>{log.details || log.action}</span>
+                        <span className="break-words">{log.details || log.action}</span>
                       </div>
                     </div>
                   ))
@@ -898,14 +1543,16 @@ const ImprovementImplementation: React.FC = () => {
 
       {/* タスク追加ダイアログ */}
       <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>新しいタスクを追加</DialogTitle>
-            <DialogDescription>Phase 1の実装タスクを追加します</DialogDescription>
+            <DialogDescription>
+              {PHASE_CONFIG[activePhase].title}の実装タスクを追加します
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="task-title">タスク名</Label>
+              <Label htmlFor="task-title">タスク名 *</Label>
               <Input
                 id="task-title"
                 placeholder="例: フォームコンポーネントの移行"
@@ -920,6 +1567,7 @@ const ImprovementImplementation: React.FC = () => {
                 placeholder="タスクの詳細な説明を入力..."
                 value={newTaskData.description}
                 onChange={(e) => setNewTaskData({ ...newTaskData, description: e.target.value })}
+                className="min-h-[80px]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -928,41 +1576,62 @@ const ImprovementImplementation: React.FC = () => {
                 <Input
                   id="estimated-hours"
                   type="number"
+                  min="1"
+                  max="100"
                   placeholder="8"
                   value={newTaskData.estimatedHours.toString()}
                   onChange={(e) =>
                     setNewTaskData({
                       ...newTaskData,
-                      estimatedHours: parseInt(e.target.value) || 8,
+                      estimatedHours: Math.max(1, parseInt(e.target.value) || 8),
                     })
                   }
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="assignee">担当者</Label>
+                <Label htmlFor="task-priority">優先度</Label>
                 <Select
-                  value={newTaskData.assignee}
-                  onValueChange={(value) => setNewTaskData({ ...newTaskData, assignee: value })}
+                  value={newTaskData.priority}
+                  onValueChange={(value) =>
+                    setNewTaskData({ ...newTaskData, priority: value as Task['priority'] })
+                  }
                 >
-                  <SelectTrigger id="assignee">
-                    <SelectValue placeholder="選択..." />
+                  <SelectTrigger id="task-priority">
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {teamMembers.map((member) => (
-                      <SelectItem key={member.id} value={member.id}>
-                        {member.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="low">低優先度</SelectItem>
+                    <SelectItem value="medium">中優先度</SelectItem>
+                    <SelectItem value="high">高優先度</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="assignee">担当者</Label>
+              <Select
+                value={newTaskData.assignee}
+                onValueChange={(value) => setNewTaskData({ ...newTaskData, assignee: value })}
+              >
+                <SelectTrigger id="assignee">
+                  <SelectValue placeholder="担当者を選択..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">未割り当て</SelectItem>
+                  {teamMembers.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.name} ({member.role})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowTaskDialog(false)}>
               キャンセル
             </Button>
-            <Button onClick={handleCreateTask} disabled={isLoading}>
+            <Button onClick={handleCreateTask} disabled={isLoading || !newTaskData.title.trim()}>
               {isLoading ? '作成中...' : '追加'}
             </Button>
           </DialogFooter>
@@ -971,95 +1640,120 @@ const ImprovementImplementation: React.FC = () => {
 
       {/* AI提案ダイアログ */}
       <Dialog open={showAISuggestionsDialog} onOpenChange={setShowAISuggestionsDialog}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
               AIによるタスク提案
             </DialogTitle>
             <DialogDescription>
-              現在のタスクを分析し、以下の追加タスクを提案します
+              {PHASE_CONFIG[activePhase].title}の現在のタスクを分析し、以下の追加タスクを提案します
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            {suggestedTasks.map((suggestion) => (
-              <Card
-                key={suggestion.id}
-                className={`cursor-pointer transition-colors ${
-                  selectedSuggestions.includes(suggestion.id) ? 'border-primary' : ''
-                }`}
-                onClick={() => toggleSuggestionSelection(suggestion.id)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        checked={selectedSuggestions.includes(suggestion.id)}
-                        onCheckedChange={() => toggleSuggestionSelection(suggestion.id)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <div>
-                        <CardTitle className="text-base">{suggestion.title}</CardTitle>
-                        <CardDescription className="mt-1">{suggestion.description}</CardDescription>
+            {suggestedTasks.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">現在提案できるタスクはありません</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  既存のタスクを進めてから再度分析してください
+                </p>
+              </div>
+            ) : (
+              suggestedTasks.map((suggestion) => (
+                <Card
+                  key={suggestion.id}
+                  className={`cursor-pointer transition-all duration-200 ${
+                    selectedSuggestions.includes(suggestion.id)
+                      ? 'border-primary ring-2 ring-primary/20'
+                      : ''
+                  }`}
+                  onClick={() => toggleSuggestionSelection(suggestion.id)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3 flex-1">
+                        <Checkbox
+                          checked={selectedSuggestions.includes(suggestion.id)}
+                          onCheckedChange={() => toggleSuggestionSelection(suggestion.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <div className="flex-1">
+                          <CardTitle className="text-base">{suggestion.title}</CardTitle>
+                          <CardDescription className="mt-1">
+                            {suggestion.description}
+                          </CardDescription>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={
-                          suggestion.priority === 'high'
-                            ? 'destructive'
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant={
+                            suggestion.priority === 'high'
+                              ? 'destructive'
+                              : suggestion.priority === 'medium'
+                                ? 'default'
+                                : 'secondary'
+                          }
+                        >
+                          {suggestion.priority === 'high'
+                            ? '高優先度'
                             : suggestion.priority === 'medium'
-                              ? 'default'
-                              : 'secondary'
-                        }
-                      >
-                        {suggestion.priority === 'high'
-                          ? '高'
-                          : suggestion.priority === 'medium'
-                            ? '中'
-                            : '低'}
-                        優先度
-                      </Badge>
-                      <Badge variant="outline">{suggestion.estimatedHours}h</Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Alert className="py-2">
-                      <Info className="h-4 w-4" />
-                      <AlertDescription className="text-sm">{suggestion.reason}</AlertDescription>
-                    </Alert>
-
-                    {suggestion.dependencies && suggestion.dependencies.length > 0 && (
-                      <div className="text-sm">
-                        <span className="font-medium">依存タスク: </span>
-                        <span className="text-muted-foreground">
-                          {suggestion.dependencies
-                            .map((dep) => tasks.find((t) => t.id === dep)?.title || dep)
-                            .join(', ')}
-                        </span>
+                              ? '中優先度'
+                              : '低優先度'}
+                        </Badge>
+                        <Badge variant="outline">{suggestion.estimatedHours}h</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          信頼度: {Math.round(suggestion.confidence * 100)}%
+                        </Badge>
                       </div>
-                    )}
-
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium flex items-center gap-2">
-                        <CheckSquare className="h-4 w-4" />
-                        予定される作業内容
-                      </p>
-                      <ul className="text-sm text-muted-foreground space-y-1 ml-6">
-                        {suggestion.checklist.map((item, index) => (
-                          <li key={index} className="list-disc">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Alert className="py-2">
+                        <Info className="h-4 w-4" />
+                        <AlertDescription className="text-sm">{suggestion.reason}</AlertDescription>
+                      </Alert>
+
+                      {suggestion.dependencies && suggestion.dependencies.length > 0 && (
+                        <div className="text-sm">
+                          <span className="font-medium">依存タスク: </span>
+                          <span className="text-muted-foreground">
+                            {suggestion.dependencies
+                              .map((dep) => tasks.find((t) => t.id === dep)?.title || dep)
+                              .join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          <CheckSquare className="h-4 w-4" />
+                          予定される作業内容
+                        </p>
+                        <ul className="text-sm text-muted-foreground space-y-1 ml-6">
+                          {suggestion.checklist.map((item, index) => (
+                            <li key={index} className="list-disc">
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {suggestion.tags && suggestion.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {suggestion.tags.map((tag, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
 
           <DialogFooter className="flex items-center justify-between">
@@ -1077,7 +1771,7 @@ const ImprovementImplementation: React.FC = () => {
                 キャンセル
               </Button>
               <Button onClick={addSuggestedTasks} disabled={selectedSuggestions.length === 0}>
-                選択したタスクを追加
+                選択したタスクを追加 ({selectedSuggestions.length})
               </Button>
             </div>
           </DialogFooter>
