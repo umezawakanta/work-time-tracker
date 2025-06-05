@@ -80,43 +80,104 @@ interface MenuItem {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const { locale, setLocale } = useLocale();
+  // 各コンテキストの変化を詳細追跡
+  const localeContext = useLocale();
+  const { locale, setLocale } = localeContext;
   const navigate = useNavigate();
   const location = useLocation();
 
-  // AuthContextの値変化を詳細に追跡
+  // AuthContextの詳細追跡
   const authContext = useAuth();
   const { isAuthenticated, setIsAuthenticated, user, fetchUser } = authContext;
 
-  // AuthContext値の変化をログ出力
+  // LocaleContextの変化も追跡
+  const localeContextRef = useRef(localeContext);
+  const locationRef = useRef(location);
+
+  // 全コンテキストの変化を同時に追跡
+  useEffect(() => {
+    const prevLocale = localeContextRef.current;
+    const prevLocation = locationRef.current;
+
+    const contextChanges = [];
+    if (prevLocale !== localeContext) contextChanges.push('locale');
+    if (prevLocation !== location) contextChanges.push('location');
+
+    if (contextChanges.length > 0) {
+      console.log('[Layout] 🌐 その他コンテキスト変化', {
+        changes: contextChanges,
+        pathname: location.pathname,
+        locale: locale,
+        renderCount: renderCountRef.current,
+      });
+    }
+
+    localeContextRef.current = localeContext;
+    locationRef.current = location;
+  });
+
+  // AuthContext値の変化をログ出力 - さらに詳細に
   const authContextRef = useRef(authContext);
   useEffect(() => {
     const prev = authContextRef.current;
     const current = authContext;
 
     const changes = [];
-    if (prev.isAuthenticated !== current.isAuthenticated) changes.push('isAuthenticated');
-    if (prev.user !== current.user) changes.push('user');
-    if (prev.fetchUser !== current.fetchUser) changes.push('fetchUser');
-    if (prev.setIsAuthenticated !== current.setIsAuthenticated) changes.push('setIsAuthenticated');
+    const details = {};
+
+    if (prev.isAuthenticated !== current.isAuthenticated) {
+      changes.push('isAuthenticated');
+      details.isAuthenticated = { prev: prev.isAuthenticated, current: current.isAuthenticated };
+    }
+    if (prev.user !== current.user) {
+      changes.push('user');
+      details.user = {
+        prev: prev.user ? 'exists' : 'null',
+        current: current.user ? 'exists' : 'null',
+        sameReference: prev.user === current.user,
+      };
+    }
+    if (prev.fetchUser !== current.fetchUser) {
+      changes.push('fetchUser');
+      details.fetchUser = { sameReference: prev.fetchUser === current.fetchUser };
+    }
+    if (prev.setIsAuthenticated !== current.setIsAuthenticated) {
+      changes.push('setIsAuthenticated');
+      details.setIsAuthenticated = {
+        sameReference: prev.setIsAuthenticated === current.setIsAuthenticated,
+      };
+    }
+    if (prev.loading !== current.loading) {
+      changes.push('loading');
+      details.loading = { prev: prev.loading, current: current.loading };
+    }
+    if (prev.setUser !== current.setUser) {
+      changes.push('setUser');
+      details.setUser = { sameReference: prev.setUser === current.setUser };
+    }
+    if (prev.updateProfile !== current.updateProfile) {
+      changes.push('updateProfile');
+      details.updateProfile = { sameReference: prev.updateProfile === current.updateProfile };
+    }
 
     if (changes.length > 0) {
-      console.log('[Layout] 🔥 AuthContext値変化検出', {
+      console.log('[Layout] 🔥 AuthContext詳細変化検出', {
         changes,
-        isAuthenticated: current.isAuthenticated,
-        user: !!current.user,
-        userId: current.user?.id || current.user?._id,
+        details,
         renderCount: ++renderCountRef.current,
+        strictModeNote: 'StrictMode有効 - 2回実行される',
       });
     } else {
       console.log('[Layout] ✅ AuthContext値変化なし', {
         renderCount: ++renderCountRef.current,
+        strictModeNote: 'StrictMode有効',
       });
     }
 
     authContextRef.current = current;
   });
 
+  // StrictMode対応の安定化されたstate
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [isSubscriptionChecking, setIsSubscriptionChecking] = useState(true);

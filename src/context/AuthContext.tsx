@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuthStatus();
   }, []); // 初回マウント時のみ実行
 
-  // contextValueをuseMemoで最適化 - 依存配列から関数を除外
+  // contextValueを完全に安定化
   const contextValue = useMemo<AuthContextType>(
     () => ({
       isAuthenticated,
@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       fetchUser,
       updateProfile,
     }),
-    [isAuthenticated, loading, user] // fetchUser, updateProfileを除外
+    [isAuthenticated, loading, user] // 関数を依存配列から完全に除外
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
