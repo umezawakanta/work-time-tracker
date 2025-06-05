@@ -68,11 +68,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsCheckingAuth(false);
     }
-  }, [isCheckingAuth, fetchUser]);
+  }, [fetchUser]); // isCheckingAuthを依存配列から削除
 
   useEffect(() => {
     checkAuthStatus();
-  }, [checkAuthStatus]);
+  }, []); // 初回マウント時のみ実行
 
   const contextValue: AuthContextType = {
     isAuthenticated,
