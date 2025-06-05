@@ -189,7 +189,7 @@ export default function Layout({ children }: LayoutProps) {
   // Ref for tracking
   const renderCountRef = useRef(0);
   const executionCountRef = useRef(0);
-  const lastExecutionRef = useRef<number>(0);
+  const lastExecutionRef = useRef<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -241,260 +241,164 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []); // 依存配列を空にして安定化
 
-  // サブスクリプション状態の取得 - 条件を調整
+  // サブスクリプション状態の取得 - シンプル化
   useEffect(() => {
-    console.log('[Layout] 💳 サブスクリプションチェックuseEffect実行', {
-      isAuthenticated,
-      hasUser: !!user,
-      userId,
-      isAdmin,
-      renderCount: renderCountRef.current,
-    });
+    console.log('[Layout] 💳 サブスクリプション処理');
 
     const checkSubscription = async () => {
-      // AuthContextの認証とユーザーデータ取得が完了するまで待機
+      // 認証済み、ユーザーデータ取得済み、ローディング完了の条件
       if (isAuthenticated && userId && !loading) {
-        // loadingも条件に追加
         try {
-          console.log('[Layout] サブスクリプションチェック開始');
           setIsSubscriptionChecking(true);
 
           if (isAdmin) {
-            console.log('[Layout] 管理者ユーザー: プレミアム有効');
             setIsPremium(true);
-            setIsSubscriptionChecking(false);
-            return;
-          }
-
-          try {
-            // サブスクリプション情報の取得を試みる
-            const response = await userSubscriptionApi.getUserSubscription(userId);
-            const subscription = response.data;
-
-            setIsPremium(
-              subscription && subscription.status === 'active' && subscription.planId !== 'free'
-            );
-          } catch (unknownError) {
-            // ... 既存のエラーハンドリングロジック（userをuserIdに変更）
-            const error = unknownError as AxiosError;
-
-            if (error.response?.status === 404) {
-              console.log('サブスクリプション情報がないため、デフォルト情報を作成します');
-
-              try {
-                const subscriptionData = {
-                  userId: userId,
-                  planId: 'free',
-                  status: 'active' as const,
-                  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                  cancelAtPeriodEnd: false,
-                };
-
-                try {
-                  await userSubscriptionApi.getUserSubscription(userId);
-                  console.log('サブスクリプション情報が既に存在します');
-                  setIsPremium(false);
-                } catch (secondError) {
-                  if (axios.isAxiosError(secondError) && secondError.response?.status === 404) {
-                    const createResponse =
-                      await userSubscriptionApi.createUserSubscription(subscriptionData);
-                    console.log('サブスクリプション作成成功:', createResponse);
-                    setIsPremium(false);
-                  } else {
-                    throw secondError;
-                  }
-                }
-              } catch (unknownCreateError) {
-                // ... 既存のエラーハンドリング
-                console.error('サブスクリプション作成エラー:', unknownCreateError);
-                setIsPremium(false);
-              }
-            } else {
-              console.error('サブスクリプション確認エラー:', error);
+          } else {
+            // サブスクリプションチェックロジック
+            try {
+              const response = await userSubscriptionApi.getUserSubscription(userId);
+              const subscription = response.data;
+              setIsPremium(
+                subscription && subscription.status === 'active' && subscription.planId !== 'free'
+              );
+            } catch (error) {
+              // エラーハンドリング（簡素化）
               setIsPremium(false);
             }
           }
         } catch (error) {
-          console.error('[Layout] サブスクリプションチェックエラー:', error);
           setIsPremium(false);
         } finally {
           setIsSubscriptionChecking(false);
-          console.log('[Layout] サブスクリプションチェック完了');
         }
       } else {
-        console.log('[Layout] 認証未完了またはユーザーID不明', {
-          isAuthenticated,
-          userId,
-          loading,
-        });
+        // 認証未完了の場合は即座にリセット
         setIsPremium(false);
         setIsSubscriptionChecking(false);
       }
     };
 
     checkSubscription();
-  }, [isAuthenticated, userId, isAdmin, loading]); // loadingを依存配列に追加
+  }, [isAuthenticated, userId, isAdmin, loading]); // 依存配列はそのまま
 
-  // メイン処理 - 条件を調整
+  // メイン処理 - 一度だけ実行するように修正
   useEffect(() => {
-    console.log('[Layout] 🎯 メイン処理useEffect実行', {
-      isAuthenticated,
-      userId,
-      loading,
-      executionCount: ++executionCountRef.current,
-      renderCount: renderCountRef.current,
-    });
+    console.log('[Layout] 🎯 メイン処理実行');
 
-    // 厳格な無限ループ検出
-    if (executionCountRef.current > 2) {
-      // より厳格に2回まで
-      console.error('[Layout] 🚨 無限ループ検出！実行を停止します', {
-        executionCount: executionCountRef.current,
-        renderCount: renderCountRef.current,
-      });
-      return;
-    }
-
-    // AuthContextの認証とユーザーデータ取得が完了するまで待機
+    // 条件をシンプルに
     if (!isAuthenticated || !userId || loading) {
-      console.log('[Layout] 認証未完了、処理スキップ', {
-        isAuthenticated,
-        userId,
-        loading,
-      });
       return;
     }
 
-    // 短時間での重複実行を防ぐ（より厳格に）
-    const currentTime = Date.now();
-    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 10000) {
-      console.log('[Layout] ⚠️ 短時間での重複実行を検出、スキップ', {
-        lastExecution: lastExecutionRef.current,
-        currentTime,
-        diff: currentTime - lastExecutionRef.current,
-      });
+    // 実行済みフラグでガード
+    const executionKey = `${isAuthenticated}-${userId}-${loading}`;
+    if (lastExecutionRef.current === executionKey) {
+      console.log('[Layout] 既に実行済み、スキップ');
       return;
     }
-    lastExecutionRef.current = currentTime;
+    lastExecutionRef.current = executionKey;
 
-    console.log('[Layout] ✅ メイン処理開始');
+    console.log('[Layout] ✅ 通知・WebSocket処理開始');
 
-    // 通知取得とstate更新を一つの関数にまとめる
-    const fetchNotifications = async () => {
+    // 通知取得とWebSocket接続（簡素化）
+    const initializeNotifications = async () => {
       try {
-        console.log('[Layout] 📝 データ取得開始');
+        setIsLoadingNotifications(true);
 
         const [notificationsResponse, unreadResponse] = await Promise.all([
           notificationApi.getUserNotifications(userId),
           notificationApi.getUnreadNotificationsCount(userId),
         ]);
 
-        // 一度にすべてのstateを更新（React 18のバッチング）
-        console.log('[Layout] 📝 一括state更新実行');
         setNotifications(notificationsResponse.data);
         setUnreadNotifications(unreadResponse.data.count);
-        setIsLoadingNotifications(false);
-
-        console.log('[Layout] ✅ 通知データ取得完了', {
-          notifications: notificationsResponse.data.length,
-          unread: unreadResponse.data.count,
-        });
       } catch (error) {
-        console.error('[Layout] 通知取得エラー:', error);
+        console.error('通知取得エラー:', error);
         setNotifications([]);
         setUnreadNotifications(0);
+      } finally {
         setIsLoadingNotifications(false);
       }
     };
 
-    // WebSocket接続関数
+    // WebSocket接続（開発環境のみ）
     const connectWebSocket = () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
+      if (window.location.hostname === 'localhost') {
+        // WebSocket接続ロジック（既存のコードを簡素化）
+        if (wsRef.current) {
+          wsRef.current.close();
+          wsRef.current = null;
+        }
 
-      try {
-        const wsUrl = 'ws://localhost:3001/notifications';
-        wsRef.current = new WebSocket(wsUrl);
+        try {
+          const wsUrl = 'ws://localhost:3001/notifications';
+          wsRef.current = new WebSocket(wsUrl);
 
-        wsRef.current.onopen = () => {
-          reconnectAttemptsRef.current = 0;
-          logger.info('WebSocket', '✅ Connected');
-
-          const token = localStorage.getItem('token');
-          if (token && wsRef.current) {
-            wsRef.current.send(
-              JSON.stringify({
-                type: 'auth',
-                userId: userId,
-                token: token,
-              })
-            );
-          }
-        };
-
-        wsRef.current.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.type === 'notification') {
-              const newNotification = data.notification;
-              setNotifications((prev) => [newNotification, ...prev]);
-              setUnreadNotifications((prev) => prev + 1);
-              toast.success(newNotification.title);
+          wsRef.current.onopen = () => {
+            const token = localStorage.getItem('token');
+            if (token && wsRef.current) {
+              wsRef.current.send(
+                JSON.stringify({
+                  type: 'auth',
+                  userId: userId,
+                  token: token,
+                })
+              );
             }
-          } catch (error) {
-            logger.error('WebSocket', 'Message parse error', error);
-          }
-        };
+          };
 
-        wsRef.current.onerror = (_error) => {
-          if (reconnectAttemptsRef.current === 0) {
-            logger.warn('WebSocket', 'Connection error');
-          }
-        };
+          wsRef.current.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              if (data.type === 'notification') {
+                const newNotification = data.notification;
+                setNotifications((prev) => [newNotification, ...prev]);
+                setUnreadNotifications((prev) => prev + 1);
+                toast.success(newNotification.title);
+              }
+            } catch (error) {
+              console.error('WebSocket message error:', error);
+            }
+          };
 
-        wsRef.current.onclose = (event) => {
-          if (event.code === 1000) return;
+          wsRef.current.onerror = () => {
+            console.warn('WebSocket connection error');
+          };
 
-          if (reconnectAttemptsRef.current < 3) {
-            reconnectAttemptsRef.current++;
-            const delay = 2000 * reconnectAttemptsRef.current;
-            reconnectTimerRef.current = setTimeout(() => connectWebSocket(), delay);
-          }
-        };
-      } catch (error) {
-        logger.error('WebSocket', 'Connection failed', error);
+          wsRef.current.onclose = () => {
+            console.log('WebSocket connection closed');
+          };
+        } catch (error) {
+          console.error('WebSocket connection failed:', error);
+        }
       }
     };
 
     // 実行
-    setIsLoadingNotifications(true);
-    fetchNotifications();
+    initializeNotifications();
+    connectWebSocket();
 
-    const isDevelopment = window.location.hostname === 'localhost';
-    if (isDevelopment) {
-      connectWebSocket();
-    }
-
-    // ポーリング間隔をより長くする
-    const pollingInterval = isDevelopment ? 600000 : 60000; // 開発:10分、本番:1分
+    // 定期更新（本番環境で重要）
+    const pollingInterval = 300000; // 5分
     const intervalId = setInterval(() => {
-      fetchNotifications();
+      initializeNotifications();
     }, pollingInterval);
 
     return () => {
-      console.log('[Layout] 🧹 クリーンアップ実行');
       clearInterval(intervalId);
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-      }
-      if (wsRef.current && isDevelopment) {
+      if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, userId, loading]); // loadingを依存配列に追加
+  }, [isAuthenticated, userId, loading]); // 必要最小限の依存配列
+
+  // レンダリング回数の制限（デバッグ用）
+  if (renderCountRef.current > 20) {
+    console.warn(
+      '[Layout] レンダリング回数が異常です。React StrictModeを無効化することを検討してください。'
+    );
+  }
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
@@ -1013,7 +917,7 @@ export default function Layout({ children }: LayoutProps) {
                               className="h-8 text-xs"
                               onClick={() => {
                                 // 通知を再取得
-                                fetchNotifications();
+                                initializeNotifications();
                               }}
                             >
                               <RefreshCw size={14} className="mr-1" />
@@ -1328,7 +1232,7 @@ export default function Layout({ children }: LayoutProps) {
                                 className="h-8 text-xs"
                                 onClick={() => {
                                   // 通知を再取得
-                                  fetchNotifications();
+                                  initializeNotifications();
                                 }}
                               >
                                 <RefreshCw size={14} className="mr-1" />
