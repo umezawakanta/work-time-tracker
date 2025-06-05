@@ -118,7 +118,10 @@ export default function Layout({ children }: LayoutProps) {
 
   // ユーザー情報の取得
   useEffect(() => {
+    console.log('[Layout] ユーザー情報取得useEffect実行', { isAuthenticated, user: !!user });
+
     if (isAuthenticated && !user) {
+      console.log('[Layout] fetchUser実行');
       fetchUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,13 +129,21 @@ export default function Layout({ children }: LayoutProps) {
 
   // サブスクリプション状態の取得
   useEffect(() => {
+    console.log('[Layout] サブスクリプションチェックuseEffect実行', {
+      isAuthenticated,
+      user: !!user,
+      userId: user?._id || user?.id,
+    });
+
     const checkSubscription = async () => {
       if (isAuthenticated && user) {
         try {
+          console.log('[Layout] サブスクリプションチェック開始');
           setIsSubscriptionChecking(true);
 
           // 管理者の場合は常にプレミアム機能を有効にする
           if (user.isAdmin) {
+            console.log('[Layout] 管理者ユーザー: プレミアム有効');
             setIsPremium(true);
             setIsSubscriptionChecking(false);
             return;
@@ -241,25 +252,30 @@ export default function Layout({ children }: LayoutProps) {
             }
           }
         } catch (error) {
-          console.error('チェック処理全体のエラー:', error);
+          console.error('[Layout] サブスクリプションチェックエラー:', error);
           setIsPremium(false);
         } finally {
           setIsSubscriptionChecking(false);
+          console.log('[Layout] サブスクリプションチェック完了');
         }
       } else {
+        console.log('[Layout] 認証されていないか、ユーザー情報なし');
         setIsPremium(false);
         setIsSubscriptionChecking(false);
       }
     };
 
     checkSubscription();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user?.id, user?._id, user?.isAdmin]); // より具体的な依存配列
 
-  // 通知取得の関数 - 依存配列を正しく設定
+  // 通知取得の関数 - ログ追加
   const fetchNotifications = useCallback(async () => {
+    console.log('[Layout] fetchNotifications実行', { isAuthenticated, user: !!user });
+
     if (isAuthenticated && user) {
       try {
         setIsLoadingNotifications(true);
+        console.log('[Layout] 通知データ取得開始');
 
         // 通知一覧を取得
         const response = await notificationApi.getUserNotifications(user._id || user.id);
@@ -270,29 +286,37 @@ export default function Layout({ children }: LayoutProps) {
           user._id || user.id
         );
         setUnreadNotifications(unreadResponse.data.count);
+
+        console.log('[Layout] 通知データ取得完了', {
+          notifications: response.data.length,
+          unread: unreadResponse.data.count,
+        });
       } catch (error) {
-        console.error('通知取得エラー:', error);
+        console.error('[Layout] 通知取得エラー:', error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-          // 通知がまだ存在しない場合は空の配列を設定
           setNotifications([]);
           setUnreadNotifications(0);
         } else {
-          // その他のエラーの場合はトースト表示
           toast.error('通知の取得に失敗しました');
         }
       } finally {
         setIsLoadingNotifications(false);
       }
     } else {
+      console.log('[Layout] 認証されていないため通知をクリア');
       setNotifications([]);
       setUnreadNotifications(0);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user?.id, user?._id]); // より具体的な依存配列
 
-  // WebSocket接続関数 - 依存配列を正しく設定
+  // WebSocket接続関数 - ログ追加
   const connectWebSocket = useCallback(() => {
-    // Add null check for user
-    if (!user) return;
+    console.log('[Layout] WebSocket接続試行', { user: !!user });
+
+    if (!user) {
+      console.log('[Layout] ユーザー情報なし、WebSocket接続スキップ');
+      return;
+    }
 
     // 既存の接続があれば閉じる
     if (wsRef.current) {
@@ -381,17 +405,33 @@ export default function Layout({ children }: LayoutProps) {
     } catch (error) {
       logger.error('WebSocket', 'Connection failed', error);
     }
-  }, [user]);
+  }, [user?.id, user?._id]); // より具体的な依存配列
 
-  // 通知の取得とWebSocket接続 - 修正版
+  // 通知の取得とWebSocket接続 - ログ追加と実行制限
   useEffect(() => {
+    console.log('[Layout] 通知・WebSocketuseEffect実行', {
+      isAuthenticated,
+      user: !!user,
+      executionCount: ++executionCountRef.current,
+    });
+
     if (!isAuthenticated || !user) {
+      console.log('[Layout] 認証されていないかユーザー情報なし、処理スキップ');
       return;
     }
 
+    // 短時間での重複実行を防ぐ
+    if (lastExecutionRef.current && Date.now() - lastExecutionRef.current < 1000) {
+      console.log('[Layout] 短時間での重複実行を検出、スキップ');
+      return;
+    }
+    lastExecutionRef.current = Date.now();
+
+    console.log('[Layout] 通知取得とWebSocket接続開始');
     fetchNotifications();
 
     const isDevelopment = window.location.hostname === 'localhost';
+    console.log('[Layout] 環境チェック', { isDevelopment });
 
     if (isDevelopment) {
       connectWebSocket();
@@ -399,22 +439,22 @@ export default function Layout({ children }: LayoutProps) {
       console.log('[WebSocket] 本番環境ではHTTPポーリングのみを使用します');
     }
 
-    // 定期的な通知更新（本番環境でのメイン手段、開発環境でのフォールバック）
-    const pollingInterval = isDevelopment ? 300000 : 30000; // 開発:5分、本番:30秒
+    const pollingInterval = isDevelopment ? 300000 : 30000;
+    console.log('[Layout] ポーリング間隔設定', { pollingInterval });
+
     const intervalId = setInterval(() => {
+      console.log('[Layout] 定期通知更新実行');
       fetchNotifications().catch(handleApiError);
     }, pollingInterval);
 
-    // クリーンアップ関数
     return () => {
+      console.log('[Layout] クリーンアップ実行');
       clearInterval(intervalId);
 
-      // 再接続タイマーをクリア
       if (reconnectTimerRef.current) {
         clearTimeout(reconnectTimerRef.current);
       }
 
-      // WebSocket接続をクローズ（開発環境でのみ）
       if (wsRef.current && isDevelopment) {
         console.log('[WebSocket] 接続をクローズします');
         wsRef.current.close();
@@ -422,7 +462,11 @@ export default function Layout({ children }: LayoutProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user?.id, user?._id]); // より具体的な依存配列
+
+  // 実行回数追跡のref追加（Layout関数の最初に追加）
+  const executionCountRef = useRef(0);
+  const lastExecutionRef = useRef<number>(0);
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
