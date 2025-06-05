@@ -28,7 +28,6 @@ import {
   CheckCircle,
   RefreshCw,
   Loader2,
-  Sparkles,
   TrendingUp,
   Zap,
   Shield,
@@ -104,6 +103,9 @@ export default function Layout({ children }: LayoutProps) {
 
   // Move this to the top level, after other hooks but before useEffect
   const connectWebSocket = useCallback(() => {
+    // Add null check for user
+    if (!user) return;
+
     // 既存の接続があれば閉じる
     if (wsRef.current) {
       wsRef.current.close();
@@ -126,9 +128,9 @@ export default function Layout({ children }: LayoutProps) {
         reconnectAttemptsRef.current = 0;
         logger.info('WebSocket', '✅ Connected');
 
-        // 認証情報送信
+        // 認証情報送信 - user null check already done above
         const token = localStorage.getItem('token');
-        if (token && wsRef.current) {
+        if (token && wsRef.current && user) {
           wsRef.current.send(
             JSON.stringify({
               type: 'auth',
@@ -191,7 +193,7 @@ export default function Layout({ children }: LayoutProps) {
     } catch (error) {
       logger.error('WebSocket', 'Connection failed', error);
     }
-  }, [user._id || user.id]);
+  }, [user]);
 
   // ユーザー情報の取得
   useEffect(() => {
