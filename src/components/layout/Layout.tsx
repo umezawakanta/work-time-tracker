@@ -99,12 +99,51 @@ export default function Layout({ children }: LayoutProps) {
   const executionCountRef = useRef(0);
   const lastExecutionRef = useRef<number>(0);
 
+  // 依存値の変化を追跡するref
+  const prevValuesRef = useRef({
+    isAuthenticated: isAuthenticated,
+    userId: user?._id || user?.id || null,
+    isAdmin: user?.isAdmin || false,
+    handleApiError: null as any,
+  });
+
+  // 再レンダリング回数を追跡
+  const renderCountRef = useRef(0);
+  renderCountRef.current++;
+
+  console.log(`[Layout] 🔄 Render #${renderCountRef.current}`, {
+    isAuthenticated,
+    user: !!user,
+    userId: user?._id || user?.id,
+    isAdmin: user?.isAdmin,
+  });
+
   // ユーザーIDを安定した値として抽出
-  const userId = useMemo(() => user?._id || user?.id || null, [user?._id, user?.id]);
-  const isAdmin = useMemo(() => user?.isAdmin || false, [user?.isAdmin]);
+  const userId = useMemo(() => {
+    const newUserId = user?._id || user?.id || null;
+    console.log('[Layout] 📋 userId useMemo実行', {
+      oldUserId: prevValuesRef.current.userId,
+      newUserId,
+      changed: prevValuesRef.current.userId !== newUserId,
+    });
+    prevValuesRef.current.userId = newUserId;
+    return newUserId;
+  }, [user?._id, user?.id]);
+
+  const isAdmin = useMemo(() => {
+    const newIsAdmin = user?.isAdmin || false;
+    console.log('[Layout] 👑 isAdmin useMemo実行', {
+      oldIsAdmin: prevValuesRef.current.isAdmin,
+      newIsAdmin,
+      changed: prevValuesRef.current.isAdmin !== newIsAdmin,
+    });
+    prevValuesRef.current.isAdmin = newIsAdmin;
+    return newIsAdmin;
+  }, [user?.isAdmin]);
 
   // APIエラーハンドリング
   const handleApiError = useCallback((error: unknown) => {
+    console.log('[Layout] 🔧 handleApiError useCallback実行');
     if (axios.isAxiosError(error)) {
       const axiosError = error;
       if (axiosError.response?.status === 500) {
@@ -120,9 +159,38 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []);
 
-  // ユーザー情報の取得 - シンプル化
+  // 依存値の変化をログに出力
   useEffect(() => {
-    console.log('[Layout] ユーザー情報取得useEffect実行', { isAuthenticated, hasUser: !!user });
+    const currentValues = {
+      isAuthenticated,
+      userId,
+      isAdmin,
+      handleApiError,
+    };
+
+    const changes = Object.entries(currentValues).filter(([key, value]) => {
+      const oldValue = prevValuesRef.current[key as keyof typeof prevValuesRef.current];
+      return oldValue !== value;
+    });
+
+    if (changes.length > 0) {
+      console.log('[Layout] 🚨 依存値変化検出:', {
+        changes: changes.map(([key, newValue]) => ({
+          key,
+          oldValue: prevValuesRef.current[key as keyof typeof prevValuesRef.current],
+          newValue,
+        })),
+        allValues: currentValues,
+      });
+    }
+
+    // 前回の値を更新
+    Object.assign(prevValuesRef.current, currentValues);
+  });
+
+  // ユーザー情報の取得
+  useEffect(() => {
+    console.log('[Layout] 👤 ユーザー情報取得useEffect実行', { isAuthenticated, hasUser: !!user });
 
     if (isAuthenticated && !user) {
       console.log('[Layout] fetchUser実行');
@@ -131,9 +199,9 @@ export default function Layout({ children }: LayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
-  // サブスクリプション状態の取得 - 安定化
+  // サブスクリプション状態の取得
   useEffect(() => {
-    console.log('[Layout] サブスクリプションチェックuseEffect実行', {
+    console.log('[Layout] 💳 サブスクリプションチェックuseEffect実行', {
       isAuthenticated,
       hasUser: !!user,
       userId,
@@ -146,7 +214,6 @@ export default function Layout({ children }: LayoutProps) {
           console.log('[Layout] サブスクリプションチェック開始');
           setIsSubscriptionChecking(true);
 
-          // 管理者の場合は常にプレミアム機能を有効にする
           if (isAdmin) {
             console.log('[Layout] 管理者ユーザー: プレミアム有効');
             setIsPremium(true);
@@ -217,14 +284,15 @@ export default function Layout({ children }: LayoutProps) {
     };
 
     checkSubscription();
-  }, [isAuthenticated, userId, isAdmin]); // 安定した値のみ
+  }, [isAuthenticated, userId, isAdmin]);
 
   // 通知取得とWebSocket接続を統合 - 一つのuseEffectに統合
   useEffect(() => {
-    console.log('[Layout] メイン処理useEffect実行', {
+    console.log('[Layout] 🎯 メイン処理useEffect実行', {
       isAuthenticated,
       userId,
       executionCount: ++executionCountRef.current,
+      dependencies: { isAuthenticated, userId, handleApiError },
     });
 
     if (!isAuthenticated || !userId) {
@@ -237,13 +305,18 @@ export default function Layout({ children }: LayoutProps) {
 
     // 短時間での重複実行を防ぐ
     const currentTime = Date.now();
-    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 1000) {
-      console.log('[Layout] 短時間での重複実行を検出、スキップ');
+    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 2000) {
+      // 2秒に延長
+      console.log('[Layout] ⚠️ 短時間での重複実行を検出、スキップ', {
+        lastExecution: lastExecutionRef.current,
+        currentTime,
+        diff: currentTime - lastExecutionRef.current,
+      });
       return;
     }
     lastExecutionRef.current = currentTime;
 
-    console.log('[Layout] メイン処理開始');
+    console.log('[Layout] ✅ メイン処理開始');
 
     // 通知取得関数（ローカル関数として定義）
     const fetchNotifications = async () => {
@@ -332,7 +405,7 @@ export default function Layout({ children }: LayoutProps) {
     }, pollingInterval);
 
     return () => {
-      console.log('[Layout] クリーンアップ実行');
+      console.log('[Layout] �� クリーンアップ実行');
       clearInterval(intervalId);
 
       if (reconnectTimerRef.current) {
@@ -345,7 +418,7 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, userId, handleApiError]); // 最小限の依存配列
+  }, [isAuthenticated, userId, handleApiError]);
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {

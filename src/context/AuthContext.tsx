@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
@@ -74,15 +74,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuthStatus();
   }, []); // 初回マウント時のみ実行
 
-  const contextValue: AuthContextType = {
-    isAuthenticated,
-    setIsAuthenticated,
-    loading,
-    user,
-    setUser,
-    fetchUser,
-    updateProfile,
-  };
+  // contextValueをuseMemoで最適化
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      isAuthenticated,
+      setIsAuthenticated,
+      loading,
+      user,
+      setUser,
+      fetchUser,
+      updateProfile,
+    }),
+    [isAuthenticated, loading, user, fetchUser, updateProfile]
+  );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
