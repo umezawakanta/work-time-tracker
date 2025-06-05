@@ -67,7 +67,6 @@ import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 import notificationApi from '@/services/api/notificationApi';
 import NotificationItem from '@/components/notifications/NotificationItem';
 import axios, { AxiosError } from 'axios';
-import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 import { logger } from '@/utils/logger';
 
 interface LayoutProps {
