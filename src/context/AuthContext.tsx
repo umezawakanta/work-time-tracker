@@ -49,22 +49,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
-    if (isCheckingAuth) return; // 重複実行防止
+    if (isCheckingAuth) return;
 
     setIsCheckingAuth(true);
     try {
-      const response = await checkAuth();
-      if (response.data.isAuthenticated) {
-        setUser(response.data.user);
+      const isAuth = await checkAuth();
+      if (isAuth) {
         setIsAuthenticated(true);
+        await fetchUser(); // Fetch user data separately
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
       }
     } catch (error) {
       logger.warn('Auth', 'Check auth failed');
       setIsAuthenticated(false);
+      setUser(null);
     } finally {
       setIsCheckingAuth(false);
     }
-  }, [isCheckingAuth]);
+  }, [isCheckingAuth, fetchUser]);
 
   useEffect(() => {
     checkAuthStatus();
