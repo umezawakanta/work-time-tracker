@@ -25,7 +25,6 @@ import {
   Bell,
   Settings,
   HelpCircle,
-  CheckCircle,
   RefreshCw,
   Loader2,
   TrendingUp,
@@ -34,8 +33,6 @@ import {
   Palette,
   BarChart3,
   FileText,
-  Package,
-  ShoppingBag,
   GitCommit,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
@@ -100,99 +97,24 @@ export default function Layout({ children }: LayoutProps) {
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Move this to the top level, after other hooks but before useEffect
-  const connectWebSocket = useCallback(() => {
-    // Add null check for user
-    if (!user) return;
+  // APIエラーハンドリング - Move this BEFORE the useEffect that uses it
+  const handleApiError = useCallback((error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
+      if (axiosError.response?.status === 500) {
+        const errorMessage = axiosError.response.data.message || axiosError.message;
+        if (errorMessage.includes('MongoDB connection error')) {
+          console.error('[API] MongoDB接続エラー検出');
 
-    // 既存の接続があれば閉じる
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
+          // オフラインモードの通知
+          toast.error('データベース接続エラー: 一部の機能が制限されています', {
+            id: 'mongodb-connection-error',
+            duration: 10000,
+          });
+        }
+      }
     }
-
-    try {
-      const wsUrl = 'ws://localhost:3001/notifications';
-      wsRef.current = new WebSocket(wsUrl);
-
-      const connectionTimeout = setTimeout(() => {
-        if (wsRef.current && wsRef.current.readyState !== WebSocket.OPEN) {
-          logger.warn('WebSocket', 'Connection timeout');
-          wsRef.current.close();
-        }
-      }, 5000);
-
-      wsRef.current.onopen = () => {
-        clearTimeout(connectionTimeout);
-        reconnectAttemptsRef.current = 0;
-        logger.info('WebSocket', '✅ Connected');
-
-        // 認証情報送信 - user null check already done above
-        const token = localStorage.getItem('token');
-        if (token && wsRef.current && user) {
-          wsRef.current.send(
-            JSON.stringify({
-              type: 'auth',
-              userId: user._id || user.id,
-              token: token,
-            })
-          );
-        }
-      };
-
-      wsRef.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data.type === 'auth_success') {
-            logger.info('WebSocket', '🔐 Auth success');
-          } else if (data.type === 'error') {
-            logger.error('WebSocket', 'Server error', data.message);
-          } else if (data.type === 'notification') {
-            // 通知処理
-            const newNotification = data.notification;
-            setNotifications((prev) => [newNotification, ...prev]);
-            setUnreadNotifications((prev) => prev + 1);
-            toast.success(newNotification.title);
-          }
-        } catch (error) {
-          logger.error('WebSocket', 'Message parse error', error);
-        }
-      };
-
-      wsRef.current.onerror = (error) => {
-        clearTimeout(connectionTimeout);
-        // エラーログは最初の1回のみ
-        if (reconnectAttemptsRef.current === 0) {
-          logger.warn('WebSocket', 'Connection error');
-        }
-      };
-
-      wsRef.current.onclose = (event) => {
-        clearTimeout(connectionTimeout);
-
-        // 手動で閉じた場合は再接続しない
-        if (event.code === 1000) return;
-
-        // 再接続制限
-        if (reconnectAttemptsRef.current < 3) {
-          reconnectAttemptsRef.current++;
-          const delay = 2000 * reconnectAttemptsRef.current; // 2秒、4秒、6秒
-
-          logger.info(
-            'WebSocket',
-            `🔄 Reconnecting in ${delay / 1000}s (${reconnectAttemptsRef.current}/3)`
-          );
-
-          reconnectTimerRef.current = setTimeout(connectWebSocket, delay);
-        } else {
-          logger.warn('WebSocket', '❌ Max reconnection attempts reached');
-        }
-      };
-    } catch (error) {
-      logger.error('WebSocket', 'Connection failed', error);
-    }
-  }, [user]);
+  }, []);
 
   // ユーザー情報の取得
   useEffect(() => {
@@ -332,7 +254,7 @@ export default function Layout({ children }: LayoutProps) {
     checkSubscription();
   }, [isAuthenticated, user]);
 
-  // 通知取得の関数
+  // 通知取得の関数 - 依存配列を正しく設定
   const fetchNotifications = useCallback(async () => {
     if (isAuthenticated && user) {
       try {
@@ -366,37 +288,112 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, [isAuthenticated, user]);
 
-  // Layoutコンポーネント内、useEffectの外で定義
-  const handleApiError = useCallback((error: unknown) => {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error;
-      if (axiosError.response?.status === 500) {
-        const errorMessage = axiosError.response.data.message || axiosError.message;
-        if (errorMessage.includes('MongoDB connection error')) {
-          console.error('[API] MongoDB接続エラー検出');
+  // WebSocket接続関数 - 依存配列を正しく設定
+  const connectWebSocket = useCallback(() => {
+    // Add null check for user
+    if (!user) return;
 
-          // オフラインモードの通知
-          toast.error('データベース接続エラー: 一部の機能が制限されています', {
-            id: 'mongodb-connection-error',
-            duration: 10000,
-          });
-        }
-      }
+    // 既存の接続があれば閉じる
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
     }
-  }, []);
+
+    try {
+      const wsUrl = 'ws://localhost:3001/notifications';
+      wsRef.current = new WebSocket(wsUrl);
+
+      const connectionTimeout = setTimeout(() => {
+        if (wsRef.current && wsRef.current.readyState !== WebSocket.OPEN) {
+          logger.warn('WebSocket', 'Connection timeout');
+          wsRef.current.close();
+        }
+      }, 5000);
+
+      wsRef.current.onopen = () => {
+        clearTimeout(connectionTimeout);
+        reconnectAttemptsRef.current = 0;
+        logger.info('WebSocket', '✅ Connected');
+
+        // 認証情報送信 - user null check already done above
+        const token = localStorage.getItem('token');
+        if (token && wsRef.current && user) {
+          wsRef.current.send(
+            JSON.stringify({
+              type: 'auth',
+              userId: user._id || user.id,
+              token: token,
+            })
+          );
+        }
+      };
+
+      wsRef.current.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (data.type === 'auth_success') {
+            logger.info('WebSocket', '🔐 Auth success');
+          } else if (data.type === 'error') {
+            logger.error('WebSocket', 'Server error', data.message);
+          } else if (data.type === 'notification') {
+            // 通知処理
+            const newNotification = data.notification;
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadNotifications((prev) => prev + 1);
+            toast.success(newNotification.title);
+          }
+        } catch (error) {
+          logger.error('WebSocket', 'Message parse error', error);
+        }
+      };
+
+      wsRef.current.onerror = (_error) => {
+        clearTimeout(connectionTimeout);
+        // エラーログは最初の1回のみ
+        if (reconnectAttemptsRef.current === 0) {
+          logger.warn('WebSocket', 'Connection error');
+        }
+      };
+
+      wsRef.current.onclose = (event) => {
+        clearTimeout(connectionTimeout);
+
+        // 手動で閉じた場合は再接続しない
+        if (event.code === 1000) return;
+
+        // 再接続制限
+        if (reconnectAttemptsRef.current < 3) {
+          reconnectAttemptsRef.current++;
+          const delay = 2000 * reconnectAttemptsRef.current; // 2秒、4秒、6秒
+
+          logger.info(
+            'WebSocket',
+            `🔄 Reconnecting in ${delay / 1000}s (${reconnectAttemptsRef.current}/3)`
+          );
+
+          reconnectTimerRef.current = setTimeout(() => connectWebSocket(), delay);
+        } else {
+          logger.warn('WebSocket', '❌ Max reconnection attempts reached');
+        }
+      };
+    } catch (error) {
+      logger.error('WebSocket', 'Connection failed', error);
+    }
+  }, [user]);
 
   // 通知の取得とWebSocket接続 - 修正版
   useEffect(() => {
-    fetchNotifications();
-
     if (!isAuthenticated || !user) {
       return;
     }
 
+    fetchNotifications();
+
     const isDevelopment = window.location.hostname === 'localhost';
 
     if (isDevelopment) {
-      connectWebSocket(); // Just call the memoized function
+      connectWebSocket();
     } else {
       console.log('[WebSocket] 本番環境ではHTTPポーリングのみを使用します');
     }
@@ -423,29 +420,7 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [
-    isAuthenticated,
-    user?._id || user?.id,
-    fetchNotifications,
-    connectWebSocket,
-    handleApiError,
-  ]);
-
-  // 通知タイプに応じたアイコンを取得する関数
-  const getNotificationTypeIcon = (type: string) => {
-    switch (type) {
-      case 'reminder':
-        return <Clock size={16} className="text-amber-500" />;
-      case 'report':
-        return <BarChart2 size={16} className="text-blue-500" />;
-      case 'alert':
-        return <AlertCircle size={16} className="text-red-500" />;
-      case 'success':
-        return <CheckCircle size={16} className="text-green-500" />;
-      default:
-        return <Bell size={16} className="text-gray-500" />;
-    }
-  };
+  }, [isAuthenticated, user, fetchNotifications, connectWebSocket, handleApiError]);
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
@@ -834,26 +809,6 @@ export default function Layout({ children }: LayoutProps) {
       </TooltipProvider>
     );
   };
-
-  // ナビゲーションメニューにECサイト関連を追加
-  const menuItems = [
-    // ... 既存のメニューアイテム
-    {
-      label: '商品一覧',
-      href: '/products',
-      icon: Package,
-    },
-    {
-      label: 'カテゴリ',
-      href: '/categories',
-      icon: ShoppingBag,
-    },
-    {
-      label: '更新履歴',
-      href: '/update-history',
-      icon: GitCommit,
-    },
-  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-50">
