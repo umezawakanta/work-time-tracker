@@ -34,6 +34,7 @@ import wbsRoutes from './routes/wbsRoutes.js';
 import implementationRoutes from './routes/implementationRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import resourceRoutes from './routes/resourceRoutes.js';
+import abstinenceRoutes from './routes/abstinenceRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,6 +89,7 @@ app.use('/api/wbs', wbsRoutes); // 追加
 app.use('/api/implementation', implementationRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/abstinence', abstinenceRoutes);
 
 // Not Found middleware
 app.use((_req: Request, res: Response): void => {

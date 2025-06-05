@@ -46,6 +46,7 @@ import ProductDetailPage from '@/pages/ProductDetailPage';
 import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
 import CheckoutPage from '@/pages/CheckoutPage';
+import AbstinenceManager from './pages/AbstinenceManager';
 
 const theme = createTheme({
   palette: {
@@ -120,6 +121,7 @@ export default function App() {
                 <Route path="/products/:id" element={<ProductDetailPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/update-history" element={<UpdateHistoryPage />} />
+                <Route path="/abstinence" element={<AbstinenceManager />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
               </Routes>
             </Layout>

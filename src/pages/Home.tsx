@@ -172,8 +172,8 @@ const Home: React.FC = () => {
         description: '作業時間を記録し、生産性を向上させましょう。',
         icon: <Clock className="h-6 w-6 text-primary" aria-hidden="true" />,
         path: '/work-time',
-        buttonText: '作業時間トラッカーを開始',
-        variant: 'default' as FeatureCardVariant, // 型アサーションを追加
+        buttonText: 'LifeSyncを開始',
+        variant: 'default' as FeatureCardVariant,
       },
       {
         title: '詳細な分析',
@@ -439,7 +439,7 @@ const Home: React.FC = () => {
           <>
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-center">
-                作業時間トラッカーへようこそ
+                LifeSyncへようこそ
               </DialogTitle>
               <DialogDescription className="text-center pt-2">
                 あなたの生産性と効率性を最大限に引き出す最高のツールです
@@ -673,6 +673,35 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* ログイン時のみ表示：生産性ツールセクション */}
+      {isUserLoggedIn && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">今日の生産性管理</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                効率的なタスク管理で生産性を向上させましょう
+              </p>
+            </div>
+
+            {/* DailyTodoReminder を追加 */}
+            <div className="max-w-4xl mx-auto mb-12">
+              <DailyTodoReminder isPremium={hasActiveSubscription} />
+            </div>
+
+            {/* バランス更新リマインダー */}
+            <div className="max-w-4xl mx-auto mb-8">
+              <BalanceUpdateReminder />
+            </div>
+
+            {/* ハビットトラッカー */}
+            <div className="max-w-4xl mx-auto">
+              <HabitTracker />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* おすすめ商品セクション */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -807,8 +836,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* 既存のコンテンツ（勤怠管理など）... */}
 
       {/* プレミアムプラン案内ダイアログ */}
       <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>

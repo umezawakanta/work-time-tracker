@@ -32,7 +32,8 @@
         "postinstall": "node scripts/setup-ai-cicd.cjs",
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
-        "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\""
+        "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
+        "setup:abstinence": "tsx src/server/scripts/setupAbstinenceData.ts"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
@@ -183,6 +184,7 @@
         "tailwindcss-animate": "^1.0.7",
         "ts-jest": "^29.3.2",
         "ts-node": "^10.9.2",
+        "tsx": "^4.19.4",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.30.1",
         "vite": "^6.3.0"

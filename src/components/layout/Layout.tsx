@@ -894,22 +894,10 @@ export default function Layout({ children }: LayoutProps) {
               <div className="flex flex-col items-center">
                 <div className="relative">
                   <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    作業時間
-                  </span>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    トラッカー
+                    LifeSync
                   </span>
                   <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-lg opacity-20 blur group-hover:opacity-30 transition-opacity duration-300" />
                 </div>
-                {(isPremium || user?.isAdmin) && (
-                  <Badge
-                    variant="secondary"
-                    className="mt-2 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-white border-0 shadow-lg shadow-amber-500/30 animate-shimmer"
-                  >
-                    <Sparkles size={12} className="mr-1" />
-                    {user?.isAdmin ? '管理者' : 'プレミアム'}
-                  </Badge>
-                )}
               </div>
             </Link>
 
@@ -1517,10 +1505,10 @@ export default function Layout({ children }: LayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                作業時間トラッカー
+                LifeSync
               </h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                あなたの生産性向上をサポートする最高のツールです。作業時間の記録、分析、改善を一つのアプリで実現しましょう。
+                あなたの生活を最適化し、生産性を向上させる総合プラットフォームです。作業時間の記録、資産管理、健康管理、そしてECサイト機能まで、すべてを一つのアプリで実現しましょう。
               </p>
               <div className="mt-4 flex items-center space-x-3">
                 <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-full p-1.5">
@@ -1606,7 +1594,7 @@ export default function Layout({ children }: LayoutProps) {
 
           <div className="mt-12 pt-8 border-t border-gray-200/50 flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} 作業時間トラッカー. All rights reserved.
+              &copy; {new Date().getFullYear()} LifeSync. All rights reserved.
             </div>
             <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <TrendingUp size={16} className="text-green-500" />
