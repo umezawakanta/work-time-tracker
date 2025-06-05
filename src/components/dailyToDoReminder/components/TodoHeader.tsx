@@ -12,7 +12,6 @@ import { PremiumBadge } from './PremiumBadge';
 import { ResetConfirmDialog } from './ResetConfirmDialog';
 import { TodoHeaderMetrics } from './TodoHeaderMetrics';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
 
 interface TodoHeaderProps {
   readonly hasPremium: boolean;
@@ -85,8 +84,6 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
   ({ hasPremium, streakCount, completedToday = 0, totalToday = 0, productivityScore = 0 }) => {
     const dispatch = useDispatch<AppDispatch>();
     const analytics = useAnalytics();
-    // Only use performance monitor for specific operations, not render
-    // const performanceMonitor = usePerformanceMonitor('TodoHeader');
 
     const [showResetDialog, setShowResetDialog] = React.useState(false);
     const [isResetting, setIsResetting] = React.useState(false);
@@ -100,8 +97,6 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
 
     // パフォーマンス最適化されたリセットハンドラー
     const handleResetTodos = useCallback(async (): Promise<void> => {
-      // Only use performance monitor for specific operations, not render
-      // const performanceMonitor = usePerformanceMonitor('resetTodos');
       setIsResetting(true);
 
       try {
