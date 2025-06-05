@@ -43,12 +43,14 @@ interface EnhancedBlogPostFormProps {
     tags: string[];
   }) => void;
   submitButtonText: string;
+  disabled?: boolean;
 }
 
 export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   initialValues = { title: '', content: '', category: '', tags: [] },
   onSubmit,
   submitButtonText,
+  disabled = false,
 }) => {
   const [title, setTitle] = useState(initialValues.title);
   const [content, setContent] = useState(initialValues.content);
@@ -61,6 +63,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [autoAnalysis, setAutoAnalysis] = useState(true);
   const [analysisTimer, setAnalysisTimer] = useState<NodeJS.Timeout | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   // 自動分析のデバウンス処理
   useEffect(() => {
@@ -86,21 +89,53 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const performAnalysis = async () => {
     if (!title.trim() && !content.trim()) return;
 
+    console.log('🤖 [AI Analysis] Starting analysis:', {
+      titleLength: title.length,
+      contentLength: content.length,
+      category,
+      timestamp: new Date().toISOString(),
+    });
+
     setIsAnalyzing(true);
+    setAnalysisError(null);
+
     try {
-      const [blogAnalysis, contentAnalysisResult] = await Promise.all([
+      const promises = [
         BlogAiService.analyzeBlogPost(title, content, category),
         content.length > 100 ? BlogAiService.analyzeContent(content) : null,
-      ]);
+      ];
+
+      console.log('🔄 [AI Analysis] Executing analysis promises...');
+      const [blogAnalysis, contentAnalysisResult] = await Promise.all(promises);
+
+      console.log('✅ [AI Analysis] Analysis completed:', {
+        blogAnalysis: {
+          hasResult: !!blogAnalysis,
+          readabilityScore: blogAnalysis?.readabilityScore,
+          suggestedTagsCount: blogAnalysis?.suggestedTags?.length || 0,
+        },
+        contentAnalysis: {
+          hasResult: !!contentAnalysisResult,
+          readingTime: contentAnalysisResult?.readingTimeMinutes,
+        },
+      });
 
       setAnalysisResult(blogAnalysis);
       if (contentAnalysisResult) {
         setContentAnalysis(contentAnalysisResult);
       }
     } catch (error) {
-      console.error('Analysis failed:', error);
+      console.error('❌ [AI Analysis] Analysis failed:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+
+      const errorMessage = error instanceof Error ? error.message : '不明なエラー';
+      setAnalysisError(`AI分析中にエラーが発生しました: ${errorMessage}`);
     } finally {
       setIsAnalyzing(false);
+      console.log('🏁 [AI Analysis] Analysis process completed');
     }
   };
 
@@ -125,6 +160,21 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log('📝 [Form] Form submission triggered:', {
+      title,
+      contentLength: content.length,
+      category,
+      tagsCount: tags.length,
+      disabled,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (disabled) {
+      console.warn('⚠️ [Form] Form submission blocked - disabled state');
+      return;
+    }
+
     onSubmit({ title, content, category, tags });
   };
 
@@ -155,6 +205,14 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
         <Typography variant="body2" color="text.secondary">
           投稿内容を自動的に分析し、タグの提案や内容の改善案を提供します
         </Typography>
+
+        {/* AI分析エラー表示 */}
+        {analysisError && (
+          <Alert severity="warning" sx={{ mt: 1 }}>
+            {analysisError}
+          </Alert>
+        )}
+
         {!autoAnalysis && (
           <Button
             variant="outlined"
@@ -346,7 +404,14 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
           </Paper>
         )}
 
-        <Button type="submit" variant="contained" color="primary" size="large" sx={{ mt: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{ mt: 2 }}
+          disabled={disabled}
+        >
           {submitButtonText}
         </Button>
       </Box>
