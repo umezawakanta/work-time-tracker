@@ -98,17 +98,35 @@ export default function Layout({ children }: LayoutProps) {
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
   const executionCountRef = useRef(0);
   const lastExecutionRef = useRef<number>(0);
+  const renderCountRef = useRef(0);
 
-  // 依存値の変化を追跡するref
-  const prevValuesRef = useRef({
-    isAuthenticated: isAuthenticated,
-    userId: user?._id || user?.id || null,
-    isAdmin: user?.isAdmin || false,
-    handleApiError: null as any,
+  // 前回のstate値を追跡
+  const prevStateRef = useRef({
+    isMenuOpen,
+    isPremium,
+    isSubscriptionChecking,
+    notifications: notifications.length,
+    unreadNotifications,
+    isNotificationOpen,
+    isLoadingNotifications,
   });
 
-  // 再レンダリング回数を追跡
-  const renderCountRef = useRef(0);
+  // state変化を追跡
+  const currentState = {
+    isMenuOpen,
+    isPremium,
+    isSubscriptionChecking,
+    notifications: notifications.length,
+    unreadNotifications,
+    isNotificationOpen,
+    isLoadingNotifications,
+  };
+
+  const stateChanges = Object.entries(currentState).filter(([key, value]) => {
+    const oldValue = prevStateRef.current[key as keyof typeof prevStateRef.current];
+    return oldValue !== value;
+  });
+
   renderCountRef.current++;
 
   console.log(`[Layout] 🔄 Render #${renderCountRef.current}`, {
@@ -116,34 +134,85 @@ export default function Layout({ children }: LayoutProps) {
     user: !!user,
     userId: user?._id || user?.id,
     isAdmin: user?.isAdmin,
+    stateChanges:
+      stateChanges.length > 0
+        ? stateChanges.map(([key, newValue]) => ({
+            key,
+            oldValue: prevStateRef.current[key as keyof typeof prevStateRef.current],
+            newValue,
+          }))
+        : 'no changes',
+    currentState,
   });
+
+  // 前回のstate値を更新
+  prevStateRef.current = { ...currentState };
+
+  // setNotifications と setUnreadNotifications をラップしてログ出力
+  const setNotificationsWithLog = useCallback(
+    (value: React.SetStateAction<UserNotification[]>) => {
+      console.log('[Layout] 📝 setNotifications実行', {
+        type: typeof value === 'function' ? 'function' : 'value',
+        currentLength: notifications.length,
+        renderCount: renderCountRef.current,
+        stack: new Error().stack?.split('\n').slice(1, 4),
+      });
+      setNotifications(value);
+    },
+    [notifications.length]
+  );
+
+  const setUnreadNotificationsWithLog = useCallback(
+    (value: React.SetStateAction<number>) => {
+      console.log('[Layout] 🔔 setUnreadNotifications実行', {
+        type: typeof value === 'function' ? 'function' : 'value',
+        currentValue: unreadNotifications,
+        renderCount: renderCountRef.current,
+        stack: new Error().stack?.split('\n').slice(1, 4),
+      });
+      setUnreadNotifications(value);
+    },
+    [unreadNotifications]
+  );
+
+  const setIsLoadingNotificationsWithLog = useCallback(
+    (value: React.SetStateAction<boolean>) => {
+      console.log('[Layout] ⏳ setIsLoadingNotifications実行', {
+        type: typeof value === 'function' ? 'function' : 'value',
+        currentValue: isLoadingNotifications,
+        newValue: typeof value === 'function' ? value(isLoadingNotifications) : value,
+        renderCount: renderCountRef.current,
+        stack: new Error().stack?.split('\n').slice(1, 4),
+      });
+      setIsLoadingNotifications(value);
+    },
+    [isLoadingNotifications]
+  );
 
   // ユーザーIDを安定した値として抽出
   const userId = useMemo(() => {
     const newUserId = user?._id || user?.id || null;
     console.log('[Layout] 📋 userId useMemo実行', {
-      oldUserId: prevValuesRef.current.userId,
       newUserId,
-      changed: prevValuesRef.current.userId !== newUserId,
+      renderCount: renderCountRef.current,
     });
-    prevValuesRef.current.userId = newUserId;
     return newUserId;
   }, [user?._id, user?.id]);
 
   const isAdmin = useMemo(() => {
     const newIsAdmin = user?.isAdmin || false;
     console.log('[Layout] 👑 isAdmin useMemo実行', {
-      oldIsAdmin: prevValuesRef.current.isAdmin,
       newIsAdmin,
-      changed: prevValuesRef.current.isAdmin !== newIsAdmin,
+      renderCount: renderCountRef.current,
     });
-    prevValuesRef.current.isAdmin = newIsAdmin;
     return newIsAdmin;
   }, [user?.isAdmin]);
 
   // APIエラーハンドリング
   const handleApiError = useCallback((error: unknown) => {
-    console.log('[Layout] 🔧 handleApiError useCallback実行');
+    console.log('[Layout] 🔧 handleApiError useCallback実行', {
+      renderCount: renderCountRef.current,
+    });
     if (axios.isAxiosError(error)) {
       const axiosError = error;
       if (axiosError.response?.status === 500) {
@@ -159,38 +228,13 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []);
 
-  // 依存値の変化をログに出力
-  useEffect(() => {
-    const currentValues = {
-      isAuthenticated,
-      userId,
-      isAdmin,
-      handleApiError,
-    };
-
-    const changes = Object.entries(currentValues).filter(([key, value]) => {
-      const oldValue = prevValuesRef.current[key as keyof typeof prevValuesRef.current];
-      return oldValue !== value;
-    });
-
-    if (changes.length > 0) {
-      console.log('[Layout] 🚨 依存値変化検出:', {
-        changes: changes.map(([key, newValue]) => ({
-          key,
-          oldValue: prevValuesRef.current[key as keyof typeof prevValuesRef.current],
-          newValue,
-        })),
-        allValues: currentValues,
-      });
-    }
-
-    // 前回の値を更新
-    Object.assign(prevValuesRef.current, currentValues);
-  });
-
   // ユーザー情報の取得
   useEffect(() => {
-    console.log('[Layout] 👤 ユーザー情報取得useEffect実行', { isAuthenticated, hasUser: !!user });
+    console.log('[Layout] 👤 ユーザー情報取得useEffect実行', {
+      isAuthenticated,
+      hasUser: !!user,
+      renderCount: renderCountRef.current,
+    });
 
     if (isAuthenticated && !user) {
       console.log('[Layout] fetchUser実行');
@@ -206,6 +250,7 @@ export default function Layout({ children }: LayoutProps) {
       hasUser: !!user,
       userId,
       isAdmin,
+      renderCount: renderCountRef.current,
     });
 
     const checkSubscription = async () => {
@@ -286,139 +331,105 @@ export default function Layout({ children }: LayoutProps) {
     checkSubscription();
   }, [isAuthenticated, userId, isAdmin]);
 
-  // 通知取得とWebSocket接続を統合 - 一つのuseEffectに統合
+  // メイン処理 - 無限ループ検出の強化
   useEffect(() => {
     console.log('[Layout] 🎯 メイン処理useEffect実行', {
       isAuthenticated,
       userId,
       executionCount: ++executionCountRef.current,
+      renderCount: renderCountRef.current,
       dependencies: { isAuthenticated, userId, handleApiError },
     });
 
+    // 無限ループ検出の強化
+    if (executionCountRef.current > 10) {
+      console.error('[Layout] 🚨 無限ループ検出！実行を停止します', {
+        executionCount: executionCountRef.current,
+        renderCount: renderCountRef.current,
+      });
+      return;
+    }
+
     if (!isAuthenticated || !userId) {
       console.log('[Layout] 認証されていないかユーザーID不明、処理スキップ');
-      // 認証されていない場合は通知をクリア
-      setNotifications([]);
-      setUnreadNotifications(0);
+      setNotificationsWithLog([]);
+      setUnreadNotificationsWithLog(0);
       return;
     }
 
     // 短時間での重複実行を防ぐ
     const currentTime = Date.now();
-    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 2000) {
-      // 2秒に延長
+    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 3000) {
+      // 3秒に延長
       console.log('[Layout] ⚠️ 短時間での重複実行を検出、スキップ', {
         lastExecution: lastExecutionRef.current,
         currentTime,
         diff: currentTime - lastExecutionRef.current,
+        renderCount: renderCountRef.current,
       });
       return;
     }
     lastExecutionRef.current = currentTime;
 
-    console.log('[Layout] ✅ メイン処理開始');
+    console.log('[Layout] ✅ メイン処理開始', {
+      renderCount: renderCountRef.current,
+    });
 
     // 通知取得関数（ローカル関数として定義）
     const fetchNotifications = async () => {
-      console.log('[Layout] fetchNotifications実行');
+      console.log('[Layout] fetchNotifications実行', {
+        renderCount: renderCountRef.current,
+      });
 
       try {
-        setIsLoadingNotifications(true);
+        setIsLoadingNotificationsWithLog(true);
         console.log('[Layout] 通知データ取得開始');
 
         const response = await notificationApi.getUserNotifications(userId);
-        setNotifications(response.data);
+        console.log('[Layout] 通知一覧取得完了', { count: response.data.length });
+        setNotificationsWithLog(response.data);
 
         const unreadResponse = await notificationApi.getUnreadNotificationsCount(userId);
-        setUnreadNotifications(unreadResponse.data.count);
+        console.log('[Layout] 未読通知数取得完了', { count: unreadResponse.data.count });
+        setUnreadNotificationsWithLog(unreadResponse.data.count);
 
         console.log('[Layout] 通知データ取得完了', {
           notifications: response.data.length,
           unread: unreadResponse.data.count,
+          renderCount: renderCountRef.current,
         });
       } catch (error) {
         console.error('[Layout] 通知取得エラー:', error);
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-          setNotifications([]);
-          setUnreadNotifications(0);
+          setNotificationsWithLog([]);
+          setUnreadNotificationsWithLog(0);
         } else {
           toast.error('通知の取得に失敗しました');
         }
       } finally {
-        setIsLoadingNotifications(false);
-      }
-    };
-
-    // WebSocket接続関数（ローカル関数として定義）
-    const connectWebSocket = () => {
-      console.log('[Layout] WebSocket接続試行');
-
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-
-      try {
-        const wsUrl = 'ws://localhost:3001/notifications';
-        wsRef.current = new WebSocket(wsUrl);
-
-        // ... 既存のWebSocketロジック（userIdを使用）
-
-        wsRef.current.onopen = () => {
-          reconnectAttemptsRef.current = 0;
-          logger.info('WebSocket', '✅ Connected');
-
-          const token = localStorage.getItem('token');
-          if (token && wsRef.current) {
-            wsRef.current.send(
-              JSON.stringify({
-                type: 'auth',
-                userId: userId,
-                token: token,
-              })
-            );
-          }
-        };
-
-        // ... 他のWebSocketイベントハンドラー
-      } catch (error) {
-        logger.error('WebSocket', 'Connection failed', error);
+        setIsLoadingNotificationsWithLog(false);
       }
     };
 
     // 実際の処理実行
     fetchNotifications();
 
-    const isDevelopment = window.location.hostname === 'localhost';
-    console.log('[Layout] 環境チェック', { isDevelopment });
-
-    if (isDevelopment) {
-      connectWebSocket();
-    }
-
-    const pollingInterval = isDevelopment ? 300000 : 30000;
-    console.log('[Layout] ポーリング間隔設定', { pollingInterval });
-
-    const intervalId = setInterval(() => {
-      console.log('[Layout] 定期通知更新実行');
-      fetchNotifications().catch(handleApiError);
-    }, pollingInterval);
+    // WebSocketとポーリングは一旦無効化して原因を特定
+    console.log('[Layout] WebSocketとポーリングを一時的に無効化');
 
     return () => {
-      console.log('[Layout] �� クリーンアップ実行');
-      clearInterval(intervalId);
-
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-      }
-
-      if (wsRef.current && isDevelopment) {
-        console.log('[WebSocket] 接続をクローズします');
-        wsRef.current.close();
-        wsRef.current = null;
-      }
+      console.log('[Layout] 🧹 クリーンアップ実行', {
+        renderCount: renderCountRef.current,
+      });
     };
-  }, [isAuthenticated, userId, handleApiError]);
+  }, [
+    isAuthenticated,
+    userId,
+    handleApiError,
+    setNotificationsWithLog,
+    setUnreadNotificationsWithLog,
+    setIsLoadingNotificationsWithLog,
+  ]);
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
