@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addBlogPost } from '@/store/blogSlice';
 import { AppDispatch } from '@/store';
-import { BlogPostForm } from '@/components/BlogPostForm';
+import { EnhancedBlogPostForm } from '@/components/EnhancedBlogPostForm';
 import { Container, Typography, Box } from '@mui/material';
 
 const NewBlogPost: React.FC = () => {
@@ -22,7 +22,7 @@ const NewBlogPost: React.FC = () => {
         addBlogPost({
           ...formData,
           author: 'Current User', // Replace with actual user data
-          status: 'published'
+          status: 'published',
         })
       );
       if (addBlogPost.fulfilled.match(resultAction)) {
@@ -39,14 +39,17 @@ const NewBlogPost: React.FC = () => {
   return (
     <Container maxWidth="md">
       <Typography variant="h4" component="h1" gutterBottom>
-        Create New Blog Post
+        AI分析機能付きブログ投稿
+      </Typography>
+      <Typography variant="body1" color="text.secondary" paragraph>
+        AIが投稿内容を分析し、タグの提案や改善案を提供します
       </Typography>
       {error && (
         <Box mb={2}>
           <Typography color="error">{error}</Typography>
         </Box>
       )}
-      <BlogPostForm onSubmit={handleSubmit} submitButtonText="Publish" />
+      <EnhancedBlogPostForm onSubmit={handleSubmit} submitButtonText="投稿する" />
     </Container>
   );
 };
