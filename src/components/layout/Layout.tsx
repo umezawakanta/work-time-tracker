@@ -121,7 +121,8 @@ export default function Layout({ children }: LayoutProps) {
     if (isAuthenticated && !user) {
       fetchUser();
     }
-  }, [isAuthenticated, user, fetchUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user]);
 
   // サブスクリプション状態の取得
   useEffect(() => {
@@ -420,7 +421,8 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, user, fetchNotifications, connectWebSocket, handleApiError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user]);
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
