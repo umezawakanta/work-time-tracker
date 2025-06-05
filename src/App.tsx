@@ -47,6 +47,7 @@ import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import AbstinenceManager from './pages/AbstinenceManager';
+import ShopPage from './pages/ShopPage';
 
 const theme = createTheme({
   palette: {
@@ -79,6 +80,10 @@ export default function App() {
                 <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
                 <Route path="/political-trends" element={<PoliticalTrends />} />
                 <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
                 <Route element={<PrivateRoute />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/integrated-dashboard" element={<IntegratedDashboard />} />
@@ -117,9 +122,6 @@ export default function App() {
                 </Route>
                 <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />
-                <Route path="/products" element={<ProductsPage />} />
-                <Route path="/products/:id" element={<ProductDetailPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/update-history" element={<UpdateHistoryPage />} />
                 <Route path="/abstinence" element={<AbstinenceManager />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
