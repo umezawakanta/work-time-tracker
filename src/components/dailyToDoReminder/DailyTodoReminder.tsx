@@ -1,38 +1,35 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { toast } from "react-hot-toast";
-import { getErrorMessage } from "./utils/errorUtils";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
+import { getErrorMessage } from './utils/errorUtils';
 
 // Store actions and selectors
-import {
-  fetchTodoItems,
-  checkPremiumStatus,
-} from "@/store/todoSlice";
+import { fetchTodoItems, checkPremiumStatus } from '@/store/todoSlice';
 import {
   selectTodos,
   selectTodoStatus,
   selectTodoError,
   selectIsPremium,
-} from "./store/selectors/todoSelectors";
-import { AppDispatch } from "@/store";
+} from './store/selectors/todoSelectors';
+import { AppDispatch } from '@/store';
 
 // Sub-components
-import { TodoHeader } from "./components/TodoHeader";
-import { TodoProgress } from "./components/TodoProgress";
-import { TodoTabs } from "./components/TodoTabs";
-import { LoadingSpinner } from "./components/LoadingSpinner";
+import { TodoHeader } from './components/TodoHeader';
+import { TodoProgress } from './components/TodoProgress';
+import { TodoTabs } from './components/TodoTabs';
+import { LoadingSpinner } from './components/LoadingSpinner';
 
 // Hooks
-import { useTodoState } from "./hooks/useTodoState";
-import { useTodoHistory } from "./hooks/useTodoHistory";
-import { useTodoFilters } from "./hooks/useTodoFilters";
+import { useTodoState } from './hooks/useTodoState';
+import { useTodoHistory } from './hooks/useTodoHistory';
+import { useTodoFilters } from './hooks/useTodoFilters';
 
 // Types
-import { Todo } from "./types";
+import { Todo } from './types';
 
 // Styles
-import "./DailyTodoReminder.css";
+import './DailyTodoReminder.css';
 
 interface DailyTodoReminderProps {
   readonly isPremium?: boolean;
@@ -42,9 +39,7 @@ interface DailyTodoReminderProps {
  * Daily Todo Reminder Component
  * World-class task management interface with premium features
  */
-const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({
-  isPremium = false,
-}) => {
+const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   // Redux selectors with proper type safety
@@ -83,26 +78,27 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({
   }, [error]);
 
   // Loading state
-  if (status === "loading") {
+  if (status === 'loading') {
     return <LoadingSpinner />;
   }
 
   // Progress calculations
   const completedCount = todos.filter((todo: Todo) => todo.completed).length;
   const totalCount = todos.length;
-  const progressPercentage = totalCount > 0 
-    ? Math.round((completedCount / totalCount) * 100) 
-    : 0;
+  const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const inputCount = todos.filter((todo: Todo) => todo.type === "input").length;
-  const outputCount = todos.filter((todo: Todo) => todo.type === "output").length;
+  const inputCount = todos.filter((todo: Todo) => todo.type === 'input').length;
+  const outputCount = todos.filter((todo: Todo) => todo.type === 'output').length;
 
   return (
     <Card className="w-full shadow-sm border border-gray-200 todo-reminder-card">
       <CardHeader className="pb-2">
-        <TodoHeader 
+        <TodoHeader
           hasPremium={hasPremium}
           streakCount={streakCount}
+          completedToday={completedCount}
+          totalToday={totalCount}
+          productivityScore={progressPercentage}
         />
       </CardHeader>
 

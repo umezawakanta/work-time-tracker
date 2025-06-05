@@ -17,7 +17,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['@mui/material', '@mui/icons-material'],
+          ui: ['@mui/material'],
           ai: ['@anthropic-ai/sdk'],
         },
       },
