@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
@@ -101,14 +101,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkAuthStatus();
   }, []);
 
-  const contextValue = useMemo<AuthContextType>(() => {
-    console.log('[AuthContext] contextValue再生成', {
+  // contextValueをReact.useMemoではなくuseRefで完全に安定化
+  const stableContextValue = useRef<AuthContextType | null>(null);
+
+  if (
+    !stableContextValue.current ||
+    stableContextValue.current.isAuthenticated !== isAuthenticated ||
+    stableContextValue.current.loading !== loading ||
+    stableContextValue.current.user !== user
+  ) {
+    console.log('[AuthContext] contextValue更新', {
       isAuthenticated,
       loading,
       user: !!user,
+      reason: !stableContextValue.current ? 'initial' : 'state_change',
     });
 
-    return {
+    stableContextValue.current = {
       isAuthenticated,
       setIsAuthenticated,
       loading,
@@ -117,9 +126,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       fetchUser,
       updateProfile,
     };
-  }, [isAuthenticated, loading, user, fetchUser, updateProfile]);
+  }
 
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={stableContextValue.current}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

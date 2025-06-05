@@ -88,7 +88,7 @@ export default function Layout({ children }: LayoutProps) {
 
   // AuthContextの詳細追跡
   const authContext = useAuth();
-  const { isAuthenticated, setIsAuthenticated, user, fetchUser } = authContext;
+  const { isAuthenticated, setIsAuthenticated, user, fetchUser, loading } = authContext;
 
   // LocaleContextの変化も追跡
   const localeContextRef = useRef(localeContext);
@@ -241,22 +241,7 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []); // 依存配列を空にして安定化
 
-  // ユーザー情報の取得
-  useEffect(() => {
-    console.log('[Layout] 👤 ユーザー情報取得useEffect実行', {
-      isAuthenticated,
-      hasUser: !!user,
-      renderCount: renderCountRef.current,
-    });
-
-    if (isAuthenticated && !user) {
-      console.log('[Layout] fetchUser実行');
-      fetchUser();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
-
-  // サブスクリプション状態の取得
+  // サブスクリプション状態の取得 - 条件を調整
   useEffect(() => {
     console.log('[Layout] 💳 サブスクリプションチェックuseEffect実行', {
       isAuthenticated,
@@ -267,7 +252,9 @@ export default function Layout({ children }: LayoutProps) {
     });
 
     const checkSubscription = async () => {
-      if (isAuthenticated && userId) {
+      // AuthContextの認証とユーザーデータ取得が完了するまで待機
+      if (isAuthenticated && userId && !loading) {
+        // loadingも条件に追加
         try {
           console.log('[Layout] サブスクリプションチェック開始');
           setIsSubscriptionChecking(true);
@@ -335,26 +322,32 @@ export default function Layout({ children }: LayoutProps) {
           console.log('[Layout] サブスクリプションチェック完了');
         }
       } else {
-        console.log('[Layout] 認証されていないか、ユーザーID不明');
+        console.log('[Layout] 認証未完了またはユーザーID不明', {
+          isAuthenticated,
+          userId,
+          loading,
+        });
         setIsPremium(false);
         setIsSubscriptionChecking(false);
       }
     };
 
     checkSubscription();
-  }, [isAuthenticated, userId, isAdmin]);
+  }, [isAuthenticated, userId, isAdmin, loading]); // loadingを依存配列に追加
 
-  // メイン処理 - 完全に安定した依存配列
+  // メイン処理 - 条件を調整
   useEffect(() => {
     console.log('[Layout] 🎯 メイン処理useEffect実行', {
       isAuthenticated,
       userId,
+      loading,
       executionCount: ++executionCountRef.current,
       renderCount: renderCountRef.current,
     });
 
     // 厳格な無限ループ検出
-    if (executionCountRef.current > 3) {
+    if (executionCountRef.current > 2) {
+      // より厳格に2回まで
       console.error('[Layout] 🚨 無限ループ検出！実行を停止します', {
         executionCount: executionCountRef.current,
         renderCount: renderCountRef.current,
@@ -362,14 +355,19 @@ export default function Layout({ children }: LayoutProps) {
       return;
     }
 
-    if (!isAuthenticated || !userId) {
-      console.log('[Layout] 認証されていないかユーザーID不明、処理スキップ');
-      return; // state更新を削除
+    // AuthContextの認証とユーザーデータ取得が完了するまで待機
+    if (!isAuthenticated || !userId || loading) {
+      console.log('[Layout] 認証未完了、処理スキップ', {
+        isAuthenticated,
+        userId,
+        loading,
+      });
+      return;
     }
 
     // 短時間での重複実行を防ぐ（より厳格に）
     const currentTime = Date.now();
-    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 5000) {
+    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 10000) {
       console.log('[Layout] ⚠️ 短時間での重複実行を検出、スキップ', {
         lastExecution: lastExecutionRef.current,
         currentTime,
@@ -496,7 +494,7 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, userId]); // 最小限の依存配列
+  }, [isAuthenticated, userId, loading]); // loadingを依存配列に追加
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
