@@ -252,7 +252,7 @@ export default function Layout({ children }: LayoutProps) {
     checkSubscription();
   }, [isAuthenticated, userId, isAdmin]);
 
-  // メイン処理 - 依存配列から関数を除外
+  // メイン処理 - 完全に安定した依存配列
   useEffect(() => {
     console.log('[Layout] 🎯 メイン処理useEffect実行', {
       isAuthenticated,
@@ -261,8 +261,8 @@ export default function Layout({ children }: LayoutProps) {
       renderCount: renderCountRef.current,
     });
 
-    // 無限ループ検出の強化
-    if (executionCountRef.current > 10) {
+    // 厳格な無限ループ検出
+    if (executionCountRef.current > 3) {
       console.error('[Layout] 🚨 無限ループ検出！実行を停止します', {
         executionCount: executionCountRef.current,
         renderCount: renderCountRef.current,
@@ -272,73 +272,53 @@ export default function Layout({ children }: LayoutProps) {
 
     if (!isAuthenticated || !userId) {
       console.log('[Layout] 認証されていないかユーザーID不明、処理スキップ');
-      // 直接state更新関数を呼び出し
-      setNotifications([]);
-      setUnreadNotifications(0);
-      return;
+      return; // state更新を削除
     }
 
-    // 短時間での重複実行を防ぐ
+    // 短時間での重複実行を防ぐ（より厳格に）
     const currentTime = Date.now();
-    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 3000) {
+    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 5000) {
       console.log('[Layout] ⚠️ 短時間での重複実行を検出、スキップ', {
         lastExecution: lastExecutionRef.current,
         currentTime,
         diff: currentTime - lastExecutionRef.current,
-        renderCount: renderCountRef.current,
       });
       return;
     }
     lastExecutionRef.current = currentTime;
 
-    console.log('[Layout] ✅ メイン処理開始', {
-      renderCount: renderCountRef.current,
-    });
+    console.log('[Layout] ✅ メイン処理開始');
 
-    // 通知取得関数（ローカル関数として定義）
+    // 通知取得とstate更新を一つの関数にまとめる
     const fetchNotifications = async () => {
-      console.log('[Layout] fetchNotifications実行', {
-        renderCount: renderCountRef.current,
-      });
-
       try {
-        console.log('[Layout] 📝 setIsLoadingNotifications(true)');
-        setIsLoadingNotifications(true);
-        console.log('[Layout] 通知データ取得開始');
+        console.log('[Layout] 📝 データ取得開始');
 
-        const response = await notificationApi.getUserNotifications(userId);
-        console.log('[Layout] 通知一覧取得完了', { count: response.data.length });
-        console.log('[Layout] 📝 setNotifications実行');
-        setNotifications(response.data);
+        const [notificationsResponse, unreadResponse] = await Promise.all([
+          notificationApi.getUserNotifications(userId),
+          notificationApi.getUnreadNotificationsCount(userId),
+        ]);
 
-        const unreadResponse = await notificationApi.getUnreadNotificationsCount(userId);
-        console.log('[Layout] 未読通知数取得完了', { count: unreadResponse.data.count });
-        console.log('[Layout] 🔔 setUnreadNotifications実行');
+        // 一度にすべてのstateを更新（React 18のバッチング）
+        console.log('[Layout] 📝 一括state更新実行');
+        setNotifications(notificationsResponse.data);
         setUnreadNotifications(unreadResponse.data.count);
+        setIsLoadingNotifications(false);
 
-        console.log('[Layout] 通知データ取得完了', {
-          notifications: response.data.length,
+        console.log('[Layout] ✅ 通知データ取得完了', {
+          notifications: notificationsResponse.data.length,
           unread: unreadResponse.data.count,
-          renderCount: renderCountRef.current,
         });
       } catch (error) {
         console.error('[Layout] 通知取得エラー:', error);
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-          setNotifications([]);
-          setUnreadNotifications(0);
-        } else {
-          toast.error('通知の取得に失敗しました');
-        }
-      } finally {
-        console.log('[Layout] 📝 setIsLoadingNotifications(false)');
+        setNotifications([]);
+        setUnreadNotifications(0);
         setIsLoadingNotifications(false);
       }
     };
 
-    // WebSocket接続関数（ローカル関数として定義）
+    // WebSocket接続関数
     const connectWebSocket = () => {
-      console.log('[Layout] WebSocket接続試行');
-
       if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
@@ -367,12 +347,7 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-
-            if (data.type === 'auth_success') {
-              logger.info('WebSocket', '🔐 Auth success');
-            } else if (data.type === 'error') {
-              logger.error('WebSocket', 'Server error', data.message);
-            } else if (data.type === 'notification') {
+            if (data.type === 'notification') {
               const newNotification = data.notification;
               setNotifications((prev) => [newNotification, ...prev]);
               setUnreadNotifications((prev) => prev + 1);
@@ -395,15 +370,7 @@ export default function Layout({ children }: LayoutProps) {
           if (reconnectAttemptsRef.current < 3) {
             reconnectAttemptsRef.current++;
             const delay = 2000 * reconnectAttemptsRef.current;
-
-            logger.info(
-              'WebSocket',
-              `🔄 Reconnecting in ${delay / 1000}s (${reconnectAttemptsRef.current}/3)`
-            );
-
             reconnectTimerRef.current = setTimeout(() => connectWebSocket(), delay);
-          } else {
-            logger.warn('WebSocket', '❌ Max reconnection attempts reached');
           }
         };
       } catch (error) {
@@ -411,41 +378,33 @@ export default function Layout({ children }: LayoutProps) {
       }
     };
 
-    // 実際の処理実行
+    // 実行
+    setIsLoadingNotifications(true);
     fetchNotifications();
 
     const isDevelopment = window.location.hostname === 'localhost';
-    console.log('[Layout] 環境チェック', { isDevelopment });
-
     if (isDevelopment) {
       connectWebSocket();
     }
 
-    const pollingInterval = isDevelopment ? 300000 : 30000;
-    console.log('[Layout] ポーリング間隔設定', { pollingInterval });
-
+    // ポーリング間隔をより長くする
+    const pollingInterval = isDevelopment ? 600000 : 60000; // 開発:10分、本番:1分
     const intervalId = setInterval(() => {
-      console.log('[Layout] 定期通知更新実行');
-      fetchNotifications().catch(handleApiError);
+      fetchNotifications();
     }, pollingInterval);
 
     return () => {
-      console.log('[Layout] 🧹 クリーンアップ実行', {
-        renderCount: renderCountRef.current,
-      });
+      console.log('[Layout] 🧹 クリーンアップ実行');
       clearInterval(intervalId);
-
       if (reconnectTimerRef.current) {
         clearTimeout(reconnectTimerRef.current);
       }
-
       if (wsRef.current && isDevelopment) {
-        console.log('[WebSocket] 接続をクローズします');
         wsRef.current.close();
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, userId]); // handleApiErrorを依存配列から除外
+  }, [isAuthenticated, userId]); // 最小限の依存配列
 
   // 通知を既読にする処理
   const handleNotificationRead = async (notificationId: number) => {
