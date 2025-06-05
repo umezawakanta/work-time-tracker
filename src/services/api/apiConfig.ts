@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../../utils/logger';
 
 export const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
@@ -19,12 +20,16 @@ api.interceptors.request.use(
       config.headers['X-Admin-Request'] = 'true';
     }
 
-    console.log('Request:', config.method?.toUpperCase(), config.url);
-    console.log('Request data:', config.data);
+    // 重複API呼び出しのログを抑制
+    const suppressLog = config.url?.includes('/auth/') || config.url?.includes('/notifications/');
+
+    if (!suppressLog) {
+      logger.debug('API', `${config.method?.toUpperCase()} ${config.url}`);
+    }
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    logger.error('API', 'Request error', error);
     return Promise.reject(error);
   }
 );
@@ -32,12 +37,16 @@ api.interceptors.request.use(
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log('Response:', response.status, response.statusText);
-    console.log('Response data:', response.data);
+    const suppressLog =
+      response.config.url?.includes('/auth/') || response.config.url?.includes('/notifications/');
+
+    if (!suppressLog) {
+      logger.debug('API', `${response.status} ${response.config.url}`);
+    }
     return response;
   },
   (error) => {
-    console.error('Response error:', error);
+    logger.error('API', `${error.response?.status} ${error.config?.url}`, error.response?.data);
     return Promise.reject(error);
   }
 );
