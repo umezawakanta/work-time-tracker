@@ -83,7 +83,40 @@ export default function Layout({ children }: LayoutProps) {
   const { locale, setLocale } = useLocale();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, setIsAuthenticated, user, fetchUser } = useAuth();
+
+  // AuthContextの値変化を詳細に追跡
+  const authContext = useAuth();
+  const { isAuthenticated, setIsAuthenticated, user, fetchUser } = authContext;
+
+  // AuthContext値の変化をログ出力
+  const authContextRef = useRef(authContext);
+  useEffect(() => {
+    const prev = authContextRef.current;
+    const current = authContext;
+
+    const changes = [];
+    if (prev.isAuthenticated !== current.isAuthenticated) changes.push('isAuthenticated');
+    if (prev.user !== current.user) changes.push('user');
+    if (prev.fetchUser !== current.fetchUser) changes.push('fetchUser');
+    if (prev.setIsAuthenticated !== current.setIsAuthenticated) changes.push('setIsAuthenticated');
+
+    if (changes.length > 0) {
+      console.log('[Layout] 🔥 AuthContext値変化検出', {
+        changes,
+        isAuthenticated: current.isAuthenticated,
+        user: !!current.user,
+        userId: current.user?.id || current.user?._id,
+        renderCount: ++renderCountRef.current,
+      });
+    } else {
+      console.log('[Layout] ✅ AuthContext値変化なし', {
+        renderCount: ++renderCountRef.current,
+      });
+    }
+
+    authContextRef.current = current;
+  });
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [isSubscriptionChecking, setIsSubscriptionChecking] = useState(true);
@@ -92,24 +125,22 @@ export default function Layout({ children }: LayoutProps) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
-  // WebSocket ref to prevent multiple connections
+  // Ref for tracking
+  const renderCountRef = useRef(0);
+  const executionCountRef = useRef(0);
+  const lastExecutionRef = useRef<number>(0);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const executionCountRef = useRef(0);
-  const lastExecutionRef = useRef<number>(0);
-  const renderCountRef = useRef(0);
 
-  renderCountRef.current++;
-
-  console.log(`[Layout] 🔄 Render #${renderCountRef.current}`, {
+  // レンダリング回数とAuthContext参照の追跡
+  console.log('[Layout] 🔄 Render #' + ++renderCountRef.current, {
     isAuthenticated,
     user: !!user,
     userId: user?._id || user?.id,
     isAdmin: user?.isAdmin,
     notificationsLength: notifications.length,
-    unreadNotifications,
-    isLoadingNotifications,
+    authContextReference: authContext === authContextRef.current ? 'same' : 'different',
   });
 
   // ユーザーIDを安定した値として抽出
