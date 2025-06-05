@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -15,6 +16,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 interface BlogPost {
   id: string;
@@ -75,9 +77,23 @@ const BlogPage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          ブログ
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h4" component="h1">
+            ブログ
+          </Typography>
+          <Button
+            component={Link}
+            to="/blog/new"
+            variant="contained"
+            startIcon={<Add />}
+            sx={{
+              height: 'fit-content',
+              fontWeight: 'bold',
+            }}
+          >
+            新規投稿
+          </Button>
+        </Box>
 
         <Tabs value={selectedTab} onChange={handleTabChange} sx={{ mb: 3 }}>
           <Tab label="すべて" />
