@@ -195,14 +195,16 @@ export default function Layout({ children }: LayoutProps) {
   const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // レンダリング回数とAuthContext参照の追跡
-  console.log('[Layout] 🔄 Render #' + ++renderCountRef.current, {
-    isAuthenticated,
-    user: !!user,
-    userId: user?._id || user?.id,
-    isAdmin: user?.isAdmin,
-    notificationsLength: notifications.length,
-    authContextReference: authContext === authContextRef.current ? 'same' : 'different',
-  });
+  const isDev = process.env.NODE_ENV === 'development';
+
+  if (isDev) {
+    console.log('[Layout] Render', {
+      count: ++renderCountRef.current,
+      auth: isAuthenticated,
+      user: !!user,
+      loading,
+    });
+  }
 
   // ユーザーIDを安定した値として抽出
   const userId = useMemo(() => {
@@ -241,12 +243,25 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []); // 依存配列を空にして安定化
 
-  // サブスクリプション状態の取得 - シンプル化
+  // より安定化されたref管理
+  const initializationRef = useRef({
+    subscriptionChecked: false,
+    notificationsInitialized: false,
+    lastAuthState: '',
+  });
+
+  // サブスクリプション状態の取得 - 一度だけ実行
   useEffect(() => {
+    const authStateKey = `${isAuthenticated}-${userId}-${isAdmin}-${loading}`;
+    
+    if (initializationRef.current.subscriptionChecked && 
+        initializationRef.current.lastAuthState === authStateKey) {
+      return; // 既に同じ状態で実行済み
+    }
+
     console.log('[Layout] 💳 サブスクリプション処理');
 
     const checkSubscription = async () => {
-      // 認証済み、ユーザーデータ取得済み、ローディング完了の条件
       if (isAuthenticated && userId && !loading) {
         try {
           setIsSubscriptionChecking(true);
@@ -254,7 +269,6 @@ export default function Layout({ children }: LayoutProps) {
           if (isAdmin) {
             setIsPremium(true);
           } else {
-            // サブスクリプションチェックロジック
             try {
               const response = await userSubscriptionApi.getUserSubscription(userId);
               const subscription = response.data;
@@ -262,45 +276,45 @@ export default function Layout({ children }: LayoutProps) {
                 subscription && subscription.status === 'active' && subscription.planId !== 'free'
               );
             } catch (error) {
-              // エラーハンドリング（簡素化）
               setIsPremium(false);
             }
           }
+          
+          initializationRef.current.subscriptionChecked = true;
+          initializationRef.current.lastAuthState = authStateKey;
         } catch (error) {
           setIsPremium(false);
         } finally {
           setIsSubscriptionChecking(false);
         }
       } else {
-        // 認証未完了の場合は即座にリセット
         setIsPremium(false);
         setIsSubscriptionChecking(false);
+        initializationRef.current.subscriptionChecked = false;
       }
     };
 
     checkSubscription();
-  }, [isAuthenticated, userId, isAdmin, loading]); // 依存配列はそのまま
+  }, [isAuthenticated, userId, isAdmin, loading]);
 
-  // メイン処理 - 一度だけ実行するように修正
+  // メイン処理 - 一度だけ実行を保証
   useEffect(() => {
+    const authStateKey = `${isAuthenticated}-${userId}-${loading}`;
+    
+    if (initializationRef.current.notificationsInitialized && 
+        initializationRef.current.lastAuthState === authStateKey) {
+      return; // 既に同じ状態で実行済み
+    }
+
     console.log('[Layout] 🎯 メイン処理実行');
 
-    // 条件をシンプルに
     if (!isAuthenticated || !userId || loading) {
+      initializationRef.current.notificationsInitialized = false;
       return;
     }
-
-    // 実行済みフラグでガード
-    const executionKey = `${isAuthenticated}-${userId}-${loading}`;
-    if (lastExecutionRef.current === executionKey) {
-      console.log('[Layout] 既に実行済み、スキップ');
-      return;
-    }
-    lastExecutionRef.current = executionKey;
 
     console.log('[Layout] ✅ 通知・WebSocket処理開始');
 
-    // 通知取得とWebSocket接続（簡素化）
     const initializeNotifications = async () => {
       try {
         setIsLoadingNotifications(true);
@@ -312,6 +326,9 @@ export default function Layout({ children }: LayoutProps) {
 
         setNotifications(notificationsResponse.data);
         setUnreadNotifications(unreadResponse.data.count);
+        
+        initializationRef.current.notificationsInitialized = true;
+        initializationRef.current.lastAuthState = authStateKey;
       } catch (error) {
         console.error('通知取得エラー:', error);
         setNotifications([]);
@@ -324,7 +341,6 @@ export default function Layout({ children }: LayoutProps) {
     // WebSocket接続（開発環境のみ）
     const connectWebSocket = () => {
       if (window.location.hostname === 'localhost') {
-        // WebSocket接続ロジック（既存のコードを簡素化）
         if (wsRef.current) {
           wsRef.current.close();
           wsRef.current = null;
@@ -337,13 +353,11 @@ export default function Layout({ children }: LayoutProps) {
           wsRef.current.onopen = () => {
             const token = localStorage.getItem('token');
             if (token && wsRef.current) {
-              wsRef.current.send(
-                JSON.stringify({
-                  type: 'auth',
-                  userId: userId,
-                  token: token,
-                })
-              );
+              wsRef.current.send(JSON.stringify({
+                type: 'auth',
+                userId: userId,
+                token: token,
+              }));
             }
           };
 
@@ -352,8 +366,8 @@ export default function Layout({ children }: LayoutProps) {
               const data = JSON.parse(event.data);
               if (data.type === 'notification') {
                 const newNotification = data.notification;
-                setNotifications((prev) => [newNotification, ...prev]);
-                setUnreadNotifications((prev) => prev + 1);
+                setNotifications(prev => [newNotification, ...prev]);
+                setUnreadNotifications(prev => prev + 1);
                 toast.success(newNotification.title);
               }
             } catch (error) {
@@ -378,10 +392,12 @@ export default function Layout({ children }: LayoutProps) {
     initializeNotifications();
     connectWebSocket();
 
-    // 定期更新（本番環境で重要）
-    const pollingInterval = 300000; // 5分
+    // 定期更新（長い間隔）
+    const pollingInterval = 600000; // 10分
     const intervalId = setInterval(() => {
-      initializeNotifications();
+      if (initializationRef.current.notificationsInitialized) {
+        initializeNotifications();
+      }
     }, pollingInterval);
 
     return () => {
@@ -391,7 +407,7 @@ export default function Layout({ children }: LayoutProps) {
         wsRef.current = null;
       }
     };
-  }, [isAuthenticated, userId, loading]); // 必要最小限の依存配列
+  }, [isAuthenticated, userId, loading]);
 
   // レンダリング回数の制限（デバッグ用）
   if (renderCountRef.current > 20) {
@@ -1504,6 +1520,12 @@ export default function Layout({ children }: LayoutProps) {
               <span className="text-xs text-gray-500">継続的に成長中のプラットフォーム</span>
             </div>
           </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
         </div>
       </footer>
     </div>
