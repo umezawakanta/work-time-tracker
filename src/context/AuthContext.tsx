@@ -22,6 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isCheckingAuth, setIsCheckingAuth] = useState(false);
 
   const fetchUser = useCallback(async () => {
+    console.log('[AuthContext] fetchUser実行');
     try {
       const userData = await fetchUserData();
 
@@ -32,51 +33,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setUser(userData);
+      console.log('[AuthContext] ユーザーデータ設定完了');
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      console.error('[AuthContext] ユーザーデータ取得失敗:', error);
       setUser(null);
     }
   }, []);
 
   const updateProfile = useCallback(async (data: { name: string; email: string }) => {
+    console.log('[AuthContext] updateProfile実行');
     try {
       const updatedUser = await updateUserProfile(data);
       setUser(updatedUser);
     } catch (error) {
-      console.error('Failed to update user profile:', error);
+      console.error('[AuthContext] プロフィール更新失敗:', error);
       throw error;
     }
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
-    if (isCheckingAuth) return;
+    if (isCheckingAuth) {
+      console.log('[AuthContext] 認証チェック中、スキップ');
+      return;
+    }
 
+    console.log('[AuthContext] 認証チェック開始');
     setIsCheckingAuth(true);
+    setLoading(true);
+
     try {
       const isAuth = await checkAuth();
+      console.log('[AuthContext] 認証結果:', isAuth);
+
       if (isAuth) {
         setIsAuthenticated(true);
-        await fetchUser(); // Fetch user data separately
+        // fetchUserを直接呼び出さずに、ここで個別にデータ取得
+        try {
+          const userData = await fetchUserData();
+          const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+          if (adminEmails.includes(userData.email)) {
+            userData.isAdmin = true;
+          }
+          setUser(userData);
+          console.log('[AuthContext] ユーザーデータ取得完了');
+        } catch (error) {
+          console.error('[AuthContext] ユーザーデータ取得失敗:', error);
+          setUser(null);
+        }
       } else {
         setIsAuthenticated(false);
         setUser(null);
       }
     } catch (error) {
       logger.warn('Auth', 'Check auth failed');
+      console.error('[AuthContext] 認証チェックエラー:', error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
       setIsCheckingAuth(false);
+      setLoading(false);
+      console.log('[AuthContext] 認証チェック完了');
     }
-  }, [fetchUser]); // isCheckingAuthを依存配列から削除
+  }, [isCheckingAuth]);
 
   useEffect(() => {
+    console.log('[AuthContext] 初回認証チェック実行');
     checkAuthStatus();
-  }, []); // 初回マウント時のみ実行
+  }, []);
 
-  // contextValueを完全に安定化
-  const contextValue = useMemo<AuthContextType>(
-    () => ({
+  const contextValue = useMemo<AuthContextType>(() => {
+    console.log('[AuthContext] contextValue再生成', {
+      isAuthenticated,
+      loading,
+      user: !!user,
+    });
+
+    return {
       isAuthenticated,
       setIsAuthenticated,
       loading,
@@ -84,9 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser,
       fetchUser,
       updateProfile,
-    }),
-    [isAuthenticated, loading, user] // 関数を依存配列から完全に除外
-  );
+    };
+  }, [isAuthenticated, loading, user, fetchUser, updateProfile]);
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
