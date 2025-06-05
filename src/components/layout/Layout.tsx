@@ -69,6 +69,7 @@ import notificationApi from '@/services/api/notificationApi';
 import NotificationItem from '@/components/notifications/NotificationItem';
 import axios, { AxiosError } from 'axios';
 import ShoppingCart from '@/components/ecommerce/ShoppingCart';
+import { logger } from '@/utils/logger';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -307,33 +308,18 @@ export default function Layout({ children }: LayoutProps) {
 
     // WebSocket接続関数 - 開発環境でのみ有効
     const connectWebSocket = () => {
-      // 本番環境ではWebSocket接続をスキップ
-      if (!isDevelopment) {
-        console.log('[WebSocket] 本番環境ではWebSocket接続をスキップします');
-        return;
-      }
-
-      // 既存の接続があればクローズ
-      if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
-        wsRef.current.close();
-      }
-
       try {
         const wsUrl = 'ws://localhost:3001/notifications';
 
-        console.log('[WebSocket] 接続試行:', wsUrl);
+        // 開発環境でのみWebSocketログを出力
+        if (process.env.NODE_ENV === 'development') {
+          logger.debug('WebSocket', 'Attempting connection');
+        }
+
         wsRef.current = new WebSocket(wsUrl);
 
-        // 接続タイムアウト処理
-        const connectionTimeout = setTimeout(() => {
-          if (wsRef.current && wsRef.current.readyState !== WebSocket.OPEN) {
-            console.log('[WebSocket] 接続タイムアウト');
-            wsRef.current.close();
-          }
-        }, 5000);
-
         wsRef.current.onopen = () => {
-          console.log('[WebSocket] 接続が確立されました');
+          logger.debug('WebSocket', 'Connected successfully');
           clearTimeout(connectionTimeout);
           reconnectAttemptsRef.current = 0;
 
@@ -352,74 +338,34 @@ export default function Layout({ children }: LayoutProps) {
         };
 
         wsRef.current.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            console.log('[WebSocket] メッセージを受信:', data.type);
+          // メッセージログは重要な場合のみ
+          const data = JSON.parse(event.data);
+          if (data.type === 'error') {
+            logger.error('WebSocket', 'Received error', data.message);
+          }
+          if (data.type === 'notification') {
+            // 新しい通知を処理
+            const newNotification = data.notification;
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadNotifications((prev) => prev + 1);
 
-            if (data.type === 'auth_success') {
-              console.log('[WebSocket] 認証に成功しました');
-            } else if (data.type === 'error') {
-              console.error('[WebSocket] エラーメッセージを受信:', data.message);
-
-              if (
-                data.message.includes('無効な認証情報') ||
-                data.message.includes('無効なトークン') ||
-                data.message.includes('jwt expired')
-              ) {
-                toast.error('セッションの有効期限が切れました。再ログインしてください。');
-                setTimeout(() => {
-                  localStorage.removeItem('token');
-                  setIsAuthenticated(false);
-                  navigate('/login');
-                }, 2000);
-              }
-            } else if (data.type === 'notification') {
-              // 新しい通知を処理
-              const newNotification = data.notification;
-              setNotifications((prev) => [newNotification, ...prev]);
-              setUnreadNotifications((prev) => prev + 1);
-
-              // トースト通知を表示（簡略化）
-              toast.success(newNotification.title);
-            }
-          } catch (error) {
-            console.error('[WebSocket] メッセージの処理エラー:', error);
+            // トースト通知を表示（簡略化）
+            toast.success(newNotification.title);
           }
         };
 
         wsRef.current.onerror = (error) => {
-          clearTimeout(connectionTimeout);
-          console.error('[WebSocket] エラーが発生しました:', error);
+          logger.warn('WebSocket', 'Connection error');
         };
 
         wsRef.current.onclose = (event) => {
-          clearTimeout(connectionTimeout);
-          console.log(
-            `[WebSocket] 接続が閉じられました: コード=${event.code}, 理由=${event.reason || '理由なし'}`
-          );
-
-          // 開発環境でのみ再接続を試みる
-          if (isDevelopment && reconnectAttemptsRef.current < maxReconnectAttempts) {
-            reconnectAttemptsRef.current++;
-            console.log(
-              `[WebSocket] 再接続を試みます (${reconnectAttemptsRef.current}/${maxReconnectAttempts})...`
-            );
-
-            // 前回のタイマーをクリア
-            if (reconnectTimerRef.current) {
-              clearTimeout(reconnectTimerRef.current);
-            }
-
-            const delay = reconnectDelay * Math.pow(1.5, reconnectAttemptsRef.current - 1);
-            reconnectTimerRef.current = setTimeout(connectWebSocket, delay);
-          } else if (!isDevelopment) {
-            console.log('[WebSocket] 本番環境では再接続を行いません');
-          } else {
-            console.error('[WebSocket] 最大再接続試行回数に達しました');
+          // 頻繁な再接続ログを抑制
+          if (reconnectAttemptsRef.current === 0) {
+            logger.debug('WebSocket', 'Connection closed');
           }
         };
       } catch (error) {
-        console.error('[WebSocket] 接続エラー:', error);
+        logger.error('WebSocket', 'Connection failed', error);
       }
     };
 

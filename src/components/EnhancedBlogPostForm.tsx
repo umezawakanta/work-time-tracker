@@ -28,6 +28,7 @@ import {
   BlogAnalysisResult,
   BlogContentAnalysis,
 } from '../services/ai/blogAiService';
+import { logger } from '@/utils/logger';
 
 interface EnhancedBlogPostFormProps {
   initialValues?: {
@@ -64,6 +65,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const [autoAnalysis, setAutoAnalysis] = useState(true);
   const [analysisTimer, setAnalysisTimer] = useState<NodeJS.Timeout | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisSuccess, setAnalysisSuccess] = useState(false);
 
   // 自動分析のデバウンス処理
   useEffect(() => {
@@ -89,15 +91,14 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const performAnalysis = async () => {
     if (!title.trim() && !content.trim()) return;
 
-    console.log('🤖 [AI Analysis] Starting analysis:', {
+    logger.debug('AI-Analysis', 'Starting analysis', {
       titleLength: title.length,
       contentLength: content.length,
-      category,
-      timestamp: new Date().toISOString(),
     });
 
     setIsAnalyzing(true);
     setAnalysisError(null);
+    setAnalysisSuccess(false);
 
     try {
       const promises = [
@@ -105,37 +106,27 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
         content.length > 100 ? BlogAiService.analyzeContent(content) : null,
       ];
 
-      console.log('🔄 [AI Analysis] Executing analysis promises...');
-      const [blogAnalysis, contentAnalysisResult] = await Promise.all(promises);
+      const [blogAnalysis, contentAnalysisResult] = (await Promise.all(promises)) as [
+        BlogAnalysisResult | null,
+        BlogContentAnalysis | null,
+      ];
 
-      console.log('✅ [AI Analysis] Analysis completed:', {
-        blogAnalysis: {
-          hasResult: !!blogAnalysis,
-          readabilityScore: blogAnalysis?.readabilityScore,
-          suggestedTagsCount: blogAnalysis?.suggestedTags?.length || 0,
-        },
-        contentAnalysis: {
-          hasResult: !!contentAnalysisResult,
-          readingTime: contentAnalysisResult?.readingTimeMinutes,
-        },
-      });
+      if (blogAnalysis) {
+        setAnalysisResult(blogAnalysis as BlogAnalysisResult);
+        setAnalysisSuccess(true);
+        logger.debug('AI-Analysis', 'Analysis completed successfully');
+      }
 
-      setAnalysisResult(blogAnalysis);
       if (contentAnalysisResult) {
         setContentAnalysis(contentAnalysisResult);
       }
     } catch (error) {
-      console.error('❌ [AI Analysis] Analysis failed:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-      });
+      logger.warn('AI-Analysis', 'Analysis failed', error);
 
-      const errorMessage = error instanceof Error ? error.message : '不明なエラー';
-      setAnalysisError(`AI分析中にエラーが発生しました: ${errorMessage}`);
+      // AI分析の失敗は投稿をブロックしない
+      setAnalysisError('AI分析が利用できません。投稿は続行可能です。');
     } finally {
       setIsAnalyzing(false);
-      console.log('🏁 [AI Analysis] Analysis process completed');
     }
   };
 
@@ -161,19 +152,16 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('📝 [Form] Form submission triggered:', {
-      title,
-      contentLength: content.length,
-      category,
-      tagsCount: tags.length,
-      disabled,
-      timestamp: new Date().toISOString(),
-    });
-
     if (disabled) {
-      console.warn('⚠️ [Form] Form submission blocked - disabled state');
+      logger.warn('Form', 'Submission blocked - form disabled');
       return;
     }
+
+    logger.debug('Form', 'Form submission', {
+      hasTitle: !!title.trim(),
+      hasContent: !!content.trim(),
+      hasCategory: !!category.trim(),
+    });
 
     onSubmit({ title, content, category, tags });
   };
@@ -188,12 +176,12 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
 
   return (
     <Box>
-      {/* AI分析設定 */}
+      {/* AI分析セクション（簡素化） */}
       <Paper sx={{ p: 2, mb: 3, bgcolor: 'primary.50' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <AutoFixHighIcon color="primary" />
-            AI分析機能
+            AI分析
           </Typography>
           <FormControlLabel
             control={
@@ -202,11 +190,23 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
             label="自動分析"
           />
         </Box>
-        <Typography variant="body2" color="text.secondary">
-          投稿内容を自動的に分析し、タグの提案や内容の改善案を提供します
-        </Typography>
 
-        {/* AI分析エラー表示 */}
+        {/* 分析状態表示 */}
+        {isAnalyzing && (
+          <Alert severity="info" sx={{ mt: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <CircularProgress size={16} />
+              AI分析中...
+            </Box>
+          </Alert>
+        )}
+
+        {analysisSuccess && (
+          <Alert severity="success" sx={{ mt: 1 }}>
+            AI分析が完了しました
+          </Alert>
+        )}
+
         {analysisError && (
           <Alert severity="warning" sx={{ mt: 1 }}>
             {analysisError}
@@ -225,8 +225,8 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
         )}
       </Paper>
 
-      {/* メインフォーム */}
-      <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
+      {/* フォーム */}
+      <Box component="form" onSubmit={handleSubmit}>
         <TextField
           fullWidth
           label="タイトル"
@@ -234,9 +234,8 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
           onChange={(e) => setTitle(e.target.value)}
           margin="normal"
           required
-          helperText={
-            contentAnalysis ? `推定読了時間: ${contentAnalysis.readingTimeMinutes}分` : ''
-          }
+          error={!title.trim() && disabled}
+          helperText={!title.trim() && disabled ? 'タイトルは必須です' : ''}
         />
 
         <Autocomplete
@@ -245,7 +244,14 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
           value={category}
           onChange={(_, newValue) => setCategory(newValue || '')}
           renderInput={(params) => (
-            <TextField {...params} label="カテゴリ" margin="normal" required />
+            <TextField
+              {...params}
+              label="カテゴリ"
+              margin="normal"
+              required
+              error={!category.trim() && disabled}
+              helperText={!category.trim() && disabled ? 'カテゴリは必須です' : ''}
+            />
           )}
         />
 
@@ -264,7 +270,7 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
             <TextField
               {...params}
               variant="outlined"
-              label="タグ"
+              label="タグ（任意）"
               placeholder="Enterキーでタグを追加"
               margin="normal"
             />
@@ -280,140 +286,59 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
           onChange={(e) => setContent(e.target.value)}
           margin="normal"
           required
-          helperText={content.length > 0 ? `文字数: ${content.length}` : ''}
+          error={!content.trim() && disabled}
+          helperText={!content.trim() && disabled ? '内容は必須です' : `文字数: ${content.length}`}
         />
 
-        {/* AI分析結果 */}
+        {/* AI分析結果の簡素化表示 */}
         {analysisResult && (
-          <Paper sx={{ mt: 3, mb: 2 }}>
-            <Accordion defaultExpanded>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <TipsAndUpdatesIcon color="secondary" />
-                  AI分析結果
-                  {isAnalyzing && <CircularProgress size={16} />}
+          <Paper sx={{ mt: 2, p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              AI分析結果
+            </Typography>
+
+            {analysisResult.suggestedTags.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  推奨タグ:
                 </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    読みやすさスコア:
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Rating value={analysisResult.readabilityScore / 20} readOnly precision={0.1} />
-                    <Typography variant="body2">{analysisResult.readabilityScore}/100</Typography>
-                  </Box>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {analysisResult.suggestedTags.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      size="small"
+                      onClick={() => {
+                        if (!tags.includes(tag)) {
+                          setTags([...tags, tag]);
+                        }
+                      }}
+                      sx={{ cursor: 'pointer' }}
+                    />
+                  ))}
                 </Box>
+              </Box>
+            )}
 
-                <Divider sx={{ my: 2 }} />
-
-                {/* タイトル改善提案 */}
-                {analysisResult.improvedTitle && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      タイトル改善提案:
-                    </Typography>
-                    <Alert
-                      severity="info"
-                      action={
-                        <Button color="inherit" size="small" onClick={applyImprovedTitle}>
-                          適用
-                        </Button>
-                      }
-                    >
-                      {analysisResult.improvedTitle}
-                    </Alert>
-                  </Box>
-                )}
-
-                {/* 推奨タグ */}
-                {analysisResult.suggestedTags.length > 0 && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      推奨タグ:
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                      {analysisResult.suggestedTags.map((tag, index) => (
-                        <Chip
-                          key={index}
-                          label={tag}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                        />
-                      ))}
-                    </Box>
-                    <Button size="small" onClick={applySuggestedTags}>
-                      タグを適用
-                    </Button>
-                  </Box>
-                )}
-
-                {/* カテゴリ推奨 */}
-                {analysisResult.categoryRecommendation !== category && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      推奨カテゴリ:
-                    </Typography>
-                    <Alert
-                      severity="info"
-                      action={
-                        <Button color="inherit" size="small" onClick={applySuggestedCategory}>
-                          適用
-                        </Button>
-                      }
-                    >
-                      {analysisResult.categoryRecommendation}
-                    </Alert>
-                  </Box>
-                )}
-
-                {/* 内容改善提案 */}
-                {analysisResult.contentSuggestions.length > 0 && (
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      内容改善提案:
-                    </Typography>
-                    <List dense>
-                      {analysisResult.contentSuggestions.map((suggestion, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={suggestion} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Box>
-                )}
-
-                {/* SEO推奨事項 */}
-                {analysisResult.seoRecommendations.length > 0 && (
-                  <Box>
-                    <Typography variant="subtitle2" gutterBottom>
-                      SEO最適化提案:
-                    </Typography>
-                    <List dense>
-                      {analysisResult.seoRecommendations.map((recommendation, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={recommendation} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Box>
-                )}
-              </AccordionDetails>
-            </Accordion>
+            {analysisResult.readabilityScore && (
+              <Typography variant="body2" color="text.secondary">
+                読みやすさスコア: {analysisResult.readabilityScore}/100
+              </Typography>
+            )}
           </Paper>
         )}
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          size="large"
-          sx={{ mt: 2 }}
-          disabled={disabled}
-        >
-          {submitButtonText}
-        </Button>
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={disabled || !title.trim() || !content.trim() || !category.trim()}
+            sx={{ minWidth: 200 }}
+          >
+            {submitButtonText}
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
