@@ -253,9 +253,11 @@ export default function Layout({ children }: LayoutProps) {
   // サブスクリプション状態の取得 - 一度だけ実行
   useEffect(() => {
     const authStateKey = `${isAuthenticated}-${userId}-${isAdmin}-${loading}`;
-    
-    if (initializationRef.current.subscriptionChecked && 
-        initializationRef.current.lastAuthState === authStateKey) {
+
+    if (
+      initializationRef.current.subscriptionChecked &&
+      initializationRef.current.lastAuthState === authStateKey
+    ) {
       return; // 既に同じ状態で実行済み
     }
 
@@ -279,7 +281,7 @@ export default function Layout({ children }: LayoutProps) {
               setIsPremium(false);
             }
           }
-          
+
           initializationRef.current.subscriptionChecked = true;
           initializationRef.current.lastAuthState = authStateKey;
         } catch (error) {
@@ -300,9 +302,11 @@ export default function Layout({ children }: LayoutProps) {
   // メイン処理 - 一度だけ実行を保証
   useEffect(() => {
     const authStateKey = `${isAuthenticated}-${userId}-${loading}`;
-    
-    if (initializationRef.current.notificationsInitialized && 
-        initializationRef.current.lastAuthState === authStateKey) {
+
+    if (
+      initializationRef.current.notificationsInitialized &&
+      initializationRef.current.lastAuthState === authStateKey
+    ) {
       return; // 既に同じ状態で実行済み
     }
 
@@ -326,7 +330,7 @@ export default function Layout({ children }: LayoutProps) {
 
         setNotifications(notificationsResponse.data);
         setUnreadNotifications(unreadResponse.data.count);
-        
+
         initializationRef.current.notificationsInitialized = true;
         initializationRef.current.lastAuthState = authStateKey;
       } catch (error) {
@@ -353,11 +357,13 @@ export default function Layout({ children }: LayoutProps) {
           wsRef.current.onopen = () => {
             const token = localStorage.getItem('token');
             if (token && wsRef.current) {
-              wsRef.current.send(JSON.stringify({
-                type: 'auth',
-                userId: userId,
-                token: token,
-              }));
+              wsRef.current.send(
+                JSON.stringify({
+                  type: 'auth',
+                  userId: userId,
+                  token: token,
+                })
+              );
             }
           };
 
@@ -366,8 +372,8 @@ export default function Layout({ children }: LayoutProps) {
               const data = JSON.parse(event.data);
               if (data.type === 'notification') {
                 const newNotification = data.notification;
-                setNotifications(prev => [newNotification, ...prev]);
-                setUnreadNotifications(prev => prev + 1);
+                setNotifications((prev) => [newNotification, ...prev]);
+                setUnreadNotifications((prev) => prev + 1);
                 toast.success(newNotification.title);
               }
             } catch (error) {
@@ -1520,12 +1526,6 @@ export default function Layout({ children }: LayoutProps) {
               <span className="text-xs text-gray-500">継続的に成長中のプラットフォーム</span>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
         </div>
       </footer>
     </div>
