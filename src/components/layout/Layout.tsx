@@ -116,7 +116,7 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, []);
 
-  // ユーザー情報の取得
+  // ユーザー情報の取得 - userを依存配列から削除
   useEffect(() => {
     console.log('[Layout] ユーザー情報取得useEffect実行', { isAuthenticated, user: !!user });
 
@@ -125,14 +125,15 @@ export default function Layout({ children }: LayoutProps) {
       fetchUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated]); // userを削除
 
-  // サブスクリプション状態の取得
+  // サブスクリプション状態の取得 - 安定した依存配列に変更
   useEffect(() => {
     console.log('[Layout] サブスクリプションチェックuseEffect実行', {
       isAuthenticated,
       user: !!user,
       userId: user?._id || user?.id,
+      isAdmin: user?.isAdmin,
     });
 
     const checkSubscription = async () => {
@@ -266,9 +267,9 @@ export default function Layout({ children }: LayoutProps) {
     };
 
     checkSubscription();
-  }, [isAuthenticated, user?.id, user?._id, user?.isAdmin]); // より具体的な依存配列
+  }, [isAuthenticated, user?._id, user?.id, user?.isAdmin]); // 安定したプロパティのみ
 
-  // 通知取得の関数 - ログ追加
+  // 通知取得の関数 - 依存配列をさらに安定化
   const fetchNotifications = useCallback(async () => {
     console.log('[Layout] fetchNotifications実行', { isAuthenticated, user: !!user });
 
@@ -277,14 +278,14 @@ export default function Layout({ children }: LayoutProps) {
         setIsLoadingNotifications(true);
         console.log('[Layout] 通知データ取得開始');
 
+        const userId = user._id || user.id;
+
         // 通知一覧を取得
-        const response = await notificationApi.getUserNotifications(user._id || user.id);
+        const response = await notificationApi.getUserNotifications(userId);
         setNotifications(response.data);
 
         // 未読通知数を取得
-        const unreadResponse = await notificationApi.getUnreadNotificationsCount(
-          user._id || user.id
-        );
+        const unreadResponse = await notificationApi.getUnreadNotificationsCount(userId);
         setUnreadNotifications(unreadResponse.data.count);
 
         console.log('[Layout] 通知データ取得完了', {
@@ -307,9 +308,9 @@ export default function Layout({ children }: LayoutProps) {
       setNotifications([]);
       setUnreadNotifications(0);
     }
-  }, [isAuthenticated, user?.id, user?._id]); // より具体的な依存配列
+  }, [isAuthenticated, user?._id, user?.id]);
 
-  // WebSocket接続関数 - ログ追加
+  // WebSocket接続関数 - 依存配列を安定化
   const connectWebSocket = useCallback(() => {
     console.log('[Layout] WebSocket接続試行', { user: !!user });
 
@@ -405,27 +406,31 @@ export default function Layout({ children }: LayoutProps) {
     } catch (error) {
       logger.error('WebSocket', 'Connection failed', error);
     }
-  }, [user?.id, user?._id]); // より具体的な依存配列
+  }, [user?._id, user?.id]);
 
-  // 通知の取得とWebSocket接続 - ログ追加と実行制限
+  // 通知の取得とWebSocket接続 - 最も安定した依存配列
   useEffect(() => {
+    const userId = user?._id || user?.id;
+
     console.log('[Layout] 通知・WebSocketuseEffect実行', {
       isAuthenticated,
       user: !!user,
+      userId,
       executionCount: ++executionCountRef.current,
     });
 
-    if (!isAuthenticated || !user) {
-      console.log('[Layout] 認証されていないかユーザー情報なし、処理スキップ');
+    if (!isAuthenticated || !userId) {
+      console.log('[Layout] 認証されていないかユーザーID不明、処理スキップ');
       return;
     }
 
     // 短時間での重複実行を防ぐ
-    if (lastExecutionRef.current && Date.now() - lastExecutionRef.current < 1000) {
+    const currentTime = Date.now();
+    if (lastExecutionRef.current && currentTime - lastExecutionRef.current < 1000) {
       console.log('[Layout] 短時間での重複実行を検出、スキップ');
       return;
     }
-    lastExecutionRef.current = Date.now();
+    lastExecutionRef.current = currentTime;
 
     console.log('[Layout] 通知取得とWebSocket接続開始');
     fetchNotifications();
@@ -462,7 +467,7 @@ export default function Layout({ children }: LayoutProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user?.id, user?._id]); // より具体的な依存配列
+  }, [isAuthenticated, user?._id, user?.id]); // より安定した依存配列
 
   // 実行回数追跡のref追加（Layout関数の最初に追加）
   const executionCountRef = useRef(0);
