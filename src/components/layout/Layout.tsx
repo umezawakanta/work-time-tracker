@@ -311,16 +311,23 @@ export default function Layout({ children }: LayoutProps) {
       try {
         const wsUrl = 'ws://localhost:3001/notifications';
 
-        // 開発環境でのみWebSocketログを出力
         if (process.env.NODE_ENV === 'development') {
           logger.debug('WebSocket', 'Attempting connection');
         }
 
         wsRef.current = new WebSocket(wsUrl);
 
+        // Define connectionTimeout in the correct scope
+        const connectionTimeout = setTimeout(() => {
+          if (wsRef.current && wsRef.current.readyState !== WebSocket.OPEN) {
+            logger.debug('WebSocket', 'Connection timeout');
+            wsRef.current.close();
+          }
+        }, 5000);
+
         wsRef.current.onopen = () => {
           logger.debug('WebSocket', 'Connected successfully');
-          clearTimeout(connectionTimeout);
+          clearTimeout(connectionTimeout); // Now this variable is accessible
           reconnectAttemptsRef.current = 0;
 
           // 認証情報を送信
@@ -355,10 +362,13 @@ export default function Layout({ children }: LayoutProps) {
         };
 
         wsRef.current.onerror = (error) => {
+          clearTimeout(connectionTimeout); // Also clear timeout on error
           logger.warn('WebSocket', 'Connection error');
         };
 
         wsRef.current.onclose = (event) => {
+          clearTimeout(connectionTimeout); // Also clear timeout on close
+          logger.debug('WebSocket', 'Connection closed');
           // 頻繁な再接続ログを抑制
           if (reconnectAttemptsRef.current === 0) {
             logger.debug('WebSocket', 'Connection closed');
