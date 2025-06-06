@@ -10,10 +10,8 @@ import {
   Database,
   Shield,
   Code2,
-  GitBranch,
   Users,
   BarChart3,
-  Settings,
   Layers,
   Network,
   Monitor,
@@ -26,17 +24,10 @@ import {
   BookOpen,
   MessageSquare,
   Clock,
-  CheckSquare,
-  User,
   Vote,
-  Music,
-  Heart,
-  Moon,
-  Twitter,
   Download,
   ExternalLink,
   Copy,
-  Eye,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -63,7 +54,7 @@ interface TechStackItem {
 }
 
 export default function SystemDesignDocuments() {
-  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [_selectedModule, _setSelectedModule] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   // システムの主要機能モジュール
