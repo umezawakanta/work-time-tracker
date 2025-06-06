@@ -52,26 +52,22 @@ import {
 import { Todo } from '@/types/todo';
 import { WBSNode } from '@/types/wbs';
 import { useTodos } from '@/hooks/useTodos';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useMongoAuth';
+import { useMongoTodos } from '@/hooks/useMongoTodos';
 
 const IntegratedDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'overview' | 'tasks' | 'timeline' | 'analytics'>(
     'overview'
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  // 実際のTodoデータを取得
-  const {
-    todos: actualTodos,
-    loading: todosLoading,
-    error: todosError,
-    stats: todoStats,
-  } = useTodos();
+  // MongoDB用ToDoデータを取得
+  const { todos: actualTodos, loading: todosLoading, error: todosError } = useMongoTodos();
 
-  // 本日のToDoフィルタリング関数
+  // 本日のToDoフィルタリング関数（MongoDB用に調整）
   const getTodaysTodos = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     console.log('[IntegratedDashboard] 📅 本日の日付:', today);
@@ -84,12 +80,13 @@ const IntegratedDashboard: React.FC = () => {
       return isCreatedToday || hasDeadlineToday || isUncompletedWithNoDeadline;
     });
 
-    console.log('[IntegratedDashboard] 📋 全ToDoリスト:', {
+    console.log('[IntegratedDashboard] 📋 全ToDoリスト (MongoDB):', {
       totalTodos: actualTodos.length,
       todaysTodos: todaysTodos.length,
       completedToday: todaysTodos.filter((t) => t.completed).length,
       pendingToday: todaysTodos.filter((t) => !t.completed).length,
       withDeadlineToday: todaysTodos.filter((t) => t.deadline === today).length,
+      user: user?.email || '未認証',
       todos: todaysTodos.map((t) => ({
         id: t._id,
         task: t.task,
@@ -101,7 +98,7 @@ const IntegratedDashboard: React.FC = () => {
     });
 
     return todaysTodos;
-  }, [actualTodos]);
+  }, [actualTodos, user]);
 
   // モックデータ（実際の実装では API から取得）
   const [projects, setProjects] = useState<ProjectHubProject[]>([
@@ -195,10 +192,11 @@ const IntegratedDashboard: React.FC = () => {
     },
   ]);
 
-  // 統合タスクの更新（実際のToDoデータを統合）
+  // 統合タスクの更新（MongoDB ToDoデータを統合）
   useEffect(() => {
-    console.log('[IntegratedDashboard] 🔄 ToDoデータ統合開始:', {
-      user: user?.uid,
+    console.log('[IntegratedDashboard] 🔄 MongoToDoデータ統合開始:', {
+      user: user?.email,
+      isAuthenticated,
       todosLoading,
       todosError,
       actualTodosCount: actualTodos.length,
@@ -208,40 +206,39 @@ const IntegratedDashboard: React.FC = () => {
     if (!todosLoading && actualTodos.length > 0) {
       const integratedFromTodos = actualTodos.map((todo) => ({
         id: `todo-${todo._id}`,
-        projectId: 'proj-mvp', // デフォルトプロジェクトにマッピング
+        projectId: 'proj-mvp',
         title: todo.task,
-        description: todo.note || 'ToDoシステムから同期されたタスク',
+        description: `ToDoシステムから同期されたタスク (${todo.type})`,
         type: 'todo' as const,
         status: todo.completed ? ('completed' as const) : ('not-started' as const),
-        priority: todo.priorityLevel || ('medium' as const),
+        priority: todo.isPrioritized ? ('high' as const) : ('medium' as const),
         progress: todo.completed ? 100 : 0,
         startDate: todo.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
         deadline: todo.deadline,
-        estimatedHours: 1, // デフォルト値
+        estimatedHours: 1,
         actualHours: 0,
         sourceType: 'todo' as const,
         sourceId: todo._id,
         lastSyncAt: new Date().toISOString(),
         syncStatus: 'synced' as const,
-        assignees: [user?.uid || 'unknown'],
-        tags: todo.tags || [],
+        assignees: [user?.id || 'unknown'],
+        tags: [],
         dependencies: [],
         children: [],
         checklist: [],
       }));
 
-      console.log('[IntegratedDashboard] ✅ ToDo統合完了:', {
+      console.log('[IntegratedDashboard] ✅ MongoToDo統合完了:', {
         integratedCount: integratedFromTodos.length,
         completedTasks: integratedFromTodos.filter((t) => t.status === 'completed').length,
         pendingTasks: integratedFromTodos.filter((t) => t.status === 'not-started').length,
       });
 
       setIntegratedTasks((prev) => {
-        // 既存のモックデータと統合
         const nonTodoTasks = prev.filter((task) => task.sourceType !== 'todo');
         const combined = [...nonTodoTasks, ...integratedFromTodos];
 
-        console.log('[IntegratedDashboard] 🔀 統合タスク更新:', {
+        console.log('[IntegratedDashboard] 🔀 統合タスク更新 (MongoDB):', {
           previousCount: prev.length,
           nonTodoTasks: nonTodoTasks.length,
           todoTasks: integratedFromTodos.length,
@@ -253,23 +250,9 @@ const IntegratedDashboard: React.FC = () => {
     }
 
     if (todosError) {
-      console.error('[IntegratedDashboard] ❌ ToDoデータ取得エラー:', todosError);
+      console.error('[IntegratedDashboard] ❌ MongoToDoデータ取得エラー:', todosError);
     }
-  }, [actualTodos, todosLoading, todosError, user, getTodaysTodos]);
-
-  // 統計情報の更新
-  useEffect(() => {
-    if (todoStats) {
-      console.log('[IntegratedDashboard] 📊 ToDo統計情報:', {
-        totalTasks: todoStats.totalTasks,
-        completedTasks: todoStats.completedTasks,
-        completionRate: todoStats.completionRate,
-        inputTasks: todoStats.inputTasks,
-        outputTasks: todoStats.outputTasks,
-        streakDays: todoStats.streakDays,
-      });
-    }
-  }, [todoStats]);
+  }, [actualTodos, todosLoading, todosError, user, getTodaysTodos, isAuthenticated]);
 
   // プロジェクト進捗サマリーの計算（実際データを反映）
   const projectSummary = useMemo(() => {
