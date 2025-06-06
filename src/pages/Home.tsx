@@ -1,302 +1,35 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Clock,
-  BarChart2,
-  Calendar,
-  Database,
-  FileText,
-  UserCircle,
-  Activity,
-  Briefcase,
-  Twitter,
-  Moon,
-  TrendingUp,
-  Users,
-  CheckCircle,
-  Crown,
-  Lock,
-  Sparkles,
-  Star,
-  ArrowRight,
-  Target,
-  ShoppingBag,
-} from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
-import { setTrialActivated } from '@/store/userSlice';
-import BalanceUpdateReminder from '@/components/BalanceUpdateReminder';
-import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
-import HabitTracker from '@/components/habitTracker/HabitTracker';
-import { FeatureCard, FeatureCardVariant, PricingCard } from '@/components/FeatureCard';
-import { Badge } from '@/components/ui/badge';
 import { fetchTodoItems } from '@/store/todoSlice';
-
-// プラン比較コンポーネント
-const PlanComparisonTable = () => (
-  <div className="w-full overflow-x-auto">
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="text-left p-3 border-b-2 border-gray-200"></th>
-          <th className="text-center p-3 border-b-2 border-gray-200">無料プラン</th>
-          <th className="text-center p-3 border-b-2 border-amber-200 bg-amber-50">
-            <div className="flex items-center justify-center gap-2">
-              <Crown className="h-5 w-5 text-amber-600" aria-hidden="true" />
-              <span className="text-amber-800">プレミアムプラン</span>
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">作業時間トラッキング</td>
-          <td className="text-center p-3 border-b border-gray-200">
-            <CheckCircle className="inline h-5 w-5 text-green-500" aria-hidden="true" />
-            <span className="ml-2">基本機能</span>
-          </td>
-          <td className="text-center p-3 border-b border-amber-100 bg-amber-50">
-            <CheckCircle className="inline h-5 w-5 text-green-600" aria-hidden="true" />
-            <span className="ml-2">高度な分析機能付き</span>
-          </td>
-        </tr>
-        <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">ToDo管理</td>
-          <td className="text-center p-3 border-b border-gray-200">
-            <CheckCircle className="inline h-5 w-5 text-green-500" aria-hidden="true" />
-            <span className="ml-2">最大10件</span>
-          </td>
-          <td className="text-center p-3 border-b border-amber-100 bg-amber-50">
-            <CheckCircle className="inline h-5 w-5 text-green-600" aria-hidden="true" />
-            <span className="ml-2">無制限 + カテゴリ分け</span>
-          </td>
-        </tr>
-        <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">資産管理</td>
-          <td className="text-center p-3 border-b border-gray-200">
-            <CheckCircle className="inline h-5 w-5 text-green-500" aria-hidden="true" />
-            <span className="ml-2">基本記録のみ</span>
-          </td>
-          <td className="text-center p-3 border-b border-amber-100 bg-amber-50">
-            <CheckCircle className="inline h-5 w-5 text-green-600" aria-hidden="true" />
-            <span className="ml-2">詳細分析 + ポートフォリオ</span>
-          </td>
-        </tr>
-        <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">睡眠管理</td>
-          <td className="text-center p-3 border-b border-gray-200">
-            <CheckCircle className="inline h-5 w-5 text-green-500" aria-hidden="true" />
-            <span className="ml-2">基本記録</span>
-          </td>
-          <td className="text-center p-3 border-b border-amber-100 bg-amber-50">
-            <CheckCircle className="inline h-5 w-5 text-green-600" aria-hidden="true" />
-            <span className="ml-2">AI分析 + 改善提案</span>
-          </td>
-        </tr>
-        <tr>
-          <td className="p-3 border-b border-gray-200 font-medium">選挙分析</td>
-          <td className="text-center p-3 border-b border-gray-200">
-            <div className="text-gray-400">
-              <Lock className="inline h-5 w-5" aria-hidden="true" />
-              <span className="ml-2">利用不可</span>
-            </div>
-          </td>
-          <td className="text-center p-3 border-b border-amber-100 bg-amber-50">
-            <CheckCircle className="inline h-5 w-5 text-green-600" aria-hidden="true" />
-            <span className="ml-2">完全アクセス</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
+import { setTrialActivated } from '@/store/userSlice';
+import { WelcomeSection } from '@/components/home/WelcomeSection';
+import { DashboardWidgets } from '@/components/home/DashboardWidgets';
+import { FeatureGrid } from '@/components/home/FeatureGrid';
+import { useAuth } from '@/context/useAuth';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   const isUserLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
   const trialActivated = useSelector((state: RootState) => state.user.trialActivated);
 
   const [showGetStartedDialog, setShowGetStartedDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [currentDialogStep, setCurrentDialogStep] = useState('intro');
 
-  // カテゴリー別の機能カード - useMemoで最適化
-  const productivityTools = useMemo(
-    () => [
-      {
-        title: '効率的な時間管理',
-        description: '作業時間を記録し、生産性を向上させましょう。',
-        icon: <Clock className="h-6 w-6 text-primary" aria-hidden="true" />,
-        path: '/work-time',
-        buttonText: '時間管理を開始',
-        variant: 'default' as FeatureCardVariant,
-      },
-      {
-        title: '詳細な分析',
-        description: '作業時間のデータを可視化し、インサイトを得る',
-        icon: <BarChart2 className="h-6 w-6 text-indigo-500" aria-hidden="true" />,
-        path: '/work-time-reports',
-        buttonText: 'レポートを見る',
-        variant: 'outline' as FeatureCardVariant,
-      },
-      {
-        title: 'WBS作成ツール',
-        description: 'プロジェクトの作業分解構造を作成',
-        icon: <Briefcase className="h-6 w-6 text-emerald-500" aria-hidden="true" />,
-        path: '/wbs-creator',
-        buttonText: 'WBS作成',
-        variant: 'secondary' as FeatureCardVariant,
-        isPremium: true,
-      },
-      {
-        title: '統合ダッシュボード',
-        description: 'すべてのプロジェクトを一元管理',
-        icon: <Target className="h-6 w-6 text-blue-500" aria-hidden="true" />,
-        path: '/integrated-dashboard',
-        buttonText: 'ダッシュボードを開く',
-        variant: 'secondary' as FeatureCardVariant,
-      },
-    ],
-    []
-  );
-
-  const financeTools = useMemo(
-    () => [
-      {
-        title: '資産/負債レポート',
-        description: '資産と負債の状況を分析',
-        icon: <Database className="h-6 w-6 text-emerald-500" aria-hidden="true" />,
-        path: '/asset-liability-report',
-        buttonText: 'レポートを見る',
-        variant: 'secondary' as FeatureCardVariant,
-      },
-      {
-        title: '資産増減カレンダー',
-        description: '日々の資産変動を視覚的に確認',
-        icon: <Calendar className="h-6 w-6 text-amber-500" aria-hidden="true" />,
-        path: '/asset-calendar',
-        buttonText: 'カレンダーを見る',
-        variant: 'secondary' as FeatureCardVariant,
-        isPremium: true,
-      },
-    ],
-    []
-  );
-
-  const personalTools = useMemo(
-    () => [
-      {
-        title: 'ブログ',
-        description: '生産性向上のヒントや体験談を共有',
-        icon: <FileText className="h-6 w-6 text-orange-500" aria-hidden="true" />,
-        path: '/blog',
-        buttonText: 'ブログを見る',
-        variant: 'secondary' as FeatureCardVariant,
-      },
-      {
-        title: '睡眠トラッカー',
-        description: '睡眠パターンを記録・分析',
-        icon: <Moon className="h-6 w-6 text-blue-500" aria-hidden="true" />,
-        path: '/sleep-tracker',
-        buttonText: '睡眠管理',
-        variant: 'secondary' as FeatureCardVariant,
-      },
-      {
-        title: 'ユーザープロフィール',
-        description: 'あなたの情報を管理',
-        icon: <UserCircle className="h-6 w-6 text-purple-500" aria-hidden="true" />,
-        path: '/profile',
-        buttonText: 'プロフィール',
-        variant: 'outline' as FeatureCardVariant,
-      },
-    ],
-    []
-  );
-
-  // 料金プラン - useMemoで最適化
-  const pricingPlans = useMemo(
-    () => [
-      {
-        plan: '無料プラン',
-        price: 0,
-        features: [
-          '基本的な時間トラッキング',
-          'ToDo管理（最大10件）',
-          '基本的な資産管理',
-          'メールサポート',
-          '広告あり',
-        ],
-        isPopular: false,
-      },
-      {
-        plan: 'プレミアムプラン',
-        price: 980,
-        features: [
-          '高度な時間分析と予測',
-          '無制限のToDoとプロジェクト管理',
-          '詳細な資産分析とポートフォリオ管理',
-          '選挙分析ツール完全アクセス',
-          '広告なし',
-          '優先サポート',
-        ],
-        isPopular: true,
-      },
-      {
-        plan: 'チームプラン',
-        price: 4980,
-        features: [
-          '5ユーザーまで利用可能',
-          'プレミアムプランのすべての機能',
-          'チーム連携ツール',
-          '管理者ダッシュボード',
-          'APIアクセス',
-          '専任サポート担当者',
-        ],
-        isPopular: false,
-      },
-    ],
-    []
-  );
-
-  // MongoDBからToDoデータを取得する初期化処理を追加
+  // ToDoデータの初期化
   useEffect(() => {
-    console.log('[Home] 🏠 ホーム画面初期化開始');
-
-    if (isUserLoggedIn) {
-      console.log('[Home] 👤 ユーザーログイン済み - ToDoデータ取得開始');
-      dispatch(fetchTodoItems())
-        .then((result) => {
-          console.log('[Home] 📋 ToDoデータ取得結果:', {
-            success: result.meta.requestStatus === 'fulfilled',
-            todoCount:
-              result.meta.requestStatus === 'fulfilled' && Array.isArray(result.payload)
-                ? result.payload.length
-                : 0,
-          });
-        })
-        .catch((error) => {
-          console.error('[Home] ❌ ToDoデータ取得エラー:', error);
-        });
-    } else {
-      console.log('[Home] 🔒 ユーザー未ログイン - ToDoデータ取得スキップ');
+    if (isAuthenticated && isUserLoggedIn) {
+      dispatch(fetchTodoItems()).catch((error) => {
+        console.error('ToDoデータ取得エラー:', error);
+      });
     }
-  }, [isUserLoggedIn, dispatch]);
+  }, [isAuthenticated, isUserLoggedIn, dispatch]);
 
-  // 「今すぐ始める」ボタンのハンドラー - useCallbackで最適化
   const handleGetStarted = useCallback(() => {
     if (!isUserLoggedIn) {
       setShowGetStartedDialog(true);
@@ -312,285 +45,18 @@ const Home: React.FC = () => {
     }
   }, [isUserLoggedIn, hasActiveSubscription, trialActivated, navigate]);
 
-  // プラン選択ハンドラー - useCallbackで最適化
-  const handleSelectPlan = useCallback(
-    (plan: string) => {
-      setSelectedPlan(plan);
-
-      if (plan === '無料プラン') {
-        if (isUserLoggedIn) {
-          setShowGetStartedDialog(false);
-          navigate('/work-time');
-        } else {
-          setCurrentDialogStep('signup');
-        }
-      } else {
-        if (isUserLoggedIn) {
-          navigate('/subscription/checkout?plan=' + encodeURIComponent(plan));
-        } else {
-          setCurrentDialogStep('signup');
-        }
-      }
-    },
-    [isUserLoggedIn, navigate]
-  );
-
-  // トライアル開始ハンドラー - useCallbackで最適化
   const handleStartTrial = useCallback(() => {
     dispatch(setTrialActivated(true));
     setShowGetStartedDialog(false);
     navigate('/work-time');
   }, [dispatch, navigate]);
 
-  // ダイアログコンテンツ - メモ化
-  const dialogContent = useMemo(() => {
-    switch (currentDialogStep) {
-      case 'intro':
-        return (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">
-                LifeSyncへようこそ
-              </DialogTitle>
-              <DialogDescription className="text-center pt-2">
-                あなたの生産性と効率性を最大限に引き出す最高のツールです
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-6">
-              <div className="flex justify-center mb-8">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Sparkles className="h-24 w-24 text-primary/20" aria-hidden="true" />
-                  </div>
-                  <Clock className="h-24 w-24 text-primary relative z-10" aria-hidden="true" />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="p-4 text-center border rounded-lg">
-                  <Star className="h-8 w-8 text-amber-500 mx-auto mb-2" aria-hidden="true" />
-                  <h3 className="font-medium">生産性向上</h3>
-                  <p className="text-sm text-gray-600">時間の使い方を最適化</p>
-                </div>
-                <div className="p-4 text-center border rounded-lg">
-                  <BarChart2 className="h-8 w-8 text-blue-500 mx-auto mb-2" aria-hidden="true" />
-                  <h3 className="font-medium">詳細分析</h3>
-                  <p className="text-sm text-gray-600">データから洞察を得る</p>
-                </div>
-                <div className="p-4 text-center border rounded-lg">
-                  <Crown className="h-8 w-8 text-amber-500 mx-auto mb-2" aria-hidden="true" />
-                  <h3 className="font-medium">プレミアム機能</h3>
-                  <p className="text-sm text-gray-600">選挙分析や資産管理</p>
-                </div>
-              </div>
-              <p className="text-center text-gray-600 mb-4">
-                まずは無料プランから、高度な機能はプレミアムプランで利用できます。
-              </p>
-            </div>
-            <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button
-                variant="outline"
-                className="sm:flex-1"
-                onClick={() => setCurrentDialogStep('plans')}
-              >
-                プランを比較
-              </Button>
-              <Button className="sm:flex-1" onClick={() => setCurrentDialogStep('trial')}>
-                14日間無料トライアル
-              </Button>
-            </DialogFooter>
-          </>
-        );
-
-      case 'plans':
-        return (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">利用プランを選択</DialogTitle>
-              <DialogDescription>あなたのニーズに合ったプランをお選びください</DialogDescription>
-            </DialogHeader>
-            <div className="py-4 overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {pricingPlans.map((plan, index) => (
-                  <PricingCard key={index} {...plan} onSelect={handleSelectPlan} />
-                ))}
-              </div>
-              <div className="mt-4">
-                <Button
-                  variant="link"
-                  className="text-sm"
-                  onClick={() => setCurrentDialogStep('comparison')}
-                >
-                  プランの詳細比較を見る →
-                </Button>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setCurrentDialogStep('intro')}>
-                戻る
-              </Button>
-            </DialogFooter>
-          </>
-        );
-
-      case 'comparison':
-        return (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">プラン比較</DialogTitle>
-              <DialogDescription>各プランの機能を詳しく比較してください</DialogDescription>
-            </DialogHeader>
-            <div className="py-4 overflow-x-auto">
-              <PlanComparisonTable />
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setCurrentDialogStep('plans')}>
-                戻る
-              </Button>
-            </DialogFooter>
-          </>
-        );
-
-      case 'trial':
-        return (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">
-                14日間の無料トライアル
-              </DialogTitle>
-              <DialogDescription className="text-center pt-2">
-                プレミアム機能をすべて無料でお試しいただけます
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-6">
-              <div className="flex justify-center mb-6">
-                <Crown className="h-16 w-16 text-amber-500" aria-hidden="true" />
-              </div>
-              <div className="space-y-4 mb-6">
-                <div className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" aria-hidden="true" />
-                  <div>
-                    <h3 className="font-medium">すべてのプレミアム機能</h3>
-                    <p className="text-sm text-gray-600">14日間、すべての機能を制限なく利用可能</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" aria-hidden="true" />
-                  <div>
-                    <h3 className="font-medium">クレジットカード不要</h3>
-                    <p className="text-sm text-gray-600">
-                      トライアル開始時にお支払い情報は必要ありません
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5" aria-hidden="true" />
-                  <div>
-                    <h3 className="font-medium">自動更新なし</h3>
-                    <p className="text-sm text-gray-600">
-                      トライアル終了後に自動課金されることはありません
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="text-center text-sm text-gray-500 mb-4">
-                トライアル終了後はいつでもアップグレードできます。
-                <br />
-                トライアル期間中のデータはそのまま保持されます。
-              </div>
-            </div>
-            <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button
-                variant="outline"
-                className="sm:flex-1"
-                onClick={() => setCurrentDialogStep('plans')}
-              >
-                プランを比較する
-              </Button>
-              <Button className="sm:flex-1" onClick={handleStartTrial}>
-                無料トライアルを開始
-              </Button>
-            </DialogFooter>
-          </>
-        );
-
-      case 'signup':
-        return (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-center">アカウント作成</DialogTitle>
-              <DialogDescription className="text-center pt-2">
-                {selectedPlan
-                  ? `${selectedPlan}をご利用になるには、アカウント作成が必要です`
-                  : 'サービスを利用するにはアカウントが必要です'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-6">
-              <p className="text-center mb-6">アカウント作成ページへ移動します</p>
-              <div className="flex justify-center">
-                <Progress value={100} className="w-2/3 h-2" aria-label="アカウント作成準備完了" />
-              </div>
-            </div>
-            <DialogFooter className="flex flex-col sm:flex-row gap-2">
-              <Button variant="outline" onClick={() => setCurrentDialogStep('plans')}>
-                キャンセル
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowGetStartedDialog(false);
-                  navigate('/signup', { state: { selectedPlan } });
-                }}
-              >
-                アカウント作成へ進む
-              </Button>
-            </DialogFooter>
-          </>
-        );
-
-      default:
-        return null;
-    }
-  }, [currentDialogStep, handleSelectPlan, handleStartTrial, pricingPlans, selectedPlan, navigate]);
-
+  // 未ログイン時の表示
   if (!isUserLoggedIn) {
     return (
       <div className="min-h-screen">
-        {/* 未ログイン時のウェルカムセクション */}
-        <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-32">
-          <div className="container mx-auto px-4 text-center">
-            <div className="flex justify-center mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Sparkles className="h-32 w-32 text-white/20" aria-hidden="true" />
-                </div>
-                <Clock className="h-32 w-32 text-white relative z-10" aria-hidden="true" />
-              </div>
-            </div>
-            <h1 className="text-6xl font-bold mb-6">LifeSync</h1>
-            <p className="text-2xl mb-8 opacity-90">
-              あなたの生産性と効率性を最大限に引き出すツール
-            </p>
-            <div className="space-x-4">
-              <Button
-                size="lg"
-                onClick={handleGetStarted}
-                className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4"
-              >
-                今すぐ始める
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4"
-                onClick={() => navigate('/shop')}
-              >
-                <ShoppingBag className="mr-2 h-5 w-5" />
-                ストアを見る
-              </Button>
-            </div>
-          </div>
-        </section>
+        <WelcomeSection onGetStarted={handleGetStarted} />
 
-        {/* 機能紹介セクション */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
@@ -599,23 +65,16 @@ const Home: React.FC = () => {
                 LifeSyncは生産性向上のための包括的なツールセットを提供します
               </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {productivityTools.map((tool, index) => (
-                <FeatureCard key={index} {...tool} />
-              ))}
-            </div>
+            <FeatureGrid />
           </div>
         </section>
 
-        {/* プレミアムプラン案内ダイアログ */}
-        <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>
-          <DialogContent className="sm:max-w-md md:max-w-2xl">{dialogContent}</DialogContent>
-        </Dialog>
+        {/* Remove PlanDialog usage or create a simple inline dialog */}
       </div>
     );
   }
 
+  // ログイン済み時の表示
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
@@ -628,74 +87,13 @@ const Home: React.FC = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             時間管理から資産管理まで、あなたの生活を最適化するオールインワンプラットフォーム
           </p>
-          {/* MongoDBからのデータがロードされているかを表示するデバッグ情報 */}
-          {process.env.NODE_ENV === 'development' && isUserLoggedIn && (
-            <div className="mb-4 p-2 bg-yellow-100 rounded text-sm">
-              🐛 デバッグ: ToDoデータ読み込み状況を確認してください
-            </div>
-          )}
-          <Button
-            size="lg"
-            className="text-lg px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            onClick={handleGetStarted}
-          >
-            今すぐ始める
-            <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
-          </Button>
         </header>
 
-        {/* ログイン済みユーザー向けのダッシュボード */}
-        {isUserLoggedIn && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">今日のダッシュボード</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BalanceUpdateReminder assetEntries={[]} debtEntries={[]} />
-              <DailyTodoReminder isPremium={hasActiveSubscription} />
-            </div>
-            <div className="mt-6">
-              <HabitTracker />
-            </div>
-          </div>
-        )}
+        <DashboardWidgets isPremium={hasActiveSubscription} />
+        <FeatureGrid />
 
-        {/* 機能カテゴリ */}
-        <Tabs defaultValue="productivity" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="productivity">生産性ツール</TabsTrigger>
-            <TabsTrigger value="finance">資産管理</TabsTrigger>
-            <TabsTrigger value="personal">個人管理</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="productivity" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {productivityTools.map((tool, index) => (
-                <FeatureCard key={index} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="finance" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {financeTools.map((tool, index) => (
-                <FeatureCard key={index} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="personal" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {personalTools.map((tool, index) => (
-                <FeatureCard key={index} {...tool} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* Remove PlanDialog usage or create a simple inline dialog */}
       </div>
-
-      {/* プレミアムプラン案内ダイアログ */}
-      <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>
-        <DialogContent className="sm:max-w-md md:max-w-2xl">{dialogContent}</DialogContent>
-      </Dialog>
     </div>
   );
 };
