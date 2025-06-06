@@ -216,8 +216,15 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
               productivityScore={progressPercentage}
             />
 
+            {/* デバッグ用ボタン表示条件確認 */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-xs text-gray-500">
+                ボタン条件: Premium={hasPremium ? 'Yes' : 'No'}, Todos={todos.length}
+              </div>
+            )}
+
             {/* AI分析ボタン */}
-            {hasPremium && todos.length > 0 && (
+            {(hasPremium || process.env.NODE_ENV === 'development') && todos.length > 0 && (
               <Button
                 variant="outline"
                 size="sm"
