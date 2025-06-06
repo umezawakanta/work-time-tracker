@@ -43,7 +43,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminRoute from './components/admin/AdminRoute';
 import ProductsPage from '@/pages/ProductsPage';
 import ProductDetailPage from '@/pages/ProductDetailPage';
-import ShoppingCart from '@/components/ecommerce/ShoppingCart';
 import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import AbstinenceManager from './pages/AbstinenceManager';
