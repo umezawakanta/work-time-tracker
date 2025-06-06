@@ -125,6 +125,8 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
       setAnalysisResult(result);
       setShowAIAnalysis(true);
+      console.log('[DEBUG] showAIAnalysis設定:', true);
+      console.log('[DEBUG] analysisResult設定:', result);
 
       toast.success(`${result.totalTasks}個のタスクを分析しました`);
     } catch (error) {
@@ -206,6 +208,8 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
       </Card>
     );
   }
+
+  console.log('[DEBUG] showAIAnalysis状態:', showAIAnalysis);
 
   return (
     <div className="space-y-4">
