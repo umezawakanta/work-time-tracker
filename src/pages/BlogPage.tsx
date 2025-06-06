@@ -1,5 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { fetchBlogPosts, selectBlogPosts, selectBlogStatus } from '@/store/blogSlice';
 import {
   Container,
   Typography,
@@ -15,60 +18,43 @@ import {
   Select,
   MenuItem,
   TextField,
+  CircularProgress,
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-interface BlogPost {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  tags: string[];
-  publishedAt: Date;
-  author: string;
-}
-
 const BlogPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const posts = useSelector(selectBlogPosts);
+  const status = useSelector(selectBlogStatus);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [posts, _setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // ブログポストを取得
-    const fetchPosts = async () => {
-      try {
-        // API呼び出しの実装
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+    // Redux storeからブログポストを取得
+    if (status === 'idle') {
+      dispatch(fetchBlogPosts());
+    }
+  }, [dispatch, status]);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
 
   const filteredPosts = posts.filter((post) => {
-    const matchesCategory = category === 'all' || post.category === category;
+    const matchesCategory =
+      category === 'all' || post.category.toLowerCase() === category.toLowerCase();
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.content.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <Container maxWidth="lg">
-        <Box sx={{ py: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            読み込み中...
-          </Typography>
+        <Box sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress />
         </Box>
       </Container>
     );
@@ -79,7 +65,7 @@ const BlogPage: React.FC = () => {
       <Box sx={{ py: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
-            ブログ
+            ブログ ({posts.length}件)
           </Typography>
           <Button
             component={Link}
@@ -107,9 +93,11 @@ const BlogPage: React.FC = () => {
             <InputLabel>カテゴリ</InputLabel>
             <Select value={category} label="カテゴリ" onChange={(e) => setCategory(e.target.value)}>
               <MenuItem value="all">すべて</MenuItem>
-              <MenuItem value="tech">技術</MenuItem>
-              <MenuItem value="product">プロダクト</MenuItem>
-              <MenuItem value="team">チーム</MenuItem>
+              <MenuItem value="技術">技術</MenuItem>
+              <MenuItem value="テクノロジー">テクノロジー</MenuItem>
+              <MenuItem value="ビジネス">ビジネス</MenuItem>
+              <MenuItem value="ライフスタイル">ライフスタイル</MenuItem>
+              <MenuItem value="教育">教育</MenuItem>
             </Select>
           </FormControl>
 
@@ -130,7 +118,7 @@ const BlogPage: React.FC = () => {
           }}
         >
           {filteredPosts.map((post) => (
-            <Card key={post.id} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Card key={post._id} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography variant="h6" component="h2" gutterBottom>
                   {post.title}
@@ -139,16 +127,17 @@ const BlogPage: React.FC = () => {
                   {post.content.substring(0, 150)}...
                 </Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                  <Chip label={post.category} color="primary" size="small" />
                   {post.tags.map((tag) => (
-                    <Chip key={tag} label={tag} size="small" />
+                    <Chip key={tag} label={tag} size="small" variant="outlined" />
                   ))}
                 </Box>
                 <Typography variant="caption" color="text.secondary">
-                  {post.author} {post.publishedAt.toLocaleDateString()}
+                  {post.author} • {new Date(post.createdAt).toLocaleDateString('ja-JP')}
                 </Typography>
               </CardContent>
               <Box sx={{ p: 2, pt: 0 }}>
-                <Button size="small" href={`/blog/${post.id}`}>
+                <Button component={Link} to={`/blog/${post._id}`} size="small" variant="outlined">
                   続きを読む
                 </Button>
               </Box>
