@@ -195,9 +195,15 @@ const WBSCleanupDialog: React.FC<WBSCleanupDialogProps> = ({
       const similar = nodes.filter((other) => {
         if (other.id === node.id || processed.has(other.id)) return false;
 
-        // 名前の類似度をチェック
+        // 名前の類似度をチェック（閾値を0.7に下げて、より多くの重複を検出）
         const similarity = calculateSimilarity(node.name, other.name);
-        return similarity > 0.8 && node.parentId === other.parentId;
+
+        // 同じ親を持つか、または同じカテゴリ/タグを持つタスクを検出
+        const sameParent = node.parentId === other.parentId;
+        const sameCategory = node.category === other.category;
+        const hasCommonTags = node.tags?.some((tag) => other.tags?.includes(tag));
+
+        return similarity > 0.7 && (sameParent || sameCategory || hasCommonTags);
       });
 
       if (similar.length > 0) {
@@ -605,18 +611,29 @@ const WBSCleanupDialog: React.FC<WBSCleanupDialogProps> = ({
 
 // ヘルパー関数
 const calculateSimilarity = (str1: string, str2: string): number => {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
+  // 文字列を正規化
+  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, ' ').trim();
+  const s1 = normalize(str1);
+  const s2 = normalize(str2);
 
-  // レーベンシュタイン距離の簡易版
-  if (s1 === s2) return 1;
+  // 完全一致
+  if (s1 === s2) return 1.0;
+
+  // 部分一致（一方が他方に含まれる）
   if (s1.includes(s2) || s2.includes(s1)) return 0.9;
 
-  // 共通単語の割合
-  const words1 = s1.split(/\s+/);
-  const words2 = s2.split(/\s+/);
-  const commonWords = words1.filter((w) => words2.includes(w)).length;
-  const similarity = (commonWords * 2) / (words1.length + words2.length);
+  // 文字列の長さが大きく異なる場合は類似度を下げる
+  const lengthDiff = Math.abs(s1.length - s2.length);
+  if (lengthDiff > Math.max(s1.length, s2.length) * 0.5) return 0.3;
+
+  // 共通の単語を数える
+  const words1 = new Set(s1.split(/\s+/));
+  const words2 = new Set(s2.split(/\s+/));
+  const commonWords = [...words1].filter((word) => words2.has(word));
+
+  // 共通単語の割合を計算
+  const totalWords = new Set([...words1, ...words2]).size;
+  const similarity = commonWords.length / totalWords;
 
   return similarity;
 };
