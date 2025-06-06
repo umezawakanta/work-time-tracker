@@ -117,6 +117,12 @@ export default function Layout({ children }: LayoutProps) {
 
   // AuthContext値の変化をログ出力 - さらに詳細に
   const authContextRef = useRef(authContext);
+  const isDev = process.env.NODE_ENV === 'development';
+  const renderCountRef = useRef(0);
+  const lastExecutionRef = useRef<string | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     const prev = authContextRef.current;
     const current = authContext;
@@ -160,17 +166,19 @@ export default function Layout({ children }: LayoutProps) {
     }
 
     if (changes.length > 0) {
-      console.log('[Layout] 🔥 AuthContext詳細変化検出', {
-        changes,
-        details,
-        renderCount: ++renderCountRef.current,
-        strictModeNote: 'StrictMode有効 - 2回実行される',
-      });
+      if (isDev) {
+        console.log('[Layout] 🔥 AuthContext詳細変化検出', {
+          changes,
+          details,
+          renderCount: ++renderCountRef.current,
+        });
+      }
     } else {
-      console.log('[Layout] ✅ AuthContext値変化なし', {
-        renderCount: ++renderCountRef.current,
-        strictModeNote: 'StrictMode有効',
-      });
+      if (isDev) {
+        console.log('[Layout] ✅ AuthContext値変化なし', {
+          renderCount: ++renderCountRef.current,
+        });
+      }
     }
 
     authContextRef.current = current;
@@ -185,54 +193,42 @@ export default function Layout({ children }: LayoutProps) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
-  // Ref for tracking
-  const renderCountRef = useRef(0);
-  const executionCountRef = useRef(0);
-  const lastExecutionRef = useRef<string | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectAttemptsRef = useRef(0);
-  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // レンダリング回数とAuthContext参照の追跡
-  const isDev = process.env.NODE_ENV === 'development';
-
-  if (isDev) {
-    console.log('[Layout] Render', {
-      count: ++renderCountRef.current,
-      auth: isAuthenticated,
-      user: !!user,
-      loading,
-    });
-  }
-
   // ユーザーIDを安定した値として抽出
   const userId = useMemo(() => {
     const newUserId = user?._id || user?.id || null;
-    console.log('[Layout] 📋 userId useMemo実行', {
-      newUserId,
-      renderCount: renderCountRef.current,
-    });
+    if (isDev) {
+      console.log('[Layout] �� userId useMemo実行', {
+        newUserId,
+        renderCount: renderCountRef.current,
+      });
+    }
     return newUserId;
   }, [user?._id, user?.id]);
 
   const isAdmin = useMemo(() => {
     const newIsAdmin = user?.isAdmin || false;
-    console.log('[Layout] 👑 isAdmin useMemo実行', {
-      newIsAdmin,
-      renderCount: renderCountRef.current,
-    });
+    if (isDev) {
+      console.log('[Layout] 👑 isAdmin useMemo実行', {
+        newIsAdmin,
+        renderCount: renderCountRef.current,
+      });
+    }
     return newIsAdmin;
   }, [user?.isAdmin]);
 
   // APIエラーハンドリング - 依存配列を空にして安定化
   const handleApiError = useCallback((error: unknown) => {
-    console.log('[Layout] 🔧 handleApiError useCallback実行');
+    if (isDev) {
+      console.log('[Layout] 🔧 handleApiError useCallback実行');
+    }
     if (axios.isAxiosError(error)) {
       const axiosError = error;
       if (axiosError.response?.status === 500) {
         const errorMessage = axiosError.response.data.message || axiosError.message;
         if (errorMessage.includes('MongoDB connection error')) {
-          console.error('[API] MongoDB接続エラー検出');
+          if (isDev) {
+            console.error('[API] MongoDB接続エラー検出');
+          }
           toast.error('データベース接続エラー: 一部の機能が制限されています', {
             id: 'mongodb-connection-error',
             duration: 10000,
@@ -260,7 +256,9 @@ export default function Layout({ children }: LayoutProps) {
       return; // 既に同じ状態で実行済み
     }
 
-    console.log('[Layout] 💳 サブスクリプション処理');
+    if (isDev) {
+      console.log('[Layout] 💳 サブスクリプション処理');
+    }
 
     const checkSubscription = async () => {
       if (isAuthenticated && userId && !loading) {
@@ -332,14 +330,18 @@ export default function Layout({ children }: LayoutProps) {
       return; // 既に同じ状態で実行済み
     }
 
-    console.log('[Layout] 🎯 メイン処理実行');
+    if (isDev) {
+      console.log('[Layout] 🎯 メイン処理実行');
+    }
 
     if (!isAuthenticated || !userId || loading) {
       initializationRef.current.notificationsInitialized = false;
       return;
     }
 
-    console.log('[Layout] ✅ 通知・WebSocket処理開始');
+    if (isDev) {
+      console.log('[Layout] ✅ 通知・WebSocket処理開始');
+    }
 
     // WebSocket接続（開発環境のみ）
     const connectWebSocket = () => {
