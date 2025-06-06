@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,19 +14,8 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import {
-  Trash2,
-  AlertTriangle,
-  CheckCircle,
-  Info,
-  Loader2,
-  Sparkles,
-  Filter,
-  Merge,
-} from 'lucide-react';
+import { Trash2, CheckCircle, Info, Loader2, Sparkles, Filter, Merge } from 'lucide-react';
 import { WBSNode } from '@/types/wbs';
-import WBSAIService from '@/services/ai/WBSAIService';
 import { toast } from 'react-hot-toast';
 
 interface WBSCleanupDialogProps {
@@ -74,20 +63,187 @@ const WBSCleanupDialog: React.FC<WBSCleanupDialogProps> = ({
   const [applying, setApplying] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'details'>('overview');
 
-  useEffect(() => {
-    if (open && nodes.length > 0) {
-      analyzeWBS();
-    }
-  }, [open, nodes]);
+  const findDuplicateTasks = useCallback((nodes: WBSNode[]) => {
+    const duplicates: Array<{ originalName: string; duplicates: string[] }> = [];
+    const processed = new Set<string>();
 
-  const analyzeWBS = async () => {
+    nodes.forEach((node) => {
+      if (processed.has(node.id)) return;
+
+      const similar = nodes.filter((other) => {
+        if (other.id === node.id || processed.has(other.id)) return false;
+        const similarity = calculateSimilarity(node.name, other.name);
+        const sameParent = node.parentId === other.parentId;
+        const hasCommonTags = node.tags?.some((tag) => other.tags?.includes(tag));
+        return similarity > 0.7 && (sameParent || hasCommonTags);
+      });
+
+      if (similar.length > 0) {
+        duplicates.push({
+          originalName: node.name,
+          duplicates: similar.map((s) => s.id),
+        });
+        similar.forEach((s) => processed.add(s.id));
+      }
+    });
+
+    return duplicates;
+  }, []);
+
+  const findLowValueTasks = useCallback((nodes: WBSNode[]) => {
+    return nodes
+      .filter((node) => {
+        if (node.status === 'completed' && node.deliverables.length === 0) return true;
+        if (node.estimatedHours < 1 && node.level > 1) return true;
+        if (node.progress === 0 && new Date(node.endDate) < new Date()) return true;
+        return false;
+      })
+      .map((node) => ({
+        id: node.id,
+        reason: getReasonForLowValue(node),
+        confidence: calculateConfidenceForLowValue(node),
+      }));
+  }, []);
+
+  const findMergeableTasks = useCallback((nodes: WBSNode[]) => {
+    const groups: Array<{
+      nodeIds: string[];
+      targetId: string;
+      reason: string;
+      confidence: number;
+    }> = [];
+
+    const parentGroups = new Map<string, WBSNode[]>();
+    nodes.forEach((node) => {
+      if (node.parentId) {
+        const siblings = parentGroups.get(node.parentId) || [];
+        siblings.push(node);
+        parentGroups.set(node.parentId, siblings);
+      }
+    });
+
+    parentGroups.forEach((siblings) => {
+      if (siblings.length < 2) return;
+      const sequential = findSequentialTasks(siblings);
+      sequential.forEach((seq) => {
+        groups.push({
+          nodeIds: seq.map((n) => n.id),
+          targetId: seq[0].id,
+          reason: '短期間の連続タスクは統合可能です',
+          confidence: 75,
+        });
+      });
+    });
+
+    return groups;
+  }, []);
+
+  const findOptimizableTasks = useCallback((nodes: WBSNode[]) => {
+    return nodes
+      .filter((node) => {
+        if (node.actualHours > 0 && node.estimatedHours > node.actualHours * 2) return true;
+        if (node.dependencies.length > 3) return true;
+        return false;
+      })
+      .map((node) => ({
+        nodeId: node.id,
+        reason: getOptimizationReason(node),
+        action: getOptimizationAction(node),
+        impact: 'low' as const,
+        confidence: 65,
+      }));
+  }, []);
+
+  const performCleanupAnalysis = useCallback(
+    async (nodes: WBSNode[]): Promise<CleanupAnalysis> => {
+      const suggestions: CleanupSuggestion[] = [];
+
+      // 1. 重複タスクの検出
+      const duplicates = findDuplicateTasks(nodes);
+      duplicates.forEach((dup) => {
+        suggestions.push({
+          type: 'delete',
+          nodeIds: dup.duplicates,
+          reason: `「${dup.originalName}」と類似したタスクが複数存在します`,
+          impact: 'medium',
+          confidence: 85,
+        });
+      });
+
+      // 2. 低価値タスクの検出
+      const lowValueTasks = findLowValueTasks(nodes);
+      lowValueTasks.forEach((task) => {
+        suggestions.push({
+          type: 'delete',
+          nodeIds: [task.id],
+          reason: task.reason,
+          impact: 'low',
+          confidence: task.confidence,
+        });
+      });
+
+      // 3. 統合可能なタスクの検出
+      const mergeableTasks = findMergeableTasks(nodes);
+      mergeableTasks.forEach((group) => {
+        suggestions.push({
+          type: 'merge',
+          nodeIds: group.nodeIds,
+          reason: group.reason,
+          impact: 'medium',
+          confidence: group.confidence,
+          details: {
+            mergeTarget: group.targetId,
+          },
+        });
+      });
+
+      // 4. 最適化可能なタスクの検出
+      const optimizableTasks = findOptimizableTasks(nodes);
+      optimizableTasks.forEach((opt) => {
+        suggestions.push({
+          type: 'optimize',
+          nodeIds: [opt.nodeId],
+          reason: opt.reason,
+          impact: opt.impact,
+          confidence: opt.confidence,
+          details: {
+            optimizationAction: opt.action,
+          },
+        });
+      });
+
+      // 統計情報の計算
+      const redundantNodes = suggestions
+        .filter((s) => s.type === 'delete')
+        .reduce((sum, s) => sum + s.nodeIds.length, 0);
+      const mergeableNodes = suggestions
+        .filter((s) => s.type === 'merge')
+        .reduce((sum, s) => sum + s.nodeIds.length - 1, 0);
+      const lowValueNodes = lowValueTasks.length;
+
+      // 削減効果の推定
+      const estimatedTimeSaving = calculateTimeSaving(nodes, suggestions);
+      const estimatedCostSaving = calculateCostSaving(nodes, suggestions);
+
+      return {
+        totalNodes: nodes.length,
+        redundantNodes,
+        mergeableNodes,
+        lowValueNodes,
+        suggestions: suggestions.sort((a, b) => b.confidence - a.confidence),
+        summary: generateCleanupSummary(nodes, suggestions),
+        estimatedTimeSaving,
+        estimatedCostSaving,
+      };
+    },
+    [findDuplicateTasks, findLowValueTasks, findMergeableTasks, findOptimizableTasks]
+  );
+
+  const analyzeWBS = useCallback(async () => {
     setAnalyzing(true);
     try {
-      // WBS全体を分析
       const analysis = await performCleanupAnalysis(nodes);
       setAnalysis(analysis);
-
-      // デフォルトで信頼度70%以上の提案を選択
       const defaultSelected = new Set<number>();
       analysis.suggestions.forEach((suggestion, index) => {
         if (suggestion.confidence >= 70) {
@@ -101,222 +257,13 @@ const WBSCleanupDialog: React.FC<WBSCleanupDialogProps> = ({
     } finally {
       setAnalyzing(false);
     }
-  };
+  }, [nodes, performCleanupAnalysis]);
 
-  const performCleanupAnalysis = async (nodes: WBSNode[]): Promise<CleanupAnalysis> => {
-    const suggestions: CleanupSuggestion[] = [];
-
-    // 1. 重複タスクの検出
-    const duplicates = findDuplicateTasks(nodes);
-    duplicates.forEach((dup) => {
-      suggestions.push({
-        type: 'delete',
-        nodeIds: dup.duplicates,
-        reason: `「${dup.originalName}」と類似したタスクが複数存在します`,
-        impact: 'medium',
-        confidence: 85,
-      });
-    });
-
-    // 2. 低価値タスクの検出
-    const lowValueTasks = findLowValueTasks(nodes);
-    lowValueTasks.forEach((task) => {
-      suggestions.push({
-        type: 'delete',
-        nodeIds: [task.id],
-        reason: task.reason,
-        impact: 'low',
-        confidence: task.confidence,
-      });
-    });
-
-    // 3. 統合可能なタスクの検出
-    const mergeableTasks = findMergeableTasks(nodes);
-    mergeableTasks.forEach((group) => {
-      suggestions.push({
-        type: 'merge',
-        nodeIds: group.nodeIds,
-        reason: group.reason,
-        impact: 'medium',
-        confidence: group.confidence,
-        details: {
-          mergeTarget: group.targetId,
-        },
-      });
-    });
-
-    // 4. 最適化可能なタスクの検出
-    const optimizableTasks = findOptimizableTasks(nodes);
-    optimizableTasks.forEach((opt) => {
-      suggestions.push({
-        type: 'optimize',
-        nodeIds: [opt.nodeId],
-        reason: opt.reason,
-        impact: opt.impact,
-        confidence: opt.confidence,
-        details: {
-          optimizationAction: opt.action,
-        },
-      });
-    });
-
-    // 統計情報の計算
-    const redundantNodes = suggestions
-      .filter((s) => s.type === 'delete')
-      .reduce((sum, s) => sum + s.nodeIds.length, 0);
-    const mergeableNodes = suggestions
-      .filter((s) => s.type === 'merge')
-      .reduce((sum, s) => sum + s.nodeIds.length - 1, 0);
-    const lowValueNodes = lowValueTasks.length;
-
-    // 削減効果の推定
-    const estimatedTimeSaving = calculateTimeSaving(nodes, suggestions);
-    const estimatedCostSaving = calculateCostSaving(nodes, suggestions);
-
-    return {
-      totalNodes: nodes.length,
-      redundantNodes,
-      mergeableNodes,
-      lowValueNodes,
-      suggestions: suggestions.sort((a, b) => b.confidence - a.confidence),
-      summary: generateCleanupSummary(nodes, suggestions),
-      estimatedTimeSaving,
-      estimatedCostSaving,
-    };
-  };
-
-  const findDuplicateTasks = (nodes: WBSNode[]) => {
-    const duplicates: Array<{ originalName: string; duplicates: string[] }> = [];
-    const processed = new Set<string>();
-
-    nodes.forEach((node) => {
-      if (processed.has(node.id)) return;
-
-      const similar = nodes.filter((other) => {
-        if (other.id === node.id || processed.has(other.id)) return false;
-
-        // 名前の類似度をチェック（閾値を0.7に下げて、より多くの重複を検出）
-        const similarity = calculateSimilarity(node.name, other.name);
-
-        // 同じ親を持つか、または同じカテゴリ/タグを持つタスクを検出
-        const sameParent = node.parentId === other.parentId;
-        const sameCategory = node.category === other.category;
-        const hasCommonTags = node.tags?.some((tag) => other.tags?.includes(tag));
-
-        return similarity > 0.7 && (sameParent || sameCategory || hasCommonTags);
-      });
-
-      if (similar.length > 0) {
-        duplicates.push({
-          originalName: node.name,
-          duplicates: similar.map((s) => s.id),
-        });
-        similar.forEach((s) => processed.add(s.id));
-      }
-    });
-
-    return duplicates;
-  };
-
-  const findLowValueTasks = (nodes: WBSNode[]) => {
-    return nodes
-      .filter((node) => {
-        // 完了済みで成果物がないタスク
-        if (node.status === 'completed' && node.deliverables.length === 0) {
-          return true;
-        }
-
-        // 工数が極端に少ないタスク（1時間未満）
-        if (node.estimatedHours < 1 && node.level > 1) {
-          return true;
-        }
-
-        // 進捗0%で期限切れのタスク
-        if (node.progress === 0 && new Date(node.endDate) < new Date()) {
-          return true;
-        }
-
-        return false;
-      })
-      .map((node) => ({
-        id: node.id,
-        reason: getReasonForLowValue(node),
-        confidence: calculateConfidenceForLowValue(node),
-      }));
-  };
-
-  const findMergeableTasks = (nodes: WBSNode[]) => {
-    const groups: Array<{
-      nodeIds: string[];
-      targetId: string;
-      reason: string;
-      confidence: number;
-    }> = [];
-
-    // 同じ親を持つ類似タスクをグループ化
-    const parentGroups = new Map<string, WBSNode[]>();
-    nodes.forEach((node) => {
-      if (node.parentId) {
-        const siblings = parentGroups.get(node.parentId) || [];
-        siblings.push(node);
-        parentGroups.set(node.parentId, siblings);
-      }
-    });
-
-    parentGroups.forEach((siblings) => {
-      if (siblings.length < 2) return;
-
-      // 短期間の連続タスクを検出
-      const sequential = findSequentialTasks(siblings);
-      sequential.forEach((seq) => {
-        groups.push({
-          nodeIds: seq.map((n) => n.id),
-          targetId: seq[0].id,
-          reason: '短期間の連続タスクは統合可能です',
-          confidence: 75,
-        });
-      });
-
-      // 同じ担当者の類似タスクを検出
-      const byAssignee = groupByAssignee(siblings);
-      byAssignee.forEach((tasks) => {
-        if (tasks.length >= 2 && areSimilarTasks(tasks)) {
-          groups.push({
-            nodeIds: tasks.map((t) => t.id),
-            targetId: tasks[0].id,
-            reason: '同じ担当者の類似タスクは統合できます',
-            confidence: 70,
-          });
-        }
-      });
-    });
-
-    return groups;
-  };
-
-  const findOptimizableTasks = (nodes: WBSNode[]) => {
-    return nodes
-      .filter((node) => {
-        // 過大な見積もり
-        if (node.actualHours > 0 && node.estimatedHours > node.actualHours * 2) {
-          return true;
-        }
-
-        // 依存関係の最適化が可能
-        if (node.dependencies.length > 3) {
-          return true;
-        }
-
-        return false;
-      })
-      .map((node) => ({
-        nodeId: node.id,
-        reason: getOptimizationReason(node),
-        action: getOptimizationAction(node),
-        impact: 'low' as const,
-        confidence: 65,
-      }));
-  };
+  useEffect(() => {
+    if (open && nodes.length > 0) {
+      analyzeWBS();
+    }
+  }, [open, nodes, analyzeWBS]);
 
   const applyCleanup = async () => {
     if (!analysis) return;
@@ -700,21 +647,7 @@ const findSequentialTasks = (siblings: WBSNode[]): WBSNode[][] => {
   return groups;
 };
 
-const groupByAssignee = (tasks: WBSNode[]): WBSNode[][] => {
-  const assigneeMap = new Map<string, WBSNode[]>();
-
-  tasks.forEach((task) => {
-    task.assignees.forEach((assignee) => {
-      const group = assigneeMap.get(assignee) || [];
-      group.push(task);
-      assigneeMap.set(assignee, group);
-    });
-  });
-
-  return Array.from(assigneeMap.values()).filter((group) => group.length >= 2);
-};
-
-const areSimilarTasks = (tasks: WBSNode[]): boolean => {
+const _areSimilarTasks = (tasks: WBSNode[]): boolean => {
   // タスク名の類似度をチェック
   for (let i = 0; i < tasks.length - 1; i++) {
     for (let j = i + 1; j < tasks.length; j++) {
@@ -793,6 +726,18 @@ const generateCleanupSummary = (nodes: WBSNode[], suggestions: CleanupSuggestion
   if (optimizeCount > 0) parts.push(`${optimizeCount}個の最適化提案`);
 
   return `分析の結果、${parts.join('、')}が見つかりました。これらを適用することで、プロジェクトの効率を大幅に改善できます。`;
+};
+
+const _groupByAssignee = (tasks: WBSNode[]): WBSNode[][] => {
+  const assigneeMap = new Map<string, WBSNode[]>();
+  tasks.forEach((task) => {
+    task.assignees.forEach((assignee) => {
+      const group = assigneeMap.get(assignee) || [];
+      group.push(task);
+      assigneeMap.set(assignee, group);
+    });
+  });
+  return Array.from(assigneeMap.values()).filter((group) => group.length >= 2);
 };
 
 export default WBSCleanupDialog;

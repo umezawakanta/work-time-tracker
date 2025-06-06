@@ -8,18 +8,12 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Clock,
   Target,
   BarChart3,
-  Calendar,
   CheckCircle,
   Award,
-  Zap,
-  ArrowRight,
-  Sparkles,
-  Users,
   TrendingUp,
   CheckSquare,
 } from 'lucide-react';
