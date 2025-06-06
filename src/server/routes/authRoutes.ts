@@ -6,7 +6,6 @@ import {
   checkAuth,
   updateProfile,
   getUserData,
-  updateUserToAdmin,
 } from '../controllers/authController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { User } from '../models/User.js';
