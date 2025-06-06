@@ -18,6 +18,7 @@ import {
   CheckSquare,
   Calendar,
   FileText,
+  BookOpen,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -99,6 +100,12 @@ const menuItems: MenuItem[] = [
     label: 'ブログ',
     path: '/blog',
     description: 'ブログ記事の閲覧と管理',
+  },
+  {
+    icon: <BookOpen className="h-5 w-5" />,
+    label: '本棚',
+    path: '/bookshelf',
+    description: '読書管理と記録',
   },
 ];
 

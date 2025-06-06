@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { WBSNode, IWBSNode } from '../models/WBSNode.js';
+import { WBSNode } from '../models/WBSNode.js';
 
 const router = express.Router();
 

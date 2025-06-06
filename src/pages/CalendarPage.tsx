@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { CalendarHeader } from "@/components/CalendarHeader"
-import { WeekView } from "@/components/WeekView"
-import { MonthView } from "@/components/MonthView"
-import { DayView } from "@/components/DayView"
-import { Sidebar } from "@/components/Sidebar"
+import { useState } from 'react';
+import { CalendarHeader } from '@/components/CalendarHeader';
+import { WeekView } from '@/components/WeekView';
+import { MonthView } from '@/components/MonthView';
+import { DayView } from '@/components/DayView';
+import { Sidebar } from '@/components/Sidebar';
 
 export default function CalendarPage() {
   const [view, setView] = useState<'day' | 'week' | 'month'>('week');
@@ -20,6 +20,5 @@ export default function CalendarPage() {
         {view === 'month' && <MonthView />}
       </div>
     </div>
-  )
+  );
 }
-
