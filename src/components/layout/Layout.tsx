@@ -14,6 +14,7 @@ import {
   Target,
   Sparkles,
   Bell,
+  Search,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -29,6 +30,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 interface LayoutProps {
@@ -77,6 +79,7 @@ export default function Layout({ children }: LayoutProps) {
   const { locale, setLocale } = useLocale();
   const { isAuthenticated, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = async () => {
     try {
@@ -93,11 +96,11 @@ export default function Layout({ children }: LayoutProps) {
 
   const renderMenuItem = (item: MenuItem, isMobile: boolean = false) => {
     const baseClasses = isMobile
-      ? 'group flex items-center gap-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 transition-all duration-200'
-      : 'group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 transition-all duration-200';
+      ? 'group flex items-center gap-3 p-4 rounded-2xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300'
+      : 'group flex items-center gap-3 px-4 py-3 text-sm rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300';
 
     const activeClasses = isActive(item.path)
-      ? 'bg-gradient-to-r from-primary/15 to-primary/10 text-primary shadow-sm'
+      ? 'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 shadow-md'
       : 'text-slate-700 hover:text-slate-900';
 
     return (
@@ -110,8 +113,10 @@ export default function Layout({ children }: LayoutProps) {
       >
         <div
           className={cn(
-            'transition-colors duration-200',
-            isActive(item.path) ? 'text-primary' : 'text-slate-500 group-hover:text-slate-700'
+            'transition-colors duration-200 p-2 rounded-lg',
+            isActive(item.path)
+              ? 'text-blue-600 bg-blue-100'
+              : 'text-slate-500 group-hover:text-slate-700 group-hover:bg-slate-100'
           )}
         >
           {item.icon}
@@ -121,12 +126,12 @@ export default function Layout({ children }: LayoutProps) {
             {item.label}
           </span>
           {isMobile && item.description && (
-            <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
+            <p className="text-xs text-slate-500 mt-1">{item.description}</p>
           )}
         </div>
         {item.isPremium && <Crown className="h-4 w-4 text-amber-500" />}
         {item.badge && (
-          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
             {item.badge}
           </Badge>
         )}
@@ -145,14 +150,14 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* 改良されたヘッダー */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* ロゴとナビゲーション */}
             <div className="flex items-center gap-8">
               <Link to="/" className="flex items-center gap-3 group">
                 <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                     <Sparkles className="h-5 w-5 text-white" />
                   </div>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full animate-pulse"></div>
@@ -165,6 +170,17 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </Link>
 
+              {/* 検索バー */}
+              <div className="hidden md:flex relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="検索..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64 bg-slate-50/50 border-slate-200 focus:bg-white transition-all duration-200"
+                />
+              </div>
+
               {/* デスクトップナビゲーション */}
               <nav className="hidden xl:flex items-center gap-2">
                 {menuItems.map((item) => renderMenuItem(item))}
@@ -172,18 +188,18 @@ export default function Layout({ children }: LayoutProps) {
             </div>
 
             {/* ユーザーメニュー */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* 通知ベル */}
-              <Button variant="ghost" size="sm" className="relative">
+              <Button variant="ghost" size="sm" className="relative hover:bg-slate-100">
                 <Bell className="h-5 w-5" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
               </Button>
 
               {/* 言語切替 */}
               <select
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as any)}
-                className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
                 title="言語選択"
               >
                 <option value="ja">🇯🇵 日本語</option>
@@ -195,11 +211,11 @@ export default function Layout({ children }: LayoutProps) {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full ring-2 ring-transparent hover:ring-primary/20 transition-all duration-200"
+                    className="relative h-10 w-10 rounded-full ring-2 ring-transparent hover:ring-blue-500/20 transition-all duration-200"
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user?.avatar} alt={user?.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-semibold">
+                      <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold">
                         {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -210,7 +226,7 @@ export default function Layout({ children }: LayoutProps) {
                     <div className="flex items-center gap-3 p-2">
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={user?.avatar} alt={user?.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white">
+                        <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                           {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -254,6 +270,18 @@ export default function Layout({ children }: LayoutProps) {
                   <SheetHeader className="text-left">
                     <SheetTitle className="text-lg font-semibold">メニュー</SheetTitle>
                   </SheetHeader>
+
+                  {/* モバイル検索 */}
+                  <div className="relative mt-6">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="検索..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
                   <nav className="flex flex-col gap-2 mt-8">
                     {menuItems.map((item) => renderMenuItem(item, true))}
                   </nav>
