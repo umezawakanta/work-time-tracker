@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Brain } from 'lucide-react';
 
 // Store actions and selectors
-import { fetchTodoItems } from '@/store/todoSlice';
+import { fetchTodoItems, deleteTodoItem, updateTodoItem, addTodoItem } from '@/store/todoSlice';
 import {
   selectTodos,
   selectTodoStatus,
@@ -179,6 +179,82 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     });
   };
 
+  // 一括適用ハンドラーを追加
+  const handleApplyAllRecommendations = useCallback(async () => {
+    if (!analysisResult) return;
+
+    const confirmMessage = '全ての推奨事項を適用しますか？この操作は元に戻せません。';
+    if (!window.confirm(confirmMessage)) return;
+
+    try {
+      let appliedCount = 0;
+
+      for (const task of analysisResult.analyzedTasks) {
+        for (const recommendation of task.recommendations) {
+          try {
+            switch (recommendation.type) {
+              case 'delete':
+                await dispatch(deleteTodoItem(task.id)).unwrap();
+                appliedCount++;
+                break;
+
+              case 'rewrite':
+                if (recommendation.rewrittenTask) {
+                  await dispatch(
+                    updateTodoItem({
+                      _id: task.id,
+                      updates: { task: recommendation.rewrittenTask },
+                    })
+                  ).unwrap();
+                  appliedCount++;
+                }
+                break;
+
+              case 'split':
+                if (recommendation.newTasks && recommendation.newTasks.length > 0) {
+                  // 元のタスクを削除
+                  await dispatch(deleteTodoItem(task.id)).unwrap();
+
+                  // 新しいタスクを追加
+                  for (const newTaskText of recommendation.newTasks) {
+                    await dispatch(
+                      addTodoItem({
+                        task: newTaskText,
+                        priority: 3,
+                        isPrioritized: false,
+                        type: 'input',
+                      })
+                    ).unwrap();
+                  }
+                  appliedCount++;
+                }
+                break;
+
+              case 'clarify':
+                // 明確化は手動での確認が必要なため、自動適用はスキップ
+                console.log(`明確化が必要なタスク: ${task.originalTask}`);
+                break;
+
+              default:
+                console.warn('未対応の推奨事項タイプ:', recommendation.type);
+            }
+          } catch (error) {
+            console.error(`タスク ${task.id} の推奨事項適用に失敗:`, error);
+          }
+        }
+      }
+
+      toast.success(`${appliedCount}件の推奨事項を適用しました`);
+
+      // 分析結果をクリア
+      setAnalysisResult(null);
+      setShowAIAnalysis(false);
+    } catch (error) {
+      console.error('一括適用エラー:', error);
+      toast.error('一括適用中にエラーが発生しました');
+    }
+  }, [analysisResult, dispatch]);
+
   // Loading state
   if (status === 'loading') {
     return (
@@ -298,6 +374,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
           onAnalyze={handleAnalyzeTodos}
           onApplyRecommendation={handleApplyRecommendation}
           onDismissRecommendation={handleDismissRecommendation}
+          onApplyAllRecommendations={handleApplyAllRecommendations}
         />
       )}
     </div>

@@ -25,6 +25,7 @@ interface TodoAIAnalysisProps {
   onAnalyze: () => void;
   onApplyRecommendation: (taskId: string, recommendation: TaskRecommendation) => void;
   onDismissRecommendation: (taskId: string, recommendationIndex: number) => void;
+  onApplyAllRecommendations?: () => void;
 }
 
 export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
@@ -33,6 +34,7 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
   onAnalyze,
   onApplyRecommendation,
   onDismissRecommendation,
+  onApplyAllRecommendations,
 }) => {
   console.log('[DEBUG] TodoAIAnalysis レンダリング開始:', {
     analysisResult: !!analysisResult,
@@ -165,9 +167,19 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
               <Progress value={analysisResult!.summary.improvementScore} className="h-2" />
             </div>
 
-            <Button onClick={onAnalyze} variant="outline" size="sm" className="w-full">
-              再分析
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={onAnalyze} variant="outline" size="sm" className="flex-1">
+                再分析
+              </Button>
+              {onApplyAllRecommendations && (
+                <Button
+                  onClick={onApplyAllRecommendations}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  全ての推奨事項を適用
+                </Button>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="recommendations" className="space-y-4">
