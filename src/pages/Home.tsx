@@ -282,7 +282,10 @@ const Home: React.FC = () => {
         .then((result) => {
           console.log('[Home] 📋 ToDoデータ取得結果:', {
             success: result.meta.requestStatus === 'fulfilled',
-            todoCount: result.meta.requestStatus === 'fulfilled' ? result.payload?.length : 0,
+            todoCount:
+              result.meta.requestStatus === 'fulfilled' && Array.isArray(result.payload)
+                ? result.payload.length
+                : 0,
           });
         })
         .catch((error) => {
@@ -646,7 +649,7 @@ const Home: React.FC = () => {
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">今日のダッシュボード</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BalanceUpdateReminder />
+              <BalanceUpdateReminder assetEntries={[]} debtEntries={[]} />
               <DailyTodoReminder isPremium={hasActiveSubscription} />
             </div>
             <div className="mt-6">

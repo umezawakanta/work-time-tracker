@@ -52,7 +52,7 @@ import {
 import { Todo } from '@/types/todo';
 import { WBSNode } from '@/types/wbs';
 import { useTodos } from '@/hooks/useTodos';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
 
 const IntegratedDashboard: React.FC = () => {
