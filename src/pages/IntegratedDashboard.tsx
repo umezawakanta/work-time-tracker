@@ -20,37 +20,21 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
-  Calendar,
   CheckCircle,
   Clock,
   AlertTriangle,
-  TrendingUp,
   Target,
   GitBranch,
   ListTodo,
   Rocket,
-  Users,
-  Settings,
   RefreshCw,
-  Filter,
   MoreVertical,
   Plus,
-  ArrowRight,
-  Zap,
   Play,
-  Pause,
   BarChart3,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ProjectHubProject,
-  ProjectProgressSummary,
-  IntegratedTask,
-  ProjectAlert,
-} from '@/types/projectHub';
-import { Todo } from '@/types/todo';
-import { WBSNode } from '@/types/wbs';
-import { useTodos } from '@/hooks/useTodos';
+import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/projectHub';
 import { useAuth } from '@/context/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
 
@@ -100,7 +84,7 @@ const IntegratedDashboard: React.FC = () => {
   }, [actualTodos, user]);
 
   // モックデータ（実際の実装では API から取得）
-  const [projects, setProjects] = useState<ProjectHubProject[]>([
+  const [projects, _setProjects] = useState<ProjectHubProject[]>([
     {
       id: 'proj-mvp',
       name: 'MVP機能完成',
@@ -179,7 +163,7 @@ const IntegratedDashboard: React.FC = () => {
     },
   ]);
 
-  const [alerts, setAlerts] = useState<ProjectAlert[]>([
+  const [alerts, _setAlerts] = useState<ProjectAlert[]>([
     {
       id: 'alert-1',
       type: 'warning',
@@ -441,7 +425,11 @@ const IntegratedDashboard: React.FC = () => {
       )}
 
       {/* メインコンテンツ */}
-      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="space-y-6">
+      <Tabs
+        value={viewMode}
+        onValueChange={(v) => setViewMode(v as 'overview' | 'tasks' | 'timeline' | 'analytics')}
+        className="space-y-6"
+      >
         <TabsList>
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="tasks">タスク管理</TabsTrigger>

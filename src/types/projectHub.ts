@@ -2,8 +2,8 @@
  * サイト改善計画、WBS、ToDoリストを統合するプロジェクトハブの型定義
  */
 
-import { Todo, PriorityLevel } from './todo';
-import { WBSNode, WBSProject } from './wbs';
+import { Todo as _Todo, PriorityLevel } from './todo';
+import { WBSNode as _WBSNode, WBSProject as _WBSProject } from './wbs';
 
 // 統合プロジェクトの状態
 export type ProjectStatus = 'planning' | 'active' | 'completed' | 'on-hold' | 'cancelled';
@@ -180,7 +180,11 @@ export interface SyncConflict {
   type: 'data-mismatch' | 'deletion-conflict' | 'dependency-conflict';
   sourceType: 'improvement' | 'wbs' | 'todo';
   sourceId: string;
-  conflictData: any;
+  conflictData: {
+    improvement?: Record<string, unknown>;
+    wbs?: Record<string, unknown>;
+    todo?: Record<string, unknown>;
+  };
   resolution?: 'keep-improvement' | 'keep-wbs' | 'keep-todo' | 'manual';
   resolvedAt?: string;
   resolvedBy?: string;
@@ -211,14 +215,20 @@ export interface DashboardWidget {
   type: 'progress-overview' | 'task-list' | 'timeline' | 'alerts' | 'metrics';
   title: string;
   position: { x: number; y: number; width: number; height: number };
-  configuration: any;
+  configuration: {
+    'progress-overview'?: { showPercentage: boolean; showTrend: boolean };
+    'task-list'?: { sortBy: string; filterStatus: string[] };
+    timeline?: { startDate: string; endDate: string };
+    alerts?: { severity: string[] };
+    metrics?: { metrics: string[] };
+  };
   visible: boolean;
 }
 
 // ダッシュボードフィルター
 export interface DashboardFilter {
   type: 'project' | 'status' | 'priority' | 'assignee' | 'tag' | 'date';
-  value: any;
+  value: string | string[] | { start: string; end: string };
   active: boolean;
 }
 
