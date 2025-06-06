@@ -99,28 +99,39 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   // AI analysis execution
   const handleAnalyzeTodos = async () => {
+    console.log('[DEBUG] AI分析ボタンがクリックされました');
+    console.log('[DEBUG] todos.length:', todos.length);
+    console.log('[DEBUG] todos:', todos);
+
     if (todos.length === 0) {
+      console.log('[DEBUG] ToDoがないため早期リターン');
       toast.error('分析するToDoがありません');
       return;
     }
 
     setIsAnalyzing(true);
-    try {
-      const todoData = todos.map((todo) => ({
-        id: todo.id,
-        task: (todo as any).task || (todo as any).title || String(todo),
-        description: (todo as any).description || '',
-      }));
+    console.log('[DEBUG] 分析開始');
 
-      const result = await todoAnalysisService.analyzeTodos(todoData);
+    try {
+      // 簡単なテストデータで動作確認
+      const testData = [
+        { id: '1', task: 'テストタスク1', description: '' },
+        { id: '2', task: 'テストタスク2', description: '' },
+      ];
+
+      console.log('[DEBUG] todoAnalysisService呼び出し前');
+      const result = await todoAnalysisService.analyzeTodos(testData);
+      console.log('[DEBUG] 分析結果:', result);
+
       setAnalysisResult(result);
       setShowAIAnalysis(true);
 
       toast.success(`${result.totalTasks}個のタスクを分析しました`);
     } catch (error) {
-      console.error('AI分析エラー:', error);
+      console.error('[DEBUG] AI分析エラー:', error);
       toast.error('AI分析に失敗しました');
     } finally {
+      console.log('[DEBUG] 分析終了');
       setIsAnalyzing(false);
     }
   };
@@ -224,17 +235,30 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
             )}
 
             {/* AI分析ボタン */}
-            {(hasPremium || process.env.NODE_ENV === 'development') && todos.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAnalyzeTodos}
-                disabled={isAnalyzing}
-                className="flex items-center gap-2"
-              >
-                <Brain className="h-4 w-4" />
-                {isAnalyzing ? 'AI分析中...' : 'AI分析'}
-              </Button>
+            {(hasPremium || process.env.NODE_ENV === 'development') && (
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    console.log('テストボタンクリック');
+                    toast.success('ボタンクリックテスト成功');
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  テスト
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAnalyzeTodos}
+                  disabled={isAnalyzing}
+                  className="flex items-center gap-2"
+                >
+                  <Brain className="h-4 w-4" />
+                  {isAnalyzing ? 'AI分析中...' : 'AI分析'}
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
