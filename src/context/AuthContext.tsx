@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+  const isCheckingAuthRef = useRef(false);
 
   const fetchUser = useCallback(async () => {
     console.log('[AuthContext] fetchUser実行');
@@ -52,13 +52,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
-    if (isCheckingAuth) {
+    if (isCheckingAuthRef.current) {
       console.log('[AuthContext] 認証チェック中、スキップ');
       return;
     }
 
     console.log('[AuthContext] 認証チェック開始');
-    setIsCheckingAuth(true);
+    isCheckingAuthRef.current = true;
     setLoading(true);
 
     try {
@@ -67,7 +67,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (isAuth) {
         setIsAuthenticated(true);
-        // fetchUserを直接呼び出さずに、ここで個別にデータ取得
         try {
           const userData = await fetchUserData();
           const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
@@ -90,11 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
       setUser(null);
     } finally {
-      setIsCheckingAuth(false);
+      isCheckingAuthRef.current = false;
       setLoading(false);
       console.log('[AuthContext] 認証チェック完了');
     }
-  }, [isCheckingAuth]);
+  }, []);
 
   useEffect(() => {
     console.log('[AuthContext] 初回認証チェック実行');
