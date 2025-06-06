@@ -51,14 +51,57 @@ import {
 } from '@/types/projectHub';
 import { Todo } from '@/types/todo';
 import { WBSNode } from '@/types/wbs';
+import { useTodos } from '@/hooks/useTodos';
+import { useAuth } from '@/hooks/useAuth';
 
 const IntegratedDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'overview' | 'tasks' | 'timeline' | 'analytics'>(
     'overview'
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  // 実際のTodoデータを取得
+  const {
+    todos: actualTodos,
+    loading: todosLoading,
+    error: todosError,
+    stats: todoStats,
+  } = useTodos();
+
+  // 本日のToDoフィルタリング関数
+  const getTodaysTodos = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    console.log('[IntegratedDashboard] 📅 本日の日付:', today);
+
+    const todaysTodos = actualTodos.filter((todo) => {
+      const isCreatedToday = todo.createdAt?.startsWith(today);
+      const hasDeadlineToday = todo.deadline === today;
+      const isUncompletedWithNoDeadline = !todo.completed && !todo.deadline;
+
+      return isCreatedToday || hasDeadlineToday || isUncompletedWithNoDeadline;
+    });
+
+    console.log('[IntegratedDashboard] 📋 全ToDoリスト:', {
+      totalTodos: actualTodos.length,
+      todaysTodos: todaysTodos.length,
+      completedToday: todaysTodos.filter((t) => t.completed).length,
+      pendingToday: todaysTodos.filter((t) => !t.completed).length,
+      withDeadlineToday: todaysTodos.filter((t) => t.deadline === today).length,
+      todos: todaysTodos.map((t) => ({
+        id: t._id,
+        task: t.task,
+        completed: t.completed,
+        deadline: t.deadline,
+        createdAt: t.createdAt,
+        type: t.type,
+      })),
+    });
+
+    return todaysTodos;
+  }, [actualTodos]);
 
   // モックデータ（実際の実装では API から取得）
   const [projects, setProjects] = useState<ProjectHubProject[]>([
@@ -152,10 +195,92 @@ const IntegratedDashboard: React.FC = () => {
     },
   ]);
 
-  // プロジェクト進捗サマリーの計算
+  // 統合タスクの更新（実際のToDoデータを統合）
+  useEffect(() => {
+    console.log('[IntegratedDashboard] 🔄 ToDoデータ統合開始:', {
+      user: user?.uid,
+      todosLoading,
+      todosError,
+      actualTodosCount: actualTodos.length,
+      todaysTodosCount: getTodaysTodos.length,
+    });
+
+    if (!todosLoading && actualTodos.length > 0) {
+      const integratedFromTodos = actualTodos.map((todo) => ({
+        id: `todo-${todo._id}`,
+        projectId: 'proj-mvp', // デフォルトプロジェクトにマッピング
+        title: todo.task,
+        description: todo.note || 'ToDoシステムから同期されたタスク',
+        type: 'todo' as const,
+        status: todo.completed ? ('completed' as const) : ('pending' as const),
+        priority: todo.priorityLevel || ('medium' as const),
+        progress: todo.completed ? 100 : 0,
+        startDate: todo.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        deadline: todo.deadline,
+        estimatedHours: 1, // デフォルト値
+        actualHours: 0,
+        sourceType: 'todo' as const,
+        sourceId: todo._id,
+        lastSyncAt: new Date().toISOString(),
+        syncStatus: 'synced' as const,
+        assignees: [user?.uid || 'unknown'],
+        tags: todo.tags || [],
+        dependencies: [],
+        children: [],
+        checklist: [],
+      }));
+
+      console.log('[IntegratedDashboard] ✅ ToDo統合完了:', {
+        integratedCount: integratedFromTodos.length,
+        completedTasks: integratedFromTodos.filter((t) => t.status === 'completed').length,
+        pendingTasks: integratedFromTodos.filter((t) => t.status === 'pending').length,
+      });
+
+      setIntegratedTasks((prev) => {
+        // 既存のモックデータと統合
+        const nonTodoTasks = prev.filter((task) => task.sourceType !== 'todo');
+        const combined = [...nonTodoTasks, ...integratedFromTodos];
+
+        console.log('[IntegratedDashboard] 🔀 統合タスク更新:', {
+          previousCount: prev.length,
+          nonTodoTasks: nonTodoTasks.length,
+          todoTasks: integratedFromTodos.length,
+          totalCombined: combined.length,
+        });
+
+        return combined;
+      });
+    }
+
+    if (todosError) {
+      console.error('[IntegratedDashboard] ❌ ToDoデータ取得エラー:', todosError);
+    }
+  }, [actualTodos, todosLoading, todosError, user, getTodaysTodos]);
+
+  // 統計情報の更新
+  useEffect(() => {
+    if (todoStats) {
+      console.log('[IntegratedDashboard] 📊 ToDo統計情報:', {
+        totalTasks: todoStats.totalTasks,
+        completedTasks: todoStats.completedTasks,
+        completionRate: todoStats.completionRate,
+        inputTasks: todoStats.inputTasks,
+        outputTasks: todoStats.outputTasks,
+        streakDays: todoStats.streakDays,
+      });
+    }
+  }, [todoStats]);
+
+  // プロジェクト進捗サマリーの計算（実際データを反映）
   const projectSummary = useMemo(() => {
+    console.log('[IntegratedDashboard] 🧮 プロジェクトサマリー計算開始:', {
+      selectedProject,
+      integratedTasksCount: integratedTasks.length,
+      alertsCount: alerts.length,
+    });
+
     if (selectedProject === 'all') {
-      return {
+      const summary = {
         overallProgress: Math.round(
           projects.reduce((sum, p) => sum + p.progress, 0) / projects.length
         ),
@@ -166,13 +291,19 @@ const IntegratedDashboard: React.FC = () => {
         completedTasks: integratedTasks.filter((t) => t.status === 'completed').length,
         alertsCount: alerts.length,
       };
+
+      console.log('[IntegratedDashboard] 📈 全体サマリー:', summary);
+      return summary;
     }
 
     const project = projects.find((p) => p.id === selectedProject);
-    if (!project) return null;
+    if (!project) {
+      console.warn('[IntegratedDashboard] ⚠️ プロジェクト未発見:', selectedProject);
+      return null;
+    }
 
     const projectTasks = integratedTasks.filter((t) => t.projectId === selectedProject);
-    return {
+    const summary = {
       overallProgress: project.progress,
       totalProjects: 1,
       activeProjects: project.status === 'active' ? 1 : 0,
@@ -183,35 +314,57 @@ const IntegratedDashboard: React.FC = () => {
         a.relatedTaskIds.some((id) => projectTasks.some((t) => t.id === id))
       ).length,
     };
+
+    console.log('[IntegratedDashboard] 📊 プロジェクト別サマリー:', {
+      project: project.name,
+      ...summary,
+    });
+
+    return summary;
   }, [selectedProject, projects, integratedTasks, alerts]);
 
-  // 同期処理
+  // 同期処理（実際のデータを同期）
   const handleSync = async () => {
+    console.log('[IntegratedDashboard] 🔄 手動同期開始');
     setIsLoading(true);
+
     try {
-      // 実際の実装では、各システムからデータを取得して同期
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // 実際のTodoデータを再取得（useTodosフックが自動で処理）
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // サイト改善計画 → WBS → ToDo の順序で同期
-      console.log('同期処理を実行中...');
-
-      // モック: 進捗を更新
-      setProjects((prev) =>
-        prev.map((p) => ({
-          ...p,
-          progress: Math.min(p.progress + 5, 100),
-          updatedAt: new Date().toISOString(),
-        }))
-      );
+      console.log('[IntegratedDashboard] ✅ 同期完了');
     } catch (error) {
-      console.error('同期エラー:', error);
+      console.error('[IntegratedDashboard] ❌ 同期エラー:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ローディング状態のログ
+  useEffect(() => {
+    console.log('[IntegratedDashboard] 🔄 ローディング状態変化:', {
+      todosLoading,
+      isLoading,
+      userLoggedIn: !!user,
+      todosCount: actualTodos.length,
+    });
+  }, [todosLoading, isLoading, user, actualTodos.length]);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* デバッグ情報表示（開発環境のみ） */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
+          <h3 className="font-bold mb-2">🐛 デバッグ情報</h3>
+          <p>ユーザー: {user?.email || '未ログイン'}</p>
+          <p>全Todo数: {actualTodos.length}</p>
+          <p>本日のTodo数: {getTodaysTodos.length}</p>
+          <p>統合タスク数: {integratedTasks.length}</p>
+          <p>ローディング: {todosLoading ? 'はい' : 'いいえ'}</p>
+          {todosError && <p className="text-red-600">エラー: {todosError}</p>}
+        </div>
+      )}
+
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -396,26 +549,38 @@ const IntegratedDashboard: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
                     <ListTodo className="h-4 w-4" />
-                    今日のタスク
+                    今日のタスク ({getTodaysTodos.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {integratedTasks.slice(0, 5).map((task) => (
-                    <div key={task.id} className="flex items-center gap-3">
-                      <CheckCircle
-                        className={`h-4 w-4 ${
-                          task.status === 'completed' ? 'text-green-500' : 'text-gray-300'
-                        }`}
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{task.title}</p>
-                        <p className="text-xs text-muted-foreground">{task.estimatedHours}h 予定</p>
+                  {getTodaysTodos.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">本日のタスクはありません</p>
+                  ) : (
+                    getTodaysTodos.slice(0, 5).map((todo) => (
+                      <div key={todo._id} className="flex items-center gap-3">
+                        <CheckCircle
+                          className={`h-4 w-4 ${
+                            todo.completed ? 'text-green-500' : 'text-gray-300'
+                          }`}
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{todo.task}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {todo.type === 'input' ? 'インプット' : 'アウトプット'}
+                            {todo.deadline && ` - 期限: ${todo.deadline}`}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" size="sm" className="w-full">
+                    ))
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => navigate('/')}
+                  >
                     <Plus className="h-4 w-4 mr-2" />
-                    タスク追加
+                    ToDoリストへ
                   </Button>
                 </CardContent>
               </Card>
