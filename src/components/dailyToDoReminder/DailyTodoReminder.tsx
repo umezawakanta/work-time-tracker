@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { Brain } from 'lucide-react';
 
 // Store actions and selectors
-import { fetchTodoItems } from '@/store/todoSlice';
+import { fetchTodoItems, deleteTodo, addTodo, updateTodo } from '@/store/todoSlice';
 import {
   selectTodos,
   selectTodoStatus,
@@ -19,6 +20,7 @@ import { TodoHeader } from './components/TodoHeader';
 import { TodoProgress } from './components/TodoProgress';
 import { TodoTabs } from './components/TodoTabs';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { TodoAIAnalysis } from './components/TodoAIAnalysis';
 
 // Hooks
 import { useTodoState } from './hooks/useTodoState';
@@ -30,6 +32,13 @@ import { Todo } from './types';
 
 // Styles
 import './DailyTodoReminder.css';
+
+// Services
+import {
+  todoAnalysisService,
+  TodoAnalysisResult,
+  TaskRecommendation,
+} from '@/services/ai/todoAnalysisService';
 
 interface DailyTodoReminderProps {
   readonly isPremium?: boolean;
@@ -52,6 +61,11 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const { selectedTab, setSelectedTab } = useTodoState();
   const { streakCount, todoHistory, dailyHistory } = useTodoHistory(todos);
   const { filteredTodos, filterControls } = useTodoFilters(todos);
+
+  // AI analysis related state
+  const [analysisResult, setAnalysisResult] = useState<TodoAnalysisResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   // Initial data loading
   useEffect(() => {
@@ -82,6 +96,119 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   const inputCount = todos.filter((todo: Todo) => todo.type === 'input').length;
   const outputCount = todos.filter((todo: Todo) => todo.type === 'output').length;
+
+  // AI analysis execution
+  const handleAnalyzeTodos = async () => {
+    if (todos.length === 0) {
+      toast.error('分析するToDoがありません');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const todoData = todos.map((todo) => ({
+        id: todo.id,
+        task: todo.task,
+        description: todo.description,
+      }));
+
+      const result = await todoAnalysisService.analyzeTodos(todoData);
+      setAnalysisResult(result);
+      setShowAIAnalysis(true);
+
+      toast.success(`${result.totalTasks}個のタスクを分析しました`);
+    } catch (error) {
+      console.error('AI分析エラー:', error);
+      toast.error('AI分析に失敗しました');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  // Apply recommendation
+  const handleApplyRecommendation = (taskId: string, recommendation: TaskRecommendation) => {
+    const task = todos.find((t) => t.id === taskId);
+    if (!task) return;
+
+    switch (recommendation.type) {
+      case 'delete':
+        // Delete task
+        dispatch(deleteTodo(taskId));
+        toast.success('タスクを削除しました');
+        break;
+
+      case 'split':
+        if (recommendation.newTasks) {
+          // Delete original task and add new tasks
+          dispatch(deleteTodo(taskId));
+          recommendation.newTasks.forEach((newTask) => {
+            dispatch(
+              addTodo({
+                task: newTask,
+                type: task.type,
+                priority: task.priority,
+              })
+            );
+          });
+          toast.success(`タスクを${recommendation.newTasks.length}個に分割しました`);
+        }
+        break;
+
+      case 'rewrite':
+      case 'clarify':
+        if (recommendation.rewrittenTask) {
+          // Rewrite task
+          dispatch(
+            updateTodo({
+              id: taskId,
+              updates: { task: recommendation.rewrittenTask },
+            })
+          );
+          toast.success('タスクを改善しました');
+        }
+        break;
+    }
+
+    // Update analysis result (remove applied recommendation)
+    if (analysisResult) {
+      const updatedTasks = analysisResult.analyzedTasks.map((analysisTask) => {
+        if (analysisTask.id === taskId) {
+          return {
+            ...analysisTask,
+            recommendations: analysisTask.recommendations.filter((rec) => rec !== recommendation),
+          };
+        }
+        return analysisTask;
+      });
+
+      setAnalysisResult({
+        ...analysisResult,
+        analyzedTasks: updatedTasks,
+      });
+    }
+  };
+
+  // Dismiss recommendation
+  const handleDismissRecommendation = (taskId: string, recommendationIndex: number) => {
+    if (!analysisResult) return;
+
+    const updatedTasks = analysisResult.analyzedTasks.map((task) => {
+      if (task.id === taskId) {
+        const newRecommendations = [...task.recommendations];
+        newRecommendations.splice(recommendationIndex, 1);
+        return {
+          ...task,
+          recommendations: newRecommendations,
+        };
+      }
+      return task;
+    });
+
+    setAnalysisResult({
+      ...analysisResult,
+      analyzedTasks: updatedTasks,
+    });
+  };
 
   // Loading state
   if (status === 'loading') {
@@ -115,44 +242,73 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   }
 
   return (
-    <Card className="w-full shadow-sm border border-gray-200 todo-reminder-card">
-      {/* デバッグ情報表示（開発環境のみ） */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="p-2 bg-blue-50 text-xs">
-          🐛 ToDo数: {todos.length}, 状態: {status}, プレミアム: {hasPremium ? 'Yes' : 'No'}
-        </div>
+    <div className="space-y-4">
+      <Card className="w-full shadow-sm border border-gray-200 todo-reminder-card">
+        {/* デバッグ情報表示（開発環境のみ） */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="p-2 bg-blue-50 text-xs">
+            🐛 ToDo数: {todos.length}, 状態: {status}, プレミアム: {hasPremium ? 'Yes' : 'No'}
+          </div>
+        )}
+
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <TodoHeader
+              hasPremium={hasPremium}
+              streakCount={streakCount}
+              completedToday={completedCount}
+              totalToday={totalCount}
+              productivityScore={progressPercentage}
+            />
+
+            {/* AI分析ボタン */}
+            {hasPremium && todos.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAnalyzeTodos}
+                disabled={isAnalyzing}
+                className="flex items-center gap-2"
+              >
+                <Brain className="h-4 w-4" />
+                {isAnalyzing ? 'AI分析中...' : 'AI分析'}
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+
+        <TodoProgress
+          completedCount={completedCount}
+          totalCount={totalCount}
+          progressPercentage={progressPercentage}
+          inputCount={inputCount}
+          outputCount={outputCount}
+        />
+
+        <CardContent className="pb-2 pt-0">
+          <TodoTabs
+            selectedTab={selectedTab}
+            onTabChange={setSelectedTab}
+            todos={filteredTodos}
+            todoHistory={todoHistory}
+            dailyHistory={dailyHistory}
+            hasPremium={hasPremium}
+            filterControls={filterControls}
+          />
+        </CardContent>
+      </Card>
+
+      {/* AI分析結果 */}
+      {showAIAnalysis && (
+        <TodoAIAnalysis
+          analysisResult={analysisResult}
+          isLoading={isAnalyzing}
+          onAnalyze={handleAnalyzeTodos}
+          onApplyRecommendation={handleApplyRecommendation}
+          onDismissRecommendation={handleDismissRecommendation}
+        />
       )}
-
-      <CardHeader className="pb-2">
-        <TodoHeader
-          hasPremium={hasPremium}
-          streakCount={streakCount}
-          completedToday={completedCount}
-          totalToday={totalCount}
-          productivityScore={progressPercentage}
-        />
-      </CardHeader>
-
-      <TodoProgress
-        completedCount={completedCount}
-        totalCount={totalCount}
-        progressPercentage={progressPercentage}
-        inputCount={inputCount}
-        outputCount={outputCount}
-      />
-
-      <CardContent className="pb-2 pt-0">
-        <TodoTabs
-          selectedTab={selectedTab}
-          onTabChange={setSelectedTab}
-          todos={filteredTodos}
-          todoHistory={todoHistory}
-          dailyHistory={dailyHistory}
-          hasPremium={hasPremium}
-          filterControls={filterControls}
-        />
-      </CardContent>
-    </Card>
+    </div>
   );
 };
 
