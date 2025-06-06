@@ -47,6 +47,7 @@ import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
 import CheckoutPage from '@/pages/CheckoutPage';
 import AbstinenceManager from './pages/AbstinenceManager';
 import ShopPage from './pages/ShopPage';
+import TodoManagerPage from './pages/TodoManagerPage';
 
 const theme = createTheme({
   palette: {
@@ -118,6 +119,7 @@ export default function App() {
                   <Route element={<PrivateRoute />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/integrated-dashboard" element={<IntegratedDashboard />} />
+                    <Route path="/todos" element={<TodoManagerPage />} />
                     <Route path="/work-time" element={<WorkTimeEntryForm />} />
                     <Route path="/work-time-reports" element={<WorkTimeReports />} />
                     <Route path="/asset-liability-report" element={<AssetLiabilityReportPage />} />

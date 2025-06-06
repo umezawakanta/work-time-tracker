@@ -21,7 +21,11 @@ import {
   Sparkles,
   Users,
   TrendingUp,
+  CheckSquare,
 } from 'lucide-react';
+import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -78,80 +82,13 @@ const Home: React.FC = () => {
     },
   ];
 
-  if (!isUserLoggedIn) {
-    return (
-      <PageLayout
-        title="あなたの生産性を最大化"
-        subtitle="時間管理、プロジェクト管理、分析機能を統合した次世代の生産性プラットフォーム"
-        badge={{
-          text: 'AI駆動の生産性分析',
-          variant: 'default',
-          icon: <Sparkles className="w-4 h-4" />,
-        }}
-        headerGradient
-        maxWidth="full"
-      >
-        {/* 機能紹介セクション */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {[
-            {
-              icon: <Clock className="h-8 w-8" />,
-              title: '時間管理',
-              description: '正確な時間追跡と自動レポート生成',
-              gradient: 'from-blue-500 to-blue-600',
-            },
-            {
-              icon: <Target className="h-8 w-8" />,
-              title: 'プロジェクト管理',
-              description: 'タスク管理とプロジェクト進捗の可視化',
-              gradient: 'from-purple-500 to-purple-600',
-            },
-            {
-              icon: <BarChart3 className="h-8 w-8" />,
-              title: '詳細レポート',
-              description: '包括的な分析ダッシュボード',
-              gradient: 'from-emerald-500 to-emerald-600',
-            },
-          ].map((feature, index) => (
-            <EnhancedCard
-              key={index}
-              title={feature.title}
-              description={feature.description}
-              icon={feature.icon}
-              gradient={feature.gradient}
-              action={{
-                text: '詳細を見る',
-                onClick: () => navigate('/register'),
-              }}
-            />
-          ))}
-        </div>
-
-        {/* CTAセクション */}
-        <div className="text-center">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              className="px-8 py-4 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
-              onClick={() => navigate('/register')}
-            >
-              無料で始める
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-8 py-4 text-lg border-2 hover:bg-slate-50"
-              onClick={() => navigate('/login')}
-            >
-              ログイン
-            </Button>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
+  // Add this after the stats array and before the return statement
+  const recentActivities = [
+    { task: 'ダッシュボード UI改善', time: '2時間前', status: 'completed' },
+    { task: 'API設計ドキュメント', time: '4時間前', status: 'in-progress' },
+    { task: 'ユーザーテスト実施', time: '昨日', status: 'completed' },
+    { task: 'デザインレビュー', time: '2日前', status: 'completed' },
+  ];
 
   // ログイン済みユーザー向けダッシュボード
   return (
@@ -167,9 +104,69 @@ const Home: React.FC = () => {
       {/* 統計セクション */}
       <StatsGrid stats={stats} className="mb-8" />
 
+      {/* メインコンテンツ */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        {/* DailyTodoReminderを左側に配置 */}
+        <div className="lg:col-span-2">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-slate-900">今日のToDo</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/todos')}
+                className="flex items-center gap-2"
+              >
+                <CheckSquare className="h-4 w-4" />
+                詳細管理
+              </Button>
+            </div>
+            <DailyTodoReminder isPremium={hasActiveSubscription} />
+          </div>
+        </div>
+
+        {/* 右側に最近のアクティビティ */}
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-500" />
+              最近のアクティビティ
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  <div
+                    className={cn(
+                      'w-2 h-2 rounded-full',
+                      activity.status === 'completed' ? 'bg-emerald-500' : 'bg-blue-500'
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{activity.task}</p>
+                    <p className="text-xs text-slate-500">{activity.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* クイックアクションセクション */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
+          {
+            icon: <CheckSquare className="h-6 w-6" />,
+            title: 'ToDo管理',
+            description: 'タスクの詳細管理',
+            path: '/todos',
+            gradient: 'from-green-500 to-green-600',
+          },
           {
             icon: <Clock className="h-6 w-6" />,
             title: '勤怠記録',
@@ -190,13 +187,6 @@ const Home: React.FC = () => {
             description: '生産性の分析',
             path: '/work-time-reports',
             gradient: 'from-emerald-500 to-emerald-600',
-          },
-          {
-            icon: <Calendar className="h-6 w-6" />,
-            title: 'カレンダー',
-            description: 'スケジュール管理',
-            path: '/calendar',
-            gradient: 'from-orange-500 to-orange-600',
           },
         ].map((action, index) => (
           <EnhancedCard

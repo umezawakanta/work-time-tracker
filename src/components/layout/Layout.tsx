@@ -15,6 +15,7 @@ import {
   Sparkles,
   Bell,
   Search,
+  CheckSquare,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -52,6 +53,13 @@ const menuItems: MenuItem[] = [
     label: 'ホーム',
     path: '/',
     description: 'ダッシュボードホーム',
+  },
+  {
+    icon: <CheckSquare className="h-5 w-5" />,
+    label: 'ToDo管理',
+    path: '/todos',
+    description: 'タスクとToDoの管理',
+    badge: 'NEW',
   },
   {
     icon: <Target className="h-5 w-5" />,

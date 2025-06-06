@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
-import { getErrorMessage } from './utils/errorUtils';
 import { Button } from '@/components/ui/button';
 
 // Store actions and selectors
-import { fetchTodoItems, checkPremiumStatus } from '@/store/todoSlice';
+import { fetchTodoItems } from '@/store/todoSlice';
 import {
   selectTodos,
   selectTodoStatus,
@@ -74,7 +73,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
       console.error('[DailyTodoReminder] ❌ ToDoデータエラー:', error);
       toast.error(`ToDoデータの取得に失敗しました: ${error}`);
     }
-  }, [dispatch, todos.length, status, error]);
+  }, [dispatch, todos.length, status, error, hasPremium]);
 
   // Progress calculations
   const completedCount = todos.filter((todo: Todo) => todo.completed).length;
