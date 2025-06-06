@@ -7,12 +7,13 @@ import {
   Clock,
   BarChart2,
   Menu,
-  X,
   LogOut,
   Settings,
   User,
   Crown,
   Target,
+  Sparkles,
+  Bell,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -23,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +41,7 @@ interface MenuItem {
   path: string;
   isPremium?: boolean;
   badge?: string;
+  description?: string;
 }
 
 const menuItems: MenuItem[] = [
@@ -46,21 +49,25 @@ const menuItems: MenuItem[] = [
     icon: <Home className="h-5 w-5" />,
     label: 'ホーム',
     path: '/',
+    description: 'ダッシュボードホーム',
   },
   {
     icon: <Target className="h-5 w-5" />,
     label: '統合ダッシュボード',
     path: '/integrated-dashboard',
+    description: 'プロジェクト統合管理',
   },
   {
     icon: <Clock className="h-5 w-5" />,
     label: '勤怠管理',
     path: '/work-time',
+    description: '時間の記録と管理',
   },
   {
     icon: <BarChart2 className="h-5 w-5" />,
     label: 'レポート',
     path: '/work-time-reports',
+    description: '分析とインサイト',
   },
 ];
 
@@ -86,10 +93,12 @@ export default function Layout({ children }: LayoutProps) {
 
   const renderMenuItem = (item: MenuItem, isMobile: boolean = false) => {
     const baseClasses = isMobile
-      ? 'flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors'
-      : 'flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors';
+      ? 'group flex items-center gap-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 transition-all duration-200'
+      : 'group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 transition-all duration-200';
 
-    const activeClasses = isActive(item.path) ? 'bg-blue-100 text-blue-700' : 'text-gray-700';
+    const activeClasses = isActive(item.path)
+      ? 'bg-gradient-to-r from-primary/15 to-primary/10 text-primary shadow-sm'
+      : 'text-slate-700 hover:text-slate-900';
 
     return (
       <Link
@@ -97,12 +106,27 @@ export default function Layout({ children }: LayoutProps) {
         to={item.path}
         className={cn(baseClasses, activeClasses)}
         onClick={() => isMobile && setIsMenuOpen(false)}
+        title={item.description}
       >
-        {item.icon}
-        <span className={isMobile ? 'text-base' : ''}>{item.label}</span>
+        <div
+          className={cn(
+            'transition-colors duration-200',
+            isActive(item.path) ? 'text-primary' : 'text-slate-500 group-hover:text-slate-700'
+          )}
+        >
+          {item.icon}
+        </div>
+        <div className="flex-1">
+          <span className={cn('font-medium', isMobile ? 'text-base' : 'text-sm')}>
+            {item.label}
+          </span>
+          {isMobile && item.description && (
+            <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
+          )}
+        </div>
         {item.isPremium && <Crown className="h-4 w-4 text-amber-500" />}
         {item.badge && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
             {item.badge}
           </Badge>
         )}
@@ -111,74 +135,109 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   if (!isAuthenticated) {
-    return <div className="min-h-screen bg-gray-50">{children}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        {children}
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      {/* 改良されたヘッダー */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* ロゴとナビゲーション */}
             <div className="flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-white" />
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="relative">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <Sparkles className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full animate-pulse"></div>
                 </div>
-                <span className="text-xl font-bold text-gray-900">LifeSync</span>
+                <div className="hidden sm:block">
+                  <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                    LifeSync
+                  </span>
+                  <p className="text-xs text-slate-500 -mt-1">生産性プラットフォーム</p>
+                </div>
               </Link>
 
               {/* デスクトップナビゲーション */}
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav className="hidden xl:flex items-center gap-2">
                 {menuItems.map((item) => renderMenuItem(item))}
               </nav>
             </div>
 
             {/* ユーザーメニュー */}
             <div className="flex items-center gap-4">
+              {/* 通知ベル */}
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+              </Button>
+
               {/* 言語切替 */}
               <select
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as any)}
-                className="text-sm border rounded px-2 py-1"
+                className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
                 title="言語選択"
               >
-                <option value="ja">日本語</option>
-                <option value="en">English</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="en">🇺🇸 English</option>
               </select>
 
               {/* ユーザードロップダウン */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full ring-2 ring-transparent hover:ring-primary/20 transition-all duration-200"
+                  >
+                    <Avatar className="h-10 w-10">
                       <AvatarImage src={user?.avatar} alt={user?.name} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-semibold">
                         {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{user?.name || 'ユーザー'}</p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
+                <DropdownMenuContent className="w-64" align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex items-center gap-3 p-2">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.avatar} alt={user?.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white">
+                          {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <p className="font-medium text-sm">{user?.name || 'ユーザー'}</p>
+                        <p className="text-xs text-slate-500">{user?.email}</p>
+                      </div>
                     </div>
-                  </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    <User className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                    <User className="mr-3 h-4 w-4" />
                     プロフィール
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/settings')}>
-                    <Settings className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem
+                    onClick={() => navigate('/settings')}
+                    className="cursor-pointer"
+                  >
+                    <Settings className="mr-3 h-4 w-4" />
                     設定
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
                     ログアウト
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -187,15 +246,15 @@ export default function Layout({ children }: LayoutProps) {
               {/* モバイルメニュー */}
               <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="lg:hidden">
+                  <Button variant="ghost" size="sm" className="xl:hidden">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-72">
-                  <SheetHeader>
-                    <SheetTitle className="text-left">メニュー</SheetTitle>
+                <SheetContent side="left" className="w-80 bg-white/95 backdrop-blur-xl">
+                  <SheetHeader className="text-left">
+                    <SheetTitle className="text-lg font-semibold">メニュー</SheetTitle>
                   </SheetHeader>
-                  <nav className="flex flex-col gap-2 mt-6">
+                  <nav className="flex flex-col gap-2 mt-8">
                     {menuItems.map((item) => renderMenuItem(item, true))}
                   </nav>
                 </SheetContent>
@@ -206,7 +265,7 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* メインコンテンツ */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 animate-fade-in">{children}</main>
     </div>
   );
 }
