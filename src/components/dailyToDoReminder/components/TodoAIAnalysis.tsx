@@ -34,6 +34,12 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
   onApplyRecommendation,
   onDismissRecommendation,
 }) => {
+  console.log('[DEBUG] TodoAIAnalysis レンダリング開始:', {
+    analysisResult: !!analysisResult,
+    isLoading,
+    analysisResultData: analysisResult,
+  });
+
   const [selectedTab, setSelectedTab] = useState('overview');
 
   const getRecommendationIcon = (type: TaskRecommendation['type']) => {
@@ -65,6 +71,7 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
   };
 
   if (!analysisResult && !isLoading) {
+    console.log('[DEBUG] TodoAIAnalysis: 初期状態を表示');
     return (
       <Card className="border-0 shadow-md bg-gradient-to-r from-purple-50 to-blue-50">
         <CardContent className="p-6 text-center">
@@ -86,6 +93,7 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
   }
 
   if (isLoading) {
+    console.log('[DEBUG] TodoAIAnalysis: ローディング状態を表示');
     return (
       <Card className="border-0 shadow-md">
         <CardContent className="p-6 text-center">
@@ -96,6 +104,7 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
     );
   }
 
+  console.log('[DEBUG] TodoAIAnalysis: 分析結果を表示');
   return (
     <Card className="border-0 shadow-md">
       <CardHeader>
