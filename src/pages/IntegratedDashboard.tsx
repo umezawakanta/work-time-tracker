@@ -212,7 +212,7 @@ const IntegratedDashboard: React.FC = () => {
         title: todo.task,
         description: todo.note || 'ToDoシステムから同期されたタスク',
         type: 'todo' as const,
-        status: todo.completed ? ('completed' as const) : ('pending' as const),
+        status: todo.completed ? ('completed' as const) : ('not-started' as const),
         priority: todo.priorityLevel || ('medium' as const),
         progress: todo.completed ? 100 : 0,
         startDate: todo.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
@@ -233,7 +233,7 @@ const IntegratedDashboard: React.FC = () => {
       console.log('[IntegratedDashboard] ✅ ToDo統合完了:', {
         integratedCount: integratedFromTodos.length,
         completedTasks: integratedFromTodos.filter((t) => t.status === 'completed').length,
-        pendingTasks: integratedFromTodos.filter((t) => t.status === 'pending').length,
+        pendingTasks: integratedFromTodos.filter((t) => t.status === 'not-started').length,
       });
 
       setIntegratedTasks((prev) => {
