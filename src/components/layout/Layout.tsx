@@ -17,6 +17,7 @@ import {
   Search,
   CheckSquare,
   Calendar,
+  FileText,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -92,6 +93,12 @@ const menuItems: MenuItem[] = [
     label: '資産カレンダー',
     path: '/asset-calendar',
     description: '資産の増減をカレンダーで管理',
+  },
+  {
+    icon: <FileText className="h-5 w-5" />,
+    label: 'ブログ',
+    path: '/blog',
+    description: 'ブログ記事の閲覧と管理',
   },
 ];
 

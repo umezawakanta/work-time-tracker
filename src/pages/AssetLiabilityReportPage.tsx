@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { BalanceUpdateModal } from "@/components/BalanceUpdateModel";
-import { AssetLiabilityTrendChart } from "@/components/chart/AssetLiabilityTrendChart";
-import { AssetTrendChart } from "@/components/chart/AssetTrendChart";
-import { DebtTrendChart } from "@/components/chart/DebtTrendChart";
-import { AssetCategoryPieChart } from "@/components/chart/AssetCategoryPieChart";
-import { NetWorthProgressChart } from "@/components/chart/NetWorthProgressChart";
-import { AssetGrowthForecastChart } from "@/components/chart/AssetGrowthForecastChart";
-import { MonthlySnapshotTable } from "@/components/tables/MonthlySnapshotTable";
-import BalanceUpdateReminder from "@/components/BalanceUpdateReminder";
-import { AssetDebtForms } from "@/components/forms/AssetDebtForms";
-import { AssetDebtLists } from "@/components/list/AssetDebtLists";
-import { QuickInput } from "@/components/QuickInput"; // 追加: 新しいクイック入力コンポーネント
-import { GoalTracking } from "@/components/goals/GoalTracking"; // 追加: 目標設定コンポーネント
-import { LongTermTrend } from "@/components/trends/LongTermTrend"; // 追加: 長期トレンド可視化コンポーネント
-import { useReportData } from "@/hooks/useReportData";
-import { useBalanceUpdate } from "@/hooks/useBalanceUpdate";
-import { combineData } from "@/utils/combineData";
-import { calculateFinancialMetrics } from "@/utils/financialMetrics";
-import { shareReport } from "@/utils/shareReport";
-import { exportToCSV, exportToPDF } from "@/utils/exportData";
+import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { BalanceUpdateModal } from '@/components/BalanceUpdateModel';
+import { AssetLiabilityTrendChart } from '@/components/chart/AssetLiabilityTrendChart';
+import { AssetTrendChart } from '@/components/chart/AssetTrendChart';
+import { DebtTrendChart } from '@/components/chart/DebtTrendChart';
+import { AssetCategoryPieChart } from '@/components/chart/AssetCategoryPieChart';
+import { NetWorthProgressChart } from '@/components/chart/NetWorthProgressChart';
+import { AssetGrowthForecastChart } from '@/components/chart/AssetGrowthForecastChart';
+import { MonthlySnapshotTable } from '@/components/tables/MonthlySnapshotTable';
+import BalanceUpdateReminder from '@/components/BalanceUpdateReminder';
+import { AssetDebtForms } from '@/components/forms/AssetDebtForms';
+import { AssetDebtLists } from '@/components/list/AssetDebtLists';
+import { QuickInput } from '@/components/QuickInput'; // 追加: 新しいクイック入力コンポーネント
+import { GoalTracking } from '@/components/goals/GoalTracking'; // 追加: 目標設定コンポーネント
+import { LongTermTrend } from '@/components/trends/LongTermTrend'; // 追加: 長期トレンド可視化コンポーネント
+import { useReportData } from '@/hooks/useReportData';
+import { useBalanceUpdate } from '@/hooks/useBalanceUpdate';
+import { combineData } from '@/utils/combineData';
+import { calculateFinancialMetrics } from '@/utils/financialMetrics';
+import { shareReport } from '@/utils/shareReport';
+import { exportToCSV, exportToPDF } from '@/utils/exportData';
 import {
   ArrowUpCircle,
   ArrowDownCircle,
@@ -45,7 +45,7 @@ import {
   Camera,
   Filter,
   Target, // 追加: 目標のアイコン
-} from "lucide-react";
+} from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -53,17 +53,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -71,25 +71,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { toast } from "react-hot-toast";
-import { CombinedDataPoint, LongTermDataPoint } from "@/types";
-import { FinancialGoal } from "@/types"; // 追加: 目標の型定義
+} from '@/components/ui/dropdown-menu';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { toast } from 'react-hot-toast';
+import { CombinedDataPoint, LongTermDataPoint } from '@/types';
+import { FinancialGoal } from '@/types'; // 追加: 目標の型定義
 
 export default function AssetLiabilityReportPage() {
   const assetEntries = useSelector((state: RootState) => state.asset.entries);
@@ -98,19 +93,17 @@ export default function AssetLiabilityReportPage() {
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState("overview");
-  const [timeRange, setTimeRange] = useState("year");
+  const [activeView, setActiveView] = useState('overview');
+  const [timeRange, setTimeRange] = useState('year');
   const [isPremiumDialogOpen, setIsPremiumDialogOpen] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
-  const [exportFormat, setExportFormat] = useState("csv");
+  const [exportFormat, setExportFormat] = useState('csv');
   const [showMonthlySnapshots, setShowMonthlySnapshots] = useState(false);
   const [isExportingData, setIsExportingData] = useState(false);
   const [compareWithPrevious, setCompareWithPrevious] = useState(false);
-  const [displayMode, setDisplayMode] = useState<"actual" | "percentage">(
-    "actual"
-  );
+  const [displayMode, setDisplayMode] = useState<'actual' | 'percentage'>('actual');
   const [viewDateRange, setViewDateRange] = useState<{
     start: Date | null;
     end: Date | null;
@@ -130,61 +123,61 @@ export default function AssetLiabilityReportPage() {
   // デモ用の目標データ (追加)
   const [goals, setGoals] = useState<FinancialGoal[]>([
     {
-      id: "goal1",
-      title: "緊急資金の構築",
-      type: "asset",
+      id: 'goal1',
+      title: '緊急資金の構築',
+      type: 'asset',
       startValue: 200000,
       currentValue: 350000,
       targetValue: 600000,
-      startDate: "2023-01-01",
-      targetDate: "2023-12-31",
-      period: "monthly",
+      startDate: '2023-01-01',
+      targetDate: '2023-12-31',
+      period: 'monthly',
       autoUpdate: true,
       history: [
-        { date: "2023-01-01", value: 200000 },
-        { date: "2023-02-01", value: 250000 },
-        { date: "2023-03-01", value: 275000 },
-        { date: "2023-04-01", value: 300000 },
-        { date: "2023-05-01", value: 325000 },
-        { date: "2023-06-01", value: 350000 },
+        { date: '2023-01-01', value: 200000 },
+        { date: '2023-02-01', value: 250000 },
+        { date: '2023-03-01', value: 275000 },
+        { date: '2023-04-01', value: 300000 },
+        { date: '2023-05-01', value: 325000 },
+        { date: '2023-06-01', value: 350000 },
       ],
     },
     {
-      id: "goal2",
-      title: "住宅ローンの返済",
-      type: "debt",
+      id: 'goal2',
+      title: '住宅ローンの返済',
+      type: 'debt',
       startValue: 25000000,
       currentValue: 24000000,
       targetValue: 0,
-      startDate: "2023-01-01",
-      targetDate: "2033-01-01",
-      period: "monthly",
+      startDate: '2023-01-01',
+      targetDate: '2033-01-01',
+      period: 'monthly',
       autoUpdate: true,
       history: [
-        { date: "2023-01-01", value: 25000000 },
-        { date: "2023-02-01", value: 24800000 },
-        { date: "2023-03-01", value: 24600000 },
-        { date: "2023-04-01", value: 24400000 },
-        { date: "2023-05-01", value: 24200000 },
-        { date: "2023-06-01", value: 24000000 },
+        { date: '2023-01-01', value: 25000000 },
+        { date: '2023-02-01', value: 24800000 },
+        { date: '2023-03-01', value: 24600000 },
+        { date: '2023-04-01', value: 24400000 },
+        { date: '2023-05-01', value: 24200000 },
+        { date: '2023-06-01', value: 24000000 },
       ],
     },
     {
-      id: "goal3",
-      title: "純資産1000万円達成",
-      type: "networth",
+      id: 'goal3',
+      title: '純資産1000万円達成',
+      type: 'networth',
       startValue: 5000000,
       currentValue: 6500000,
       targetValue: 10000000,
-      startDate: "2023-01-01",
-      targetDate: "2025-01-01",
-      period: "quarterly",
+      startDate: '2023-01-01',
+      targetDate: '2025-01-01',
+      period: 'quarterly',
       autoUpdate: false,
       history: [
-        { date: "2023-01-01", value: 5000000 },
-        { date: "2023-04-01", value: 5500000 },
-        { date: "2023-07-01", value: 6000000 },
-        { date: "2023-10-01", value: 6500000 },
+        { date: '2023-01-01', value: 5000000 },
+        { date: '2023-04-01', value: 5500000 },
+        { date: '2023-07-01', value: 6000000 },
+        { date: '2023-10-01', value: 6500000 },
       ],
     },
   ]);
@@ -197,7 +190,7 @@ export default function AssetLiabilityReportPage() {
     setIsLoading(true);
     // 実際のAPIコールが必要だが、このデモではタイマーで模擬
     setTimeout(() => {
-      toast.success("月次スナップショットが生成されました！");
+      toast.success('月次スナップショットが生成されました！');
       setShowMonthlySnapshots(true);
       setIsLoading(false);
     }, 1500);
@@ -210,9 +203,7 @@ export default function AssetLiabilityReportPage() {
     setTimeout(() => {
       setIsPremium(true);
       setIsPremiumDialogOpen(false);
-      toast.success(
-        "プレミアムにアップグレードしました！全ての機能が利用可能です。"
-      );
+      toast.success('プレミアムにアップグレードしました！全ての機能が利用可能です。');
       setIsLoading(false);
     }, 1500);
   };
@@ -230,8 +221,8 @@ export default function AssetLiabilityReportPage() {
           generateLongTermData();
         }, 800);
       } catch (err) {
-        console.error("Failed to load report data:", err);
-        setError("データの読み込みに失敗しました。もう一度お試しください。");
+        console.error('Failed to load report data:', err);
+        setError('データの読み込みに失敗しました。もう一度お試しください。');
         setIsLoading(false);
       }
     };
@@ -262,16 +253,16 @@ export default function AssetLiabilityReportPage() {
 
       // カテゴリ別の資産を追加
       const categories = {
-        "現金・預金": assets * 0.2,
+        '現金・預金': assets * 0.2,
         投資: assets * 0.35,
         不動産: assets * 0.3,
-        "年金・保険": assets * 0.1,
+        '年金・保険': assets * 0.1,
         その他: assets * 0.05,
       };
 
       // データポイント
       data.push({
-        date: date.toISOString().split("T")[0],
+        date: date.toISOString().split('T')[0],
         assets,
         debts,
         netWorth,
@@ -284,8 +275,8 @@ export default function AssetLiabilityReportPage() {
   };
 
   const updateLastBalanceDate = () => {
-    const today = new Date().toISOString().split("T")[0];
-    localStorage.setItem("lastBalanceUpdateDate", today);
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('lastBalanceUpdateDate', today);
   };
 
   const {
@@ -313,14 +304,14 @@ export default function AssetLiabilityReportPage() {
       date: new Date(entry.date),
       account: entry.account,
       value: entry.value,
-      type: "asset" as const,
+      type: 'asset' as const,
     }));
 
     const debtChartData = debtEntries.map((entry) => ({
       date: new Date(entry.date),
       account: entry.account,
       value: entry.value,
-      type: "debt" as const,
+      type: 'debt' as const,
     }));
 
     return [...assetChartData, ...debtChartData];
@@ -333,9 +324,7 @@ export default function AssetLiabilityReportPage() {
 
     return combinedData.filter((entry: { date: string }) => {
       const entryDate = new Date(entry.date);
-      return (
-        entryDate >= viewDateRange.start! && entryDate <= viewDateRange.end!
-      );
+      return entryDate >= viewDateRange.start! && entryDate <= viewDateRange.end!;
     });
   }, [combinedData, viewDateRange]);
 
@@ -378,7 +367,7 @@ export default function AssetLiabilityReportPage() {
   const handleExportData = () => {
     setIsExportingData(true);
     setTimeout(() => {
-      if (exportFormat === "csv") {
+      if (exportFormat === 'csv') {
         // filteredCombinedDataをExportableData型に変換
         const exportableData = filteredCombinedData.map((entry) => {
           // エントリの各プロパティをコピーして新しいオブジェクトを作成
@@ -392,8 +381,8 @@ export default function AssetLiabilityReportPage() {
           return exportableEntry;
         });
 
-        exportToCSV(exportableData, "asset-liability-report");
-      } else if (exportFormat === "pdf") {
+        exportToCSV(exportableData, 'asset-liability-report');
+      } else if (exportFormat === 'pdf') {
         // こちらも同様に型を変換
         const exportableData = filteredCombinedData.map((entry) => {
           const exportableEntry: ExportableEntry = {};
@@ -403,20 +392,18 @@ export default function AssetLiabilityReportPage() {
           return exportableEntry;
         });
 
-        exportToPDF(exportableData, "asset-liability-report");
+        exportToPDF(exportableData, 'asset-liability-report');
       }
       setIsExportingData(false);
       setExportDialogOpen(false);
-      toast.success(
-        `データを${exportFormat.toUpperCase()}形式でエクスポートしました！`
-      );
+      toast.success(`データを${exportFormat.toUpperCase()}形式でエクスポートしました！`);
     }, 1500);
   };
 
   // レポート共有処理
   const handleShareReport = () => {
     if (!isPremium) {
-      toast.error("レポート共有はプレミアム機能です");
+      toast.error('レポート共有はプレミアム機能です');
       setIsPremiumDialogOpen(true);
       return;
     }
@@ -429,9 +416,9 @@ export default function AssetLiabilityReportPage() {
         assetGrowthRate: assetGrowthRate,
       }),
       {
-        loading: "共有リンクを生成中...",
-        success: "共有リンクがクリップボードにコピーされました！",
-        error: "共有リンクの生成に失敗しました",
+        loading: '共有リンクを生成中...',
+        success: '共有リンクがクリップボードにコピーされました！',
+        error: '共有リンクの生成に失敗しました',
       }
     );
   };
@@ -439,19 +426,19 @@ export default function AssetLiabilityReportPage() {
   // スクリーンショット撮影処理（※実際の画面キャプチャ実装は別途ライブラリの導入が必要）
   const handleTakeScreenshot = () => {
     if (!isPremium) {
-      toast.error("スクリーンショット機能はプレミアム機能です");
+      toast.error('スクリーンショット機能はプレミアム機能です');
       setIsPremiumDialogOpen(true);
       return;
     }
 
-    toast.success("スクリーンショットがダウンロードされました！");
+    toast.success('スクリーンショットがダウンロードされました！');
   };
 
   // 目標の追加・編集処理 (追加)
   const handleAddGoal = (newGoal: FinancialGoal) => {
     setGoals([...goals, { ...newGoal, id: `goal${goals.length + 1}` }]);
     setIsGoalFormOpen(false);
-    toast.success("新しい目標を設定しました！");
+    toast.success('新しい目標を設定しました！');
   };
 
   const handleEditGoal = (goalId: string) => {
@@ -464,42 +451,26 @@ export default function AssetLiabilityReportPage() {
     if (assetEntries.length === 0) return [];
 
     const categories: { [key: string]: number } = {
-      "現金・預金": 0,
+      '現金・預金': 0,
       投資: 0,
       不動産: 0,
-      "年金・保険": 0,
+      '年金・保険': 0,
       その他: 0,
     };
 
     assetEntries.forEach((entry) => {
       // 実際のアプリではカテゴリ情報もエントリに含まれるが、デモでは簡易的に振り分け
       const name = entry.account.toLowerCase();
-      if (
-        name.includes("銀行") ||
-        name.includes("現金") ||
-        name.includes("預金")
-      ) {
-        categories["現金・預金"] += entry.value;
-      } else if (
-        name.includes("株") ||
-        name.includes("投資") ||
-        name.includes("fund")
-      ) {
-        categories["投資"] += entry.value;
-      } else if (
-        name.includes("不動産") ||
-        name.includes("マンション") ||
-        name.includes("house")
-      ) {
-        categories["不動産"] += entry.value;
-      } else if (
-        name.includes("年金") ||
-        name.includes("保険") ||
-        name.includes("insurance")
-      ) {
-        categories["年金・保険"] += entry.value;
+      if (name.includes('銀行') || name.includes('現金') || name.includes('預金')) {
+        categories['現金・預金'] += entry.value;
+      } else if (name.includes('株') || name.includes('投資') || name.includes('fund')) {
+        categories['投資'] += entry.value;
+      } else if (name.includes('不動産') || name.includes('マンション') || name.includes('house')) {
+        categories['不動産'] += entry.value;
+      } else if (name.includes('年金') || name.includes('保険') || name.includes('insurance')) {
+        categories['年金・保険'] += entry.value;
       } else {
-        categories["その他"] += entry.value;
+        categories['その他'] += entry.value;
       }
     });
 
@@ -512,19 +483,18 @@ export default function AssetLiabilityReportPage() {
 
   // ヒントのリスト
   const financialTips = [
-    "資産配分は年齢に応じて調整することがおすすめです。一般的に若いうちはより積極的な資産配分が可能です。",
-    "緊急資金は生活費の3〜6ヶ月分を目安に確保しておくと安心です。",
-    "高金利の負債から優先的に返済することで、長期的な利息負担を軽減できます。",
-    "資産の定期的なリバランスは、リスク管理と長期的なリターン向上に役立ちます。",
-    "確定拠出年金などの税制優遇制度を活用することで、長期的な資産形成が効率的になります。",
-    "投資は分散することでリスクを軽減できます。株式、債券、不動産など、異なる資産クラスに分散することを検討しましょう。",
-    "長期的な資産形成には複利の力を活用することが重要です。早期に投資を始めるほど効果は大きくなります。",
-    "定期的な資産棚卸しを行い、不要な支出や余剰資金を確認することで資産形成の効率が高まります。",
+    '資産配分は年齢に応じて調整することがおすすめです。一般的に若いうちはより積極的な資産配分が可能です。',
+    '緊急資金は生活費の3〜6ヶ月分を目安に確保しておくと安心です。',
+    '高金利の負債から優先的に返済することで、長期的な利息負担を軽減できます。',
+    '資産の定期的なリバランスは、リスク管理と長期的なリターン向上に役立ちます。',
+    '確定拠出年金などの税制優遇制度を活用することで、長期的な資産形成が効率的になります。',
+    '投資は分散することでリスクを軽減できます。株式、債券、不動産など、異なる資産クラスに分散することを検討しましょう。',
+    '長期的な資産形成には複利の力を活用することが重要です。早期に投資を始めるほど効果は大きくなります。',
+    '定期的な資産棚卸しを行い、不要な支出や余剰資金を確認することで資産形成の効率が高まります。',
   ];
 
   // ランダムなヒントを選択
-  const randomTip =
-    financialTips[Math.floor(Math.random() * financialTips.length)];
+  const randomTip = financialTips[Math.floor(Math.random() * financialTips.length)];
 
   // ローディング画面
   if (isLoading) {
@@ -533,9 +503,7 @@ export default function AssetLiabilityReportPage() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-xl text-muted-foreground">
-              データを読み込んでいます...
-            </p>
+            <p className="text-xl text-muted-foreground">データを読み込んでいます...</p>
           </div>
         </div>
       </div>
@@ -564,9 +532,7 @@ export default function AssetLiabilityReportPage() {
       {/* ヘッダーセクション */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            資産/負債レポート
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">資産/負債レポート</h1>
           <p className="text-muted-foreground mt-1">
             あなたの財務状況を分析・管理するためのダッシュボード
           </p>
@@ -577,11 +543,7 @@ export default function AssetLiabilityReportPage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setIsQuickAddOpen(true)}
-                >
+                <Button variant="outline" size="icon" onClick={() => setIsQuickAddOpen(true)}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -599,16 +561,14 @@ export default function AssetLiabilityReportPage() {
                   variant="outline"
                   size="icon"
                   onClick={() =>
-                    isPremium
-                      ? setExportDialogOpen(true)
-                      : setIsPremiumDialogOpen(true)
+                    isPremium ? setExportDialogOpen(true) : setIsPremiumDialogOpen(true)
                   }
                 >
                   <Download className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>データエクスポート {!isPremium && "(プレミアム)"}</p>
+                <p>データエクスポート {!isPremium && '(プレミアム)'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -617,16 +577,12 @@ export default function AssetLiabilityReportPage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleTakeScreenshot}
-                >
+                <Button variant="outline" size="icon" onClick={handleTakeScreenshot}>
                   <Camera className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>スクリーンショット {!isPremium && "(プレミアム)"}</p>
+                <p>スクリーンショット {!isPremium && '(プレミアム)'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -635,16 +591,12 @@ export default function AssetLiabilityReportPage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleShareReport}
-                >
+                <Button variant="outline" size="icon" onClick={handleShareReport}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>レポート共有 {!isPremium && "(プレミアム)"}</p>
+                <p>レポート共有 {!isPremium && '(プレミアム)'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -655,9 +607,7 @@ export default function AssetLiabilityReportPage() {
               className="bg-amber-600 hover:bg-amber-700 text-white font-medium flex items-center gap-2"
             >
               <Crown className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                プレミアムにアップグレード
-              </span>
+              <span className="hidden sm:inline">プレミアムにアップグレード</span>
               <span className="sm:hidden">プレミアム</span>
             </Button>
           )}
@@ -706,22 +656,15 @@ export default function AssetLiabilityReportPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              ¥{totalAssets.toLocaleString()}
-            </div>
+            <div className="text-3xl font-bold">¥{totalAssets.toLocaleString()}</div>
             <div className="text-xs text-muted-foreground mt-1">
               {assetEntries.length > 0 ? (
-                <span
-                  className={
-                    assetGrowthRate >= 0 ? "text-green-500" : "text-red-500"
-                  }
-                >
-                  {assetGrowthRate >= 0 ? "+" : ""}
-                  {assetGrowthRate.toFixed(2)}%
-                  <span className="ml-1">前回比</span>
+                <span className={assetGrowthRate >= 0 ? 'text-green-500' : 'text-red-500'}>
+                  {assetGrowthRate >= 0 ? '+' : ''}
+                  {assetGrowthRate.toFixed(2)}%<span className="ml-1">前回比</span>
                 </span>
               ) : (
-                "データなし"
+                'データなし'
               )}
             </div>
           </CardContent>
@@ -738,15 +681,9 @@ export default function AssetLiabilityReportPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              ¥{totalDebts.toLocaleString()}
-            </div>
+            <div className="text-3xl font-bold">¥{totalDebts.toLocaleString()}</div>
             <div className="text-xs text-muted-foreground mt-1">
-              {debtEntries.length > 0 ? (
-                <span>{debtEntries.length}件の負債</span>
-              ) : (
-                "データなし"
-              )}
+              {debtEntries.length > 0 ? <span>{debtEntries.length}件の負債</span> : 'データなし'}
             </div>
           </CardContent>
         </Card>
@@ -762,16 +699,10 @@ export default function AssetLiabilityReportPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              ¥{netWorth.toLocaleString()}
-            </div>
+            <div className="text-3xl font-bold">¥{netWorth.toLocaleString()}</div>
             <div className="text-xs text-muted-foreground mt-1">
-              <span
-                className={
-                  monthlyNetWorthChange >= 0 ? "text-green-500" : "text-red-500"
-                }
-              >
-                {monthlyNetWorthChange >= 0 ? "+" : ""}
+              <span className={monthlyNetWorthChange >= 0 ? 'text-green-500' : 'text-red-500'}>
+                {monthlyNetWorthChange >= 0 ? '+' : ''}
                 {monthlyNetWorthChange.toLocaleString()}円/月
               </span>
             </div>
@@ -787,33 +718,27 @@ export default function AssetLiabilityReportPage() {
             <div
               className={`p-2 rounded-full ${
                 debtToAssetRatio < 30
-                  ? "bg-green-500/10"
+                  ? 'bg-green-500/10'
                   : debtToAssetRatio < 50
-                  ? "bg-yellow-500/10"
-                  : "bg-red-500/10"
+                    ? 'bg-yellow-500/10'
+                    : 'bg-red-500/10'
               }`}
             >
               <LineChart
                 className={`h-5 w-5 ${
                   debtToAssetRatio < 30
-                    ? "text-green-500"
+                    ? 'text-green-500'
                     : debtToAssetRatio < 50
-                    ? "text-yellow-500"
-                    : "text-red-500"
+                      ? 'text-yellow-500'
+                      : 'text-red-500'
                 }`}
               />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
-              {debtToAssetRatio.toFixed(1)}%
-            </div>
+            <div className="text-3xl font-bold">{debtToAssetRatio.toFixed(1)}%</div>
             <div className="text-xs text-muted-foreground mt-1">
-              {debtToAssetRatio < 30
-                ? "良好"
-                : debtToAssetRatio < 50
-                ? "注意"
-                : "危険"}
+              {debtToAssetRatio < 30 ? '良好' : debtToAssetRatio < 50 ? '注意' : '危険'}
             </div>
           </CardContent>
         </Card>
@@ -828,23 +753,17 @@ export default function AssetLiabilityReportPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold">
-                  {emergencyFundRatio.toFixed(1)}ヶ月分
-                </div>
+                <div className="text-2xl font-bold">{emergencyFundRatio.toFixed(1)}ヶ月分</div>
                 <Badge
                   variant={
                     emergencyFundRatio >= 6
-                      ? "default"
+                      ? 'default'
                       : emergencyFundRatio >= 3
-                      ? "secondary"
-                      : "destructive"
+                        ? 'secondary'
+                        : 'destructive'
                   }
                 >
-                  {emergencyFundRatio >= 6
-                    ? "理想的"
-                    : emergencyFundRatio >= 3
-                    ? "良好"
-                    : "不足"}
+                  {emergencyFundRatio >= 6 ? '理想的' : emergencyFundRatio >= 3 ? '良好' : '不足'}
                 </Badge>
               </div>
             </CardContent>
@@ -856,23 +775,17 @@ export default function AssetLiabilityReportPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold">
-                  {liquidityRatio.toFixed(2)}倍
-                </div>
+                <div className="text-2xl font-bold">{liquidityRatio.toFixed(2)}倍</div>
                 <Badge
                   variant={
                     liquidityRatio >= 2
-                      ? "default"
+                      ? 'default'
                       : liquidityRatio >= 1
-                      ? "secondary"
-                      : "destructive"
+                        ? 'secondary'
+                        : 'destructive'
                   }
                 >
-                  {liquidityRatio >= 2
-                    ? "安全"
-                    : liquidityRatio >= 1
-                    ? "適正"
-                    : "要注意"}
+                  {liquidityRatio >= 2 ? '安全' : liquidityRatio >= 1 ? '適正' : '要注意'}
                 </Badge>
               </div>
             </CardContent>
@@ -880,29 +793,25 @@ export default function AssetLiabilityReportPage() {
 
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                投資配分比率
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">投資配分比率</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold">
-                  {investmentAllocation.toFixed(1)}%
-                </div>
+                <div className="text-2xl font-bold">{investmentAllocation.toFixed(1)}%</div>
                 <Badge
                   variant={
                     investmentAllocation >= 30
-                      ? "default"
+                      ? 'default'
                       : investmentAllocation >= 15
-                      ? "secondary"
-                      : "outline"
+                        ? 'secondary'
+                        : 'outline'
                   }
                 >
                   {investmentAllocation >= 30
-                    ? "積極的"
+                    ? '積極的'
                     : investmentAllocation >= 15
-                    ? "バランス"
-                    : "保守的"}
+                      ? 'バランス'
+                      : '保守的'}
                 </Badge>
               </div>
             </CardContent>
@@ -910,15 +819,11 @@ export default function AssetLiabilityReportPage() {
 
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                1年後の予測純資産
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">1年後の予測純資産</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-end justify-between">
-                <div className="text-2xl font-bold">
-                  ¥{projectedNetWorth.toLocaleString()}
-                </div>
+                <div className="text-2xl font-bold">¥{projectedNetWorth.toLocaleString()}</div>
                 <Badge variant="outline" className="text-green-600">
                   +{((projectedNetWorth / netWorth - 1) * 100).toFixed(1)}%
                 </Badge>
@@ -976,7 +881,7 @@ export default function AssetLiabilityReportPage() {
 
           <div className="flex items-center gap-2">
             {/* フィルターとオプション */}
-            {activeView !== "details" && activeView !== "goals" && (
+            {activeView !== 'details' && activeView !== 'goals' && (
               <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -989,28 +894,18 @@ export default function AssetLiabilityReportPage() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() =>
-                        setDisplayMode(
-                          displayMode === "actual" ? "percentage" : "actual"
-                        )
+                        setDisplayMode(displayMode === 'actual' ? 'percentage' : 'actual')
                       }
                     >
-                      <span className="mr-2">
-                        {displayMode === "actual" ? "%" : "¥"}
-                      </span>
-                      {displayMode === "actual" ? "割合表示" : "金額表示"}に切替
+                      <span className="mr-2">{displayMode === 'actual' ? '%' : '¥'}</span>
+                      {displayMode === 'actual' ? '割合表示' : '金額表示'}に切替
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        setCompareWithPrevious(!compareWithPrevious)
-                      }
-                    >
+                    <DropdownMenuItem onClick={() => setCompareWithPrevious(!compareWithPrevious)}>
                       <Switch checked={compareWithPrevious} className="mr-2" />
                       前回と比較
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => generateMonthlySnapshots()}
-                    >
+                    <DropdownMenuItem onClick={() => generateMonthlySnapshots()}>
                       <Clock className="mr-2 h-4 w-4" />
                       月次データ生成
                     </DropdownMenuItem>
@@ -1020,7 +915,7 @@ export default function AssetLiabilityReportPage() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {timeRange === "custom" && (
+                {timeRange === 'custom' && (
                   <div className="flex items-center space-x-2">
                     <div className="flex flex-col">
                       <label htmlFor="start-date">開始日</label>
@@ -1029,14 +924,10 @@ export default function AssetLiabilityReportPage() {
                         type="date"
                         className="h-9 rounded-md border border-input bg-background px-3"
                         value={
-                          viewDateRange.start
-                            ? viewDateRange.start.toISOString().split("T")[0]
-                            : ""
+                          viewDateRange.start ? viewDateRange.start.toISOString().split('T')[0] : ''
                         }
                         onChange={(e) => {
-                          const newDate = e.target.value
-                            ? new Date(e.target.value)
-                            : null;
+                          const newDate = e.target.value ? new Date(e.target.value) : null;
                           setViewDateRange((prev) => ({
                             ...prev,
                             start: newDate,
@@ -1052,14 +943,10 @@ export default function AssetLiabilityReportPage() {
                         type="date"
                         className="h-9 rounded-md border border-input bg-background px-3"
                         value={
-                          viewDateRange.end
-                            ? viewDateRange.end.toISOString().split("T")[0]
-                            : ""
+                          viewDateRange.end ? viewDateRange.end.toISOString().split('T')[0] : ''
                         }
                         onChange={(e) => {
-                          const newDate = e.target.value
-                            ? new Date(e.target.value)
-                            : null;
+                          const newDate = e.target.value ? new Date(e.target.value) : null;
                           setViewDateRange((prev) => ({
                             ...prev,
                             end: newDate,
@@ -1093,9 +980,7 @@ export default function AssetLiabilityReportPage() {
             <Card className="overflow-hidden">
               <CardHeader>
                 <CardTitle>資産/負債の推移</CardTitle>
-                <CardDescription>
-                  時間経過による資産と負債の変化
-                </CardDescription>
+                <CardDescription>時間経過による資産と負債の変化</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 {chartData.length > 0 ? (
@@ -1105,12 +990,8 @@ export default function AssetLiabilityReportPage() {
                 ) : (
                   <div className="flex items-center justify-center h-80 bg-muted/20">
                     <div className="text-center">
-                      <p className="text-muted-foreground mb-4">
-                        データがありません
-                      </p>
-                      <Button onClick={() => setIsQuickAddOpen(true)}>
-                        データを追加
-                      </Button>
+                      <p className="text-muted-foreground mb-4">データがありません</p>
+                      <Button onClick={() => setIsQuickAddOpen(true)}>データを追加</Button>
                     </div>
                   </div>
                 )}
@@ -1119,10 +1000,7 @@ export default function AssetLiabilityReportPage() {
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4 mr-1" />
                   <span>
-                    最終更新:{" "}
-                    {chartData.length > 0
-                      ? new Date().toLocaleDateString()
-                      : "なし"}
+                    最終更新: {chartData.length > 0 ? new Date().toLocaleDateString() : 'なし'}
                   </span>
                 </div>
               </CardFooter>
@@ -1170,9 +1048,7 @@ export default function AssetLiabilityReportPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-full bg-muted/20 rounded-md">
-                      <p className="text-muted-foreground">
-                        資産データがありません
-                      </p>
+                      <p className="text-muted-foreground">資産データがありません</p>
                     </div>
                   )}
                 </div>
@@ -1187,10 +1063,7 @@ export default function AssetLiabilityReportPage() {
                     <CardDescription>月次の純資産変化</CardDescription>
                   </div>
                   {showMonthlySnapshots && (
-                    <Badge
-                      variant="outline"
-                      className="text-blue-600 border-blue-200"
-                    >
+                    <Badge variant="outline" className="text-blue-600 border-blue-200">
                       最新データ
                     </Badge>
                   )}
@@ -1199,16 +1072,13 @@ export default function AssetLiabilityReportPage() {
               <CardContent>
                 <div className="h-64">
                   {filteredCombinedData.length > 0 && showMonthlySnapshots ? (
-                    <NetWorthProgressChart
-                      data={filteredCombinedData}
-                      isPremium={isPremium}
-                    />
+                    <NetWorthProgressChart data={filteredCombinedData} isPremium={isPremium} />
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full bg-muted/20 rounded-md">
                       <p className="text-muted-foreground mb-2">
                         {filteredCombinedData.length === 0
-                          ? "データがありません"
-                          : "月次スナップショットが必要です"}
+                          ? 'データがありません'
+                          : '月次スナップショットが必要です'}
                       </p>
                       <Button
                         variant="outline"
@@ -1234,9 +1104,7 @@ export default function AssetLiabilityReportPage() {
                 <CardDescription>月ごとの資産・負債推移</CardDescription>
               </CardHeader>
               <CardContent>
-                <MonthlySnapshotTable
-                  data={filteredCombinedData as CombinedDataPoint[]}
-                />
+                <MonthlySnapshotTable data={filteredCombinedData as CombinedDataPoint[]} />
               </CardContent>
             </Card>
           )}
@@ -1280,16 +1148,12 @@ export default function AssetLiabilityReportPage() {
                   <div className="h-64">
                     <AssetTrendChart
                       data={assetEntries}
-                      timeRange={
-                        timeRange as "month" | "quarter" | "year" | "all"
-                      }
+                      timeRange={timeRange as 'month' | 'quarter' | 'year' | 'all'}
                     />
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-64 bg-muted/20 rounded-md">
-                    <p className="text-muted-foreground">
-                      資産データがありません
-                    </p>
+                    <p className="text-muted-foreground">資産データがありません</p>
                   </div>
                 )}
               </CardContent>
@@ -1305,16 +1169,12 @@ export default function AssetLiabilityReportPage() {
                   <div className="h-64">
                     <DebtTrendChart
                       data={debtEntries}
-                      timeRange={
-                        timeRange as "month" | "quarter" | "year" | "all"
-                      }
+                      timeRange={timeRange as 'month' | 'quarter' | 'year' | 'all'}
                     />
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-64 bg-muted/20 rounded-md">
-                    <p className="text-muted-foreground">
-                      負債データがありません
-                    </p>
+                    <p className="text-muted-foreground">負債データがありません</p>
                   </div>
                 )}
               </CardContent>
@@ -1328,9 +1188,7 @@ export default function AssetLiabilityReportPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>資産成長予測</CardTitle>
-                    <CardDescription>
-                      現在のペースでの5年後の資産予測
-                    </CardDescription>
+                    <CardDescription>現在のペースでの5年後の資産予測</CardDescription>
                   </div>
                   {!isPremium && (
                     <Badge
@@ -1368,9 +1226,7 @@ export default function AssetLiabilityReportPage() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-64 bg-muted/20 rounded-md">
-                    <p className="text-muted-foreground">
-                      予測には十分なデータがありません
-                    </p>
+                    <p className="text-muted-foreground">予測には十分なデータがありません</p>
                   </div>
                 )}
               </CardContent>
@@ -1395,10 +1251,10 @@ export default function AssetLiabilityReportPage() {
                       </p>
                       <p className="text-sm text-blue-700">
                         {assetGrowthRate > 5
-                          ? "現在の成長率は良好です。この調子を維持しましょう。"
+                          ? '現在の成長率は良好です。この調子を維持しましょう。'
                           : assetGrowthRate > 0
-                          ? "成長率は安定していますが、さらなる向上の余地があります。"
-                          : "成長率が低下しています。資産配分の見直しを検討してください。"}
+                            ? '成長率は安定していますが、さらなる向上の余地があります。'
+                            : '成長率が低下しています。資産配分の見直しを検討してください。'}
                       </p>
                     </div>
                   </li>
@@ -1413,10 +1269,10 @@ export default function AssetLiabilityReportPage() {
                       </p>
                       <p className="text-sm text-blue-700">
                         {debtToAssetRatio < 30
-                          ? "負債比率は健全な水準です。"
+                          ? '負債比率は健全な水準です。'
                           : debtToAssetRatio < 50
-                          ? "負債比率は許容範囲内ですが、注意が必要です。"
-                          : "負債比率が高すぎます。負債の削減を優先してください。"}
+                            ? '負債比率は許容範囲内ですが、注意が必要です。'
+                            : '負債比率が高すぎます。負債の削減を優先してください。'}
                       </p>
                     </div>
                   </li>
@@ -1427,13 +1283,12 @@ export default function AssetLiabilityReportPage() {
                     </div>
                     <div>
                       <p className="text-blue-800 font-medium">
-                        月次純資産変化: {monthlyNetWorthChange.toLocaleString()}
-                        円
+                        月次純資産変化: {monthlyNetWorthChange.toLocaleString()}円
                       </p>
                       <p className="text-sm text-blue-700">
                         {monthlyNetWorthChange > 0
-                          ? "純資産は増加傾向にあります。"
-                          : "純資産が減少しています。収入増加か支出削減を検討してください。"}
+                          ? '純資産は増加傾向にあります。'
+                          : '純資産が減少しています。収入増加か支出削減を検討してください。'}
                       </p>
                     </div>
                   </li>
@@ -1445,11 +1300,7 @@ export default function AssetLiabilityReportPage() {
 
         {/* 新しい目標設定タブ */}
         <TabsContent value="goals" className="mt-6">
-          <GoalTracking
-            goals={goals}
-            onAddGoal={handleAddGoal}
-            onEditGoal={handleEditGoal}
-          />
+          <GoalTracking goals={goals} onAddGoal={handleAddGoal} onEditGoal={handleEditGoal} />
         </TabsContent>
 
         {/* 新しい長期トレンド分析タブ */}
@@ -1504,19 +1355,15 @@ export default function AssetLiabilityReportPage() {
         </CardHeader>
         <CardContent>
           <ul className="list-disc pl-5 space-y-2">
-            <li>
-              定期的に資産と負債の残高を更新して、正確な財務状況を把握しましょう。
-            </li>
+            <li>定期的に資産と負債の残高を更新して、正確な財務状況を把握しましょう。</li>
             <li>資産の成長率を観察し、投資戦略の有効性を評価しましょう。</li>
+            <li>負債の返済計画を立て、高金利の負債から優先的に返済することを検討しましょう。</li>
             <li>
-              負債の返済計画を立て、高金利の負債から優先的に返済することを検討しましょう。
-            </li>
-            <li>
-              <strong>新機能:</strong>{" "}
+              <strong>新機能:</strong>{' '}
               資産負債率が50%を超える場合は、新たな負債を増やす前に慎重に検討しましょう。
             </li>
             <li>
-              <strong>新機能:</strong>{" "}
+              <strong>新機能:</strong>{' '}
               毎月の純資産の増加額を追跡し、長期的な資産形成の進捗を確認しましょう。
             </li>
           </ul>
@@ -1537,7 +1384,7 @@ export default function AssetLiabilityReportPage() {
         onClose={() => setIsBalanceModalOpen(false)}
         onSubmit={handleBalanceUpdateSubmit}
         currentBalance={selectedAccount?.value || 0}
-        accountName={selectedAccount?.account || ""}
+        accountName={selectedAccount?.account || ''}
       />
 
       {/* クイック追加モーダル - 新機能 */}
@@ -1545,9 +1392,7 @@ export default function AssetLiabilityReportPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>クイック追加</DialogTitle>
-            <DialogDescription>
-              資産・負債を素早く追加できます
-            </DialogDescription>
+            <DialogDescription>資産・負債を素早く追加できます</DialogDescription>
           </DialogHeader>
 
           <QuickInput
@@ -1561,12 +1406,8 @@ export default function AssetLiabilityReportPage() {
       <Dialog open={isGoalFormOpen} onOpenChange={setIsGoalFormOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {editingGoal ? "目標を編集" : "新しい目標を設定"}
-            </DialogTitle>
-            <DialogDescription>
-              財務目標を設定して、進捗を追跡しましょう
-            </DialogDescription>
+            <DialogTitle>{editingGoal ? '目標を編集' : '新しい目標を設定'}</DialogTitle>
+            <DialogDescription>財務目標を設定して、進捗を追跡しましょう</DialogDescription>
           </DialogHeader>
 
           {/* 実際のアプリでは、目標の設定フォームコンポーネントを実装 */}
@@ -1585,9 +1426,7 @@ export default function AssetLiabilityReportPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>データエクスポート</DialogTitle>
-            <DialogDescription>
-              資産・負債データをエクスポートします
-            </DialogDescription>
+            <DialogDescription>資産・負債データをエクスポートします</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -1618,16 +1457,10 @@ export default function AssetLiabilityReportPage() {
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setExportDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setExportDialogOpen(false)}>
               キャンセル
             </Button>
-            <Button
-              onClick={handleExportData}
-              disabled={!isPremium || isExportingData}
-            >
+            <Button onClick={handleExportData} disabled={!isPremium || isExportingData}>
               {isExportingData ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1652,9 +1485,7 @@ export default function AssetLiabilityReportPage() {
               <Crown className="h-5 w-5 text-amber-500" />
               プレミアム資産管理
             </DialogTitle>
-            <DialogDescription>
-              あなたの資産管理をより効果的に
-            </DialogDescription>
+            <DialogDescription>あなたの資産管理をより効果的に</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -1744,9 +1575,7 @@ export default function AssetLiabilityReportPage() {
         <DialogContent className="max-w-7xl w-full">
           <DialogHeader>
             <DialogTitle>長期トレンド分析 - 詳細ビュー</DialogTitle>
-            <DialogDescription>
-              財務データの長期的な変化を詳細に確認できます
-            </DialogDescription>
+            <DialogDescription>財務データの長期的な変化を詳細に確認できます</DialogDescription>
           </DialogHeader>
 
           <div className="h-[calc(100vh-200px)]">
@@ -1759,10 +1588,7 @@ export default function AssetLiabilityReportPage() {
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsFullscreenView(false)}
-            >
+            <Button variant="outline" onClick={() => setIsFullscreenView(false)}>
               閉じる
             </Button>
           </DialogFooter>
