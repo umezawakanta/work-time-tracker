@@ -63,8 +63,7 @@ import { UserNotification } from '@/types';
 import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 import notificationApi from '@/services/api/notificationApi';
 import NotificationItem from '@/components/notifications/NotificationItem';
-import axios, { AxiosError } from 'axios';
-import { logger } from '@/utils/logger';
+import axios from 'axios';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -88,7 +87,7 @@ export default function Layout({ children }: LayoutProps) {
 
   // AuthContextの詳細追跡
   const authContext = useAuth();
-  const { isAuthenticated, setIsAuthenticated, user, fetchUser, loading } = authContext;
+  const { isAuthenticated, setIsAuthenticated, user, loading } = authContext;
 
   // LocaleContextの変化も追跡
   const localeContextRef = useRef(localeContext);
@@ -123,7 +122,7 @@ export default function Layout({ children }: LayoutProps) {
     const current = authContext;
 
     const changes = [];
-    const details = {};
+    const details: Record<string, unknown> = {};
 
     if (prev.isAuthenticated !== current.isAuthenticated) {
       changes.push('isAuthenticated');
@@ -299,6 +298,29 @@ export default function Layout({ children }: LayoutProps) {
     checkSubscription();
   }, [isAuthenticated, userId, isAdmin, loading]);
 
+  // Move this outside the useEffect, after other useCallbacks
+  const initializeNotifications = useCallback(async () => {
+    if (!isAuthenticated || !userId || loading) return;
+
+    try {
+      setIsLoadingNotifications(true);
+
+      const [notificationsResponse, unreadResponse] = await Promise.all([
+        notificationApi.getUserNotifications(userId),
+        notificationApi.getUnreadNotificationsCount(userId),
+      ]);
+
+      setNotifications(notificationsResponse.data);
+      setUnreadNotifications(unreadResponse.data.count);
+    } catch (error) {
+      console.error('通知取得エラー:', error);
+      setNotifications([]);
+      setUnreadNotifications(0);
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  }, [isAuthenticated, userId, loading]);
+
   // メイン処理 - 一度だけ実行を保証
   useEffect(() => {
     const authStateKey = `${isAuthenticated}-${userId}-${loading}`;
@@ -318,29 +340,6 @@ export default function Layout({ children }: LayoutProps) {
     }
 
     console.log('[Layout] ✅ 通知・WebSocket処理開始');
-
-    const initializeNotifications = async () => {
-      try {
-        setIsLoadingNotifications(true);
-
-        const [notificationsResponse, unreadResponse] = await Promise.all([
-          notificationApi.getUserNotifications(userId),
-          notificationApi.getUnreadNotificationsCount(userId),
-        ]);
-
-        setNotifications(notificationsResponse.data);
-        setUnreadNotifications(unreadResponse.data.count);
-
-        initializationRef.current.notificationsInitialized = true;
-        initializationRef.current.lastAuthState = authStateKey;
-      } catch (error) {
-        console.error('通知取得エラー:', error);
-        setNotifications([]);
-        setUnreadNotifications(0);
-      } finally {
-        setIsLoadingNotifications(false);
-      }
-    };
 
     // WebSocket接続（開発環境のみ）
     const connectWebSocket = () => {
