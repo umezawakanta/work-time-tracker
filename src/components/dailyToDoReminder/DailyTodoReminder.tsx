@@ -113,14 +113,15 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     console.log('[DEBUG] 分析開始');
 
     try {
-      // 簡単なテストデータで動作確認
-      const testData = [
-        { id: '1', task: 'テストタスク1', description: '' },
-        { id: '2', task: 'テストタスク2', description: '' },
-      ];
+      // 実際のToDoデータを分析用の形式にマッピング
+      const tasksForAnalysis = todos.map((todo: Todo) => ({
+        id: todo.id,
+        task: todo.text,
+        description: todo.category || '',
+      }));
 
-      console.log('[DEBUG] todoAnalysisService呼び出し前');
-      const result = await todoAnalysisService.analyzeTodos(testData);
+      console.log('[DEBUG] todoAnalysisService呼び出し前 - 実データ:', tasksForAnalysis.length);
+      const result = await todoAnalysisService.analyzeTodos(tasksForAnalysis);
       console.log('[DEBUG] 分析結果:', result);
 
       setAnalysisResult(result);
