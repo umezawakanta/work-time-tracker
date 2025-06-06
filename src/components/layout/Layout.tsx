@@ -16,6 +16,7 @@ import {
   Bell,
   Search,
   CheckSquare,
+  Calendar,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -85,6 +86,12 @@ const menuItems: MenuItem[] = [
     label: '禁欲管理',
     path: '/abstinence',
     description: '禁欲チャレンジの管理',
+  },
+  {
+    icon: <Calendar className="h-5 w-5" />,
+    label: '資産カレンダー',
+    path: '/asset-calendar',
+    description: '資産の増減をカレンダーで管理',
   },
 ];
 
