@@ -280,6 +280,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
             dailyHistory={dailyHistory}
             hasPremium={hasPremium}
             filterControls={filterControls}
+            onAnalyzeRequest={handleAnalyzeTodos}
           />
         </CardContent>
       </Card>

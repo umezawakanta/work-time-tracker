@@ -1,5 +1,5 @@
-import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -7,24 +7,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Brain } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Brain } from 'lucide-react';
 
 // Sub-components (will be implemented separately)
-import { TodoList } from "../todo/TodoList";
-import { AddTodoForm } from "../todo/AddTodoForm";
-import { TodoCalendar } from "@/components/calendar/TodoCalendar";
-import { TodoChart } from "@/components/chart/TodoChart";
-import TodoAnalysis from "../../todoAnalysis/TodoAnalysis";
-import { TodoViewControls } from "../controls/TodoViewControls";
+import { TodoList } from '../todo/TodoList';
+import { AddTodoForm } from '../todo/AddTodoForm';
+import { TodoCalendar } from '@/components/calendar/TodoCalendar';
+import { TodoChart } from '@/components/chart/TodoChart';
+import TodoAnalysis from '../../todoAnalysis/TodoAnalysis';
+import { TodoViewControls } from '../controls/TodoViewControls';
 
 // Types
-import { Todo } from "../types";
+import { Todo } from '../types';
 
-type TabType = "list" | "calendar" | "chart";
-type FilterStatus = "all" | "active" | "completed";
-type CategoryFilter = "all" | "input" | "output" | "deadline";
+type TabType = 'list' | 'calendar' | 'chart';
+type FilterStatus = 'all' | 'active' | 'completed';
+type CategoryFilter = 'all' | 'input' | 'output' | 'deadline';
 
 interface TodoHistoryData {
   readonly date: string;
@@ -48,6 +48,7 @@ interface TodoTabsProps {
   readonly dailyHistory: readonly TodoHistoryData[];
   readonly hasPremium: boolean;
   readonly filterControls: FilterControls;
+  readonly onAnalyzeRequest?: () => void;
 }
 
 /**
@@ -62,15 +63,15 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
   dailyHistory,
   hasPremium,
   filterControls,
+  onAnalyzeRequest,
 }) => {
   const [showAnalysis, setShowAnalysis] = React.useState<boolean>(false);
   const [showAddForm, setShowAddForm] = React.useState<boolean>(false);
-  const [autoAdjustEnabled, setAutoAdjustEnabled] =
-    React.useState<boolean>(true);
+  const [autoAdjustEnabled, setAutoAdjustEnabled] = React.useState<boolean>(true);
 
   const handleAdjustPriorities = (): void => {
     // This will be implemented with actual priority adjustment logic
-    console.log("Adjusting priorities...");
+    console.log('Adjusting priorities...');
   };
 
   const handleTabChange = (value: string): void => {
@@ -95,11 +96,7 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
           <div className="flex justify-end mb-3">
             <Dialog open={showAnalysis} onOpenChange={setShowAnalysis}>
               <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs flex items-center gap-1"
-                >
+                <Button variant="outline" size="sm" className="text-xs flex items-center gap-1">
                   <Brain className="h-4 w-4" aria-hidden="true" />
                   <span>タスク分析</span>
                 </Button>
@@ -138,27 +135,15 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
           isPremium={hasPremium}
         />
 
-        <TodoList
-          todos={todos}
-          isPremium={hasPremium}
-          onAnalyzeRequest={() => setShowAnalysis(true)}
-        />
+        <TodoList todos={todos} isPremium={hasPremium} onAnalyzeRequest={onAnalyzeRequest} />
       </TabsContent>
 
       <TabsContent value="calendar">
-        <TodoCalendar
-          todoHistory={[
-            ...(dailyHistory.length > 0 ? dailyHistory : todoHistory),
-          ]}
-        />
+        <TodoCalendar todoHistory={[...(dailyHistory.length > 0 ? dailyHistory : todoHistory)]} />
       </TabsContent>
 
       <TabsContent value="chart">
-        <TodoChart
-          todoHistory={[
-            ...(dailyHistory.length > 0 ? dailyHistory : todoHistory),
-          ]}
-        />
+        <TodoChart todoHistory={[...(dailyHistory.length > 0 ? dailyHistory : todoHistory)]} />
       </TabsContent>
     </Tabs>
   );
