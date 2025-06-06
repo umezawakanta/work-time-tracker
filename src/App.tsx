@@ -48,6 +48,7 @@ import CheckoutPage from '@/pages/CheckoutPage';
 import AbstinenceManager from './pages/AbstinenceManager';
 import ShopPage from './pages/ShopPage';
 import TodoManagerPage from './pages/TodoManagerPage';
+import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 
 const theme = createTheme({
   palette: {
@@ -155,6 +156,7 @@ export default function App() {
                       path="/improvement-implementation/:projectId"
                       element={<ImprovementImplementation />}
                     />
+                    <Route path="/billing-history" element={<BillingHistoryPage />} />
                   </Route>
                   <Route path="/site-dev" element={<SiteDevWBS />} />
                   <Route path="/404" element={<NotFound />} />

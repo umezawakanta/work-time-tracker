@@ -5,6 +5,12 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+interface TaskUpdateData {
+  status: string;
+  updatedAt: Date;
+  completedDate?: Date;
+}
+
 // GET /api/implementation/tasks/:projectId - プロジェクトのタスク一覧取得
 router.get(
   '/tasks/:projectId',
@@ -75,9 +81,9 @@ router.put(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { taskId } = req.params;
-      const { status } = req.body;
+      const { status } = req.body as { status: string };
 
-      const updateData: any = { status, updatedAt: new Date() };
+      const updateData: TaskUpdateData = { status, updatedAt: new Date() };
       if (status === 'completed') {
         updateData.completedDate = new Date();
       }
