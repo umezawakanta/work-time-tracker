@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
 import { getErrorMessage } from './utils/errorUtils';
+import { Button } from '@/components/ui/button';
 
 // Store actions and selectors
 import { fetchTodoItems, checkPremiumStatus } from '@/store/todoSlice';
@@ -55,32 +56,25 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   // Initial data loading
   useEffect(() => {
-    const loadInitialData = async (): Promise<void> => {
-      try {
-        await Promise.all([
-          dispatch(fetchTodoItems()).unwrap(),
-          dispatch(checkPremiumStatus()).unwrap(),
-        ]);
-      } catch (err) {
-        const errorMessage = getErrorMessage(err);
-        toast.error(`データの読み込みに失敗しました: ${errorMessage}`);
-      }
-    };
+    console.log('[DailyTodoReminder] 🔄 初期化開始:', {
+      todosCount: todos.length,
+      status,
+      error,
+      hasPremium,
+    });
 
-    void loadInitialData();
-  }, [dispatch]);
-
-  // Error handling
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
+    // データが空で、ロード中でない場合は再取得を試行
+    if (todos.length === 0 && status !== 'loading') {
+      console.log('[DailyTodoReminder] 📡 ToDoデータ再取得試行');
+      dispatch(fetchTodoItems());
     }
-  }, [error]);
 
-  // Loading state
-  if (status === 'loading') {
-    return <LoadingSpinner />;
-  }
+    // エラー処理
+    if (error) {
+      console.error('[DailyTodoReminder] ❌ ToDoデータエラー:', error);
+      toast.error(`ToDoデータの取得に失敗しました: ${error}`);
+    }
+  }, [dispatch, todos.length, status, error]);
 
   // Progress calculations
   const completedCount = todos.filter((todo: Todo) => todo.completed).length;
@@ -90,8 +84,46 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const inputCount = todos.filter((todo: Todo) => todo.type === 'input').length;
   const outputCount = todos.filter((todo: Todo) => todo.type === 'output').length;
 
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <Card className="w-full shadow-sm border border-gray-200">
+        <CardContent className="p-4 text-center">
+          <LoadingSpinner />
+          <p className="mt-2 text-sm text-gray-600">ToDoリストを読み込み中...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // エラー状態の表示を改善
+  if (status === 'failed') {
+    return (
+      <Card className="w-full shadow-sm border border-red-200">
+        <CardContent className="p-4 text-center">
+          <p className="text-red-600">ToDoデータの読み込みに失敗しました</p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={() => dispatch(fetchTodoItems())}
+          >
+            再試行
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full shadow-sm border border-gray-200 todo-reminder-card">
+      {/* デバッグ情報表示（開発環境のみ） */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="p-2 bg-blue-50 text-xs">
+          🐛 ToDo数: {todos.length}, 状態: {status}, プレミアム: {hasPremium ? 'Yes' : 'No'}
+        </div>
+      )}
+
       <CardHeader className="pb-2">
         <TodoHeader
           hasPremium={hasPremium}

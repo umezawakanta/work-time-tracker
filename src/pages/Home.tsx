@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
@@ -42,6 +42,7 @@ import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder'
 import HabitTracker from '@/components/habitTracker/HabitTracker';
 import { FeatureCard, FeatureCardVariant, PricingCard } from '@/components/FeatureCard';
 import { Badge } from '@/components/ui/badge';
+import { fetchTodoItems } from '@/store/todoSlice';
 
 // プラン比較コンポーネント
 const PlanComparisonTable = () => (
@@ -270,6 +271,27 @@ const Home: React.FC = () => {
     ],
     []
   );
+
+  // MongoDBからToDoデータを取得する初期化処理を追加
+  useEffect(() => {
+    console.log('[Home] 🏠 ホーム画面初期化開始');
+
+    if (isUserLoggedIn) {
+      console.log('[Home] 👤 ユーザーログイン済み - ToDoデータ取得開始');
+      dispatch(fetchTodoItems())
+        .then((result) => {
+          console.log('[Home] 📋 ToDoデータ取得結果:', {
+            success: result.meta.requestStatus === 'fulfilled',
+            todoCount: result.meta.requestStatus === 'fulfilled' ? result.payload?.length : 0,
+          });
+        })
+        .catch((error) => {
+          console.error('[Home] ❌ ToDoデータ取得エラー:', error);
+        });
+    } else {
+      console.log('[Home] 🔒 ユーザー未ログイン - ToDoデータ取得スキップ');
+    }
+  }, [isUserLoggedIn, dispatch]);
 
   // 「今すぐ始める」ボタンのハンドラー - useCallbackで最適化
   const handleGetStarted = useCallback(() => {
@@ -592,52 +614,46 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ログイン時のヘッダー */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">今日も生産的な一日を！</h1>
-              <p className="text-xl opacity-90">あなたのタスクと目標を管理しましょう</p>
-            </div>
-            <div className="hidden md:flex items-center gap-4">
-              <Button
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600"
-                onClick={() => navigate('/shop')}
-              >
-                <ShoppingBag className="mr-2 h-4 w-4" />
-                ストア
-              </Button>
-              <Button
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600"
-                onClick={() => navigate('/integrated-dashboard')}
-              >
-                <Target className="mr-2 h-4 w-4" />
-                統合ダッシュボード
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
-        {/* メイン生産性ツール */}
-        <div className="mb-8">
-          <DailyTodoReminder isPremium={hasActiveSubscription} />
-        </div>
+        <header className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              LifeSync
+            </span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            時間管理から資産管理まで、あなたの生活を最適化するオールインワンプラットフォーム
+          </p>
+          {/* MongoDBからのデータがロードされているかを表示するデバッグ情報 */}
+          {process.env.NODE_ENV === 'development' && isUserLoggedIn && (
+            <div className="mb-4 p-2 bg-yellow-100 rounded text-sm">
+              🐛 デバッグ: ToDoデータ読み込み状況を確認してください
+            </div>
+          )}
+          <Button
+            size="lg"
+            className="text-lg px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            onClick={handleGetStarted}
+          >
+            今すぐ始める
+            <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+          </Button>
+        </header>
 
-        {/* その他のツール */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div>
-            <BalanceUpdateReminder assetEntries={[]} debtEntries={[]} />
+        {/* ログイン済みユーザー向けのダッシュボード */}
+        {isUserLoggedIn && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">今日のダッシュボード</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <BalanceUpdateReminder />
+              <DailyTodoReminder isPremium={hasActiveSubscription} />
+            </div>
+            <div className="mt-6">
+              <HabitTracker />
+            </div>
           </div>
-          <div>
-            <HabitTracker />
-          </div>
-        </div>
+        )}
 
         {/* 機能カテゴリ */}
         <Tabs defaultValue="productivity" className="w-full">
@@ -672,6 +688,11 @@ const Home: React.FC = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* プレミアムプラン案内ダイアログ */}
+      <Dialog open={showGetStartedDialog} onOpenChange={setShowGetStartedDialog}>
+        <DialogContent className="sm:max-w-md md:max-w-2xl">{dialogContent}</DialogContent>
+      </Dialog>
     </div>
   );
 };
