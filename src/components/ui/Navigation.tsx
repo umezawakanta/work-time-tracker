@@ -11,7 +11,20 @@ const Navigation: React.FC = () => {
     },
   ];
 
-  return <div>{/* Render your navigation items here */}</div>;
+  return (
+    <div>
+      {navigationItems.map((item) => (
+        <a
+          key={item.href}
+          href={item.href}
+          className="flex items-center gap-2 p-2 hover:bg-slate-100 rounded-lg"
+        >
+          <item.icon className="h-5 w-5" />
+          <span>{item.title}</span>
+        </a>
+      ))}
+    </div>
+  );
 };
 
 export default Navigation;

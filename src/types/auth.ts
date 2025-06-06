@@ -9,6 +9,7 @@ export interface AuthUser {
   subscriptionStatus: 'free' | 'trial' | 'premium' | 'enterprise';
   createdAt: string;
   lastLoginAt: string;
+  loginCount?: number;
   preferences: UserPreferences;
 }
 

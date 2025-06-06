@@ -80,6 +80,12 @@ const menuItems: MenuItem[] = [
     path: '/work-time-reports',
     description: '分析とインサイト',
   },
+  {
+    icon: <Target className="h-5 w-5" />,
+    label: '禁欲管理',
+    path: '/abstinence',
+    description: '禁欲チャレンジの管理',
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {

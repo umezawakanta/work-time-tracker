@@ -82,6 +82,7 @@ import {
 import { SubscriptionCharts } from '@/components/chart/SubscriptionCharts';
 import { MonthlySubscriptionChart } from '@/components/chart/MonthlySubscriptionChart';
 import { SubscriptionService } from '@/types';
+import { useNavigate } from 'react-router-dom';
 // サブスクリプション管理ガイドコンポーネント
 const SubscriptionManagementGuide = () => {
   return (
@@ -365,6 +366,7 @@ const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscript
 export default function SubscriptionManagementPage() {
   const dispatch = useDispatch<AppDispatch>();
   const { subscriptions, status, error } = useSelector((state: RootState) => state.subscription);
+  const navigate = useNavigate();
   // 新規ステート
   const [selectedBankAccount, setSelectedBankAccount] = useState('smbc_main');
   const [paymentSource, setPaymentSource] = useState('all'); // "all", "credit", "bank"
@@ -943,7 +945,20 @@ export default function SubscriptionManagementPage() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">サブスクリプション管理</h1>
+          <p className="text-gray-600 mt-2">サブスクリプションの管理と分析を行います</p>
+        </div>
+        <Button
+          onClick={() => navigate('/subscription-upgrade')}
+          className="flex items-center gap-2"
+        >
+          <CrownIcon className="h-4 w-4" />
+          プランアップグレード
+        </Button>
+      </div>
       <Dialog>
         {detailedGuideContent}
         <div className="flex justify-between items-center mb-6">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -38,11 +37,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User } from '@/types/user';
-import { Product, Order, ProductCategory, StoreSettings } from '@/types/ecommerce';
+import { Product, Order, ProductCategory } from '@/types/ecommerce';
 import {
   Search,
   Plus,
@@ -51,7 +49,6 @@ import {
   UserCheck,
   UserX,
   Calendar,
-  Mail,
   User as UserIcon,
   Package,
   ShoppingBag,
@@ -64,14 +61,10 @@ import {
   Truck,
   Star,
   BarChart3,
+  Shield,
 } from 'lucide-react';
-
-interface UserManagementProps {
-  users: User[];
-  onUserUpdate: (user: User) => Promise<void>;
-  onUserDelete: (userId: string) => Promise<void>;
-  onUserCreate: (user: Omit<User, 'id'>) => Promise<void>;
-}
+import { Link } from 'react-router-dom';
+import AuthContext from '@/context/AuthContext';
 
 interface UserFormData {
   name: string;
@@ -84,13 +77,8 @@ interface UserFormData {
 }
 
 const AdminDashboard: React.FC = () => {
-  const user = useMemo(
-    () => ({
-      loginCount: 5,
-      subscriptionStatus: 'active',
-    }),
-    []
-  );
+  const context = useContext(AuthContext);
+  const authUser = context?.user;
 
   // ユーザー管理のサンプルデータ（実際の実装では API から取得）
   const [users, setUsers] = useState<User[]>([
@@ -128,7 +116,7 @@ const AdminDashboard: React.FC = () => {
   ]);
 
   // ECサイト関連の状態
-  const [products, setProducts] = useState<Product[]>([
+  const [products, _setProducts] = useState<Product[]>([
     {
       id: '1',
       name: 'プレミアム ワイヤレスヘッドフォン',
@@ -186,7 +174,7 @@ const AdminDashboard: React.FC = () => {
     },
   ]);
 
-  const [orders, setOrders] = useState<Order[]>([
+  const [orders, _setOrders] = useState<Order[]>([
     {
       id: '1',
       orderNumber: 'ORD-2024-001',
@@ -239,7 +227,7 @@ const AdminDashboard: React.FC = () => {
     },
   ]);
 
-  const [categories, setCategories] = useState<ProductCategory[]>([
+  const [categories, _setCategories] = useState<ProductCategory[]>([
     { id: '1', name: '電子機器', slug: 'electronics', isActive: true, order: 1 },
     { id: '2', name: '食品・飲料', slug: 'food-drink', isActive: true, order: 2 },
     { id: '3', name: 'ファッション', slug: 'fashion', isActive: true, order: 3 },
@@ -451,29 +439,29 @@ const AdminDashboard: React.FC = () => {
             <div className="flex-1">
               <div className="flex justify-between">
                 <span className="text-gray-500">ログイン回数:</span>
-                <span>{user.loginCount || 0}回</span>
+                <span>{authUser?.loginCount || 0}回</span>
               </div>
             </div>
 
-            {user.subscriptionStatus && (
+            {authUser?.subscriptionStatus && (
               <>
                 <Separator />
                 <div>
                   <h4 className="font-medium mb-2">サブスクリプション</h4>
                   <Badge
                     variant={
-                      user.subscriptionStatus === 'active'
+                      authUser.subscriptionStatus === 'active'
                         ? 'default'
-                        : user.subscriptionStatus === 'canceled'
+                        : authUser.subscriptionStatus === 'canceled'
                           ? 'destructive'
                           : 'outline'
                     }
                   >
-                    {user.subscriptionStatus === 'active'
+                    {authUser.subscriptionStatus === 'active'
                       ? 'アクティブ'
-                      : user.subscriptionStatus === 'canceled'
+                      : authUser.subscriptionStatus === 'canceled'
                         ? 'キャンセル済み'
-                        : user.subscriptionStatus === 'expired'
+                        : authUser.subscriptionStatus === 'expired'
                           ? '期限切れ'
                           : 'なし'}
                   </Badge>
@@ -1056,6 +1044,16 @@ const AdminDashboard: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {authUser?.isAdmin && (
+        <Link
+          to="/admin"
+          className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100"
+        >
+          <Shield className="h-4 w-4" />
+          管理者ダッシュボード
+        </Link>
+      )}
     </div>
   );
 };

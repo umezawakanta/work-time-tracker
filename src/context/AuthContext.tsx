@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('[AuthContext] 初回認証チェック実行');
     checkAuthStatus();
-  }, []);
+  }, [checkAuthStatus]);
 
   // contextValueをReact.useMemoではなくuseRefで完全に安定化
   const stableContextValue = useRef<AuthContextType | null>(null);

@@ -9,6 +9,7 @@ export interface User {
   hasActiveSubscription?: boolean; // サブスクリプション状態
   trialActivated?: boolean; // トライアル状態
   trialExpiryDate?: string; // トライアル期限日
+  loginCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

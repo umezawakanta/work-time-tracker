@@ -49,6 +49,7 @@ import AbstinenceManager from './pages/AbstinenceManager';
 import ShopPage from './pages/ShopPage';
 import TodoManagerPage from './pages/TodoManagerPage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
+import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 
 const theme = createTheme({
   palette: {
@@ -128,6 +129,7 @@ export default function App() {
                       path="/subscription-management"
                       element={<SubscriptionManagementPage />}
                     />
+                    <Route path="/subscription-upgrade" element={<SubscriptionUpgradePage />} />
                     <Route path="/asset-calendar" element={<AssetCalendarPage />} />
                     <Route path="/bookshelf" element={<BookShelfPage />} />
                     <Route path="/guitar-practice" element={<GuitarPracticePage />} />
