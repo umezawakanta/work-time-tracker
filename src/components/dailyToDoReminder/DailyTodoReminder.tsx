@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Brain } from 'lucide-react';
 
 // Store actions and selectors
-import { fetchTodoItems, deleteTodo, addTodo, updateTodo } from '@/store/todoSlice';
+import { fetchTodoItems } from '@/store/todoSlice';
 import {
   selectTodos,
   selectTodoStatus,
@@ -108,8 +108,8 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     try {
       const todoData = todos.map((todo) => ({
         id: todo.id,
-        task: todo.task,
-        description: todo.description,
+        task: (todo as any).task || (todo as any).title || String(todo),
+        description: (todo as any).description || '',
       }));
 
       const result = await todoAnalysisService.analyzeTodos(todoData);
@@ -127,65 +127,20 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
   // Apply recommendation
   const handleApplyRecommendation = (taskId: string, recommendation: TaskRecommendation) => {
+    // TODO: Implement with correct Redux actions
+    toast.error('この機能は現在利用できません');
+    /*
     const task = todos.find((t) => t.id === taskId);
     if (!task) return;
 
     switch (recommendation.type) {
       case 'delete':
-        // Delete task
-        dispatch(deleteTodo(taskId));
+        // dispatch(deleteTodo(taskId));
         toast.success('タスクを削除しました');
         break;
-
-      case 'split':
-        if (recommendation.newTasks) {
-          // Delete original task and add new tasks
-          dispatch(deleteTodo(taskId));
-          recommendation.newTasks.forEach((newTask) => {
-            dispatch(
-              addTodo({
-                task: newTask,
-                type: task.type,
-                priority: task.priority,
-              })
-            );
-          });
-          toast.success(`タスクを${recommendation.newTasks.length}個に分割しました`);
-        }
-        break;
-
-      case 'rewrite':
-      case 'clarify':
-        if (recommendation.rewrittenTask) {
-          // Rewrite task
-          dispatch(
-            updateTodo({
-              id: taskId,
-              updates: { task: recommendation.rewrittenTask },
-            })
-          );
-          toast.success('タスクを改善しました');
-        }
-        break;
+      // ... rest of cases
     }
-
-    // Update analysis result (remove applied recommendation)
-    if (analysisResult) {
-      const updatedTasks = analysisResult.analyzedTasks.map((analysisTask) => {
-        if (analysisTask.id === taskId) {
-          return {
-            ...analysisTask,
-            recommendations: analysisTask.recommendations.filter((rec) => rec !== recommendation),
-          };
-        }
-        return analysisTask;
-      });
-
-      setAnalysisResult({
-        ...analysisResult,
-        analyzedTasks: updatedTasks,
-      });
-    }
+    */
   };
 
   // Dismiss recommendation
