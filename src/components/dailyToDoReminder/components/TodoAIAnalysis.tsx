@@ -17,11 +17,7 @@ import {
   Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  TodoAnalysisResult,
-  TaskAnalysis,
-  TaskRecommendation,
-} from '@/services/ai/todoAnalysisService';
+import { TodoAnalysisResult, TaskRecommendation } from '@/services/ai/todoAnalysisService';
 
 interface TodoAIAnalysisProps {
   analysisResult: TodoAnalysisResult | null;

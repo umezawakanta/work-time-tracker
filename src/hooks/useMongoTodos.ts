@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/useAuth';
 import { todoApi } from '@/services/api/todoApi';
 import { TodoItem } from '@/types';
+import { AxiosError } from 'axios';
 
 interface UseMongoTodosReturn {
   todos: TodoItem[];
@@ -43,9 +44,11 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
           completed: t.completed,
         })),
       });
-    } catch (err: any) {
-      console.error('[useMongoTodos] ❌ ToDo取得エラー:', err);
-      setError(err.response?.data?.message || 'ToDoの取得に失敗しました');
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as AxiosError<{ message: string }>).response?.data?.message ||
+        'ToDoの取得に失敗しました';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -57,9 +60,12 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
         const response = await todoApi.create(task, 3, false, type, deadline);
         setTodos((prev) => [response.data.todo, ...prev]);
         console.log('[useMongoTodos] ✅ ToDo追加成功:', response.data.todo);
-      } catch (err: any) {
-        console.error('[useMongoTodos] ❌ ToDo追加エラー:', err);
-        throw new Error(err.response?.data?.message || 'ToDoの追加に失敗しました');
+      } catch (err: unknown) {
+        const errorMessage =
+          (err as AxiosError<{ message: string }>).response?.data?.message ||
+          'ToDoの追加に失敗しました';
+        console.error('[useMongoTodos] ❌ ToDo追加エラー:', errorMessage);
+        throw new Error(errorMessage);
       }
     },
     []
@@ -72,9 +78,12 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
         prev.map((todo) => (todo._id === id ? { ...todo, ...response.data.todo } : todo))
       );
       console.log('[useMongoTodos] ✅ ToDo更新成功:', { id, updates });
-    } catch (err: any) {
-      console.error('[useMongoTodos] ❌ ToDo更新エラー:', err);
-      throw new Error(err.response?.data?.message || 'ToDoの更新に失敗しました');
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as AxiosError<{ message: string }>).response?.data?.message ||
+        'ToDoの更新に失敗しました';
+      console.error('[useMongoTodos] ❌ ToDo更新エラー:', errorMessage);
+      throw new Error(errorMessage);
     }
   }, []);
 
@@ -83,9 +92,12 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
       await todoApi.delete(id);
       setTodos((prev) => prev.filter((todo) => todo._id !== id));
       console.log('[useMongoTodos] 🗑️ ToDo削除成功:', id);
-    } catch (err: any) {
-      console.error('[useMongoTodos] ❌ ToDo削除エラー:', err);
-      throw new Error(err.response?.data?.message || 'ToDoの削除に失敗しました');
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as AxiosError<{ message: string }>).response?.data?.message ||
+        'ToDoの削除に失敗しました';
+      console.error('[useMongoTodos] ❌ ToDo削除エラー:', errorMessage);
+      throw new Error(errorMessage);
     }
   }, []);
 

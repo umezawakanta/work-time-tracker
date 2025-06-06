@@ -33,6 +33,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { Locale } from '@/context/LocaleContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -206,12 +207,12 @@ export default function Layout({ children }: LayoutProps) {
               {/* 言語切替 */}
               <select
                 value={locale}
-                onChange={(e) => setLocale(e.target.value as any)}
+                onChange={(e) => setLocale(e.target.value as Locale)}
                 className="text-sm border border-slate-200 rounded-xl px-3 py-2 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
                 title="言語選択"
               >
-                <option value="ja">🇯🇵 日本語</option>
-                <option value="en">🇺🇸 English</option>
+                <option value="ja-JP">🇯🇵 日本語</option>
+                <option value="en-US">🇺🇸 English</option>
               </select>
 
               {/* ユーザードロップダウン */}

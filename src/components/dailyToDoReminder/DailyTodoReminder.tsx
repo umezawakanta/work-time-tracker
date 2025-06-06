@@ -137,7 +137,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   };
 
   // Apply recommendation
-  const handleApplyRecommendation = (taskId: string, recommendation: TaskRecommendation) => {
+  const handleApplyRecommendation = (_taskId: string, _recommendation: TaskRecommendation) => {
     // TODO: Implement with correct Redux actions
     toast.error('この機能は現在利用できません');
     /*

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { api } from '@/services/api/apiConfig';
+import { AxiosError } from 'axios';
 
 export interface User {
   id: string;
@@ -79,8 +80,10 @@ export const useAuth = () => {
       setUser(userData);
 
       console.log('[MongoAuth] ✅ ログイン成功:', userData);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'ログインに失敗しました';
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as AxiosError<{ message: string }>).response?.data?.message ||
+        'ログインに失敗しました';
       setError(errorMessage);
       console.error('[MongoAuth] ❌ ログインエラー:', error);
       throw new Error(errorMessage);
@@ -102,8 +105,9 @@ export const useAuth = () => {
       setUser(userData);
 
       console.log('[MongoAuth] ✅ 登録成功:', userData);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || '登録に失敗しました';
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as AxiosError<{ message: string }>).response?.data?.message || '登録に失敗しました';
       setError(errorMessage);
       console.error('[MongoAuth] ❌ 登録エラー:', error);
       throw new Error(errorMessage);

@@ -172,8 +172,10 @@ export const designTokens = {
 };
 
 // ユーティリティ関数
-export const getColor = (path: string) => {
-  return path.split('.').reduce((obj, key) => (obj as any)?.[key], designTokens.colors);
+export const getColor = (path: string): unknown => {
+  return path
+    .split('.')
+    .reduce((obj: unknown, key) => (obj as Record<string, unknown>)?.[key], designTokens.colors);
 };
 
 export const getShadow = (key: keyof typeof designTokens.shadows) => {
