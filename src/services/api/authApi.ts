@@ -142,22 +142,23 @@ export const checkAuth = async (): Promise<boolean> => {
     const response = await api.get('/auth/check');
     console.log('✅ Server auth check response:', response.data);
     return response.data.isAuthenticated;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as Error & { response?: { status?: number; data?: unknown }; code?: string };
     console.error('❌ Auth check error:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-      code: error.code,
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data,
+      code: err.code,
     });
 
     // ネットワークエラーやサーバーダウンの場合は認証状態を維持
-    if (error.code === 'ECONNREFUSED' || error.code === 'NETWORK_ERROR' || !error.response) {
+    if (err.code === 'ECONNREFUSED' || err.code === 'NETWORK_ERROR' || !err.response) {
       console.log('⚠️ Network error - maintaining auth state');
       return true; // ネットワークエラーの場合は認証状態を維持
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (err.response?.status === 401 || err.response?.status === 403) {
       console.log('🔒 Server rejected auth - clearing tokens');
       tokenManager.clearTokens();
     }

@@ -374,8 +374,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isMounted) {
           console.log('🏁 認証初期化完了 - loading終了');
           setLoading(false);
-        } else {
-          console.log('⚠️ Component unmounted during auth init');
         }
       }
     };
@@ -385,7 +383,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, [checkAuthStatus, fetchUser, updateActivity]);
+  }, [checkAuthStatus, fetchUser, updateActivity, loading, refreshAuth]);
 
   // 定期的な認証チェック
   useEffect(() => {

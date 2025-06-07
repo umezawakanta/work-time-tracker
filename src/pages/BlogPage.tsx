@@ -6,6 +6,7 @@ import {
   fetchBlogPosts,
   selectBlogPosts,
   selectBlogStatus,
+  selectBlogError,
   deleteBlogPost,
 } from '@/store/blogSlice';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,6 +49,7 @@ const BlogPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const posts = useSelector(selectBlogPosts);
   const status = useSelector(selectBlogStatus);
+  const error = useSelector(selectBlogError);
   const { user } = useAuth();
 
   const [selectedTab, setSelectedTab] = useState(0);
@@ -58,11 +60,21 @@ const BlogPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
     // Redux storeからブログポストを取得
     if (status === 'idle') {
-      dispatch(fetchBlogPosts());
+      console.log('🔄 ブログポストを取得中...');
+      dispatch(fetchBlogPosts())
+        .unwrap()
+        .then((data) => {
+          console.log('✅ ブログポスト取得成功:', data.length, 'posts');
+        })
+        .catch((error) => {
+          console.error('❌ ブログポスト取得エラー:', error);
+          toast.error('ブログポストの取得に失敗しました');
+        });
     }
   }, [dispatch, status]);
 
@@ -190,6 +202,58 @@ const BlogPage: React.FC = () => {
       <Container maxWidth="lg">
         <Box sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
           <CircularProgress />
+          <Typography sx={{ ml: 2 }}>ブログポストを読み込み中...</Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (status === 'failed') {
+    return (
+      <Container maxWidth="lg">
+        <Box sx={{ py: 4 }}>
+          <Alert severity="error" sx={{ mb: 3 }}>
+            <Typography variant="h6">データの取得に失敗しました</Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {error || 'ブログポストを取得できませんでした。'}
+            </Typography>
+            <Box sx={{ mt: 2 }}>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  console.log('🔄 ブログポストを再取得...');
+                  setIsRetrying(true);
+                  try {
+                    await dispatch(fetchBlogPosts()).unwrap();
+                    toast.success('ブログポストを再取得しました');
+                  } catch (error) {
+                    console.error('❌ 再取得エラー:', error);
+                    toast.error('再取得に失敗しました');
+                  } finally {
+                    setIsRetrying(false);
+                  }
+                }}
+                disabled={isRetrying}
+                startIcon={isRetrying ? <CircularProgress size={16} color="inherit" /> : undefined}
+              >
+                {isRetrying ? '再取得中...' : '再試行'}
+              </Button>
+              <Button variant="outlined" sx={{ ml: 2 }} onClick={() => window.location.reload()}>
+                ページを再読み込み
+              </Button>
+            </Box>
+          </Alert>
+          {process.env.NODE_ENV === 'development' && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              <Typography variant="body2">
+                <strong>開発者向け情報:</strong>
+                <br />• API Base URL:{' '}
+                {process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api'}
+                <br />• エラー詳細: {error}
+                <br />• ブラウザの開発者ツールでネットワークタブを確認してください
+              </Typography>
+            </Alert>
+          )}
         </Box>
       </Container>
     );
@@ -386,11 +450,27 @@ const BlogPage: React.FC = () => {
           </MenuItemComponent>
         </Menu>
 
-        {filteredPosts.length === 0 && (
+        {filteredPosts.length === 0 && status === 'succeeded' && (
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="body1" color="text.secondary">
               記事が見つかりませんでした。
             </Typography>
+            {posts.length === 0 && (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  まだブログ記事が投稿されていません。
+                </Typography>
+                <Button
+                  component={Link}
+                  to="/blog/new"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  startIcon={<Add />}
+                >
+                  最初の記事を投稿する
+                </Button>
+              </Box>
+            )}
           </Box>
         )}
       </Box>
