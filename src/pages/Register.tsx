@@ -25,6 +25,7 @@ interface ValidationErrors {
   password?: string;
   confirmPassword?: string;
   terms?: string;
+  general?: string;
 }
 
 interface PasswordStrength {
@@ -207,15 +208,36 @@ export default function Register() {
         const errorMessage = error.response?.data?.message;
         const errorField = error.response?.data?.field;
 
+        console.log('エラーレスポンス:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: errorMessage,
+          field: errorField,
+        });
+
         if (errorField && errorMessage) {
           // 特定のフィールドエラーの場合
-          setValidationErrors((prev) => ({ ...prev, [errorField]: errorMessage }));
+          if (errorField === 'email') {
+            setValidationErrors((prev) => ({ ...prev, email: errorMessage }));
+            setTouchedFields((prev) => ({ ...prev, email: true }));
+          } else if (errorField === 'general') {
+            // 一般的なエラーはtoastで表示
+            toast.error(errorMessage);
+          } else {
+            // その他のフィールドエラー
+            setValidationErrors((prev) => ({ ...prev, [errorField]: errorMessage }));
+            setTouchedFields((prev) => ({ ...prev, [errorField]: true }));
+          }
+        } else if (errorMessage) {
+          // メッセージのみの場合はtoastで表示
+          toast.error(errorMessage);
         } else {
-          // 一般的なエラーメッセージ
-          toast.error(errorMessage || 'アカウントの作成に失敗しました');
+          // デフォルトのエラーメッセージ
+          toast.error('アカウントの作成に失敗しました。もう一度お試しください。');
         }
       } else {
-        toast.error('不明なエラーが発生しました');
+        console.error('予期しないエラー:', error);
+        toast.error('予期しないエラーが発生しました。しばらく時間をおいてから再度お試しください。');
       }
     } finally {
       setIsSubmitting(false);
@@ -237,6 +259,16 @@ export default function Register() {
 
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            {/* 一般的なエラーメッセージ表示エリアを追加 */}
+            {validationErrors.general && (
+              <Alert className="border-red-200 bg-red-50">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-700">
+                  {validationErrors.general}
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* 名前フィールド */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium text-gray-700">

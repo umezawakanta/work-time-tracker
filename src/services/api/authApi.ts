@@ -49,16 +49,47 @@ export const login = async (
   rememberMe: boolean = false
 ): Promise<AuthResponse> => {
   try {
-    const response = await api.post<AuthResponse>('/auth/login', {
+    const response = await api.post('/auth/login', {
       email,
       password,
       rememberMe,
     });
 
+    // 既存のtoken形式に対応
+    if (response.data.token) {
+      // 単純なtokenをaccessTokenとして扱う
+      const expiresIn = 3600; // 1時間
+      const refreshExpiresIn = rememberMe ? 2592000 : 604800;
+
+      tokenManager.setTokens(
+        response.data.token, // accessTokenとして使用
+        response.data.token, // refreshTokenも同じ値を使用（一時的）
+        expiresIn,
+        refreshExpiresIn
+      );
+
+      if (rememberMe) {
+        tokenManager.setRememberMe(true);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
+
+      // AuthResponse形式に変換
+      return {
+        accessToken: response.data.token,
+        refreshToken: response.data.token,
+        user: response.data.user,
+        message: 'ログインに成功しました',
+        expiresIn,
+        refreshExpiresIn,
+      };
+    }
+
+    // 新しい形式のレスポンス（推奨）
     if (response.data.accessToken && response.data.refreshToken) {
-      // TokenManagerを使用してトークンを管理
-      const expiresIn = response.data.expiresIn || 3600; // 1時間
-      const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800); // Remember Me: 30日, 通常: 7日
+      const expiresIn = response.data.expiresIn || 3600;
+      const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
 
       tokenManager.setTokens(
         response.data.accessToken,
@@ -67,7 +98,6 @@ export const login = async (
         refreshExpiresIn
       );
 
-      // Remember Me設定を適用
       if (rememberMe) {
         tokenManager.setRememberMe(true);
         localStorage.setItem('rememberMe', 'true');

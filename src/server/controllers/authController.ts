@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User.js';
 import dotenv from 'dotenv';
+import { TokenManager } from '../utils/TokenManager.js';
 
 dotenv.config();
 
@@ -14,10 +15,14 @@ interface AuthRequest extends Request {
 const generateToken = (userId: string) => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
+    console.error('JWT_SECRET environment variable is not set');
     throw new Error('JWT_SECRET is not defined');
   }
+  console.log('JWT_SECRET is properly configured');
   return jwt.sign({ id: userId }, secret, { expiresIn: '1d' });
 };
+
+const tokenManager = new TokenManager();
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -57,6 +62,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.log('Login successful for user:', userId);
 
     res.json({ token, user: { id: userId, name: user.name, email: user.email } });
+
+    if (response.data.accessToken && response.data.refreshToken) {
+      tokenManager.setTokens(/* ... */);
+    }
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof Error) {
@@ -85,7 +94,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         email: !email ? 'missing' : 'present',
         password: !password ? 'missing' : 'present',
       });
-      res.status(400).json({ message: 'All fields (name, email, password) are required' });
+      res.status(400).json({
+        message: '名前、メールアドレス、パスワードをすべて入力してください',
+        field: 'general',
+      });
       return;
     }
 
@@ -94,7 +106,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     if (user) {
       console.log('Registration failed: User already exists with email:', email);
-      res.status(400).json({ message: 'User already exists' });
+      res.status(400).json({
+        message: 'このメールアドレスは既に登録されています。別のメールアドレスをお試しください。',
+        field: 'email',
+      });
       return;
     }
 
@@ -123,6 +138,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json(responseData);
     console.log('=== Registration completed successfully ===');
+
+    if (response.data.accessToken && response.data.refreshToken) {
+      tokenManager.setTokens(/* ... */);
+    }
   } catch (error) {
     console.error('=== Registration error occurred ===');
     console.error('Error type:', error?.constructor?.name);
@@ -134,9 +153,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       if (error.name === 'ValidationError') {
         console.error('Mongoose Validation Error details:', error);
         res.status(400).json({
-          message: 'Validation error',
+          message: '入力データに問題があります。すべてのフィールドを正しく入力してください。',
+          field: 'general',
           details: error,
-          errorType: 'ValidationError',
         });
         return;
       }
@@ -145,8 +164,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       if (error.name === 'MongoServerError' && 'code' in error && error.code === 11000) {
         console.error('MongoDB Duplicate Key Error:', error);
         res.status(400).json({
-          message: 'User already exists',
-          errorType: 'DuplicateKeyError',
+          message: 'このメールアドレスは既に登録されています。',
+          field: 'email',
         });
         return;
       }
@@ -156,17 +175,18 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     if (error instanceof Error && error.message.includes('JWT_SECRET')) {
       console.error('JWT configuration error');
       res.status(500).json({
-        message: 'Server configuration error',
-        errorType: 'JWTConfigError',
+        message: 'サーバーの設定に問題があります。しばらく時間をおいてから再度お試しください。',
+        field: 'general',
       });
       return;
     }
 
     // その他のエラー
     res.status(500).json({
-      message: 'Server error during registration',
+      message:
+        'アカウント作成中にエラーが発生しました。しばらく時間をおいてから再度お試しください。',
+      field: 'general',
       error: error instanceof Error ? error.message : 'Unknown error',
-      errorType: error?.constructor?.name || 'Unknown',
     });
   }
 };
