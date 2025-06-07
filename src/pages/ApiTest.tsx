@@ -20,15 +20,35 @@ import { AxiosError } from 'axios';
 interface TestResult {
   endpoint: string;
   status: 'pending' | 'success' | 'error';
-  response?: any;
+  response?: unknown;
   error?: string;
   duration?: number;
+}
+
+interface ApiInfo {
+  api?: {
+    status?: string;
+    version?: string;
+  };
+  server?: {
+    environment?: string;
+    platform?: string;
+    nodeVersion?: string;
+    uptime?: string;
+  };
+  database?: {
+    connected?: boolean;
+  };
+  cors?: {
+    enabled?: boolean;
+  };
+  endpoints?: Record<string, string>;
 }
 
 const ApiTest: React.FC = () => {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [apiInfo, setApiInfo] = useState<any>(null);
+  const [apiInfo, setApiInfo] = useState<ApiInfo | null>(null);
 
   const testEndpoints = [
     { name: 'Health Check', path: '/api/health', method: 'GET' },

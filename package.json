@@ -165,6 +165,7 @@
         "@types/react-syntax-highlighter": "^15.5.13",
         "@types/uuid": "^10.0.0",
         "@types/ws": "^8.18.1",
+        "@vercel/node": "^5.2.1",
         "@vitejs/plugin-react": "^4.4.0",
         "@vitejs/plugin-react-swc": "^3.9.0",
         "autoprefixer": "^10.4.21",
