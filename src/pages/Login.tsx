@@ -5,6 +5,7 @@ import { login } from '@/services/api/authApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -16,7 +17,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
-import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } from 'lucide-react';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ export default function Login() {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
@@ -34,6 +36,7 @@ export default function Login() {
   // リダイレクト先を取得（PrivateRouteから渡される）
   const from = location.state?.from?.pathname || '/';
   const message = location.state?.message;
+  const sessionExpired = location.state?.sessionExpired;
 
   // 既にログイン済みの場合はリダイレクト
   useEffect(() => {
@@ -50,7 +53,25 @@ export default function Login() {
         setFormData((prev) => ({ ...prev, email: location.state.email }));
       }
     }
-  }, [message, location.state]);
+
+    // セッション期限切れメッセージ
+    if (sessionExpired) {
+      toast.error('セッションが期限切れになりました。再度ログインしてください。', {
+        duration: 5000,
+      });
+    }
+  }, [message, sessionExpired, location.state]);
+
+  // Remember Meの状態を復元
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+
+    if (savedEmail && savedRememberMe) {
+      setFormData((prev) => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -84,6 +105,18 @@ export default function Login() {
     try {
       await login(formData.email.trim(), formData.password);
       setIsAuthenticated(true);
+
+      // Remember Me 機能
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', formData.email.trim());
+        localStorage.setItem('rememberMe', 'true');
+        localStorage.setItem('sessionPersistent', 'true');
+      } else {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberMe');
+        localStorage.removeItem('sessionPersistent');
+      }
+
       toast.success('ログインに成功しました');
 
       // ログイン成功後、元のページまたはホームページにリダイレクト
@@ -100,6 +133,10 @@ export default function Login() {
         } else if (statusCode === 429) {
           setErrors({
             general: 'ログイン試行回数が上限に達しました。しばらく時間をおいてからお試しください',
+          });
+        } else if (statusCode === 423) {
+          setErrors({
+            general: 'アカウントがロックされています。サポートにお問い合わせください',
           });
         } else {
           setErrors({ general: errorMessage || 'ログインに失敗しました' });
@@ -128,13 +165,24 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">ログイン</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
+            <Shield className="h-6 w-6 text-blue-600" />
+            ログイン
+          </CardTitle>
           <CardDescription className="text-gray-600">Work Time Trackerにアクセス</CardDescription>
           {from !== '/' && (
             <Alert className="mt-4 border-blue-200 bg-blue-50">
               <AlertCircle className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-700">
                 このページにアクセスするにはログインが必要です
+              </AlertDescription>
+            </Alert>
+          )}
+          {sessionExpired && (
+            <Alert className="mt-4 border-orange-200 bg-orange-50">
+              <AlertCircle className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-700">
+                セッションが期限切れになりました
               </AlertDescription>
             </Alert>
           )}
@@ -214,8 +262,21 @@ export default function Login() {
               )}
             </div>
 
-            {/* パスワードを忘れた場合のリンク */}
-            <div className="text-right">
+            {/* Remember Me チェックボックス */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
+                  ログイン状態を保持する
+                </Label>
+              </div>
+
+              {/* パスワードを忘れた場合のリンク */}
               <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
                 パスワードをお忘れですか？
               </Link>
@@ -230,7 +291,10 @@ export default function Login() {
                   ログイン中...
                 </>
               ) : (
-                'ログイン'
+                <>
+                  <Shield className="h-4 w-4 mr-2" />
+                  ログイン
+                </>
               )}
             </Button>
 
@@ -239,6 +303,13 @@ export default function Login() {
               <Link to="/register" className="text-blue-600 hover:underline ml-1">
                 こちらから登録
               </Link>
+            </div>
+
+            {/* セキュリティ情報 */}
+            <div className="text-center">
+              <p className="text-xs text-gray-500">
+                このサイトは SSL暗号化通信により保護されています
+              </p>
             </div>
           </CardFooter>
         </form>
