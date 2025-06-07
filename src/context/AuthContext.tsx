@@ -343,9 +343,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 setIsAuthenticated(true);
                 // オフラインの可能性があるため後で再試行（ローディング終了後）
                 setTimeout(() => {
-                  if (isMounted && !loading) {
+                  if (isMounted) {
                     console.log('🔄 Retrying auth check...');
-                    refreshAuth();
+                    checkAuthStatus().then((isValid) => {
+                      if (isValid && isMounted) {
+                        fetchUser()
+                          .then(() => {
+                            setIsAuthenticated(true);
+                          })
+                          .catch(() => {
+                            setIsAuthenticated(true); // 認証は有効
+                          });
+                      }
+                    });
                   }
                 }, 3000);
               } else {
@@ -383,7 +393,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, [checkAuthStatus, fetchUser, updateActivity, loading, refreshAuth]);
+  }, [checkAuthStatus, fetchUser, updateActivity]);
 
   // 定期的な認証チェック
   useEffect(() => {
