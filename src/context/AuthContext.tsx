@@ -290,12 +290,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
           hostname: window.location.hostname,
         });
 
-        // 開発環境でのサーバー起動ガイダンス
-        if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+        // 開発環境でのサーバー起動ガイダンス（初回のみ）
+        if (
+          import.meta.env.DEV &&
+          window.location.hostname === 'localhost' &&
+          !sessionStorage.getItem('auth-init-shown')
+        ) {
           console.log('💡 Development Mode Guidance:');
           console.log('   - Frontend: http://localhost:3000 ✅');
           console.log('   - Backend: http://localhost:3001 (確認中...)');
           console.log('   - サーバーが起動していない場合、オフラインモードで動作します');
+          sessionStorage.setItem('auth-init-shown', 'true');
         }
 
         if (isTokenValid) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,17 +9,19 @@ const PrivateRoute: React.FC = () => {
   const { isAuthenticated, loading, sessionExpired, refreshAuth, user } = useAuth();
   const location = useLocation();
 
-  // デバッグログ
-  if (process.env.NODE_ENV === 'development') {
-    console.log('PrivateRoute Debug:', {
-      isAuthenticated,
-      loading,
-      sessionExpired,
-      user: user ? { id: user.id || user._id, name: user.name, email: user.email } : null,
-      location: location.pathname,
-      timestamp: new Date().toISOString(),
-    });
-  }
+  // デバッグログ (React Strict Mode による重複実行を考慮)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('PrivateRoute Debug:', {
+        isAuthenticated,
+        loading,
+        sessionExpired,
+        user: user ? { id: user.id || user._id, name: user.name, email: user.email } : null,
+        location: location.pathname,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [isAuthenticated, loading, sessionExpired, user, location.pathname]);
 
   // ローディング状態
   if (loading) {

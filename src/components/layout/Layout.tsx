@@ -520,7 +520,7 @@ export default function Layout({ children }: LayoutProps) {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <p className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                          <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                             {user?.name || 'ユーザー'}
                             {user?.isAdmin && (
                               <Badge className="text-xs bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-400 border-0">
@@ -528,7 +528,7 @@ export default function Layout({ children }: LayoutProps) {
                                 管理者
                               </Badge>
                             )}
-                          </p>
+                          </div>
                           <p className="text-sm text-slate-500 dark:text-slate-400">
                             {user?.email}
                           </p>
