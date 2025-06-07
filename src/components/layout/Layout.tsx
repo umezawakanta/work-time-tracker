@@ -305,14 +305,14 @@ export default function Layout({ children }: LayoutProps) {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm truncate flex items-center gap-1">
+              <div className="font-medium text-sm truncate flex items-center gap-1">
                 {user?.name || 'ユーザー'}
                 {user?.isAdmin && (
-                  <div title="管理者">
+                  <span title="管理者">
                     <Crown className="h-3 w-3 text-amber-500" />
-                  </div>
+                  </span>
                 )}
-              </p>
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
             </div>
           </div>

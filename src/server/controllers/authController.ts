@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User.js';
 import dotenv from 'dotenv';
-import { TokenManager } from '../utils/TokenManager.js';
 
 dotenv.config();
 
@@ -21,8 +20,6 @@ const generateToken = (userId: string) => {
   console.log('JWT_SECRET is properly configured');
   return jwt.sign({ id: userId }, secret, { expiresIn: '1d' });
 };
-
-const tokenManager = new TokenManager();
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -62,10 +59,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.log('Login successful for user:', userId);
 
     res.json({ token, user: { id: userId, name: user.name, email: user.email } });
-
-    if (response.data.accessToken && response.data.refreshToken) {
-      tokenManager.setTokens(/* ... */);
-    }
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof Error) {
@@ -138,10 +131,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json(responseData);
     console.log('=== Registration completed successfully ===');
-
-    if (response.data.accessToken && response.data.refreshToken) {
-      tokenManager.setTokens(/* ... */);
-    }
   } catch (error) {
     console.error('=== Registration error occurred ===');
     console.error('Error type:', error?.constructor?.name);
