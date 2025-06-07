@@ -31,7 +31,7 @@ export default function Login() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { setIsAuthenticated, isAuthenticated } = useAuth();
+  const { setIsAuthenticated, isAuthenticated, refreshAuth } = useAuth();
 
   // リダイレクト先を取得（PrivateRouteから渡される）
   const from = location.state?.from?.pathname || '/';
@@ -104,7 +104,6 @@ export default function Login() {
 
     try {
       await login(formData.email.trim(), formData.password, rememberMe);
-      setIsAuthenticated(true);
 
       // Remember Me 機能（Emailの保存のみローカルで実行）
       if (rememberMe) {
@@ -114,6 +113,10 @@ export default function Login() {
       }
 
       toast.success('ログインに成功しました');
+
+      // AuthContextの認証状態を強制的に更新
+      await refreshAuth();
+      setIsAuthenticated(true);
 
       // ログイン成功後、元のページまたはホームページにリダイレクト
       navigate(from, { replace: true });

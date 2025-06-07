@@ -50,6 +50,7 @@ app.use(helmet());
 app.use(morgan('combined'));
 
 // Connect to MongoDB
+console.log('Attempting to connect to MongoDB...');
 connectDB();
 
 // Create uploads directory if it doesn't exist
@@ -67,6 +68,7 @@ const wsService = setupWebSocketServer(server);
 app.set('wsService', wsService);
 
 // Routes
+console.log('Setting up API routes...');
 app.use('/api/auth', authRoutes);
 app.use('/api/worktime', workTimeRoutes);
 app.use('/api/asset', assetRoutes);
@@ -98,9 +100,29 @@ app.use((_req: Request, res: Response): void => {
 
 // Error handling middleware
 app.use((err: Error, _req: Request, res: Response): void => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  console.error('=== Global Error Handler ===');
+  console.error('Error type:', err.constructor.name);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
+  console.error('Request URL:', _req.url);
+  console.error('Request method:', _req.method);
+  console.error('Request body:', JSON.stringify(_req.body, null, 2));
+  console.error('=== End Global Error Handler ===');
+
+  res.status(500).json({
+    message: 'Something went wrong!',
+    error: err.message,
+    errorType: err.constructor.name,
+  });
 });
+
+// 環境変数の確認
+console.log('=== Environment Check ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
+console.log('=== End Environment Check ===');
 
 const PORT = process.env.PORT || 3001;
 // app.listen()ではなくserver.listen()を使用

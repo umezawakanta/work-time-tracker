@@ -98,6 +98,11 @@ const toasterConfig = {
   },
 };
 
+// Layoutでラップするコンポーネント
+const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Layout>{children}</Layout>
+);
+
 export default function App() {
   return (
     <Provider store={store}>
@@ -107,71 +112,258 @@ export default function App() {
             <CssBaseline />
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
               <Toaster {...toasterConfig} />
-              <Layout>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
-                  <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
-                  <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
-                  <Route path="/political-trends" element={<PoliticalTrends />} />
-                  <Route path="/calendar" element={<CalendarPage />} />
-                  <Route path="/shop" element={<ShopPage />} />
-                  <Route path="/products" element={<ProductsPage />} />
-                  <Route path="/products/:id" element={<ProductDetailPage />} />
-                  <Route path="/checkout" element={<CheckoutPage />} />
-                  <Route element={<PrivateRoute />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/integrated-dashboard" element={<IntegratedDashboard />} />
-                    <Route path="/todos" element={<TodoManagerPage />} />
-                    <Route path="/work-time" element={<WorkTimeEntryForm />} />
-                    <Route path="/work-time-reports" element={<WorkTimeReports />} />
-                    <Route path="/asset-liability-report" element={<AssetLiabilityReportPage />} />
-                    <Route
-                      path="/subscription-management"
-                      element={<SubscriptionManagementPage />}
-                    />
-                    <Route path="/subscription-upgrade" element={<SubscriptionUpgradePage />} />
-                    <Route path="/asset-calendar" element={<AssetCalendarPage />} />
-                    <Route path="/bookshelf" element={<BookShelfPage />} />
-                    <Route path="/guitar-practice" element={<GuitarPracticePage />} />
-                    <Route path="/sleep-tracker" element={<SleepTrackerPage />} />
-                    <Route path="/twitter" element={<TwitterPage />} />
-                    <Route path="/blog" element={<BlogPage />} />
-                    <Route path="/blog/new" element={<NewBlogPost />} />
-                    <Route path="/blog/:id" element={<BlogPostDetail />} />
-                    <Route path="/blog/edit/:id" element={<EditBlogPost />} />
-                    <Route path="/profile" element={<UserProfile />} />
-                    <Route path="/wbs-creator" element={<WBSCreatorPage />} />
-                    <Route path="/wbs" element={<WBSCreatorPage />} />
-                    <Route path="/diary" element={<DiaryPage />} />
-                    <Route path="/impulse-tracker" element={<ImpulseTrackerPage />} />
-                    <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
-                    <Route path="/improvement-plan/detail" element={<ImprovementPlanDetail />} />
-                    <Route path="/system-design" element={<SystemDesignDocuments />} />
-                    <Route
-                      path="/admin"
-                      element={
-                        <AdminRoute>
+              <Routes>
+                {/* 認証不要なルート */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
+                <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
+                <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
+                <Route path="/political-trends" element={<PoliticalTrends />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/products" element={<ProductsPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/site-dev" element={<SiteDevWBS />} />
+                <Route path="/404" element={<NotFound />} />
+                <Route path="/update-history" element={<UpdateHistoryPage />} />
+                <Route path="/abstinence" element={<AbstinenceManager />} />
+
+                {/* 認証が必要なルート */}
+                <Route element={<PrivateRoute />}>
+                  <Route
+                    path="/"
+                    element={
+                      <LayoutWrapper>
+                        <Home />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/integrated-dashboard"
+                    element={
+                      <LayoutWrapper>
+                        <IntegratedDashboard />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/todos"
+                    element={
+                      <LayoutWrapper>
+                        <TodoManagerPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/work-time"
+                    element={
+                      <LayoutWrapper>
+                        <WorkTimeEntryForm />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/work-time-reports"
+                    element={
+                      <LayoutWrapper>
+                        <WorkTimeReports />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/asset-liability-report"
+                    element={
+                      <LayoutWrapper>
+                        <AssetLiabilityReportPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/subscription-management"
+                    element={
+                      <LayoutWrapper>
+                        <SubscriptionManagementPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/subscription-upgrade"
+                    element={
+                      <LayoutWrapper>
+                        <SubscriptionUpgradePage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/asset-calendar"
+                    element={
+                      <LayoutWrapper>
+                        <AssetCalendarPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/bookshelf"
+                    element={
+                      <LayoutWrapper>
+                        <BookShelfPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/guitar-practice"
+                    element={
+                      <LayoutWrapper>
+                        <GuitarPracticePage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/sleep-tracker"
+                    element={
+                      <LayoutWrapper>
+                        <SleepTrackerPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/twitter"
+                    element={
+                      <LayoutWrapper>
+                        <TwitterPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/blog"
+                    element={
+                      <LayoutWrapper>
+                        <BlogPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/blog/new"
+                    element={
+                      <LayoutWrapper>
+                        <NewBlogPost />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/blog/:id"
+                    element={
+                      <LayoutWrapper>
+                        <BlogPostDetail />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/blog/edit/:id"
+                    element={
+                      <LayoutWrapper>
+                        <EditBlogPost />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <LayoutWrapper>
+                        <UserProfile />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/wbs-creator"
+                    element={
+                      <LayoutWrapper>
+                        <WBSCreatorPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/wbs"
+                    element={
+                      <LayoutWrapper>
+                        <WBSCreatorPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/diary"
+                    element={
+                      <LayoutWrapper>
+                        <DiaryPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/impulse-tracker"
+                    element={
+                      <LayoutWrapper>
+                        <ImpulseTrackerPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/improvement-plan"
+                    element={
+                      <LayoutWrapper>
+                        <SiteImprovementPlan />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/improvement-plan/detail"
+                    element={
+                      <LayoutWrapper>
+                        <ImprovementPlanDetail />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/system-design"
+                    element={
+                      <LayoutWrapper>
+                        <SystemDesignDocuments />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRoute>
+                        <LayoutWrapper>
                           <AdminDashboard />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/improvement-implementation/:projectId"
-                      element={<ImprovementImplementation />}
-                    />
-                    <Route path="/billing-history" element={<BillingHistoryPage />} />
-                  </Route>
-                  <Route path="/site-dev" element={<SiteDevWBS />} />
-                  <Route path="/404" element={<NotFound />} />
-                  <Route path="/update-history" element={<UpdateHistoryPage />} />
-                  <Route path="/abstinence" element={<AbstinenceManager />} />
-                  <Route path="*" element={<Navigate to="/404" replace />} />
-                </Routes>
-              </Layout>
+                        </LayoutWrapper>
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/improvement-implementation/:projectId"
+                    element={
+                      <LayoutWrapper>
+                        <ImprovementImplementation />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/billing-history"
+                    element={
+                      <LayoutWrapper>
+                        <BillingHistoryPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                </Route>
+
+                <Route path="*" element={<Navigate to="/404" replace />} />
+              </Routes>
             </div>
           </ThemeProvider>
         </LocaleProvider>

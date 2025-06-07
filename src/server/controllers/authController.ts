@@ -70,22 +70,104 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  // 戻り値の型を追加
   try {
+    console.log('=== Registration attempt started ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+
     const { name, email, password } = req.body;
-    let user = (await User.findOne({ email })) as IUser | null;
-    if (user) {
-      res.status(400).json({ message: 'User already exists' });
-      return; // return文を修正
+
+    // 必須フィールドの検証とログ出力
+    if (!name || !email || !password) {
+      console.error('Registration validation error: Missing required fields');
+      console.error('Missing fields:', {
+        name: !name ? 'missing' : 'present',
+        email: !email ? 'missing' : 'present',
+        password: !password ? 'missing' : 'present',
+      });
+      res.status(400).json({ message: 'All fields (name, email, password) are required' });
+      return;
     }
+
+    console.log('Checking if user already exists with email:', email);
+    let user = (await User.findOne({ email })) as IUser | null;
+
+    if (user) {
+      console.log('Registration failed: User already exists with email:', email);
+      res.status(400).json({ message: 'User already exists' });
+      return;
+    }
+
+    console.log('Creating new user with data:', {
+      name,
+      email,
+      passwordLength: typeof password === 'string' ? password.length : 'unknown',
+    });
     user = new User({ name, email, password }) as IUser;
+
+    console.log('Attempting to save user to database...');
     await user.save();
+    console.log('User saved successfully with ID:', user._id);
+
     const userId = user._id?.toString() || '';
+    console.log('Generating JWT token for user ID:', userId);
+
     const token = generateToken(userId);
-    res.status(201).json({ token, user: { id: userId, name: user.name, email: user.email } });
+    console.log('JWT token generated successfully');
+
+    const responseData = {
+      token,
+      user: { id: userId, name: user.name, email: user.email },
+    };
+    console.log('Sending successful registration response:', responseData);
+
+    res.status(201).json(responseData);
+    console.log('=== Registration completed successfully ===');
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    console.error('=== Registration error occurred ===');
+    console.error('Error type:', error?.constructor?.name);
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
+    // Mongoose validation errors
+    if (error && typeof error === 'object' && 'name' in error) {
+      if (error.name === 'ValidationError') {
+        console.error('Mongoose Validation Error details:', error);
+        res.status(400).json({
+          message: 'Validation error',
+          details: error,
+          errorType: 'ValidationError',
+        });
+        return;
+      }
+
+      // Duplicate key error (MongoDB)
+      if (error.name === 'MongoServerError' && 'code' in error && error.code === 11000) {
+        console.error('MongoDB Duplicate Key Error:', error);
+        res.status(400).json({
+          message: 'User already exists',
+          errorType: 'DuplicateKeyError',
+        });
+        return;
+      }
+    }
+
+    // JWT関連のエラー
+    if (error instanceof Error && error.message.includes('JWT_SECRET')) {
+      console.error('JWT configuration error');
+      res.status(500).json({
+        message: 'Server configuration error',
+        errorType: 'JWTConfigError',
+      });
+      return;
+    }
+
+    // その他のエラー
+    res.status(500).json({
+      message: 'Server error during registration',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      errorType: error?.constructor?.name || 'Unknown',
+    });
   }
 };
 

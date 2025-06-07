@@ -6,11 +6,24 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, Loader2, LogIn } from 'lucide-react';
 
 const PrivateRoute: React.FC = () => {
-  const { isAuthenticated, loading, sessionExpired, refreshAuth } = useAuth();
+  const { isAuthenticated, loading, sessionExpired, refreshAuth, user } = useAuth();
   const location = useLocation();
+
+  // デバッグログ
+  if (process.env.NODE_ENV === 'development') {
+    console.log('PrivateRoute Debug:', {
+      isAuthenticated,
+      loading,
+      sessionExpired,
+      user: user ? { id: user.id || user._id, name: user.name, email: user.email } : null,
+      location: location.pathname,
+      timestamp: new Date().toISOString(),
+    });
+  }
 
   // ローディング状態
   if (loading) {
+    console.log('PrivateRoute: Loading state');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="w-full max-w-md">
@@ -26,6 +39,7 @@ const PrivateRoute: React.FC = () => {
 
   // セッション期限切れの場合
   if (sessionExpired && !isAuthenticated) {
+    console.log('PrivateRoute: Session expired');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="w-full max-w-md">
@@ -59,9 +73,11 @@ const PrivateRoute: React.FC = () => {
 
   // 認証されていない場合はログインページへリダイレクト
   if (!isAuthenticated) {
+    console.log('PrivateRoute: Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  console.log('PrivateRoute: Authenticated, rendering Outlet');
   return <Outlet />;
 };
 
