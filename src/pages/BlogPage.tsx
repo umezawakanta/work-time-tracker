@@ -28,8 +28,10 @@ import {
   IconButton,
   Menu,
   MenuItem as MenuItemComponent,
+  Badge,
+  Alert,
 } from '@mui/material';
-import { Add, MoreVert, Edit, Delete } from '@mui/icons-material';
+import { Add, MoreVert, Edit, Delete, AdminPanelSettings } from '@mui/icons-material';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -84,10 +86,32 @@ const BlogPage: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
-  // 投稿の権限チェック
+  // 投稿の権限チェック（管理者は全て削除可能）
   const canModifyPost = (postAuthor: string) => {
-    return user && (postAuthor === user.email || postAuthor === user.name || user.isAdmin);
+    if (!user) return false;
+
+    // 管理者は全ての投稿を編集・削除可能
+    if (user.isAdmin) return true;
+
+    // 作成者は自分の投稿のみ編集・削除可能
+    return postAuthor === user.email || postAuthor === user.name;
   };
+
+  // 管理者権限の確認
+  const isAdmin = user?.isAdmin === true;
+
+  // 管理者向け統計情報
+  const getAdminStats = () => {
+    if (!isAdmin) return null;
+
+    const totalPosts = posts.length;
+    const myPosts = posts.filter((p) => p.author === user?.email || p.author === user?.name).length;
+    const othersPosts = totalPosts - myPosts;
+
+    return { totalPosts, myPosts, othersPosts };
+  };
+
+  const adminStats = getAdminStats();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, postId: string) => {
     event.preventDefault();
@@ -122,10 +146,19 @@ const BlogPage: React.FC = () => {
   const handleDeleteConfirm = async () => {
     if (!postToDelete) return;
 
+    const post = posts.find((p) => p._id === postToDelete);
+    const isMyPost = post && user && (post.author === user.email || post.author === user.name);
+    const isAdminDelete = isAdmin && !isMyPost;
+
     setIsDeleting(true);
     try {
       await dispatch(deleteBlogPost(postToDelete)).unwrap();
-      toast.success('ブログ記事を削除しました');
+
+      if (isAdminDelete) {
+        toast.success('管理者権限でブログ記事を削除しました');
+      } else {
+        toast.success('ブログ記事を削除しました');
+      }
     } catch (error) {
       console.error('削除に失敗しました:', error);
       toast.error('削除に失敗しました');
@@ -142,6 +175,16 @@ const BlogPage: React.FC = () => {
     return post?.title || '';
   };
 
+  const getPostToDeleteAuthor = () => {
+    if (!postToDelete) return '';
+    const post = posts.find((p) => p._id === postToDelete);
+    return post?.author || '';
+  };
+
+  const isMyPost = (postAuthor: string) => {
+    return user && (postAuthor === user.email || postAuthor === user.name);
+  };
+
   if (status === 'loading') {
     return (
       <Container maxWidth="lg">
@@ -155,14 +198,42 @@ const BlogPage: React.FC = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 4 }}>
+        {/* 管理者権限の表示 */}
+        {isAdmin && (
+          <Alert severity="info" icon={<AdminPanelSettings />} sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2">
+                <strong>管理者モード:</strong> 全ての投稿を編集・削除できます
+              </Typography>
+              {adminStats && (
+                <Typography variant="caption" color="text.secondary">
+                  自分: {adminStats.myPosts}件 | 他ユーザー: {adminStats.othersPosts}件 | 合計:{' '}
+                  {adminStats.totalPosts}件
+                </Typography>
+              )}
+            </Box>
+          </Alert>
+        )}
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box>
-            <Typography variant="h4" component="h1">
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
               ブログ
+              {isAdmin && (
+                <Badge color="secondary" variant="dot" sx={{ ml: 1 }}>
+                  <AdminPanelSettings color="primary" fontSize="small" />
+                </Badge>
+              )}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {user && selectedTab === 4
-                ? `自分の投稿: ${posts.filter((p) => p.author === user.email || p.author === user.name).length}件 / 全体: ${posts.length}件`
+                ? `自分の投稿: ${
+                    posts.filter((p) => p.author === user.email || p.author === user.name).length
+                  }件 / 全体: ${posts.length}件`
                 : `全${posts.length}件の記事`}
             </Typography>
           </Box>
@@ -225,11 +296,18 @@ const BlogPage: React.FC = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
+                border: isAdmin && !isMyPost(post.author) ? '2px solid' : '1px solid',
+                borderColor: isAdmin && !isMyPost(post.author) ? 'warning.main' : 'divider',
+                backgroundColor:
+                  isAdmin && !isMyPost(post.author) ? 'warning.50' : 'background.paper',
               }}
             >
-              {/* アクションメニュー */}
+              {/* 管理者表示・アクションメニュー */}
               {canModifyPost(post.author) && (
                 <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
+                  {isAdmin && !isMyPost(post.author) && (
+                    <Chip label="管理者操作" color="warning" size="small" sx={{ mr: 1 }} />
+                  )}
                   <IconButton
                     size="small"
                     onClick={(e) => handleMenuOpen(e, post._id)}
@@ -259,6 +337,15 @@ const BlogPage: React.FC = () => {
                 </Box>
                 <Typography variant="caption" color="text.secondary">
                   {post.author} • {new Date(post.createdAt).toLocaleDateString('ja-JP')}
+                  {isAdmin && !isMyPost(post.author) && (
+                    <Chip
+                      label="他ユーザー投稿"
+                      color="warning"
+                      size="small"
+                      variant="outlined"
+                      sx={{ ml: 1 }}
+                    />
+                  )}
                 </Typography>
               </CardContent>
               <Box sx={{ p: 2, pt: 0 }}>
@@ -291,6 +378,11 @@ const BlogPage: React.FC = () => {
           <MenuItemComponent onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
             <Delete sx={{ mr: 1, fontSize: '1rem' }} />
             削除
+            {selectedPostId &&
+              isAdmin &&
+              !isMyPost(posts.find((p) => p._id === selectedPostId)?.author || '') && (
+                <Chip label="管理者権限" color="warning" size="small" sx={{ ml: 1 }} />
+              )}
           </MenuItemComponent>
         </Menu>
 
@@ -310,10 +402,21 @@ const BlogPage: React.FC = () => {
             <AlertDialogTitle className="flex items-center gap-2">
               <Delete className="h-5 w-5 text-red-600" />
               ブログ記事を削除
+              {postToDelete && isAdmin && !isMyPost(getPostToDeleteAuthor()) && (
+                <Chip label="管理者権限" color="warning" size="small" />
+              )}
             </AlertDialogTitle>
             <AlertDialogDescription>
               <strong>「{getPostToDeleteTitle()}」</strong>を削除しますか？
               <br />
+              {postToDelete && isAdmin && !isMyPost(getPostToDeleteAuthor()) && (
+                <>
+                  <strong>作成者:</strong> {getPostToDeleteAuthor()}
+                  <br />
+                  <em>※ 管理者権限で他のユーザーの投稿を削除します</em>
+                  <br />
+                </>
+              )}
               この操作は取り消すことができません。
             </AlertDialogDescription>
           </AlertDialogHeader>

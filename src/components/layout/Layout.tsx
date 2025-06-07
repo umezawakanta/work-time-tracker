@@ -297,7 +297,14 @@ export default function Layout({ children }: LayoutProps) {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm truncate">{user?.name || 'ユーザー'}</p>
+              <p className="font-medium text-sm truncate flex items-center gap-1">
+                {user?.name || 'ユーザー'}
+                {user?.isAdmin && (
+                  <div title="管理者">
+                    <Crown className="h-3 w-3 text-amber-500" />
+                  </div>
+                )}
+              </p>
               <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
             </div>
           </div>
@@ -505,8 +512,14 @@ export default function Layout({ children }: LayoutProps) {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <p className="font-semibold text-slate-900 dark:text-white">
+                          <p className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                             {user?.name || 'ユーザー'}
+                            {user?.isAdmin && (
+                              <Badge className="text-xs bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-400 border-0">
+                                <Crown className="h-3 w-3 mr-1" />
+                                管理者
+                              </Badge>
+                            )}
                           </p>
                           <p className="text-sm text-slate-500 dark:text-slate-400">
                             {user?.email}

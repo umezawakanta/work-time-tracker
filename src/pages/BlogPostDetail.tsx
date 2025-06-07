@@ -24,8 +24,9 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  Badge,
 } from '@mui/material';
-import { ArrowBack, Share, Edit, Delete, MoreVert } from '@mui/icons-material';
+import { ArrowBack, Share, Edit, Delete, MoreVert, AdminPanelSettings } from '@mui/icons-material';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +62,15 @@ const BlogPostDetail: React.FC = () => {
   // 投稿の権限チェック（作成者または管理者のみ編集・削除可能）
   const canModifyPost =
     post && user && (post.author === user.email || post.author === user.name || user.isAdmin);
+
+  // 管理者権限の確認
+  const isAdmin = user?.isAdmin === true;
+
+  // 自分の投稿かチェック
+  const isMyPost = post && user && (post.author === user.email || post.author === user.name);
+
+  // 管理者権限で他人の投稿を操作しているかチェック
+  const isAdminAction = isAdmin && !isMyPost;
 
   useEffect(() => {
     if (id && !post) {
@@ -108,7 +118,12 @@ const BlogPostDetail: React.FC = () => {
     setIsDeleting(true);
     try {
       await dispatch(deleteBlogPost(id)).unwrap();
-      toast.success('ブログ記事を削除しました');
+
+      if (isAdminAction) {
+        toast.success('管理者権限でブログ記事を削除しました');
+      } else {
+        toast.success('ブログ記事を削除しました');
+      }
       navigate('/blog');
     } catch (error) {
       console.error('削除に失敗しました:', error);
@@ -154,6 +169,15 @@ const BlogPostDetail: React.FC = () => {
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 4 }}>
+        {/* 管理者権限の表示 */}
+        {isAdminAction && (
+          <Alert severity="warning" icon={<AdminPanelSettings />} sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              <strong>管理者モード:</strong> 他のユーザー（{post.author}）の投稿を表示しています
+            </Typography>
+          </Alert>
+        )}
+
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Button
@@ -171,7 +195,15 @@ const BlogPostDetail: React.FC = () => {
 
           {/* 編集・削除メニュー */}
           {canModifyPost && (
-            <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {isAdminAction && (
+                <Chip
+                  label="管理者操作"
+                  color="warning"
+                  size="small"
+                  icon={<AdminPanelSettings />}
+                />
+              )}
               <IconButton onClick={handleMenuOpen} size="small">
                 <MoreVert />
               </IconButton>
@@ -191,10 +223,16 @@ const BlogPostDetail: React.FC = () => {
                 <MenuItem onClick={handleEdit}>
                   <Edit sx={{ mr: 1, fontSize: '1rem' }} />
                   編集
+                  {isAdminAction && (
+                    <Chip label="管理者権限" color="warning" size="small" sx={{ ml: 1 }} />
+                  )}
                 </MenuItem>
                 <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
                   <Delete sx={{ mr: 1, fontSize: '1rem' }} />
                   削除
+                  {isAdminAction && (
+                    <Chip label="管理者権限" color="warning" size="small" sx={{ ml: 1 }} />
+                  )}
                 </MenuItem>
               </Menu>
             </Box>
@@ -208,6 +246,15 @@ const BlogPostDetail: React.FC = () => {
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <Typography variant="body2" color="text.secondary">
             {post.author}
+            {isAdminAction && (
+              <Chip
+                label="他ユーザー投稿"
+                color="warning"
+                size="small"
+                variant="outlined"
+                sx={{ ml: 1 }}
+              />
+            )}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {new Date(post.createdAt).toLocaleDateString('ja-JP', {
@@ -293,10 +340,19 @@ const BlogPostDetail: React.FC = () => {
             <AlertDialogTitle className="flex items-center gap-2">
               <Delete className="h-5 w-5 text-red-600" />
               ブログ記事を削除
+              {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
             </AlertDialogTitle>
             <AlertDialogDescription>
               <strong>「{post.title}」</strong>を削除しますか？
               <br />
+              {isAdminAction && (
+                <>
+                  <strong>作成者:</strong> {post.author}
+                  <br />
+                  <em>※ 管理者権限で他のユーザーの投稿を削除します</em>
+                  <br />
+                </>
+              )}
               この操作は取り消すことができません。
             </AlertDialogDescription>
           </AlertDialogHeader>

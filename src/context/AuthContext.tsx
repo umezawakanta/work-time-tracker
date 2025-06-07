@@ -68,12 +68,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // 環境変数で指定されたメールアドレスのユーザーを管理者にする
       const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+      console.log('[AuthContext] 管理者メールアドレス設定:', adminEmails);
+      console.log('[AuthContext] ユーザーメールアドレス:', userData.email);
+
       if (adminEmails.includes(userData.email)) {
         userData.isAdmin = true;
+        console.log('[AuthContext] 管理者権限が付与されました:', userData.email);
+        toast.success(`管理者権限でログインしました (${userData.email})`, {
+          duration: 3000,
+          id: 'admin-login',
+        });
+      } else {
+        userData.isAdmin = false;
+        console.log('[AuthContext] 一般ユーザーとしてログイン:', userData.email);
       }
 
       setUser(userData);
-      console.log('[AuthContext] ユーザーデータ設定完了');
+      console.log('[AuthContext] ユーザーデータ設定完了', {
+        name: userData.name,
+        email: userData.email,
+        isAdmin: userData.isAdmin,
+      });
     } catch (error) {
       console.error('[AuthContext] ユーザーデータ取得失敗:', error);
       setUser(null);
@@ -85,6 +100,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('[AuthContext] updateProfile実行');
     try {
       const updatedUser = await updateUserProfile(data);
+
+      // プロフィール更新時も管理者権限を再確認
+      const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+      if (adminEmails.includes(updatedUser.email)) {
+        updatedUser.isAdmin = true;
+        console.log('[AuthContext] プロフィール更新後も管理者権限を維持:', updatedUser.email);
+      } else {
+        updatedUser.isAdmin = false;
+      }
+
       setUser(updatedUser);
     } catch (error) {
       console.error('[AuthContext] プロフィール更新失敗:', error);
@@ -146,11 +171,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const userData = await fetchUserData();
           const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+          console.log('[AuthContext] checkAuthStatus - 管理者メール設定:', adminEmails);
+          console.log('[AuthContext] checkAuthStatus - ユーザーメール:', userData.email);
+
           if (adminEmails.includes(userData.email)) {
             userData.isAdmin = true;
+            console.log('[AuthContext] checkAuthStatus - 管理者権限付与:', userData.email);
+          } else {
+            userData.isAdmin = false;
+            console.log('[AuthContext] checkAuthStatus - 一般ユーザー:', userData.email);
           }
+
           setUser(userData);
-          console.log('[AuthContext] ユーザーデータ取得完了');
+          console.log('[AuthContext] ユーザーデータ取得完了', {
+            name: userData.name,
+            email: userData.email,
+            isAdmin: userData.isAdmin,
+          });
         } catch (error) {
           console.error('[AuthContext] ユーザーデータ取得失敗:', error);
           setUser(null);
