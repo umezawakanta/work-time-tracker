@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/useAuth";
-import userSubscriptionApi from "@/services/api/userSubscriptionApi";
-import { toast } from "react-hot-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Download, FileText, Receipt } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import userSubscriptionApi from '@/services/api/userSubscriptionApi';
+import { toast } from 'react-hot-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CreditCard, Download, FileText, Receipt } from 'lucide-react';
 
 interface Invoice {
   id: string;
@@ -67,16 +74,16 @@ export default function BillingHistoryPage() {
       if (isAuthenticated && user) {
         try {
           setIsLoading(true);
-          
+
           // サブスクリプション情報を取得
           const subscriptionResponse = await userSubscriptionApi.getUserSubscription(user.id);
           setSubscription(subscriptionResponse.data);
-          
+
           // 支払い方法情報は通常はサブスクリプション情報の一部
           if (subscriptionResponse.data && subscriptionResponse.data.paymentMethod) {
             setPaymentMethod(subscriptionResponse.data.paymentMethod);
           }
-          
+
           // 請求履歴を取得
           const invoiceResponse = await userSubscriptionApi.getInvoiceHistory(user.id);
           // 日付をDate型に変換
@@ -84,12 +91,12 @@ export default function BillingHistoryPage() {
             ...invoice,
             periodStart: new Date(invoice.periodStart),
             periodEnd: new Date(invoice.periodEnd),
-            createdAt: new Date(invoice.createdAt)
+            createdAt: new Date(invoice.createdAt),
           }));
           setInvoices(formattedInvoices);
         } catch (error) {
-          console.error("請求情報取得エラー:", error);
-          toast.error("請求情報の取得に失敗しました");
+          console.error('請求情報取得エラー:', error);
+          toast.error('請求情報の取得に失敗しました');
         } finally {
           setIsLoading(false);
         }
@@ -103,9 +110,9 @@ export default function BillingHistoryPage() {
 
   // 支払い方法の表示
   const renderPaymentMethod = () => {
-    if (!paymentMethod) return "登録されていません";
+    if (!paymentMethod) return '登録されていません';
 
-    if (paymentMethod.type === "credit_card") {
+    if (paymentMethod.type === 'credit_card') {
       return (
         <div className="flex items-center">
           <CreditCard className="h-4 w-4 mr-2" />
@@ -113,18 +120,22 @@ export default function BillingHistoryPage() {
         </div>
       );
     }
-    
+
     return paymentMethod.type;
   };
 
   // 請求書のステータスに応じたバッジを表示
   const renderStatusBadge = (status: string) => {
     switch (status) {
-      case "paid":
+      case 'paid':
         return <Badge className="bg-green-500">支払い済み</Badge>;
-      case "unpaid":
-        return <Badge variant="outline" className="border-amber-500 text-amber-700">未払い</Badge>;
-      case "failed":
+      case 'unpaid':
+        return (
+          <Badge variant="outline" className="border-amber-500 text-amber-700">
+            未払い
+          </Badge>
+        );
+      case 'failed':
         return <Badge variant="destructive">失敗</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -132,7 +143,7 @@ export default function BillingHistoryPage() {
   };
 
   // 金額のフォーマット
-  const formatCurrency = (amount: number, currency: string = "jpy") => {
+  const formatCurrency = (amount: number, currency: string = 'jpy') => {
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
       currency: currency.toUpperCase(),
@@ -141,10 +152,10 @@ export default function BillingHistoryPage() {
 
   // 日付のフォーマット
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "long",
-      day: "numeric"
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   };
 
@@ -154,12 +165,10 @@ export default function BillingHistoryPage() {
         <Card>
           <CardHeader>
             <CardTitle>請求履歴</CardTitle>
-            <CardDescription>
-              請求履歴を表示するにはログインが必要です。
-            </CardDescription>
+            <CardDescription>請求履歴を表示するにはログインが必要です。</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => window.location.href = "/login"}>ログイン</Button>
+            <Button onClick={() => (window.location.href = '/login')}>ログイン</Button>
           </CardContent>
         </Card>
       </div>
@@ -180,9 +189,7 @@ export default function BillingHistoryPage() {
           <Card>
             <CardHeader>
               <CardTitle>請求履歴</CardTitle>
-              <CardDescription>
-                過去の請求書と支払い記録
-              </CardDescription>
+              <CardDescription>過去の請求書と支払い記録</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -209,7 +216,9 @@ export default function BillingHistoryPage() {
                         <TableCell>
                           {subscription && (
                             <>
-                              {subscription.planId.includes("premium") ? "プレミアムプラン" : subscription.planId}
+                              {subscription.planId.includes('premium')
+                                ? 'プレミアムプラン'
+                                : subscription.planId}
                               <div className="text-xs text-gray-500">
                                 {formatDate(invoice.periodStart)} - {formatDate(invoice.periodEnd)}
                               </div>
@@ -241,9 +250,7 @@ export default function BillingHistoryPage() {
           <Card>
             <CardHeader>
               <CardTitle>支払い方法</CardTitle>
-              <CardDescription>
-                登録済みの支払い方法と管理
-              </CardDescription>
+              <CardDescription>登録済みの支払い方法と管理</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -254,9 +261,7 @@ export default function BillingHistoryPage() {
                 <div className="space-y-6">
                   <div className="border rounded-md p-4">
                     <h3 className="text-sm font-medium text-gray-900 mb-2">現在の支払い方法</h3>
-                    <div className="text-sm text-gray-700">
-                      {renderPaymentMethod()}
-                    </div>
+                    <div className="text-sm text-gray-700">{renderPaymentMethod()}</div>
                   </div>
 
                   <div className="flex flex-col space-y-2">
@@ -268,14 +273,16 @@ export default function BillingHistoryPage() {
                     </Button>
                   </div>
 
-                  {subscription && subscription.planId !== "free" && (
+                  {subscription && subscription.planId !== 'free' && (
                     <div className="mt-6 pt-6 border-t">
                       <h3 className="text-sm font-medium text-gray-900 mb-2">次回の請求</h3>
                       <p className="text-sm text-gray-700">
                         {subscription.currentPeriodEnd && (
                           <>
                             {formatDate(new Date(subscription.currentPeriodEnd))}に
-                            {subscription.planId.includes("premium") ? "プレミアムプラン" : subscription.planId}
+                            {subscription.planId.includes('premium')
+                              ? 'プレミアムプラン'
+                              : subscription.planId}
                             の料金が請求されます。
                           </>
                         )}
@@ -302,7 +309,9 @@ export default function BillingHistoryPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div className="mb-4 sm:mb-0">
                 <h3 className="text-sm font-medium text-gray-900">すべての請求書をダウンロード</h3>
-                <p className="text-sm text-gray-500">過去のすべての請求書をCSV形式でダウンロードします</p>
+                <p className="text-sm text-gray-500">
+                  過去のすべての請求書をCSV形式でダウンロードします
+                </p>
               </div>
               <Button variant="outline" className="flex items-center">
                 <Download className="h-4 w-4 mr-2" />

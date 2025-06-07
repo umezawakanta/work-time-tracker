@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/projectHub';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
 
 const IntegratedDashboard: React.FC = () => {

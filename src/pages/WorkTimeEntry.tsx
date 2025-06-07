@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { WorkTimeEntry } from '@/types/workTimeEntry';
 import { AppDispatch } from '@/store';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 const WorkTimeEntryForm: React.FC = () => {
   const [projectName, setProjectName] = useState('');

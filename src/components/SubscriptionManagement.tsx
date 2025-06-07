@@ -1,14 +1,8 @@
 // src/components/subscription/SubscriptionManagement.tsx
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,30 +20,26 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "react-hot-toast";
-import { PlusCircle, Search, RefreshCw, AlertCircle, Info } from "lucide-react";
-import { useAuth } from "@/context/useAuth";
-import { SubscriptionService } from "@/types";
-import subscriptionApi from "@/services/api/subscriptionApi";
-import {
-  formatBillingDate,
-  isValidDateFormat,
-  convertDateStringToNumber,
-} from "@/utils/dateUtils";
-import SubscriptionList from "@/components/subscription/SubscriptionList"; // 追加: SubscriptionListをインポート
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'react-hot-toast';
+import { PlusCircle, Search, RefreshCw, AlertCircle, Info } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { SubscriptionService } from '@/types';
+import subscriptionApi from '@/services/api/subscriptionApi';
+import { formatBillingDate, isValidDateFormat, convertDateStringToNumber } from '@/utils/dateUtils';
+import SubscriptionList from '@/components/subscription/SubscriptionList'; // 追加: SubscriptionListをインポート
 
 // サブスクリプション追加・編集フォーム用の型
 interface SubscriptionFormData {
@@ -57,46 +47,46 @@ interface SubscriptionFormData {
   billingDate: string;
   type: string;
   amount: string;
-  paymentMethod?: "credit" | "bank" | "paypal" | "apple" | "google";
+  paymentMethod?: 'credit' | 'bank' | 'paypal' | 'apple' | 'google';
   bankAccount?: string;
   isActive: boolean;
 }
 
 // 有効な支払い方法の型
-type ValidPaymentMethod = "credit" | "bank" | "paypal" | "apple" | "google";
+type ValidPaymentMethod = 'credit' | 'bank' | 'paypal' | 'apple' | 'google';
 
 // 空のフォームデータ
 const emptyFormData: SubscriptionFormData = {
-  name: "",
-  billingDate: "",
-  amount: "",
-  type: "",
-  paymentMethod: "credit", // 明示的に設定
-  bankAccount: "",
+  name: '',
+  billingDate: '',
+  amount: '',
+  type: '',
+  paymentMethod: 'credit', // 明示的に設定
+  bankAccount: '',
   isActive: true,
 };
 
 // 支払い方法オプション
 const paymentMethodOptions = [
-  { value: "credit", label: "クレジットカード" },
-  { value: "bank", label: "銀行引き落とし" },
-  { value: "paypal", label: "PayPal" },
-  { value: "apple", label: "Apple Pay" },
-  { value: "google", label: "Google Pay" },
+  { value: 'credit', label: 'クレジットカード' },
+  { value: 'bank', label: '銀行引き落とし' },
+  { value: 'paypal', label: 'PayPal' },
+  { value: 'apple', label: 'Apple Pay' },
+  { value: 'google', label: 'Google Pay' },
 ];
 
 // サービスタイプオプション
 const serviceTypeOptions = [
-  { value: "エンターテイメント", label: "エンターテイメント" },
-  { value: "音楽", label: "音楽" },
-  { value: "動画", label: "動画ストリーミング" },
-  { value: "ゲーム", label: "ゲーム" },
-  { value: "クラウドストレージ", label: "クラウドストレージ" },
-  { value: "ソフトウェア", label: "ソフトウェア" },
-  { value: "ニュース", label: "ニュース/雑誌" },
-  { value: "食品", label: "食品/ミールキット" },
-  { value: "美容", label: "美容/ヘルスケア" },
-  { value: "その他", label: "その他" },
+  { value: 'エンターテイメント', label: 'エンターテイメント' },
+  { value: '音楽', label: '音楽' },
+  { value: '動画', label: '動画ストリーミング' },
+  { value: 'ゲーム', label: 'ゲーム' },
+  { value: 'クラウドストレージ', label: 'クラウドストレージ' },
+  { value: 'ソフトウェア', label: 'ソフトウェア' },
+  { value: 'ニュース', label: 'ニュース/雑誌' },
+  { value: '食品', label: '食品/ミールキット' },
+  { value: '美容', label: '美容/ヘルスケア' },
+  { value: 'その他', label: 'その他' },
 ];
 
 const SubscriptionManagement: React.FC = () => {
@@ -105,28 +95,26 @@ const SubscriptionManagement: React.FC = () => {
 
   // ステート
   const [subscriptions, setSubscriptions] = useState<SubscriptionService[]>([]);
-  const [filteredSubscriptions, setFilteredSubscriptions] = useState<
-    SubscriptionService[]
-  >([]);
+  const [filteredSubscriptions, setFilteredSubscriptions] = useState<SubscriptionService[]>([]);
   const [totalMonthly, setTotalMonthly] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<SubscriptionFormData>(emptyFormData);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isValidationError, setIsValidationError] = useState(false);
-  const [validationMessage, setValidationMessage] = useState("");
+  const [validationMessage, setValidationMessage] = useState('');
   const [showBankAccount, setShowBankAccount] = useState(false);
 
   // 認証チェック
   useEffect(() => {
     if (!isAuthenticated) {
-      toast.error("この機能を利用するにはログインが必要です");
-      navigate("/login", { state: { from: location.pathname } });
+      toast.error('この機能を利用するにはログインが必要です');
+      navigate('/login', { state: { from: location.pathname } });
     }
   }, [isAuthenticated, navigate]);
 
@@ -144,8 +132,8 @@ const SubscriptionManagement: React.FC = () => {
         .reduce((sum, sub) => sum + sub.amount, 0);
       setTotalMonthly(total);
     } catch (error) {
-      console.error("データ取得エラー:", error);
-      toast.error("サブスクリプション情報の取得に失敗しました");
+      console.error('データ取得エラー:', error);
+      toast.error('サブスクリプション情報の取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -161,22 +149,20 @@ const SubscriptionManagement: React.FC = () => {
     let filtered = [...subscriptions];
 
     // アクティブ状態でフィルター
-    if (activeFilter !== "all") {
-      const isActive = activeFilter === "active";
+    if (activeFilter !== 'all') {
+      const isActive = activeFilter === 'active';
       filtered = filtered.filter((sub) => sub.isActive === isActive);
     }
 
     // タイプでフィルター
-    if (typeFilter !== "all") {
+    if (typeFilter !== 'all') {
       filtered = filtered.filter((sub) => sub.type === typeFilter);
     }
 
     // 検索クエリでフィルター
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((sub) =>
-        sub.name.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter((sub) => sub.name.toLowerCase().includes(query));
     }
 
     setFilteredSubscriptions(filtered);
@@ -185,39 +171,32 @@ const SubscriptionManagement: React.FC = () => {
   // フォームデータの検証
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {
-      setValidationMessage("サービス名を入力してください");
+      setValidationMessage('サービス名を入力してください');
       setIsValidationError(true);
       return false;
     }
 
     if (!formData.billingDate.trim()) {
-      setValidationMessage("請求日を入力してください");
+      setValidationMessage('請求日を入力してください');
       setIsValidationError(true);
       return false;
     }
 
     // 日付形式のバリデーション（YYYY/MM/DD形式が望ましい）
-    if (
-      formData.billingDate.includes("/") &&
-      !isValidDateFormat(formData.billingDate)
-    ) {
-      setValidationMessage("請求日は YYYY/MM/DD 形式で入力してください");
+    if (formData.billingDate.includes('/') && !isValidDateFormat(formData.billingDate)) {
+      setValidationMessage('請求日は YYYY/MM/DD 形式で入力してください');
       setIsValidationError(true);
       return false;
     }
 
-    if (
-      !formData.amount.trim() ||
-      isNaN(Number(formData.amount)) ||
-      Number(formData.amount) < 0
-    ) {
-      setValidationMessage("有効な金額を入力してください");
+    if (!formData.amount.trim() || isNaN(Number(formData.amount)) || Number(formData.amount) < 0) {
+      setValidationMessage('有効な金額を入力してください');
       setIsValidationError(true);
       return false;
     }
 
-    if (formData.paymentMethod === "bank" && !formData.bankAccount?.trim()) {
-      setValidationMessage("銀行口座情報を入力してください");
+    if (formData.paymentMethod === 'bank' && !formData.bankAccount?.trim()) {
+      setValidationMessage('銀行口座情報を入力してください');
       setIsValidationError(true);
       return false;
     }
@@ -233,42 +212,37 @@ const SubscriptionManagement: React.FC = () => {
     try {
       // billingDateを数値型に変換
       let numericBillingDate: number;
-      if (formData.billingDate.includes("/")) {
+      if (formData.billingDate.includes('/')) {
         numericBillingDate = convertDateStringToNumber(formData.billingDate);
       } else {
         // 数値型に変換できない場合は現在日付を使用
         numericBillingDate =
           parseInt(formData.billingDate, 10) ||
-          convertDateStringToNumber(
-            new Date().toISOString().split("T")[0].replace(/-/g, "/")
-          );
+          convertDateStringToNumber(new Date().toISOString().split('T')[0].replace(/-/g, '/'));
       }
 
       const subscriptionData = {
         name: formData.name,
         billingDate: numericBillingDate,
-        type: formData.type || "その他", // デフォルト値を設定
+        type: formData.type || 'その他', // デフォルト値を設定
         amount: Number(formData.amount),
         paymentMethod: {
           type: formData.paymentMethod as ValidPaymentMethod,
           isDefault: true,
         },
-        bankAccount:
-          formData.paymentMethod === "bank" ? formData.bankAccount : undefined,
+        bankAccount: formData.paymentMethod === 'bank' ? formData.bankAccount : undefined,
         isActive: Boolean(formData.isActive), // Booleanで確実に変換
-        expiresAt: new Date(
-          new Date().setMonth(new Date().getMonth() + 1)
-        ).toISOString(),
+        expiresAt: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
       };
 
       if (editingId) {
         // 更新
         await subscriptionApi.update(editingId, subscriptionData);
-        toast.success("サブスクリプション情報を更新しました");
+        toast.success('サブスクリプション情報を更新しました');
       } else {
         // 新規作成
         await subscriptionApi.create(subscriptionData);
-        toast.success("サブスクリプションを追加しました");
+        toast.success('サブスクリプションを追加しました');
       }
 
       // フォームをリセット
@@ -276,8 +250,8 @@ const SubscriptionManagement: React.FC = () => {
       // データ再取得
       fetchData();
     } catch (error) {
-      console.error("保存エラー:", error);
-      toast.error("サブスクリプションの保存に失敗しました");
+      console.error('保存エラー:', error);
+      toast.error('サブスクリプションの保存に失敗しました');
     }
   };
 
@@ -287,33 +261,27 @@ const SubscriptionManagement: React.FC = () => {
 
     try {
       await subscriptionApi.delete(deleteId);
-      toast.success("サブスクリプションを削除しました");
+      toast.success('サブスクリプションを削除しました');
 
       // 削除後のデータ再取得
       fetchData();
       // ダイアログを閉じる
       setIsDeleteDialogOpen(false);
     } catch (error) {
-      console.error("削除エラー:", error);
-      toast.error("サブスクリプションの削除に失敗しました");
+      console.error('削除エラー:', error);
+      toast.error('サブスクリプションの削除に失敗しました');
     }
   };
 
   // paymentMethodの型アサーション関数を定義
   function ensureValidPaymentMethod(method: string): ValidPaymentMethod {
     // 有効な支払い方法の配列
-    const validMethods: ValidPaymentMethod[] = [
-      "credit",
-      "bank",
-      "paypal",
-      "apple",
-      "google",
-    ];
+    const validMethods: ValidPaymentMethod[] = ['credit', 'bank', 'paypal', 'apple', 'google'];
 
     // 値が有効なリストに含まれるかチェック
     return validMethods.includes(method as ValidPaymentMethod)
       ? (method as ValidPaymentMethod)
-      : "credit";
+      : 'credit';
   }
 
   // 編集開始
@@ -328,10 +296,10 @@ const SubscriptionManagement: React.FC = () => {
       type: subscription.type,
       amount: subscription.amount.toString(),
       paymentMethod:
-        typeof subscription.paymentMethod === "object"
+        typeof subscription.paymentMethod === 'object'
           ? ensureValidPaymentMethod(subscription.paymentMethod.type)
-          : ensureValidPaymentMethod(subscription.paymentMethod || "credit"),
-      bankAccount: subscription.bankAccount || "",
+          : ensureValidPaymentMethod(subscription.paymentMethod || 'credit'),
+      bankAccount: subscription.bankAccount || '',
       isActive: subscription.isActive,
     });
 
@@ -339,11 +307,11 @@ const SubscriptionManagement: React.FC = () => {
     setIsFormOpen(true);
 
     const paymentType =
-      typeof subscription.paymentMethod === "object"
+      typeof subscription.paymentMethod === 'object'
         ? subscription.paymentMethod?.type
         : subscription.paymentMethod;
 
-    if (paymentType === "bank") {
+    if (paymentType === 'bank') {
       setShowBankAccount(true);
     }
   };
@@ -364,7 +332,7 @@ const SubscriptionManagement: React.FC = () => {
       paymentMethod: value,
     }));
 
-    setShowBankAccount(value === "bank");
+    setShowBankAccount(value === 'bank');
   };
 
   // タイプオプションの取得
@@ -384,15 +352,10 @@ const SubscriptionManagement: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">サブスクリプション管理</h1>
-          <p className="text-gray-500 mt-1">
-            各種サブスクリプションの管理と費用確認
-          </p>
+          <p className="text-gray-500 mt-1">各種サブスクリプションの管理と費用確認</p>
         </div>
         <div className="mt-4 md:mt-0">
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            className="flex items-center"
-          >
+          <Button onClick={() => setIsFormOpen(true)} className="flex items-center">
             <PlusCircle className="mr-2 h-4 w-4" />
             新規追加
           </Button>
@@ -407,15 +370,10 @@ const SubscriptionManagement: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {loading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                filteredSubscriptions.length
-              )}
+              {loading ? <Skeleton className="h-8 w-16" /> : filteredSubscriptions.length}
             </div>
             <p className="text-sm text-gray-500 mt-1">
-              有効: {filteredSubscriptions.filter((sub) => sub.isActive).length}{" "}
-              / 無効:{" "}
+              有効: {filteredSubscriptions.filter((sub) => sub.isActive).length} / 無効:{' '}
               {filteredSubscriptions.filter((sub) => !sub.isActive).length}
             </p>
           </CardContent>
@@ -427,15 +385,9 @@ const SubscriptionManagement: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-primary">
-              {loading ? (
-                <Skeleton className="h-8 w-24" />
-              ) : (
-                `¥${totalMonthly.toLocaleString()}`
-              )}
+              {loading ? <Skeleton className="h-8 w-24" /> : `¥${totalMonthly.toLocaleString()}`}
             </div>
-            <p className="text-sm text-gray-500 mt-1">
-              有効なサブスクリプションのみ
-            </p>
+            <p className="text-sm text-gray-500 mt-1">有効なサブスクリプションのみ</p>
           </CardContent>
         </Card>
 
@@ -515,9 +467,7 @@ const SubscriptionManagement: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>サブスクリプション一覧</CardTitle>
-          <CardDescription>
-            登録済みの全てのサブスクリプションサービス
-          </CardDescription>
+          <CardDescription>登録済みの全てのサブスクリプションサービス</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -539,12 +489,8 @@ const SubscriptionManagement: React.FC = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
                 <Info className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium">
-                サブスクリプションがありません
-              </h3>
-              <p className="text-gray-500 mt-2">
-                サブスクリプションを追加して管理を始めましょう
-              </p>
+              <h3 className="text-lg font-medium">サブスクリプションがありません</h3>
+              <p className="text-gray-500 mt-2">サブスクリプションを追加して管理を始めましょう</p>
               <Button className="mt-4" onClick={() => setIsFormOpen(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 新規追加
@@ -566,9 +512,7 @@ const SubscriptionManagement: React.FC = () => {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {editingId
-                ? "サブスクリプションの編集"
-                : "新規サブスクリプション"}
+              {editingId ? 'サブスクリプションの編集' : '新規サブスクリプション'}
             </DialogTitle>
             <DialogDescription>
               サブスクリプションサービスの情報を入力してください。
@@ -588,9 +532,7 @@ const SubscriptionManagement: React.FC = () => {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="例: Netflix"
               />
             </div>
@@ -600,23 +542,17 @@ const SubscriptionManagement: React.FC = () => {
               <Input
                 id="billingDate"
                 value={formData.billingDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, billingDate: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, billingDate: e.target.value })}
                 placeholder="例: 2024/01/15"
               />
-              <p className="text-xs text-gray-500">
-                YYYY/MM/DD形式で入力してください
-              </p>
+              <p className="text-xs text-gray-500">YYYY/MM/DD形式で入力してください</p>
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="type">サービスタイプ</Label>
               <Select
                 value={formData.type}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, type: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="タイプを選択" />
@@ -637,28 +573,20 @@ const SubscriptionManagement: React.FC = () => {
                 id="amount"
                 type="number"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 placeholder="例: 1490"
               />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="paymentMethod">支払い方法</Label>
-              <Select
-                value={formData.paymentMethod}
-                onValueChange={handlePaymentMethodChange}
-              >
+              <Select value={formData.paymentMethod} onValueChange={handlePaymentMethodChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="支払い方法を選択" />
                 </SelectTrigger>
                 <SelectContent>
                   {paymentMethodOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value as ValidPaymentMethod}
-                    >
+                    <SelectItem key={option.value} value={option.value as ValidPaymentMethod}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -672,9 +600,7 @@ const SubscriptionManagement: React.FC = () => {
                 <Input
                   id="bankAccount"
                   value={formData.bankAccount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bankAccount: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, bankAccount: e.target.value })}
                   placeholder="例: みずほ銀行 渋谷支店 普通1234567"
                 />
               </div>
@@ -684,9 +610,7 @@ const SubscriptionManagement: React.FC = () => {
               <Switch
                 id="isActive"
                 checked={formData.isActive}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, isActive: checked })
-                }
+                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
               />
               <Label htmlFor="isActive">有効にする</Label>
             </div>
@@ -702,10 +626,7 @@ const SubscriptionManagement: React.FC = () => {
       </Dialog>
 
       {/* 削除確認ダイアログ */}
-      <AlertDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-      >
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>サブスクリプションの削除</AlertDialogTitle>
@@ -715,10 +636,7 @@ const SubscriptionManagement: React.FC = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>キャンセル</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
               削除
             </AlertDialogAction>
           </AlertDialogFooter>

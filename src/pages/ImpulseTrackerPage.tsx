@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "@/components/ui/use-toast";
-import { AlertCircle, Download, Filter, TrendingUp } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from '@/components/ui/use-toast';
+import { AlertCircle, Download, Filter, TrendingUp } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -17,9 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { useAuth } from "@/context/useAuth";
-import "@/styles/ImpulseTrackerPage.css";
+} from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/useAuth';
+import '@/styles/ImpulseTrackerPage.css';
 
 interface ImpulseAction {
   id: string;
@@ -44,22 +44,22 @@ interface ImpulseStats {
 
 // カテゴリーの定義
 const CATEGORIES = [
-  { value: "shopping", label: "買い物" },
-  { value: "food", label: "食べ物" },
-  { value: "entertainment", label: "娯楽" },
-  { value: "social_media", label: "SNS" },
-  { value: "procrastination", label: "先延ばし" },
-  { value: "other", label: "その他" },
+  { value: 'shopping', label: '買い物' },
+  { value: 'food', label: '食べ物' },
+  { value: 'entertainment', label: '娯楽' },
+  { value: 'social_media', label: 'SNS' },
+  { value: 'procrastination', label: '先延ばし' },
+  { value: 'other', label: 'その他' },
 ];
 
 // 感情の定義
 const EMOTIONS = [
-  { value: "boredom", label: "退屈" },
-  { value: "stress", label: "ストレス" },
-  { value: "anxiety", label: "不安" },
-  { value: "excitement", label: "興奮" },
-  { value: "sadness", label: "悲しみ" },
-  { value: "loneliness", label: "孤独" },
+  { value: 'boredom', label: '退屈' },
+  { value: 'stress', label: 'ストレス' },
+  { value: 'anxiety', label: '不安' },
+  { value: 'excitement', label: '興奮' },
+  { value: 'sadness', label: '悲しみ' },
+  { value: 'loneliness', label: '孤独' },
 ];
 
 const ImpulseTrackerPage: React.FC = () => {
@@ -68,22 +68,20 @@ const ImpulseTrackerPage: React.FC = () => {
 
   const [actions, setActions] = useState<ImpulseAction[]>([]);
   const [filteredActions, setFilteredActions] = useState<ImpulseAction[]>([]);
-  const [newAction, setNewAction] = useState("");
-  const [newConsequence, setNewConsequence] = useState("");
-  const [newCategory, setNewCategory] = useState("");
-  const [newEmotion, setNewEmotion] = useState("");
-  const [newTrigger, setNewTrigger] = useState("");
-  const [newCostAmount, setNewCostAmount] = useState<number | undefined>(
-    undefined
-  );
+  const [newAction, setNewAction] = useState('');
+  const [newConsequence, setNewConsequence] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newEmotion, setNewEmotion] = useState('');
+  const [newTrigger, setNewTrigger] = useState('');
+  const [newCostAmount, setNewCostAmount] = useState<number | undefined>(undefined);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
-  const [filterDate, setFilterDate] = useState<string>("");
-  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterDate, setFilterDate] = useState<string>('');
+  const [filterCategory, setFilterCategory] = useState<string>('');
   const [statsData, setStatsData] = useState<ImpulseStats | null>(null);
 
   // データ読み込み
@@ -91,7 +89,7 @@ const ImpulseTrackerPage: React.FC = () => {
     const loadData = async () => {
       if (!isAuthenticated) {
         // 未認証の場合はローカルストレージからデータを読み込む
-        const storedActions = localStorage.getItem("impulseActions");
+        const storedActions = localStorage.getItem('impulseActions');
         if (storedActions) {
           const parsedActions = JSON.parse(storedActions) as ImpulseAction[];
           setActions(parsedActions);
@@ -112,9 +110,7 @@ const ImpulseTrackerPage: React.FC = () => {
         // setFilteredActions(data);
 
         // モック実装
-        const storedActions = localStorage.getItem(
-          `impulseActions_${user?.id}`
-        );
+        const storedActions = localStorage.getItem(`impulseActions_${user?.id}`);
         if (storedActions) {
           const parsedActions = JSON.parse(storedActions) as ImpulseAction[];
           setActions(parsedActions);
@@ -130,13 +126,13 @@ const ImpulseTrackerPage: React.FC = () => {
         // }
 
         // モック実装
-        setIsPremium(user?.email?.includes("premium") || false);
+        setIsPremium(user?.email?.includes('premium') || false);
       } catch (error) {
-        console.error("データ取得エラー:", error);
+        console.error('データ取得エラー:', error);
         toast({
-          title: "エラー",
-          description: "データの取得に失敗しました。",
-          variant: "destructive",
+          title: 'エラー',
+          description: 'データの取得に失敗しました。',
+          variant: 'destructive',
         });
       } finally {
         setIsLoading(false);
@@ -150,7 +146,7 @@ const ImpulseTrackerPage: React.FC = () => {
   const saveActions = async (newActions: ImpulseAction[]) => {
     if (!isAuthenticated) {
       // 未認証の場合はローカルストレージに保存
-      localStorage.setItem("impulseActions", JSON.stringify(newActions));
+      localStorage.setItem('impulseActions', JSON.stringify(newActions));
       setActions(newActions);
       setFilteredActions(newActions);
       return;
@@ -169,18 +165,15 @@ const ImpulseTrackerPage: React.FC = () => {
       // if (!response.ok) throw new Error('データの保存に失敗しました');
 
       // モック実装
-      localStorage.setItem(
-        `impulseActions_${user?.id}`,
-        JSON.stringify(newActions)
-      );
+      localStorage.setItem(`impulseActions_${user?.id}`, JSON.stringify(newActions));
       setActions(newActions);
       setFilteredActions(newActions);
     } catch (error) {
-      console.error("データ保存エラー:", error);
+      console.error('データ保存エラー:', error);
       toast({
-        title: "エラー",
-        description: "データの保存に失敗しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'データの保存に失敗しました。',
+        variant: 'destructive',
       });
       return false;
     }
@@ -194,17 +187,17 @@ const ImpulseTrackerPage: React.FC = () => {
     try {
       if (!newAction.trim()) {
         toast({
-          title: "入力エラー",
-          description: "やってしまったことを入力してください",
-          variant: "destructive",
+          title: '入力エラー',
+          description: 'やってしまったことを入力してください',
+          variant: 'destructive',
         });
         return;
       }
 
       const newEntry: ImpulseAction = {
         id: Date.now().toString(),
-        userId: user?.id || "anonymous",
-        date: format(new Date(), "yyyy-MM-dd HH:mm"),
+        userId: user?.id || 'anonymous',
+        date: format(new Date(), 'yyyy-MM-dd HH:mm'),
         action: newAction,
         consequence: newConsequence,
         category: newCategory || undefined,
@@ -217,24 +210,24 @@ const ImpulseTrackerPage: React.FC = () => {
       const success = await saveActions(updatedActions);
 
       if (success) {
-        setNewAction("");
-        setNewConsequence("");
-        setNewCategory("");
-        setNewEmotion("");
-        setNewTrigger("");
+        setNewAction('');
+        setNewConsequence('');
+        setNewCategory('');
+        setNewEmotion('');
+        setNewTrigger('');
         setNewCostAmount(undefined);
 
         toast({
-          title: "記録しました",
-          description: "新しい行動が追加されました。",
+          title: '記録しました',
+          description: '新しい行動が追加されました。',
         });
       }
     } catch (error) {
-      console.error("送信エラー:", error);
+      console.error('送信エラー:', error);
       toast({
-        title: "エラー",
-        description: "送信中にエラーが発生しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: '送信中にエラーが発生しました。',
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -261,17 +254,17 @@ const ImpulseTrackerPage: React.FC = () => {
 
       if (success) {
         toast({
-          title: "削除しました",
-          description: "記録が削除されました。",
-          variant: "destructive",
+          title: '削除しました',
+          description: '記録が削除されました。',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("削除エラー:", error);
+      console.error('削除エラー:', error);
       toast({
-        title: "エラー",
-        description: "削除中にエラーが発生しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: '削除中にエラーが発生しました。',
+        variant: 'destructive',
       });
     }
   };
@@ -281,15 +274,11 @@ const ImpulseTrackerPage: React.FC = () => {
     let filtered = [...actions];
 
     if (filterDate) {
-      filtered = filtered.filter((action) =>
-        action.date.startsWith(filterDate)
-      );
+      filtered = filtered.filter((action) => action.date.startsWith(filterDate));
     }
 
     if (filterCategory) {
-      filtered = filtered.filter(
-        (action) => action.category === filterCategory
-      );
+      filtered = filtered.filter((action) => action.category === filterCategory);
     }
 
     setFilteredActions(filtered);
@@ -298,8 +287,8 @@ const ImpulseTrackerPage: React.FC = () => {
 
   // フィルターリセット
   const resetFilters = () => {
-    setFilterDate("");
-    setFilterCategory("");
+    setFilterDate('');
+    setFilterCategory('');
     setFilteredActions(actions);
     setIsFilterDialogOpen(false);
   };
@@ -310,8 +299,7 @@ const ImpulseTrackerPage: React.FC = () => {
     const categoryBreakdown: Record<string, number> = {};
     actions.forEach((action) => {
       if (action.category) {
-        categoryBreakdown[action.category] =
-          (categoryBreakdown[action.category] || 0) + 1;
+        categoryBreakdown[action.category] = (categoryBreakdown[action.category] || 0) + 1;
       }
     });
 
@@ -319,8 +307,7 @@ const ImpulseTrackerPage: React.FC = () => {
     const emotionBreakdown: Record<string, number> = {};
     actions.forEach((action) => {
       if (action.emotion) {
-        emotionBreakdown[action.emotion] =
-          (emotionBreakdown[action.emotion] || 0) + 1;
+        emotionBreakdown[action.emotion] = (emotionBreakdown[action.emotion] || 0) + 1;
       }
     });
 
@@ -334,13 +321,8 @@ const ImpulseTrackerPage: React.FC = () => {
     });
 
     // 衝動行動あたりの平均コスト
-    const validCostEntries = actions.filter(
-      (action) => action.costAmount && action.costAmount > 0
-    );
-    const totalCost = validCostEntries.reduce(
-      (sum, action) => sum + (action.costAmount || 0),
-      0
-    );
+    const validCostEntries = actions.filter((action) => action.costAmount && action.costAmount > 0);
+    const totalCost = validCostEntries.reduce((sum, action) => sum + (action.costAmount || 0), 0);
     const averageCostPerImpulse =
       validCostEntries.length > 0 ? totalCost / validCostEntries.length : 0;
 
@@ -357,9 +339,9 @@ const ImpulseTrackerPage: React.FC = () => {
   const openAnalytics = () => {
     if (!isPremium) {
       toast({
-        title: "プレミアム機能",
-        description: "詳細な分析はプレミアムユーザーのみ利用可能です。",
-        variant: "default",
+        title: 'プレミアム機能',
+        description: '詳細な分析はプレミアムユーザーのみ利用可能です。',
+        variant: 'default',
       });
       return;
     }
@@ -372,38 +354,35 @@ const ImpulseTrackerPage: React.FC = () => {
   // CSV形式でエクスポート
   const exportToCsv = () => {
     const header = [
-      "日付",
-      "やってしまったこと",
-      "結果や感想",
-      "カテゴリー",
-      "感情",
-      "きっかけ",
-      "コスト",
-    ].join(",");
+      '日付',
+      'やってしまったこと',
+      '結果や感想',
+      'カテゴリー',
+      '感情',
+      'きっかけ',
+      'コスト',
+    ].join(',');
 
     const rows = actions.map((action) =>
       [
         action.date,
         `"${action.action.replace(/"/g, '""')}"`,
-        `"${action.consequence?.replace(/"/g, '""') || ""}"`,
-        action.category || "",
-        action.emotion || "",
-        `"${action.triggerSituation?.replace(/"/g, '""') || ""}"`,
-        action.costAmount || "",
-      ].join(",")
+        `"${action.consequence?.replace(/"/g, '""') || ''}"`,
+        action.category || '',
+        action.emotion || '',
+        `"${action.triggerSituation?.replace(/"/g, '""') || ''}"`,
+        action.costAmount || '',
+      ].join(',')
     );
 
-    const csvContent = [header, ...rows].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
+    const csvContent = [header, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
 
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `衝動行動記録_${format(new Date(), "yyyyMMdd")}.csv`
-    );
-    link.style.visibility = "hidden";
+    link.setAttribute('href', url);
+    link.setAttribute('download', `衝動行動記録_${format(new Date(), 'yyyyMMdd')}.csv`);
+    link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
     link.click();
@@ -424,10 +403,7 @@ const ImpulseTrackerPage: React.FC = () => {
 
     return {
       count: recentActions.length,
-      totalCost: recentActions.reduce(
-        (sum, action) => sum + (action.costAmount || 0),
-        0
-      ),
+      totalCost: recentActions.reduce((sum, action) => sum + (action.costAmount || 0), 0),
     };
   };
 
@@ -446,19 +422,11 @@ const ImpulseTrackerPage: React.FC = () => {
             <Filter className="mr-2 h-4 w-4" />
             フィルター
           </Button>
-          <Button
-            variant="outline"
-            onClick={openAnalytics}
-            className="flex items-center"
-          >
+          <Button variant="outline" onClick={openAnalytics} className="flex items-center">
             <TrendingUp className="mr-2 h-4 w-4" />
             分析
           </Button>
-          <Button
-            variant="outline"
-            onClick={exportToCsv}
-            className="flex items-center"
-          >
+          <Button variant="outline" onClick={exportToCsv} className="flex items-center">
             <Download className="mr-2 h-4 w-4" />
             エクスポート
           </Button>
@@ -476,9 +444,7 @@ const ImpulseTrackerPage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">合計コスト</p>
-              <p className="text-2xl font-bold">
-                ¥{weeklyStats.totalCost.toLocaleString()}
-              </p>
+              <p className="text-2xl font-bold">¥{weeklyStats.totalCost.toLocaleString()}</p>
             </div>
           </div>
         </CardContent>
@@ -492,10 +458,7 @@ const ImpulseTrackerPage: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label
-                  htmlFor="action"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="action" className="block text-sm font-medium text-gray-700">
                   やってしまったこと
                 </label>
                 <Input
@@ -508,10 +471,7 @@ const ImpulseTrackerPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="consequence"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="consequence" className="block text-sm font-medium text-gray-700">
                   結果や感想
                 </label>
                 <Textarea
@@ -525,10 +485,7 @@ const ImpulseTrackerPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label
-                    htmlFor="category"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700">
                     カテゴリー
                   </label>
                   <select
@@ -547,10 +504,7 @@ const ImpulseTrackerPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label
-                    htmlFor="emotion"
-                    className="block text-sm font-medium text-gray-700"
-                  >
+                  <label htmlFor="emotion" className="block text-sm font-medium text-gray-700">
                     その時の感情
                   </label>
                   <select
@@ -571,10 +525,7 @@ const ImpulseTrackerPage: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="trigger"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="trigger" className="block text-sm font-medium text-gray-700">
                   きっかけとなった状況
                 </label>
                 <Input
@@ -587,21 +538,16 @@ const ImpulseTrackerPage: React.FC = () => {
               </div>
 
               <div>
-                <label
-                  htmlFor="cost"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="cost" className="block text-sm font-medium text-gray-700">
                   コスト（円）
                 </label>
                 <Input
                   id="cost"
                   type="number"
                   min="0"
-                  value={newCostAmount || ""}
+                  value={newCostAmount || ''}
                   onChange={(e) =>
-                    setNewCostAmount(
-                      e.target.value ? Number(e.target.value) : undefined
-                    )
+                    setNewCostAmount(e.target.value ? Number(e.target.value) : undefined)
                   }
                   placeholder="例: 5000"
                   disabled={isSubmitting}
@@ -609,7 +555,7 @@ const ImpulseTrackerPage: React.FC = () => {
               </div>
 
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "送信中..." : "記録する"}
+                {isSubmitting ? '送信中...' : '記録する'}
               </Button>
             </form>
           </CardContent>
@@ -632,23 +578,18 @@ const ImpulseTrackerPage: React.FC = () => {
                         <div>
                           <p className="font-semibold">{action.action}</p>
                           <p className="text-sm text-gray-500">
-                            {format(
-                              new Date(action.date),
-                              "yyyy年MM月dd日 HH:mm",
-                              { locale: ja }
-                            )}
+                            {format(new Date(action.date), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
                           </p>
                           {action.category && (
                             <span className="inline-block bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full mt-1 mr-1">
-                              {CATEGORIES.find(
-                                (c) => c.value === action.category
-                              )?.label || action.category}
+                              {CATEGORIES.find((c) => c.value === action.category)?.label ||
+                                action.category}
                             </span>
                           )}
                           {action.emotion && (
                             <span className="inline-block bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full mt-1 mr-1">
-                              {EMOTIONS.find((e) => e.value === action.emotion)
-                                ?.label || action.emotion}
+                              {EMOTIONS.find((e) => e.value === action.emotion)?.label ||
+                                action.emotion}
                             </span>
                           )}
                           {action.costAmount && (
@@ -659,14 +600,10 @@ const ImpulseTrackerPage: React.FC = () => {
                         </div>
                         <AlertCircle className="text-yellow-500" />
                       </div>
-                      {action.consequence && (
-                        <p className="mt-2 text-sm">{action.consequence}</p>
-                      )}
+                      {action.consequence && <p className="mt-2 text-sm">{action.consequence}</p>}
                       {action.triggerSituation && (
                         <div className="mt-2">
-                          <span className="text-xs text-gray-500">
-                            きっかけ:
-                          </span>
+                          <span className="text-xs text-gray-500">きっかけ:</span>
                           <p className="text-sm">{action.triggerSituation}</p>
                         </div>
                       )}
@@ -695,25 +632,19 @@ const ImpulseTrackerPage: React.FC = () => {
                         <div>
                           <p className="font-semibold">{action.action}</p>
                           <p className="text-sm text-gray-500">
-                            {format(
-                              new Date(action.date),
-                              "yyyy年MM月dd日 HH:mm",
-                              { locale: ja }
-                            )}
+                            {format(new Date(action.date), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
                           </p>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {action.category && (
                               <span className="inline-block bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                                {CATEGORIES.find(
-                                  (c) => c.value === action.category
-                                )?.label || action.category}
+                                {CATEGORIES.find((c) => c.value === action.category)?.label ||
+                                  action.category}
                               </span>
                             )}
                             {action.emotion && (
                               <span className="inline-block bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full">
-                                {EMOTIONS.find(
-                                  (e) => e.value === action.emotion
-                                )?.label || action.emotion}
+                                {EMOTIONS.find((e) => e.value === action.emotion)?.label ||
+                                  action.emotion}
                               </span>
                             )}
                             {action.costAmount && (
@@ -727,12 +658,8 @@ const ImpulseTrackerPage: React.FC = () => {
                           )}
                           {action.triggerSituation && (
                             <div className="mt-2">
-                              <span className="text-xs text-gray-500">
-                                きっかけ:
-                              </span>
-                              <p className="text-sm">
-                                {action.triggerSituation}
-                              </p>
+                              <span className="text-xs text-gray-500">きっかけ:</span>
+                              <p className="text-sm">{action.triggerSituation}</p>
                             </div>
                           )}
                         </div>
@@ -762,10 +689,7 @@ const ImpulseTrackerPage: React.FC = () => {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label
-                htmlFor="filter-date"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="filter-date" className="block text-sm font-medium text-gray-700">
                 日付
               </label>
               <Input
@@ -776,10 +700,7 @@ const ImpulseTrackerPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="filter-category"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="filter-category" className="block text-sm font-medium text-gray-700">
                 カテゴリー
               </label>
               <select
@@ -819,76 +740,59 @@ const ImpulseTrackerPage: React.FC = () => {
             <div className="space-y-6 py-4">
               <div>
                 <h3 className="text-lg font-medium">概要</h3>
+                <p className="text-sm text-gray-500">合計記録数: {statsData.totalCount}件</p>
                 <p className="text-sm text-gray-500">
-                  合計記録数: {statsData.totalCount}件
-                </p>
-                <p className="text-sm text-gray-500">
-                  平均コスト: ¥
-                  {statsData.averageCostPerImpulse.toLocaleString()}
+                  平均コスト: ¥{statsData.averageCostPerImpulse.toLocaleString()}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-lg font-medium">カテゴリー別統計</h3>
                 <div className="mt-2 space-y-2">
-                  {Object.entries(statsData.categoryBreakdown).map(
-                    ([category, count]) => {
-                      const percent = Math.round(
-                        (count / statsData.totalCount) * 100
-                      );
-                      return (
-                        <div key={category} className="flex items-center">
-                          <div className="w-1/3 text-sm">
-                            {CATEGORIES.find((c) => c.value === category)
-                              ?.label || category}
-                          </div>
-                          <div className="w-2/3">
-                            <div className="relative h-4 bg-gray-200 rounded-full">
-                              <div
-                                className="progress-bar progress-bar-blue"
-                                data-percent={percent}
-                              ></div>
-                            </div>
-                            <div className="text-xs text-right mt-1">
-                              {count}件
-                            </div>
-                          </div>
+                  {Object.entries(statsData.categoryBreakdown).map(([category, count]) => {
+                    const percent = Math.round((count / statsData.totalCount) * 100);
+                    return (
+                      <div key={category} className="flex items-center">
+                        <div className="w-1/3 text-sm">
+                          {CATEGORIES.find((c) => c.value === category)?.label || category}
                         </div>
-                      );
-                    }
-                  )}
+                        <div className="w-2/3">
+                          <div className="relative h-4 bg-gray-200 rounded-full">
+                            <div
+                              className="progress-bar progress-bar-blue"
+                              data-percent={percent}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-right mt-1">{count}件</div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               <div>
                 <h3 className="text-lg font-medium">感情別統計</h3>
                 <div className="mt-2 space-y-2">
-                  {Object.entries(statsData.emotionBreakdown).map(
-                    ([emotion, count]) => {
-                      const percent = Math.round(
-                        (count / statsData.totalCount) * 100
-                      );
-                      return (
-                        <div key={emotion} className="flex items-center">
-                          <div className="w-1/3 text-sm">
-                            {EMOTIONS.find((e) => e.value === emotion)?.label ||
-                              emotion}
-                          </div>
-                          <div className="w-2/3">
-                            <div className="relative h-4 bg-gray-200 rounded-full">
-                              <div
-                                className="progress-bar progress-bar-green"
-                                data-percent={percent}
-                              ></div>
-                            </div>
-                            <div className="text-xs text-right mt-1">
-                              {count}件
-                            </div>
-                          </div>
+                  {Object.entries(statsData.emotionBreakdown).map(([emotion, count]) => {
+                    const percent = Math.round((count / statsData.totalCount) * 100);
+                    return (
+                      <div key={emotion} className="flex items-center">
+                        <div className="w-1/3 text-sm">
+                          {EMOTIONS.find((e) => e.value === emotion)?.label || emotion}
                         </div>
-                      );
-                    }
-                  )}
+                        <div className="w-2/3">
+                          <div className="relative h-4 bg-gray-200 rounded-full">
+                            <div
+                              className="progress-bar progress-bar-green"
+                              data-percent={percent}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-right mt-1">{count}件</div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -900,13 +804,9 @@ const ImpulseTrackerPage: React.FC = () => {
                     .slice(0, 6) // 直近6ヶ月のみ表示
                     .map(([month, cost]) => (
                       <div key={month} className="flex items-center">
-                        <div className="w-1/3 text-sm">
-                          {month.replace("-", "年")}月
-                        </div>
+                        <div className="w-1/3 text-sm">{month.replace('-', '年')}月</div>
                         <div className="w-2/3">
-                          <div className="text-sm font-medium">
-                            ¥{cost.toLocaleString()}
-                          </div>
+                          <div className="text-sm font-medium">¥{cost.toLocaleString()}</div>
                         </div>
                       </div>
                     ))}
@@ -918,14 +818,13 @@ const ImpulseTrackerPage: React.FC = () => {
                 <ul className="mt-2 space-y-1 list-disc list-inside text-sm">
                   <li>
                     {statsData.categoryBreakdown.shopping > 0
-                      ? "買い物をする前に、本当に必要かどうか24時間考える時間を持ちましょう。"
-                      : "新しい習慣を形成するために、衝動を感じたら別の活動に切り替えましょう。"}
+                      ? '買い物をする前に、本当に必要かどうか24時間考える時間を持ちましょう。'
+                      : '新しい習慣を形成するために、衝動を感じたら別の活動に切り替えましょう。'}
                   </li>
                   <li>
-                    {statsData.emotionBreakdown.boredom > 0 ||
-                    statsData.emotionBreakdown.stress > 0
-                      ? "退屈やストレスを感じたら、事前に計画した健全な対処法を実践しましょう。"
-                      : "感情の変化に気づき、それをメモすることで自己理解を深めましょう。"}
+                    {statsData.emotionBreakdown.boredom > 0 || statsData.emotionBreakdown.stress > 0
+                      ? '退屈やストレスを感じたら、事前に計画した健全な対処法を実践しましょう。'
+                      : '感情の変化に気づき、それをメモすることで自己理解を深めましょう。'}
                   </li>
                   <li>
                     衝動を感じた時の「きっかけ」「行動」「結果」の記録を続けることで、パターンが見えてきます。

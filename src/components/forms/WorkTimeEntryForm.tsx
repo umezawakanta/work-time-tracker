@@ -50,7 +50,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format, isToday } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 import projectApi from '@/services/api/projectApi';
 import presetApi from '@/services/api/presetApi';
