@@ -6,11 +6,12 @@ export interface AuthUser {
   photoURL: string | null;
   emailVerified: boolean;
   isPremium: boolean;
-  subscriptionStatus: 'free' | 'trial' | 'premium' | 'enterprise';
+  isAdmin?: boolean;
+  subscriptionStatus?: 'free' | 'trial' | 'premium' | 'enterprise';
   createdAt: string;
-  lastLoginAt: string;
+  lastSignInAt?: string;
   loginCount?: number;
-  preferences: UserPreferences;
+  preferences?: UserPreferences;
 }
 
 export interface UserPreferences {
@@ -31,8 +32,9 @@ export interface AuthError {
 }
 
 export interface AuthResponse {
-  user: AuthUser | null;
-  error: AuthError | null;
+  user?: AuthUser | null;
+  error?: AuthError | null;
+  session?: any; // Supabase Sessionまたは任意のセッション情報
 }
 
 export interface AuthState {
