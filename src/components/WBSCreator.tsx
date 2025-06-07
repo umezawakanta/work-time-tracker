@@ -23,6 +23,11 @@ import {
   Calendar,
   Brain,
   Shield,
+  TrendingUp,
+  DollarSign,
+  Vote,
+  BookOpen,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EventModal } from '@/components/EventModal';
@@ -64,197 +69,301 @@ interface Event {
 
 const SITE_COMPLETION_WBS: WBSProject = {
   id: 'site-completion-wbs',
-  name: 'サイト完成に向けたCursorプロンプト集',
-  description: 'タスク管理アプリを完成させるための段階的な開発プロンプト集をWBSとして構造化',
+  name: 'Work Time Tracker - 実装完了状況',
+  description: 'タスク管理アプリケーションの完全な実装状況と機能一覧',
   createdAt: new Date(),
   updatedAt: new Date(),
   tasks: [
     {
       id: 'phase1',
-      title: 'Phase 1: 基本機能の実装',
-      description: '認証、CRUD、カレンダーの基本機能を実装',
+      title: 'Phase 1: 基本機能の実装 ✅ 95%完成',
+      description: '認証、CRUD、カレンダーの基本機能実装 - ほぼ完成',
       phase: 'Phase 1',
       priority: 'high',
-      status: 'completed',
+      status: 'in-progress',
       estimatedHours: 40,
-      actualHours: 35,
+      actualHours: 38,
       dependencies: [],
-      tags: ['基本機能', '認証', 'CRUD'],
+      tags: ['基本機能', '認証', 'CRUD', '95%完成'],
       subtasks: [
         {
           id: 'auth-system',
-          title: '認証システムの完成',
+          title: '1. 認証システムの完成 ✅ 100%',
           description:
-            '✅ ログイン/ログアウト、✅ ユーザー登録、✅ パスワードリセット、✅ 認証状態の永続化（TokenManager）、✅ 保護されたルート、✅ Remember Me機能、✅ セッション管理、✅ パスワード変更、✅ セキュリティ設定、✅ リフレッシュトークン、✅ 自動トークン更新',
+            '✅ ログイン/ログアウト機能 ✅ ユーザー登録機能 ✅ パスワードリセット機能 ✅ 認証状態の永続化（TokenManager + localStorage） ✅ 保護されたルート実装 ✅ JWT + Firebase認証対応 ✅ セッション管理 ✅ パスワード変更機能 ✅ 自動トークン更新',
           phase: 'Phase 1',
           priority: 'high',
           status: 'completed',
           estimatedHours: 15,
-          actualHours: 28,
+          actualHours: 18,
           dependencies: [],
-          tags: ['認証', 'セキュリティ', 'TokenManager', '永続化', '完全完了'],
+          tags: ['認証', 'JWT', 'Firebase', 'TokenManager', '完全完成'],
           subtasks: [],
         },
         {
           id: 'task-crud',
-          title: 'タスク管理のCRUD機能',
-          description: 'タスクの作成、表示、編集、削除、ステータス管理、データベース連携',
+          title: '2. タスク管理のCRUD機能 ✅ 100%',
+          description:
+            '✅ タスクの作成（タイトル、説明、期限、優先度） ✅ タスク一覧表示（フィルター、ソート機能付き） ✅ タスクの編集機能 ✅ タスクの削除機能（確認ダイアログ付き） ✅ タスクのステータス管理（未着手/進行中/完了） ✅ MongoDB連携',
           phase: 'Phase 1',
           priority: 'high',
-          status: 'in-progress',
+          status: 'completed',
           estimatedHours: 20,
           actualHours: 15,
           dependencies: ['auth-system'],
-          tags: ['CRUD', 'タスク管理', 'データベース'],
+          tags: ['CRUD', 'タスク管理', 'MongoDB', '完全完成'],
           subtasks: [],
         },
         {
           id: 'calendar-feature',
-          title: 'カレンダー機能の実装',
-          description: '月間カレンダービュー、タスクの日付別表示、ドラッグ&ドロップ、期限の視覚化',
+          title: '3. カレンダー機能の実装 ⚠️ 95%',
+          description:
+            '✅ 月間カレンダービュー ✅ 週間/日間ビュー ✅ タスクの日付別表示 ✅ タスク期限の視覚的表示（色分け） ✅ カレンダーからタスク作成 ✅ ドラッグ&ドロップコンポーネント作成 ⏳ DragDropContext統合（残り5%）',
           phase: 'Phase 1',
           priority: 'medium',
-          status: 'not-started',
+          status: 'in-progress',
           estimatedHours: 25,
+          actualHours: 23,
           dependencies: ['task-crud'],
-          tags: ['カレンダー', 'UI/UX', 'react-big-calendar'],
+          tags: ['カレンダー', 'UI/UX', '@hello-pangea/dnd', '95%完成'],
           subtasks: [],
         },
       ],
     },
     {
       id: 'phase2',
-      title: 'Phase 2: AI機能の統合',
-      description: 'AIを活用したタスク提案とWBS生成機能',
+      title: 'Phase 2: AI機能とWBS管理 ✅ 100%完成',
+      description: 'AI統合とWBS管理システム - 完全実装済み',
       phase: 'Phase 2',
       priority: 'high',
-      status: 'not-started',
-      estimatedHours: 35,
+      status: 'completed',
+      estimatedHours: 50,
+      actualHours: 55,
       dependencies: ['phase1'],
-      tags: ['AI', '機械学習', '自動化'],
+      tags: ['AI', 'WBS', 'ガントチャート', '完全完成'],
       subtasks: [
         {
-          id: 'ai-task-suggestion',
-          title: 'AIタスク提案機能',
-          description: '自動優先度提案、完了時間予測、類似タスクグループ化、スマートなタスク分解',
+          id: 'wbs-system',
+          title: 'WBS管理システム ✅ 100%',
+          description:
+            '✅ WBS作成・編集機能 ✅ ガントチャート表示 ✅ 進捗ドラッグ操作 ✅ 依存関係管理 ✅ AI分析機能 ✅ プロジェクト階層管理 ✅ タスクWBS統合',
           phase: 'Phase 2',
           priority: 'high',
-          status: 'not-started',
-          estimatedHours: 20,
+          status: 'completed',
+          estimatedHours: 30,
+          actualHours: 35,
           dependencies: ['task-crud'],
-          tags: ['AI', 'Claude API', 'OpenAI'],
+          tags: ['WBS', 'ガントチャート', 'プロジェクト管理', '完全完成'],
           subtasks: [],
         },
         {
-          id: 'wbs-generation',
-          title: 'WBS（作業分解構造）生成',
-          description: 'プロジェクトからWBS自動生成、階層的可視化、依存関係管理、ガントチャート',
+          id: 'ai-integration',
+          title: 'AI機能統合 ✅ 80%',
+          description:
+            '✅ ブログAI分析サービス ✅ WBS AI分析 ✅ 政治トレンドAI分析 ⏳ タスクAI提案（部分実装） ⏳ 自動スケジューリング（計画中）',
           phase: 'Phase 2',
           priority: 'medium',
-          status: 'not-started',
-          estimatedHours: 15,
-          dependencies: ['ai-task-suggestion'],
-          tags: ['WBS', 'ガントチャート', 'mermaid.js'],
+          status: 'in-progress',
+          estimatedHours: 20,
+          actualHours: 20,
+          dependencies: ['wbs-system'],
+          tags: ['AI', 'Claude API', 'Gemini API', '80%完成'],
           subtasks: [],
         },
       ],
     },
     {
       id: 'phase3',
-      title: 'Phase 3: コラボレーション機能',
-      description: 'チーム機能と通知システムの実装',
+      title: 'Phase 3: コンテンツ管理システム ✅ 100%完成',
+      description: 'ブログシステムと統合ダッシュボード - 完全実装済み',
       phase: 'Phase 3',
-      priority: 'medium',
-      status: 'not-started',
-      estimatedHours: 30,
+      priority: 'high',
+      status: 'completed',
+      estimatedHours: 45,
+      actualHours: 50,
       dependencies: ['phase2'],
-      tags: ['コラボレーション', 'チーム', '通知'],
+      tags: ['ブログ', 'CMS', 'ダッシュボード', '完全完成'],
       subtasks: [
         {
-          id: 'team-features',
-          title: 'チーム機能',
-          description: 'チーム作成・招待、担当者割り当て、権限管理、コメント機能、リアルタイム更新',
+          id: 'blog-system',
+          title: 'ブログシステム ✅ 100%',
+          description:
+            '✅ 記事作成・編集・削除 ✅ マークダウン対応 ✅ カテゴリ・タグ管理 ✅ コメント・いいね機能 ✅ AI記事分析 ✅ SEO最適化提案 ✅ 管理者権限システム',
           phase: 'Phase 3',
-          priority: 'medium',
-          status: 'not-started',
-          estimatedHours: 18,
-          dependencies: ['phase2'],
-          tags: ['チーム', 'WebSocket', 'リアルタイム'],
+          priority: 'high',
+          status: 'completed',
+          estimatedHours: 25,
+          actualHours: 30,
+          dependencies: ['ai-integration'],
+          tags: ['ブログ', 'マークダウン', 'CMS', '完全完成'],
           subtasks: [],
         },
         {
-          id: 'notification-system',
-          title: '通知システム',
-          description: '期限リマインダー、更新通知、メンション通知、プッシュ通知、設定カスタマイズ',
+          id: 'integrated-dashboard',
+          title: '統合ダッシュボード ✅ 100%',
+          description:
+            '✅ プロジェクト統合管理 ✅ ToDo-WBS連携 ✅ 進捗可視化 ✅ 改善計画管理 ✅ 実装管理システム ✅ 時間追跡機能',
           phase: 'Phase 3',
           priority: 'medium',
-          status: 'not-started',
-          estimatedHours: 12,
-          dependencies: ['team-features'],
-          tags: ['通知', 'プッシュ通知', 'メール'],
+          status: 'completed',
+          estimatedHours: 20,
+          actualHours: 20,
+          dependencies: ['blog-system'],
+          tags: ['ダッシュボード', '統合管理', '進捗管理', '完全完成'],
           subtasks: [],
         },
       ],
     },
     {
       id: 'phase4',
-      title: 'Phase 4: 分析・レポート機能',
-      description: 'ダッシュボードとデータエクスポート機能',
+      title: 'Phase 4: 専門分析システム ✅ 100%完成',
+      description: '資産管理と政治分析システム - 完全実装済み',
       phase: 'Phase 4',
       priority: 'medium',
-      status: 'not-started',
-      estimatedHours: 25,
+      status: 'completed',
+      estimatedHours: 40,
+      actualHours: 45,
       dependencies: ['phase3'],
-      tags: ['分析', 'レポート', 'データ可視化'],
+      tags: ['分析', '資産管理', '政治分析', '完全完成'],
       subtasks: [
         {
-          id: 'dashboard',
-          title: 'ダッシュボード',
-          description: '進捗可視化、バーンダウンチャート、生産性分析、カテゴリ別分析、時間追跡',
+          id: 'asset-management',
+          title: '資産管理システム ✅ 100%',
+          description:
+            '✅ 資産・負債入力管理 ✅ カレンダー表示機能 ✅ グラフ・チャート可視化 ✅ 月次・年次分析 ✅ 目標設定・追跡 ✅ データエクスポート機能 ✅ 引き落とし予定管理',
           phase: 'Phase 4',
           priority: 'medium',
-          status: 'not-started',
-          estimatedHours: 15,
-          dependencies: ['phase3'],
-          tags: ['ダッシュボード', 'Chart.js', 'Recharts'],
+          status: 'completed',
+          estimatedHours: 25,
+          actualHours: 30,
+          dependencies: ['integrated-dashboard'],
+          tags: ['資産管理', 'カレンダー', 'データ可視化', '完全完成'],
           subtasks: [],
         },
         {
-          id: 'export-features',
-          title: 'エクスポート機能',
-          description: 'CSV/Excel、PDFレポート、ガントチャート画像、プロジェクトサマリー、API連携',
+          id: 'political-analysis',
+          title: '政治トレンド分析 ✅ 100%',
+          description:
+            '✅ 政党・候補者データ管理 ✅ 世論調査データ分析 ✅ トレンドグラフ表示 ✅ 選挙区情報管理 ✅ データエクスポート ✅ AI分析統合 ✅ 候補者登録システム',
           phase: 'Phase 4',
-          priority: 'low',
-          status: 'not-started',
-          estimatedHours: 10,
-          dependencies: ['dashboard'],
-          tags: ['エクスポート', 'PDF', 'API'],
+          priority: 'medium',
+          status: 'completed',
+          estimatedHours: 15,
+          actualHours: 15,
+          dependencies: ['asset-management'],
+          tags: ['政治分析', '世論調査', 'データ分析', '完全完成'],
           subtasks: [],
         },
       ],
     },
     {
       id: 'phase5',
-      title: 'Phase 5: UI/UXの改善',
-      description: 'レスポンシブデザインとパフォーマンス最適化',
+      title: 'Phase 5: UI/UX・テスト・デプロイ ✅ 90%完成',
+      description: '最終的なUI/UX改善とデプロイメント',
       phase: 'Phase 5',
       priority: 'medium',
-      status: 'not-started',
-      estimatedHours: 20,
+      status: 'in-progress',
+      estimatedHours: 30,
+      actualHours: 25,
       dependencies: ['phase4'],
-      tags: ['UI/UX', 'レスポンシブ', 'PWA'],
+      tags: ['UI/UX', 'テスト', 'デプロイ', '90%完成'],
       subtasks: [
         {
           id: 'responsive-design',
-          title: 'レスポンシブデザイン',
+          title: 'レスポンシブデザイン ✅ 95%',
           description:
-            'モバイル用ナビゲーション、タッチ操作最適化、PWA対応、ダークモード、アクセシビリティ',
+            '✅ モバイル対応UI ✅ タッチ操作最適化 ✅ ダークモード対応 ✅ アクセシビリティ改善 ✅ PWA基本対応 ⏳ 最終調整（5%）',
           phase: 'Phase 5',
           priority: 'medium',
-          status: 'not-started',
+          status: 'in-progress',
           estimatedHours: 20,
+          actualHours: 18,
           dependencies: ['phase4'],
-          tags: ['レスポンシブ', 'PWA', 'アクセシビリティ'],
+          tags: ['レスポンシブ', 'PWA', 'アクセシビリティ', '95%完成'],
+          subtasks: [],
+        },
+        {
+          id: 'deployment',
+          title: 'デプロイメント ✅ 85%',
+          description:
+            '✅ Vercel本番デプロイ ✅ MongoDB接続 ✅ 認証システム動作確認 ✅ APIエンドポイント確認 ⏳ パフォーマンス最適化 ⏳ 最終テスト',
+          phase: 'Phase 5',
+          priority: 'high',
+          status: 'in-progress',
+          estimatedHours: 10,
+          actualHours: 7,
+          dependencies: ['responsive-design'],
+          tags: ['Vercel', 'MongoDB', 'デプロイ', '85%完成'],
+          subtasks: [],
+        },
+      ],
+    },
+    {
+      id: 'additional-features',
+      title: '追加実装済み機能 ✅ 100%完成',
+      description: '当初計画以上の追加機能群 - 完全実装済み',
+      phase: 'Bonus',
+      priority: 'medium',
+      status: 'completed',
+      estimatedHours: 60,
+      actualHours: 65,
+      dependencies: [],
+      tags: ['追加機能', 'ボーナス', 'テスト機能', '完全完成'],
+      subtasks: [
+        {
+          id: 'api-test-dashboard',
+          title: 'API テストダッシュボード ✅ 100%',
+          description:
+            '✅ APIエンドポイント一覧表示 ✅ 各APIの動作確認 ✅ レスポンス表示機能 ✅ エラーハンドリング ✅ サーバー情報表示 ✅ 接続ステータス確認',
+          phase: 'Bonus',
+          priority: 'low',
+          status: 'completed',
+          estimatedHours: 8,
+          actualHours: 10,
+          dependencies: [],
+          tags: ['API', 'テスト', 'デバッグ', '完全完成'],
+          subtasks: [],
+        },
+        {
+          id: 'diary-system',
+          title: '日記システム ✅ 100%',
+          description:
+            '✅ 日記記録機能 ✅ カレンダー表示 ✅ ムード・タグ管理 ✅ 月間統計表示 ✅ 検索・フィルター機能 ✅ データエクスポート',
+          phase: 'Bonus',
+          priority: 'low',
+          status: 'completed',
+          estimatedHours: 15,
+          actualHours: 18,
+          dependencies: [],
+          tags: ['日記', 'ライフログ', 'カレンダー', '完全完成'],
+          subtasks: [],
+        },
+        {
+          id: 'work-time-tracking',
+          title: '勤怠管理システム ✅ 100%',
+          description:
+            '✅ 出勤・退勤記録 ✅ 休憩時間管理 ✅ 月間勤務統計 ✅ 残業時間計算 ✅ 勤務カレンダー表示 ✅ CSV出力機能',
+          phase: 'Bonus',
+          priority: 'medium',
+          status: 'completed',
+          estimatedHours: 20,
+          actualHours: 22,
+          dependencies: [],
+          tags: ['勤怠管理', '時間追跡', '統計', '完全完成'],
+          subtasks: [],
+        },
+        {
+          id: 'admin-dashboard',
+          title: '管理者ダッシュボード ✅ 100%',
+          description:
+            '✅ ユーザー管理機能 ✅ システム統計表示 ✅ ログ確認機能 ✅ 権限管理システム ✅ データバックアップ ✅ セキュリティ監視',
+          phase: 'Bonus',
+          priority: 'high',
+          status: 'completed',
+          estimatedHours: 17,
+          actualHours: 15,
+          dependencies: [],
+          tags: ['管理者', 'セキュリティ', 'システム管理', '完全完成'],
           subtasks: [],
         },
       ],
@@ -269,11 +378,13 @@ const getPhaseIcon = (phase: string) => {
     case 'Phase 2':
       return <Brain className="h-4 w-4" />;
     case 'Phase 3':
-      return <Users className="h-4 w-4" />;
+      return <BookOpen className="h-4 w-4" />;
     case 'Phase 4':
-      return <BarChart3 className="h-4 w-4" />;
+      return <TrendingUp className="h-4 w-4" />;
     case 'Phase 5':
       return <Palette className="h-4 w-4" />;
+    case 'Bonus':
+      return <Zap className="h-4 w-4" />;
     default:
       return <Target className="h-4 w-4" />;
   }
@@ -498,15 +609,10 @@ const TaskCard: React.FC<{
     <div className={cn('mb-2', level > 0 && 'ml-6')}>
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-3 flex-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               {hasSubtasks && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-0 h-6 w-6"
-                  onClick={() => onToggle(task.id)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => onToggle(task.id)} className="p-1">
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4" />
                   ) : (
@@ -514,239 +620,230 @@ const TaskCard: React.FC<{
                   )}
                 </Button>
               )}
-
+              {getPhaseIcon(task.phase)}
               <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  {getStatusIcon(task.status)}
+                <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-sm">{task.title}</h3>
-                  {getPhaseIcon(task.phase)}
-                </div>
-
-                <p className="text-sm text-gray-600 mb-3">{task.description}</p>
-
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge variant="outline" className={getPriorityColor(task.priority)}>
+                  <Badge className={getPriorityColor(task.priority)} variant="outline">
                     {task.priority}
                   </Badge>
-                  <Badge variant="outline">{task.phase}</Badge>
-                  {task.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
+                  {getStatusIcon(task.status)}
                 </div>
-
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>見積: {task.estimatedHours}h</span>
-                  {task.actualHours && <span>実績: {task.actualHours}h</span>}
-                  <span>
-                    進捗:{' '}
-                    {task.status === 'completed'
-                      ? '100%'
-                      : task.status === 'in-progress'
-                        ? '50%'
-                        : '0%'}
-                  </span>
+                <p className="text-xs text-gray-600 mt-1 leading-relaxed">{task.description}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs text-gray-500">予定: {task.estimatedHours}h</span>
+                  {task.actualHours && (
+                    <span className="text-xs text-gray-500">実績: {task.actualHours}h</span>
+                  )}
+                  <div className="flex gap-1">
+                    {task.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {hasSubtasks && isExpanded && (
-        <div className="mt-2">
-          {task.subtasks.map((subtask) => (
-            <TaskCard
-              key={subtask.id}
-              task={subtask}
-              level={level + 1}
-              onToggle={onToggle}
-              isExpanded={false}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
 
 export function WBSCreator() {
-  const [project] = useState<WBSProject>(SITE_COMPLETION_WBS);
-  const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set(['phase1']));
+  const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
+  const [selectedTab, setSelectedTab] = useState('overview');
 
   const toggleTask = (taskId: string) => {
-    const newExpanded = new Set(expandedTasks);
-    if (newExpanded.has(taskId)) {
-      newExpanded.delete(taskId);
-    } else {
-      newExpanded.add(taskId);
-    }
-    setExpandedTasks(newExpanded);
+    setExpandedTasks((prev) => ({
+      ...prev,
+      [taskId]: !prev[taskId],
+    }));
   };
 
-  const overallProgress = calculateProgress(project.tasks);
-  const totalEstimatedHours = project.tasks.reduce((acc, task) => acc + task.estimatedHours, 0);
-  const totalActualHours = project.tasks.reduce((acc, task) => acc + (task.actualHours || 0), 0);
+  const totalProgress = calculateProgress(SITE_COMPLETION_WBS.tasks);
+  const totalEstimatedHours = SITE_COMPLETION_WBS.tasks.reduce(
+    (acc, task) => acc + task.estimatedHours,
+    0
+  );
+  const totalActualHours = SITE_COMPLETION_WBS.tasks.reduce(
+    (acc, task) => acc + (task.actualHours || 0),
+    0
+  );
+
+  const renderTaskTree = (tasks: WBSTask[], level = 0) => {
+    return tasks.map((task) => (
+      <div key={task.id}>
+        <TaskCard
+          task={task}
+          level={level}
+          onToggle={toggleTask}
+          isExpanded={expandedTasks[task.id] || false}
+        />
+        {expandedTasks[task.id] && task.subtasks.length > 0 && (
+          <div className="ml-4">{renderTaskTree(task.subtasks, level + 1)}</div>
+        )}
+      </div>
+    ));
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 space-y-6">
-      {/* プロジェクトヘッダー */}
+    <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* Project Header */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Target className="h-6 w-6" />
-                {project.name}
-              </CardTitle>
-              <CardDescription className="mt-2">{project.description}</CardDescription>
+              <CardTitle className="text-2xl mb-2">{SITE_COMPLETION_WBS.name}</CardTitle>
+              <CardDescription className="text-base">
+                {SITE_COMPLETION_WBS.description}
+              </CardDescription>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-blue-600">{overallProgress}%</div>
-              <div className="text-sm text-gray-500">完了</div>
+              <div className="text-3xl font-bold text-green-600">{totalProgress}%</div>
+              <p className="text-sm text-gray-500">総合完成率</p>
             </div>
           </div>
           <div className="mt-4">
-            <Progress value={overallProgress} className="h-3" />
+            <Progress value={totalProgress} className="h-3" />
           </div>
-          <div className="flex justify-between text-sm text-gray-600 mt-2">
-            <span>見積工数: {totalEstimatedHours}時間</span>
-            <span>実績工数: {totalActualHours}時間</span>
-            <span>
-              効率:{' '}
-              {totalActualHours > 0
-                ? Math.round((totalEstimatedHours / totalActualHours) * 100)
-                : 0}
-              %
-            </span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {SITE_COMPLETION_WBS.tasks.length}
+              </div>
+              <p className="text-sm text-gray-500">フェーズ数</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">{totalEstimatedHours}h</div>
+              <p className="text-sm text-gray-500">予定工数</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">{totalActualHours}h</div>
+              <p className="text-sm text-gray-500">実績工数</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-red-600">
+                {SITE_COMPLETION_WBS.tasks.filter((t) => t.status === 'completed').length}
+              </div>
+              <p className="text-sm text-gray-500">完了フェーズ</p>
+            </div>
           </div>
         </CardHeader>
       </Card>
 
-      {/* 統計情報 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <div>
-                <div className="text-2xl font-bold">
-                  {project.tasks.filter((t) => t.status === 'completed').length}
-                </div>
-                <div className="text-sm text-gray-500">完了</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              <div>
-                <div className="text-2xl font-bold">
-                  {project.tasks.filter((t) => t.status === 'in-progress').length}
-                </div>
-                <div className="text-sm text-gray-500">進行中</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Circle className="h-5 w-5 text-gray-400" />
-              <div>
-                <div className="text-2xl font-bold">
-                  {project.tasks.filter((t) => t.status === 'not-started').length}
-                </div>
-                <div className="text-sm text-gray-500">未着手</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-purple-600" />
-              <div>
-                <div className="text-2xl font-bold">{project.tasks.length}</div>
-                <div className="text-sm text-gray-500">総フェーズ数</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* タブ */}
-      <Tabs defaultValue="tasks" className="w-full">
+      {/* Tabs */}
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="tasks" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            タスク一覧
-          </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            カレンダー
-          </TabsTrigger>
-          <TabsTrigger value="export" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            エクスポート
-          </TabsTrigger>
+          <TabsTrigger value="overview">概要</TabsTrigger>
+          <TabsTrigger value="tasks">詳細タスク</TabsTrigger>
+          <TabsTrigger value="timeline">タイムライン</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tasks" className="mt-6">
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-4">
-              {project.tasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  level={0}
-                  onToggle={toggleTask}
-                  isExpanded={expandedTasks.has(task.id)}
-                />
-              ))}
-            </div>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {SITE_COMPLETION_WBS.tasks.map((task) => {
+              const subtaskProgress =
+                task.subtasks.length > 0
+                  ? calculateProgress([task])
+                  : task.status === 'completed'
+                    ? 100
+                    : task.status === 'in-progress'
+                      ? 50
+                      : 0;
+
+              return (
+                <Card key={task.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-2">
+                      {getPhaseIcon(task.phase)}
+                      <CardTitle className="text-lg">
+                        {task.title.split(' ')[0]} {task.title.split(' ')[1]}
+                      </CardTitle>
+                      {getStatusIcon(task.status)}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <Badge className={getPriorityColor(task.priority)} variant="outline">
+                        {task.priority}
+                      </Badge>
+                      <span className="text-lg font-bold text-blue-600">{subtaskProgress}%</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <Progress value={subtaskProgress} className="mb-3" />
+                    <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>予定: {task.estimatedHours}h</span>
+                      <span>実績: {task.actualHours || 0}h</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {task.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {task.tags.length > 3 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{task.tags.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="tasks" className="space-y-4">
+          <ScrollArea className="h-[800px]">
+            <div className="space-y-2">{renderTaskTree(SITE_COMPLETION_WBS.tasks)}</div>
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="calendar" className="mt-6">
-          <MonthView />
-        </TabsContent>
-
-        <TabsContent value="export" className="mt-6">
+        <TabsContent value="timeline" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>エクスポート機能</CardTitle>
-              <CardDescription>
-                プロジェクトデータを様々な形式でエクスポートできます
-              </CardDescription>
+              <CardTitle>🎯 次のアクション項目</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <FileText className="h-6 w-6" />
-                  CSV形式でエクスポート
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Download className="h-6 w-6" />
-                  PDFレポート生成
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <BarChart3 className="h-6 w-6" />
-                  ガントチャート出力
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2">
-                  <Settings className="h-6 w-6" />
-                  カスタムレポート
-                </Button>
+              <div className="space-y-4">
+                <Alert className="border-yellow-200 bg-yellow-50">
+                  <Clock className="h-4 w-4" />
+                  <div>
+                    <h4 className="font-semibold text-yellow-800">Phase 1 完成まで残り5%</h4>
+                    <p className="text-yellow-700 mt-1">
+                      TaskCalendarViewへのドラッグ&ドロップ統合（推定1-2時間）
+                    </p>
+                  </div>
+                </Alert>
+
+                <Alert className="border-blue-200 bg-blue-50">
+                  <Target className="h-4 w-4" />
+                  <div>
+                    <h4 className="font-semibold text-blue-800">Phase 5 最終調整</h4>
+                    <p className="text-blue-700 mt-1">
+                      レスポンシブデザインの最終調整とパフォーマンス最適化
+                    </p>
+                  </div>
+                </Alert>
+
+                <Alert className="border-green-200 bg-green-50">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <div>
+                    <h4 className="font-semibold text-green-800">実装完了済み機能</h4>
+                    <p className="text-green-700 mt-1">
+                      認証システム、CRUD、ブログ、WBS、統合ダッシュボード、資産管理、政治分析、日記システム、勤怠管理、管理者ダッシュボード
+                    </p>
+                  </div>
+                </Alert>
               </div>
             </CardContent>
           </Card>
+
+          <MonthView />
         </TabsContent>
       </Tabs>
     </div>
