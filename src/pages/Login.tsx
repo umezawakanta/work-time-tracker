@@ -23,6 +23,7 @@ import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } fr
 declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
+    __API_CONNECTION_FAILED__?: boolean;
   }
 }
 
@@ -35,6 +36,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [showDemoMode, setShowDemoMode] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -160,7 +162,16 @@ export default function Login() {
         const errorMessage = error.response?.data?.message;
         const statusCode = error.response?.status;
 
-        if (statusCode === 401) {
+        // ネットワークエラーまたはサーバー接続エラーの場合
+        if (!error.response || error.code === 'ECONNREFUSED' || error.code === 'NETWORK_ERROR') {
+          setErrors({
+            general: 'サーバーに接続できません。ネットワーク接続を確認してください。',
+          });
+          // 本番環境でAPIに接続できない場合はデモモードを有効化
+          if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
+            setShowDemoMode(true);
+          }
+        } else if (statusCode === 401) {
           setErrors({ general: 'メールアドレスまたはパスワードが正しくありません' });
         } else if (statusCode === 429) {
           setErrors({
@@ -330,8 +341,8 @@ export default function Login() {
               )}
             </Button>
 
-            {/* 本番環境でのデモログインボタン */}
-            {window.location.hostname === 'work-time-tracker-5d9q.vercel.app' && (
+            {/* APIサーバー接続失敗時のデモログインボタン */}
+            {showDemoMode && (
               <div className="space-y-2">
                 <div className="text-center text-xs text-gray-500">または</div>
                 <Button
@@ -354,7 +365,7 @@ export default function Login() {
                   )}
                 </Button>
                 <div className="text-center text-xs text-gray-500">
-                  ※ バックエンドサーバーなしでアプリを体験できます
+                  ※ サーバーに接続できない場合のオフライン体験モード
                 </div>
               </div>
             )}

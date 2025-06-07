@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
+    __API_CONNECTION_FAILED__?: boolean;
   }
 }
 
@@ -313,13 +314,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isTokenValid) {
           console.log('✅ トークン有効 - サーバー認証確認中...');
 
-          // 本番環境でモックモードの場合はサーバー認証をスキップ
-          const isProductionMock =
-            window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
-            window.__VITE_USE_MOCK_DATA__ === 'true';
+          // モックモードが明示的に有効の場合のみスキップ
+          const isExplicitMockMode = window.__VITE_USE_MOCK_DATA__ === 'true';
 
-          if (isProductionMock) {
-            console.log('🎭 本番環境モックモード - 認証をスキップします');
+          if (isExplicitMockMode) {
+            console.log('🎭 モックモード有効 - 認証をスキップします');
             if (isMounted) {
               // ダミーユーザーデータを設定
               setUser({

@@ -6,6 +6,7 @@ import { api, USE_MOCK_DATA } from './apiConfig';
 declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
+    __API_CONNECTION_FAILED__?: boolean;
   }
 }
 

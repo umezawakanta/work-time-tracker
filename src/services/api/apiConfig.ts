@@ -5,6 +5,7 @@ import { logger } from '../../utils/logger';
 declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
+    __API_CONNECTION_FAILED__?: boolean;
   }
 }
 
@@ -19,16 +20,12 @@ const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_BASE_URL;
   }
 
-  // 本番環境では外部APIサーバーまたはモックデータを使用
+  // 本番環境では実際のAPIサーバーに接続を試行
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
-      // 本番環境用の外部APIサーバーがない場合はモックモードを有効化
-      console.warn(
-        '⚠️ 本番環境: バックエンドサーバーが設定されていません。モックデータを使用します。'
-      );
-      // モックモードを強制的に有効化（環境変数を動的に設定）
-      window.__VITE_USE_MOCK_DATA__ = 'true';
-      return 'mock://api'; // モック用のダミーURL
+      // 本番環境のAPIエンドポイント
+      console.log('🌐 本番環境: APIサーバーに接続を試行します');
+      return 'https://work-time-tracker-5d9q.vercel.app/api';
     }
     if (window.location.hostname !== 'localhost') {
       return `${window.location.protocol}//${window.location.hostname}/api`;
@@ -97,6 +94,15 @@ api.interceptors.response.use(
         message: error.message,
         url: error.config?.url,
       });
+
+      // 本番環境でAPIサーバーに接続できない場合の案内
+      if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
+        console.warn(
+          '💡 本番環境: APIサーバーに接続できません。デモモードの利用を検討してください。'
+        );
+        // グローバルフラグを設定してフロントエンドでモック利用可能にする
+        window.__API_CONNECTION_FAILED__ = true;
+      }
 
       // 開発環境でのサーバー未起動を通知
       if (baseURL.includes('localhost:3001') && import.meta.env.DEV) {

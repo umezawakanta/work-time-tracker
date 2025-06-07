@@ -7,6 +7,7 @@ import { User } from '@/types';
 declare global {
   interface Window {
     __VITE_USE_MOCK_DATA__?: string;
+    __API_CONNECTION_FAILED__?: boolean;
   }
 }
 
