@@ -220,18 +220,36 @@ const BlogPostDetail: React.FC = () => {
                 }}
               >
                 <MenuItem onClick={handleEdit}>
-                  <Edit sx={{ mr: 1, fontSize: '1rem' }} />
-                  編集
-                  {isAdminAction && (
-                    <Chip label="管理者権限" color="warning" size="small" sx={{ ml: 1 }} />
-                  )}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Edit sx={{ mr: 1, fontSize: '1rem' }} />
+                      編集
+                    </Box>
+                    {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
+                  </Box>
                 </MenuItem>
                 <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
-                  <Delete sx={{ mr: 1, fontSize: '1rem' }} />
-                  削除
-                  {isAdminAction && (
-                    <Chip label="管理者権限" color="warning" size="small" sx={{ ml: 1 }} />
-                  )}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Delete sx={{ mr: 1, fontSize: '1rem' }} />
+                      削除
+                    </Box>
+                    {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
+                  </Box>
                 </MenuItem>
               </Menu>
             </Box>
@@ -243,7 +261,7 @@ const BlogPostDetail: React.FC = () => {
         </Typography>
 
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" component="div">
             {post.author}
             {isAdminAction && (
               <Chip
