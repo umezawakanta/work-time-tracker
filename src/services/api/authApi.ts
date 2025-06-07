@@ -1,4 +1,5 @@
 import { api } from './apiConfig';
+import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 
 export interface RegisterData {
@@ -13,18 +14,26 @@ export interface LoginData {
 }
 
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: User;
   message: string;
+  expiresIn?: number;
+  refreshExpiresIn?: number;
 }
 
 export const register = async (userData: RegisterData): Promise<AuthResponse> => {
   try {
     const response = await api.post<AuthResponse>('/auth/register', userData);
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    if (response.data.accessToken && response.data.refreshToken) {
+      // TokenManagerを使用してトークンを管理
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresIn || 3600, // デフォルト1時間
+        response.data.refreshExpiresIn || 604800 // デフォルト7日
+      );
     }
 
     return response.data;
@@ -34,13 +43,37 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
   }
 };
 
-export const login = async (email: string, password: string): Promise<AuthResponse> => {
+export const login = async (
+  email: string,
+  password: string,
+  rememberMe: boolean = false
+): Promise<AuthResponse> => {
   try {
-    const response = await api.post<AuthResponse>('/auth/login', { email, password });
+    const response = await api.post<AuthResponse>('/auth/login', {
+      email,
+      password,
+      rememberMe,
+    });
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    if (response.data.accessToken && response.data.refreshToken) {
+      // TokenManagerを使用してトークンを管理
+      const expiresIn = response.data.expiresIn || 3600; // 1時間
+      const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800); // Remember Me: 30日, 通常: 7日
+
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        expiresIn,
+        refreshExpiresIn
+      );
+
+      // Remember Me設定を適用
+      if (rememberMe) {
+        tokenManager.setRememberMe(true);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
     }
 
     return response.data;
@@ -51,23 +84,33 @@ export const login = async (email: string, password: string): Promise<AuthRespon
 };
 
 export const logout = (): void => {
-  localStorage.removeItem('token');
-  delete api.defaults.headers.common['Authorization'];
+  // TokenManagerを使用してクリーンアップ
+  tokenManager.clearTokens();
+
+  // 追加のローカルストレージクリーンアップ
+  localStorage.removeItem('user');
+  localStorage.removeItem('lastActivity');
+  localStorage.removeItem('sessionPersistent');
 };
 
 export const checkAuth = async (): Promise<boolean> => {
   try {
-    const token = localStorage.getItem('token');
+    // TokenManagerで認証状態を確認
+    if (!tokenManager.isAuthenticated()) {
+      return false;
+    }
+
+    // サーバーサイドで認証状態を確認
+    const token = await tokenManager.getAccessToken();
     if (!token) {
       return false;
     }
 
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = await api.get('/auth/check');
     return response.data.isAuthenticated;
   } catch (error) {
     console.error('Auth check error:', error);
-    logout(); // 無効なトークンの場合はクリア
+    tokenManager.clearTokens();
     return false;
   }
 };
@@ -87,16 +130,12 @@ export const updateUserProfile = async (userData: {
   email: string;
 }): Promise<User> => {
   try {
-    const token = localStorage.getItem('token');
+    const token = await tokenManager.getAccessToken();
     if (!token) {
       throw new Error('認証トークンがありません');
     }
 
-    const response = await api.put<{ user: User }>('/auth/profile', userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.put<{ user: User }>('/auth/profile', userData);
     return response.data.user;
   } catch (error) {
     console.error('Update user profile error:', error);
@@ -107,7 +146,17 @@ export const updateUserProfile = async (userData: {
 export const fetchUserData = async (): Promise<User> => {
   try {
     const response = await api.get<{ user: User }>('/auth/user');
-    return response.data.user;
+
+    // 環境変数による管理者権限の確認
+    const userData = response.data.user;
+    const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+
+    if (adminEmails.includes(userData.email)) {
+      userData.isAdmin = true;
+      console.log('[Auth] Admin privileges granted for:', userData.email);
+    }
+
+    return userData;
   } catch (error) {
     console.error('Fetch user data error:', error);
     throw error;
@@ -151,6 +200,53 @@ export const resetPassword = async (
   }
 };
 
+// トークンリフレッシュ機能
+export const refreshToken = async (refreshToken: string): Promise<AuthResponse> => {
+  try {
+    const response = await api.post<AuthResponse>('/auth/refresh', {
+      refreshToken,
+    });
+
+    if (response.data.accessToken && response.data.refreshToken) {
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        response.data.expiresIn || 3600,
+        response.data.refreshExpiresIn || 604800
+      );
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    tokenManager.clearTokens();
+    throw error;
+  }
+};
+
+// パスワード変更機能
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<{ message: string }> => {
+  try {
+    const token = await tokenManager.getAccessToken();
+    if (!token) {
+      throw new Error('認証トークンがありません');
+    }
+
+    const response = await api.post<{ message: string }>('/auth/change-password', {
+      currentPassword,
+      newPassword,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Change password error:', error);
+    throw error;
+  }
+};
+
 // メール認証関連
 export const resendVerificationEmail = async (): Promise<{ message: string }> => {
   try {
@@ -182,4 +278,14 @@ export const promoteToAdmin = async (): Promise<User> => {
     console.error('Promote to admin error:', error);
     throw error;
   }
+};
+
+// セッション情報の取得
+export const getSessionInfo = () => {
+  return tokenManager.getSessionInfo();
+};
+
+// デバッグ用
+export const getAuthDebugInfo = () => {
+  return tokenManager.getDebugInfo();
 };

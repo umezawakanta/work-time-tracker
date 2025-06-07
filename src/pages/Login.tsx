@@ -103,18 +103,14 @@ export default function Login() {
     setErrors({});
 
     try {
-      await login(formData.email.trim(), formData.password);
+      await login(formData.email.trim(), formData.password, rememberMe);
       setIsAuthenticated(true);
 
-      // Remember Me 機能
+      // Remember Me 機能（Emailの保存のみローカルで実行）
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', formData.email.trim());
-        localStorage.setItem('rememberMe', 'true');
-        localStorage.setItem('sessionPersistent', 'true');
       } else {
         localStorage.removeItem('rememberedEmail');
-        localStorage.removeItem('rememberMe');
-        localStorage.removeItem('sessionPersistent');
       }
 
       toast.success('ログインに成功しました');

@@ -1,42 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { User } from '@/types';
 import { login, register, logout, checkAuth, fetchUserData } from '@/services/api/authApi';
 import { logger } from '@/utils/logger';
-
-interface AuthContextType {
-  // 基本認証状態
-  isAuthenticated: boolean;
-  user: User | null;
-  loading: boolean;
-
-  // 認証アクション
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-  signUp: (name: string, email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-
-  // セッション管理
-  refreshAuth: () => Promise<void>;
-  sessionExpired: boolean;
-
-  // アカウント管理
-  updateProfile: (data: { name: string; email: string }) => Promise<void>;
-  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
-  deleteAccount: () => Promise<void>;
-
-  // セキュリティ機能
-  enableTwoFactor: () => Promise<string>; // QRコードURL
-  verifyTwoFactor: (code: string) => Promise<void>;
-  disableTwoFactor: (code: string) => Promise<void>;
-
-  // アクティビティ監視
-  lastActivity: Date | null;
-  sessionTimeout: number;
-  isOnline: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext, AuthContextType } from '@/context/AuthContext';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -66,6 +34,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [warningTimer, setWarningTimer] = useState<NodeJS.Timeout | null>(null);
   const [refreshTimer, setRefreshTimer] = useState<NodeJS.Timeout | null>(null);
 
+  // セッション期限切れ処理
+  const handleSessionExpiry = useCallback(async () => {
+    setSessionExpired(true);
+    setIsAuthenticated(false);
+    setUser(null);
+
+    // トークンクリア
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('lastActivity');
+
+    // タイマークリア
+    if (sessionTimer) clearTimeout(sessionTimer);
+    if (warningTimer) clearTimeout(warningTimer);
+    if (refreshTimer) clearTimeout(refreshTimer);
+
+    toast.error('セッションが期限切れになりました。再度ログインしてください。');
+    navigate('/login', { state: { sessionExpired: true } });
+  }, [navigate, sessionTimer, warningTimer, refreshTimer]);
+
   // アクティビティ監視
   const updateActivity = useCallback(() => {
     const now = new Date();
@@ -92,27 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }, SESSION_TIMEOUT);
       setSessionTimer(timeout);
     }
-  }, [isAuthenticated, sessionTimer, warningTimer]);
-
-  // セッション期限切れ処理
-  const handleSessionExpiry = useCallback(async () => {
-    setSessionExpired(true);
-    setIsAuthenticated(false);
-    setUser(null);
-
-    // トークンクリア
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('lastActivity');
-
-    // タイマークリア
-    if (sessionTimer) clearTimeout(sessionTimer);
-    if (warningTimer) clearTimeout(warningTimer);
-    if (refreshTimer) clearTimeout(refreshTimer);
-
-    toast.error('セッションが期限切れになりました。再度ログインしてください。');
-    navigate('/login', { state: { sessionExpired: true } });
-  }, [navigate, sessionTimer, warningTimer, refreshTimer]);
+  }, [isAuthenticated, sessionTimer, warningTimer, handleSessionExpiry]);
 
   // 認証状態の自動リフレッシュ
   const refreshAuth = useCallback(async () => {
@@ -154,15 +122,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         logger.info('Auth', 'User signed in successfully', { userId: response.user.id });
         toast.success('ログインしました');
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error('Auth', 'Sign in failed', error);
 
         // エラータイプに応じた処理
-        if (error.response?.status === 429) {
+        const errorResponse = error as { response?: { status?: number } };
+        if (errorResponse.response?.status === 429) {
           toast.error(
             'ログイン試行回数が上限に達しました。しばらく時間をおいてからお試しください。'
           );
-        } else if (error.response?.status === 401) {
+        } else if (errorResponse.response?.status === 401) {
           toast.error('メールアドレスまたはパスワードが正しくありません。');
         } else {
           toast.error('ログインに失敗しました。');
@@ -191,12 +160,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const refresh = setInterval(refreshAuth, REFRESH_INTERVAL);
         setRefreshTimer(refresh);
 
-        logger.info('User registered and signed in', { userId: response.user.id });
+        logger.info('Auth', 'User registered and signed in', { userId: response.user.id });
         toast.success('アカウントが作成されました');
-      } catch (error: any) {
-        logger.error('Sign up failed:', error);
+      } catch (error: unknown) {
+        logger.error('Auth', 'Sign up failed', error);
 
-        if (error.response?.data?.field === 'email') {
+        const errorResponse = error as { response?: { data?: { field?: string } } };
+        if (errorResponse.response?.data?.field === 'email') {
           toast.error('このメールアドレスは既に登録されています。');
         } else {
           toast.error('アカウントの作成に失敗しました。');
@@ -229,38 +199,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem('lastActivity');
       localStorage.removeItem('rememberMe');
 
-      logger.info('User signed out');
+      logger.info('Auth', 'User signed out');
       toast.success('ログアウトしました');
 
       navigate('/login');
     } catch (error) {
-      logger.error('Sign out failed:', error);
+      logger.error('Auth', 'Sign out failed', error);
       toast.error('ログアウトに失敗しました');
     }
   }, [navigate, sessionTimer, warningTimer, refreshTimer]);
 
   // プロフィール更新
-  const updateProfile = useCallback(async (data: { name: string; email: string }) => {
+  const updateProfile = useCallback(async (_data: { name: string; email: string }) => {
     try {
       // APIコール実装予定
       // const updatedUser = await updateUserProfile(data);
       // setUser(updatedUser);
       toast.success('プロフィールを更新しました');
     } catch (error) {
-      logger.error('Profile update failed:', error);
+      logger.error('Auth', 'Profile update failed', error);
       toast.error('プロフィールの更新に失敗しました');
       throw error;
     }
   }, []);
 
   // パスワード変更
-  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+  const changePassword = useCallback(async (_currentPassword: string, _newPassword: string) => {
     try {
       // APIコール実装予定
       // await changeUserPassword(currentPassword, newPassword);
       toast.success('パスワードを変更しました');
     } catch (error) {
-      logger.error('Password change failed:', error);
+      logger.error('Auth', 'Password change failed', error);
       toast.error('パスワードの変更に失敗しました');
       throw error;
     }
@@ -274,7 +244,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await signOut();
       toast.success('アカウントを削除しました');
     } catch (error) {
-      logger.error('Account deletion failed:', error);
+      logger.error('Auth', 'Account deletion failed', error);
       toast.error('アカウントの削除に失敗しました');
       throw error;
     }
@@ -289,33 +259,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
       toast.success('2要素認証を有効化しました');
       return 'qr-code-url';
     } catch (error) {
-      logger.error('2FA enable failed:', error);
+      logger.error('Auth', '2FA enable failed', error);
       toast.error('2要素認証の有効化に失敗しました');
       throw error;
     }
   }, []);
 
   // 2要素認証確認
-  const verifyTwoFactor = useCallback(async (code: string) => {
+  const verifyTwoFactor = useCallback(async (_code: string) => {
     try {
       // APIコール実装予定
       // await verifyTwoFactorCode(code);
       toast.success('2要素認証を確認しました');
     } catch (error) {
-      logger.error('2FA verify failed:', error);
+      logger.error('Auth', '2FA verify failed', error);
       toast.error('認証コードが正しくありません');
       throw error;
     }
   }, []);
 
   // 2要素認証無効化
-  const disableTwoFactor = useCallback(async (code: string) => {
+  const disableTwoFactor = useCallback(async (_code: string) => {
     try {
       // APIコール実装予定
       // await disableTwoFactorAuth(code);
       toast.success('2要素認証を無効化しました');
     } catch (error) {
-      logger.error('2FA disable failed:', error);
+      logger.error('Auth', '2FA disable failed', error);
       toast.error('2要素認証の無効化に失敗しました');
       throw error;
     }
@@ -357,10 +327,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const refresh = setInterval(refreshAuth, REFRESH_INTERVAL);
           setRefreshTimer(refresh);
 
-          logger.info('Auth initialized from storage');
+          logger.info('Auth', 'Auth initialized from storage');
         }
       } catch (error) {
-        logger.error('Auth initialization failed:', error);
+        logger.error('Auth', 'Auth initialization failed', error);
         handleSessionExpiry();
       } finally {
         setLoading(false);
@@ -451,12 +421,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

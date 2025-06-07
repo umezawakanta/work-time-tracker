@@ -61,7 +61,7 @@ const mockSessions: LoginSession[] = [
 ];
 
 export default function UserProfile() {
-  const { user, fetchUser, updateProfile, setUser } = useAuth();
+  const { user, fetchUser, updateProfile } = useAuth();
   const [formName, setFormName] = useState(user?.name || '');
   const [formEmail, setFormEmail] = useState(user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -160,12 +160,21 @@ export default function UserProfile() {
     }
 
     try {
-      // API コール実装予定
-      // await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+      // changePassword API を使用
+      const { changePassword } = await import('@/services/api/authApi');
+      await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
       toast.success('パスワードを変更しました');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    } catch (error) {
-      toast.error('パスワードの変更に失敗しました');
+    } catch (error: unknown) {
+      console.error('Password change error:', error);
+      const errorResponse = error as { response?: { status?: number } };
+      if (errorResponse.response?.status === 401) {
+        toast.error('現在のパスワードが正しくありません');
+      } else if (errorResponse.response?.status === 422) {
+        toast.error('新しいパスワードが要件を満たしていません');
+      } else {
+        toast.error('パスワードの変更に失敗しました');
+      }
     }
   };
 
@@ -174,7 +183,7 @@ export default function UserProfile() {
     try {
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
       toast.success('セッションを終了しました');
-    } catch (error) {
+    } catch {
       toast.error('セッションの終了に失敗しました');
     }
   };
@@ -184,7 +193,7 @@ export default function UserProfile() {
     try {
       setSessions((prev) => prev.filter((s) => s.isCurrent));
       toast.success('他のすべてのセッションを終了しました');
-    } catch (error) {
+    } catch {
       toast.error('セッションの終了に失敗しました');
     }
   };
@@ -208,7 +217,7 @@ export default function UserProfile() {
     }
   };
 
-  const getPasswordStrengthColor = (strength: number) => {
+  const _getPasswordStrengthColor = (strength: number) => {
     if (strength < 40) return 'bg-red-500';
     if (strength < 70) return 'bg-yellow-500';
     return 'bg-green-500';

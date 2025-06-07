@@ -85,14 +85,14 @@ const SITE_COMPLETION_WBS: WBSProject = {
           id: 'auth-system',
           title: '認証システムの完成',
           description:
-            '✅ ログイン/ログアウト、✅ ユーザー登録、✅ パスワードリセット、✅ 認証状態の永続化、✅ 保護されたルート、✅ Remember Me機能、✅ セッション管理、✅ パスワード変更、✅ セキュリティ設定',
+            '✅ ログイン/ログアウト、✅ ユーザー登録、✅ パスワードリセット、✅ 認証状態の永続化（TokenManager）、✅ 保護されたルート、✅ Remember Me機能、✅ セッション管理、✅ パスワード変更、✅ セキュリティ設定、✅ リフレッシュトークン、✅ 自動トークン更新',
           phase: 'Phase 1',
           priority: 'high',
           status: 'completed',
           estimatedHours: 15,
-          actualHours: 22,
+          actualHours: 28,
           dependencies: [],
-          tags: ['認証', 'セキュリティ', 'セッション管理', '完了'],
+          tags: ['認証', 'セキュリティ', 'TokenManager', '永続化', '完全完了'],
           subtasks: [],
         },
         {

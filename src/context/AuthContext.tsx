@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
-import { checkAuth, fetchUserData, updateUserProfile, logout } from '@/services/api/authApi';
+import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
+import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
 import { toast } from 'react-hot-toast';
@@ -14,309 +15,318 @@ interface AuthContextType {
   updateProfile: (data: { name: string; email: string }) => Promise<void>;
   sessionExpired: boolean;
   refreshAuth: () => Promise<void>;
+  sessionInfo: {
+    isAuthenticated: boolean;
+    expiresAt: Date | null;
+    refreshExpiresAt: Date | null;
+    timeUntilExpiry: number;
+    timeUntilRefreshExpiry: number;
+  };
 }
-
-// セッション管理の設定
-const SESSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5分
-const SESSION_WARNING_TIME = 5 * 60 * 1000; // 5分前に警告
-const AUTO_LOGOUT_TIME = 30 * 60 * 1000; // 30分でタイムアウト
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
-  const isCheckingAuthRef = useRef(false);
-  const lastActivityRef = useRef(Date.now());
-  const sessionCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const warningShownRef = useRef(false);
+  const [sessionInfo, setSessionInfo] = useState(tokenManager.getSessionInfo());
 
-  // 最終アクティビティ時間を更新
-  const updateLastActivity = useCallback(() => {
-    lastActivityRef.current = Date.now();
-    warningShownRef.current = false;
-  }, []);
+  const lastActivityRef = useRef<number>(Date.now());
+  const activityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ユーザーアクティビティの監視
+  // トークン期限切れイベントリスナー
   useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-
-    const handleActivity = () => {
-      updateLastActivity();
-      if (sessionExpired) {
-        setSessionExpired(false);
-      }
+    const handleTokenExpired = () => {
+      logger.info('Auth', 'Token expired, redirecting to login');
+      setIsAuthenticated(false);
+      setUser(null);
+      setSessionExpired(true);
+      tokenManager.clearTokens();
+      toast.error('セッションが期限切れになりました。再度ログインしてください。');
     };
 
+    window.addEventListener('auth:token-expired', handleTokenExpired);
+    return () => {
+      window.removeEventListener('auth:token-expired', handleTokenExpired);
+    };
+  }, []);
+
+  // セッション情報の定期更新
+  useEffect(() => {
+    const updateSessionInfo = () => {
+      setSessionInfo(tokenManager.getSessionInfo());
+    };
+
+    updateSessionInfo();
+    const interval = setInterval(updateSessionInfo, 30000); // 30秒ごと
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // ユーザーアクティビティ監視
+  const updateActivity = useCallback(() => {
+    lastActivityRef.current = Date.now();
+
+    if (activityTimerRef.current) {
+      clearTimeout(activityTimerRef.current);
+    }
+
+    // 30分間非アクティブでセッション期限切れ警告
+    activityTimerRef.current = setTimeout(
+      () => {
+        if (isAuthenticated) {
+          toast('長時間非アクティブです。セッションの更新をお勧めします。', {
+            icon: '⚠️',
+            duration: 5000,
+          });
+        }
+      },
+      25 * 60 * 1000
+    ); // 25分
+  }, [isAuthenticated]);
+
+  // ユーザーアクティビティイベントの設定
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+
     events.forEach((event) => {
-      document.addEventListener(event, handleActivity, true);
+      document.addEventListener(event, updateActivity, { passive: true });
     });
 
     return () => {
       events.forEach((event) => {
-        document.removeEventListener(event, handleActivity, true);
+        document.removeEventListener(event, updateActivity);
       });
+
+      if (activityTimerRef.current) {
+        clearTimeout(activityTimerRef.current);
+      }
     };
-  }, [updateLastActivity, sessionExpired]);
+  }, [isAuthenticated, updateActivity]);
 
-  const fetchUser = useCallback(async () => {
-    console.log('[AuthContext] fetchUser実行');
+  // 認証状態のチェック
+  const checkAuthStatus = useCallback(async () => {
     try {
-      const userData = await fetchUserData();
+      const isTokenValid = tokenManager.isAuthenticated();
 
-      // 環境変数で指定されたメールアドレスのユーザーを管理者にする
-      const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
-      console.log('[AuthContext] 管理者メールアドレス設定:', adminEmails);
-      console.log('[AuthContext] ユーザーメールアドレス:', userData.email);
-
-      if (adminEmails.includes(userData.email)) {
-        userData.isAdmin = true;
-        console.log('[AuthContext] 管理者権限が付与されました:', userData.email);
-        toast.success(`管理者権限でログインしました (${userData.email})`, {
-          duration: 3000,
-          id: 'admin-login',
-        });
-      } else {
-        userData.isAdmin = false;
-        console.log('[AuthContext] 一般ユーザーとしてログイン:', userData.email);
+      if (!isTokenValid) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return false;
       }
 
-      setUser(userData);
-      console.log('[AuthContext] ユーザーデータ設定完了', {
-        name: userData.name,
-        email: userData.email,
-        isAdmin: userData.isAdmin,
-      });
+      // APIによる認証状態確認
+      const isValidOnServer = await checkAuth();
+      if (!isValidOnServer) {
+        tokenManager.clearTokens();
+        setIsAuthenticated(false);
+        setUser(null);
+        return false;
+      }
+
+      return true;
     } catch (error) {
-      console.error('[AuthContext] ユーザーデータ取得失敗:', error);
+      logger.error('Auth', 'Auth check failed', error);
+      tokenManager.clearTokens();
+      setIsAuthenticated(false);
       setUser(null);
-      throw error;
+      return false;
     }
   }, []);
 
+  // ユーザー情報の取得
+  const fetchUser = useCallback(async () => {
+    try {
+      if (!tokenManager.isAuthenticated()) {
+        setUser(null);
+        return;
+      }
+
+      const userData = await fetchUserData();
+      setUser(userData);
+
+      // 管理者の場合は成功メッセージ表示
+      if (userData.isAdmin) {
+        logger.info('Auth', 'Admin user logged in', { userId: userData.id });
+        toast.success('🔥 管理者としてログインしました', {
+          duration: 3000,
+          style: {
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontWeight: 'bold',
+          },
+        });
+      }
+    } catch (error) {
+      logger.error('Auth', 'Failed to fetch user data', error);
+      setUser(null);
+    }
+  }, []);
+
+  // 認証の更新
+  const refreshAuth = useCallback(async () => {
+    if (!tokenManager.isAuthenticated()) {
+      setIsAuthenticated(false);
+      setUser(null);
+      return;
+    }
+
+    try {
+      // トークンを自動更新（必要に応じて）
+      const token = await tokenManager.getAccessToken();
+      if (!token) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
+      const isValid = await checkAuthStatus();
+      if (isValid) {
+        await fetchUser();
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      logger.error('Auth', 'Auth refresh failed', error);
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  }, [checkAuthStatus, fetchUser]);
+
+  // プロフィール更新
   const updateProfile = useCallback(async (data: { name: string; email: string }) => {
-    console.log('[AuthContext] updateProfile実行');
     try {
       const updatedUser = await updateUserProfile(data);
-
-      // プロフィール更新時も管理者権限を再確認
-      const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
-      if (adminEmails.includes(updatedUser.email)) {
-        updatedUser.isAdmin = true;
-        console.log('[AuthContext] プロフィール更新後も管理者権限を維持:', updatedUser.email);
-      } else {
-        updatedUser.isAdmin = false;
-      }
-
       setUser(updatedUser);
+      toast.success('プロフィールを更新しました');
     } catch (error) {
-      console.error('[AuthContext] プロフィール更新失敗:', error);
+      logger.error('Auth', 'Profile update failed', error);
+      toast.error('プロフィールの更新に失敗しました');
       throw error;
     }
   }, []);
 
-  // 認証状態の確認
-  const refreshAuth = useCallback(async () => {
-    if (isCheckingAuthRef.current) {
-      console.log('[AuthContext] 認証チェック中、スキップ');
-      return;
-    }
+  // 初期化処理
+  useEffect(() => {
+    let isMounted = true;
 
-    console.log('[AuthContext] 認証状態確認開始');
-    isCheckingAuthRef.current = true;
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
 
-    try {
-      const isAuth = await checkAuth();
+        // TokenManagerから認証状態を確認
+        const isTokenValid = tokenManager.isAuthenticated();
 
-      if (isAuth) {
-        setIsAuthenticated(true);
-        updateLastActivity();
-        if (!user) {
-          await fetchUser();
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
-        setSessionExpired(true);
-      }
-    } catch (error) {
-      console.error('[AuthContext] 認証状態確認エラー:', error);
-      setIsAuthenticated(false);
-      setUser(null);
-      setSessionExpired(true);
-    } finally {
-      isCheckingAuthRef.current = false;
-    }
-  }, [fetchUser, user, updateLastActivity]);
+        if (isTokenValid) {
+          const isValid = await checkAuthStatus();
+          if (isValid && isMounted) {
+            await fetchUser();
+            setIsAuthenticated(true);
+            updateActivity();
 
-  const checkAuthStatus = useCallback(async () => {
-    if (isCheckingAuthRef.current) {
-      console.log('[AuthContext] 認証チェック中、スキップ');
-      return;
-    }
-
-    console.log('[AuthContext] 認証チェック開始');
-    isCheckingAuthRef.current = true;
-    setLoading(true);
-
-    try {
-      const isAuth = await checkAuth();
-      console.log('[AuthContext] 認証結果:', isAuth);
-
-      if (isAuth) {
-        setIsAuthenticated(true);
-        updateLastActivity();
-        try {
-          const userData = await fetchUserData();
-          const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
-          console.log('[AuthContext] checkAuthStatus - 管理者メール設定:', adminEmails);
-          console.log('[AuthContext] checkAuthStatus - ユーザーメール:', userData.email);
-
-          if (adminEmails.includes(userData.email)) {
-            userData.isAdmin = true;
-            console.log('[AuthContext] checkAuthStatus - 管理者権限付与:', userData.email);
-          } else {
-            userData.isAdmin = false;
-            console.log('[AuthContext] checkAuthStatus - 一般ユーザー:', userData.email);
+            logger.info('Auth', 'Authentication restored from storage');
           }
-
-          setUser(userData);
-          console.log('[AuthContext] ユーザーデータ取得完了', {
-            name: userData.name,
-            email: userData.email,
-            isAdmin: userData.isAdmin,
-          });
-        } catch (error) {
-          console.error('[AuthContext] ユーザーデータ取得失敗:', error);
+        } else {
+          // トークンが無効な場合はクリア
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
           setUser(null);
         }
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
+      } catch (error) {
+        logger.error('Auth', 'Auth initialization failed', error);
+        if (isMounted) {
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    } catch (error) {
-      logger.warn('Auth', 'Check auth failed');
-      console.error('[AuthContext] 認証チェックエラー:', error);
-      setIsAuthenticated(false);
-      setUser(null);
-    } finally {
-      isCheckingAuthRef.current = false;
-      setLoading(false);
-      console.log('[AuthContext] 認証チェック完了');
-    }
-  }, [fetchUser, updateLastActivity]);
+    };
 
-  // セッション監視機能
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [checkAuthStatus, fetchUser, updateActivity]);
+
+  // 定期的な認証チェック
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const checkSession = () => {
-      const now = Date.now();
-      const timeSinceLastActivity = now - lastActivityRef.current;
+    const checkInterval = setInterval(
+      async () => {
+        await refreshAuth();
+      },
+      5 * 60 * 1000
+    ); // 5分ごと
 
-      // セッションタイムアウトの警告
-      if (
-        timeSinceLastActivity > AUTO_LOGOUT_TIME - SESSION_WARNING_TIME &&
-        !warningShownRef.current
-      ) {
-        warningShownRef.current = true;
-        toast(
-          (t) => (
-            <div className="flex flex-col gap-2">
-              <span className="font-medium">セッション期限警告</span>
-              <span className="text-sm">
-                5分以内にアクティビティがない場合、自動ログアウトします。
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    updateLastActivity();
-                    toast.dismiss(t.id);
-                  }}
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
-                >
-                  セッション継続
-                </button>
-                <button
-                  onClick={() => {
-                    logout();
-                    setIsAuthenticated(false);
-                    setSessionExpired(true);
-                    toast.dismiss(t.id);
-                  }}
-                  className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
-                >
-                  ログアウト
-                </button>
-              </div>
-            </div>
-          ),
-          {
-            duration: 30000,
-            id: 'session-warning',
-          }
-        );
-      }
+    return () => clearInterval(checkInterval);
+  }, [isAuthenticated, refreshAuth]);
 
-      // 自動ログアウト
-      if (timeSinceLastActivity > AUTO_LOGOUT_TIME) {
-        console.log('[AuthContext] セッションタイムアウト');
-        logout();
-        setIsAuthenticated(false);
-        setSessionExpired(true);
-        toast.error('セッションがタイムアウトしました。再度ログインしてください。');
+  // オンライン/オフライン状態の監視
+  useEffect(() => {
+    const handleOnline = () => {
+      if (isAuthenticated) {
+        logger.info('Auth', 'Connection restored, refreshing auth');
+        refreshAuth();
       }
     };
 
-    // 定期的なセッションチェック
-    sessionCheckIntervalRef.current = setInterval(checkSession, SESSION_CHECK_INTERVAL);
+    const handleOffline = () => {
+      logger.info('Auth', 'Connection lost');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      if (sessionCheckIntervalRef.current) {
-        clearInterval(sessionCheckIntervalRef.current);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [isAuthenticated, refreshAuth]);
+
+  // ページアンロード時のクリーンアップ
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Remember Meが無効な場合のみセッションをクリア
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+      if (!rememberMe) {
+        // ブラウザ終了時にセッションクリア（ログアウトはしない）
+        // tokenManager.clearTokens();
       }
     };
-  }, [isAuthenticated, updateLastActivity]);
 
-  useEffect(() => {
-    console.log('[AuthContext] 初回認証チェック実行');
-    checkAuthStatus();
-  }, [checkAuthStatus]);
-
-  // contextValueをReact.useMemoではなくuseRefで完全に安定化
-  const stableContextValue = useRef<AuthContextType | null>(null);
-
-  if (
-    !stableContextValue.current ||
-    stableContextValue.current.isAuthenticated !== isAuthenticated ||
-    stableContextValue.current.loading !== loading ||
-    stableContextValue.current.user !== user ||
-    stableContextValue.current.sessionExpired !== sessionExpired
-  ) {
-    console.log('[AuthContext] contextValue更新', {
-      isAuthenticated,
-      loading,
-      user: !!user,
-      sessionExpired,
-      reason: !stableContextValue.current ? 'initial' : 'state_change',
-    });
-
-    stableContextValue.current = {
-      isAuthenticated,
-      setIsAuthenticated,
-      loading,
-      user,
-      setUser,
-      fetchUser,
-      updateProfile,
-      sessionExpired,
-      refreshAuth,
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }
+  }, []);
 
-  return <AuthContext.Provider value={stableContextValue.current}>{children}</AuthContext.Provider>;
-};
+  const value: AuthContextType = {
+    isAuthenticated,
+    setIsAuthenticated,
+    loading,
+    user,
+    setUser,
+    fetchUser,
+    updateProfile,
+    sessionExpired,
+    refreshAuth,
+    sessionInfo,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
 export default AuthContext;
