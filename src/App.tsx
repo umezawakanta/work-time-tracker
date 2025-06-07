@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { LocaleProvider } from './context/LocaleContext';
 import { AuthProvider } from './context/AuthContext';
 import { AssetCalendarPage } from './pages/AssetCalendarPage';
@@ -111,6 +112,7 @@ export default function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
                   <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
                   <Route path="/district/:prefecture/:district" element={<DistrictPage />} />

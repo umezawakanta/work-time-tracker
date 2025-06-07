@@ -125,6 +125,16 @@ export const requestPasswordReset = async (email: string): Promise<{ message: st
   }
 };
 
+export const verifyResetToken = async (token: string): Promise<{ valid: boolean }> => {
+  try {
+    const response = await api.post<{ valid: boolean }>('/auth/password-reset/verify', { token });
+    return response.data;
+  } catch (error) {
+    console.error('Verify reset token error:', error);
+    throw error;
+  }
+};
+
 export const resetPassword = async (
   token: string,
   newPassword: string
