@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { verifyEmail, resendVerificationEmail } from '@/services/api/authApi';
 import { Button } from '@/components/ui/button';
@@ -37,12 +37,54 @@ export default function EmailVerification() {
   const [resendCountdown, setResendCountdown] = useState(0);
   const [error, setError] = useState('');
 
+  const verifyEmailToken = useCallback(
+    async (verificationToken: string) => {
+      try {
+        setIsVerifying(true);
+        await verifyEmail(verificationToken);
+        setVerificationStatus('success');
+        toast.success('メールアドレスが確認されました');
+
+        // 3秒後にログインページにリダイレクト
+        setTimeout(() => {
+          navigate('/login', {
+            state: {
+              message: 'メール確認が完了しました。ログインしてください。',
+            },
+          });
+        }, 3000);
+      } catch (error) {
+        console.error('Email verification failed:', error);
+
+        if (error instanceof AxiosError) {
+          const statusCode = error.response?.status;
+          if (statusCode === 400) {
+            setVerificationStatus('expired');
+            setError('確認リンクが期限切れまたは無効です');
+          } else if (statusCode === 404) {
+            setVerificationStatus('error');
+            setError('確認トークンが見つかりません');
+          } else {
+            setVerificationStatus('error');
+            setError('メール確認に失敗しました');
+          }
+        } else {
+          setVerificationStatus('error');
+          setError('不明なエラーが発生しました');
+        }
+      } finally {
+        setIsVerifying(false);
+      }
+    },
+    [navigate]
+  );
+
   // トークンがある場合は自動で確認処理を実行
   useEffect(() => {
     if (token) {
       verifyEmailToken(token);
     }
-  }, [token]);
+  }, [token, verifyEmailToken]);
 
   // 再送信のクールダウンタイマー
   useEffect(() => {
@@ -55,45 +97,6 @@ export default function EmailVerification() {
       setCanResend(true);
     }
   }, [resendCountdown]);
-
-  const verifyEmailToken = async (verificationToken: string) => {
-    try {
-      setIsVerifying(true);
-      await verifyEmail(verificationToken);
-      setVerificationStatus('success');
-      toast.success('メールアドレスが確認されました');
-
-      // 3秒後にログインページにリダイレクト
-      setTimeout(() => {
-        navigate('/login', {
-          state: {
-            message: 'メール確認が完了しました。ログインしてください。',
-          },
-        });
-      }, 3000);
-    } catch (error) {
-      console.error('Email verification failed:', error);
-
-      if (error instanceof AxiosError) {
-        const statusCode = error.response?.status;
-        if (statusCode === 400) {
-          setVerificationStatus('expired');
-          setError('確認リンクが期限切れまたは無効です');
-        } else if (statusCode === 404) {
-          setVerificationStatus('error');
-          setError('確認トークンが見つかりません');
-        } else {
-          setVerificationStatus('error');
-          setError('メール確認に失敗しました');
-        }
-      } else {
-        setVerificationStatus('error');
-        setError('不明なエラーが発生しました');
-      }
-    } finally {
-      setIsVerifying(false);
-    }
-  };
 
   const handleResendVerification = async () => {
     try {

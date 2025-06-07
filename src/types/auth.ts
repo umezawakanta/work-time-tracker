@@ -31,10 +31,18 @@ export interface AuthError {
   message: string;
 }
 
+export interface AuthSession {
+  access_token?: string;
+  refresh_token?: string;
+  expires_at?: number;
+  user?: AuthUser;
+  [key: string]: unknown;
+}
+
 export interface AuthResponse {
   user?: AuthUser | null;
   error?: AuthError | null;
-  session?: any; // Supabase Sessionまたは任意のセッション情報
+  session?: AuthSession | null;
 }
 
 export interface AuthState {
