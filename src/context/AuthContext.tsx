@@ -5,6 +5,13 @@ import { User } from '@/types';
 import { logger } from '@/utils/logger';
 import { toast } from 'react-hot-toast';
 
+// Extend Window interface for custom properties
+declare global {
+  interface Window {
+    __VITE_USE_MOCK_DATA__?: string;
+  }
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
@@ -309,7 +316,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // 本番環境でモックモードの場合はサーバー認証をスキップ
           const isProductionMock =
             window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
-            (window as any).__VITE_USE_MOCK_DATA__ === 'true';
+            window.__VITE_USE_MOCK_DATA__ === 'true';
 
           if (isProductionMock) {
             console.log('🎭 本番環境モックモード - 認証をスキップします');

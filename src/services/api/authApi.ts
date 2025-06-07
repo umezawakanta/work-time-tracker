@@ -3,6 +3,13 @@ import { USE_MOCK_DATA } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 
+// Extend Window interface for custom properties
+declare global {
+  interface Window {
+    __VITE_USE_MOCK_DATA__?: string;
+  }
+}
+
 export interface RegisterData {
   name: string;
   email: string;
@@ -127,7 +134,7 @@ export const logout = (): void => {
 export const checkAuth = async (): Promise<boolean> => {
   try {
     // モックモードの場合は常に認証成功
-    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Auth check always returns true');
       return true;
     }
@@ -205,7 +212,7 @@ export const updateUserProfile = async (userData: {
 export const fetchUserData = async (): Promise<User> => {
   try {
     // モックモードの場合はダミーユーザーデータを返す
-    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Returning demo user data');
       return {
         id: 'demo-user',

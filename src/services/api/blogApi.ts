@@ -1,6 +1,13 @@
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { BlogPost, Comment } from '@/store/blogSlice';
 import { api, USE_MOCK_DATA } from './apiConfig';
+
+// Extend Window interface for custom properties
+declare global {
+  interface Window {
+    __VITE_USE_MOCK_DATA__?: string;
+  }
+}
 
 interface BlogApiResponse {
   message: string;
@@ -85,14 +92,14 @@ const mockBlogPosts: BlogPost[] = [
 export const blogApi = {
   getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
     // モックモードの場合はモックデータを返す
-    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Returning mock blog posts');
       return Promise.resolve({
         data: mockBlogPosts,
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as AxiosRequestConfig,
       } as AxiosResponse<BlogPost[]>);
     }
 

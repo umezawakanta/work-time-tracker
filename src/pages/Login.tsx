@@ -19,6 +19,13 @@ import { toast } from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Mail, Lock, Shield } from 'lucide-react';
 
+// Extend Window interface for custom properties
+declare global {
+  interface Window {
+    __VITE_USE_MOCK_DATA__?: string;
+  }
+}
+
 export default function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -100,7 +107,7 @@ export default function Login() {
     try {
       // ダミートークンを設定してモックモードを有効化
       localStorage.setItem('token', 'demo-token-12345');
-      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
+      window.__VITE_USE_MOCK_DATA__ = 'true';
 
       toast.success('デモモードでログインしました');
 

@@ -1,9 +1,16 @@
 import axios from 'axios';
 import { logger } from '../../utils/logger';
 
+// Extend Window interface for custom properties
+declare global {
+  interface Window {
+    __VITE_USE_MOCK_DATA__?: string;
+  }
+}
+
 export const USE_MOCK_DATA =
   import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
-  (typeof window !== 'undefined' && (window as any).__VITE_USE_MOCK_DATA__ === 'true');
+  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true');
 
 // デプロイ先でのAPI URL自動判定
 const getApiBaseUrl = () => {
@@ -20,7 +27,7 @@ const getApiBaseUrl = () => {
         '⚠️ 本番環境: バックエンドサーバーが設定されていません。モックデータを使用します。'
       );
       // モックモードを強制的に有効化（環境変数を動的に設定）
-      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
+      window.__VITE_USE_MOCK_DATA__ = 'true';
       return 'mock://api'; // モック用のダミーURL
     }
     if (window.location.hostname !== 'localhost') {
