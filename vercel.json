@@ -19,11 +19,13 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "src/server/server.ts"
+      "dest": "/src/server/server.ts"
     },
     {
       "src": "/assets/(.*)",
-      "headers": { "cache-control": "public, max-age=31536000, immutable" },
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
       "continue": true
     },
     {
@@ -31,7 +33,17 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/"
     }
-  ]
+  ],
+  "functions": {
+    "src/server/server.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
 }

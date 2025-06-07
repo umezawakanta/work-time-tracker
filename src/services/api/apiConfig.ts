@@ -11,7 +11,13 @@ declare global {
 
 export const USE_MOCK_DATA =
   import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
-  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true');
+  (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
+  // 本番環境でAPIが存在しない場合は自動的にモックモードを有効化
+  (typeof window !== 'undefined' &&
+    window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
+    !import.meta.env.VITE_API_BASE_URL?.includes('herokuapp') &&
+    !import.meta.env.VITE_API_BASE_URL?.includes('railway') &&
+    !import.meta.env.VITE_API_BASE_URL?.includes('render'));
 
 // デプロイ先でのAPI URL自動判定
 const getApiBaseUrl = () => {
