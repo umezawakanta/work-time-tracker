@@ -1,5 +1,5 @@
 ﻿// src/components/features/wbs/WBSManager.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -23,11 +23,29 @@ const WBSManager: React.FC = () => {
   const [viewMode, setViewMode] = useState<'tree' | 'gantt'>('gantt');
   const [loading, setLoading] = useState(true);
 
+  const loadProjects = useCallback(async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const userProjects = await WBSService.getProjects(user.uid!);
+      setProjects(userProjects);
+
+      if (userProjects.length > 0 && !selectedProject) {
+        setSelectedProject(userProjects[0]);
+      }
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, selectedProject]);
+
   useEffect(() => {
     if (user) {
       loadProjects();
     }
-  }, [user]);
+  }, [user, loadProjects]);
 
   useEffect(() => {
     if (selectedProject) {
@@ -39,28 +57,10 @@ const WBSManager: React.FC = () => {
     }
   }, [selectedProject]);
 
-  const loadProjects = async () => {
-    if (!user) return;
-
-    setLoading(true);
-    try {
-      const userProjects = await WBSService.getProjects(user.uid);
-      setProjects(userProjects);
-
-      if (userProjects.length > 0 && !selectedProject) {
-        setSelectedProject(userProjects[0]);
-      }
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const createNewProject = async () => {
     if (!user) return;
 
-    const projectId = await WBSService.createProject(user.uid, {
+    await WBSService.createProject(user.uid!, {
       name: 'Work Time Tracker 髢狗匱險育判',
       description: '荳也阜譛鬮倥・繧ｿ繧ｹ繧ｯ邂｡逅・し繝ｼ繝薙せ繧呈ｧ狗ｯ峨☆繧九◆繧√・髢狗匱險育判',
     });
@@ -273,7 +273,7 @@ const WBSManager: React.FC = () => {
                 ...nodeData,
                 projectId: selectedProject?.id,
               },
-              user.uid
+              user.uid!
             );
           }
           setShowNodeDialog(false);

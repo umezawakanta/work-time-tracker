@@ -44,11 +44,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const handleTokenExpired = () => {
       logger.info('Auth', 'Token expired, redirecting to login');
+      console.log('🔒 トークン期限切れ検出:', {
+        currentUrl: window.location.href,
+        tokenInfo: tokenManager.getDebugInfo(),
+        sessionInfo: tokenManager.getSessionInfo(),
+      });
+
       setIsAuthenticated(false);
       setUser(null);
       setSessionExpired(true);
       tokenManager.clearTokens();
-      toast.error('セッションが期限切れになりました。再度ログインしてください。');
+      toast.error('セッションが期限切れになりました。再度ログインしてください。', {
+        duration: 6000,
+      });
     };
 
     window.addEventListener('auth:token-expired', handleTokenExpired);
@@ -223,23 +231,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // TokenManagerから認証状態を確認
         const isTokenValid = tokenManager.isAuthenticated();
+        const sessionInfo = tokenManager.getSessionInfo();
+        const debugInfo = tokenManager.getDebugInfo();
+
+        console.log('🔑 認証初期化:', {
+          isTokenValid,
+          sessionInfo,
+          debugInfo,
+          currentUrl: window.location.href,
+          hostname: window.location.hostname,
+        });
 
         if (isTokenValid) {
+          console.log('✅ トークン有効 - サーバー認証確認中...');
           const isValid = await checkAuthStatus();
           if (isValid && isMounted) {
             await fetchUser();
             setIsAuthenticated(true);
             updateActivity();
-
+            console.log('✅ 認証復元成功');
             logger.info('Auth', 'Authentication restored from storage');
+          } else {
+            console.log('❌ サーバー認証失敗');
           }
         } else {
+          console.log('🔒 トークン無効 - 認証クリア');
           // トークンが無効な場合はクリア
           tokenManager.clearTokens();
           setIsAuthenticated(false);
           setUser(null);
         }
       } catch (error) {
+        console.log('❌ 認証初期化エラー:', error);
         logger.error('Auth', 'Auth initialization failed', error);
         if (isMounted) {
           tokenManager.clearTokens();

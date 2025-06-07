@@ -55,7 +55,6 @@ import { useImplementation } from '@/hooks/useImplementation';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { useAuth } from '@/hooks/useAuth';
 import { useResources } from '@/hooks/useResources';
-import { implementationService } from '@/services/implementationService';
 import { githubService } from '@/services/githubService';
 import ResearchTaskService from '@/services/ai/ResearchTaskService';
 
@@ -130,9 +129,9 @@ const ImprovementImplementation: React.FC = () => {
     priority: 'medium',
   });
   const [isAddingTasks, setIsAddingTasks] = useState(false);
-  const [isExecutingResearch, setIsExecutingResearch] = useState(false);
-  const [showResearchDialog, setShowResearchDialog] = useState(false);
-  const [researchTask, setResearchTask] = useState<Task | null>(null);
+  const [_isExecutingResearch, setIsExecutingResearch] = useState(false);
+  const [_showResearchDialog, _setShowResearchDialog] = useState(false);
+  const [_researchTask, _setResearchTask] = useState<Task | null>(null);
 
   // プロジェクトIDを安全に取得
   const currentProjectId = useMemo(() => projectId || 'site-improvement-2024', [projectId]);
@@ -233,6 +232,54 @@ const ImprovementImplementation: React.FC = () => {
     }
   }, [currentProjectId, user, refreshData, refreshMembers, refreshResources]);
 
+  // フェーズ進捗の計算ヘルパー
+  const calculatePhaseProgress = useCallback((phase: string, taskList: Task[]) => {
+    const phaseTasks = taskList.filter((t) => t.phase === phase);
+    if (phaseTasks.length === 0) return 0;
+    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
+    return Math.round((completedTasks / phaseTasks.length) * 100);
+  }, []);
+
+  // タスクステータスの更新
+  const handleUpdateTaskStatus = useCallback(
+    async (taskId: string, status: Task['status']) => {
+      try {
+        const success = await updateTaskStatus(taskId, status);
+        if (success && user) {
+          const task = tasks.find((t) => t.id === taskId);
+          await addLog(
+            'task_status_updated',
+            `タスク「${task?.title}」のステータスを「${status}」に変更`,
+            user.uid!,
+            user.displayName || user.email || 'Unknown User'
+          );
+
+          // 完了時の特別処理
+          if (status === 'completed') {
+            toast.success('タスクが完了しました！🎉');
+
+            // フェーズ進捗をチェックして次フェーズのアンロック通知
+            const updatedPhaseProgress = calculatePhaseProgress(
+              activePhase,
+              tasks.map((t) => (t.id === taskId ? { ...t, status } : t))
+            );
+
+            if (updatedPhaseProgress >= 80) {
+              const nextPhase = activePhase === 'phase1' ? 'phase2' : 'phase3';
+              if (nextPhase in PHASE_CONFIG) {
+                toast.success(`🚀 Phase ${nextPhase.slice(-1)}がアンロックされました！`);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Task status update error:', error);
+        toast.error('タスクステータスの更新に失敗しました');
+      }
+    },
+    [updateTaskStatus, tasks, addLog, user, activePhase, calculatePhaseProgress]
+  );
+
   // チェックリストの更新
   const handleUpdateChecklist = useCallback(
     async (taskId: string, checklistId: string, completed: boolean) => {
@@ -247,7 +294,7 @@ const ImprovementImplementation: React.FC = () => {
           await addLog(
             'checklist_updated',
             `${task?.title}: ${checklistItem?.label} - ${action}`,
-            user.uid,
+            user.uid!,
             user.displayName || user.email || 'Unknown User'
           );
 
@@ -282,56 +329,8 @@ const ImprovementImplementation: React.FC = () => {
         toast.error('チェックリストの更新に失敗しました');
       }
     },
-    [updateChecklist, tasks, addLog, user, calculateTaskProgress]
+    [updateChecklist, tasks, addLog, user, calculateTaskProgress, handleUpdateTaskStatus]
   );
-
-  // タスクステータスの更新
-  const handleUpdateTaskStatus = useCallback(
-    async (taskId: string, status: Task['status']) => {
-      try {
-        const success = await updateTaskStatus(taskId, status);
-        if (success && user) {
-          const task = tasks.find((t) => t.id === taskId);
-          await addLog(
-            'task_status_updated',
-            `タスク「${task?.title}」のステータスを「${status}」に変更`,
-            user.uid,
-            user.displayName || user.email || 'Unknown User'
-          );
-
-          // 完了時の特別処理
-          if (status === 'completed') {
-            toast.success('タスクが完了しました！🎉');
-
-            // フェーズ進捗をチェックして次フェーズのアンロック通知
-            const updatedPhaseProgress = calculatePhaseProgress(
-              activePhase,
-              tasks.map((t) => (t.id === taskId ? { ...t, status } : t))
-            );
-
-            if (updatedPhaseProgress >= 80) {
-              const nextPhase = activePhase === 'phase1' ? 'phase2' : 'phase3';
-              if (nextPhase in PHASE_CONFIG) {
-                toast.success(`🚀 Phase ${nextPhase.slice(-1)}がアンロックされました！`);
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Task status update error:', error);
-        toast.error('タスクステータスの更新に失敗しました');
-      }
-    },
-    [updateTaskStatus, tasks, addLog, user, activePhase]
-  );
-
-  // フェーズ進捗の計算ヘルパー
-  const calculatePhaseProgress = useCallback((phase: string, taskList: Task[]) => {
-    const phaseTasks = taskList.filter((t) => t.phase === phase);
-    if (phaseTasks.length === 0) return 0;
-    const completedTasks = phaseTasks.filter((t) => t.status === 'completed').length;
-    return Math.round((completedTasks / phaseTasks.length) * 100);
-  }, []);
 
   // ノートの追加
   const addNote = useCallback(async () => {
@@ -341,7 +340,7 @@ const ImprovementImplementation: React.FC = () => {
       const success = await addLog(
         'note_added',
         newNote,
-        user.uid,
+        user.uid!,
         user.displayName || user.email || 'Unknown User'
       );
 
@@ -380,7 +379,7 @@ const ImprovementImplementation: React.FC = () => {
         await addLog(
           'branch_created',
           `タスク「${task.title}」のGitHubブランチ「${branchName}」を作成`,
-          user.uid,
+          user.uid!,
           user.displayName || user.email || 'Unknown User'
         );
 
@@ -416,7 +415,7 @@ const ImprovementImplementation: React.FC = () => {
         await addLog(
           'pr_created',
           `タスク「${task.title}」のプルリクエストを作成: ${prResult.url}`,
-          user.uid,
+          user.uid!,
           user.displayName || user.email || 'Unknown User'
         );
 
@@ -733,7 +732,7 @@ const ImprovementImplementation: React.FC = () => {
             tags: suggestionTask.tags,
             dependencies: suggestionTask.dependencies,
             notes: `AI提案 (信頼度: ${Math.round(suggestionTask.confidence * 100)}%)\n理由: ${suggestionTask.reason}\n作成日時: ${new Date().toLocaleString()}`,
-            createdBy: user.uid,
+            createdBy: user.uid!,
           };
 
           const success = await createTask(taskData);
@@ -743,7 +742,7 @@ const ImprovementImplementation: React.FC = () => {
             await addLog(
               'ai_task_added',
               `AI提案タスク「${suggestionTask.title}」を追加`,
-              user.uid,
+              user.uid!,
               user.displayName || user.email || 'Unknown User'
             );
           } else {
@@ -802,7 +801,7 @@ const ImprovementImplementation: React.FC = () => {
         await addLog(
           'ai_analysis',
           `AIがタスクを分析し、${analysisResult.length}件の追加タスクを提案しました (Phase: ${activePhase})`,
-          user.uid,
+          user.uid!,
           user.displayName || user.email || 'Unknown User'
         );
 
@@ -899,7 +898,7 @@ const ImprovementImplementation: React.FC = () => {
       dependencies: [],
       notes: '',
       assignee: newTaskData.assignee || undefined,
-      createdBy: user.uid,
+      createdBy: user.uid!,
     };
 
     const success = await createTask(taskData);
@@ -926,7 +925,7 @@ const ImprovementImplementation: React.FC = () => {
   }, []);
 
   // AI調査実行
-  const executeAIResearch = useCallback(
+  const _executeAIResearch = useCallback(
     async (task: Task) => {
       if (!user) {
         toast.error('ユーザー認証が必要です');
@@ -936,7 +935,7 @@ const ImprovementImplementation: React.FC = () => {
       setIsExecutingResearch(true);
 
       try {
-        const result = await ResearchTaskService.executeResearch(task, user.uid);
+        const result = await ResearchTaskService.executeResearch(task, user.uid!);
 
         if (result.success) {
           // タスクに調査結果を保存
@@ -962,7 +961,7 @@ const ImprovementImplementation: React.FC = () => {
             await addLog(
               'research_result_added',
               `タスク「${task.title}」にAI調査結果を追加`,
-              user.uid,
+              user.uid!,
               user.displayName || user.email || 'Unknown User'
             );
             toast.success('AI調査結果をタスクに追加しました');
@@ -975,7 +974,7 @@ const ImprovementImplementation: React.FC = () => {
         setIsExecutingResearch(false);
       }
     },
-    [user, tasks, updateTask, addLog]
+    [user, updateTask, addLog]
   );
 
   return (
@@ -1062,7 +1061,7 @@ const ImprovementImplementation: React.FC = () => {
         className="space-y-6"
       >
         <TabsList className="grid w-full grid-cols-3">
-          {Object.entries(PHASE_CONFIG).map(([phase, config]) => (
+          {Object.entries(PHASE_CONFIG).map(([phase, _config]) => (
             <TabsTrigger
               key={phase}
               value={phase}

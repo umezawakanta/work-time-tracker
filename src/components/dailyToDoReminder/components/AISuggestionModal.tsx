@@ -169,7 +169,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
 
         // MongoDBのユーザーIDを使用（_idを使用）
         const userId = effectiveUser._id || effectiveUser.uid;
-        const projects = await WBSService.getProjects(userId);
+        const projects = await WBSService.getProjects(userId!);
         console.log('Loaded WBS projects:', projects);
         setWbsProjects(projects);
 

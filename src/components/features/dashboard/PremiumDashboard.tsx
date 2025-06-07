@@ -1,8 +1,8 @@
 // src/components/features/dashboard/PremiumDashboard.tsx
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import {
   TrendingUp,
   Award,
@@ -13,23 +13,19 @@ import {
   Target,
   Clock,
   Brain,
-} from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useTodos } from "@/hooks/useTodos";
-import ReportService from "@/services/report/ReportService";
-import { ProductivityReport } from "@/services/report/ReportService";
+} from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useTodos } from '@/hooks/useTodos';
+import ReportService from '@/services/report/ReportService';
+import { ProductivityReport } from '@/services/report/ReportService';
 
 const PremiumDashboard: React.FC = () => {
   const { user } = useAuth();
   const { stats } = useTodos();
-  const [weeklyReport, setWeeklyReport] = useState<ProductivityReport | null>(
-    null
-  );
-  const [monthlyReport, setMonthlyReport] = useState<ProductivityReport | null>(
-    null
-  );
+  const [weeklyReport, setWeeklyReport] = useState<ProductivityReport | null>(null);
+  const [monthlyReport, setMonthlyReport] = useState<ProductivityReport | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   const loadReports = useCallback(async () => {
     if (!user) return;
@@ -37,14 +33,14 @@ const PremiumDashboard: React.FC = () => {
     setLoading(true);
     try {
       const [weekly, monthly] = await Promise.all([
-        ReportService.generateWeeklyReport(user.uid),
-        ReportService.generateMonthlyReport(user.uid),
+        ReportService.generateWeeklyReport(user.uid!),
+        ReportService.generateMonthlyReport(user.uid!),
       ]);
 
       setWeeklyReport(weekly);
       setMonthlyReport(monthly);
     } catch (error) {
-      console.error("Failed to load reports:", error);
+      console.error('Failed to load reports:', error);
     } finally {
       setLoading(false);
     }
@@ -56,23 +52,23 @@ const PremiumDashboard: React.FC = () => {
     }
   }, [user, loadReports]);
 
-  const exportReport = async (format: "pdf" | "csv") => {
+  const exportReport = async (format: 'pdf' | 'csv') => {
     if (!monthlyReport) return;
 
     try {
       const blob =
-        format === "pdf"
+        format === 'pdf'
           ? await ReportService.exportReportAsPDF(monthlyReport)
           : await ReportService.exportReportAsCSV(monthlyReport);
 
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
       a.download = `productivity-report.${format}`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error('Export failed:', error);
     }
   };
 
@@ -92,11 +88,11 @@ const PremiumDashboard: React.FC = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold">プレミアムダッシュボード</h2>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => exportReport("csv")}>
+          <Button variant="outline" onClick={() => exportReport('csv')}>
             <Download className="h-4 w-4 mr-2" />
             CSV出力
           </Button>
-          <Button variant="outline" onClick={() => exportReport("pdf")}>
+          <Button variant="outline" onClick={() => exportReport('pdf')}>
             <Download className="h-4 w-4 mr-2" />
             PDF出力
           </Button>
@@ -115,9 +111,7 @@ const PremiumDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.streakDays || 0}日</div>
-            <p className="text-xs text-muted-foreground">
-              最長記録: {stats?.longestStreak || 0}日
-            </p>
+            <p className="text-xs text-muted-foreground">最長記録: {stats?.longestStreak || 0}日</p>
           </CardContent>
         </Card>
 
@@ -143,9 +137,7 @@ const PremiumDashboard: React.FC = () => {
             <div className="text-2xl font-bold">
               {stats?.averageCompletionTime.toFixed(0) || 0}分
             </div>
-            <p className="text-xs text-muted-foreground">
-              効率的に作業できています
-            </p>
+            <p className="text-xs text-muted-foreground">効率的に作業できています</p>
           </CardContent>
         </Card>
 
@@ -156,9 +148,7 @@ const PremiumDashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">85</div>
-            <p className="text-xs text-muted-foreground">
-              上位15%のパフォーマンス
-            </p>
+            <p className="text-xs text-muted-foreground">上位15%のパフォーマンス</p>
           </CardContent>
         </Card>
       </div>
@@ -180,15 +170,11 @@ const PremiumDashboard: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span>総タスク数</span>
-                  <span className="font-bold">
-                    {monthlyReport?.overview.totalTasks || 0}
-                  </span>
+                  <span className="font-bold">{monthlyReport?.overview.totalTasks || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>完了タスク</span>
-                  <span className="font-bold">
-                    {monthlyReport?.overview.completedTasks || 0}
-                  </span>
+                  <span className="font-bold">{monthlyReport?.overview.completedTasks || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>1日平均</span>
@@ -236,7 +222,7 @@ const PremiumDashboard: React.FC = () => {
                 <div>
                   <h4 className="font-medium mb-2">最も生産的な曜日</h4>
                   <p className="text-2xl font-bold">
-                    {monthlyReport?.overview.mostProductiveDay || "月"}曜日
+                    {monthlyReport?.overview.mostProductiveDay || '月'}曜日
                   </p>
                 </div>
               </div>

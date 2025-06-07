@@ -39,7 +39,7 @@ import GuitarPracticePage from './pages/GuitarPracticePage';
 import SiteDevWBS from './components/features/wbs/SiteDevWBS';
 import SiteImprovementPlan from './pages/SiteImprovementPlan';
 import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
-import ImprovementImplementation from './pages/ImprovementImplementation';
+// import ImprovementImplementation from './pages/ImprovementImplementation';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 import SystemDesignDocuments from './pages/SystemDesignDocuments';
 import AdminDashboard from './pages/AdminDashboard';
@@ -346,14 +346,14 @@ export default function App() {
                       </AdminRoute>
                     }
                   />
-                  <Route
+                  {/* <Route
                     path="/improvement-implementation/:projectId"
                     element={
                       <LayoutWrapper>
                         <ImprovementImplementation />
                       </LayoutWrapper>
                     }
-                  />
+                  /> */}
                   <Route
                     path="/billing-history"
                     element={

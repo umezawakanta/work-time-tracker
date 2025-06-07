@@ -36,7 +36,7 @@ import DiaryPage from './pages/DiaryPage';
 import ImpulseTrackerPage from './pages/ImpulseTrackerPage';
 import GuitarPracticePage from './pages/GuitarPracticePage';
 import IntegratedDashboard from './pages/IntegratedDashboard';
-import ImprovementImplementation from './pages/ImprovementImplementation';
+// import ImprovementImplementation from './pages/ImprovementImplementation';
 import WorkTimeEntry from './pages/WorkTimeEntry';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
@@ -101,7 +101,7 @@ function App() {
 
                     {/* ダッシュボード */}
                     <Route path="dashboard" element={<IntegratedDashboard />} />
-                    <Route path="improvement" element={<ImprovementImplementation />} />
+                    {/* <Route path="improvement" element={<ImprovementImplementation />} /> */}
 
                     {/* 資産管理 */}
                     <Route path="asset-calendar" element={<AssetCalendarPage />} />

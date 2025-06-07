@@ -3,8 +3,32 @@ import { logger } from '../../utils/logger';
 
 export const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
+// デプロイ先でのAPI URL自動判定
+const getApiBaseUrl = () => {
+  // 環境変数が設定されている場合はそれを使用
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // 本番環境では現在のドメインのAPIエンドポイントを使用
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
+      return 'https://work-time-tracker-5d9q.vercel.app/api';
+    }
+    if (window.location.hostname !== 'localhost') {
+      return `${window.location.protocol}//${window.location.hostname}/api`;
+    }
+  }
+
+  // 開発環境のデフォルト
+  return 'http://localhost:3001/api';
+};
+
+const baseURL = getApiBaseUrl();
+console.log('🔗 API Base URL:', baseURL);
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+  baseURL,
 });
 
 // Add a request interceptor
