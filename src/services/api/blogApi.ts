@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { BlogPost, Comment } from '@/store/blogSlice';
-import { api } from './apiConfig';
+import { api, USE_MOCK_DATA } from './apiConfig';
 
 interface BlogApiResponse {
   message: string;
@@ -22,8 +22,80 @@ interface DraftApiResponse {
   draft: BlogPost;
 }
 
+// モックデータ
+const mockBlogPosts: BlogPost[] = [
+  {
+    _id: 'mock-post-1',
+    title: 'Work Time Tracker デモ記事 1',
+    content:
+      'これはWork Time Trackerのデモ環境での記事です。本番環境ではバックエンドサーバーがない場合のサンプルデータとして表示されています。',
+    author: 'デモユーザー',
+    category: 'デモ',
+    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1日前
+    updatedAt: new Date().toISOString(),
+    likes: ['demo-user'],
+    comments: [
+      {
+        _id: 'mock-comment-1',
+        content: 'デモ環境のコメントです。',
+        author: 'デモユーザー',
+        createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+    tags: ['デモ', '作業記録'],
+    status: 'published' as const,
+  },
+  {
+    _id: 'mock-post-2',
+    title: 'プロジェクト管理のベストプラクティス',
+    content:
+      'プロジェクト管理において重要なのは、適切な時間追跡と進捗管理です。Work Time Trackerを使用することで、効率的なプロジェクト運営が可能になります。',
+    author: 'デモユーザー',
+    category: 'プロジェクト管理',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7日前
+    updatedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: ['demo-user'],
+    comments: [],
+    tags: ['プロジェクト管理', 'ベストプラクティス'],
+    status: 'published' as const,
+  },
+  {
+    _id: 'mock-post-3',
+    title: '生産性向上のための時間管理術',
+    content:
+      '時間管理は現代のビジネスパーソンにとって必須のスキルです。このアプリケーションを活用して、あなたの生産性を向上させましょう。',
+    author: 'デモユーザー',
+    category: '生産性',
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14日前
+    updatedAt: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: [],
+    comments: [
+      {
+        _id: 'mock-comment-2',
+        content: '参考になる記事でした！',
+        author: '読者',
+        createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+    tags: ['生産性', '時間管理'],
+    status: 'published' as const,
+  },
+];
+
 export const blogApi = {
   getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
+    // モックモードの場合はモックデータを返す
+    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+      console.log('🎭 Mock mode: Returning mock blog posts');
+      return Promise.resolve({
+        data: mockBlogPosts,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      } as AxiosResponse<BlogPost[]>);
+    }
+
     if (import.meta.env.DEV) {
       console.log('🔄 API Call: GET /blog');
     }

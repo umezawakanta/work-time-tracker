@@ -1,4 +1,5 @@
 import { api } from './apiConfig';
+import { USE_MOCK_DATA } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
 
@@ -125,6 +126,12 @@ export const logout = (): void => {
 
 export const checkAuth = async (): Promise<boolean> => {
   try {
+    // モックモードの場合は常に認証成功
+    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+      console.log('🎭 Mock mode: Auth check always returns true');
+      return true;
+    }
+
     // TokenManagerで認証状態を確認
     if (!tokenManager.isAuthenticated()) {
       console.log('🔒 No valid local token');
@@ -197,6 +204,20 @@ export const updateUserProfile = async (userData: {
 
 export const fetchUserData = async (): Promise<User> => {
   try {
+    // モックモードの場合はダミーユーザーデータを返す
+    if (USE_MOCK_DATA || (window as any).__VITE_USE_MOCK_DATA__ === 'true') {
+      console.log('🎭 Mock mode: Returning demo user data');
+      return {
+        id: 'demo-user',
+        _id: 'demo-user-id',
+        name: 'デモユーザー',
+        username: 'demouser',
+        email: 'demo@example.com',
+        isAdmin: true,
+        avatar: '',
+      };
+    }
+
     const response = await api.get<{ user: User }>('/auth/user');
 
     // 環境変数による管理者権限の確認

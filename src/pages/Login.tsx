@@ -92,6 +92,32 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // 本番環境でのダミーログイン
+  const handleDemoLogin = async () => {
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      // ダミートークンを設定してモックモードを有効化
+      localStorage.setItem('token', 'demo-token-12345');
+      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
+
+      toast.success('デモモードでログインしました');
+
+      // AuthContextの認証状態を強制的に更新
+      await refreshAuth();
+      setIsAuthenticated(true);
+
+      // ログイン成功後、元のページまたはホームページにリダイレクト
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.error('デモログインエラー:', error);
+      setErrors({ general: 'デモログインに失敗しました' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -296,6 +322,35 @@ export default function Login() {
                 </>
               )}
             </Button>
+
+            {/* 本番環境でのデモログインボタン */}
+            {window.location.hostname === 'work-time-tracker-5d9q.vercel.app' && (
+              <div className="space-y-2">
+                <div className="text-center text-xs text-gray-500">または</div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
+                  onClick={handleDemoLogin}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      デモログイン中...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      デモモードでログイン
+                    </>
+                  )}
+                </Button>
+                <div className="text-center text-xs text-gray-500">
+                  ※ バックエンドサーバーなしでアプリを体験できます
+                </div>
+              </div>
+            )}
 
             <div className="text-center text-sm text-gray-600">
               アカウントをお持ちでない方は

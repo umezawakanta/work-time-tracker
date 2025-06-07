@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { logger } from '../../utils/logger';
 
-export const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+export const USE_MOCK_DATA =
+  import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
+  (typeof window !== 'undefined' && (window as any).__VITE_USE_MOCK_DATA__ === 'true');
 
 // デプロイ先でのAPI URL自動判定
 const getApiBaseUrl = () => {
@@ -10,10 +12,16 @@ const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_BASE_URL;
   }
 
-  // 本番環境では現在のドメインのAPIエンドポイントを使用
+  // 本番環境では外部APIサーバーまたはモックデータを使用
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
-      return 'https://work-time-tracker-5d9q.vercel.app/api';
+      // 本番環境用の外部APIサーバーがない場合はモックモードを有効化
+      console.warn(
+        '⚠️ 本番環境: バックエンドサーバーが設定されていません。モックデータを使用します。'
+      );
+      // モックモードを強制的に有効化（環境変数を動的に設定）
+      (window as any).__VITE_USE_MOCK_DATA__ = 'true';
+      return 'mock://api'; // モック用のダミーURL
     }
     if (window.location.hostname !== 'localhost') {
       return `${window.location.protocol}//${window.location.hostname}/api`;
