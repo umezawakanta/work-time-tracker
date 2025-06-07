@@ -29,6 +29,10 @@ console.log('🔗 API Base URL:', baseURL);
 
 export const api = axios.create({
   baseURL,
+  timeout: 10000, // 10秒タイムアウト
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Add a request interceptor
@@ -70,7 +74,24 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    logger.error('API', `${error.response?.status} ${error.config?.url}`, error.response?.data);
+    // サーバー接続エラーの詳細情報をログに出力
+    if (error.code === 'ECONNREFUSED' || error.code === 'NETWORK_ERROR' || !error.response) {
+      console.warn('⚠️ Server connection failed:', {
+        baseURL,
+        code: error.code,
+        message: error.message,
+        url: error.config?.url,
+      });
+
+      // 開発環境でのサーバー未起動を通知
+      if (baseURL.includes('localhost:3001') && import.meta.env.DEV) {
+        console.warn(
+          '💡 Hint: Make sure your development server is running on http://localhost:3001'
+        );
+      }
+    } else {
+      logger.error('API', `${error.response?.status} ${error.config?.url}`, error.response?.data);
+    }
     return Promise.reject(error);
   }
 );

@@ -127,20 +127,41 @@ export const checkAuth = async (): Promise<boolean> => {
   try {
     // TokenManagerで認証状態を確認
     if (!tokenManager.isAuthenticated()) {
+      console.log('🔒 No valid local token');
       return false;
     }
 
     // サーバーサイドで認証状態を確認
     const token = await tokenManager.getAccessToken();
     if (!token) {
+      console.log('🔒 No access token available');
       return false;
     }
 
+    console.log('🔄 Checking auth with server...');
     const response = await api.get('/auth/check');
+    console.log('✅ Server auth check response:', response.data);
     return response.data.isAuthenticated;
-  } catch (error) {
-    console.error('Auth check error:', error);
-    tokenManager.clearTokens();
+  } catch (error: any) {
+    console.error('❌ Auth check error:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      code: error.code,
+    });
+
+    // ネットワークエラーやサーバーダウンの場合は認証状態を維持
+    if (error.code === 'ECONNREFUSED' || error.code === 'NETWORK_ERROR' || !error.response) {
+      console.log('⚠️ Network error - maintaining auth state');
+      return true; // ネットワークエラーの場合は認証状態を維持
+    }
+
+    // サーバーが明示的に認証エラーを返した場合のみクリア
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.log('🔒 Server rejected auth - clearing tokens');
+      tokenManager.clearTokens();
+    }
+
     return false;
   }
 };
