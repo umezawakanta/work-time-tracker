@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
-import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
+import { checkAuth, fetchUserData, updateUserProfile, logout } from '@/services/api/authApi';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
+import { toast } from 'react-hot-toast';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -11,7 +12,14 @@ interface AuthContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   fetchUser: () => Promise<void>;
   updateProfile: (data: { name: string; email: string }) => Promise<void>;
+  sessionExpired: boolean;
+  refreshAuth: () => Promise<void>;
 }
+
+// セッション管理の設定
+const SESSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5分
+const SESSION_WARNING_TIME = 5 * 60 * 1000; // 5分前に警告
+const AUTO_LOGOUT_TIME = 30 * 60 * 1000; // 30分でタイムアウト
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -19,7 +27,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const isCheckingAuthRef = useRef(false);
+  const lastActivityRef = useRef(Date.now());
+  const sessionCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const warningShownRef = useRef(false);
+
+  // 最終アクティビティ時間を更新
+  const updateLastActivity = useCallback(() => {
+    lastActivityRef.current = Date.now();
+    warningShownRef.current = false;
+  }, []);
+
+  // ユーザーアクティビティの監視
+  useEffect(() => {
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+    const handleActivity = () => {
+      updateLastActivity();
+      if (sessionExpired) {
+        setSessionExpired(false);
+      }
+    };
+
+    events.forEach((event) => {
+      document.addEventListener(event, handleActivity, true);
+    });
+
+    return () => {
+      events.forEach((event) => {
+        document.removeEventListener(event, handleActivity, true);
+      });
+    };
+  }, [updateLastActivity, sessionExpired]);
 
   const fetchUser = useCallback(async () => {
     console.log('[AuthContext] fetchUser実行');
@@ -37,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('[AuthContext] ユーザーデータ取得失敗:', error);
       setUser(null);
+      throw error;
     }
   }, []);
 
@@ -50,6 +91,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw error;
     }
   }, []);
+
+  // 認証状態の確認
+  const refreshAuth = useCallback(async () => {
+    if (isCheckingAuthRef.current) {
+      console.log('[AuthContext] 認証チェック中、スキップ');
+      return;
+    }
+
+    console.log('[AuthContext] 認証状態確認開始');
+    isCheckingAuthRef.current = true;
+
+    try {
+      const isAuth = await checkAuth();
+
+      if (isAuth) {
+        setIsAuthenticated(true);
+        updateLastActivity();
+        if (!user) {
+          await fetchUser();
+        }
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        setSessionExpired(true);
+      }
+    } catch (error) {
+      console.error('[AuthContext] 認証状態確認エラー:', error);
+      setIsAuthenticated(false);
+      setUser(null);
+      setSessionExpired(true);
+    } finally {
+      isCheckingAuthRef.current = false;
+    }
+  }, [fetchUser, user, updateLastActivity]);
 
   const checkAuthStatus = useCallback(async () => {
     if (isCheckingAuthRef.current) {
@@ -67,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (isAuth) {
         setIsAuthenticated(true);
+        updateLastActivity();
         try {
           const userData = await fetchUserData();
           const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
@@ -93,7 +169,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
       console.log('[AuthContext] 認証チェック完了');
     }
-  }, []);
+  }, [fetchUser, updateLastActivity]);
+
+  // セッション監視機能
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const checkSession = () => {
+      const now = Date.now();
+      const timeSinceLastActivity = now - lastActivityRef.current;
+
+      // セッションタイムアウトの警告
+      if (
+        timeSinceLastActivity > AUTO_LOGOUT_TIME - SESSION_WARNING_TIME &&
+        !warningShownRef.current
+      ) {
+        warningShownRef.current = true;
+        toast(
+          (t) => (
+            <div className="flex flex-col gap-2">
+              <span className="font-medium">セッション期限警告</span>
+              <span className="text-sm">
+                5分以内にアクティビティがない場合、自動ログアウトします。
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    updateLastActivity();
+                    toast.dismiss(t.id);
+                  }}
+                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                >
+                  セッション継続
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsAuthenticated(false);
+                    setSessionExpired(true);
+                    toast.dismiss(t.id);
+                  }}
+                  className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+                >
+                  ログアウト
+                </button>
+              </div>
+            </div>
+          ),
+          {
+            duration: 30000,
+            id: 'session-warning',
+          }
+        );
+      }
+
+      // 自動ログアウト
+      if (timeSinceLastActivity > AUTO_LOGOUT_TIME) {
+        console.log('[AuthContext] セッションタイムアウト');
+        logout();
+        setIsAuthenticated(false);
+        setSessionExpired(true);
+        toast.error('セッションがタイムアウトしました。再度ログインしてください。');
+      }
+    };
+
+    // 定期的なセッションチェック
+    sessionCheckIntervalRef.current = setInterval(checkSession, SESSION_CHECK_INTERVAL);
+
+    return () => {
+      if (sessionCheckIntervalRef.current) {
+        clearInterval(sessionCheckIntervalRef.current);
+      }
+    };
+  }, [isAuthenticated, updateLastActivity]);
 
   useEffect(() => {
     console.log('[AuthContext] 初回認証チェック実行');
@@ -107,12 +255,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     !stableContextValue.current ||
     stableContextValue.current.isAuthenticated !== isAuthenticated ||
     stableContextValue.current.loading !== loading ||
-    stableContextValue.current.user !== user
+    stableContextValue.current.user !== user ||
+    stableContextValue.current.sessionExpired !== sessionExpired
   ) {
     console.log('[AuthContext] contextValue更新', {
       isAuthenticated,
       loading,
       user: !!user,
+      sessionExpired,
       reason: !stableContextValue.current ? 'initial' : 'state_change',
     });
 
@@ -124,6 +274,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser,
       fetchUser,
       updateProfile,
+      sessionExpired,
+      refreshAuth,
     };
   }
 

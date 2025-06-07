@@ -45,6 +45,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Locale } from '@/context/LocaleContext';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -131,12 +141,13 @@ export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { locale, setLocale } = useLocale();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, setIsAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -148,9 +159,11 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      logout();
+      setIsAuthenticated(false);
       navigate('/login');
       toast.success('ログアウトしました');
+      setShowLogoutDialog(false);
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('ログアウトに失敗しました');
@@ -532,7 +545,7 @@ export default function Layout({ children }: LayoutProps) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={handleLogout}
+                      onClick={() => setShowLogoutDialog(true)}
                       className="cursor-pointer py-2.5 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20"
                     >
                       <LogOut className="mr-3 h-4 w-4" />
@@ -610,6 +623,27 @@ export default function Layout({ children }: LayoutProps) {
         {/* メインコンテンツ */}
         <main className="flex-1">{children}</main>
       </div>
+
+      {/* ログアウト確認ダイアログ */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ログアウトの確認</AlertDialogTitle>
+            <AlertDialogDescription>
+              本当にログアウトしますか？未保存のデータは失われる可能性があります。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+            >
+              ログアウト
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
