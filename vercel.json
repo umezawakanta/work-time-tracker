@@ -38,8 +38,12 @@
   ],
   "functions": {
     "src/server/server.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
     }
+  },
+  "env": {
+    "NODE_ENV": "production"
   },
   "build": {
     "env": {

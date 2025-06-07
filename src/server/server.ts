@@ -43,9 +43,16 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://work-time-tracker-5d9q.vercel.app',
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
+];
+
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -85,10 +92,15 @@ if (!fs.existsSync(uploadsDir)) {
 // 静的ファイルの提供
 app.use('/uploads', express.static(uploadsDir));
 
-// WebSocketサーバーのセットアップ
-const wsService = setupWebSocketServer(server);
-// グローバルに利用できるようにする（通知サービスなどから利用可能に）
-app.set('wsService', wsService);
+// WebSocketサーバーのセットアップ（Vercel以外の環境でのみ）
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  const wsService = setupWebSocketServer(server);
+  // グローバルに利用できるようにする（通知サービスなどから利用可能に）
+  app.set('wsService', wsService);
+  console.log('WebSocket server initialized');
+} else {
+  console.log('WebSocket server skipped (Vercel environment)');
+}
 
 // Routes の前に追加
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -97,25 +109,112 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Routes の前に追加で基本テスト
-app.get('/test', (req: Request, res: Response) => {
-  console.log('*** TEST ENDPOINT HIT ***');
+// API Health Check エンドポイント
+app.get('/api/health', (req: Request, res: Response) => {
+  console.log('*** API HEALTH CHECK ***');
   res.json({
-    message: 'Server is working!',
+    status: 'OK',
+    message: 'Work Time Tracker API is running',
     timestamp: new Date().toISOString(),
-    url: req.url,
-    method: req.method,
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    platform: process.env.VERCEL ? 'Vercel Functions' : 'Node.js Server',
+    endpoint: req.url,
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
   });
 });
 
-// 基本的なPOSTテストも追加
-app.post('/test', (req: Request, res: Response) => {
-  console.log('*** POST TEST ENDPOINT HIT ***');
+// 詳細システム情報
+app.get('/api/status', (req: Request, res: Response) => {
+  console.log('*** API STATUS CHECK ***');
+  res.json({
+    api: {
+      status: 'running',
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+    },
+    server: {
+      platform: process.platform,
+      nodeVersion: process.version,
+      uptime: `${Math.floor(process.uptime())} seconds`,
+      environment: process.env.NODE_ENV || 'development',
+      runtime: process.env.VERCEL ? 'Vercel Functions' : 'Node.js Server',
+      isVercel: !!process.env.VERCEL,
+    },
+    database: {
+      connected: true, // この値は実際のDB接続状態に応じて動的に設定
+      uri: process.env.MONGODB_URI ? 'Connected' : 'Not configured',
+    },
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      blog: '/api/blog',
+      worktime: '/api/worktime',
+      test: '/api/test',
+    },
+    cors: {
+      enabled: true,
+      origins: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    },
+  });
+});
+
+// API テストエンドポイント
+app.get('/api/test', (req: Request, res: Response) => {
+  console.log('*** API TEST ENDPOINT HIT ***');
+  res.json({
+    success: true,
+    message: 'API Test endpoint is working!',
+    timestamp: new Date().toISOString(),
+    requestInfo: {
+      method: req.method,
+      url: req.url,
+      headers: {
+        'user-agent': req.get('User-Agent'),
+        origin: req.get('Origin'),
+        authorization: req.get('Authorization') ? 'Present' : 'Not present',
+      },
+    },
+    serverInfo: {
+      platform: process.platform,
+      nodeVersion: process.version,
+      environment: process.env.NODE_ENV || 'development',
+    },
+  });
+});
+
+// POST テスト
+app.post('/api/test', (req: Request, res: Response) => {
+  console.log('*** API POST TEST ENDPOINT HIT ***');
   console.log('POST Body:', req.body);
   res.json({
-    message: 'POST is working!',
-    body: req.body,
+    success: true,
+    message: 'API POST test is working!',
+    receivedData: req.body,
     timestamp: new Date().toISOString(),
+  });
+});
+
+// 認証テスト（トークンなしでもアクセス可能）
+app.get('/api/test/auth', (req: Request, res: Response) => {
+  const authHeader = req.get('Authorization');
+  res.json({
+    message: 'Auth test endpoint',
+    hasAuthHeader: !!authHeader,
+    authHeader: authHeader ? 'Bearer token present' : 'No token',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// 基本テスト（ルートレベル）
+app.get('/test', (req: Request, res: Response) => {
+  console.log('*** ROOT TEST ENDPOINT HIT ***');
+  res.json({
+    message: 'Root test endpoint working!',
+    timestamp: new Date().toISOString(),
+    url: req.url,
+    method: req.method,
   });
 });
 
@@ -177,11 +276,17 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
 console.log('=== End Environment Check ===');
 
 const PORT = process.env.PORT || 3001;
-// app.listen()ではなくserver.listen()を使用
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`WebSocket server is also running on port ${PORT}`);
-  console.log(`Uploads directory: ${uploadsDir}`);
-});
+
+// Vercel環境の場合はサーバーを起動しない（Functionsとして動作）
+if (process.env.VERCEL) {
+  console.log('Running in Vercel Functions mode');
+} else {
+  // app.listen()ではなくserver.listen()を使用
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`WebSocket server is also running on port ${PORT}`);
+    console.log(`Uploads directory: ${uploadsDir}`);
+  });
+}
 
 export default app;

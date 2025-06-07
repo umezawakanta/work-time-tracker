@@ -473,11 +473,12 @@ const AdminDashboard: React.FC = () => {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="users">ユーザー管理</TabsTrigger>
           <TabsTrigger value="ecommerce">ECサイト</TabsTrigger>
           <TabsTrigger value="orders">注文管理</TabsTrigger>
+          <TabsTrigger value="api-test">API テスト</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -954,6 +955,152 @@ const AdminDashboard: React.FC = () => {
                       ))}
                     </TableBody>
                   </Table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="api-test" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>API テスト & 診断</CardTitle>
+                  <CardDescription>
+                    APIサーバーの動作確認とエンドポイントテストを実行します
+                  </CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Link to="/api-test">
+                    <Button>
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      詳細テストページ
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(`${window.location.origin}/api/health`, '_blank')}
+                  >
+                    <Shield className="mr-2 h-4 w-4" />
+                    Health Check
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Card className="border-2 border-blue-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-blue-500" />
+                      API Health
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-2">基本的な API 接続確認</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.open(`${window.location.origin}/api/health`, '_blank')}
+                    >
+                      Test
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-2 border-green-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-green-500" />
+                      Status Check
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-2">詳細システム情報</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.open(`${window.location.origin}/api/status`, '_blank')}
+                    >
+                      Test
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-2 border-purple-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <UserIcon className="h-4 w-4 text-purple-500" />
+                      Auth Test
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-2">認証システム確認</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() =>
+                        window.open(`${window.location.origin}/api/test/auth`, '_blank')
+                      }
+                    >
+                      Test
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h4 className="font-medium">クイックアクション</h4>
+                <div className="grid gap-2 md:grid-cols-2">
+                  <Button variant="outline" asChild>
+                    <Link to="/api-test">
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      完全な API テストダッシュボード
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const apiBaseUrl =
+                        import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`;
+                      navigator.clipboard.writeText(apiBaseUrl);
+                      // 簡単な通知（toastを使う場合は適切にimportする）
+                      alert('API Base URL をクリップボードにコピーしました');
+                    }}
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    API URL をコピー
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h5 className="font-medium mb-2">現在の設定</h5>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span>API Base URL:</span>
+                    <code className="text-xs bg-white px-2 py-1 rounded">
+                      {import.meta.env.VITE_API_BASE_URL || `${window.location.origin}/api`}
+                    </code>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Environment:</span>
+                    <code className="text-xs bg-white px-2 py-1 rounded">
+                      {import.meta.env.MODE}
+                    </code>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Mock Mode:</span>
+                    <code className="text-xs bg-white px-2 py-1 rounded">
+                      {import.meta.env.VITE_USE_MOCK_DATA === 'true' ? 'Enabled' : 'Disabled'}
+                    </code>
+                  </div>
                 </div>
               </div>
             </CardContent>

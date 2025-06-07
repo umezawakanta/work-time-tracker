@@ -53,6 +53,7 @@ import ShopPage from './pages/ShopPage';
 import TodoManagerPage from './pages/TodoManagerPage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
+import ApiTest from './pages/ApiTest';
 
 const theme = createTheme({
   palette: {
@@ -342,6 +343,16 @@ export default function App() {
                       <AdminRoute>
                         <LayoutWrapper>
                           <AdminDashboard />
+                        </LayoutWrapper>
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/api-test"
+                    element={
+                      <AdminRoute>
+                        <LayoutWrapper>
+                          <ApiTest />
                         </LayoutWrapper>
                       </AdminRoute>
                     }
