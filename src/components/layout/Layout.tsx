@@ -94,6 +94,14 @@ const menuItems: MenuItem[] = [
     gradient: 'from-purple-500 to-pink-500',
   },
   {
+    icon: <Award className="h-5 w-5" />,
+    label: 'WBS作成',
+    path: '/wbs',
+    description: 'プロジェクトのWBS管理',
+    badge: 'HOT',
+    gradient: 'from-rose-500 to-pink-500',
+  },
+  {
     icon: <Clock className="h-5 w-5" />,
     label: '勤怠管理',
     path: '/work-time',

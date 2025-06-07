@@ -143,6 +143,7 @@ export default function App() {
                     <Route path="/blog/edit/:id" element={<EditBlogPost />} />
                     <Route path="/profile" element={<UserProfile />} />
                     <Route path="/wbs-creator" element={<WBSCreatorPage />} />
+                    <Route path="/wbs" element={<WBSCreatorPage />} />
                     <Route path="/diary" element={<DiaryPage />} />
                     <Route path="/impulse-tracker" element={<ImpulseTrackerPage />} />
                     <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
