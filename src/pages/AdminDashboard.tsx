@@ -70,9 +70,9 @@ interface UserFormData {
   name: string;
   email: string;
   role: string;
-  isAdmin: boolean;
-  hasActiveSubscription: boolean;
-  trialActivated: boolean;
+  isAdmin?: boolean;
+  hasActiveSubscription?: boolean;
+  trialActivated?: boolean;
   trialExpiryDate?: string;
 }
 

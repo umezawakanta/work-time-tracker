@@ -10,6 +10,7 @@ export interface AuthUser {
   subscriptionStatus?: 'free' | 'trial' | 'premium' | 'enterprise';
   createdAt: string;
   lastSignInAt?: string;
+  lastLoginAt?: string; // 最終ログイン日時（別名）
   loginCount?: number;
   preferences?: UserPreferences;
 }

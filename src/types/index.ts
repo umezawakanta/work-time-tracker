@@ -193,9 +193,16 @@ export interface User {
   _id: string;
   username: string;
   isAdmin: boolean;
+  uid?: string; // Firebase UID
+  displayName?: string; // 表示名
   avatar?: string; // オプショナルプロパティとして avatar を追加
   loginCount?: number;
   subscriptionStatus?: 'active' | 'canceled' | 'expired' | 'none';
+  hasActiveSubscription?: boolean; // アクティブなサブスクリプション状態
+  isPremium?: boolean; // プレミアムユーザー状態
+  trialActivated?: boolean; // トライアル有効化状態
+  trialExpiryDate?: string; // トライアル有効期限
+  lastLoginAt?: string; // 最終ログイン日時
   // その他必要なユーザープロパティ
 }
 
