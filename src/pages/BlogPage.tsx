@@ -8,7 +8,7 @@ import {
   selectBlogStatus,
   deleteBlogPost,
 } from '@/store/blogSlice';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Container,
   Typography,

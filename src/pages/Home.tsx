@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems } from '@/store/todoSlice';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';

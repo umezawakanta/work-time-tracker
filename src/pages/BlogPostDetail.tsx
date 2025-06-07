@@ -8,7 +8,7 @@ import {
   selectBlogPosts,
   deleteBlogPost,
 } from '@/store/blogSlice';
-import { useAuth } from '@/context/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import {
   Container,
