@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('*** AUTH LOGIN ENDPOINT HIT ***');
     console.log('Request body:', req.body);
 
-    const { email, password, rememberMe = false }: LoginRequest = req.body;
+    const { email, password, rememberMe: _rememberMe = false }: LoginRequest = req.body;
 
     if (!email || !password) {
       res.status(400).json({
