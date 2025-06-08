@@ -132,6 +132,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const checkAuthStatus = useCallback(async () => {
     try {
       const isTokenValid = tokenManager.isAuthenticated();
+      console.log('🔍 Local token check:', { isTokenValid });
 
       if (!isTokenValid) {
         console.log('🔒 Token invalid locally');
@@ -141,13 +142,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       // APIによる認証状態確認（タイムアウトを設定）
+      console.log('📡 Starting server auth check...');
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Auth check timeout')), 30000); // 30秒タイムアウト（本番環境対応）
+        setTimeout(() => reject(new Error('Auth check timeout')), 8000); // 8秒タイムアウト
       });
 
       const authCheckPromise = checkAuth();
 
       const isValidOnServer = await Promise.race([authCheckPromise, timeoutPromise]);
+      console.log('📡 Server auth check result:', { isValidOnServer });
 
       if (!isValidOnServer) {
         console.log('❌ Server auth check failed');
@@ -296,6 +299,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           debugInfo,
           currentUrl: window.location.href,
           hostname: window.location.hostname,
+          localStorage: {
+            accessToken: localStorage.getItem('accessToken') ? 'exists' : 'missing',
+            refreshToken: localStorage.getItem('refreshToken') ? 'exists' : 'missing',
+            rememberMe: localStorage.getItem('rememberMe'),
+          },
         });
 
         // 開発環境でのサーバー起動ガイダンス（初回のみ）
@@ -339,7 +347,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               // タイムアウトを設定してcheckAuthStatusを実行
               const authCheckPromise = checkAuthStatus();
               const timeoutPromise = new Promise<boolean>((_, reject) => {
-                setTimeout(() => reject(new Error('Init auth timeout')), 25000); // 25秒タイムアウト（本番環境対応）
+                setTimeout(() => reject(new Error('Init auth timeout')), 10000); // 10秒タイムアウトに短縮
               });
 
               const isValid = await Promise.race([authCheckPromise, timeoutPromise]);
@@ -401,6 +409,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           tokenManager.clearTokens();
           setIsAuthenticated(false);
           setUser(null);
+          console.log('🔒 Auth cleared - user needs to login');
         }
       } catch (error) {
         console.log('❌ 認証初期化エラー:', error);
