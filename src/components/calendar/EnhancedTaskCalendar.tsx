@@ -23,7 +23,6 @@ import {
   ChevronRight,
   Clock,
   CheckCircle2,
-  Target,
   Edit3,
   Trash2,
   GripVertical,
