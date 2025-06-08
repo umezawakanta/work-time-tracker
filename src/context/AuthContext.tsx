@@ -319,6 +319,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
           sessionStorage.setItem('auth-init-shown', 'true');
         }
 
+        // 開発環境での即座認証設定（サーバー問題を回避）
+        if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+          console.log('🚀 Development fast auth mode enabled');
+          if (isMounted) {
+            setUser({
+              id: 'demo-user',
+              _id: 'demo-user-id',
+              name: 'Demo User (Dev)',
+              username: 'demouser',
+              email: 'demo@example.com',
+              isAdmin: true,
+              avatar: '',
+            });
+            setIsAuthenticated(true);
+            updateActivity();
+            setLoading(false); // 開発環境では即座にローディング解除
+            console.log('✅ Development auth set immediately');
+            console.log('🏁 認証初期化完了 - loading終了 (dev fast mode)');
+            return; // 早期リターンで他の処理をスキップ
+          }
+        }
+
         if (isTokenValid) {
           console.log('✅ トークン有効 - サーバー認証確認中...');
 
@@ -382,18 +404,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
                   setIsAuthenticated(true);
 
                   // ユーザーデータを設定（デモデータ）
-                  if (!user) {
-                    console.log('⚠️ Setting demo user data for offline mode');
-                    setUser({
-                      id: 'demo-user',
-                      _id: 'demo-user-id',
-                      name: 'Demo User (Offline)',
-                      username: 'demouser',
-                      email: 'demo@example.com',
-                      isAdmin: true,
-                      avatar: '',
-                    });
-                  }
+                  console.log('⚠️ Setting demo user data for offline mode');
+                  setUser({
+                    id: 'demo-user',
+                    _id: 'demo-user-id',
+                    name: 'Demo User (Offline)',
+                    username: 'demouser',
+                    email: 'demo@example.com',
+                    isAdmin: true,
+                    avatar: '',
+                  });
+                  updateActivity();
                 } else {
                   console.log('🔒 Token invalid after timeout - clearing auth');
                   setIsAuthenticated(false);
