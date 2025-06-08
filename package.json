@@ -33,7 +33,8 @@
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
-        "setup:abstinence": "tsx src/server/scripts/setupAbstinenceData.ts"
+        "setup:abstinence": "tsx src/server/scripts/setupAbstinenceData.ts",
+        "seed:blog": "node --loader ts-node/esm src/server/scripts/seedBlogData.ts"
     },
     "pnpm": {
         "onlyBuiltDependencies": [

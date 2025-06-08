@@ -92,18 +92,6 @@ const mockBlogPosts: BlogPost[] = [
 
 export const blogApi = {
   getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
-    // 開発環境での一時的モックデータ使用（デバッグ用）
-    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-      console.log('🔧 Development mode: Using mock blog data');
-      return Promise.resolve({
-        data: mockBlogPosts,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as AxiosRequestConfig,
-      } as AxiosResponse<BlogPost[]>);
-    }
-
     // モックモードの場合はモックデータを返す
     if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Returning mock blog posts');
@@ -138,13 +126,20 @@ export const blogApi = {
           baseURL: error.config?.baseURL,
         });
 
-        // 開発環境でエラーが発生した場合はフォールバック
-        if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-          console.log('🔧 Development mode: Fallback to mock blog data on error');
+        // ネットワークエラーなど重大な問題の場合のみフォールバック
+        if (
+          error.code === 'ECONNREFUSED' ||
+          error.code === 'NETWORK_ERROR' ||
+          error.message.includes('timeout')
+        ) {
+          console.log('🔧 Network error detected: Fallback to mock blog data');
+          console.log(
+            '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
+          );
           return Promise.resolve({
             data: mockBlogPosts,
             status: 200,
-            statusText: 'OK (Fallback)',
+            statusText: 'OK (Network Error Fallback)',
             headers: {},
             config: {} as AxiosRequestConfig,
           } as AxiosResponse<BlogPost[]>);
@@ -176,9 +171,9 @@ export const blogApi = {
   },
 
   getById: (id: string): Promise<AxiosResponse<BlogPost>> => {
-    // 開発環境での一時的モックデータ使用（デバッグ用）
-    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-      console.log('🔧 Development mode: Using mock blog post for ID:', id);
+    // モックモードの場合はモックデータを返す
+    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
+      console.log('🎭 Mock mode: Returning mock blog post for ID:', id);
       const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
       return Promise.resolve({
         data: mockPost,
@@ -189,24 +184,43 @@ export const blogApi = {
       } as AxiosResponse<BlogPost>);
     }
 
-    return api.get<BlogPost>(`/blog/${id}`).catch((error) => {
-      console.error('❌ Blog Post API Error:', error);
+    if (import.meta.env.DEV) {
+      console.log('🔄 API Call: GET /blog/' + id);
+    }
 
-      // 開発環境でエラーが発生した場合はフォールバック
-      if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-        console.log('🔧 Development mode: Fallback to mock blog post on error');
-        const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
-        return Promise.resolve({
-          data: mockPost,
-          status: 200,
-          statusText: 'OK (Fallback)',
-          headers: {},
-          config: {} as AxiosRequestConfig,
-        } as AxiosResponse<BlogPost>);
-      }
+    return api
+      .get<BlogPost>(`/blog/${id}`)
+      .then((response) => {
+        if (import.meta.env.DEV) {
+          console.log('✅ Blog Post API Response:', response.status, response.data?.title);
+        }
+        return response;
+      })
+      .catch((error) => {
+        console.error('❌ Blog Post API Error:', error);
 
-      throw error;
-    });
+        // ネットワークエラーなど重大な問題の場合のみフォールバック
+        if (
+          error.code === 'ECONNREFUSED' ||
+          error.code === 'NETWORK_ERROR' ||
+          error.message.includes('timeout')
+        ) {
+          console.log('🔧 Network error detected: Fallback to mock blog post');
+          console.log(
+            '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
+          );
+          const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
+          return Promise.resolve({
+            data: mockPost,
+            status: 200,
+            statusText: 'OK (Network Error Fallback)',
+            headers: {},
+            config: {} as AxiosRequestConfig,
+          } as AxiosResponse<BlogPost>);
+        }
+
+        throw error;
+      });
   },
 
   toggleLike: (postId: string, userId: string): Promise<AxiosResponse<LikeApiResponse>> => {

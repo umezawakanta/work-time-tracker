@@ -134,16 +134,6 @@ export const logout = (): void => {
 
 export const checkAuth = async (): Promise<boolean> => {
   try {
-    // 開発環境での一時的認証スキップ（デバッグ用）
-    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-      console.log('🔧 Development mode: Enabling offline auth mode');
-      const hasToken = tokenManager.isAuthenticated();
-      if (hasToken) {
-        console.log('✅ Local token valid - skipping server check in dev mode');
-        return true;
-      }
-    }
-
     // モックモードの場合は常に認証成功
     if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Auth check always returns true');
@@ -222,20 +212,6 @@ export const updateUserProfile = async (userData: {
 
 export const fetchUserData = async (): Promise<User> => {
   try {
-    // 開発環境での一時的デモユーザー（デバッグ用）
-    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-      console.log('🔧 Development mode: Using demo user data');
-      return {
-        id: 'demo-user',
-        _id: 'demo-user-id',
-        name: 'Demo User',
-        username: 'demouser',
-        email: 'demo@example.com',
-        isAdmin: true,
-        avatar: '',
-      };
-    }
-
     // モックモードの場合はダミーユーザーデータを返す
     if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Returning demo user data');
@@ -250,11 +226,13 @@ export const fetchUserData = async (): Promise<User> => {
       };
     }
 
+    console.log('🔄 Fetching user data from server...');
     const response = await api.get<{ user: User }>('/auth/user');
+    console.log('✅ User data retrieved:', response.data.user?.email);
 
     // 環境変数による管理者権限の確認
     const userData = response.data.user;
-    const adminEmails = process.env.REACT_APP_ADMIN_EMAILS?.split(',') || [];
+    const adminEmails = import.meta.env.VITE_ADMIN_EMAILS?.split(',') || [];
 
     if (adminEmails.includes(userData.email)) {
       userData.isAdmin = true;
@@ -265,13 +243,21 @@ export const fetchUserData = async (): Promise<User> => {
   } catch (error) {
     console.error('Fetch user data error:', error);
 
-    // 開発環境でエラーが発生した場合もデモユーザーを返す
-    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
-      console.log('🔧 Development mode: Fallback to demo user on error');
+    // ネットワークエラーなど重大な問題の場合のみフォールバック
+    if (
+      error instanceof Error &&
+      (error.message.includes('ECONNREFUSED') ||
+        error.message.includes('NETWORK_ERROR') ||
+        error.message.includes('timeout'))
+    ) {
+      console.log('🔧 Network error detected: Fallback to demo user data');
+      console.log(
+        '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
+      );
       return {
         id: 'demo-user',
         _id: 'demo-user-id',
-        name: 'Demo User (Fallback)',
+        name: 'Demo User (Network Error)',
         username: 'demouser',
         email: 'demo@example.com',
         isAdmin: true,
