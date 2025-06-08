@@ -26,21 +26,23 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // 本番環境用のデモユーザーデータを返す
+  // 本番環境用のデモユーザーデータを返す（authApi.tsの期待する形式）
   return res.status(200).json({
-    id: 'demo-user',
-    _id: 'demo-user-id',
-    name: 'Demo User',
-    username: 'demouser',
-    email: 'demo@example.com',
-    isAdmin: true,
-    avatar: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    preferences: {
-      theme: 'light',
-      language: 'ja',
-      notifications: true,
+    user: {
+      id: 'demo-user',
+      _id: 'demo-user-id',
+      name: 'Demo User',
+      username: 'demouser',
+      email: 'demo@example.com',
+      isAdmin: true,
+      avatar: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      preferences: {
+        theme: 'light',
+        language: 'ja',
+        notifications: true,
+      },
     },
   });
 }
