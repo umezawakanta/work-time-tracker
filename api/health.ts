@@ -1,23 +1,27 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
   try {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-    if (req.method === 'OPTIONS') {
-      return res.status(200).end();
-    }
-
-    if (req.method !== 'GET') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
-
     console.log('*** API HEALTH CHECK ***');
-
-    return res.status(200).json({
+    
+    const healthData = {
       status: 'OK',
       message: 'Work Time Tracker API is running',
       timestamp: new Date().toISOString(),
@@ -28,10 +32,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       serverless: true,
       region: process.env.VERCEL_REGION || 'unknown',
       memory: process.memoryUsage(),
-    });
+    };
+
+    res.status(200).json(healthData);
   } catch (error) {
     console.error('Health check error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'ERROR',
       message: 'Health check failed',
       error: error instanceof Error ? error.message : 'Unknown error',
