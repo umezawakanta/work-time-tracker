@@ -413,5 +413,9 @@ export interface TodoItem {
   completedDate: string | null;
   type?: 'input' | 'output';
   createdAt?: string;
-  deadline?: string; // deadline プロパティを追加
+  deadline?: string;
+  category?: string;
+  tags?: string[];
+  note?: string;
+  estimatedDuration?: number;
 }

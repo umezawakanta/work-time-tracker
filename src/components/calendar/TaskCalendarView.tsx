@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,9 @@ import {
   Target,
   Edit3,
   Trash2,
+  GripVertical,
+  Brain,
+  Sparkles,
 } from 'lucide-react';
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems, updateTodoItem, deleteTodoItem } from '@/store/todoSlice';
@@ -240,6 +244,55 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
     }
   };
 
+  // Handle drag and drop
+  const handleDragEnd = useCallback(
+    async (result: DropResult) => {
+      if (!result.destination) return;
+
+      const { source, destination, draggableId } = result;
+
+      // Extract date from destination droppableId (format: "date-YYYY-MM-DD")
+      const destinationDateStr = destination.droppableId.replace('date-', '');
+      const destinationDate = new Date(destinationDateStr);
+
+      if (isNaN(destinationDate.getTime())) {
+        toast.error('無効な日付です');
+        return;
+      }
+
+      // Find the task (draggableId format: "task-{todoId}")
+      const taskId = draggableId.replace('task-', '');
+      const todo = todos.find((t) => t._id === taskId);
+
+      if (!todo) {
+        toast.error('タスクが見つかりません');
+        return;
+      }
+
+      // Skip if dropping on the same date
+      const currentDate = todo.deadline ? new Date(todo.deadline) : new Date();
+      if (currentDate.toDateString() === destinationDate.toDateString()) {
+        return;
+      }
+
+      // Update task deadline
+      try {
+        await dispatch(
+          updateTodoItem({
+            _id: taskId,
+            updates: { deadline: destinationDate.toISOString() },
+          })
+        ).unwrap();
+
+        toast.success(`タスクを${destinationDate.toLocaleDateString('ja-JP')}に移動しました`);
+      } catch (error) {
+        toast.error('タスクの日付変更に失敗しました');
+        console.error('Task date update error:', error);
+      }
+    },
+    [todos, dispatch]
+  );
+
   const monthYear = currentDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
 
   // Render month view
@@ -264,79 +317,126 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
     };
 
     return (
-      <div className="grid grid-cols-7 gap-1">
-        {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
-          <div key={index} className="text-center font-semibold p-2 bg-gray-50 rounded">
-            {day}
-          </div>
-        ))}
-        {days.map((day, index) => {
-          const items = day ? getItemsForDate(day) : [];
-          const isToday = day && day.toDateString() === new Date().toDateString();
-
-          return (
-            <div
-              key={index}
-              className={cn(
-                'h-32 border p-1 relative overflow-hidden cursor-pointer transition-colors hover:bg-gray-50',
-                day && day.getMonth() !== currentDate.getMonth() && 'bg-gray-100 opacity-50',
-                isToday && 'bg-blue-50 border-blue-300'
-              )}
-              onClick={() => day && handleDateClick(day)}
-            >
-              {day && (
-                <>
-                  <div
-                    className={cn(
-                      'text-right text-sm font-medium mb-1',
-                      isToday ? 'text-blue-600' : 'text-gray-700'
-                    )}
-                  >
-                    {day.getDate()}
-                  </div>
-                  <div className="space-y-1 overflow-hidden">
-                    {items.slice(0, 3).map((item) => (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          'text-xs p-1 rounded cursor-pointer transition-all hover:opacity-80 truncate',
-                          item.type === 'task'
-                            ? item.completed
-                              ? 'bg-green-100 text-green-800 line-through'
-                              : 'bg-blue-100 text-blue-800'
-                            : 'bg-purple-100 text-purple-800'
-                        )}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleItemClick(item);
-                        }}
-                      >
-                        <div className="flex items-center gap-1">
-                          {item.type === 'task' ? (
-                            item.completed ? (
-                              <CheckCircle2 className="h-3 w-3" />
-                            ) : (
-                              <Clock className="h-3 w-3" />
-                            )
-                          ) : (
-                            <Calendar className="h-3 w-3" />
-                          )}
-                          <span className="truncate">{item.title}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {items.length > 3 && (
-                      <div className="text-xs text-gray-500 text-center">
-                        +{items.length - 3} more
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-7 gap-1">
+          {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
+            <div key={index} className="text-center font-semibold p-2 bg-gray-50 rounded">
+              {day}
             </div>
-          );
-        })}
-      </div>
+          ))}
+          {days.map((day, index) => {
+            const items = day ? getItemsForDate(day) : [];
+            const isToday = day && day.toDateString() === new Date().toDateString();
+            const dateStr = day ? day.toISOString().split('T')[0] : `empty-${index}`;
+
+            return (
+              <Droppable key={index} droppableId={day ? `date-${dateStr}` : `empty-${index}`}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={cn(
+                      'h-32 border p-1 relative overflow-hidden cursor-pointer transition-all duration-200',
+                      day && day.getMonth() !== currentDate.getMonth() && 'bg-gray-100 opacity-50',
+                      isToday && 'bg-blue-50 border-blue-300',
+                      snapshot.isDraggingOver && 'bg-green-50 border-green-300 scale-105 shadow-md',
+                      !day && 'bg-gray-50',
+                      'hover:bg-gray-50'
+                    )}
+                    onClick={() => day && handleDateClick(day)}
+                  >
+                    {day && (
+                      <>
+                        <div
+                          className={cn(
+                            'text-right text-sm font-medium mb-1',
+                            isToday ? 'text-blue-600' : 'text-gray-700'
+                          )}
+                        >
+                          {day.getDate()}
+                        </div>
+                        <div className="space-y-1 overflow-hidden">
+                          {items.slice(0, 3).map((item, itemIndex) =>
+                            item.type === 'task' ? (
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={itemIndex}
+                                isDragDisabled={item.completed}
+                              >
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    className={cn(
+                                      'text-xs p-1 rounded cursor-pointer transition-all hover:opacity-80 truncate group',
+                                      item.completed
+                                        ? 'bg-green-100 text-green-800 line-through opacity-75'
+                                        : 'bg-blue-100 text-blue-800',
+                                      snapshot.isDragging && 'shadow-lg scale-105 rotate-2 z-50'
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleItemClick(item);
+                                    }}
+                                  >
+                                    <div className="flex items-center gap-1">
+                                      <div
+                                        {...provided.dragHandleProps}
+                                        className={cn(
+                                          'opacity-0 transition-opacity cursor-grab active:cursor-grabbing',
+                                          !item.completed && 'group-hover:opacity-100'
+                                        )}
+                                      >
+                                        <GripVertical className="h-3 w-3" />
+                                      </div>
+                                      {item.completed ? (
+                                        <CheckCircle2 className="h-3 w-3" />
+                                      ) : (
+                                        <Clock className="h-3 w-3" />
+                                      )}
+                                      <span className="truncate flex-1">{item.title}</span>
+                                      {item.priority && item.priority > 3 && (
+                                        <Badge variant="destructive" className="h-3 text-xs px-1">
+                                          !
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </Draggable>
+                            ) : (
+                              <div
+                                key={item.id}
+                                className="text-xs p-1 rounded cursor-pointer transition-all hover:opacity-80 truncate bg-purple-100 text-purple-800"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleItemClick(item);
+                                }}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  <span className="truncate">{item.title}</span>
+                                </div>
+                              </div>
+                            )
+                          )}
+                          {items.length > 3 && (
+                            <div className="text-xs text-gray-500 text-center">
+                              +{items.length - 3} more
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            );
+          })}
+        </div>
+      </DragDropContext>
     );
   };
 
