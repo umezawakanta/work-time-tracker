@@ -23,18 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import {
-  Calendar as CalendarIcon,
-  Plus,
-  Edit3,
-  Trash2,
-  Clock,
-  CheckCircle2,
-  Target,
-  AlertCircle,
-  Filter,
-  Settings,
-} from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Trash2, Clock, CheckCircle2 } from 'lucide-react';
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems, updateTodoItem, deleteTodoItem, addTodoItem } from '@/store/todoSlice';
 import { toast } from 'react-hot-toast';
@@ -85,7 +74,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [showEventModal, setShowEventModal] = useState(false);
+  const [_showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<{ start: Date; end: Date } | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
@@ -119,7 +108,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
       const savedEvents = localStorage.getItem('big-calendar-events');
       if (savedEvents) {
         const parsedEvents = JSON.parse(savedEvents);
-        const eventsWithDates = parsedEvents.map((event: any) => ({
+        const eventsWithDates = parsedEvents.map((event: { id: string; title: string; start: string; end: string; resource?: any }) => ({
           ...event,
           start: new Date(event.start),
           end: new Date(event.end),
