@@ -44,7 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!email || !email.trim()) {
           return res.status(400).json({
             error: 'Bad Request',
-            message: 'メールアドレスは必須です'
+            message: 'メールアドレスは必須です',
           });
         }
 
@@ -53,25 +53,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!emailRegex.test(email)) {
           return res.status(400).json({
             error: 'Bad Request',
-            message: '有効なメールアドレスを入力してください'
+            message: '有効なメールアドレスを入力してください',
           });
         }
 
         // デモ環境での有効なメールアドレスチェック
-        const validEmails = [
-          'admin@example.com',
-          'demo@example.com', 
-          'test@example.com'
-        ];
-        
-        const isValidEmail = validEmails.includes(email) || 
-                           email.includes('demo') || 
-                           email.includes('test');
+        const validEmails = ['admin@example.com', 'demo@example.com', 'test@example.com'];
+
+        const isValidEmail =
+          validEmails.includes(email) || email.includes('demo') || email.includes('test');
 
         if (!isValidEmail) {
           return res.status(404).json({
             error: 'Not Found',
-            message: 'このメールアドレスは登録されていません'
+            message: 'このメールアドレスは登録されていません',
           });
         }
 
@@ -84,16 +79,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.log('✅ パスワードリセットリクエスト:', {
           email,
           token: resetToken,
-          expires: new Date(expires).toISOString()
+          expires: new Date(expires).toISOString(),
         });
 
         const response: PasswordResetResponse = {
           success: true,
-          message: 'パスワードリセットのメールを送信しました'
+          message: 'パスワードリセットのメールを送信しました',
         };
 
         return res.status(200).json(response);
-
       } else if (action === 'verify') {
         // リセットトークンの検証
         const { token }: VerifyTokenRequest = req.body;
@@ -101,16 +95,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!token) {
           return res.status(400).json({
             error: 'Bad Request',
-            message: 'トークンは必須です'
+            message: 'トークンは必須です',
           });
         }
 
         const tokenData = resetTokens.get(token);
-        
+
         if (!tokenData) {
           return res.status(404).json({
             error: 'Invalid Token',
-            message: '無効なトークンです'
+            message: '無効なトークンです',
           });
         }
 
@@ -118,15 +112,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           resetTokens.delete(token);
           return res.status(400).json({
             error: 'Token Expired',
-            message: 'トークンの有効期限が切れています'
+            message: 'トークンの有効期限が切れています',
           });
         }
 
         return res.status(200).json({
           valid: true,
-          message: 'トークンは有効です'
+          message: 'トークンは有効です',
         });
-
       } else if (action === 'confirm') {
         // パスワードリセット確定
         const { token, password }: ConfirmResetRequest = req.body;
@@ -134,23 +127,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!token || !password) {
           return res.status(400).json({
             error: 'Bad Request',
-            message: 'トークンとパスワードは必須です'
+            message: 'トークンとパスワードは必須です',
           });
         }
 
         if (password.length < 6) {
           return res.status(400).json({
             error: 'Bad Request',
-            message: 'パスワードは6文字以上である必要があります'
+            message: 'パスワードは6文字以上である必要があります',
           });
         }
 
         const tokenData = resetTokens.get(token);
-        
+
         if (!tokenData) {
           return res.status(404).json({
             error: 'Invalid Token',
-            message: '無効なトークンです'
+            message: '無効なトークンです',
           });
         }
 
@@ -158,7 +151,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           resetTokens.delete(token);
           return res.status(400).json({
             error: 'Token Expired',
-            message: 'トークンの有効期限が切れています'
+            message: 'トークンの有効期限が切れています',
           });
         }
 
@@ -167,33 +160,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         console.log('✅ パスワードリセット完了:', {
           email: tokenData.email,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
 
         return res.status(200).json({
           success: true,
-          message: 'パスワードが正常に更新されました'
+          message: 'パスワードが正常に更新されました',
         });
-
       } else {
         return res.status(404).json({
           error: 'Not Found',
-          message: '指定されたエンドポイントが見つかりません'
+          message: '指定されたエンドポイントが見つかりません',
         });
       }
-
     } else {
       return res.status(405).json({
         error: 'Method Not Allowed',
-        message: 'サポートされていないHTTPメソッドです'
+        message: 'サポートされていないHTTPメソッドです',
       });
     }
-
   } catch (error) {
     console.error('❌ Password reset API error:', error);
     return res.status(500).json({
       error: 'Internal Server Error',
-      message: 'サーバーエラーが発生しました'
+      message: 'サーバーエラーが発生しました',
     });
   }
-} 
+}

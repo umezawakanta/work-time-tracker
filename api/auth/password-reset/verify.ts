@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({
       error: 'Method Not Allowed',
-      message: 'サポートされていないHTTPメソッドです'
+      message: 'サポートされていないHTTPメソッドです',
     });
   }
 
@@ -31,17 +31,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!token) {
       return res.status(400).json({
         error: 'Bad Request',
-        message: 'トークンは必須です'
+        message: 'トークンは必須です',
       });
     }
 
     const tokenData = resetTokens.get(token);
-    
+
     if (!tokenData) {
       return res.status(404).json({
         error: 'Invalid Token',
         message: '無効なトークンです',
-        valid: false
+        valid: false,
       });
     }
 
@@ -50,27 +50,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({
         error: 'Token Expired',
         message: 'トークンの有効期限が切れています',
-        valid: false
+        valid: false,
       });
     }
 
     console.log('✅ トークン検証成功:', {
       token,
       email: tokenData.email,
-      expires: new Date(tokenData.expires).toISOString()
+      expires: new Date(tokenData.expires).toISOString(),
     });
 
     return res.status(200).json({
       valid: true,
-      message: 'トークンは有効です'
+      message: 'トークンは有効です',
     });
-
   } catch (error) {
     console.error('❌ Token verification error:', error);
     return res.status(500).json({
       error: 'Internal Server Error',
       message: 'サーバーエラーが発生しました',
-      valid: false
+      valid: false,
     });
   }
-} 
+}

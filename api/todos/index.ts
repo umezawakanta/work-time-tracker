@@ -35,7 +35,7 @@ let todos: TodoItem[] = [
     tags: ['認証', 'Phase1', '完成'],
     note: 'ログイン・ログアウト・登録・パスワードリセット機能',
     estimatedDuration: 15,
-    userId: 'demo-user'
+    userId: 'demo-user',
   },
   {
     id: 'demo-todo-2',
@@ -52,7 +52,7 @@ let todos: TodoItem[] = [
     tags: ['CRUD', 'タスク管理', 'Phase1'],
     note: '作成・読取・更新・削除機能とフィルター・ソート',
     estimatedDuration: 20,
-    userId: 'demo-user'
+    userId: 'demo-user',
   },
   {
     id: 'demo-todo-3',
@@ -69,7 +69,7 @@ let todos: TodoItem[] = [
     tags: ['カレンダー', 'ドラッグ&ドロップ', 'Phase1'],
     note: 'react-big-calendarとドラッグ&ドロップ機能',
     estimatedDuration: 8,
-    userId: 'demo-user'
+    userId: 'demo-user',
   },
   {
     id: 'demo-todo-4',
@@ -86,7 +86,7 @@ let todos: TodoItem[] = [
     tags: ['AI', 'Phase2', '準備'],
     note: 'AIタスク提案機能の基盤構築',
     estimatedDuration: 25,
-    userId: 'demo-user'
+    userId: 'demo-user',
   },
   {
     id: 'demo-todo-5',
@@ -103,8 +103,8 @@ let todos: TodoItem[] = [
     tags: ['WBS', '実績', 'テスト'],
     note: '実際の工数・日付データの反映機能テスト',
     estimatedDuration: 5,
-    userId: 'demo-user'
-  }
+    userId: 'demo-user',
+  },
 ];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -122,7 +122,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
       error: 'Unauthorized',
-      message: '認証が必要です'
+      message: '認証が必要です',
     });
   }
 
@@ -130,55 +130,65 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET') {
       // Todo一覧取得
       const { completed, type, priority, tags } = req.query;
-      
+
       let filteredTodos = [...todos];
 
       // フィルター適用
       if (completed !== undefined) {
         const isCompleted = completed === 'true';
-        filteredTodos = filteredTodos.filter(todo => todo.completed === isCompleted);
+        filteredTodos = filteredTodos.filter((todo) => todo.completed === isCompleted);
       }
 
       if (type && typeof type === 'string') {
-        filteredTodos = filteredTodos.filter(todo => todo.type === type);
+        filteredTodos = filteredTodos.filter((todo) => todo.type === type);
       }
 
       if (priority && typeof priority === 'string') {
         const priorityNum = parseInt(priority);
-        filteredTodos = filteredTodos.filter(todo => todo.priority >= priorityNum);
+        filteredTodos = filteredTodos.filter((todo) => todo.priority >= priorityNum);
       }
 
       if (tags && typeof tags === 'string') {
         const tagList = tags.split(',');
-        filteredTodos = filteredTodos.filter(todo => 
-          todo.tags && todo.tags.some(tag => tagList.includes(tag))
+        filteredTodos = filteredTodos.filter(
+          (todo) => todo.tags && todo.tags.some((tag) => tagList.includes(tag))
         );
       }
 
       // 作成日時順でソート（新しい順）
-      filteredTodos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      filteredTodos.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
 
       console.log('✅ Todo一覧取得:', {
         total: todos.length,
         filtered: filteredTodos.length,
-        filters: { completed, type, priority, tags }
+        filters: { completed, type, priority, tags },
       });
 
       return res.status(200).json({
         success: true,
         data: filteredTodos,
         total: filteredTodos.length,
-        message: 'Todo一覧を取得しました'
+        message: 'Todo一覧を取得しました',
       });
-
     } else if (req.method === 'POST') {
       // Todo作成
-      const { task, priority = 3, type = 'input', deadline, category, tags, note, estimatedDuration } = req.body;
+      const {
+        task,
+        priority = 3,
+        type = 'input',
+        deadline,
+        category,
+        tags,
+        note,
+        estimatedDuration,
+      } = req.body;
 
       if (!task || !task.trim()) {
         return res.status(400).json({
           error: 'Bad Request',
-          message: 'タスク内容は必須です'
+          message: 'タスク内容は必須です',
         });
       }
 
@@ -197,7 +207,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         tags: Array.isArray(tags) ? tags : [],
         note,
         estimatedDuration,
-        userId: 'demo-user'
+        userId: 'demo-user',
       };
 
       todos.unshift(newTodo); // 先頭に追加
@@ -206,27 +216,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id: newTodo.id,
         task: newTodo.task,
         priority: newTodo.priority,
-        type: newTodo.type
+        type: newTodo.type,
       });
 
       return res.status(201).json({
         success: true,
         data: newTodo,
-        message: 'Todoを作成しました'
+        message: 'Todoを作成しました',
       });
-
     } else {
       return res.status(405).json({
         error: 'Method Not Allowed',
-        message: 'サポートされていないHTTPメソッドです'
+        message: 'サポートされていないHTTPメソッドです',
       });
     }
-
   } catch (error) {
     console.error('❌ Todo API error:', error);
     return res.status(500).json({
       error: 'Internal Server Error',
-      message: 'サーバーエラーが発生しました'
+      message: 'サーバーエラーが発生しました',
     });
   }
-} 
+}
