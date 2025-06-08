@@ -6,13 +6,8 @@ import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { firebaseConfig } from './index';
 
-// 開発環境での設定検証をスキップ
-const validateFirebaseConfig = (): void => {
-  if (import.meta.env.DEV) {
-    console.warn('🚧 Development mode: Skipping Firebase config validation');
-    return;
-  }
-
+// Firebase設定の検証
+const validateFirebaseConfig = (): boolean => {
   const requiredFields = [
     'apiKey',
     'authDomain',
@@ -22,50 +17,89 @@ const validateFirebaseConfig = (): void => {
     'appId',
   ];
 
-  requiredFields.forEach((field) => {
-    if (!firebaseConfig[field as keyof typeof firebaseConfig]) {
-      console.error(`Missing required Firebase config: ${field}`);
+  const missingFields = requiredFields.filter(
+    (field) => !firebaseConfig[field as keyof typeof firebaseConfig]
+  );
+
+  if (missingFields.length > 0) {
+    if (import.meta.env.DEV) {
+      console.warn('🚧 Development mode: Missing Firebase config fields:', missingFields);
+      return false;
+    } else {
+      console.error('❌ Production: Missing required Firebase config:', missingFields);
+      throw new Error(`Missing Firebase configuration: ${missingFields.join(', ')}`);
     }
-  });
+  }
+
+  return true;
 };
 
-validateFirebaseConfig();
+// Firebase設定の可用性をチェック
+const isFirebaseConfigValid = validateFirebaseConfig();
 
-// ダミー設定で初期化（開発環境のみ）
-const developmentConfig = {
-  apiKey: 'demo-api-key',
-  authDomain: 'demo-project.firebaseapp.com',
-  projectId: 'demo-project',
-  storageBucket: 'demo-project.appspot.com',
-  messagingSenderId: '123456789',
-  appId: '1:123456789:web:abcdef123456',
-};
+// Firebase初期化（設定が有効な場合のみ）
+let app: any = null;
+let auth: any = null;
+let db: any = null;
+let storage: any = null;
+let analytics: any = null;
 
-// Firebase初期化
-const app = initializeApp(
-  import.meta.env.DEV && !firebaseConfig.apiKey ? developmentConfig : firebaseConfig
-);
+if (isFirebaseConfigValid) {
+  try {
+    console.log('🚀 Initializing Firebase with valid config');
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
 
-// Firebase services（エラーハンドリング付き）
-let auth, db, storage, analytics;
-
-try {
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
-} catch (error) {
-  console.warn('🚧 Firebase services initialization failed (development mode)');
-  if (import.meta.env.DEV) {
-    // 開発環境ではモックオブジェクトを提供
-    auth = {} as any;
-    db = {} as any;
-    storage = {} as any;
-    analytics = Promise.resolve(null);
-  } else {
+    // Analytics は本番環境でのみ有効化
+    if (!import.meta.env.DEV) {
+      analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
+    } else {
+      analytics = Promise.resolve(null);
+      console.log('🚧 Development: Firebase Analytics disabled');
+    }
+  } catch (error) {
+    console.error('❌ Firebase initialization failed:', error);
     throw error;
   }
+} else {
+  // 開発環境用のモック設定
+  console.log('🎭 Development mode: Using mock Firebase services');
+
+  // モックオブジェクトを提供
+  auth = {
+    currentUser: null,
+    onAuthStateChanged: () => () => {},
+    signInWithEmailAndPassword: () => Promise.reject(new Error('Firebase not configured')),
+    createUserWithEmailAndPassword: () => Promise.reject(new Error('Firebase not configured')),
+    signOut: () => Promise.resolve(),
+  };
+
+  db = {
+    collection: () => ({
+      add: () => Promise.reject(new Error('Firebase not configured')),
+      doc: () => ({
+        get: () => Promise.reject(new Error('Firebase not configured')),
+        set: () => Promise.reject(new Error('Firebase not configured')),
+        update: () => Promise.reject(new Error('Firebase not configured')),
+        delete: () => Promise.reject(new Error('Firebase not configured')),
+      }),
+    }),
+  };
+
+  storage = {
+    ref: () => ({
+      put: () => Promise.reject(new Error('Firebase not configured')),
+      getDownloadURL: () => Promise.reject(new Error('Firebase not configured')),
+    }),
+  };
+
+  analytics = Promise.resolve(null);
 }
 
 export { auth, db, storage, analytics };
 export default app;
+
+// Firebase設定状態をエクスポート
+export const isFirebaseEnabled = isFirebaseConfigValid;

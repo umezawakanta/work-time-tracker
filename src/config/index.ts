@@ -17,8 +17,8 @@ if (import.meta.env.DEV) {
   });
 }
 
-// Firebase設定
-export const firebaseConfig = {
+// Firebase設定をデバッグ情報と共にエクスポート
+const firebaseEnvVars = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -26,6 +26,36 @@ export const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
+// 開発環境でのデバッグ情報
+if (import.meta.env.DEV) {
+  const configStatus = Object.entries(firebaseEnvVars).reduce(
+    (acc, [key, value]) => {
+      acc[key] = value ? 'Set' : 'Missing';
+      return acc;
+    },
+    {} as Record<string, string>
+  );
+
+  console.log('🔧 Firebase Config Status:', configStatus);
+
+  // 設定が不完全な場合の案内
+  const missingConfigs = Object.entries(configStatus)
+    .filter(([_, status]) => status === 'Missing')
+    .map(([key]) => key);
+
+  if (missingConfigs.length > 0) {
+    console.warn(`
+🚧 Firebase設定が不完全です。以下の環境変数を.env.localファイルに追加してください:
+
+${missingConfigs.map((key) => `VITE_FIREBASE_${key.toUpperCase()}=your_${key}_here`).join('\n')}
+
+現在は開発モードでモック機能が使用されます。
+    `);
+  }
+}
+
+export const firebaseConfig = firebaseEnvVars;
 
 // アプリケーション情報
 export const appInfo = {
@@ -98,8 +128,8 @@ export const premiumFeatures = [
 
 // API設定
 export const apiConfig = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL || '',
-  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10),
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002/api',
+  timeout: 10000,
 };
 
 // フィードバックタイプ
