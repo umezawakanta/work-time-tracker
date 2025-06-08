@@ -144,7 +144,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // APIによる認証状態確認（タイムアウトを設定）
       console.log('📡 Starting server auth check...');
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Auth check timeout')), 8000); // 8秒タイムアウト
+        setTimeout(() => reject(new Error('Auth check timeout')), 4000); // 4秒タイムアウト
       });
 
       const authCheckPromise = checkAuth();
@@ -233,7 +233,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // タイムアウト付きでcheckAuthStatusを実行
       const authCheckPromise = checkAuthStatus();
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Refresh auth timeout')), 20000); // 20秒タイムアウト（本番環境対応）
+        setTimeout(() => reject(new Error('Refresh auth timeout')), 5000); // 5秒タイムアウト
       });
 
       const isValid = await Promise.race([authCheckPromise, timeoutPromise]);
@@ -347,7 +347,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               // タイムアウトを設定してcheckAuthStatusを実行
               const authCheckPromise = checkAuthStatus();
               const timeoutPromise = new Promise<boolean>((_, reject) => {
-                setTimeout(() => reject(new Error('Init auth timeout')), 10000); // 10秒タイムアウトに短縮
+                setTimeout(() => reject(new Error('Init auth timeout')), 5000); // 5秒タイムアウト
               });
 
               const isValid = await Promise.race([authCheckPromise, timeoutPromise]);

@@ -154,9 +154,22 @@ export const checkAuth = async (): Promise<boolean> => {
     }
 
     console.log('🔄 Checking auth with server...');
-    const response = await api.get('/auth/check');
-    console.log('✅ Server auth check response:', response.data);
-    return response.data.isAuthenticated;
+
+    // 開発環境では短いタイムアウトでサーバーチェック
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒タイムアウト
+
+    try {
+      const response = await api.get('/auth/check', {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      console.log('✅ Server auth check response:', response.data);
+      return response.data.isAuthenticated;
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      throw fetchError;
+    }
   } catch (error: unknown) {
     const err = error as Error & { response?: { status?: number; data?: unknown }; code?: string };
     console.error('❌ Auth check error:', {
@@ -166,10 +179,16 @@ export const checkAuth = async (): Promise<boolean> => {
       code: err.code,
     });
 
-    // ネットワークエラーやサーバーダウンの場合は認証状態を維持
-    if (err.code === 'ECONNREFUSED' || err.code === 'NETWORK_ERROR' || !err.response) {
-      console.log('⚠️ Network error - maintaining auth state');
-      return true; // ネットワークエラーの場合は認証状態を維持
+    // 開発環境でのタイムアウトやネットワークエラーの場合は認証状態を維持
+    if (
+      err.name === 'AbortError' ||
+      err.code === 'ECONNREFUSED' ||
+      err.code === 'NETWORK_ERROR' ||
+      !err.response ||
+      import.meta.env.DEV
+    ) {
+      console.log('⚠️ Network error or timeout - maintaining auth state (dev mode)');
+      return true; // 開発環境では認証状態を維持
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
