@@ -58,134 +58,154 @@
   }
 }
 
-/* Force rebuild */
-
-/* Tailwind v4 Test */
-.test-tailwind-v4 {
-  background: red;
-  color: white;
-  padding: 16px;
-  border-radius: 8px;
+/* ベーススタイル */
+* {
+  border-color: hsl(var(--color-border));
 }
 
-/* Force Tailwind classes generation */
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  scroll-behavior: smooth;
+}
+
 body {
-  @apply bg-background text-foreground;
+  background-color: hsl(var(--color-background));
+  color: hsl(var(--color-foreground));
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
-  }
-
-  /* カスタムスクロールバー */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full hover:bg-slate-400;
-  }
-
-  ::-webkit-scrollbar-corner {
-    @apply bg-transparent;
-  }
+/* カスタムスクロールバー */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-@layer components {
-  /* 高度なグラデーション */
-  .gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .gradient-secondary {
-    background: var(--gradient-secondary);
-  }
-
-  .gradient-accent {
-    background: var(--gradient-accent);
-  }
-
-  .gradient-mesh {
-    background:
-      radial-gradient(circle at 20% 50%, hsl(217 91% 60% / 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(262 83% 58% / 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, hsl(45 100% 51% / 0.15) 0%, transparent 50%),
-      linear-gradient(135deg, hsl(217 91% 60% / 0.05) 0%, hsl(262 83% 58% / 0.05) 100%);
-  }
-
-  /* 高度なアニメーション */
-  .animate-fade-in {
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .animate-blur-in {
-    animation: blurIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* インタラクション効果 */
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-  }
-
-  .glass-effect {
-    backdrop-filter: blur(16px) saturate(180%);
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .glass-dark {
-    backdrop-filter: blur(16px) saturate(180%);
-    background: rgba(30, 41, 59, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  /* ホバーエフェクト */
-  .hover-lift {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-  }
-
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-xl hover:shadow-primary/25;
-  }
-
-  /* タイポグラフィ */
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* 高度なキーフレーム */
+::-webkit-scrollbar-thumb {
+  background-color: hsl(240 4.9% 83.9%);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(240 5.9% 73.9%);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* カスタムコンポーネント */
+.gradient-primary {
+  background: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(212 100% 48%) 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, hsl(45 100% 51%) 0%, hsl(38 92% 50%) 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(217 91% 60%) 100%);
+}
+
+.gradient-mesh {
+  background:
+    radial-gradient(circle at 20% 50%, hsl(217 91% 60% / 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsl(262 83% 58% / 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, hsl(45 100% 51% / 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, hsl(217 91% 60% / 0.05) 0%, hsl(262 83% 58% / 0.05) 100%);
+}
+
+/* アニメーション */
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-blur-in {
+  animation: blurIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* インタラクション効果 */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px hsl(var(--color-background)),
+    0 0 0 4px hsl(var(--color-primary));
+}
+
+.glass-effect {
+  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ホバーエフェクト */
+.hover-lift {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.hover-glow {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-glow:hover {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    0 0 0 1px hsl(var(--color-primary) / 0.25);
+}
+
+/* タイポグラフィ */
+.text-gradient {
+  background: linear-gradient(
+    to right,
+    hsl(var(--color-primary)),
+    hsl(var(--color-accent)),
+    hsl(var(--color-primary))
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* キーフレーム */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -233,7 +253,8 @@ body {
 /* レスポンシブヘルパー */
 @media (max-width: 640px) {
   .mobile-padding {
-    @apply px-4;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
@@ -248,7 +269,7 @@ body {
   }
 
   * {
-    @apply shadow-none !important;
+    box-shadow: none !important;
   }
 }
 
