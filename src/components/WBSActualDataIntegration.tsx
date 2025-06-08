@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -47,7 +47,7 @@ export const WBSActualDataIntegration: React.FC<WBSActualDataIntegrationProps> =
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   // 実績データを取得する関数
-  const fetchActualData = async () => {
+  const fetchActualData = useCallback(async () => {
     if (!user?.uid) return;
 
     try {
@@ -64,7 +64,7 @@ export const WBSActualDataIntegration: React.FC<WBSActualDataIntegrationProps> =
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.uid, projectId, nodes]);
 
   // 特定ノードの詳細データを取得
   const fetchNodeDetail = async (nodeId: string) => {
@@ -81,7 +81,7 @@ export const WBSActualDataIntegration: React.FC<WBSActualDataIntegrationProps> =
   // 初回データ取得
   useEffect(() => {
     fetchActualData();
-  }, [user?.uid, projectId]);
+  }, [user?.uid, projectId, fetchActualData]);
 
   // 自動更新設定
   useEffect(() => {
@@ -89,7 +89,7 @@ export const WBSActualDataIntegration: React.FC<WBSActualDataIntegrationProps> =
 
     const interval = setInterval(fetchActualData, refreshInterval);
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, user?.uid, projectId]);
+  }, [autoRefresh, refreshInterval, fetchActualData]);
 
   // エクスポート機能
   const exportReport = () => {

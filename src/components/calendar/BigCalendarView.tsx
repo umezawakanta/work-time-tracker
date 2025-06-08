@@ -528,12 +528,16 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
               date={currentDate}
               onNavigate={setCurrentDate}
               onSelectSlot={handleSelectSlot}
-              onSelectEvent={(event: any) => handleSelectEvent(event as CalendarEvent)}
-              onEventDrop={(args: any) => handleEventDrop(args)}
-              onEventResize={(args: any) => handleEventResize(args)}
+              onSelectEvent={(event: object) => handleSelectEvent(event as CalendarEvent)}
+              onEventDrop={(args: object) =>
+                handleEventDrop(args as { event: CalendarEvent; start: Date; end: Date })
+              }
+              onEventResize={(args: object) =>
+                handleEventResize(args as { event: CalendarEvent; start: Date; end: Date })
+              }
               selectable
               resizable
-              eventPropGetter={(event: any) => eventStyleGetter(event as CalendarEvent)}
+              eventPropGetter={(event: object) => eventStyleGetter(event as CalendarEvent)}
               views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
               messages={{
                 next: '次へ',

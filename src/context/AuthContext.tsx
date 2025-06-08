@@ -320,7 +320,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         // 開発環境での即座認証設定（サーバー問題を回避）
-        if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+        // ログアウト状態をチェック
+        const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
+
+        if (import.meta.env.DEV && window.location.hostname === 'localhost' && !isLoggedOut) {
           console.log('🚀 Development fast auth mode enabled');
           if (isMounted) {
             setUser({
@@ -339,6 +342,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log('🏁 認証初期化完了 - loading終了 (dev fast mode)');
             return; // 早期リターンで他の処理をスキップ
           }
+        } else if (isLoggedOut) {
+          console.log('🚪 User manually logged out - skipping auto auth');
         }
 
         if (isTokenValid) {
@@ -425,8 +430,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         } else {
           console.log('🔒 トークン無効 - 認証クリア');
-          // 開発環境でトークンがない場合のフォールバック
-          if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+          // ログアウト状態をチェック
+          const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
+
+          // 開発環境でトークンがない場合のフォールバック（ログアウトしていない場合のみ）
+          if (import.meta.env.DEV && window.location.hostname === 'localhost' && !isLoggedOut) {
             console.log('🔧 Development mode: Setting demo auth for no token case');
             setUser({
               id: 'demo-user',
@@ -443,6 +451,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             tokenManager.clearTokens();
             setIsAuthenticated(false);
             setUser(null);
+            if (isLoggedOut) {
+              console.log('🚪 Logged out state preserved');
+            }
           }
           console.log('🔒 Auth cleared - user needs to login');
         }

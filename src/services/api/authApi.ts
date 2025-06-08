@@ -84,6 +84,9 @@ export const login = async (
         localStorage.removeItem('rememberMe');
       }
 
+      // ログアウトフラグをクリア
+      sessionStorage.removeItem('user-logged-out');
+
       // AuthResponse形式に変換
       return {
         accessToken: response.data.token,
@@ -113,6 +116,9 @@ export const login = async (
       } else {
         localStorage.removeItem('rememberMe');
       }
+
+      // ログアウトフラグをクリア
+      sessionStorage.removeItem('user-logged-out');
     }
 
     return response.data;
@@ -130,6 +136,11 @@ export const logout = (): void => {
   localStorage.removeItem('user');
   localStorage.removeItem('lastActivity');
   localStorage.removeItem('sessionPersistent');
+
+  // 開発環境での自動認証を無効化するフラグを設定
+  sessionStorage.setItem('user-logged-out', 'true');
+
+  console.log('🚪 Logout completed - auto auth disabled');
 };
 
 export const checkAuth = async (): Promise<boolean> => {
