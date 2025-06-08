@@ -511,19 +511,19 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
             <DnDCalendar
               localizer={localizer}
               events={allEvents}
-              startAccessor={(event: CalendarEvent) => event.start}
-              endAccessor={(event: CalendarEvent) => event.end}
+              startAccessor={(event: any) => event.start}
+              endAccessor={(event: any) => event.end}
               view={currentView}
               onView={setCurrentView}
               date={currentDate}
               onNavigate={setCurrentDate}
               onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-              onEventDrop={handleEventDrop}
-              onEventResize={handleEventResize}
+              onSelectEvent={(event: any) => handleSelectEvent(event as CalendarEvent)}
+              onEventDrop={(args: any) => handleEventDrop(args)}
+              onEventResize={(args: any) => handleEventResize(args)}
               selectable
               resizable
-              eventPropGetter={eventStyleGetter}
+              eventPropGetter={(event: any) => eventStyleGetter(event as CalendarEvent)}
               views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
               messages={{
                 next: '次へ',
