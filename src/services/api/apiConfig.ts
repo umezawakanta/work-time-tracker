@@ -45,9 +45,28 @@ const getApiBaseUrl = () => {
 const baseURL = getApiBaseUrl();
 console.log('🔗 API Base URL:', baseURL);
 
+// 本番環境での健全性チェック
+if (
+  typeof window !== 'undefined' &&
+  window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+) {
+  console.log('🏥 本番環境健全性チェック開始...');
+  fetch(baseURL + '/health', { method: 'GET' })
+    .then((response) => {
+      if (response.ok) {
+        console.log('✅ 本番API正常動作確認');
+      } else {
+        console.warn('⚠️ 本番APIレスポンス異常:', response.status);
+      }
+    })
+    .catch((error) => {
+      console.error('❌ 本番API接続失敗:', error.message);
+    });
+}
+
 export const api = axios.create({
   baseURL,
-  timeout: 10000, // 10秒タイムアウト
+  timeout: 30000, // 30秒タイムアウト（本番環境対応）
   headers: {
     'Content-Type': 'application/json',
   },
