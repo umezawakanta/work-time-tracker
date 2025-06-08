@@ -306,7 +306,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         ) {
           console.log('💡 Development Mode Guidance:');
           console.log('   - Frontend: http://localhost:3000 ✅');
-          console.log('   - Backend: http://localhost:3001 (確認中...)');
+          console.log('   - Backend: http://localhost:3002 (確認中...)');
           console.log('   - サーバーが起動していない場合、オフラインモードで動作します');
           sessionStorage.setItem('auth-init-shown', 'true');
         }

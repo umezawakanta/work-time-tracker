@@ -39,7 +39,7 @@ const getApiBaseUrl = () => {
   }
 
   // 開発環境のデフォルト
-  return 'http://localhost:3001/api';
+  return 'http://localhost:3002/api';
 };
 
 const baseURL = getApiBaseUrl();
@@ -111,9 +111,9 @@ api.interceptors.response.use(
       }
 
       // 開発環境でのサーバー未起動を通知
-      if (baseURL.includes('localhost:3001') && import.meta.env.DEV) {
+      if (baseURL.includes('localhost:3002') && import.meta.env.DEV) {
         console.warn(
-          '💡 Hint: Make sure your development server is running on http://localhost:3001'
+          '💡 Hint: Make sure your development server is running on http://localhost:3002'
         );
       }
     } else {
