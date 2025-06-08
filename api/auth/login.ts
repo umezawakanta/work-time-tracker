@@ -1,3 +1,5 @@
+// Fixed runtime configuration for Vercel deployment
+import { NextApiRequest, NextApiResponse } from 'next';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
 interface LoginRequest {
