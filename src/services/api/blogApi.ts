@@ -92,6 +92,18 @@ const mockBlogPosts: BlogPost[] = [
 
 export const blogApi = {
   getAll: (): Promise<AxiosResponse<BlogPost[]>> => {
+    // 開発環境での一時的モックデータ使用（デバッグ用）
+    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+      console.log('🔧 Development mode: Using mock blog data');
+      return Promise.resolve({
+        data: mockBlogPosts,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as AxiosRequestConfig,
+      } as AxiosResponse<BlogPost[]>);
+    }
+
     // モックモードの場合はモックデータを返す
     if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
       console.log('🎭 Mock mode: Returning mock blog posts');
@@ -125,6 +137,19 @@ export const blogApi = {
           url: error.config?.url,
           baseURL: error.config?.baseURL,
         });
+
+        // 開発環境でエラーが発生した場合はフォールバック
+        if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+          console.log('🔧 Development mode: Fallback to mock blog data on error');
+          return Promise.resolve({
+            data: mockBlogPosts,
+            status: 200,
+            statusText: 'OK (Fallback)',
+            headers: {},
+            config: {} as AxiosRequestConfig,
+          } as AxiosResponse<BlogPost[]>);
+        }
+
         throw error;
       });
   },
@@ -151,7 +176,37 @@ export const blogApi = {
   },
 
   getById: (id: string): Promise<AxiosResponse<BlogPost>> => {
-    return api.get<BlogPost>(`/blog/${id}`);
+    // 開発環境での一時的モックデータ使用（デバッグ用）
+    if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+      console.log('🔧 Development mode: Using mock blog post for ID:', id);
+      const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
+      return Promise.resolve({
+        data: mockPost,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as AxiosRequestConfig,
+      } as AxiosResponse<BlogPost>);
+    }
+
+    return api.get<BlogPost>(`/blog/${id}`).catch((error) => {
+      console.error('❌ Blog Post API Error:', error);
+
+      // 開発環境でエラーが発生した場合はフォールバック
+      if (import.meta.env.DEV && window.location.hostname === 'localhost') {
+        console.log('🔧 Development mode: Fallback to mock blog post on error');
+        const mockPost = mockBlogPosts.find((post) => post._id === id) || mockBlogPosts[0];
+        return Promise.resolve({
+          data: mockPost,
+          status: 200,
+          statusText: 'OK (Fallback)',
+          headers: {},
+          config: {} as AxiosRequestConfig,
+        } as AxiosResponse<BlogPost>);
+      }
+
+      throw error;
+    });
   },
 
   toggleLike: (postId: string, userId: string): Promise<AxiosResponse<LikeApiResponse>> => {
