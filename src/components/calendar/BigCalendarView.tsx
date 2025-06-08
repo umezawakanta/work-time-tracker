@@ -521,8 +521,8 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
             <DnDCalendar
               localizer={localizer}
               events={allEvents}
-              startAccessor={(event: any) => event.start}
-              endAccessor={(event: any) => event.end}
+              startAccessor={(event: object) => (event as CalendarEvent).start}
+              endAccessor={(event: object) => (event as CalendarEvent).end}
               view={currentView}
               onView={setCurrentView}
               date={currentDate}
