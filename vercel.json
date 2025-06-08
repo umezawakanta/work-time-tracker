@@ -19,8 +19,24 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/auth/(.*)",
+      "dest": "/api/auth"
+    },
+    {
+      "src": "/api/blog/(.*)",
+      "dest": "/api/blog"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health"
+    },
+    {
+      "src": "/api/todos/(.*)",
+      "dest": "/api/todos/$1"
+    },
+    {
+      "src": "/api/todos",
+      "dest": "/api/todos"
     },
     {
       "src": "/assets/(.*)",
