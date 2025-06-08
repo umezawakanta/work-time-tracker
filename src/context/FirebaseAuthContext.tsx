@@ -51,6 +51,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
           email: 'dev@example.com',
           displayName: 'Development User',
           isPremium: true,
+          photoURL: null,
+          emailVerified: true,
+          createdAt: new Date().toISOString(),
         });
         setIsAuthenticated(true);
       }
@@ -99,13 +102,26 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     }
   }, []);
 
-  // 他の認証メソッドも同様に実装...
   const signUp = useCallback(async (name: string, email: string, password: string) => {
     if (!isFirebaseEnabled) {
       toast.error('Firebase認証が設定されていません');
       return;
     }
-    // 実装...
+
+    setLoading(true);
+    try {
+      const response = await AuthService.signUp(email, password, name);
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+      toast.success('アカウントを作成しました。確認メールを送信しました。');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'アカウント作成に失敗しました';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
@@ -113,7 +129,21 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       toast.error('Firebase認証が設定されていません');
       return;
     }
-    // 実装...
+
+    setLoading(true);
+    try {
+      const response = await AuthService.signInWithGoogle();
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+      toast.success('Googleアカウントでログインしました');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Googleログインに失敗しました';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const signOut = useCallback(async () => {
@@ -121,10 +151,23 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       setIsAuthenticated(false);
       setUser(null);
       toast.success('ログアウトしました');
-      navigate('/login');
+      navigate('/firebase-login');
       return;
     }
-    // Firebase実装...
+
+    setLoading(true);
+    try {
+      await AuthService.signOut();
+      setIsAuthenticated(false);
+      setUser(null);
+      toast.success('ログアウトしました');
+      navigate('/firebase-login');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'ログアウトに失敗しました';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
 
   const resetPassword = useCallback(async (email: string) => {
@@ -132,7 +175,19 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       toast.error('Firebase認証が設定されていません');
       return;
     }
-    // 実装...
+
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock delay
+      console.log('Password reset would be sent to:', email);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'パスワードリセットに失敗しました';
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const refreshAuth = useCallback(async () => {

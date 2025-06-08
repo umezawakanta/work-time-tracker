@@ -40,6 +40,7 @@ import IntegratedDashboard from './pages/IntegratedDashboard';
 import WorkTimeEntry from './pages/WorkTimeEntry';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
+import TaskManagementPage from './pages/TaskManagementPage';
 
 // Material-UI テーマの設定
 const theme = createTheme({
@@ -141,6 +142,9 @@ function App() {
 
                     {/* 日記 */}
                     <Route path="diary" element={<DiaryPage />} />
+
+                    {/* 新しいタスク管理ページ */}
+                    <Route path="tasks" element={<TaskManagementPage />} />
                   </Route>
                 </Route>
 
