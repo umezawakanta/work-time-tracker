@@ -46,7 +46,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // デモ環境の認証ロジック
     const adminEmails = ['admin@example.com', 'demo@example.com', 'test@example.com'];
-    const isValidDemo = email.includes('demo') || email.includes('test') || adminEmails.includes(email);
+    const isValidDemo =
+      email.includes('demo') || email.includes('test') || adminEmails.includes(email);
     const isPasswordValid = password.length >= 3;
 
     if (!isValidDemo || !isPasswordValid) {
@@ -60,7 +61,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const user = {
       id: `user_${Date.now()}`,
       _id: `user_${Date.now()}`,
-      name: email.includes('admin') ? 'Admin User' : email.includes('demo') ? 'Demo User' : 'Test User',
+      name: email.includes('admin')
+        ? 'Admin User'
+        : email.includes('demo')
+          ? 'Demo User'
+          : 'Test User',
       username: email.split('@')[0],
       email: email,
       isAdmin: adminEmails.includes(email) || email.includes('admin'),
@@ -81,4 +86,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       message: 'サーバーエラーが発生しました',
     });
   }
-} 
+}
