@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert } from '@mui/material';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   CheckCircle2,
   Circle,
@@ -21,10 +21,16 @@ import {
   TrendingUp,
   BookOpen,
   Zap,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EventModal } from '@/components/EventModal';
 import '@/styles/event.css';
+
+// ユーティリティ関数
+const formatDate = (date: Date | undefined) => {
+  return date ? date.toLocaleDateString('ja-JP') : '未設定';
+};
 
 interface WBSTask {
   id: string;
@@ -42,6 +48,14 @@ interface WBSTask {
   startDate?: Date;
   endDate?: Date;
   completedDate?: Date;
+}
+
+// 実績データ統合用の型定義
+interface ActualDataMetrics {
+  efficiency: number; // 効率性 (実績/計画 * 100)
+  timeVariance: number; // 時間差異 (実績 - 計画)
+  scheduleVariance: number; // スケジュール差異（日数）
+  actualDuration?: number; // 実際の作業期間（日数）
 }
 
 interface WBSProject {
@@ -741,12 +755,9 @@ const TaskCard: React.FC<{
   level: number;
   onToggle: (taskId: string) => void;
   isExpanded: boolean;
-}> = ({ task, level, onToggle, isExpanded }) => {
+  calculateActualMetrics: (task: WBSTask) => ActualDataMetrics;
+}> = ({ task, level, onToggle, isExpanded, calculateActualMetrics }) => {
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
-
-  const formatDate = (date: Date | undefined) => {
-    return date ? date.toLocaleDateString('ja-JP') : '未設定';
-  };
 
   return (
     <div className={cn('mb-2', level > 0 && 'ml-6')}>
@@ -776,7 +787,23 @@ const TaskCard: React.FC<{
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <span className="text-xs text-gray-500">予定: {task.estimatedHours}h</span>
                   {task.actualHours && (
-                    <span className="text-xs text-gray-500">実績: {task.actualHours}h</span>
+                    <>
+                      <span className="text-xs text-blue-600">実績: {task.actualHours}h</span>
+                      {(() => {
+                        const metrics = calculateActualMetrics(task);
+                        const efficiencyColor =
+                          metrics.efficiency <= 100
+                            ? 'text-green-600'
+                            : metrics.efficiency <= 120
+                              ? 'text-yellow-600'
+                              : 'text-red-600';
+                        return (
+                          <span className={`text-xs font-semibold ${efficiencyColor}`}>
+                            効率: {metrics.efficiency.toFixed(1)}%
+                          </span>
+                        );
+                      })()}
+                    </>
                   )}
                   {task.startDate && (
                     <span className="text-xs text-blue-500">
@@ -826,6 +853,51 @@ export function WBSCreator() {
     0
   );
 
+  // 実績データのメトリクスを計算
+  const calculateActualMetrics = (task: WBSTask): ActualDataMetrics => {
+    const efficiency =
+      task.estimatedHours > 0 ? ((task.actualHours || 0) / task.estimatedHours) * 100 : 100;
+    const timeVariance = (task.actualHours || 0) - task.estimatedHours;
+
+    let scheduleVariance = 0;
+    let actualDuration;
+
+    if (task.startDate && task.endDate) {
+      const plannedDuration = Math.ceil(
+        (task.endDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (task.completedDate) {
+        actualDuration = Math.ceil(
+          (task.completedDate.getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        scheduleVariance = actualDuration - plannedDuration;
+      } else if (task.status === 'in-progress') {
+        const currentDuration = Math.ceil(
+          (new Date().getTime() - task.startDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        scheduleVariance = currentDuration - plannedDuration;
+      }
+    }
+
+    return {
+      efficiency,
+      timeVariance,
+      scheduleVariance,
+      actualDuration,
+    };
+  };
+
+  // 全体の実績サマリーを計算
+  const overallMetrics = {
+    totalEfficiency: totalEstimatedHours > 0 ? (totalActualHours / totalEstimatedHours) * 100 : 100,
+    totalVariance: totalActualHours - totalEstimatedHours,
+    completedTasks: SITE_COMPLETION_WBS.tasks.filter((task) => task.status === 'completed').length,
+    inProgressTasks: SITE_COMPLETION_WBS.tasks.filter((task) => task.status === 'in-progress')
+      .length,
+    averageProgress: totalProgress,
+  };
+
   const renderTaskTree = (tasks: WBSTask[], level = 0) => {
     return tasks.map((task) => (
       <div key={task.id}>
@@ -834,6 +906,7 @@ export function WBSCreator() {
           level={level}
           onToggle={toggleTask}
           isExpanded={expandedTasks[task.id] || false}
+          calculateActualMetrics={calculateActualMetrics}
         />
         {expandedTasks[task.id] && task.subtasks.length > 0 && (
           <div className="ml-4">{renderTaskTree(task.subtasks, level + 1)}</div>
@@ -890,9 +963,10 @@ export function WBSCreator() {
 
       {/* Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="tasks">詳細タスク</TabsTrigger>
+          <TabsTrigger value="actual">📊 実績分析</TabsTrigger>
           <TabsTrigger value="timeline">タイムライン</TabsTrigger>
           <TabsTrigger value="today">📅 本日の作業</TabsTrigger>
         </TabsList>
@@ -1001,6 +1075,210 @@ export function WBSCreator() {
           <ScrollArea className="h-[800px]">
             <div className="space-y-2">{renderTaskTree(SITE_COMPLETION_WBS.tasks)}</div>
           </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="actual" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* 全体効率性 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">全体効率性</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className={`text-2xl font-bold ${
+                    overallMetrics.totalEfficiency <= 100
+                      ? 'text-green-600'
+                      : overallMetrics.totalEfficiency <= 120
+                        ? 'text-yellow-600'
+                        : 'text-red-600'
+                  }`}
+                >
+                  {overallMetrics.totalEfficiency.toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  差異: {overallMetrics.totalVariance > 0 ? '+' : ''}
+                  {overallMetrics.totalVariance}h
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* 完了タスク数 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">完了タスク</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {overallMetrics.completedTasks}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  進行中: {overallMetrics.inProgressTasks}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* 平均進捗 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">平均進捗</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">
+                  {overallMetrics.averageProgress.toFixed(1)}%
+                </div>
+                <Progress value={overallMetrics.averageProgress} className="mt-2" />
+              </CardContent>
+            </Card>
+
+            {/* 予算効率 */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">予算効率</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className={`text-2xl font-bold ${
+                    totalEstimatedHours >= totalActualHours ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {totalEstimatedHours > 0
+                    ? ((totalEstimatedHours / totalActualHours) * 100).toFixed(1)
+                    : '100.0'}
+                  %
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {totalEstimatedHours >= totalActualHours ? '予算内' : '予算超過'}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 詳細実績テーブル */}
+          <Card>
+            <CardHeader>
+              <CardTitle>フェーズ別実績詳細</CardTitle>
+              <CardDescription>各フェーズの計画対実績の詳細分析</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {SITE_COMPLETION_WBS.tasks.map((task) => {
+                  const metrics = calculateActualMetrics(task);
+                  const hasActualData = task.actualHours && task.actualHours > 0;
+
+                  return (
+                    <div key={task.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold">{task.title}</h4>
+                          <p className="text-sm text-muted-foreground">{task.phase}</p>
+                        </div>
+                        <Badge
+                          className={
+                            task.status === 'completed'
+                              ? 'bg-green-100 text-green-800'
+                              : task.status === 'in-progress'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-800'
+                          }
+                        >
+                          {task.status}
+                        </Badge>
+                      </div>
+
+                      {hasActualData && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">計画工数</p>
+                            <p className="font-semibold">{task.estimatedHours}h</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">実績工数</p>
+                            <p className="font-semibold">{task.actualHours}h</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">効率性</p>
+                            <p
+                              className={`font-semibold ${
+                                metrics.efficiency <= 100
+                                  ? 'text-green-600'
+                                  : metrics.efficiency <= 120
+                                    ? 'text-yellow-600'
+                                    : 'text-red-600'
+                              }`}
+                            >
+                              {metrics.efficiency.toFixed(1)}%
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">時間差異</p>
+                            <p
+                              className={`font-semibold ${
+                                metrics.timeVariance <= 0 ? 'text-green-600' : 'text-red-600'
+                              }`}
+                            >
+                              {metrics.timeVariance > 0 ? '+' : ''}
+                              {metrics.timeVariance}h
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {task.startDate && task.completedDate && (
+                        <div className="mt-3 pt-3 border-t text-sm">
+                          <div className="flex gap-4">
+                            <span>開始: {formatDate(task.startDate)}</span>
+                            <span>完了: {formatDate(task.completedDate)}</span>
+                            {metrics.actualDuration && (
+                              <span>実期間: {metrics.actualDuration}日</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 推奨事項 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>📈 実績分析に基づく推奨事項</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {overallMetrics.totalEfficiency > 120 && (
+                  <Alert className="border-red-200 bg-red-50">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      全体的に予定工数を超過しています。見積もり精度の改善や作業プロセスの見直しを検討してください。
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {overallMetrics.totalEfficiency <= 90 && (
+                  <Alert className="border-green-200 bg-green-50">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <AlertDescription>
+                      優秀な効率性を達成しています。現在の作業手法をベストプラクティスとして他のプロジェクトに適用することを検討してください。
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {overallMetrics.inProgressTasks > 0 && (
+                  <Alert className="border-blue-200 bg-blue-50">
+                    <Target className="h-4 w-4" />
+                    <AlertDescription>
+                      {overallMetrics.inProgressTasks}
+                      個のタスクが進行中です。リソースの集中投入により完了時期を早められる可能性があります。
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="timeline" className="space-y-4">
