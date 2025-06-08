@@ -108,11 +108,28 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
       const savedEvents = localStorage.getItem('big-calendar-events');
       if (savedEvents) {
         const parsedEvents = JSON.parse(savedEvents);
-        const eventsWithDates = parsedEvents.map((event: { id: string; title: string; start: string; end: string; resource?: any }) => ({
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end),
-        }));
+        const eventsWithDates = parsedEvents.map(
+          (event: {
+            id: string;
+            title: string;
+            start: string;
+            end: string;
+            resource?: {
+              type: 'task' | 'event';
+              taskId?: string;
+              priority?: number;
+              completed?: boolean;
+              isPrioritized?: boolean;
+              category?: string;
+              tags?: string[];
+              description?: string;
+            };
+          }) => ({
+            ...event,
+            start: new Date(event.start),
+            end: new Date(event.end),
+          })
+        );
         setEvents(eventsWithDates);
       }
     } catch (error) {
@@ -359,7 +376,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
           isPrioritized: taskForm.priority >= 4,
         };
 
-        await dispatch(addTodoItem(newTaskData as any)).unwrap();
+        await dispatch(addTodoItem(newTaskData)).unwrap();
         toast.success('新しいタスクを作成しました');
       }
 
@@ -425,7 +442,10 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
 
             <div className="flex items-center gap-2">
               {/* Filters */}
-              <Select value={filterStatus} onValueChange={(value: any) => setFilterStatus(value)}>
+              <Select
+                value={filterStatus}
+                onValueChange={(value: 'all' | 'active' | 'completed') => setFilterStatus(value)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -438,7 +458,9 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
 
               <Select
                 value={filterPriority}
-                onValueChange={(value: any) => setFilterPriority(value)}
+                onValueChange={(value: 'all' | 'high' | 'medium' | 'low') =>
+                  setFilterPriority(value)
+                }
               >
                 <SelectTrigger className="w-32">
                   <SelectValue />
