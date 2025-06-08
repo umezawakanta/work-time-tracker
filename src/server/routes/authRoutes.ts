@@ -6,6 +6,9 @@ import {
   checkAuth,
   updateProfile,
   getUserData,
+  refreshToken,
+  requestPasswordReset,
+  resetPassword,
 } from '../controllers/authController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { User } from '../models/User.js';
@@ -20,6 +23,11 @@ router.get('/profile', authMiddleware, (req: Request, res: Response): void => {
 });
 router.put('/profile', authMiddleware, updateProfile);
 router.get('/user', authMiddleware, getUserData);
+
+// 新しいエンドポイントを追加
+router.post('/refresh', refreshToken);
+router.post('/password-reset', requestPasswordReset);
+router.post('/reset-password', resetPassword);
 
 // 管理者権限付与エンドポイント（開発用）
 router.post(

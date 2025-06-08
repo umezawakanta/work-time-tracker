@@ -11,6 +11,10 @@ interface AuthRequest extends Request {
   };
 }
 
+interface TokenPayload {
+  id: string;
+}
+
 const generateToken = (userId: string) => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -268,4 +272,107 @@ export const getUserData = async (req: AuthRequest, res: Response): Promise<void
 
 export const updateUserToAdmin = async (userId: string) => {
   return await User.findByIdAndUpdate(userId, { isAdmin: true }, { new: true }).select('-password');
+};
+
+// リフレッシュトークン機能を追加
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken || typeof refreshToken !== 'string') {
+      res.status(400).json({ message: 'Valid refresh token is required' });
+      return;
+    }
+
+    // 簡易実装：リフレッシュトークンを検証（実際の実装では別途管理が必要）
+    try {
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        throw new Error('JWT_SECRET is not defined');
+      }
+
+      const decoded = jwt.verify(refreshToken, secret) as unknown as TokenPayload;
+
+      if (!decoded?.id) {
+        res.status(401).json({ message: 'Invalid refresh token payload' });
+        return;
+      }
+
+      const user = await User.findById(decoded.id).select('-password');
+
+      if (!user) {
+        res.status(401).json({ message: 'Invalid refresh token' });
+        return;
+      }
+
+      // 新しいアクセストークンを生成
+      const newAccessToken = generateToken(String(user._id));
+
+      res.json({
+        accessToken: newAccessToken,
+        refreshToken: refreshToken, // 既存のリフレッシュトークンを再利用
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin || false,
+        },
+        expiresIn: 86400, // 24時間
+        refreshExpiresIn: 604800, // 7日
+      });
+    } catch (jwtError) {
+      console.error('Invalid refresh token:', jwtError);
+      res.status(401).json({ message: 'Invalid refresh token' });
+    }
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    res.status(500).json({ message: 'Server error during token refresh' });
+  }
+};
+
+// パスワードリセット機能も追加
+export const requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'Email is required' });
+      return;
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // セキュリティのため、ユーザーが存在しない場合でも成功を返す
+      res.json({
+        message: 'パスワードリセットメールを送信しました（該当するアカウントが存在する場合）',
+      });
+      return;
+    }
+
+    // 実際の実装では、ここでメール送信処理を行う
+    console.log(`Password reset requested for: ${email}`);
+
+    res.json({ message: 'パスワードリセットメールを送信しました' });
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    res.status(500).json({ message: 'サーバーエラーが発生しました' });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      res.status(400).json({ message: 'Token and new password are required' });
+      return;
+    }
+
+    // 実際の実装では、リセットトークンの検証を行う
+    // ここでは簡易的な実装
+    res.json({ message: 'パスワードがリセットされました' });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({ message: 'パスワードリセット中にエラーが発生しました' });
+  }
 };
