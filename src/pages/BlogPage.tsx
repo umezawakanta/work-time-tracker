@@ -247,8 +247,8 @@ const BlogPage: React.FC = () => {
             <Alert severity="info" sx={{ mt: 2 }}>
               <Typography variant="body2">
                 <strong>開発者向け情報:</strong>
-                <br />• API Base URL:{' '}
-                {process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api'}
+                <br /> • API Base URL:{' '}
+                {import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002/api'}
                 <br />• エラー詳細: {error}
                 <br />• ブラウザの開発者ツールでネットワークタブを確認してください
               </Typography>
