@@ -37,6 +37,11 @@ import {
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems, updateTodoItem, deleteTodoItem, addTodoItem } from '@/store/todoSlice';
 import { toast } from 'react-hot-toast';
+import { Calendar, momentLocalizer, View } from 'react-big-calendar';
+import moment from 'moment';
+import 'moment/locale/ja';
+import TaskForm from '../tasks/TaskForm';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 interface TaskFormData {
   title: string;
@@ -66,12 +71,29 @@ interface EnhancedTaskCalendarProps {
   className?: string;
 }
 
+// Momentローカライザーの設定
+moment.locale('ja');
+const localizer = momentLocalizer(moment);
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: {
+    type: 'task' | 'event';
+    priority: number;
+    completed: boolean;
+    category: string;
+  };
+}
+
 export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ className }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
+  const [view, setView] = useState<View>('month');
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<TaskEvent | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
   const [filterPriority, setFilterPriority] = useState<'all' | 'high' | 'medium' | 'low'>('all');
@@ -489,6 +511,106 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
 
   const monthYear = currentDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
 
+  // ToDoをカレンダーイベントに変換
+  const events: CalendarEvent[] = todos
+    .filter((todo) => todo.deadline)
+    .map((todo) => ({
+      id: todo._id,
+      title: todo.task,
+      start: new Date(todo.deadline!),
+      end: new Date(todo.deadline!),
+      resource: {
+        type: 'task' as const,
+        priority: todo.priority,
+        completed: todo.completed,
+        category: todo.category || 'general',
+      },
+    }));
+
+  // イベントスタイルの設定
+  const eventStyleGetter = useCallback((event: CalendarEvent) => {
+    const { priority, completed, category } = event.resource;
+
+    let backgroundColor = '#3174ad';
+    let borderColor = '#3174ad';
+
+    if (completed) {
+      backgroundColor = '#10b981';
+      borderColor = '#10b981';
+    } else {
+      switch (priority) {
+        case 1:
+          backgroundColor = '#ef4444';
+          borderColor = '#dc2626';
+          break;
+        case 2:
+          backgroundColor = '#f97316';
+          borderColor = '#ea580c';
+          break;
+        case 3:
+          backgroundColor = '#eab308';
+          borderColor = '#ca8a04';
+          break;
+        case 4:
+          backgroundColor = '#22c55e';
+          borderColor = '#16a34a';
+          break;
+        case 5:
+          backgroundColor = '#6b7280';
+          borderColor = '#4b5563';
+          break;
+      }
+    }
+
+    return {
+      style: {
+        backgroundColor,
+        borderColor,
+        color: 'white',
+        opacity: completed ? 0.7 : 1,
+        fontSize: '12px',
+        padding: '2px 4px',
+        borderRadius: '4px',
+      },
+    };
+  }, []);
+
+  // ドラッグ&ドロップでタスク日付を変更
+  const handleEventDrop = useCallback(
+    async ({ event, start, end }: any) => {
+      try {
+        await dispatch(
+          updateTodoItem({
+            _id: event.id,
+            updates: { deadline: start.toISOString() },
+          })
+        ).unwrap();
+      } catch (error) {
+        console.error('Failed to update task deadline:', error);
+      }
+    },
+    [dispatch]
+  );
+
+  // スロット選択（新しいタスク作成）
+  const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
+    setSelectedDate(start);
+    setShowTaskModal(true);
+  }, []);
+
+  // タスク選択（編集）
+  const handleSelectEvent = useCallback(
+    (event: CalendarEvent) => {
+      const task = todos.find((todo) => todo._id === event.id);
+      if (task) {
+        // Convert TodoItem to TaskEvent format or use task directly
+        setSelectedTask(task as any); // Quick fix
+        setShowTaskModal(true);
+      }
+    },
+    [todos]
+  );
+
   return (
     <div className={cn('space-y-4', className)}>
       {/* Header */}
@@ -594,7 +716,40 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
 
       {/* Calendar Grid */}
       <Card>
-        <CardContent className="p-6">{renderMonthView()}</CardContent>
+        <CardContent className="p-6">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            titleAccessor="title"
+            view={view}
+            date={currentDate}
+            onView={setView}
+            onNavigate={setCurrentDate}
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            eventPropGetter={eventStyleGetter}
+            selectable
+            style={{ height: 600 }}
+            messages={{
+              next: '次',
+              previous: '前',
+              today: '今日',
+              month: '月',
+              week: '週',
+              day: '日',
+              agenda: 'アジェンダ',
+              noEventsInRange: 'この期間にイベントはありません',
+            }}
+            formats={{
+              monthHeaderFormat: 'YYYY年 M月',
+              dayHeaderFormat: 'M月D日 (ddd)',
+              dayRangeHeaderFormat: ({ start, end }) =>
+                `${moment(start).format('M月D日')} - ${moment(end).format('M月D日')}`,
+            }}
+          />
+        </CardContent>
       </Card>
 
       {/* Task Modal */}
