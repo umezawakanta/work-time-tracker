@@ -11,7 +11,6 @@ import {
   Brain,
   Sparkles,
   TrendingUp,
-  TrendingDown,
   Target,
   Clock,
   Calendar,
@@ -19,7 +18,6 @@ import {
   CheckCircle,
   BarChart3,
   LineChart,
-  PieChart,
   Lightbulb,
   Zap,
   Award,
@@ -141,7 +139,7 @@ export const AITaskDashboard: React.FC<AITaskDashboardProps> = ({ className }) =
     ];
   }, [analysis]);
 
-  const handleApplySuggestion = async (suggestion: TaskSuggestion) => {
+  const handleApplySuggestion = async (_suggestion: TaskSuggestion) => {
     // Phase 2で実装: 実際の提案適用
     toast.success('提案の適用機能はPhase 2で実装予定です');
   };
@@ -439,7 +437,7 @@ export const AITaskDashboard: React.FC<AITaskDashboardProps> = ({ className }) =
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Mock prediction cards */}
-            {['今週の予測', '来月の傾向', 'パフォーマンス予測'].map((title, index) => (
+            {['今週の予測', '来月の傾向', 'パフォーマンス予測'].map((title, _index) => (
               <Card key={title} className="opacity-50 relative">
                 <CardContent className="p-6 text-center">
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-lg" />

@@ -16,7 +16,8 @@ import {
   Download,
   RefreshCw,
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useContext } from 'react';
+import AuthContext from '@/context/AuthContext';
 import WBSActualDataService, {
   ActualDataSummary,
   WBSActualReport,
@@ -37,7 +38,8 @@ export const WBSActualDataIntegration: React.FC<WBSActualDataIntegrationProps> =
   autoRefresh = true,
   refreshInterval = 60000, // 1分
 }) => {
-  const { user } = useAuth();
+  const authContext = useContext(AuthContext);
+  const user = authContext?.user;
   const [actualReport, setActualReport] = useState<WBSActualReport | null>(null);
   const [selectedNodeData, setSelectedNodeData] = useState<ActualDataSummary | null>(null);
   const [loading, setLoading] = useState(true);

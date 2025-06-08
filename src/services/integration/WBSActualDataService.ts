@@ -147,11 +147,11 @@ class WBSActualDataService {
         projectName: entry.projectName,
       })),
       relatedTasks: relatedTasks.map((task) => ({
-        id: task.id || task._id,
-        title: task.title || task.task,
+        id: task.id,
+        title: task.title,
         completed: task.completed,
         completedDate: task.completedDate,
-        estimatedHours: task.estimatedHours || task.estimatedDuration,
+        estimatedHours: task.estimatedHours,
         actualHours: task.actualHours,
         priority: task.priority,
         tags: task.tags || [],
@@ -372,10 +372,7 @@ class WBSActualDataService {
     );
   }
 
-  private calculateTotalActualHours(
-    tasks: Array<TodoItem & Task>,
-    workEntries: IWorkTimeEntry[]
-  ): number {
+  private calculateTotalActualHours(tasks: UnifiedTask[], workEntries: IWorkTimeEntry[]): number {
     const taskHours = tasks.reduce((sum, task) => sum + (task.actualHours || 0), 0);
 
     const workHours = workEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
@@ -383,7 +380,7 @@ class WBSActualDataService {
     return Math.max(taskHours, workHours);
   }
 
-  private calculateProgress(tasks: Array<TodoItem & Task>): number {
+  private calculateProgress(tasks: UnifiedTask[]): number {
     if (tasks.length === 0) return 0;
 
     const completedTasks = tasks.filter((task) => task.completed).length;
@@ -391,7 +388,7 @@ class WBSActualDataService {
   }
 
   private calculateActualDates(
-    tasks: Array<TodoItem & Task>,
+    tasks: UnifiedTask[],
     workEntries: IWorkTimeEntry[]
   ): { startDate: string | null; endDate: string | null } {
     const allDates: Date[] = [];
