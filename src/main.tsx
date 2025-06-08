@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './store';
-import App from './App.firebase';
+import App from './App';
 import './styles/global.css';
 import ErrorBoundary from './components/ErrorBoundary';
 
