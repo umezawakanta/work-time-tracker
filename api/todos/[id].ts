@@ -19,7 +19,7 @@ interface TodoItem {
 }
 
 // 共有データストレージ（デモ用） - 実際の実装では外部データベースを使用
-let todos: TodoItem[] = [
+const todos: TodoItem[] = [
   {
     id: 'demo-todo-1',
     _id: 'demo-todo-1',

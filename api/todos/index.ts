@@ -19,7 +19,7 @@ interface TodoItem {
 }
 
 // メモリ内ストレージ（デモ用）
-let todos: TodoItem[] = [
+const todos: TodoItem[] = [
   {
     id: 'demo-todo-1',
     _id: 'demo-todo-1',
