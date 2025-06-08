@@ -1,8 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/* Force rebuild */
+
+/* Tailwind v4 Test */
+.test-tailwind-v4 {
+  background: red;
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+/* Force Tailwind classes generation */
+body {
+  @apply bg-background text-foreground;
+}
 
 @layer base {
   :root {
