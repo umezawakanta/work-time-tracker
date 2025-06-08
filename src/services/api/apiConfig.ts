@@ -51,17 +51,30 @@ if (
   window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
 ) {
   console.log('🏥 本番環境健全性チェック開始...');
-  fetch(baseURL + '/health', { method: 'GET' })
-    .then((response) => {
-      if (response.ok) {
-        console.log('✅ 本番API正常動作確認');
-      } else {
-        console.warn('⚠️ 本番APIレスポンス異常:', response.status);
-      }
+
+  // 健全性チェックを遅延実行（DOM読み込み後）
+  setTimeout(() => {
+    fetch(baseURL + '/health', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     })
-    .catch((error) => {
-      console.error('❌ 本番API接続失敗:', error.message);
-    });
+      .then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            console.log('✅ 本番API正常動作確認:', data);
+          });
+        } else {
+          console.warn('⚠️ 本番APIレスポンス異常:', response.status);
+        }
+      })
+      .catch((error) => {
+        console.error('❌ 本番API接続失敗:', error.message);
+        console.log('💡 API Routes が正常に設定されているか確認してください');
+      });
+  }, 1000);
 }
 
 export const api = axios.create({
