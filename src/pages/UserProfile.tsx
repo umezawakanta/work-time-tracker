@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'react-hot-toast';
-import { promoteToAdmin } from '@/services/api/authApi';
+import { promoteToAdmin, changePassword } from '@/services/api/authApi';
 import { Badge } from '@/components/ui/badge';
 import {
   Crown,
@@ -160,8 +160,6 @@ export default function UserProfile() {
     }
 
     try {
-      // changePassword API を使用
-      const { changePassword } = await import('@/services/api/authApi');
       await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
       toast.success('パスワードを変更しました');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });

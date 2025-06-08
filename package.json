@@ -37,7 +37,8 @@
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
         "setup:abstinence": "tsx src/server/scripts/setupAbstinenceData.ts",
-        "seed:blog": "node --loader ts-node/esm src/server/scripts/seedBlogData.ts"
+        "seed:blog": "node --loader ts-node/esm src/server/scripts/seedBlogData.ts",
+        "analyze": "vite build --mode analyze && npx vite-bundle-analyzer dist"
     },
     "pnpm": {
         "onlyBuiltDependencies": [

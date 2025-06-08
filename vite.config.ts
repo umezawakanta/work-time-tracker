@@ -12,16 +12,37 @@ export default defineConfig({
   build: {
     target: 'esnext',
     sourcemap: true,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['@mui/material'],
-          ai: ['@anthropic-ai/sdk'],
+          mui: ['@mui/material', '@mui/icons-material'],
+          radix: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-select',
+            '@radix-ui/react-popover',
+          ],
+          charts: [
+            'chart.js',
+            'react-chartjs-2',
+            'recharts',
+            '@fullcalendar/core',
+            '@fullcalendar/react',
+            '@fullcalendar/daygrid',
+            '@fullcalendar/timegrid',
+          ],
+          utils: ['date-fns', 'date-fns-tz', 'moment', 'lodash', 'uuid', 'file-saver'],
+          state: ['@reduxjs/toolkit', 'react-redux', 'redux'],
+          firebase: ['firebase'],
         },
       },
     },
+    cssCodeSplit: true,
+    minify: 'esbuild',
   },
   server: {
     port: 3000,
@@ -37,5 +58,21 @@ export default defineConfig({
     'process.env.NEXT_PUBLIC_OPENAI_API_KEY': JSON.stringify(
       process.env.NEXT_PUBLIC_OPENAI_API_KEY
     ),
+  },
+  css: {
+    postcss: {
+      plugins: [
+        {
+          postcssPlugin: 'internal:charset-removal',
+          AtRule: {
+            charset: (atRule) => {
+              if (atRule.name === 'charset') {
+                atRule.remove();
+              }
+            },
+          },
+        },
+      ],
+    },
   },
 });
