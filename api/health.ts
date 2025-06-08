@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     console.log('*** API HEALTH CHECK ***');
-    
+
     const healthData = {
       status: 'OK',
       message: 'Work Time Tracker API is running',

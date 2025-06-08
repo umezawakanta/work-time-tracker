@@ -17,8 +17,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     endpoints: {
       health: '/api/health',
       auth: '/api/auth/*',
-      todos: '/api/todos/*'
+      todos: '/api/todos/*',
     },
-    version: '1.0.0'
+    version: '1.0.0',
   });
-} 
+}
