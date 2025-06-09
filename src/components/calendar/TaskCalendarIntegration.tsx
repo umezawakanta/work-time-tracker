@@ -220,7 +220,7 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
         startTime: '',
         endTime: '',
       });
-    } catch (error) {
+    } catch {
       toast.error('タスクの作成に失敗しました');
     }
   };
