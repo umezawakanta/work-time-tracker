@@ -28,12 +28,22 @@ const getApiBaseUrl = () => {
 
   // 本番環境では実際のAPIサーバーに接続を試行
   if (typeof window !== 'undefined') {
-    if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
-      // 本番環境のAPIエンドポイント
+    const hostname = window.location.hostname;
+
+    // Vercel production domain
+    if (hostname === 'work-time-tracker-5d9q.vercel.app') {
       console.log('🌐 本番環境: APIサーバーに接続を試行します');
       return 'https://work-time-tracker-5d9q.vercel.app/api';
     }
-    if (window.location.hostname !== 'localhost') {
+
+    // Vercel preview deployments - always use production API
+    if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+      console.log('🌐 Vercelプレビュー環境: 本番APIサーバーに接続します');
+      return 'https://work-time-tracker-5d9q.vercel.app/api';
+    }
+
+    // Other custom domains
+    if (hostname !== 'localhost') {
       return `${window.location.protocol}//${window.location.hostname}/api`;
     }
   }
@@ -48,9 +58,14 @@ console.log('🔗 API Base URL:', baseURL);
 // 本番環境での健全性チェック
 if (
   typeof window !== 'undefined' &&
-  window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+  (window.location.hostname === 'work-time-tracker-5d9q.vercel.app' ||
+    window.location.hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/))
 ) {
-  console.log('🏥 本番環境健全性チェック開始...');
+  const envType =
+    window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+      ? '本番環境'
+      : 'プレビュー環境';
+  console.log(`🏥 ${envType}健全性チェック開始...`);
 
   // 健全性チェックを遅延実行（DOM読み込み後）
   setTimeout(() => {
@@ -64,14 +79,14 @@ if (
       .then((response) => {
         if (response.ok) {
           response.json().then((data) => {
-            console.log('✅ 本番API正常動作確認:', data);
+            console.log(`✅ ${envType}API正常動作確認:`, data);
           });
         } else {
-          console.warn('⚠️ 本番APIレスポンス異常:', response.status);
+          console.warn(`⚠️ ${envType}APIレスポンス異常:`, response.status);
         }
       })
       .catch((error) => {
-        console.error('❌ 本番API接続失敗:', error.message);
+        console.error(`❌ ${envType}API接続失敗:`, error.message);
         console.log('💡 API Routes が正常に設定されているか確認してください');
       });
   }, 1000);

@@ -45,14 +45,43 @@ const server = http.createServer(app);
 // Middleware
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
   'http://127.0.0.1:3000',
   'https://work-time-tracker-5d9q.vercel.app',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
 ];
 
+// Dynamic CORS origin function to handle Vercel preview deployments
+const corsOrigin = (
+  origin: string | undefined,
+  callback: (err: Error | null, allow?: boolean) => void
+) => {
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) return callback(null, true);
+
+  // Check if origin is in allowed list
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+
+  // Allow all Vercel preview deployments for work-time-tracker
+  if (origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+    return callback(null, true);
+  }
+
+  // Allow localhost with any port for development
+  if (origin.match(/^http:\/\/localhost:\d+$/)) {
+    return callback(null, true);
+  }
+
+  console.log(`CORS: Blocked origin: ${origin}`);
+  callback(new Error('Not allowed by CORS'));
+};
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: corsOrigin,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

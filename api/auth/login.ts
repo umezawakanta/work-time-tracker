@@ -22,12 +22,32 @@ interface LoginResponse {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // CORS設定
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // Enhanced CORS設定
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+      'https://work-time-tracker-5d9q.vercel.app',
+    ];
 
+    // Allow all Vercel preview deployments
+    const isVercelPreview =
+      origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
+    const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
+
+    res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+
+    // Handle preflight requests
     if (req.method === 'OPTIONS') {
+      console.log('*** PREFLIGHT REQUEST ***');
+      console.log('Origin:', origin);
+      console.log('Method:', req.headers['access-control-request-method']);
+      console.log('Headers:', req.headers['access-control-request-headers']);
       res.status(200).end();
       return;
     }
@@ -38,6 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     console.log('*** AUTH LOGIN ENDPOINT HIT ***');
+    console.log('Origin:', origin);
     console.log('Request body:', req.body);
 
     const { email, password, rememberMe: _rememberMe = false }: LoginRequest = req.body;
