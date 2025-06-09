@@ -237,7 +237,7 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
 
       toast.success(completed ? 'タスクを完了しました' : 'タスクを未完了に戻しました');
       setIsEventModalOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('タスクの更新に失敗しました');
     }
   };
