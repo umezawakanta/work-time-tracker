@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-import { RootState, AppDispatch } from '@/store';
+import { AppDispatch } from '@/store';
 import { updateTodoItem, addTodoItem, selectTodos } from '@/store/todoSlice';
 import taskAIService, {
   AITaskSuggestion,
