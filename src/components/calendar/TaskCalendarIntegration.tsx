@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'react-hot-toast';
-import { Calendar as CalendarIcon, Clock, AlertTriangle, CheckCircle, Plus } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, CheckCircle, Plus } from 'lucide-react';
 
 import { RootState, AppDispatch } from '@/store';
 import { updateTodoItem, addTodoItem, selectTodos } from '@/store/todoSlice';
