@@ -15,7 +15,6 @@ import {
   TrendingUp,
   CheckCircle,
   BarChart3,
-  Filter,
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
