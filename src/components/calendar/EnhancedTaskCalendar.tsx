@@ -23,12 +23,9 @@ import {
   ChevronRight,
   Clock,
   CheckCircle2,
-  Edit3,
   Trash2,
   GripVertical,
   Brain,
-  Sparkles,
-  TrendingUp,
   AlertCircle,
   Filter,
 } from 'lucide-react';

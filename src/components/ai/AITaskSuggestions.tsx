@@ -26,7 +26,6 @@ import taskAIService, {
   TaskTimeEstimate,
   TaskGroup,
   TaskBreakdown,
-  SubTask,
   smartTaskBreakdown,
   evaluateTaskComplexity,
   AIServiceError,
@@ -152,7 +151,7 @@ const AITaskSuggestions: React.FC = () => {
             ),
           });
         }
-      } catch (error) {
+      } catch {
         toast.error('提案の適用に失敗しました');
       }
     },
@@ -185,7 +184,7 @@ const AITaskSuggestions: React.FC = () => {
         }
 
         toast.success(`${breakdown.subtasks.length}個のサブタスクを作成しました`);
-      } catch (error) {
+      } catch {
         toast.error('タスクブレイクダウンの適用に失敗しました');
       }
     },
