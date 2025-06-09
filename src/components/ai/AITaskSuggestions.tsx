@@ -27,12 +27,16 @@ import taskAIService, {
   TaskTimeEstimate,
   TaskGroup,
   TaskBreakdown,
+  SubTask,
+  smartTaskBreakdown,
+  evaluateTaskComplexity,
 } from '@/services/ai/taskAIService';
 
 interface AIAnalysisResult {
   prioritySuggestions: AITaskSuggestion[];
   timeEstimates: TaskTimeEstimate[];
   taskGroups: TaskGroup[];
+  taskBreakdowns: TaskBreakdown[];
   recommendations: string[];
 }
 
@@ -54,7 +58,24 @@ const AITaskSuggestions: React.FC = () => {
     setIsAnalyzing(true);
     try {
       const result = await taskAIService.analyzeTasksComprehensively(todos);
-      setAnalysisResult(result);
+
+      // タスク分解の候補を検出
+      const breakdownCandidates = todos.filter(
+        (task) => !task.completed && evaluateTaskComplexity(task).score >= 3
+      );
+
+      const taskBreakdowns: TaskBreakdown[] = [];
+      for (const task of breakdownCandidates.slice(0, 3)) {
+        // 最大3つまで
+        try {
+          const breakdown = await smartTaskBreakdown(task);
+          taskBreakdowns.push(breakdown);
+        } catch (error) {
+          // 分解が不要なタスクはスキップ
+        }
+      }
+
+      setAnalysisResult({ ...result, taskBreakdowns });
       toast.success(`${todos.length}個のタスクの分析が完了しました`);
     } catch (error) {
       console.error('AI analysis failed:', error);
@@ -198,16 +219,17 @@ const AITaskSuggestions: React.FC = () => {
 
       <CardContent>
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">概要</TabsTrigger>
             <TabsTrigger value="priority">優先度</TabsTrigger>
             <TabsTrigger value="time">時間予測</TabsTrigger>
             <TabsTrigger value="groups">グループ化</TabsTrigger>
+            <TabsTrigger value="breakdown">タスク分解</TabsTrigger>
           </TabsList>
 
           {/* 概要タブ */}
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
                   <Target className="h-8 w-8 text-blue-500 mx-auto mb-2" />
@@ -238,6 +260,16 @@ const AITaskSuggestions: React.FC = () => {
                   <Users className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold">{analysisResult?.taskGroups.length || 0}</div>
                   <div className="text-sm text-gray-600">推奨グループ</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <BarChart3 className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+                  <div className="text-2xl font-bold">
+                    {analysisResult?.taskBreakdowns.length || 0}
+                  </div>
+                  <div className="text-sm text-gray-600">タスク分解</div>
                 </CardContent>
               </Card>
             </div>
@@ -438,6 +470,128 @@ const AITaskSuggestions: React.FC = () => {
                 <div className="text-center py-8 text-gray-500">
                   <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p>グループ化の提案はありません</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* タスク分解タブ */}
+          <TabsContent value="breakdown" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">スマートタスク分解</h3>
+              <Badge variant="outline">
+                {analysisResult?.taskBreakdowns.length || 0}個の分解提案
+              </Badge>
+            </div>
+
+            <div className="space-y-4">
+              {analysisResult?.taskBreakdowns.map((breakdown) => (
+                <Card key={breakdown.id}>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {/* 元のタスク情報 */}
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <h4 className="font-medium text-blue-900 mb-2">
+                          📋 元のタスク: {breakdown.originalTaskTitle}
+                        </h4>
+                        <div className="flex items-center gap-4 text-sm text-blue-700">
+                          <Badge variant="outline">
+                            難易度:{' '}
+                            {breakdown.difficulty === 'high'
+                              ? '高'
+                              : breakdown.difficulty === 'medium'
+                                ? '中'
+                                : '低'}
+                          </Badge>
+                          <Badge variant="outline">
+                            信頼度: {Math.round(breakdown.confidence * 100)}%
+                          </Badge>
+                          <Badge variant="outline">
+                            総予想時間: {Math.floor(breakdown.estimatedTotalTime / 60)}時間
+                            {breakdown.estimatedTotalTime % 60}分
+                          </Badge>
+                        </div>
+                      </div>
+
+                      {/* 分解理由 */}
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <Lightbulb className="h-4 w-4 text-yellow-600 mt-0.5" />
+                          <div className="text-sm text-gray-700">
+                            <strong>分解理由:</strong> {breakdown.reasoning}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* サブタスク一覧 */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-gray-900">提案されるサブタスク:</h5>
+                        {breakdown.subtasks.map((subtask, index) => (
+                          <div
+                            key={subtask.id}
+                            className="flex items-start gap-3 p-3 border rounded-lg bg-white"
+                          >
+                            <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-medium text-blue-700">
+                              {index + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h6 className="font-medium text-gray-900 mb-1">{subtask.title}</h6>
+                              <p className="text-sm text-gray-600 mb-2">{subtask.description}</p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Badge variant="outline" className="text-xs">
+                                  優先度: {subtask.priority}
+                                </Badge>
+                                <Badge
+                                  variant={subtask.type === 'input' ? 'secondary' : 'default'}
+                                  className="text-xs"
+                                >
+                                  {subtask.type === 'input' ? 'インプット' : 'アウトプット'}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {Math.floor(subtask.estimatedMinutes / 60) > 0
+                                    ? `${Math.floor(subtask.estimatedMinutes / 60)}時間${subtask.estimatedMinutes % 60 > 0 ? `${subtask.estimatedMinutes % 60}分` : ''}`
+                                    : `${subtask.estimatedMinutes}分`}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {subtask.category}
+                                </Badge>
+                              </div>
+                              {subtask.dependencies.length > 0 && (
+                                <div className="mt-2 text-xs text-gray-500">
+                                  依存: {subtask.dependencies.length}個の前提タスクあり
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* アクションボタン */}
+                      <div className="flex justify-end gap-3 pt-4 border-t">
+                        <Button variant="outline" size="sm">
+                          後で確認
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleApplyBreakdown(breakdown)}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                          分解を適用
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )) || []}
+
+              {!analysisResult?.taskBreakdowns.length && (
+                <div className="text-center py-8 text-gray-500">
+                  <BarChart3 className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>分解可能な複雑なタスクはありません</p>
+                  <p className="text-sm mt-1">
+                    大きなタスクやプロジェクトを作成すると、AIが自動で分解提案を行います
+                  </p>
                 </div>
               )}
             </div>
