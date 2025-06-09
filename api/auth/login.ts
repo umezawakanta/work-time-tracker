@@ -78,69 +78,97 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // Enhanced demo authentication logic
-    console.log('🔍 Validating credentials...');
+    // Real user authentication with predefined user database
+    console.log('🔍 Validating credentials against user database...');
 
-    // Allow any email that looks valid and any password 3+ chars
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isValidPassword = password.length >= 3;
+    // Predefined user database
+    const users = [
+      {
+        id: 'user_1',
+        email: 'admin@example.com',
+        password: 'admin123',
+        name: 'Administrator',
+        username: 'admin',
+        isAdmin: true,
+      },
+      {
+        id: 'user_2',
+        email: 'demo@example.com',
+        password: 'demo123',
+        name: 'Demo User',
+        username: 'demo',
+        isAdmin: false,
+      },
+      {
+        id: 'user_3',
+        email: 'test@example.com',
+        password: 'test123',
+        name: 'Test User',
+        username: 'test',
+        isAdmin: false,
+      },
+      {
+        id: 'user_4',
+        email: 'user@example.com',
+        password: 'user123',
+        name: 'General User',
+        username: 'user',
+        isAdmin: false,
+      },
+      {
+        id: 'user_5',
+        email: 'developer@example.com',
+        password: 'dev123',
+        name: 'Developer',
+        username: 'developer',
+        isAdmin: true,
+      },
+    ];
 
-    console.log('Validation results:', {
-      email,
-      isValidEmail,
-      passwordLength: password.length,
-      isValidPassword,
-    });
+    // Find user by email
+    const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 
-    if (!isValidEmail) {
-      console.log('❌ Invalid email format');
+    if (!user) {
+      console.log('❌ User not found:', email);
       res.status(401).json({
-        error: 'Invalid email format',
-        message: 'メールアドレスの形式が正しくありません',
+        error: 'Invalid credentials',
+        message: 'メールアドレスまたはパスワードが正しくありません',
+        hint: '利用可能なアカウント: admin@example.com, demo@example.com, test@example.com, user@example.com, developer@example.com',
       });
       return;
     }
 
-    if (!isValidPassword) {
-      console.log('❌ Password too short');
+    // Validate password
+    if (user.password !== password) {
+      console.log('❌ Invalid password for user:', email);
       res.status(401).json({
-        error: 'Password too short',
-        message: 'パスワードは3文字以上である必要があります',
+        error: 'Invalid credentials',
+        message: 'メールアドレスまたはパスワードが正しくありません',
       });
       return;
     }
 
-    // Demo environment - accept all valid emails and passwords
-    console.log('✅ Demo authentication successful');
+    console.log('✅ Authentication successful for:', email);
 
-    const token = `demo_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const userId = `user_${Date.now()}`;
+    const token = `auth_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Determine admin status
-    const adminEmails = ['admin@example.com', 'demo@example.com', 'test@example.com'];
-    const isAdmin = adminEmails.includes(email) || email.includes('admin');
-
-    const user = {
-      id: userId,
-      _id: userId,
-      name: email.includes('admin')
-        ? 'Admin User'
-        : email.includes('demo')
-          ? 'Demo User'
-          : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
-      username: email.split('@')[0],
-      email: email,
-      isAdmin: isAdmin,
+    const authenticatedUser = {
+      id: user.id,
+      _id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
       avatar: '',
     };
 
     const response: LoginResponse = {
       token,
-      user,
+      user: authenticatedUser,
       message: 'ログインに成功しました',
     };
 
-    console.log('✅ Login successful for:', email, 'Admin:', isAdmin);
+    console.log('✅ Login successful for:', email, 'Admin:', user.isAdmin);
     res.status(200).json(response);
   } catch (error) {
     console.error('❌ Login error:', error);

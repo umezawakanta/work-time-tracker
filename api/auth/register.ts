@@ -81,10 +81,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    if (password.length < 3) {
+    if (password.length < 6) {
       res.status(400).json({
         error: 'Password too short',
-        message: 'パスワードは3文字以上である必要があります',
+        message: 'パスワードは6文字以上である必要があります',
       });
       return;
     }
@@ -99,9 +99,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // Demo registration logic - allow any valid email/password combination
-    const token = `demo_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Check against existing predefined users (same as login.ts)
+    const existingUsers = [
+      'admin@example.com',
+      'demo@example.com',
+      'test@example.com',
+      'user@example.com',
+      'developer@example.com',
+    ];
+
+    if (existingUsers.includes(email.toLowerCase())) {
+      res.status(409).json({
+        error: 'User already exists',
+        message: 'このメールアドレスは既に登録されています',
+        hint: '既存のアカウントでログインしてください',
+      });
+      return;
+    }
+
+    // For demo purposes, we'll simulate successful registration
+    // In a real app, you would save to database
     const userId = `user_${Date.now()}`;
+    const token = `auth_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     const user = {
       id: userId,
@@ -109,14 +128,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       name: name,
       username: email.split('@')[0],
       email: email,
-      isAdmin: email.includes('admin'),
+      isAdmin: false,
       avatar: '',
     };
+
+    // Log the registration for tracking (in real app, save to database)
+    console.log('✅ New user registered:', {
+      email,
+      name,
+      userId,
+      timestamp: new Date().toISOString(),
+    });
 
     const response: RegisterResponse = {
       token,
       user,
-      message: 'ユーザー登録が完了しました',
+      message:
+        'ユーザー登録が完了しました。デモ環境のため、ログイン時は事前定義されたアカウントをご利用ください。',
     };
 
     console.log('Registration successful for:', email);
