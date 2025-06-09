@@ -1,12 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-interface LoginRequest {
+interface RegisterRequest {
+  name: string;
   email: string;
   password: string;
-  rememberMe?: boolean;
+  confirmPassword: string;
 }
 
-interface LoginResponse {
+interface RegisterResponse {
   token: string;
   user: {
     id: string;
@@ -44,7 +45,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-      console.log('*** PREFLIGHT REQUEST ***');
+      console.log('*** REGISTER PREFLIGHT REQUEST ***');
       console.log('Origin:', origin);
       console.log('Method:', req.headers['access-control-request-method']);
       console.log('Headers:', req.headers['access-control-request-headers']);
@@ -57,93 +58,71 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    console.log('*** AUTH LOGIN ENDPOINT HIT ***');
+    console.log('*** AUTH REGISTER ENDPOINT HIT ***');
     console.log('Origin:', origin);
     console.log('Request body:', req.body);
 
-    const { email, password, rememberMe: _rememberMe = false }: LoginRequest = req.body;
+    const { name, email, password, confirmPassword }: RegisterRequest = req.body;
 
-    console.log('Parsed login data:', {
-      email,
-      password: password ? '***' : 'missing',
-      rememberMe: _rememberMe,
-    });
-
-    if (!email || !password) {
-      console.log('❌ Missing email or password');
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
       res.status(400).json({
-        error: 'Email and password are required',
-        message: 'メールアドレスとパスワードは必須です',
+        error: 'All fields are required',
+        message: 'すべてのフィールドは必須です',
       });
       return;
     }
 
-    // Enhanced demo authentication logic
-    console.log('🔍 Validating credentials...');
-
-    // Allow any email that looks valid and any password 3+ chars
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const isValidPassword = password.length >= 3;
-
-    console.log('Validation results:', {
-      email,
-      isValidEmail,
-      passwordLength: password.length,
-      isValidPassword,
-    });
-
-    if (!isValidEmail) {
-      console.log('❌ Invalid email format');
-      res.status(401).json({
-        error: 'Invalid email format',
-        message: 'メールアドレスの形式が正しくありません',
+    if (password !== confirmPassword) {
+      res.status(400).json({
+        error: 'Passwords do not match',
+        message: 'パスワードが一致しません',
       });
       return;
     }
 
-    if (!isValidPassword) {
-      console.log('❌ Password too short');
-      res.status(401).json({
+    if (password.length < 3) {
+      res.status(400).json({
         error: 'Password too short',
         message: 'パスワードは3文字以上である必要があります',
       });
       return;
     }
 
-    // Demo environment - accept all valid emails and passwords
-    console.log('✅ Demo authentication successful');
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({
+        error: 'Invalid email format',
+        message: 'メールアドレスの形式が正しくありません',
+      });
+      return;
+    }
 
+    // Demo registration logic - allow any valid email/password combination
     const token = `demo_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const userId = `user_${Date.now()}`;
-
-    // Determine admin status
-    const adminEmails = ['admin@example.com', 'demo@example.com', 'test@example.com'];
-    const isAdmin = adminEmails.includes(email) || email.includes('admin');
 
     const user = {
       id: userId,
       _id: userId,
-      name: email.includes('admin')
-        ? 'Admin User'
-        : email.includes('demo')
-          ? 'Demo User'
-          : email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+      name: name,
       username: email.split('@')[0],
       email: email,
-      isAdmin: isAdmin,
+      isAdmin: email.includes('admin'),
       avatar: '',
     };
 
-    const response: LoginResponse = {
+    const response: RegisterResponse = {
       token,
       user,
-      message: 'ログインに成功しました',
+      message: 'ユーザー登録が完了しました',
     };
 
-    console.log('✅ Login successful for:', email, 'Admin:', isAdmin);
-    res.status(200).json(response);
+    console.log('Registration successful for:', email);
+    res.status(201).json(response);
   } catch (error) {
-    console.error('❌ Login error:', error);
+    console.error('❌ Register error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'サーバーエラーが発生しました',
