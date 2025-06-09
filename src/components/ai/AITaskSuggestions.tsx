@@ -13,7 +13,6 @@ import {
   Users,
   Lightbulb,
   TrendingUp,
-  AlertCircle,
   CheckCircle,
   Zap,
   BarChart3,
