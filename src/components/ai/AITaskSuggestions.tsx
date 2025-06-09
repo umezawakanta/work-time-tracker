@@ -14,7 +14,6 @@ import {
   Lightbulb,
   TrendingUp,
   CheckCircle,
-  Zap,
   BarChart3,
   Filter,
   RefreshCw,
