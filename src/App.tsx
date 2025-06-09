@@ -30,6 +30,7 @@ import EditBlogPost from './pages/EditBlogPost';
 import UserProfile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
 import WBSCreatorPage from './pages/WBSCreatorPage';
+import WBSGeneratorPage from './pages/WBSGeneratorPage';
 import TwitterPage from './pages/TwitterPage';
 import PoliticalTrends from './pages/PoliticalTrends';
 import CalendarPage from './pages/CalendarPage';
@@ -294,6 +295,14 @@ export default function App() {
                     element={
                       <LayoutWrapper>
                         <WBSCreatorPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/wbs-generator"
+                    element={
+                      <LayoutWrapper>
+                        <WBSGeneratorPage />
                       </LayoutWrapper>
                     }
                   />

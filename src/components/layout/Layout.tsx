@@ -102,6 +102,14 @@ const menuItems: MenuItem[] = [
     gradient: 'from-rose-500 to-pink-500',
   },
   {
+    icon: <Target className="h-5 w-5" />,
+    label: 'AI WBS生成',
+    path: '/wbs-generator',
+    description: 'AIによる自動WBS生成',
+    badge: 'NEW',
+    gradient: 'from-violet-500 to-purple-500',
+  },
+  {
     icon: <Clock className="h-5 w-5" />,
     label: '勤怠管理',
     path: '/work-time',
