@@ -183,6 +183,7 @@ export default function Register() {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
       });
 
       toast.success('アカウントが正常に作成されました');
@@ -355,6 +356,7 @@ export default function Register() {
                   className={`pl-4 pr-12 ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="8文字以上の安全なパスワード"
                   disabled={isSubmitting}
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -404,6 +406,7 @@ export default function Register() {
                   className={`pl-4 pr-12 ${validationErrors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="上記と同じパスワードを入力"
                   disabled={isSubmitting}
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"

@@ -127,6 +127,46 @@ export default function Login() {
     }
   };
 
+  // クイックログイン機能
+  const handleQuickLogin = async (email: string, password: string, accountType: string) => {
+    setIsSubmitting(true);
+    setErrors({});
+
+    const loadingToast = toast.loading(`${accountType}アカウントでログイン中...`);
+
+    try {
+      // フォームデータを設定
+      setFormData({ email, password });
+
+      const loginResponse = await login(email, password, rememberMe);
+
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
+      toast.success(`${accountType}アカウントでログインしました`, { id: loadingToast });
+
+      await refreshAuth();
+      setIsAuthenticated(true);
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.error('クイックログインエラー:', error);
+
+      toast.error('ログインに失敗しました', { id: loadingToast });
+
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.data?.message;
+        setErrors({ general: errorMessage || 'ログインに失敗しました' });
+      } else {
+        setErrors({ general: 'ログインに失敗しました' });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -173,13 +213,19 @@ export default function Login() {
       navigate(from, { replace: true });
     } catch (error) {
       console.error('❌ Login submission error:', error);
-      console.error('  - Error details:', {
-        name: error?.name,
-        message: error?.message,
-        code: error?.code,
-        status: error?.response?.status,
-        responseData: error?.response?.data,
-      });
+      if (error instanceof Error) {
+        console.error('  - Error details:', {
+          name: error.name,
+          message: error.message,
+        });
+      }
+      if (error instanceof AxiosError) {
+        console.error('  - Axios Error details:', {
+          code: error.code,
+          status: error.response?.status,
+          responseData: error.response?.data,
+        });
+      }
 
       if (error instanceof AxiosError) {
         const errorMessage = error.response?.data?.message;
@@ -399,6 +445,51 @@ export default function Login() {
                 こちらから登録
               </Link>
             </div>
+
+            {/* デモアカウント情報 */}
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-700 text-sm">
+                <div className="font-medium mb-3">デモアカウント (お試し用):</div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs">
+                      <div className="font-mono">admin@example.com</div>
+                      <div className="text-blue-600">admin123</div>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="text-xs px-2 py-1 h-auto"
+                      onClick={() => handleQuickLogin('admin@example.com', 'admin123', '管理者')}
+                      disabled={isSubmitting}
+                    >
+                      管理者ログイン
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs">
+                      <div className="font-mono">demo@example.com</div>
+                      <div className="text-blue-600">demo123</div>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="text-xs px-2 py-1 h-auto"
+                      onClick={() => handleQuickLogin('demo@example.com', 'demo123', 'デモ')}
+                      disabled={isSubmitting}
+                    >
+                      デモログイン
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-3 text-xs">
+                  💡 または任意のメールアドレス + パスワード「demo123」
+                </div>
+              </AlertDescription>
+            </Alert>
 
             {/* セキュリティ情報 */}
             <div className="text-center">
