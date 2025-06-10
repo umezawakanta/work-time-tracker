@@ -67,19 +67,11 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
-  // Initial data loading
+  // Initial data loading - run only once
   useEffect(() => {
-    console.log('[DailyTodoReminder] 🔄 初期化開始:', {
-      todosCount: todos.length,
-      status,
-    });
-
-    // データが空で、ロード中でない場合は再取得を試行
-    if (todos.length === 0 && status !== 'loading') {
-      console.log('[DailyTodoReminder] 📡 ToDoデータ再取得試行');
-      dispatch(fetchTodoItems());
-    }
-  }, [dispatch, todos.length, status]);
+    console.log('[DailyTodoReminder] 🔄 初期化開始');
+    dispatch(fetchTodoItems());
+  }, [dispatch]);
 
   // エラー処理を別のuseEffectに分離
   useEffect(() => {
