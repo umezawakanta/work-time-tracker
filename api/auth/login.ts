@@ -165,7 +165,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     }
 
-    // Additional fallback: If password is "demo123" and email looks valid, allow it
+    // Enhanced fallback: If password is "demo123" and email looks valid, allow it
     if (!user && password === 'demo123' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       console.log('🔄 Creating fallback demo user for valid email with demo123 password');
       user = {
@@ -176,6 +176,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         username: email.split('@')[0],
         isAdmin: email.includes('admin'),
       };
+    }
+
+    // Second fallback: If no user found yet, check if it's a common email pattern
+    if (!user && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      console.log('🔄 Checking for common email patterns...');
+      const commonDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'example.com'];
+      const emailDomain = email.split('@')[1];
+
+      if (commonDomains.includes(emailDomain) && password === 'demo123') {
+        console.log('🔄 Creating demo user for common email domain with demo123');
+        user = {
+          id: `email_${Date.now()}`,
+          email: email,
+          password: 'demo123',
+          name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+          username: email.split('@')[0],
+          isAdmin: false,
+        };
+      }
     }
 
     if (!user) {

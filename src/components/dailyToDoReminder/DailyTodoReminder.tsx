@@ -72,8 +72,6 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     console.log('[DailyTodoReminder] 🔄 初期化開始:', {
       todosCount: todos.length,
       status,
-      error,
-      hasPremium,
     });
 
     // データが空で、ロード中でない場合は再取得を試行
@@ -81,13 +79,15 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
       console.log('[DailyTodoReminder] 📡 ToDoデータ再取得試行');
       dispatch(fetchTodoItems());
     }
+  }, [dispatch, todos.length, status]);
 
-    // エラー処理
+  // エラー処理を別のuseEffectに分離
+  useEffect(() => {
     if (error) {
       console.error('[DailyTodoReminder] ❌ ToDoデータエラー:', error);
       toast.error(`ToDoデータの取得に失敗しました: ${error}`);
     }
-  }, [dispatch, todos.length, status, error, hasPremium]);
+  }, [error]);
 
   // Progress calculations
   const completedCount = todos.filter((todo: Todo) => todo.completed).length;

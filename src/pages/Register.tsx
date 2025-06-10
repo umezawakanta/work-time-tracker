@@ -321,6 +321,7 @@ export default function Register() {
                   className={`pl-4 ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                   placeholder="example@email.com"
                   disabled={isSubmitting}
+                  autoComplete="email"
                 />
                 {touchedFields.email && (
                   <div className="absolute right-3 top-3">

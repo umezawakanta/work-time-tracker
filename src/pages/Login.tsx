@@ -138,7 +138,7 @@ export default function Login() {
       // フォームデータを設定
       setFormData({ email, password });
 
-      const loginResponse = await login(email, password, rememberMe);
+      const _loginResponse = await login(email, password, rememberMe);
 
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
@@ -188,10 +188,10 @@ export default function Login() {
 
     try {
       console.log('🚀 Calling login API...');
-      const loginResponse = await login(formData.email.trim(), formData.password, rememberMe);
+      const _loginResponse = await login(formData.email.trim(), formData.password, rememberMe);
 
       console.log('✅ Login API call successful');
-      console.log('  - Response received:', !!loginResponse);
+      console.log('  - Response received:', !!_loginResponse);
 
       // Remember Me 機能（Emailの保存のみローカルで実行）
       if (rememberMe) {
@@ -241,7 +241,16 @@ export default function Login() {
             setShowDemoMode(true);
           }
         } else if (statusCode === 401) {
-          setErrors({ general: 'メールアドレスまたはパスワードが正しくありません' });
+          const hintMessage = error.response?.data?.hint;
+          const _availableAccounts = error.response?.data?.availableAccounts;
+
+          if (hintMessage) {
+            setErrors({
+              general: `${error.response?.data?.message}\n\n${hintMessage}`,
+            });
+          } else {
+            setErrors({ general: 'メールアドレスまたはパスワードが正しくありません' });
+          }
         } else if (statusCode === 429) {
           setErrors({
             general: 'ログイン試行回数が上限に達しました。しばらく時間をおいてからお試しください',
@@ -322,7 +331,7 @@ export default function Login() {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className={`pl-4 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                  placeholder="example@email.com"
+                  placeholder="demo@example.com または任意のメール"
                   disabled={isSubmitting}
                   autoComplete="email"
                 />
@@ -353,7 +362,7 @@ export default function Login() {
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   className={`pl-4 pr-12 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
-                  placeholder="パスワードを入力"
+                  placeholder="demo123 または admin123"
                   disabled={isSubmitting}
                   autoComplete="current-password"
                 />
@@ -485,8 +494,11 @@ export default function Login() {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-3 text-xs">
-                  💡 または任意のメールアドレス + パスワード「demo123」
+                <div className="mt-3 space-y-1 text-xs">
+                  <div>💡 または任意のメールアドレス + パスワード「demo123」</div>
+                  <div className="text-green-600 font-medium">
+                    🚀 Gmailユーザー: あなたのメール + パスワード「demo123」でログイン可能
+                  </div>
                 </div>
               </AlertDescription>
             </Alert>
