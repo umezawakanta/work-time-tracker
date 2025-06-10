@@ -2,6 +2,7 @@ import { api } from './apiConfig';
 import { USE_MOCK_DATA } from './apiConfig';
 import { tokenManager } from '@/services/auth/TokenManager';
 import { User } from '@/types';
+import { AxiosError } from 'axios';
 
 // Extend Window interface for custom properties
 declare global {
@@ -63,13 +64,27 @@ export const login = async (
   rememberMe: boolean = false
 ): Promise<AuthResponse> => {
   try {
-    const response = await api.post('/auth/login', {
+    console.log('🔑 Login attempt started');
+    console.log('  - Email:', email);
+    console.log('  - Password length:', password.length);
+    console.log('  - Remember Me:', rememberMe);
+    console.log('  - API Base URL:', api.defaults.baseURL);
+
+    const requestData = {
       email,
       password,
       rememberMe,
-    });
+    };
 
-    console.log('Login response:', response.data);
+    console.log('🚀 Sending login request...');
+    const response = await api.post('/auth/login', requestData);
+
+    console.log('✅ Login response received');
+    console.log('  - Status:', response.status);
+    console.log('  - Response data keys:', Object.keys(response.data));
+    console.log('  - Has accessToken:', !!response.data.accessToken);
+    console.log('  - Has refreshToken:', !!response.data.refreshToken);
+    console.log('  - Has user:', !!response.data.user);
 
     // Handle new format with accessToken and refreshToken
     if (response.data.accessToken && response.data.refreshToken) {
@@ -131,7 +146,18 @@ export const login = async (
 
     throw new Error('Invalid response format from server');
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error occurred');
+    console.error('  - Error type:', error?.constructor?.name);
+    console.error('  - Error message:', error?.message);
+
+    if (error instanceof AxiosError) {
+      console.error('  - HTTP Status:', error.response?.status);
+      console.error('  - Response data:', error.response?.data);
+      console.error('  - Request URL:', error.config?.url);
+      console.error('  - Request baseURL:', error.config?.baseURL);
+      console.error('  - Error code:', error.code);
+    }
+
     throw error;
   }
 };

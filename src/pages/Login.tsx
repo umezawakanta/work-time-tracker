@@ -130,7 +130,16 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('🔐 Login form submission started');
+    console.log('  - Form data:', {
+      email: formData.email,
+      passwordLength: formData.password.length,
+    });
+    console.log('  - Remember me:', rememberMe);
+    console.log('  - Current URL:', window.location.href);
+
     if (!validateForm()) {
+      console.log('❌ Form validation failed');
       return;
     }
 
@@ -138,7 +147,11 @@ export default function Login() {
     setErrors({});
 
     try {
-      await login(formData.email.trim(), formData.password, rememberMe);
+      console.log('🚀 Calling login API...');
+      const loginResponse = await login(formData.email.trim(), formData.password, rememberMe);
+
+      console.log('✅ Login API call successful');
+      console.log('  - Response received:', !!loginResponse);
 
       // Remember Me 機能（Emailの保存のみローカルで実行）
       if (rememberMe) {
@@ -149,14 +162,24 @@ export default function Login() {
 
       toast.success('ログインに成功しました');
 
-      // AuthContextの認証状態を強制的に更新
+      console.log('🔄 Refreshing auth context...');
       await refreshAuth();
+
+      console.log('🔄 Setting authenticated state...');
       setIsAuthenticated(true);
 
       // ログイン成功後、元のページまたはホームページにリダイレクト
+      console.log('🔀 Redirecting to:', from);
       navigate(from, { replace: true });
     } catch (error) {
-      console.error('ログインエラー:', error);
+      console.error('❌ Login submission error:', error);
+      console.error('  - Error details:', {
+        name: error?.name,
+        message: error?.message,
+        code: error?.code,
+        status: error?.response?.status,
+        responseData: error?.response?.data,
+      });
 
       if (error instanceof AxiosError) {
         const errorMessage = error.response?.data?.message;

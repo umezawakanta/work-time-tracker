@@ -21,14 +21,23 @@ export const USE_MOCK_DATA =
 
 // デプロイ先でのAPI URL自動判定
 const getApiBaseUrl = () => {
+  console.log('🔧 Determining API Base URL...');
+  console.log('  - Environment variables:', {
+    VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+    DEV: import.meta.env.DEV,
+    PROD: import.meta.env.PROD,
+  });
+
   // 環境変数が設定されている場合はそれを使用
   if (import.meta.env.VITE_API_BASE_URL) {
+    console.log('  - Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
     return import.meta.env.VITE_API_BASE_URL;
   }
 
   // 本番環境では実際のAPIサーバーに接続を試行
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
+    console.log('  - Current hostname:', hostname);
 
     // Vercel production domain
     if (hostname === 'work-time-tracker-5d9q.vercel.app') {
@@ -44,12 +53,16 @@ const getApiBaseUrl = () => {
 
     // Other custom domains
     if (hostname !== 'localhost') {
-      return `${window.location.protocol}//${window.location.hostname}/api`;
+      const apiUrl = `${window.location.protocol}//${window.location.hostname}/api`;
+      console.log('  - Using custom domain API:', apiUrl);
+      return apiUrl;
     }
   }
 
-  // 開発環境のデフォルト
-  return 'http://localhost:3002/api';
+  // 開発環境のデフォルト - Vercel dev server uses same port
+  const devApiUrl = 'http://localhost:3000/api';
+  console.log('  - Using development API URL:', devApiUrl);
+  return devApiUrl;
 };
 
 const baseURL = getApiBaseUrl();
