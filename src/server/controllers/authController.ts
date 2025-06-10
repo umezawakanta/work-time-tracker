@@ -16,13 +16,13 @@ interface TokenPayload {
 }
 
 const generateTokens = (userId: string, rememberMe: boolean = false) => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    console.error('JWT_SECRET environment variable is not set');
-    throw new Error('JWT_SECRET is not defined');
-  }
+  const secret = process.env.JWT_SECRET || 'dev-fallback-jwt-secret-key-change-in-production';
 
-  console.log('JWT_SECRET is properly configured');
+  if (!process.env.JWT_SECRET) {
+    console.warn('⚠️ JWT_SECRET not set, using fallback secret for development');
+  } else {
+    console.log('JWT_SECRET is properly configured');
+  }
 
   // Access token: 1 hour
   const accessToken = jwt.sign({ id: userId }, secret, { expiresIn: '1h' });
@@ -41,12 +41,14 @@ const generateTokens = (userId: string, rememberMe: boolean = false) => {
 
 // Legacy function for backward compatibility
 const generateToken = (userId: string) => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    console.error('JWT_SECRET environment variable is not set');
-    throw new Error('JWT_SECRET is not defined');
+  const secret = process.env.JWT_SECRET || 'dev-fallback-jwt-secret-key-change-in-production';
+
+  if (!process.env.JWT_SECRET) {
+    console.warn('⚠️ JWT_SECRET not set, using fallback secret for development');
+  } else {
+    console.log('JWT_SECRET is properly configured');
   }
-  console.log('JWT_SECRET is properly configured');
+
   return jwt.sign({ id: userId }, secret, { expiresIn: '1h' }); // Changed from 1d to 1h
 };
 
@@ -334,12 +336,14 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     }
 
     try {
-      const secret = process.env.JWT_SECRET;
-      if (!secret) {
-        throw new Error('JWT_SECRET is not defined');
+      const secret = process.env.JWT_SECRET || 'dev-fallback-jwt-secret-key-change-in-production';
+
+      if (!process.env.JWT_SECRET) {
+        console.warn('⚠️ JWT_SECRET not set, using fallback secret for development');
+      } else {
+        console.log('JWT_SECRET is properly configured');
       }
 
-      console.log('JWT_SECRET is properly configured');
       const decoded = jwt.verify(refreshToken, secret) as unknown as TokenPayload;
 
       if (!decoded?.id) {
