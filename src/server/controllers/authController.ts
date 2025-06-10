@@ -54,12 +54,12 @@ const generateToken = (userId: string) => {
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('Login attempt:', req.body);
+    console.log('🔄 Login attempt started:', req.body);
     const { email, password, rememberMe } = req.body;
     const rememberMeFlag = Boolean(rememberMe);
 
     if (!email || !password) {
-      console.error('Login error: Missing email or password');
+      console.error('❌ Login error: Missing email or password');
       res.status(400).json({ message: 'Email and password are required' });
       return;
     }
@@ -67,32 +67,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     // パスワードが文字列であることを確認
     const passwordStr = String(password);
 
+    console.log('🔍 Looking up user with email:', email);
     const user = (await User.findOne({ email })) as IUser | null;
-    console.log('User found:', user ? 'Yes' : 'No');
+    console.log('👤 User found:', user ? 'Yes' : 'No');
 
     if (!user) {
-      console.error('Login error: User not found');
+      console.error('❌ Login error: User not found');
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
-    // 修正: 文字列に変換したパスワードを使用
+    console.log('🔐 Comparing password...');
     const isMatch = await user.comparePassword(passwordStr);
-    console.log('Password match:', isMatch);
+    console.log('🔑 Password match:', isMatch);
 
     if (!isMatch) {
-      console.error('Login error: Invalid password');
+      console.error('❌ Login error: Invalid password');
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
 
     const userId = user._id?.toString() || '';
-    const tokens = generateTokens(userId, rememberMeFlag);
-    console.log('Login successful for user:', userId);
-    console.log('Remember me:', rememberMeFlag);
+    console.log('🎫 Generating tokens for user:', userId);
 
-    // New format with proper token structure
-    res.json({
+    const tokens = generateTokens(userId, rememberMeFlag);
+    console.log('✅ Tokens generated successfully');
+
+    console.log('📝 Building response data...');
+    const responseData = {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       user: {
@@ -104,14 +106,28 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: tokens.expiresIn,
       refreshExpiresIn: tokens.refreshExpiresIn,
       message: 'Login successful',
-    });
+    };
+
+    console.log('📤 Sending response to client...');
+    console.log('Remember me:', rememberMeFlag);
+
+    res.json(responseData);
+
+    console.log('✅ Response sent successfully');
+    console.log('🏁 Login process completed for user:', userId);
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error caught in catch block:', error);
     if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
       res
         .status(500)
         .json({ message: 'Server error during login', error: error.message, stack: error.stack });
     } else {
+      console.error('Non-Error object thrown:', error);
       res.status(500).json({ message: 'Server error during login', error: 'Unknown error' });
     }
   }
