@@ -28,12 +28,6 @@ const getApiBaseUrl = () => {
     PROD: import.meta.env.PROD,
   });
 
-  // 環境変数が設定されている場合はそれを使用
-  if (import.meta.env.VITE_API_BASE_URL) {
-    console.log('  - Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-
   // 本番環境では実際のAPIサーバーに接続を試行
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
@@ -51,17 +45,23 @@ const getApiBaseUrl = () => {
       return 'https://work-time-tracker-5d9q.vercel.app/api';
     }
 
-    // Other custom domains
-    if (hostname !== 'localhost') {
-      const apiUrl = `${window.location.protocol}//${window.location.hostname}/api`;
-      console.log('  - Using custom domain API:', apiUrl);
-      return apiUrl;
+    // Development environment - force use of localhost:3001
+    if (hostname === 'localhost') {
+      const devApiUrl = 'http://localhost:3001/api';
+      console.log('🔧 開発環境: Vercel dev serverを使用:', devApiUrl);
+      console.log('💡 Note: VITE_API_BASE_URL環境変数を無視して localhost:3001 を使用します');
+      return devApiUrl;
     }
+
+    // Other custom domains
+    const apiUrl = `${window.location.protocol}//${window.location.hostname}/api`;
+    console.log('  - Using custom domain API:', apiUrl);
+    return apiUrl;
   }
 
-  // 開発環境のデフォルト - Vercel dev server uses same port
-  const devApiUrl = 'http://localhost:3000/api';
-  console.log('  - Using development API URL:', devApiUrl);
+  // Fallback for development
+  const devApiUrl = 'http://localhost:3001/api';
+  console.log('  - Fallback to development API URL:', devApiUrl);
   return devApiUrl;
 };
 
@@ -171,9 +171,9 @@ api.interceptors.response.use(
       }
 
       // 開発環境でのサーバー未起動を通知
-      if (baseURL.includes('localhost:3002') && import.meta.env.DEV) {
+      if (baseURL.includes('localhost:3001') && import.meta.env.DEV) {
         console.warn(
-          '💡 Hint: Make sure your development server is running on http://localhost:3002'
+          '💡 Hint: Make sure your development server is running on http://localhost:3001'
         );
       }
     } else {

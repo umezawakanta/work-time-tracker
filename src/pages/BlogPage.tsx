@@ -248,7 +248,7 @@ const BlogPage: React.FC = () => {
               <Typography variant="body2">
                 <strong>開発者向け情報:</strong>
                 <br /> • API Base URL:{' '}
-                {import.meta.env.VITE_API_BASE_URL || 'http://localhost:3002/api'}
+                {import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api'}
                 <br />• エラー詳細: {error}
                 <br />• ブラウザの開発者ツールでネットワークタブを確認してください
               </Typography>

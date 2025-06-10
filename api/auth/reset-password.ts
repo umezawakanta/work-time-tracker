@@ -13,7 +13,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
-      'http://localhost:3002',
       'https://work-time-tracker-5d9q.vercel.app',
     ];
 

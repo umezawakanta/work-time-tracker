@@ -147,8 +147,9 @@ export const login = async (
     throw new Error('Invalid response format from server');
   } catch (error) {
     console.error('❌ Login error occurred');
+    const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('  - Error type:', error?.constructor?.name);
-    console.error('  - Error message:', error?.message);
+    console.error('  - Error message:', (error as Error)?.message);
 
     if (error instanceof AxiosError) {
       console.error('  - HTTP Status:', error.response?.status);

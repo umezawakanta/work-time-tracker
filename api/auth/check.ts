@@ -11,7 +11,14 @@ interface AuthUser {
   avatar: string;
 }
 
-interface AuthSuccessResponse {
+interface _AuthErrorResponse {
+  isAuthenticated: false;
+  error: string;
+  message: string;
+  details?: string;
+}
+
+interface _AuthSuccessResponse {
   isAuthenticated: true;
   message: string;
   timestamp: string;
@@ -19,16 +26,9 @@ interface AuthSuccessResponse {
   tokenType: 'demo' | 'auth';
 }
 
-interface AuthErrorResponse {
-  isAuthenticated: false;
-  error: string;
-  message: string;
-  details?: string;
-}
-
 // 環境変数から許可されたオリジンを取得
 const getAllowedOrigins = (): string[] => {
-  const baseOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+  const baseOrigins = ['http://localhost:3000'];
 
   const prodOrigin = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`

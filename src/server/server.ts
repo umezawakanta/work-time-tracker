@@ -45,8 +45,6 @@ const server = http.createServer(app);
 // Middleware
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:3002',
   'http://127.0.0.1:3000',
   'https://work-time-tracker-5d9q.vercel.app',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
@@ -304,7 +302,7 @@ console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
 console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
 console.log('=== End Environment Check ===');
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 // Vercel環境の場合はサーバーを起動しない（Functionsとして動作）
 if (process.env.VERCEL) {
