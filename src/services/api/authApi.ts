@@ -35,6 +35,8 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
   try {
     const response = await api.post<AuthResponse>('/auth/register', userData);
 
+    console.log('Register response:', response.data);
+
     if (response.data.accessToken && response.data.refreshToken) {
       // TokenManagerを使用してトークンを管理
       tokenManager.setTokens(
@@ -43,6 +45,9 @@ export const register = async (userData: RegisterData): Promise<AuthResponse> =>
         response.data.expiresIn || 3600, // デフォルト1時間
         response.data.refreshExpiresIn || 604800 // デフォルト7日
       );
+
+      // ログアウトフラグをクリア
+      sessionStorage.removeItem('user-logged-out');
     }
 
     return response.data;
@@ -64,10 +69,36 @@ export const login = async (
       rememberMe,
     });
 
-    // 既存のtoken形式に対応
+    console.log('Login response:', response.data);
+
+    // Handle new format with accessToken and refreshToken
+    if (response.data.accessToken && response.data.refreshToken) {
+      const expiresIn = response.data.expiresIn || 3600;
+      const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
+
+      tokenManager.setTokens(
+        response.data.accessToken,
+        response.data.refreshToken,
+        expiresIn,
+        refreshExpiresIn
+      );
+
+      if (rememberMe) {
+        tokenManager.setRememberMe(true);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
+
+      // ログアウトフラグをクリア
+      sessionStorage.removeItem('user-logged-out');
+
+      return response.data;
+    }
+
+    // Legacy format fallback (single token field)
     if (response.data.token) {
-      // 単純なtokenをaccessTokenとして扱う
-      const expiresIn = 3600; // 1時間
+      const expiresIn = 3600; // 1 hour
       const refreshExpiresIn = rememberMe ? 2592000 : 604800;
 
       tokenManager.setTokens(
@@ -98,30 +129,7 @@ export const login = async (
       };
     }
 
-    // 新しい形式のレスポンス（推奨）
-    if (response.data.accessToken && response.data.refreshToken) {
-      const expiresIn = response.data.expiresIn || 3600;
-      const refreshExpiresIn = response.data.refreshExpiresIn || (rememberMe ? 2592000 : 604800);
-
-      tokenManager.setTokens(
-        response.data.accessToken,
-        response.data.refreshToken,
-        expiresIn,
-        refreshExpiresIn
-      );
-
-      if (rememberMe) {
-        tokenManager.setRememberMe(true);
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('rememberMe');
-      }
-
-      // ログアウトフラグをクリア
-      sessionStorage.removeItem('user-logged-out');
-    }
-
-    return response.data;
+    throw new Error('Invalid response format from server');
   } catch (error) {
     console.error('Login error:', error);
     throw error;

@@ -15,6 +15,31 @@ interface TokenPayload {
   id: string;
 }
 
+const generateTokens = (userId: string, rememberMe: boolean = false) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('JWT_SECRET environment variable is not set');
+    throw new Error('JWT_SECRET is not defined');
+  }
+
+  console.log('JWT_SECRET is properly configured');
+
+  // Access token: 1 hour
+  const accessToken = jwt.sign({ id: userId }, secret, { expiresIn: '1h' });
+
+  // Refresh token: 7 days (30 days if remember me)
+  const refreshExpiresIn = rememberMe ? '30d' : '7d';
+  const refreshToken = jwt.sign({ id: userId }, secret, { expiresIn: refreshExpiresIn });
+
+  return {
+    accessToken,
+    refreshToken,
+    expiresIn: 3600, // 1 hour in seconds
+    refreshExpiresIn: rememberMe ? 2592000 : 604800, // 30 days or 7 days in seconds
+  };
+};
+
+// Legacy function for backward compatibility
 const generateToken = (userId: string) => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -22,13 +47,14 @@ const generateToken = (userId: string) => {
     throw new Error('JWT_SECRET is not defined');
   }
   console.log('JWT_SECRET is properly configured');
-  return jwt.sign({ id: userId }, secret, { expiresIn: '1d' });
+  return jwt.sign({ id: userId }, secret, { expiresIn: '1h' }); // Changed from 1d to 1h
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     console.log('Login attempt:', req.body);
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
+    const rememberMeFlag = Boolean(rememberMe);
 
     if (!email || !password) {
       console.error('Login error: Missing email or password');
@@ -59,10 +85,24 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     const userId = user._id?.toString() || '';
-    const token = generateToken(userId);
+    const tokens = generateTokens(userId, rememberMeFlag);
     console.log('Login successful for user:', userId);
+    console.log('Remember me:', rememberMeFlag);
 
-    res.json({ token, user: { id: userId, name: user.name, email: user.email } });
+    // New format with proper token structure
+    res.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: userId,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin || false,
+      },
+      expiresIn: tokens.expiresIn,
+      refreshExpiresIn: tokens.refreshExpiresIn,
+      message: 'Login successful',
+    });
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof Error) {
@@ -122,14 +162,23 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     console.log('User saved successfully with ID:', user._id);
 
     const userId = user._id?.toString() || '';
-    console.log('Generating JWT token for user ID:', userId);
+    console.log('Generating JWT tokens for user ID:', userId);
 
-    const token = generateToken(userId);
-    console.log('JWT token generated successfully');
+    const tokens = generateTokens(userId, false); // New registrations don't get remember me by default
+    console.log('JWT tokens generated successfully');
 
     const responseData = {
-      token,
-      user: { id: userId, name: user.name, email: user.email },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: userId,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin || false,
+      },
+      expiresIn: tokens.expiresIn,
+      refreshExpiresIn: tokens.refreshExpiresIn,
+      message: 'Registration successful',
     };
     console.log('Sending successful registration response:', responseData);
 
@@ -274,7 +323,7 @@ export const updateUserToAdmin = async (userId: string) => {
   return await User.findByIdAndUpdate(userId, { isAdmin: true }, { new: true }).select('-password');
 };
 
-// リフレッシュトークン機能を追加
+// リフレッシュトークン機能を修正
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
   try {
     const { refreshToken } = req.body;
@@ -284,13 +333,13 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // 簡易実装：リフレッシュトークンを検証（実際の実装では別途管理が必要）
     try {
       const secret = process.env.JWT_SECRET;
       if (!secret) {
         throw new Error('JWT_SECRET is not defined');
       }
 
+      console.log('JWT_SECRET is properly configured');
       const decoded = jwt.verify(refreshToken, secret) as unknown as TokenPayload;
 
       if (!decoded?.id) {
@@ -301,25 +350,28 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       const user = await User.findById(decoded.id).select('-password');
 
       if (!user) {
-        res.status(401).json({ message: 'Invalid refresh token' });
+        res.status(401).json({ message: 'Invalid refresh token - user not found' });
         return;
       }
 
-      // 新しいアクセストークンを生成
-      const newAccessToken = generateToken(String(user._id));
+      // 新しいトークンペアを生成
+      const tokens = generateTokens(String(user._id), false);
 
       res.json({
-        accessToken: newAccessToken,
-        refreshToken: refreshToken, // 既存のリフレッシュトークンを再利用
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
         user: {
           id: user._id,
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin || false,
         },
-        expiresIn: 86400, // 24時間
-        refreshExpiresIn: 604800, // 7日
+        expiresIn: tokens.expiresIn,
+        refreshExpiresIn: tokens.refreshExpiresIn,
+        message: 'Token refreshed successfully',
       });
+
+      console.log('Token refresh successful for user:', user._id);
     } catch (jwtError) {
       console.error('Invalid refresh token:', jwtError);
       res.status(401).json({ message: 'Invalid refresh token' });
