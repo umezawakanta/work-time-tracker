@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
@@ -9,6 +9,7 @@ import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';
 import { NextTaskSuggestionComponent } from '@/components/ai/NextTaskSuggestion';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import {
   Clock,
   Target,
@@ -21,10 +22,31 @@ import {
   Calendar,
   Zap,
   Plus,
+  AlertTriangle,
+  Users,
+  BookOpen,
+  Briefcase,
 } from 'lucide-react';
 import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { toast } from 'react-hot-toast';
+
+interface ActivityData {
+  task: string;
+  time: string;
+  status: 'completed' | 'in-progress' | 'pending';
+  type?: 'todo' | 'calendar' | 'wbs';
+}
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  type: 'meeting' | 'deadline' | 'reminder';
+}
 
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,42 +57,103 @@ const Home: React.FC = () => {
   const isUserLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
 
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
+  const [isLoadingCalendar, setIsLoadingCalendar] = useState(false);
+
   // ToDoデータの初期化
   useEffect(() => {
     if (isAuthenticated && isUserLoggedIn) {
       dispatch(fetchTodoItems());
+      loadCalendarData();
     }
   }, [isAuthenticated, isUserLoggedIn, dispatch]);
 
-  // 統計データの計算
-  const calculateStats = () => {
+  // カレンダーデータの読み込み
+  const loadCalendarData = async () => {
+    setIsLoadingCalendar(true);
+    try {
+      // 実際の実装では、カレンダーAPIからデータを取得
+      // 現在はモックデータを使用
+      const mockEvents: CalendarEvent[] = [
+        {
+          id: '1',
+          title: 'プロジェクトレビュー',
+          start: new Date(Date.now() + 24 * 60 * 60 * 1000), // 明日
+          end: new Date(Date.now() + 24 * 60 * 60 * 1000 + 60 * 60 * 1000), // 明日+1時間
+          type: 'meeting',
+        },
+        {
+          id: '2',
+          title: '月次報告会',
+          start: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5日後
+          end: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000), // 5日後+2時間
+          type: 'meeting',
+        },
+        {
+          id: '3',
+          title: 'タスクA期限',
+          start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3日後
+          end: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          type: 'deadline',
+        },
+      ];
+      setCalendarEvents(mockEvents);
+    } catch (error) {
+      console.error('Failed to load calendar data:', error);
+      toast.error('カレンダーデータの読み込みに失敗しました');
+    } finally {
+      setIsLoadingCalendar(false);
+    }
+  };
+
+  // 統合統計データの計算
+  const calculateIntegratedStats = useMemo(() => {
+    const today = new Date();
+    const todayStr = today.toDateString();
+
+    // ToDo統計
     const todayTasks = todos.filter((todo) => {
-      const today = new Date().toDateString();
-      const createdDate = todo.createdAt ? new Date(todo.createdAt).toDateString() : today;
-      return createdDate === today;
+      const createdDate = todo.createdAt ? new Date(todo.createdAt).toDateString() : todayStr;
+      return createdDate === todayStr;
     });
 
     const completedToday = todayTasks.filter((todo) => todo.completed).length;
     const totalToday = todayTasks.length;
     const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
 
+    // 期限切れタスク
     const overdueTasks = todos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
-      return new Date(todo.deadline) < new Date();
+      return new Date(todo.deadline) < today;
     }).length;
 
+    // 今週のイベント
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 7);
+
+    const thisWeekEvents = calendarEvents.filter(
+      (event) => event.start >= weekStart && event.start <= weekEnd
+    ).length;
+
+    // 高優先度タスク
+    const highPriorityTasks = todos.filter(
+      (todo) => !todo.completed && (todo.isPrioritized || (todo.priority && todo.priority > 3))
+    ).length;
+
     // 連続記録の計算（簡易版）
-    const streakDays = 7; // 実際にはより複雑な計算が必要
+    const streakDays = calculateStreakDays();
 
     return [
       {
         title: '今日のタスク',
-        value: `${completedToday}/${totalToday}`,
+        value: totalToday > 0 ? `${completedToday}/${totalToday}` : '0',
         icon: <CheckCircle className="h-6 w-6" />,
         color: 'text-emerald-600',
         bgColor: 'bg-emerald-50',
         progress: completionRate,
-        change: { value: 12, period: '先週比' },
+        change: { value: completionRate >= 70 ? 12 : -5, period: '先週比' },
       },
       {
         title: '作業時間',
@@ -83,11 +166,11 @@ const Home: React.FC = () => {
       },
       {
         title: '生産性スコア',
-        value: `${completionRate}%`,
+        value: `${Math.max(completionRate, 50)}%`,
         icon: <TrendingUp className="h-6 w-6" />,
         color: 'text-purple-600',
         bgColor: 'bg-purple-50',
-        progress: completionRate,
+        progress: Math.max(completionRate, 50),
         change: { value: 5, period: '今月平均' },
       },
       {
@@ -100,10 +183,41 @@ const Home: React.FC = () => {
         change: { value: 0, period: '目標30日' },
       },
     ];
+  }, [todos, calendarEvents]);
+
+  // 連続記録の計算
+  const calculateStreakDays = (): number => {
+    // 簡易実装：実際にはより複雑なロジックが必要
+    const completedDates = todos
+      .filter((todo) => todo.completed && todo.completedDate)
+      .map((todo) => new Date(todo.completedDate!).toDateString())
+      .sort()
+      .reverse();
+
+    let streak = 0;
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+
+    if (completedDates.includes(today) || completedDates.includes(yesterday)) {
+      streak = 1;
+      for (let i = 1; i < 30; i++) {
+        const checkDate = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toDateString();
+        if (completedDates.includes(checkDate)) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return streak;
   };
 
-  // 最近のアクティビティの計算
-  const getRecentActivities = () => {
+  // 統合アクティビティの取得
+  const getIntegratedActivities = (): ActivityData[] => {
+    const activities: ActivityData[] = [];
+
+    // 最近完了したToDo
     const recentTodos = todos
       .filter((todo) => todo.completed && todo.completedDate)
       .sort((a, b) => {
@@ -111,13 +225,31 @@ const Home: React.FC = () => {
         const dateB = new Date(b.completedDate!).getTime();
         return dateB - dateA;
       })
-      .slice(0, 4);
+      .slice(0, 3)
+      .map((todo) => ({
+        task: todo.task,
+        time: todo.completedDate ? getTimeAgo(new Date(todo.completedDate)) : '不明',
+        status: 'completed' as const,
+        type: 'todo' as const,
+      }));
 
-    return recentTodos.map((todo) => ({
-      task: todo.task,
-      time: todo.completedDate ? getTimeAgo(new Date(todo.completedDate)) : '不明',
-      status: 'completed' as const,
-    }));
+    activities.push(...recentTodos);
+
+    // 近日中のカレンダーイベント
+    const upcomingEvents = calendarEvents
+      .filter((event) => event.start > new Date())
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .slice(0, 2)
+      .map((event) => ({
+        task: event.title,
+        time: getTimeUntil(event.start),
+        status: 'pending' as const,
+        type: 'calendar' as const,
+      }));
+
+    activities.push(...upcomingEvents);
+
+    return activities.slice(0, 5);
   };
 
   const getTimeAgo = (date: Date): string => {
@@ -135,16 +267,68 @@ const Home: React.FC = () => {
     }
   };
 
+  const getTimeUntil = (date: Date): string => {
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return `${diffDays}日後`;
+    } else if (diffHours > 0) {
+      return `${diffHours}時間後`;
+    } else {
+      return '間もなく';
+    }
+  };
+
   const handleTaskSelect = (taskId: string) => {
-    if (taskId) {
+    if (taskId && taskId !== 'default-task') {
       navigate(`/todos?highlight=${taskId}`);
     } else {
       navigate('/todos');
     }
   };
 
-  const stats = calculateStats();
-  const recentActivities = getRecentActivities();
+  // 緊急度の高いアラートを表示
+  const getUrgentAlerts = () => {
+    const alerts = [];
+    const overdueTasks = todos.filter((todo) => {
+      if (!todo.deadline || todo.completed) return false;
+      return new Date(todo.deadline) < new Date();
+    });
+
+    if (overdueTasks.length > 0) {
+      alerts.push({
+        type: 'error',
+        title: '期限切れタスク',
+        message: `${overdueTasks.length}件のタスクが期限を過ぎています`,
+        action: () => navigate('/todos?filter=overdue'),
+      });
+    }
+
+    const todayDeadlines = todos.filter((todo) => {
+      if (!todo.deadline || todo.completed) return false;
+      const deadline = new Date(todo.deadline);
+      const today = new Date();
+      return deadline.toDateString() === today.toDateString();
+    });
+
+    if (todayDeadlines.length > 0) {
+      alerts.push({
+        type: 'warning',
+        title: '今日が期限',
+        message: `${todayDeadlines.length}件のタスクが今日期限です`,
+        action: () => navigate('/todos?filter=today'),
+      });
+    }
+
+    return alerts;
+  };
+
+  const stats = calculateIntegratedStats;
+  const activities = getIntegratedActivities();
+  const alerts = getUrgentAlerts();
 
   return (
     <PageLayout
@@ -156,6 +340,42 @@ const Home: React.FC = () => {
       }}
       headerGradient
     >
+      {/* 緊急アラート */}
+      {alerts.length > 0 && (
+        <div className="mb-6 space-y-3">
+          {alerts.map((alert, index) => (
+            <Card
+              key={index}
+              className={cn(
+                'border-l-4 cursor-pointer hover:shadow-md transition-shadow',
+                alert.type === 'error' && 'border-l-red-500 bg-red-50',
+                alert.type === 'warning' && 'border-l-yellow-500 bg-yellow-50'
+              )}
+              onClick={alert.action}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle
+                    className={cn(
+                      'h-5 w-5',
+                      alert.type === 'error' && 'text-red-600',
+                      alert.type === 'warning' && 'text-yellow-600'
+                    )}
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm">{alert.title}</h4>
+                    <p className="text-sm text-gray-600">{alert.message}</p>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    確認
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {/* 統計セクション */}
       <StatsGrid stats={stats} className="mb-8" />
 
@@ -189,9 +409,10 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* 右側：最近のアクティビティ */}
-        <div className="xl:col-span-1">
-          <Card className="border-0 shadow-md h-fit">
+        {/* 右側：統合アクティビティ */}
+        <div className="xl:col-span-1 space-y-6">
+          {/* 最近のアクティビティ */}
+          <Card className="border-0 shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-blue-500" />
@@ -200,8 +421,8 @@ const Home: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentActivities.length > 0 ? (
-                  recentActivities.map((activity, index) => (
+                {activities.length > 0 ? (
+                  activities.map((activity, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
@@ -209,13 +430,27 @@ const Home: React.FC = () => {
                       <div
                         className={cn(
                           'w-2 h-2 rounded-full',
-                          activity.status === 'completed' ? 'bg-emerald-500' : 'bg-blue-500'
+                          activity.status === 'completed' && 'bg-emerald-500',
+                          activity.status === 'pending' && 'bg-blue-500',
+                          activity.status === 'in-progress' && 'bg-yellow-500'
                         )}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">
-                          {activity.task}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-slate-900 truncate">
+                            {activity.task}
+                          </p>
+                          {activity.type && (
+                            <Badge variant="outline" className="text-xs">
+                              {activity.type === 'todo' && <CheckSquare className="h-3 w-3 mr-1" />}
+                              {activity.type === 'calendar' && (
+                                <Calendar className="h-3 w-3 mr-1" />
+                              )}
+                              {activity.type === 'wbs' && <Briefcase className="h-3 w-3 mr-1" />}
+                              {activity.type}
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-500">{activity.time}</p>
                       </div>
                     </div>
@@ -223,7 +458,7 @@ const Home: React.FC = () => {
                 ) : (
                   <div className="text-center py-6 text-gray-500">
                     <CheckCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">完了したタスクがありません</p>
+                    <p className="text-sm">まだアクティビティがありません</p>
                     <Button
                       variant="outline"
                       size="sm"
@@ -240,29 +475,48 @@ const Home: React.FC = () => {
           </Card>
 
           {/* カレンダープレビュー */}
-          <Card className="border-0 shadow-md mt-6">
+          <Card className="border-0 shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 今週の予定
+                {isLoadingCalendar && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500" />
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center gap-3 p-2 rounded">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">プロジェクトレビュー</p>
-                    <p className="text-xs text-gray-500">明日 10:00</p>
+                {calendarEvents.length > 0 ? (
+                  calendarEvents.slice(0, 3).map((event, index) => (
+                    <div key={event.id} className="flex items-center gap-3 p-2 rounded">
+                      <div
+                        className={cn(
+                          'w-3 h-3 rounded-full',
+                          event.type === 'meeting' && 'bg-blue-500',
+                          event.type === 'deadline' && 'bg-red-500',
+                          event.type === 'reminder' && 'bg-green-500'
+                        )}
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{event.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {event.start.toLocaleDateString('ja-JP', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-gray-500">
+                    <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm">予定がありません</p>
                   </div>
-                </div>
-                <div className="flex items-center gap-3 p-2 rounded">
-                  <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">月次報告会</p>
-                    <p className="text-xs text-gray-500">金曜日 14:00</p>
-                  </div>
-                </div>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -336,6 +590,12 @@ const Home: React.FC = () => {
                 <p className="text-slate-600">
                   高度なAI分析、チーム協力、自動WBS生成などの機能をご利用いただけます
                 </p>
+                <ul className="text-sm text-slate-500 mt-2 space-y-1">
+                  <li>• WBSとカレンダーの統合分析</li>
+                  <li>• リアルタイムAI提案</li>
+                  <li>• チーム協力機能</li>
+                  <li>• 詳細レポート</li>
+                </ul>
               </div>
               <Button
                 onClick={() => navigate('/subscription-management')}
