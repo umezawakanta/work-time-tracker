@@ -100,9 +100,8 @@ export const login = async (
 
       if (rememberMe) {
         tokenManager.setRememberMe(true);
-        localStorage.setItem('rememberMe', 'true');
       } else {
-        localStorage.removeItem('rememberMe');
+        tokenManager.setRememberMe(false);
       }
 
       // ログアウトフラグをクリア
@@ -125,9 +124,8 @@ export const login = async (
 
       if (rememberMe) {
         tokenManager.setRememberMe(true);
-        localStorage.setItem('rememberMe', 'true');
       } else {
-        localStorage.removeItem('rememberMe');
+        tokenManager.setRememberMe(false);
       }
 
       // ログアウトフラグをクリア
