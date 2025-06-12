@@ -1,15 +1,16 @@
 import { KnowledgeEntry } from '@/types/knowledge';
 
 class KnowledgeService {
-  private storageKey = 'work-time-tracker-knowledge';
+  private baseUrl = '/api/knowledge';
 
   /**
    * すべての知識エントリーを取得
    */
   async getAll(): Promise<KnowledgeEntry[]> {
     try {
-      const stored = localStorage.getItem(this.storageKey);
-      return stored ? JSON.parse(stored) : [];
+      const res = await fetch(this.baseUrl, { method: 'GET' });
+      if (!res.ok) throw new Error('Failed to fetch knowledge entries');
+      return (await res.json()) as KnowledgeEntry[];
     } catch (error) {
       console.error('知識エントリーの取得エラー:', error);
       return [];
@@ -17,23 +18,16 @@ class KnowledgeService {
   }
 
   /**
-   * 知識エントリーを保存
+   * 知識エントリーを保存（新規 or 更新）
    */
   async save(entries: KnowledgeEntry[]): Promise<void> {
     try {
-      const existingEntries = await this.getAll();
-      const newEntries = [...existingEntries];
-
-      for (const entry of entries) {
-        const existingIndex = newEntries.findIndex((e) => e.id === entry.id);
-        if (existingIndex >= 0) {
-          newEntries[existingIndex] = { ...entry, updatedAt: new Date().toISOString() };
-        } else {
-          newEntries.push(entry);
-        }
-      }
-
-      localStorage.setItem(this.storageKey, JSON.stringify(newEntries));
+      const res = await fetch(this.baseUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entries),
+      });
+      if (!res.ok) throw new Error('Failed to save knowledge entries');
     } catch (error) {
       console.error('知識エントリーの保存エラー:', error);
       throw error;
@@ -44,16 +38,30 @@ class KnowledgeService {
    * IDで知識エントリーを取得
    */
   async getById(id: string): Promise<KnowledgeEntry | null> {
-    const entries = await this.getAll();
-    return entries.find((e) => e.id === id) || null;
+    try {
+      const res = await fetch(`${this.baseUrl}/${id}`, { method: 'GET' });
+      if (!res.ok) return null;
+      return (await res.json()) as KnowledgeEntry;
+    } catch (error) {
+      console.error('知識エントリーの取得エラー:', error);
+      return null;
+    }
   }
 
   /**
    * タスクに関連する知識エントリーを取得
    */
   async getByTaskId(taskId: string): Promise<KnowledgeEntry[]> {
-    const entries = await this.getAll();
-    return entries.filter((e) => e.relatedTasks?.includes(taskId));
+    try {
+      const res = await fetch(`${this.baseUrl}?taskId=${encodeURIComponent(taskId)}`, {
+        method: 'GET',
+      });
+      if (!res.ok) throw new Error('Failed to fetch by taskId');
+      return (await res.json()) as KnowledgeEntry[];
+    } catch (error) {
+      console.error('知識エントリーの取得エラー:', error);
+      return [];
+    }
   }
 
   /**

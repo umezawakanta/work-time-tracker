@@ -40,31 +40,29 @@ export class TokenManager {
   /**
    * ストレージからトークンを読み込み
    */
-  private loadFromStorage(): void {
+  private async loadFromStorage(): Promise<void> {
     try {
-      const tokenData = localStorage.getItem('auth_tokens');
-      if (tokenData) {
-        const parsed: TokenPair = JSON.parse(tokenData);
-        this.accessToken = parsed.accessToken;
-        this.refreshToken = parsed.refreshToken;
-        this.expiresAt = parsed.expiresAt;
-        this.refreshExpiresAt = parsed.refreshExpiresAt;
+      const response = await api.get<TokenPair>('/auth/tokens');
+      const parsed = response.data;
+      this.accessToken = parsed.accessToken;
+      this.refreshToken = parsed.refreshToken;
+      this.expiresAt = parsed.expiresAt;
+      this.refreshExpiresAt = parsed.refreshExpiresAt;
 
-        // 有効期限チェック
-        const now = Date.now();
-        if (this.refreshExpiresAt <= now) {
-          // リフレッシュトークンも期限切れ
-          this.clearTokens();
-        } else if (this.expiresAt <= now) {
-          // アクセストークンのみ期限切れ - 自動更新を試行
-          this.scheduleTokenRefresh();
-        } else {
-          // 両方有効 - リフレッシュスケジュール設定
-          this.scheduleTokenRefresh();
-        }
+      // 有効期限チェック
+      const now = Date.now();
+      if (this.refreshExpiresAt <= now) {
+        // リフレッシュトークンも期限切れ
+        this.clearTokens();
+      } else if (this.expiresAt <= now) {
+        // アクセストークンのみ期限切れ - 自動更新を試行
+        this.scheduleTokenRefresh();
+      } else {
+        // 両方有効 - リフレッシュスケジュール設定
+        this.scheduleTokenRefresh();
       }
     } catch (error) {
-      console.error('Failed to load tokens from storage:', error);
+      console.error('Failed to load tokens from DB:', error);
       this.clearTokens();
     }
   }
@@ -72,7 +70,7 @@ export class TokenManager {
   /**
    * ストレージにトークンを保存
    */
-  private saveToStorage(): void {
+  private async saveToStorage(): Promise<void> {
     try {
       const tokenData: TokenPair = {
         accessToken: this.accessToken!,
@@ -80,21 +78,21 @@ export class TokenManager {
         expiresAt: this.expiresAt,
         refreshExpiresAt: this.refreshExpiresAt,
       };
-      localStorage.setItem('auth_tokens', JSON.stringify(tokenData));
+      await api.post('/auth/tokens', tokenData);
     } catch (error) {
-      console.error('Failed to save tokens to storage:', error);
+      console.error('Failed to save tokens to DB:', error);
     }
   }
 
   /**
    * トークンペアを設定
    */
-  public setTokens(
+  public async setTokens(
     accessToken: string,
     refreshToken: string,
     expiresIn: number = 3600, // 1時間
     refreshExpiresIn: number = 604800 // 7日
-  ): void {
+  ): Promise<void> {
     const now = Date.now();
 
     this.accessToken = accessToken;
@@ -102,7 +100,7 @@ export class TokenManager {
     this.expiresAt = now + expiresIn * 1000;
     this.refreshExpiresAt = now + refreshExpiresIn * 1000;
 
-    this.saveToStorage();
+    await this.saveToStorage();
     this.scheduleTokenRefresh();
 
     // APIリクエストヘッダーを更新
@@ -218,7 +216,7 @@ export class TokenManager {
   /**
    * トークンをクリア
    */
-  public clearTokens(): void {
+  public async clearTokens(): Promise<void> {
     this.accessToken = null;
     this.refreshToken = null;
     this.expiresAt = 0;
@@ -229,7 +227,11 @@ export class TokenManager {
       this.refreshTimer = null;
     }
 
-    localStorage.removeItem('auth_tokens');
+    try {
+      await api.delete('/auth/tokens');
+    } catch (error) {
+      console.error('Failed to delete tokens from DB:', error);
+    }
     delete api.defaults.headers.common['Authorization'];
   }
 
@@ -299,12 +301,12 @@ export class TokenManager {
   /**
    * Remember Me設定を適用
    */
-  public setRememberMe(remember: boolean): void {
+  public async setRememberMe(remember: boolean): Promise<void> {
     if (remember) {
       // Remember Meが有効な場合は30日間有効
       const now = Date.now();
       this.refreshExpiresAt = now + 30 * 24 * 60 * 60 * 1000; // 30日
-      this.saveToStorage();
+      await this.saveToStorage();
     }
   }
 
