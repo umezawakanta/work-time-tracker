@@ -34,6 +34,7 @@ export const AIWBSGenerator: React.FC<{
       onGenerate(wbsStructure);
       toast.success('WBSを生成しました');
     } catch (error) {
+      console.error('WBS generation error:', error);
       toast.error('WBS生成に失敗しました');
     } finally {
       setIsGenerating(false);

@@ -1,5 +1,18 @@
 import { WBSNode } from '@/types/wbs';
-import AdvancedAIService from './AdvancedAIService';
+import AdvancedAIService, { TaskBreakdown } from './AdvancedAIService';
+
+interface TaskContext {
+  taskType: string;
+  complexity: 'low' | 'medium' | 'high';
+}
+
+interface ProjectRisk {
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high';
+  affectedNodes?: string[];
+  mitigation: string;
+}
 
 class WBSAIService {
   private aiService = AdvancedAIService;
@@ -102,7 +115,7 @@ class WBSAIService {
       risks.push({
         title: '遅延タスクの存在',
         description: `${delayedNodes.length}個のタスクが予定より遅れています`,
-        severity: 'high',
+        severity: 'high' as const,
         affectedNodes: delayedNodes.map((n) => n.id),
         mitigation: '遅延タスクの優先順位を上げ、リソースを集中的に投入することを推奨します',
       });
@@ -114,7 +127,7 @@ class WBSAIService {
       risks.push({
         title: 'クリティカルパスの遅延リスク',
         description: 'プロジェクト全体の完了に影響する重要なタスクに遅れが見られます',
-        severity: 'high',
+        severity: 'high' as const,
         mitigation: 'クリティカルパス上のタスクに追加リソースを割り当ててください',
       });
     }
@@ -125,7 +138,7 @@ class WBSAIService {
       risks.push({
         title: 'リソースの過負荷',
         description: '一部のリソースに作業が集中しています',
-        severity: 'medium',
+        severity: 'medium' as const,
         mitigation: 'タスクの再割り当てやスケジュール調整を検討してください',
       });
     }
@@ -169,7 +182,7 @@ class WBSAIService {
    * 完了予測を生成
    */
   private async predictCompletion(nodes: WBSNode[]) {
-    const currentProgress = this.calculateOverallProgress(nodes);
+    const _currentProgress = this.calculateOverallProgress(nodes);
     const velocity = this.calculateVelocity(nodes);
     const remainingWork = this.calculateRemainingWork(nodes);
 
@@ -295,7 +308,9 @@ class WBSAIService {
     );
   }
 
-  private analyzeBuffers(nodes: WBSNode[]): any {
+  private analyzeBuffers(
+    nodes: WBSNode[]
+  ): { title: string; description: string; impact: string } | null {
     // バッファ分析（簡易版）
     const totalDuration = nodes.reduce((sum, n) => sum + n.duration, 0);
     const criticalPathDuration = this.findCriticalPath(nodes).reduce(
@@ -316,7 +331,9 @@ class WBSAIService {
     return null;
   }
 
-  private findResourceLevelingOpportunity(nodes: WBSNode[]): any {
+  private findResourceLevelingOpportunity(
+    nodes: WBSNode[]
+  ): { title: string; description: string; impact: string } | null {
     // リソース平準化の機会を検出
     const overloaded = this.findOverloadedResources(nodes);
     if (overloaded.length > 0) {
@@ -384,7 +401,7 @@ class WBSAIService {
     return findings;
   }
 
-  private async generateRecommendations(nodes: WBSNode[], risks: any[]): Promise<string[]> {
+  private async generateRecommendations(nodes: WBSNode[], risks: ProjectRisk[]): Promise<string[]> {
     const recommendations = [];
 
     // 高リスクタスクへの対応
@@ -407,7 +424,13 @@ class WBSAIService {
     return recommendations;
   }
 
-  private parseNodeAnalysis(analysis: string): any {
+  private parseNodeAnalysis(analysis: string): {
+    summary: string;
+    progressAssessment: string;
+    risks: string[];
+    suggestions: string[];
+    completionForecast: string;
+  } {
     // AI応答をパースして構造化データに変換
     return {
       summary: analysis,
@@ -478,7 +501,7 @@ class WBSAIService {
     return { taskType, complexity: this.estimateComplexity(node) };
   }
 
-  private generateEnhancedDescription(node: WBSNode, context: any): string {
+  private generateEnhancedDescription(node: WBSNode, context: TaskContext): string {
     const templates = {
       development: `${node.name}の実装を行います。主な作業内容：
 - 要件の詳細確認と技術選定
@@ -504,7 +527,7 @@ class WBSAIService {
     return templates[context.taskType as keyof typeof templates] || templates.general;
   }
 
-  private generateDeliverables(node: WBSNode, context: any): string[] {
+  private generateDeliverables(node: WBSNode, context: TaskContext): string[] {
     const deliverableTemplates = {
       development: ['実装済みソースコード', 'ユニットテスト', 'API仕様書', 'デプロイメント手順書'],
       design: ['デザインファイル（Figma/XD）', 'スタイルガイド', 'アイコンセット', 'プロトタイプ'],
@@ -518,7 +541,16 @@ class WBSAIService {
     );
   }
 
-  private generateSubtasks(node: WBSNode, breakdown: any, context: any): any[] {
+  private generateSubtasks(
+    node: WBSNode,
+    breakdown: TaskBreakdown,
+    context: TaskContext
+  ): Array<{
+    name: string;
+    description: string;
+    estimatedHours: number;
+    deliverables: string[];
+  }> {
     const subtaskTemplates = {
       development: [
         {
@@ -596,7 +628,15 @@ class WBSAIService {
     ];
   }
 
-  private generateTaskRisks(node: WBSNode, context: any): any[] {
+  private generateTaskRisks(
+    node: WBSNode,
+    context: TaskContext
+  ): Array<{
+    description: string;
+    probability: 'low' | 'medium' | 'high';
+    impact: 'low' | 'medium' | 'high';
+    mitigation: string;
+  }> {
     const commonRisks = [
       {
         description: 'スケジュール遅延のリスク',
