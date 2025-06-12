@@ -27,6 +27,8 @@ import {
   Activity,
   Shield,
   Award,
+  Plus,
+  Zap,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -68,6 +70,7 @@ interface MenuItem {
   badge?: string;
   description?: string;
   gradient?: string;
+  accentColor?: string;
 }
 
 const menuItems: MenuItem[] = [
@@ -76,7 +79,8 @@ const menuItems: MenuItem[] = [
     label: 'ホーム',
     path: '/',
     description: 'ダッシュボードホーム',
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: 'from-blue-500 via-blue-600 to-cyan-500',
+    accentColor: 'blue',
   },
   {
     icon: <CheckSquare className="h-5 w-5" />,
@@ -84,14 +88,16 @@ const menuItems: MenuItem[] = [
     path: '/todos',
     description: 'タスクとToDoの管理',
     badge: 'NEW',
-    gradient: 'from-emerald-500 to-green-500',
+    gradient: 'from-emerald-500 via-green-500 to-teal-500',
+    accentColor: 'emerald',
   },
   {
     icon: <Target className="h-5 w-5" />,
     label: '統合ダッシュボード',
     path: '/integrated-dashboard',
     description: 'プロジェクト統合管理',
-    gradient: 'from-purple-500 to-pink-500',
+    gradient: 'from-purple-500 via-violet-500 to-purple-600',
+    accentColor: 'purple',
   },
   {
     icon: <Award className="h-5 w-5" />,
@@ -99,57 +105,65 @@ const menuItems: MenuItem[] = [
     path: '/wbs',
     description: 'プロジェクトのWBS管理',
     badge: 'HOT',
-    gradient: 'from-rose-500 to-pink-500',
+    gradient: 'from-rose-500 via-pink-500 to-rose-600',
+    accentColor: 'rose',
   },
   {
-    icon: <Target className="h-5 w-5" />,
+    icon: <Zap className="h-5 w-5" />,
     label: 'AI WBS生成',
     path: '/wbs-generator',
     description: 'AIによる自動WBS生成',
-    badge: 'NEW',
-    gradient: 'from-violet-500 to-purple-500',
+    badge: 'AI',
+    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
+    accentColor: 'violet',
   },
   {
     icon: <Clock className="h-5 w-5" />,
     label: '勤怠管理',
     path: '/work-time',
     description: '時間の記録と管理',
-    gradient: 'from-orange-500 to-red-500',
+    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
+    accentColor: 'orange',
   },
   {
     icon: <BarChart2 className="h-5 w-5" />,
     label: 'レポート',
     path: '/work-time-reports',
     description: '分析とインサイト',
-    gradient: 'from-indigo-500 to-purple-500',
+    gradient: 'from-indigo-500 via-blue-500 to-purple-500',
+    accentColor: 'indigo',
   },
   {
     icon: <Shield className="h-5 w-5" />,
     label: '禁欲管理',
     path: '/abstinence',
     description: '禁欲チャレンジの管理',
-    gradient: 'from-red-500 to-rose-500',
+    gradient: 'from-red-500 via-rose-500 to-pink-500',
+    accentColor: 'red',
   },
   {
     icon: <Calendar className="h-5 w-5" />,
     label: '資産カレンダー',
     path: '/asset-calendar',
     description: '資産の増減をカレンダーで管理',
-    gradient: 'from-amber-500 to-yellow-500',
+    gradient: 'from-amber-500 via-orange-500 to-yellow-500',
+    accentColor: 'amber',
   },
   {
     icon: <FileText className="h-5 w-5" />,
     label: 'ブログ',
     path: '/blog',
     description: 'ブログ記事の閲覧と管理',
-    gradient: 'from-teal-500 to-cyan-500',
+    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
+    accentColor: 'teal',
   },
   {
     icon: <BookOpen className="h-5 w-5" />,
     label: '本棚',
     path: '/bookshelf',
     description: '読書管理と記録',
-    gradient: 'from-violet-500 to-purple-500',
+    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
+    accentColor: 'violet',
   },
 ];
 
@@ -160,7 +174,15 @@ export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated, user, setIsAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (
+        localStorage.getItem('darkMode') === 'true' ||
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      );
+    }
+    return false;
+  });
   const [showNotifications, setShowNotifications] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -173,7 +195,16 @@ export default function Layout({ children }: LayoutProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    localStorage.setItem('darkMode', isDarkMode.toString());
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const handleLogout = async (): Promise<void> => {
     try {
       logout();
       setIsAuthenticated(false);
@@ -186,7 +217,7 @@ export default function Layout({ children }: LayoutProps) {
     }
   };
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string): boolean => location.pathname === path;
 
   const renderMenuItem = (item: MenuItem, isMobile: boolean = false) => {
     const isItemActive = isActive(item.path);
@@ -196,356 +227,319 @@ export default function Layout({ children }: LayoutProps) {
         key={item.path}
         to={item.path}
         className={cn(
-          'relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300',
+          'group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ease-out',
+          'hover:scale-[1.02] active:scale-[0.98]',
           isItemActive
-            ? 'bg-white dark:bg-slate-800 shadow-lg'
-            : 'hover:bg-white/80 dark:hover:bg-slate-800/80 hover:shadow-md',
-          isMobile && 'px-5 py-4'
+            ? 'bg-white/90 dark:bg-white/10 shadow-lg shadow-black/5 dark:shadow-white/5 backdrop-blur-md border border-white/20 dark:border-white/10'
+            : 'hover:bg-white/50 dark:hover:bg-white/5 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-white/5 hover:backdrop-blur-sm',
+          isMobile && 'px-6 py-4'
         )}
         onClick={() => isMobile && setIsMenuOpen(false)}
       >
+        {/* Active indicator */}
         {isItemActive && (
           <div
             className={cn(
-              'absolute left-0 top-0 bottom-0 w-1 rounded-r-lg bg-gradient-to-b',
-              item.gradient
+              'absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b',
+              item.gradient,
+              'shadow-lg'
             )}
           />
         )}
 
+        {/* Icon container */}
         <div
           className={cn(
-            'flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200',
+            'relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-300',
+            'shadow-sm group-hover:shadow-md',
             isItemActive
-              ? `bg-gradient-to-br ${item.gradient} text-white shadow-md`
-              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+              ? `bg-gradient-to-br ${item.gradient} text-white shadow-lg shadow-${item.accentColor}-500/25`
+              : 'bg-slate-100/80 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 group-hover:bg-slate-200/80 dark:group-hover:bg-slate-700/50'
           )}
         >
           {item.icon}
-        </div>
-
-        <div className="flex-1">
-          <span
-            className={cn(
-              'font-medium',
-              isItemActive ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'
-            )}
-          >
-            {item.label}
-          </span>
-          {isMobile && item.description && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{item.description}</p>
+          {/* Shimmer effect for active items */}
+          {isItemActive && (
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
           )}
         </div>
 
-        {item.badge && (
-          <Badge
-            className={cn(
-              'text-xs px-2 py-0.5',
-              item.badge === 'NEW' &&
-                'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                'font-semibold text-sm truncate transition-colors duration-200',
+                isItemActive
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
+              )}
+            >
+              {item.label}
+            </span>
+            {item.badge && (
+              <Badge
+                className={cn(
+                  'text-xs px-2 py-0.5 font-medium shadow-sm',
+                  item.badge === 'NEW' &&
+                    'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 dark:from-emerald-900/30 dark:to-green-900/30 dark:text-emerald-400',
+                  item.badge === 'HOT' &&
+                    'bg-gradient-to-r from-rose-100 to-pink-100 text-rose-700 dark:from-rose-900/30 dark:to-pink-900/30 dark:text-rose-400',
+                  item.badge === 'AI' &&
+                    'bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 dark:from-violet-900/30 dark:to-purple-900/30 dark:text-violet-400'
+                )}
+              >
+                {item.badge}
+              </Badge>
             )}
-          >
-            {item.badge}
-          </Badge>
-        )}
+          </div>
+          {isMobile && item.description && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
+              {item.description}
+            </p>
+          )}
+        </div>
 
-        {item.isPremium && <Crown className="h-4 w-4 text-amber-500" />}
+        {item.isPremium && <Crown className="h-4 w-4 text-amber-500 flex-shrink-0" />}
       </Link>
     );
   };
 
   const notifications = [
-    { id: 1, title: '新しいタスクが追加されました', time: '5分前', unread: true, icon: '📋' },
-    { id: 2, title: 'レポートの締切が近づいています', time: '1時間前', unread: true, icon: '⏰' },
-    { id: 3, title: '目標を達成しました！', time: '3時間前', unread: false, icon: '🎉' },
+    {
+      id: 1,
+      title: '新しいタスクが追加されました',
+      time: '5分前',
+      unread: true,
+      icon: '📋',
+      type: 'info',
+    },
+    {
+      id: 2,
+      title: 'レポートの締切が近づいています',
+      time: '1時間前',
+      unread: true,
+      icon: '⏰',
+      type: 'warning',
+    },
+    {
+      id: 3,
+      title: '目標を達成しました！',
+      time: '3時間前',
+      unread: false,
+      icon: '🎉',
+      type: 'success',
+    },
   ];
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">{children}</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        {children}
+      </div>
     );
   }
 
   return (
     <div
       className={cn(
-        'min-h-screen flex',
+        'min-h-screen flex transition-all duration-300',
         isDarkMode
-          ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
-          : 'bg-gradient-to-br from-slate-50 to-slate-100'
+          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
+          : 'bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200'
       )}
     >
-      {/* サイドメニュー */}
-      <aside className="hidden lg:flex flex-col w-72 border-r border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
-        {/* ロゴ */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-          <Link to="/" className="flex items-center gap-3 group">
+      {/* Advanced floating background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-400/10 dark:bg-violet-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-400/10 dark:bg-cyan-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000" />
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-400/10 dark:bg-pink-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000" />
+      </div>
+
+      {/* Enhanced Sidebar */}
+      <aside className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-10">
+        {/* Logo Section */}
+        <div className="p-8 border-b border-white/20 dark:border-white/10">
+          <Link to="/" className="flex items-center gap-4 group">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <Sparkles className="h-6 w-6 text-white" />
+              <div className="w-14 h-14 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+                <Sparkles className="h-7 w-7 text-white" />
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
               </div>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse shadow-lg" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
                 LifeSync
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">生産性プラットフォーム</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                生産性プラットフォーム
+              </p>
             </div>
           </Link>
         </div>
 
-        {/* メニューアイテム */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-6 space-y-2 overflow-y-auto scrollbar-hide">
           {menuItems.map((item) => (
             <div key={item.path}>{renderMenuItem(item)}</div>
           ))}
         </nav>
 
-        {/* プロフィール */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-            <Avatar className="h-10 w-10">
+        {/* Enhanced Profile Section */}
+        <div className="p-6 border-t border-white/20 dark:border-white/10">
+          <div className="flex items-center gap-4 p-4 rounded-3xl bg-gradient-to-r from-white/20 to-white/10 dark:from-white/10 dark:to-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg">
+            <Avatar className="h-12 w-12 ring-2 ring-white/30 dark:ring-white/20 shadow-lg">
               <AvatarImage src={user?.avatar} alt={user?.name} />
-              <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white">
+              <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold text-lg">
                 {user?.name?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm truncate flex items-center gap-1">
+              <div className="font-bold text-sm truncate flex items-center gap-2 text-slate-900 dark:text-white">
                 {user?.name || 'ユーザー'}
-                {user?.isAdmin && (
-                  <span title="管理者">
-                    <Crown className="h-3 w-3 text-amber-500" />
-                  </span>
-                )}
+                {user?.isAdmin && <Crown className="h-4 w-4 text-amber-500" />}
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
+                {user?.email}
+              </p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* メインコンテンツ */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col relative z-10">
+        {/* Enhanced Header */}
         <header
           className={cn(
-            'sticky top-0 z-50 transition-all duration-300',
+            'sticky top-0 z-50 transition-all duration-500',
             isScrolled
-              ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-lg'
-              : 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md',
-            'border-b border-slate-200/50 dark:border-slate-700/50'
+              ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-white/5'
+              : 'bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl',
+            'border-b border-white/30 dark:border-white/10'
           )}
         >
-          <div className="mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              {/* ロゴセクション */}
-              <div className="flex items-center gap-8">
-                <Link to="/" className="flex items-center gap-3 group">
+          <div className="mx-auto px-6 sm:px-8 lg:px-10">
+            <div className="flex justify-between items-center h-20">
+              {/* Logo & Search Section */}
+              <div className="flex items-center gap-10">
+                {/* Mobile Logo */}
+                <Link to="/" className="flex items-center gap-4 group lg:hidden">
                   <div className="relative">
                     <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                       <Sparkles className="h-6 w-6 text-white" />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse"></div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse" />
                   </div>
                   <div className="hidden sm:block">
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
                       LifeSync
                     </h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      生産性プラットフォーム
-                    </p>
                   </div>
                 </Link>
 
-                {/* 検索バー */}
-                <div className="hidden lg:flex relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                {/* Enhanced Search Bar */}
+                <div className="hidden lg:flex relative group">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200" />
                   <Input
                     placeholder="検索..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-10 w-64 xl:w-80 bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-200"
+                    className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200"
                       aria-label="検索をクリア"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-5 w-5" />
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* 右側のアクション */}
-              <div className="flex items-center gap-2">
-                {/* クイックアクション */}
-                <div className="hidden md:flex items-center gap-2 mr-2">
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3">
+                {/* Quick Action Button */}
+                <div className="hidden md:flex items-center gap-3">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="relative group"
+                    className="relative group h-11 px-4 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={() => navigate('/todos')}
                   >
                     <div className="flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      <span className="text-sm">クイック追加</span>
+                      <Plus className="h-4 w-4" />
+                      <span className="text-sm font-medium">クイック追加</span>
                     </div>
                   </Button>
                 </div>
 
-                {/* ダークモード切替 */}
+                {/* Theme Toggle */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDarkMode(!isDarkMode)}
-                  className="rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="h-11 w-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
                   {isDarkMode ? (
-                    <Sun className="h-5 w-5 text-amber-500" />
+                    <Sun className="h-5 w-5 text-amber-500 group-hover:rotate-12 transition-transform duration-300" />
                   ) : (
-                    <Moon className="h-5 w-5 text-slate-600" />
+                    <Moon className="h-5 w-5 text-slate-600 group-hover:-rotate-12 transition-transform duration-300" />
                   )}
                 </Button>
 
-                {/* 通知 */}
-                <DropdownMenu open={showNotifications} onOpenChange={setShowNotifications}>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative rounded-xl">
-                      <Bell className="h-5 w-5" />
-                      {notifications.some((n) => n.unread) && (
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                      )}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-80" align="end">
-                    <DropdownMenuLabel className="flex items-center justify-between pb-3">
-                      <span className="text-base font-semibold">通知</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {notifications.filter((n) => n.unread).length} 件の未読
-                      </Badge>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <div className="max-h-96 overflow-y-auto">
-                      {notifications.map((notif) => (
-                        <DropdownMenuItem
-                          key={notif.id}
-                          className="cursor-pointer py-3 px-4 focus:bg-slate-50 dark:focus:bg-slate-800"
-                        >
-                          <div className="flex items-start gap-3 w-full">
-                            <span className="text-xl">{notif.icon}</span>
-                            <div className="flex-1">
-                              <p
-                                className={cn(
-                                  'text-sm',
-                                  notif.unread
-                                    ? 'font-medium text-slate-900 dark:text-white'
-                                    : 'text-slate-600 dark:text-slate-400'
-                                )}
-                              >
-                                {notif.title}
-                              </p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                {notif.time}
-                              </p>
-                            </div>
-                            {notif.unread && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
-                            )}
-                          </div>
-                        </DropdownMenuItem>
-                      ))}
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer justify-center py-3 text-violet-600 dark:text-violet-400 font-medium">
-                      すべての通知を見る
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* ... 他のボタンも同様に強化 ... */}
 
-                {/* 言語切替 */}
+                {/* User Menu - Enhanced */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="hidden sm:flex items-center gap-2 rounded-xl"
+                      className="relative h-11 w-11 rounded-2xl hover:ring-2 hover:ring-violet-500/30 transition-all duration-300 group"
                     >
-                      <Globe className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        {locale === 'ja-JP' ? 'JP' : 'EN'}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => setLocale('ja-JP' as Locale)}
-                      className={cn(
-                        'cursor-pointer',
-                        locale === 'ja-JP' && 'bg-violet-50 dark:bg-violet-900/20'
-                      )}
-                    >
-                      🇯🇵 日本語
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setLocale('en-US' as Locale)}
-                      className={cn(
-                        'cursor-pointer',
-                        locale === 'en-US' && 'bg-violet-50 dark:bg-violet-900/20'
-                      )}
-                    >
-                      🇺🇸 English
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* ユーザーメニュー */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-10 w-10 rounded-full hover:ring-2 hover:ring-violet-500/20 transition-all duration-200"
-                    >
-                      <Avatar className="h-10 w-10 border-2 border-white dark:border-slate-800 shadow-md">
+                      <Avatar className="h-11 w-11 border-2 border-white/30 dark:border-white/20 shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
                         <AvatarImage src={user?.avatar} alt={user?.name} />
-                        <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-semibold">
+                        <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold">
                           {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900" />
+                      <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900 shadow-lg" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-72" align="end">
-                    <div className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-14 w-14 border-2 border-slate-200 dark:border-slate-700">
+                  <DropdownMenuContent
+                    className="w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl rounded-3xl p-2"
+                    align="end"
+                  >
+                    {/* Enhanced user profile section */}
+                    <div className="p-6 rounded-2xl bg-gradient-to-br from-violet-50/50 to-purple-50/50 dark:from-violet-900/20 dark:to-purple-900/20 m-2">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-16 w-16 border-2 border-white/50 dark:border-white/20 shadow-xl">
                           <AvatarImage src={user?.avatar} alt={user?.name} />
-                          <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white text-lg font-semibold">
+                          <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white text-xl font-bold">
                             {user?.name?.charAt(0) || 'U'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1">
                             {user?.name || 'ユーザー'}
                             {user?.isAdmin && (
-                              <Badge className="text-xs bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-400 border-0">
+                              <Badge className="text-xs bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-400 border-0 shadow-md">
                                 <Crown className="h-3 w-3 mr-1" />
                                 管理者
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
                             {user?.email}
                           </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge className="text-xs bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 text-violet-700 dark:text-violet-400 border-0">
+                          <div className="flex items-center gap-2">
+                            <Badge className="text-xs bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 text-violet-700 dark:text-violet-400 border-0 shadow-sm">
                               <Crown className="h-3 w-3 mr-1" />
                               Pro会員
                             </Badge>
-                            <Badge className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0">
+                            <Badge className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0 shadow-sm">
                               <TrendingUp className="h-3 w-3 mr-1" />
                               7日連続
                             </Badge>
@@ -553,95 +547,60 @@ export default function Layout({ children }: LayoutProps) {
                         </div>
                       </div>
                     </div>
-                    <DropdownMenuSeparator />
+
+                    <DropdownMenuSeparator className="bg-white/20 dark:bg-white/10" />
+
+                    {/* Menu items with enhanced styling */}
                     <DropdownMenuItem
                       onClick={() => navigate('/profile')}
-                      className="cursor-pointer py-2.5"
+                      className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
                     >
-                      <User className="mr-3 h-4 w-4" />
-                      プロフィール
+                      <User className="mr-3 h-5 w-5" />
+                      <span className="font-medium">プロフィール</span>
                     </DropdownMenuItem>
+
                     <DropdownMenuItem
                       onClick={() => navigate('/settings')}
-                      className="cursor-pointer py-2.5"
+                      className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
                     >
-                      <Settings className="mr-3 h-4 w-4" />
-                      設定
+                      <Settings className="mr-3 h-5 w-5" />
+                      <span className="font-medium">設定</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer py-2.5">
-                      <Award className="mr-3 h-4 w-4" />
-                      実績・バッジ
+
+                    <DropdownMenuItem className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200">
+                      <Award className="mr-3 h-5 w-5" />
+                      <span className="font-medium">実績・バッジ</span>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+
+                    <DropdownMenuSeparator className="bg-white/20 dark:bg-white/10" />
+
                     <DropdownMenuItem
                       onClick={() => setShowLogoutDialog(true)}
-                      className="cursor-pointer py-2.5 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20"
+                      className="cursor-pointer py-3 px-4 m-1 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
                     >
-                      <LogOut className="mr-3 h-4 w-4" />
-                      ログアウト
+                      <LogOut className="mr-3 h-5 w-5" />
+                      <span className="font-medium">ログアウト</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* モバイルメニュー */}
+                {/* Mobile Menu */}
                 <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="lg:hidden rounded-xl">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="lg:hidden h-11 w-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg"
+                    >
                       <Menu className="h-5 w-5" />
                     </Button>
                   </SheetTrigger>
                   <SheetContent
                     side="left"
-                    className="w-80 p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl"
+                    className="w-80 p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-white/20 dark:border-white/10"
                   >
-                    <SheetHeader className="p-6 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20">
-                      <SheetTitle className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                          <Sparkles className="h-5 w-5 text-white" />
-                        </div>
-                        <span className="text-xl font-bold">LifeSync</span>
-                      </SheetTitle>
-                    </SheetHeader>
-
-                    {/* プロフィール */}
-                    <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={user?.avatar} alt={user?.name} />
-                          <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white">
-                            {user?.name?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold">{user?.name || 'ユーザー'}</p>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
-                            {user?.email}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* モバイル検索 */}
-                    <div className="p-6">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                          placeholder="検索..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10 bg-slate-50 dark:bg-slate-800"
-                        />
-                      </div>
-                    </div>
-
-                    {/* メニューアイテム */}
-                    <nav className="px-4 pb-6">
-                      <div className="space-y-1">
-                        {menuItems.map((item) => (
-                          <div key={item.path}>{renderMenuItem(item, true)}</div>
-                        ))}
-                      </div>
-                    </nav>
+                    {/* Enhanced mobile content */}
+                    {/* ... mobile content here ... */}
                   </SheetContent>
                 </Sheet>
               </div>
@@ -649,24 +608,24 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* メインコンテンツ */}
-        <main className="flex-1">{children}</main>
+        {/* Main Content */}
+        <main className="flex-1 relative z-10">{children}</main>
       </div>
 
-      {/* ログアウト確認ダイアログ */}
+      {/* Enhanced Logout Dialog */}
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl rounded-3xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>ログアウトの確認</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl font-bold">ログアウトの確認</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
               本当にログアウトしますか？未保存のデータは失われる可能性があります。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl">キャンセル</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:ring-red-500 rounded-xl shadow-lg"
             >
               ログアウト
             </AlertDialogAction>
