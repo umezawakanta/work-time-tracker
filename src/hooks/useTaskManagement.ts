@@ -18,7 +18,7 @@ export const useTaskManagement = () => {
   const loading = status === 'loading';
   const error = useSelector((state: RootState) => state.todo.error);
 
-  const [filter, setFilter] = useState<TaskFilter>({});
+  const [filter, setFilter] = useState<{ priority?: number[]; [key: string]: any }>({});
   const [sort, setSort] = useState<TaskSort>({ field: 'createdAt', direction: 'desc' });
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
@@ -39,7 +39,8 @@ export const useTaskManagement = () => {
     }
 
     if (filter.priority?.length) {
-      filtered = filtered.filter((task) => filter.priority!.includes(task.priority));
+      // Ensure filter.priority is number[]
+      filtered = filtered.filter((task) => (filter.priority as number[]).includes(task.priority));
     }
 
     if (filter.tags?.length) {
