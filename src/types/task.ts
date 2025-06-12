@@ -25,12 +25,8 @@ export interface Task {
   startDate?: Date;
   estimatedDuration?: number; // 分単位
 
-  // カテゴリとタグ
-  category?: string;
-  tags: string[];
-
   // AI機能用
-  aiSuggestions?: TaskSuggestion[];
+  aiSuggestions?: AISuggestion[];
   complexityScore?: number;
 
   // 依存関係
@@ -121,21 +117,4 @@ export interface AISuggestion {
   content: string;
   confidence: number; // 0-1
   createdAt: Date;
-}
-
-export interface TaskFilter {
-  status?: ExtendedTask['status'][];
-  priority?: number[];
-  tags?: string[];
-  assignee?: string;
-  dueDate?: {
-    from?: Date;
-    to?: Date;
-  };
-  search?: string;
-}
-
-export interface TaskSort {
-  field: keyof ExtendedTask;
-  direction: 'asc' | 'desc';
 }
