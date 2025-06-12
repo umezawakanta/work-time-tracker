@@ -131,12 +131,12 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
                   </div>
                   <div className="flex items-end gap-2 mt-2">
                     <span className="text-2xl font-bold">
-                      {analysis.insights.productivity.score}
+                      {analysis!.insights.productivity.score}
                     </span>
                     <span className="text-sm text-gray-500 mb-1">/100</span>
-                    {getTrendIcon(analysis.insights.productivity.trend)}
+                    {getTrendIcon(analysis!.insights.productivity.trend)}
                   </div>
-                  <Progress value={analysis.insights.productivity.score} className="mt-2" />
+                  <Progress value={analysis!.insights.productivity.score} className="mt-2" />
                 </CardContent>
               </Card>
 
@@ -148,7 +148,7 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
                   </div>
                   <div className="flex items-end gap-2 mt-2">
                     <span className="text-2xl font-bold">
-                      {analysis.insights.timeManagement.averageTaskTime}
+                      {analysis!.insights.timeManagement.averageTaskTime}
                     </span>
                     <span className="text-sm text-gray-500 mb-1">分</span>
                   </div>
@@ -163,7 +163,7 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
                   </div>
                   <div className="flex items-end gap-2 mt-2">
                     <span className="text-2xl font-bold">
-                      {analysis.insights.prioritization.accuracy}
+                      {analysis!.insights.prioritization.accuracy}
                     </span>
                     <span className="text-sm text-gray-500 mb-1">%</span>
                   </div>
@@ -173,7 +173,7 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
 
             <div className="space-y-2">
               <h4 className="font-medium">主な改善要因</h4>
-              {analysis.insights.productivity.factors.map((factor, index) => (
+              {analysis!.insights.productivity.factors.map((factor, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
                   {factor}
@@ -183,7 +183,7 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
           </TabsContent>
 
           <TabsContent value="suggestions" className="space-y-4">
-            {analysis.suggestions.map((suggestion) => {
+            {analysis!.suggestions.map((suggestion) => {
               const task = tasks.find((t) => t._id === suggestion.taskId);
               if (!task) return null;
 
@@ -254,16 +254,16 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
                     <div>
                       <span className="text-sm text-gray-600">過大見積もり率</span>
                       <Progress
-                        value={analysis.insights.timeManagement.overestimationRate * 100}
+                        value={analysis!.insights.timeManagement.overestimationRate * 100}
                         className="mt-1"
                       />
                       <span className="text-xs text-gray-500">
-                        {Math.round(analysis.insights.timeManagement.overestimationRate * 100)}%
+                        {Math.round(analysis!.insights.timeManagement.overestimationRate * 100)}%
                       </span>
                     </div>
                     <div>
                       <p className="text-sm font-medium mb-2">改善提案:</p>
-                      {analysis.insights.timeManagement.suggestions.map((suggestion, index) => (
+                      {analysis!.insights.timeManagement.suggestions.map((suggestion, index) => (
                         <p key={index} className="text-sm text-gray-600">
                           • {suggestion}
                         </p>
@@ -282,12 +282,12 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">期限超過タスク</span>
                       <span className="text-lg font-bold text-red-600">
-                        {analysis.insights.prioritization.missedDeadlines}
+                        {analysis!.insights.prioritization.missedDeadlines}
                       </span>
                     </div>
                     <div>
                       <p className="text-sm font-medium mb-2">改善提案:</p>
-                      {analysis.insights.prioritization.suggestions.map((suggestion, index) => (
+                      {analysis!.insights.prioritization.suggestions.map((suggestion, index) => (
                         <p key={index} className="text-sm text-gray-600">
                           • {suggestion}
                         </p>
@@ -300,7 +300,7 @@ export const AITaskAnalysis: React.FC<AITaskAnalysisProps> = ({
           </TabsContent>
 
           <TabsContent value="recommendations" className="space-y-4">
-            {analysis.recommendations.map((recommendation, index) => {
+            {analysis!.recommendations.map((recommendation, index) => {
               const icons = {
                 schedule: <Clock className="h-4 w-4" />,
                 break: <AlertCircle className="h-4 w-4" />,

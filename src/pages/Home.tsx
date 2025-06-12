@@ -106,6 +106,34 @@ const Home: React.FC = () => {
     }
   };
 
+  // 連続記録の計算
+  const calculateStreakDays = (): number => {
+    // 簡易実装：実際にはより複雑なロジックが必要
+    const completedDates = todos
+      .filter((todo) => todo.completed && todo.completedDate)
+      .map((todo) => new Date(todo.completedDate!).toDateString())
+      .sort()
+      .reverse();
+
+    let streak = 0;
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+
+    if (completedDates.includes(today) || completedDates.includes(yesterday)) {
+      streak = 1;
+      for (let i = 1; i < 30; i++) {
+        const checkDate = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toDateString();
+        if (completedDates.includes(checkDate)) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+    }
+
+    return streak;
+  };
+
   // 統合統計データの計算
   const calculateIntegratedStats = useMemo(() => {
     const today = new Date();
@@ -184,34 +212,6 @@ const Home: React.FC = () => {
       },
     ];
   }, [todos, calendarEvents]);
-
-  // 連続記録の計算
-  const calculateStreakDays = (): number => {
-    // 簡易実装：実際にはより複雑なロジックが必要
-    const completedDates = todos
-      .filter((todo) => todo.completed && todo.completedDate)
-      .map((todo) => new Date(todo.completedDate!).toDateString())
-      .sort()
-      .reverse();
-
-    let streak = 0;
-    const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
-
-    if (completedDates.includes(today) || completedDates.includes(yesterday)) {
-      streak = 1;
-      for (let i = 1; i < 30; i++) {
-        const checkDate = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toDateString();
-        if (completedDates.includes(checkDate)) {
-          streak++;
-        } else {
-          break;
-        }
-      }
-    }
-
-    return streak;
-  };
 
   // 統合アクティビティの取得
   const getIntegratedActivities = (): ActivityData[] => {
@@ -385,6 +385,7 @@ const Home: React.FC = () => {
         <div className="xl:col-span-1">
           <NextTaskSuggestionComponent
             todos={todos}
+            calendarEvents={calendarEvents}
             onTaskSelect={handleTaskSelect}
             className="h-fit"
           />
