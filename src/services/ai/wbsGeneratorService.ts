@@ -52,17 +52,33 @@ class WBSGeneratorService {
   private readonly API_ENDPOINT =
     process.env.VITE_AI_API_ENDPOINT || 'http://localhost:3001/api/ai';
 
+  // アクセストークンをAPI経由で取得
+  private async fetchAccessToken(): Promise<string> {
+    const response = await fetch(`${this.API_ENDPOINT}/auth/token`, {
+      method: 'GET',
+      credentials: 'include', // 必要に応じて
+    });
+    if (!response.ok) {
+      throw new Error('アクセストークンの取得に失敗しました');
+    }
+    const data = await response.json();
+    return data.accessToken;
+  }
+
   async generateWBS(request: WBSGenerationRequest): Promise<WBSGenerationResponse> {
     try {
       if (process.env.NODE_ENV === 'development') {
         return this.generateMockWBS(request);
       }
 
+      // localStorageの代わりにAPI経由でトークン取得
+      const accessToken = await this.fetchAccessToken();
+
       const response = await fetch(`${this.API_ENDPOINT}/generate-wbs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(request),
       });
