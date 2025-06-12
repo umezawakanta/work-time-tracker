@@ -23,15 +23,28 @@ export interface Notification {
 class NotificationService {
   private socket: Socket | null = null;
   private listeners: Map<string, Set<(notification: Notification) => void>> = new Map();
+  private accessToken: string | null = null;
 
-  connect(userId: string) {
+  // アクセストークンをAPI経由で取得
+  private async fetchAccessToken(userId: string): Promise<string> {
+    // ここは実際のAPIエンドポイントに合わせて修正
+    const response = await fetch(`${process.env.VITE_API_URL}/auth/token?userId=${userId}`);
+    if (!response.ok) throw new Error('Failed to fetch access token');
+    const data = await response.json();
+    return data.accessToken;
+  }
+
+  async connect(userId: string) {
     if (this.socket?.connected) {
       return;
     }
 
+    // API経由でトークン取得
+    this.accessToken = await this.fetchAccessToken(userId);
+
     this.socket = io(process.env.VITE_WEBSOCKET_URL || 'http://localhost:3001', {
       auth: {
-        token: localStorage.getItem('accessToken'),
+        token: this.accessToken,
         userId,
       },
       transports: ['websocket', 'polling'],
@@ -146,10 +159,11 @@ class NotificationService {
   // 通知の既読マーク
   async markAsRead(notificationId: string) {
     try {
+      if (!this.accessToken) throw new Error('No access token');
       await fetch(`${process.env.VITE_API_URL}/notifications/${notificationId}/read`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${this.accessToken}`,
         },
       });
     } catch (error) {
@@ -160,10 +174,11 @@ class NotificationService {
   // 通知の一括既読
   async markAllAsRead() {
     try {
+      if (!this.accessToken) throw new Error('No access token');
       await fetch(`${process.env.VITE_API_URL}/notifications/read-all`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${this.accessToken}`,
         },
       });
     } catch (error) {
