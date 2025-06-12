@@ -675,6 +675,169 @@ class WBSAIService {
     if (node.estimatedHours > 16) return 'medium';
     return 'low';
   }
+
+  /**
+   * プロジェクトのWBS構造を生成
+   */
+  async generateWBS(prompt: string): Promise<WBSNode[]> {
+    try {
+      // AIサービスを使用してWBS構造を生成
+      const response = await this.aiService.generateResponse(prompt);
+      return this.parseWBSResponse(response);
+    } catch (error) {
+      console.error('WBS generation failed:', error);
+      // フォールバック: 基本的なWBS構造を生成
+      return this.generateBasicWBS(prompt);
+    }
+  }
+
+  private parseWBSResponse(response: string): WBSNode[] {
+    // AI応答からWBS構造を抽出（簡易実装）
+    const lines = response.split('\n').filter((line) => line.trim());
+    const nodes: WBSNode[] = [];
+    let nodeId = 1;
+
+    lines.forEach((line, index) => {
+      const trimmed = line.trim();
+      if (trimmed && (trimmed.includes('-') || trimmed.includes('•'))) {
+        const level = this.calculateLevel(line);
+        const name = trimmed.replace(/^[-•\s]+/, '').replace(/（.*）$/, '');
+        const estimatedHours = this.extractHours(trimmed) || 8;
+
+        nodes.push({
+          id: `wbs-${nodeId++}`,
+          projectId: 'generated-project',
+          name: name,
+          description: '',
+          level: level,
+          orderIndex: index,
+          parentId: this.findParentId(nodes, level),
+          estimatedHours: estimatedHours,
+          actualHours: 0,
+          budget: estimatedHours * 50,
+          actualCost: 0,
+          progress: 0,
+          status: 'not-started',
+          assignees: [],
+          dependencies: [],
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + estimatedHours * 60 * 60 * 1000).toISOString(),
+          duration: estimatedHours / 8,
+          risks: [],
+          deliverables: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          createdBy: 'ai-generator',
+        });
+      }
+    });
+
+    return nodes;
+  }
+
+  private generateBasicWBS(prompt: string): WBSNode[] {
+    // プロンプトからプロジェクト名を抽出
+    const projectName = prompt.match(/プロジェクト名:\s*(.+)/)?.[1] || 'プロジェクト';
+
+    const now = new Date().toISOString();
+
+    return [
+      {
+        id: 'wbs-1',
+        projectId: 'generated-project',
+        name: `${projectName} - 企画・設計`,
+        description: 'プロジェクトの企画と基本設計',
+        level: 1,
+        orderIndex: 0,
+        parentId: null,
+        estimatedHours: 40,
+        actualHours: 0,
+        budget: 2000,
+        actualCost: 0,
+        progress: 0,
+        status: 'not-started',
+        assignees: [],
+        dependencies: [],
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        duration: 5,
+        risks: [],
+        deliverables: [],
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'ai-generator',
+      },
+      {
+        id: 'wbs-2',
+        projectId: 'generated-project',
+        name: `${projectName} - 実装`,
+        description: 'システムの実装・開発',
+        level: 1,
+        orderIndex: 1,
+        parentId: null,
+        estimatedHours: 80,
+        actualHours: 0,
+        budget: 4000,
+        actualCost: 0,
+        progress: 0,
+        status: 'not-started',
+        assignees: [],
+        dependencies: ['wbs-1'],
+        startDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        endDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        duration: 10,
+        risks: [],
+        deliverables: [],
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'ai-generator',
+      },
+      {
+        id: 'wbs-3',
+        projectId: 'generated-project',
+        name: `${projectName} - テスト・リリース`,
+        description: 'テスト実施とリリース作業',
+        level: 1,
+        orderIndex: 2,
+        parentId: null,
+        estimatedHours: 32,
+        actualHours: 0,
+        budget: 1600,
+        actualCost: 0,
+        progress: 0,
+        status: 'not-started',
+        assignees: [],
+        dependencies: ['wbs-2'],
+        startDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+        endDate: new Date(Date.now() + 19 * 24 * 60 * 60 * 1000).toISOString(),
+        duration: 4,
+        risks: [],
+        deliverables: [],
+        createdAt: now,
+        updatedAt: now,
+        createdBy: 'ai-generator',
+      },
+    ];
+  }
+
+  private calculateLevel(line: string): number {
+    const leadingSpaces = line.length - line.trimStart().length;
+    return Math.floor(leadingSpaces / 2) + 1;
+  }
+
+  private extractHours(text: string): number | null {
+    const match = text.match(/（(\d+)時間）|（(\d+)h）|（(\d+)H）/);
+    return match ? parseInt(match[1] || match[2] || match[3]) : null;
+  }
+
+  private findParentId(nodes: WBSNode[], currentLevel: number): string | null {
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i].level === currentLevel - 1) {
+        return nodes[i].id;
+      }
+    }
+    return null;
+  }
 }
 
 export default new WBSAIService();

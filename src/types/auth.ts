@@ -1,5 +1,9 @@
 // src/types/auth.ts
-export interface AuthUser {
+export interface AuthUser extends User {
+  permissions: string[];
+  roles: string[];
+  lastActivityAt: Date;
+  twoFactorEnabled?: boolean;
   uid: string;
   email: string;
   displayName: string;
@@ -50,4 +54,17 @@ export interface AuthState {
   user: AuthUser | null;
   loading: boolean;
   error: AuthError | null;
+}
+
+export interface SessionInfo {
+  isAuthenticated: boolean;
+  expiresAt: Date | null;
+  refreshExpiresAt: Date | null;
+  timeUntilExpiry: number;
+  timeUntilRefreshExpiry: number;
+  deviceInfo?: {
+    browser: string;
+    os: string;
+    ip: string;
+  };
 }
