@@ -2,14 +2,20 @@ import { useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { Task, TaskFilter, TaskSort } from '@/types/task';
-import { fetchTasks, addTask, updateTask, deleteTask, bulkUpdateTasks } from '@/store/taskSlice';
+import {
+  fetchTodoItems,
+  addTodoItem,
+  updateTodoItem,
+  deleteTodoItem,
+  // bulkUpdateTasks など一括操作が必要ならここに追加
+} from '@/store/todoSlice';
 import { toast } from 'react-hot-toast';
 
 export const useTaskManagement = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const tasks = useSelector((state: RootState) => state.tasks.items);
-  const loading = useSelector((state: RootState) => state.tasks.loading);
-  const error = useSelector((state: RootState) => state.tasks.error);
+  const tasks = useSelector((state: RootState) => state.todo.items);
+  const loading = useSelector((state: RootState) => state.todo.loading);
+  const error = useSelector((state: RootState) => state.todo.error);
 
   const [filter, setFilter] = useState<TaskFilter>({});
   const [sort, setSort] = useState<TaskSort>({ field: 'createdAt', direction: 'desc' });
@@ -88,7 +94,7 @@ export const useTaskManagement = () => {
   const createTask = useCallback(
     async (taskData: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>) => {
       try {
-        await dispatch(addTask(taskData)).unwrap();
+        await dispatch(addTodoItem(taskData)).unwrap();
         toast.success('タスクを作成しました');
       } catch (error) {
         toast.error('タスクの作成に失敗しました');
@@ -102,7 +108,7 @@ export const useTaskManagement = () => {
   const editTask = useCallback(
     async (id: string, updates: Partial<Task>) => {
       try {
-        await dispatch(updateTask({ id, updates })).unwrap();
+        await dispatch(updateTodoItem({ id, updates })).unwrap();
         toast.success('タスクを更新しました');
       } catch (error) {
         toast.error('タスクの更新に失敗しました');
@@ -116,7 +122,7 @@ export const useTaskManagement = () => {
   const removeTask = useCallback(
     async (id: string) => {
       try {
-        await dispatch(deleteTask(id)).unwrap();
+        await dispatch(deleteTodoItem(id)).unwrap();
         toast.success('タスクを削除しました');
       } catch (error) {
         toast.error('タスクの削除に失敗しました');
@@ -151,7 +157,7 @@ export const useTaskManagement = () => {
         if (!window.confirm(`${taskIds.length}個のタスクを削除しますか？`)) return;
 
         try {
-          await Promise.all(taskIds.map((id) => dispatch(deleteTask(id))));
+          await Promise.all(taskIds.map((id) => dispatch(deleteTodoItem(id))));
           toast.success(`${taskIds.length}個のタスクを削除しました`);
           setSelectedTasks([]);
         } catch (error) {
@@ -205,6 +211,6 @@ export const useTaskManagement = () => {
     bulkOperations,
 
     // ユーティリティ
-    refreshTasks: useCallback(() => dispatch(fetchTasks()), [dispatch]),
+    refreshTasks: useCallback(() => dispatch(fetchTodoItems()), [dispatch]),
   };
 };

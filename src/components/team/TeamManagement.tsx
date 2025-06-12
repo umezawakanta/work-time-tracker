@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,4 +41,7 @@ interface TeamManagementProps {
   onTeamUpdate?: (team: Team) => void;
 }
 
-export const TeamManagement: React.FC<TeamManagementProps>;
+export const TeamManagement: React.FC<TeamManagementProps> = () => {
+  // TODO: 実装を追加
+  return null;
+};

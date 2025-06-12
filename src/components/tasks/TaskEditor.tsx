@@ -359,6 +359,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({ task, isOpen, onClose, o
                       {tag}
                       <button
                         type="button"
+                        title="タグを削除"
                         onClick={() => removeTag(tag)}
                         className="ml-1 hover:text-red-500"
                       >
@@ -427,6 +428,7 @@ export const TaskEditor: React.FC<TaskEditorProps> = ({ task, isOpen, onClose, o
                 <div key={subtask.id} className="flex items-center gap-2 p-2 border rounded">
                   <input
                     type="checkbox"
+                    title="サブタスク完了"
                     checked={subtask.completed}
                     onChange={() => toggleSubtask(subtask.id)}
                     className="rounded"
