@@ -1,4 +1,6 @@
 import { TodoItem } from './index';
+import WBSService from '@/services/wbs/WBSService';
+import { WBSNode, WBSProject } from '@/types/wbs';
 
 // タスク管理の型定義を拡張
 export interface Task {
