@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
-import { Task, TaskFilter, TaskSort } from '@/types/task';
+import { TodoItem } from '@/types';
+import { TaskSort } from '@/types/task';
 import {
   fetchTodoItems,
   addTodoItem,
@@ -45,7 +46,7 @@ export const useTaskManagement = () => {
 
     if (filter.tags?.length) {
       filtered = filtered.filter(
-        (task) => task.tags && filter.tags!.some((tag) => task.tags!.includes(tag))
+        (task) => task.tags && filter.tags!.some((tag: string) => task.tags!.includes(tag))
       );
     }
 
@@ -116,9 +117,9 @@ export const useTaskManagement = () => {
 
   // タスク更新
   const editTask = useCallback(
-    async (id: string, updates: Partial<TodoItem>) => {
+    async (_id: string, updates: Partial<TodoItem>) => {
       try {
-        await dispatch(updateTodoItem({ id, updates })).unwrap();
+        await dispatch(updateTodoItem({ _id, updates })).unwrap();
         toast.success('タスクを更新しました');
       } catch (error) {
         toast.error('タスクの更新に失敗しました');

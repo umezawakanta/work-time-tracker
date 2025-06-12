@@ -29,11 +29,11 @@ class ExportService {
 
   private async exportToPDF(data: any, options: ExportOptions, filename: string) {
     const doc = new jsPDF();
-    
+
     // ヘッダー
     doc.setFontSize(20);
     doc.text('プロジェクトレポート', 20, 30);
-    
+
     // 日付範囲
     if (options.dateRange) {
       doc.setFontSize(12);
@@ -44,8 +44,26 @@ class ExportService {
       );
     }
 
-    let yPosition = 60;
+    const yPosition = 60;
 
     // タスクセクション
-    if (options.sections?.includes('tasks') && data.tasks)
-} 
+    if (options.sections?.includes('tasks') && data.tasks) {
+      // ... (existing or future implementation)
+    }
+  }
+
+  private exportToCSV(data: any, filename: string) {
+    // TODO: implement CSV export
+    return;
+  }
+
+  private exportToXLSX(data: any, filename: string) {
+    // TODO: implement XLSX export
+    return;
+  }
+
+  private exportToJSON(data: any, filename: string) {
+    // TODO: implement JSON export
+    return;
+  }
+}
