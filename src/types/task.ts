@@ -56,18 +56,6 @@ export interface Project {
   wbsStructure?: WBSNode[];
 }
 
-export interface WBSNode {
-  id: string;
-  name: string;
-  description?: string;
-  level: number;
-  parentId?: string;
-  children: string[];
-  taskId?: string; // 関連するタスクID
-  estimatedDuration?: number;
-  dependencies: string[];
-}
-
 export interface SubTask {
   id: string;
   title: string;

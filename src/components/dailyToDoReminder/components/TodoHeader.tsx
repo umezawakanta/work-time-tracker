@@ -89,61 +89,43 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
     const [isResetting, setIsResetting] = React.useState(false);
     const [showAISuggestionModal, setShowAISuggestionModal] = React.useState(false);
 
-    // Move expensive operations to useMemo
     const expensiveAnalytics = useMemo(() => {
-      // Only create analytics instance when needed
       return hasPremium ? analytics : null;
     }, [hasPremium, analytics]);
 
-    // パフォーマンス最適化されたリセットハンドラー
     const handleResetTodos = useCallback(async (): Promise<void> => {
       setIsResetting(true);
-
       try {
-        // Analytics tracking
         expensiveAnalytics?.track('todo_reset_initiated', {
           streakCount,
           completedToday,
           totalToday,
           productivityScore,
         });
-
         await dispatch(resetTodoList()).unwrap();
-
-        // 並列実行でパフォーマンス向上
         await Promise.all([
           dispatch(fetchTodoHistory()).unwrap(),
           dispatch(fetchDailyTodoHistory()).unwrap(),
         ]);
-
         toast.success('新しい日の準備ができました。今日も頑張りましょう！', {
           duration: 4000,
           position: 'top-center',
           icon: '🎯',
         });
-
-        expensiveAnalytics?.track('todo_reset_completed', {
-          success: true,
-        });
+        expensiveAnalytics?.track('todo_reset_completed', { success: true });
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '不明なエラー';
-
         console.error('Reset error:', err);
-
         toast.error(`エラーが発生しました: ${errorMessage}`, {
           duration: 5000,
           position: 'top-center',
         });
-
-        expensiveAnalytics?.track('todo_reset_failed', {
-          error: errorMessage,
-        });
+        expensiveAnalytics?.track('todo_reset_failed', { error: errorMessage });
       } finally {
         setIsResetting(false);
       }
     }, [dispatch, expensiveAnalytics, streakCount, completedToday, totalToday, productivityScore]);
 
-    // メトリクスデータの最適化
     const metricsData = useMemo(
       () => ({
         completedToday,
@@ -155,24 +137,45 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
     );
 
     return (
-      <>
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-          <div className="todo-header-info flex-1">
-            <div className="flex items-center gap-2">
-              <StaticCardTitle />
+      <section
+        className="
+          w-full
+          bg-gradient-to-br from-white via-slate-50 to-slate-100
+          rounded-2xl shadow-xl
+          px-6 py-6 sm:px-10 sm:py-8
+          border border-slate-200
+          transition-all
+          hover:shadow-2xl
+          focus-within:ring-2 focus-within:ring-blue-400
+        "
+        aria-label="本日のToDoリスト ヘッダー"
+      >
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-6 sm:gap-8">
+          <div className="flex-1 w-full">
+            <div className="flex items-center gap-3 mb-2">
+              <CardTitle className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-blue-700 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-sm">
+                本日のToDoリスト
+              </CardTitle>
               {hasPremium && <PremiumBadge />}
             </div>
-            <StaticCardDescription />
+            <CardDescription className="text-base text-slate-600 mb-2">
+              登録したことは必ずやり遂げましょう
+            </CardDescription>
             <StreakDisplay streakCount={streakCount} />
-            {hasPremium && totalToday > 0 && <TodoHeaderMetrics {...metricsData} />}
+            {hasPremium && totalToday > 0 && (
+              <div className="mt-4">
+                <TodoHeaderMetrics {...metricsData} />
+              </div>
+            )}
           </div>
-
-          <ActionButtons
-            hasPremium={hasPremium}
-            isResetting={isResetting}
-            onResetClick={() => setShowResetDialog(true)}
-            onAIClick={() => setShowAISuggestionModal(true)}
-          />
+          <div className="flex flex-col items-end gap-3 min-w-[160px]">
+            <ActionButtons
+              hasPremium={hasPremium}
+              isResetting={isResetting}
+              onResetClick={() => setShowResetDialog(true)}
+              onAIClick={() => setShowAISuggestionModal(true)}
+            />
+          </div>
         </div>
 
         <ResetConfirmDialog
@@ -188,14 +191,14 @@ export const TodoHeader: React.FC<TodoHeaderProps> = React.memo(
         />
 
         {hasPremium && showAISuggestionModal && (
-          <React.Suspense fallback={<div>Loading...</div>}>
+          <React.Suspense fallback={<div>AI提案を読み込み中...</div>}>
             <AISuggestionModal
               open={showAISuggestionModal}
               onOpenChange={setShowAISuggestionModal}
             />
           </React.Suspense>
         )}
-      </>
+      </section>
     );
   }
 );

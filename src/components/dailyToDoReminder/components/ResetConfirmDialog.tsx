@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,10 +6,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle, TrendingUp } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, TrendingUp } from 'lucide-react';
 
 interface ResetConfirmDialogProps {
   open: boolean;
@@ -30,9 +30,7 @@ interface ResetConfirmDialogProps {
 export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
   ({ open, onOpenChange, onConfirm, isLoading, stats }) => {
     const completionRate =
-      stats.totalCount > 0
-        ? Math.round((stats.completedCount / stats.totalCount) * 100)
-        : 0;
+      stats.totalCount > 0 ? Math.round((stats.completedCount / stats.totalCount) * 100) : 0;
 
     const handleConfirm = async () => {
       await onConfirm();
@@ -43,18 +41,29 @@ export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          className="
+            sm:max-w-md
+            bg-white
+            rounded-xl
+            shadow-xl
+            p-6
+            border
+            border-gray-200
+            focus:outline-none
+            focus:ring-2
+            focus:ring-primary-500
+          "
+        >
           <DialogHeader>
             <DialogTitle>1日の振り返り</DialogTitle>
-            <DialogDescription>
-              今日のタスクを締めくくり、新しい日を始めますか？
-            </DialogDescription>
+            <DialogDescription>今日のタスクを締めくくり、新しい日を始めますか？</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* 今日の成果サマリー */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <h4 className="font-medium text-sm text-gray-700">今日の成果</h4>
+            <div className="bg-gray-100 rounded-lg p-4 space-y-3 border border-gray-200">
+              <h4 className="font-semibold text-base text-gray-800">今日の成果</h4>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">完了タスク</span>
@@ -85,7 +94,7 @@ export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
               )}
             </div>
 
-            <div className="text-sm text-gray-600 space-y-2">
+            <div className="text-sm text-gray-700 space-y-2">
               <p>• 完了したタスクはアーカイブされます</p>
               <p>• 未完了のタスクは明日に引き継がれます</p>
               <p>• この操作は取り消せません</p>
@@ -97,13 +106,14 @@ export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
+              className="focus:ring-2 focus:ring-primary-500"
             >
               キャンセル
             </Button>
             <Button
               onClick={handleConfirm}
               disabled={isLoading}
-              className="min-w-[100px]"
+              className="min-w-[100px] bg-primary-600 hover:bg-primary-700 text-white focus:ring-2 focus:ring-primary-500"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
@@ -111,7 +121,7 @@ export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
                   処理中...
                 </span>
               ) : (
-                "1日を締める"
+                '1日を締める'
               )}
             </Button>
           </DialogFooter>
@@ -121,4 +131,4 @@ export const ResetConfirmDialog: React.FC<ResetConfirmDialogProps> = React.memo(
   }
 );
 
-ResetConfirmDialog.displayName = "ResetConfirmDialog";
+ResetConfirmDialog.displayName = 'ResetConfirmDialog';
