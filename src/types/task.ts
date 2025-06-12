@@ -2,9 +2,21 @@
 export interface Task {
   _id: string;
   title: string;
-  description: string;
-  status: 'todo' | 'in_progress' | 'completed' | 'blocked';
+  description?: string;
+  status: 'todo' | 'inProgress' | 'completed';
   priority: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate?: Date;
+  tags: string[];
+  assignee?: string;
+  estimatedTime?: number; // 分単位
+  actualTime?: number; // 分単位
+  subtasks: SubTask[];
+  dependencies: string[]; // 依存するタスクのID
+  createdAt: Date;
+  updatedAt: Date;
+  projectId?: string;
+  category?: string;
+  progress: number; // 0-100
 
   // 期限管理
   deadline?: Date;
@@ -20,14 +32,10 @@ export interface Task {
   complexityScore?: number;
 
   // 依存関係
-  dependencies: string[]; // 依存するタスクのID
   blockedBy: string[]; // このタスクをブロックしているタスクのID
 
   // メタデータ
-  createdAt: Date;
-  updatedAt: Date;
   userId: string;
-  projectId?: string;
 
   // カレンダー統合
   calendarEventId?: string;
@@ -58,4 +66,28 @@ export interface WBSNode {
   taskId?: string; // 関連するタスクID
   estimatedDuration?: number;
   dependencies: string[];
+}
+
+export interface SubTask {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+export interface TaskFilter {
+  status?: Task['status'][];
+  priority?: Task['priority'][];
+  tags?: string[];
+  assignee?: string;
+  dueDate?: {
+    from?: Date;
+    to?: Date;
+  };
+  search?: string;
+}
+
+export interface TaskSort {
+  field: keyof Task;
+  direction: 'asc' | 'desc';
 }
