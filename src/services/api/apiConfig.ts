@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { logger } from '../../utils/logger';
+import { fetchTokenFromDB } from './tokenService';
 
 // Extend Window interface for custom properties
 declare global {
@@ -113,12 +114,16 @@ export const api = axios.create({
   },
 });
 
-// Add a request interceptor
+let tokenCache: string | null = null;
+
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+  async (config) => {
+    // トークンがキャッシュされていなければAPIから取得
+    if (!tokenCache) {
+      tokenCache = await fetchTokenFromDB();
+    }
+    if (tokenCache) {
+      config.headers['Authorization'] = `Bearer ${tokenCache}`;
     }
 
     // 管理者APIの場合は特別なヘッダーを追加

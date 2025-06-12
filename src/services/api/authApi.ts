@@ -161,14 +161,20 @@ export const login = async (
   }
 };
 
-export const logout = (): void => {
+export const logout = async (): Promise<void> => {
   // TokenManagerを使用してクリーンアップ
   tokenManager.clearTokens();
 
-  // 追加のローカルストレージクリーンアップ
-  localStorage.removeItem('user');
-  localStorage.removeItem('lastActivity');
-  localStorage.removeItem('sessionPersistent');
+  // API経由でセッション情報を削除
+  try {
+    await api.delete('/user/session');
+    // 必要に応じて他の情報も削除
+    // await api.delete('/user/activity');
+    // await api.delete('/user/profile-cache');
+  } catch (error) {
+    console.error('Failed to clear session info from DB:', error);
+    // 必要ならユーザーに通知
+  }
 
   // 開発環境での自動認証を無効化するフラグを設定
   sessionStorage.setItem('user-logged-out', 'true');
@@ -457,4 +463,22 @@ export const getSessionInfo = () => {
 // デバッグ用
 export const getAuthDebugInfo = () => {
   return tokenManager.getDebugInfo();
+};
+
+// 例: lastActivityを保存
+export const saveLastActivity = async (timestamp: number): Promise<void> => {
+  try {
+    await api.post('/user/activity', { lastActivity: timestamp });
+  } catch (error) {
+    console.error('Failed to save last activity:', error);
+  }
+};
+
+// 例: sessionPersistentを保存
+export const saveSessionPersistent = async (persistent: boolean): Promise<void> => {
+  try {
+    await api.post('/user/session', { persistent });
+  } catch (error) {
+    console.error('Failed to save session persistent flag:', error);
+  }
 };
