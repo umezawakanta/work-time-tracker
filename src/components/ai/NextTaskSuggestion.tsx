@@ -17,12 +17,16 @@ interface NextTaskSuggestionProps {
   todos: TodoItem[];
   calendarEvents: CalendarEvent[];
   wbsItems?: any[]; // WBSの型定義は必要に応じて追加
+  onTaskSelect?: (taskId: string) => void;
+  className?: string;
 }
 
 export const NextTaskSuggestionComponent: React.FC<NextTaskSuggestionProps> = ({
   todos,
   calendarEvents,
   wbsItems = [],
+  onTaskSelect,
+  className,
 }) => {
   const suggestedTask = useMemo(() => {
     // 1. 期限切れのタスクをチェック
@@ -108,7 +112,8 @@ export const NextTaskSuggestionComponent: React.FC<NextTaskSuggestionProps> = ({
         'transition-colors',
         suggestedTask.priority === 'high' && 'bg-red-50',
         suggestedTask.priority === 'medium' && 'bg-amber-50',
-        suggestedTask.priority === 'normal' && 'bg-blue-50'
+        suggestedTask.priority === 'normal' && 'bg-blue-50',
+        className
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
