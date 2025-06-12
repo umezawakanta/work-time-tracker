@@ -28,7 +28,14 @@ export const useTaskManagement = () => {
 
     // フィルター適用
     if (filter.status?.length) {
-      filtered = filtered.filter((task) => filter.status!.includes(task.status));
+      filtered = filtered.filter((task) => {
+        // Only 'completed' is supported for now
+        if (filter.status!.includes('completed')) {
+          return task.completed;
+        }
+        // If you want to support 'incomplete', add that logic here
+        return true;
+      });
     }
 
     if (filter.priority?.length) {
@@ -36,26 +43,24 @@ export const useTaskManagement = () => {
     }
 
     if (filter.tags?.length) {
-      filtered = filtered.filter((task) => filter.tags!.some((tag) => task.tags.includes(tag)));
-    }
-
-    if (filter.assignee) {
-      filtered = filtered.filter((task) => task.assignee === filter.assignee);
+      filtered = filtered.filter(
+        (task) => task.tags && filter.tags!.some((tag) => task.tags!.includes(tag))
+      );
     }
 
     if (filter.search) {
       const searchLower = filter.search.toLowerCase();
       filtered = filtered.filter(
         (task) =>
-          task.title.toLowerCase().includes(searchLower) ||
-          task.description?.toLowerCase().includes(searchLower)
+          task.task.toLowerCase().includes(searchLower) ||
+          (task.note?.toLowerCase().includes(searchLower) ?? false)
       );
     }
 
     if (filter.dueDate) {
       filtered = filtered.filter((task) => {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate);
+        if (!task.deadline) return false;
+        const taskDate = new Date(task.deadline);
         if (filter.dueDate!.from && taskDate < filter.dueDate!.from) return false;
         if (filter.dueDate!.to && taskDate > filter.dueDate!.to) return false;
         return true;
@@ -64,9 +69,12 @@ export const useTaskManagement = () => {
 
     // ソート適用
     return filtered.sort((a, b) => {
-      const aValue = a[sort.field];
-      const bValue = b[sort.field];
-
+      // Only allow sorting by fields that exist on TodoItem
+      const allowedFields: (keyof typeof a)[] = ['priority', 'createdAt', 'deadline', 'task'];
+      if (!allowedFields.includes(sort.field as any)) return 0;
+      const aValue = a[sort.field as keyof typeof a];
+      const bValue = b[sort.field as keyof typeof b];
+      if (aValue == null || bValue == null) return 0;
       if (aValue < bValue) return sort.direction === 'asc' ? -1 : 1;
       if (aValue > bValue) return sort.direction === 'asc' ? 1 : -1;
       return 0;
@@ -76,10 +84,10 @@ export const useTaskManagement = () => {
   // タスク統計
   const taskStats = useMemo(() => {
     const total = tasks.length;
-    const completed = tasks.filter((task) => task.status === 'completed').length;
-    const inProgress = tasks.filter((task) => task.status === 'inProgress').length;
+    const completed = tasks.filter((task) => task.completed).length;
+    const inProgress = 0; // TodoItemにはinProgressの概念がない場合
     const overdue = tasks.filter(
-      (task) => task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed'
+      (task) => task.deadline && new Date(task.deadline) < new Date() && !task.completed
     ).length;
 
     return {
@@ -93,7 +101,7 @@ export const useTaskManagement = () => {
 
   // タスク作成
   const createTask = useCallback(
-    async (taskData: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>) => {
+    async (taskData: Omit<TodoItem, '_id' | 'createdAt' | 'updatedAt'>) => {
       try {
         await dispatch(addTodoItem(taskData)).unwrap();
         toast.success('タスクを作成しました');
@@ -107,7 +115,7 @@ export const useTaskManagement = () => {
 
   // タスク更新
   const editTask = useCallback(
-    async (id: string, updates: Partial<Task>) => {
+    async (id: string, updates: Partial<TodoItem>) => {
       try {
         await dispatch(updateTodoItem({ id, updates })).unwrap();
         toast.success('タスクを更新しました');
@@ -134,58 +142,7 @@ export const useTaskManagement = () => {
   );
 
   // 一括操作
-  const bulkOperations = {
-    markCompleted: useCallback(
-      async (taskIds: string[]) => {
-        try {
-          await dispatch(
-            bulkUpdateTasks({
-              ids: taskIds,
-              updates: { status: 'completed' as const },
-            })
-          ).unwrap();
-          toast.success(`${taskIds.length}個のタスクを完了しました`);
-          setSelectedTasks([]);
-        } catch (error) {
-          toast.error('一括完了操作に失敗しました');
-        }
-      },
-      [dispatch]
-    ),
-
-    delete: useCallback(
-      async (taskIds: string[]) => {
-        if (!window.confirm(`${taskIds.length}個のタスクを削除しますか？`)) return;
-
-        try {
-          await Promise.all(taskIds.map((id) => dispatch(deleteTodoItem(id))));
-          toast.success(`${taskIds.length}個のタスクを削除しました`);
-          setSelectedTasks([]);
-        } catch (error) {
-          toast.error('一括削除操作に失敗しました');
-        }
-      },
-      [dispatch]
-    ),
-
-    updateTags: useCallback(
-      async (taskIds: string[], tags: string[]) => {
-        try {
-          await dispatch(
-            bulkUpdateTasks({
-              ids: taskIds,
-              updates: { tags },
-            })
-          ).unwrap();
-          toast.success(`${taskIds.length}個のタスクのタグを更新しました`);
-          setSelectedTasks([]);
-        } catch (error) {
-          toast.error('タグの一括更新に失敗しました');
-        }
-      },
-      [dispatch]
-    ),
-  };
+  const bulkOperations = {};
 
   return {
     // データ
