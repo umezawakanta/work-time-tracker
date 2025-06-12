@@ -14,7 +14,8 @@ import { toast } from 'react-hot-toast';
 export const useTaskManagement = () => {
   const dispatch = useDispatch<AppDispatch>();
   const tasks = useSelector((state: RootState) => state.todo.items);
-  const loading = useSelector((state: RootState) => state.todo.loading);
+  const status = useSelector((state: RootState) => state.todo.status);
+  const loading = status === 'loading';
   const error = useSelector((state: RootState) => state.todo.error);
 
   const [filter, setFilter] = useState<TaskFilter>({});
