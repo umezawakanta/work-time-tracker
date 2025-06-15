@@ -119,7 +119,7 @@ export default function DailyBalanceReminder() {
         title: 'スキップしました',
         description: '今日の残高記録はスキップされました。明日また通知します。',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'エラー',
         description: 'スキップ情報の保存に失敗しました。',

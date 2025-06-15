@@ -8,7 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  BarChart,
   Bar,
   PieChart,
   Pie,

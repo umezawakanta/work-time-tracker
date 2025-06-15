@@ -21,17 +21,6 @@ interface TodoHeaderProps {
   readonly productivityScore?: number;
 }
 
-// Move static components out of the main component
-const StaticCardTitle = React.memo(() => (
-  <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-    本日のToDoリスト
-  </CardTitle>
-));
-
-const StaticCardDescription = React.memo(() => (
-  <CardDescription className="text-sm">登録したことは必ずやり遂げましょう</CardDescription>
-));
-
 // Create memoized action buttons
 const ActionButtons = React.memo<{
   hasPremium: boolean;
