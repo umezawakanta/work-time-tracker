@@ -291,13 +291,13 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ trigger, onExport })
   const downloadExcel = async (data: any) => {
     // xlsx ライブラリが利用可能な場合の実装
     // 簡易版として CSV と同じ処理
-    toast.info('Excel形式は現在開発中です。CSV形式をお試しください。');
+    toast('Excel形式は現在開発中です。CSV形式をお試しください。');
   };
 
   // PDF ダウンロード
   const downloadPDF = async (data: any) => {
     // jsPDF ライブラリが利用可能な場合の実装
-    toast.info('PDF形式は現在開発中です。CSV形式をお試しください。');
+    toast('PDF形式は現在開発中です。CSV形式をお試しください。');
   };
 
   // JSON ダウンロード
