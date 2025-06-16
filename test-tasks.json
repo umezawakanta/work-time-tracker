@@ -1,0 +1,633 @@
+[
+  {
+    "phase": "Phase 1: 基本機能テスト",
+    "tasks": [
+      {
+        "task": "🔐 ログイン機能テスト - 正常ケース（有効なメール/パスワード）",
+        "description": "有効な認証情報でのログイン成功、リダイレクト確認、認証状態更新確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "🔐 ログイン機能テスト - 異常ケース（無効な認証情報）",
+        "description": "無効なメール/パスワードでのログイン試行、エラーメッセージ表示確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "🔐 ログアウト機能テスト - セッション終了確認",
+        "description": "ログアウト実行、セッション削除、ログイン画面への遷移確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 20
+      },
+      {
+        "task": "📝 ユーザー登録機能テスト - 新規アカウント作成",
+        "description": "新規ユーザー登録、バリデーション、重複チェック確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "🔑 パスワードリセット機能テスト - メール送信確認",
+        "description": "パスワードリセット要求、メール送信、リセットリンク確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "💾 認証状態永続化テスト - ページリロード後の状態維持",
+        "description": "ブラウザリロード、タブ切り替え後の認証状態維持確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 20
+      },
+      {
+        "task": "🛡️ 保護されたルートテスト - 未認証アクセス防止",
+        "description": "未認証状態での保護ページアクセス、リダイレクト確認",
+        "priority": 1,
+        "type": "output",
+        "category": "auth-test",
+        "estimatedDuration": 25
+      }
+    ]
+  },
+  {
+    "phase": "Phase 1: タスク管理CRUD機能テスト",
+    "tasks": [
+      {
+        "task": "➕ タスク作成機能テスト - 必須項目のみ",
+        "description": "タスク名のみでタスク作成、デフォルト値設定確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "➕ タスク作成機能テスト - 全項目入力",
+        "description": "期限、優先度、カテゴリ、タグ、メモを含む完全なタスク作成",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "📋 タスク一覧表示テスト - 基本表示機能",
+        "description": "タスク一覧の表示、ページネーション、レスポンシブ対応確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "🔍 タスクフィルター機能テスト - 完了状態別",
+        "description": "完了/未完了/すべて のフィルター動作確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 25
+      },
+      {
+        "task": "🔍 タスクフィルター機能テスト - 優先度別",
+        "description": "高/中/低優先度でのフィルタリング確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 25
+      },
+      {
+        "task": "📊 タスクソート機能テスト - 作成日、期限、優先度",
+        "description": "昇順/降順ソート、複数条件でのソート確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 35
+      },
+      {
+        "task": "✏️ タスク編集機能テスト - 内容変更",
+        "description": "タスク内容の編集、バリデーション、更新確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 40
+      },
+      {
+        "task": "🗑️ タスク削除機能テスト - 確認ダイアログ表示",
+        "description": "削除確認ダイアログ、キャンセル/削除実行の動作確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "✅ タスクステータス変更テスト - 状態遷移",
+        "description": "未着手→進行中→完了のステータス変更確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 35
+      },
+      {
+        "task": "💾 データベース連携テスト - 永続化確認",
+        "description": "作成、更新、削除操作のデータベース反映確認",
+        "priority": 1,
+        "type": "output",
+        "category": "crud-test",
+        "estimatedDuration": 45
+      }
+    ]
+  },
+  {
+    "phase": "Phase 1: カレンダー機能テスト",
+    "tasks": [
+      {
+        "task": "📅 月間カレンダー表示テスト - 基本表示",
+        "description": "カレンダー表示、月切り替え、今日の日付ハイライト確認",
+        "priority": 1,
+        "type": "output",
+        "category": "calendar-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "📅 タスク日付別表示テスト - カレンダー統合",
+        "description": "期限付きタスクのカレンダー表示、詳細表示確認",
+        "priority": 1,
+        "type": "output",
+        "category": "calendar-test",
+        "estimatedDuration": 40
+      },
+      {
+        "task": "🖱️ ドラッグ&ドロップテスト - タスク日付変更",
+        "description": "タスクのドラッグ&ドロップによる日付変更機能確認",
+        "priority": 1,
+        "type": "output",
+        "category": "calendar-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "🎨 タスク色分け表示テスト - 視覚的表示",
+        "description": "期限・優先度による色分け、凡例表示確認",
+        "priority": 1,
+        "type": "output",
+        "category": "calendar-test",
+        "estimatedDuration": 30
+      },
+      {
+        "task": "➕ カレンダーからタスク作成テスト - 直接作成",
+        "description": "日付クリックからのタスク作成、期限自動設定確認",
+        "priority": 1,
+        "type": "output",
+        "category": "calendar-test",
+        "estimatedDuration": 35
+      }
+    ]
+  },
+  {
+    "phase": "Phase 2: AI機能テスト",
+    "tasks": [
+      {
+        "task": "🤖 AI優先度提案テスト - 自動優先度算出",
+        "description": "タスク内容に基づく優先度自動提案、精度確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "⏱️ AI時間予測テスト - 完了時間推定",
+        "description": "タスクの推定完了時間算出、履歴ベース学習確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "🔗 AI類似タスクグループ化テスト - 自動分類",
+        "description": "類似タスクの自動グループ化、カテゴリ提案確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "✂️ AIタスク分解テスト - サブタスク生成",
+        "description": "大きなタスクの小タスク自動分解、階層構造確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "🛡️ AI APIレート制限テスト - エラーハンドリング",
+        "description": "API制限時の適切な処理、ユーザー通知確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "🌐 AI API接続エラーテスト - 障害対応",
+        "description": "ネットワークエラー時の適切な処理、フォールバック確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ai-test",
+        "estimatedDuration": 45
+      }
+    ]
+  },
+  {
+    "phase": "Phase 2: WBS機能テスト",
+    "tasks": [
+      {
+        "task": "📊 WBS自動生成テスト - プロジェクト分解",
+        "description": "プロジェクト名と目標からのWBS自動生成確認",
+        "priority": 2,
+        "type": "output",
+        "category": "wbs-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "🌳 WBS階層構造テスト - 視覚的表示",
+        "description": "階層的タスク構造の可視化、展開/折り畳み確認",
+        "priority": 2,
+        "type": "output",
+        "category": "wbs-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "🔗 WBS依存関係テスト - タスク関連管理",
+        "description": "タスク間の依存関係設定、順序制約確認",
+        "priority": 2,
+        "type": "output",
+        "category": "wbs-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "📈 ガントチャート表示テスト - 進捗可視化",
+        "description": "ガントチャート表示、進捗バー、タイムライン確認",
+        "priority": 2,
+        "type": "output",
+        "category": "wbs-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "⏱️ AI工数見積もりテスト - 時間推定",
+        "description": "AIによる各タスクの工数自動見積もり確認",
+        "priority": 2,
+        "type": "output",
+        "category": "wbs-test",
+        "estimatedDuration": 60
+      }
+    ]
+  },
+  {
+    "phase": "Phase 3: チーム機能テスト",
+    "tasks": [
+      {
+        "task": "👥 チーム作成テスト - 基本機能",
+        "description": "チーム作成、設定、管理機能の基本動作確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "📧 チーム招待テスト - メンバー追加",
+        "description": "メンバー招待、招待メール送信、参加プロセス確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "👤 タスク担当者割り当てテスト - アサイン機能",
+        "description": "タスクの担当者割り当て、通知、権限確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "🛡️ チーム権限管理テスト - アクセス制御",
+        "description": "管理者/メンバー権限、操作制限、設定変更確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "💬 タスクコメント機能テスト - コミュニケーション",
+        "description": "タスクへのコメント追加、編集、削除、通知確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "⚡ リアルタイム更新テスト - 同期機能",
+        "description": "複数ユーザー間のリアルタイム同期、WebSocket動作確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "📢 メンション機能テスト - @ユーザー通知",
+        "description": "@ユーザー名メンション、通知送信、リンク動作確認",
+        "priority": 3,
+        "type": "output",
+        "category": "team-test",
+        "estimatedDuration": 60
+      }
+    ]
+  },
+  {
+    "phase": "Phase 3: 通知システムテスト",
+    "tasks": [
+      {
+        "task": "⏰ タスク期限リマインダーテスト - 自動通知",
+        "description": "期限前の自動リマインダー、時間設定、通知内容確認",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "🔔 担当タスク更新通知テスト - 変更通知",
+        "description": "担当タスクの更新時通知、内容詳細、リンク確認",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "📢 メンション通知テスト - @通知",
+        "description": "メンション時の即座通知、通知表示、確認状態管理",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "🖥️ ブラウザプッシュ通知テスト - デスクトップ通知",
+        "description": "ブラウザ通知許可、プッシュ通知表示、クリック動作確認",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "📧 メール通知テスト - 外部通知",
+        "description": "重要通知のメール送信、内容フォーマット、配信確認",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "⚙️ 通知設定カスタマイズテスト - 個人設定",
+        "description": "通知ON/OFF設定、頻度調整、種別選択確認",
+        "priority": 3,
+        "type": "output",
+        "category": "notification-test",
+        "estimatedDuration": 60
+      }
+    ]
+  },
+  {
+    "phase": "Phase 4: ダッシュボード機能テスト",
+    "tasks": [
+      {
+        "task": "📊 タスク完了率表示テスト - 進捗可視化",
+        "description": "日次/週次/月次完了率の表示、グラフ描画確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "📉 バーンダウンチャートテスト - 進捗追跡",
+        "description": "理想線と実績線の表示、進捗予測、警告表示確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "👥 チーム生産性分析テスト - メンバー分析",
+        "description": "チームメンバー別の生産性分析、比較グラフ確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "🏷️ カテゴリ別分析テスト - 分類統計",
+        "description": "タスクカテゴリ別の完了率、時間分析確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "⏱️ 時間追跡レポートテスト - 作業時間分析",
+        "description": "作業時間の記録、分析、レポート生成確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "📈 リアルタイムメトリクステスト - 即時更新",
+        "description": "ダッシュボードのリアルタイム更新、データ同期確認",
+        "priority": 2,
+        "type": "output",
+        "category": "dashboard-test",
+        "estimatedDuration": 60
+      }
+    ]
+  },
+  {
+    "phase": "Phase 4: エクスポート機能テスト",
+    "tasks": [
+      {
+        "task": "📄 CSVエクスポートテスト - データ出力",
+        "description": "CSV形式でのタスクデータエクスポート、フォーマット確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 45
+      },
+      {
+        "task": "📊 Excelエクスポートテスト - 高度な出力",
+        "description": "Excel形式でのエクスポート、書式設定、計算式確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "📑 PDFレポート生成テスト - 印刷対応",
+        "description": "PDF形式でのレポート生成、レイアウト、印刷適性確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "🖼️ ガントチャート画像出力テスト - 視覚的出力",
+        "description": "ガントチャートの画像ファイル出力、品質確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "📋 プロジェクトサマリー生成テスト - 要約出力",
+        "description": "プロジェクト概要の自動生成、統計情報確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "🔗 API外部連携テスト - データ連携",
+        "description": "外部システムとのAPI連携、データ形式確認",
+        "priority": 2,
+        "type": "output",
+        "category": "export-test",
+        "estimatedDuration": 90
+      }
+    ]
+  },
+  {
+    "phase": "Phase 5: UI/UX改善テスト",
+    "tasks": [
+      {
+        "task": "📱 モバイルナビゲーションテスト - スマホ対応",
+        "description": "スマートフォンでのナビゲーション、メニュー操作確認",
+        "priority": 2,
+        "type": "output",
+        "category": "mobile-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "👆 タッチ操作最適化テスト - タッチUI",
+        "description": "タッチデバイスでの操作性、ジェスチャー対応確認",
+        "priority": 2,
+        "type": "output",
+        "category": "mobile-test",
+        "estimatedDuration": 75
+      },
+      {
+        "task": "📲 PWA対応テスト - アプリ化",
+        "description": "PWAインストール、オフライン機能、プッシュ通知確認",
+        "priority": 2,
+        "type": "output",
+        "category": "pwa-test",
+        "estimatedDuration": 120
+      },
+      {
+        "task": "🌙 ダークモードテスト - テーマ切り替え",
+        "description": "ダークモード切り替え、色彩設計、視認性確認",
+        "priority": 2,
+        "type": "output",
+        "category": "ui-test",
+        "estimatedDuration": 60
+      },
+      {
+        "task": "♿ アクセシビリティテスト - ユニバーサルデザイン",
+        "description": "スクリーンリーダー対応、キーボードナビゲーション確認",
+        "priority": 2,
+        "type": "output",
+        "category": "accessibility-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "⚡ パフォーマンス最適化テスト - 速度改善",
+        "description": "ページ読み込み速度、レスポンス時間、メモリ使用量確認",
+        "priority": 2,
+        "type": "output",
+        "category": "performance-test",
+        "estimatedDuration": 90
+      }
+    ]
+  },
+  {
+    "phase": "統合テスト・本番準備",
+    "tasks": [
+      {
+        "task": "🔄 エンドツーエンドテスト - 全体フロー",
+        "description": "ユーザー登録からプロジェクト完了までの全体フロー確認",
+        "priority": 1,
+        "type": "output",
+        "category": "integration-test",
+        "estimatedDuration": 180
+      },
+      {
+        "task": "🛡️ セキュリティテスト - 脆弱性検査",
+        "description": "認証セキュリティ、データ保護、XSS/CSRF対策確認",
+        "priority": 1,
+        "type": "output",
+        "category": "security-test",
+        "estimatedDuration": 120
+      },
+      {
+        "task": "📊 負荷テスト - 同時アクセス",
+        "description": "多数ユーザー同時アクセス、データベース負荷確認",
+        "priority": 1,
+        "type": "output",
+        "category": "load-test",
+        "estimatedDuration": 120
+      },
+      {
+        "task": "💾 データバックアップ・復元テスト - データ保護",
+        "description": "データベースバックアップ、復元プロセス確認",
+        "priority": 1,
+        "type": "output",
+        "category": "backup-test",
+        "estimatedDuration": 90
+      },
+      {
+        "task": "🌐 クロスブラウザテスト - 互換性確認",
+        "description": "Chrome、Firefox、Safari、Edgeでの動作確認",
+        "priority": 1,
+        "type": "output",
+        "category": "compatibility-test",
+        "estimatedDuration": 120
+      },
+      {
+        "task": "📖 ユーザーマニュアル作成 - ドキュメント整備",
+        "description": "操作マニュアル、FAQ、トラブルシューティング作成",
+        "priority": 2,
+        "type": "output",
+        "category": "documentation",
+        "estimatedDuration": 240
+      },
+      {
+        "task": "🚀 本番デプロイメントテスト - 配置確認",
+        "description": "本番環境へのデプロイ、設定確認、監視設定",
+        "priority": 1,
+        "type": "output",
+        "category": "deployment-test",
+        "estimatedDuration": 150
+      },
+      {
+        "task": "📈 監視・ログ設定テスト - 運用準備",
+        "description": "アプリケーション監視、エラーログ、パフォーマンス監視確認",
+        "priority": 1,
+        "type": "output",
+        "category": "monitoring-test",
+        "estimatedDuration": 120
+      }
+    ]
+  }
+]
