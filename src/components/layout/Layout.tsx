@@ -13,7 +13,6 @@ import {
   Crown,
   Target,
   Sparkles,
-  Bell,
   Search,
   CheckSquare,
   Calendar,
