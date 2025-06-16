@@ -88,8 +88,8 @@ export const TaskCalendar: React.FC<TaskCalendarProps> = ({ onTaskSelect, onDate
     };
   }, []);
 
-  // イベントドロップハンドラー
-  const handleEventDrop = useCallback(
+  // イベントドロップハンドラー (DnD有効化時に使用)
+  const _handleEventDrop = useCallback(
     async ({ event, start, end }: { event: CalendarEvent; start: Date; end: Date }) => {
       try {
         await dispatch(
@@ -111,8 +111,8 @@ export const TaskCalendar: React.FC<TaskCalendarProps> = ({ onTaskSelect, onDate
     [dispatch]
   );
 
-  // イベントリサイズハンドラー
-  const handleEventResize = useCallback(
+  // イベントリサイズハンドラー (DnD有効化時に使用)
+  const _handleEventResize = useCallback(
     async ({ event, start, end }: { event: CalendarEvent; start: Date; end: Date }) => {
       try {
         await dispatch(
