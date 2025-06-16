@@ -1,5 +1,7 @@
 // src/types/auth.ts
-export interface AuthUser extends User {
+import { User } from './index';
+
+export interface AuthUser extends Omit<User, 'subscriptionStatus'> {
   permissions: string[];
   roles: string[];
   lastActivityAt: Date;
@@ -10,7 +12,6 @@ export interface AuthUser extends User {
   photoURL: string | null;
   emailVerified: boolean;
   isPremium: boolean;
-  isAdmin?: boolean;
   subscriptionStatus?: 'free' | 'trial' | 'premium' | 'enterprise';
   createdAt: string;
   lastSignInAt?: string;
