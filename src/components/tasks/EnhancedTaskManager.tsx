@@ -55,6 +55,7 @@ import {
   CheckCircle,
   Lightbulb,
   Zap,
+  Download,
 } from 'lucide-react';
 import { format, isToday, isTomorrow, isYesterday, isPast } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -65,6 +66,7 @@ import { SortOption, QuickFilterOption } from '@/types/todo';
 import TaskForm from './TaskForm';
 import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { toast } from 'react-hot-toast';
+import TaskImporter from './TaskImporter';
 
 interface TaskSuggestion {
   id: string;
@@ -122,6 +124,7 @@ export const EnhancedTaskManager: React.FC = () => {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TodoItem | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<TodoItem | null>(null);
+  const [isImporterOpen, setIsImporterOpen] = useState(false);
 
   // AI State
   const [taskSuggestions, setTaskSuggestions] = useState<TaskSuggestion[]>([]);
@@ -716,6 +719,69 @@ export const EnhancedTaskManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* ヘッダー部分 */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">タスク管理</h1>
+          <p className="text-gray-600 mt-1">効率的なタスク管理でプロジェクトを成功に導きます</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* インポートボタンを追加 */}
+          <Button
+            variant="outline"
+            onClick={() => setIsImporterOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            インポート
+          </Button>
+
+          {/* AI機能ボタン */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Brain className="h-4 w-4" />
+                AI機能
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>AI分析</DropdownMenuLabel>
+              <DropdownMenuItem onClick={generateTaskSuggestions} disabled={isAnalyzing}>
+                <Lightbulb className="h-4 w-4 mr-2" />
+                タスク提案
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={predictTaskPriorities} disabled={isAnalyzing}>
+                <Target className="h-4 w-4 mr-2" />
+                優先度予測
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={predictCompletionTimes} disabled={isAnalyzing}>
+                <Clock className="h-4 w-4 mr-2" />
+                完了時間予測
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={groupSimilarTasks} disabled={isAnalyzing}>
+                <Users className="h-4 w-4 mr-2" />
+                類似タスクグループ化
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={runCompleteAnalysis} disabled={isAnalyzing}>
+                <Zap className="h-4 w-4 mr-2" />
+                完全分析実行
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* 新規タスク作成ボタン */}
+          <Button
+            onClick={() => setIsTaskFormOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            新規タスク
+          </Button>
+        </div>
+      </div>
+
       {/* AI Control Panel */}
       <Card>
         <CardHeader>
@@ -1067,36 +1133,6 @@ export const EnhancedTaskManager: React.FC = () => {
               <DropdownMenuItem onClick={() => setSortOption('type')}>タイプ順</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* 新規タスク作成 */}
-          <Dialog open={isTaskFormOpen} onOpenChange={setIsTaskFormOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" />
-                新規作成
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>{editingTask ? 'タスクを編集' : '新しいタスクを作成'}</DialogTitle>
-                <DialogDescription>タスクの詳細を入力してください。</DialogDescription>
-              </DialogHeader>
-              <TaskForm
-                task={
-                  editingTask
-                    ? {
-                        ...editingTask,
-                        type: editingTask.type || 'input',
-                        createdAt: editingTask.createdAt || new Date().toISOString(),
-                        updatedAt: editingTask.createdAt || new Date().toISOString(),
-                      }
-                    : undefined
-                }
-                onClose={handleCloseTaskForm}
-                onSubmit={handleCloseTaskForm}
-              />
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
@@ -1169,6 +1205,9 @@ export const EnhancedTaskManager: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* インポートダイアログ */}
+      <TaskImporter isOpen={isImporterOpen} onClose={() => setIsImporterOpen(false)} />
     </div>
   );
 };

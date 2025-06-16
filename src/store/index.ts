@@ -11,6 +11,7 @@ import bookReducer from './bookSlice';
 import sleepTrackerReducer from './sleepTrackerSlice';
 import blogReducer from './blogSlice';
 import guitarPracticeReducer from './guitarPracticeSlice';
+import achievementReducer from './achievementSlice';
 
 const rootReducer = combineReducers({
   workTime: workTimeReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   sleepTracker: sleepTrackerReducer,
   blog: blogReducer,
   guitarPractice: guitarPracticeReducer,
+  achievements: achievementReducer,
 });
 
 export const store = configureStore({
