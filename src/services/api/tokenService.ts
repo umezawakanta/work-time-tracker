@@ -9,6 +9,12 @@ const tokenApi = axios.create({
 });
 
 export async function fetchTokenFromDB(): Promise<string> {
+  // 開発環境では無効化
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🚫 Development: Token fetch from DB disabled');
+    throw new Error('Token fetch disabled in development mode');
+  }
+
   // API base URLを動的に取得（循環依存を避けるため）
   const getTokenApiUrl = () => {
     if (typeof window !== 'undefined') {
@@ -32,21 +38,11 @@ export async function fetchTokenFromDB(): Promise<string> {
     return 'http://localhost:3001/api';
   };
 
-  const baseURL = getTokenApiUrl();
-
   try {
-    const response = await tokenApi.get(`${baseURL}/auth/token`, {
-      withCredentials: true,
-    });
-
-    if (!response.data?.accessToken) {
-      throw new Error('Access token not found in response');
-    }
-
-    return response.data.accessToken;
+    const response = await tokenApi.get(`${getTokenApiUrl()}/auth/token`);
+    return response.data.token;
   } catch (error) {
-    console.warn('Token fetch failed:', error);
-    // トークン取得に失敗してもアプリケーションを停止させない
-    return '';
+    console.error('Token fetch failed:', error);
+    throw error;
   }
 }

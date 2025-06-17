@@ -33,6 +33,12 @@ export class TokenManager {
   }
 
   private constructor() {
+    // 開発環境ではトークン管理を無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: TokenManager disabled');
+      return;
+    }
+
     this.loadFromStorage();
     this.setupAxiosInterceptors();
   }
@@ -41,6 +47,12 @@ export class TokenManager {
    * ストレージからトークンを読み込み
    */
   private async loadFromStorage(): Promise<void> {
+    // 開発環境では無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Token loading disabled');
+      return;
+    }
+
     try {
       const response = await api.get<TokenPair>('/auth/tokens');
       const parsed = response.data;
@@ -71,6 +83,12 @@ export class TokenManager {
    * ストレージにトークンを保存
    */
   private async saveToStorage(): Promise<void> {
+    // 開発環境では無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Token saving disabled');
+      return;
+    }
+
     try {
       const tokenData: TokenPair = {
         accessToken: this.accessToken!,
@@ -144,6 +162,12 @@ export class TokenManager {
    * アクセストークンを更新
    */
   private async refreshAccessToken(): Promise<string | null> {
+    // 開発環境では無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Token refresh disabled');
+      return null;
+    }
+
     if (this.isRefreshing && this.refreshPromise) {
       return this.refreshPromise;
     }
@@ -175,6 +199,12 @@ export class TokenManager {
    * トークン更新の実行
    */
   private async performTokenRefresh(): Promise<string | null> {
+    // 開発環境では無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Token refresh request disabled');
+      return null;
+    }
+
     try {
       const response = await api.post<RefreshResponse>('/auth/refresh', {
         refreshToken: this.refreshToken,
@@ -227,11 +257,17 @@ export class TokenManager {
       this.refreshTimer = null;
     }
 
-    try {
-      await api.delete('/auth/tokens');
-    } catch (error) {
-      console.error('Failed to delete tokens from DB:', error);
+    // 開発環境ではAPI呼び出しを無効化
+    if (process.env.NODE_ENV !== 'development') {
+      try {
+        await api.delete('/auth/tokens');
+      } catch (error) {
+        console.error('Failed to delete tokens from DB:', error);
+      }
+    } else {
+      console.log('🚫 Development: Token deletion API call disabled');
     }
+
     delete api.defaults.headers.common['Authorization'];
   }
 
@@ -239,6 +275,12 @@ export class TokenManager {
    * Axiosインターセプターの設定
    */
   private setupAxiosInterceptors(): void {
+    // 開発環境では無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Axios interceptors for TokenManager disabled');
+      return;
+    }
+
     // リクエストインターセプター
     api.interceptors.request.use(
       async (config) => {

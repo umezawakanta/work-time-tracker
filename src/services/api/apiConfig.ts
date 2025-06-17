@@ -20,54 +20,47 @@ export const USE_MOCK_DATA =
     !import.meta.env.VITE_API_BASE_URL?.includes('railway') &&
     !import.meta.env.VITE_API_BASE_URL?.includes('render'));
 
-// デプロイ先でのAPI URL自動判定
-const getApiBaseUrl = () => {
-  console.log('🔧 Determining API Base URL...');
-  console.log('  - Environment variables:', {
-    VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
-    DEV: import.meta.env.DEV,
-    PROD: import.meta.env.PROD,
-  });
+console.log('🔧 Determining API Base URL...');
+console.log('📋 Environment variables:', {
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  DEV: import.meta.env.DEV,
+  PROD: import.meta.env.PROD,
+});
 
-  // 本番環境では実際のAPIサーバーに接続を試行
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    console.log('  - Current hostname:', hostname);
+const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+console.log('🌐 Current hostname:', hostname);
 
-    // Vercel production domain
-    if (hostname === 'work-time-tracker-5d9q.vercel.app') {
-      console.log('🌐 本番環境: APIサーバーに接続を試行します');
-      return 'https://work-time-tracker-5d9q.vercel.app/api';
+let baseURL: string;
+
+if (hostname === 'work-time-tracker-5d9q.vercel.app') {
+  baseURL = 'https://work-time-tracker-5d9q.vercel.app/api';
+  console.log('🚀 Production: Using production API server:', baseURL);
+} else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+  baseURL = 'https://work-time-tracker-5d9q.vercel.app/api';
+  console.log('🔧 Preview: Using production API server:', baseURL);
+} else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+  // ローカル開発環境
+  if (
+    import.meta.env.VITE_API_BASE_URL?.includes('vercel.app') ||
+    import.meta.env.VITE_API_BASE_URL?.includes('railway.app')
+  ) {
+    baseURL = import.meta.env.VITE_API_BASE_URL;
+    console.log('🛰️ Development: Using remote API server:', baseURL);
+  } else {
+    baseURL = 'http://localhost:3001/api';
+    if (import.meta.env.DEV) {
+      console.log('🛠️ Development: Using local dev server');
+      if (import.meta.env.VITE_API_BASE_URL) {
+        console.log('💡 Note: Ignoring VITE_API_BASE_URL for localhost development');
+      }
     }
-
-    // Vercel preview deployments - always use production API
-    if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
-      console.log('🌐 Vercelプレビュー環境: 本番APIサーバーに接続します');
-      return 'https://work-time-tracker-5d9q.vercel.app/api';
-    }
-
-    // Development environment - force use of localhost:3001
-    if (hostname === 'localhost') {
-      const devApiUrl = 'http://localhost:3001/api';
-      console.log('🔧 開発環境: Vercel dev serverを使用:', devApiUrl);
-      console.log('💡 Note: VITE_API_BASE_URL環境変数を無視して localhost:3001 を使用します');
-      return devApiUrl;
-    }
-
-    // Other custom domains
-    const apiUrl = `${window.location.protocol}//${window.location.hostname}/api`;
-    console.log('  - Using custom domain API:', apiUrl);
-    return apiUrl;
   }
+} else {
+  baseURL = `${window.location.protocol}//${window.location.hostname}/api`;
+  console.log('🔧 Fallback: Dynamic API URL:', baseURL);
+}
 
-  // Fallback for development
-  const devApiUrl = 'http://localhost:3001/api';
-  console.log('  - Fallback to development API URL:', devApiUrl);
-  return devApiUrl;
-};
-
-const baseURL = getApiBaseUrl();
-console.log('🔗 API Base URL:', baseURL);
+console.log('🔗 Final API Base URL:', baseURL);
 
 // 本番環境での健全性チェック
 if (
@@ -119,6 +112,12 @@ let tokenFetchPromise: Promise<string> | null = null;
 
 api.interceptors.request.use(
   async (config) => {
+    // 開発環境では本番でのトークン機能を無効化
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚫 Development: Token authentication disabled');
+      return config;
+    }
+
     // /auth/token エンドポイントへのリクエストではトークンを追加しない（無限ループ防止）
     if (config.url?.includes('/auth/token')) {
       return config;
@@ -145,8 +144,9 @@ api.interceptors.request.use(
       }
     }
 
+    // トークンがあればヘッダーに追加
     if (tokenCache) {
-      config.headers['Authorization'] = `Bearer ${tokenCache}`;
+      config.headers.Authorization = `Bearer ${tokenCache}`;
     }
 
     // 管理者APIの場合は特別なヘッダーを追加
