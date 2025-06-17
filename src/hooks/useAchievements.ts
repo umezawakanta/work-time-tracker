@@ -61,14 +61,14 @@ export const useAchievements = () => {
   // タスクの変更を監視
   useEffect(() => {
     if (tasks.length > 0) {
-      // 少し遅延を入れて、UIの更新後に実績チェックを実行
+      // デバウンスを実装して、短時間での連続チェックを防ぐ
       const timeoutId = setTimeout(() => {
         checkAchievements();
-      }, 500);
+      }, 1000); // 1秒のデバウンス
 
       return () => clearTimeout(timeoutId);
     }
-  }, [tasks, checkAchievements]);
+  }, [tasks.length, checkAchievements]); // tasks全体ではなく、lengthのみ監視
 
   // 実績の進捗を計算
   const getAchievementProgress = useCallback(

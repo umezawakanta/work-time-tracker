@@ -193,7 +193,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     };
 
     loadWBSData();
-  }, [open, effectiveUser, isWBSDataLoaded, authUser, reduxUserId]); // 依存配列を修正
+  }, [open, effectiveUser?._id, effectiveUser?.uid]); // 必要最小限の依存関係のみ
 
   // モーダルが閉じたときにフラグをリセット
   useEffect(() => {

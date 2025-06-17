@@ -1,24 +1,10 @@
-"use client";
+'use client';
 
-import React, {
-  useState,
-  useEffect,
-  Suspense,
-  useCallback,
-  useRef,
-  lazy,
-} from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "@/components/ui/use-toast";
-import {
-  Settings,
-  Crown,
-  Sparkles,
-  ListTodo,
-  Trophy,
-  LineChart,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, Suspense, useCallback, useRef, lazy } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/components/ui/use-toast';
+import { Settings, Crown, Sparkles, ListTodo, Trophy, LineChart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -26,11 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Download, Upload } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Download, Upload } from 'lucide-react';
 
 // 型定義のインポート
 import {
@@ -41,171 +27,163 @@ import {
   UserSettings,
   MonthlyStats,
   MotivationDataPoint,
-} from "@/types";
+} from '@/types';
 
 // コンポーネント
-import DiaryForm from "@/components/forms/DiaryForm";
-import MonthlyCalendar from "@/components/calendar/MonthlyCalendar";
-import MindfulnessSection from "@/components/MindfulnessSection";
-import WeeklyView from "@/components/view/WeeklyView";
-import DiaryHistory from "@/components/history/DiaryHistory";
-import GoalManagement from "@/components/GoalManagement";
-import AchievementsList from "@/components/AchievementsList";
-import { format } from "date-fns";
+import DiaryForm from '@/components/forms/DiaryForm';
+import MonthlyCalendar from '@/components/calendar/MonthlyCalendar';
+import MindfulnessSection from '@/components/MindfulnessSection';
+import WeeklyView from '@/components/view/WeeklyView';
+import DiaryHistory from '@/components/history/DiaryHistory';
+import GoalManagement from '@/components/GoalManagement';
+import AchievementsList from '@/components/AchievementsList';
+import { format } from 'date-fns';
 
 // 遅延ロードするコンポーネント
-const StatsView = lazy(() => import("@/components/StatsView"));
+const StatsView = lazy(() => import('@/components/StatsView'));
 
 // defaultAchievementsの定義
 const defaultAchievements: Achievement[] = [
   {
-    id: "streak-3",
-    name: "3日連続記録",
-    description: "3日連続で記録をつけました",
+    id: 'streak-3',
+    name: '3日連続記録',
+    description: '3日連続で記録をつけました',
     earned: false,
-    icon: "Zap",
+    icon: 'Zap',
   },
   {
-    id: "streak-7",
-    name: "1週間継続",
-    description: "7日連続で記録をつけました",
+    id: 'streak-7',
+    name: '1週間継続',
+    description: '7日連続で記録をつけました',
     earned: false,
-    icon: "Medal",
+    icon: 'Medal',
   },
   {
-    id: "streak-30",
-    name: "1ヶ月マスター",
-    description: "30日連続で記録をつけました",
+    id: 'streak-30',
+    name: '1ヶ月マスター',
+    description: '30日連続で記録をつけました',
     earned: false,
-    icon: "Trophy",
+    icon: 'Trophy',
   },
   {
-    id: "entries-10",
-    name: "10個の達成",
-    description: "10個の達成を記録しました",
+    id: 'entries-10',
+    name: '10個の達成',
+    description: '10個の達成を記録しました',
     earned: false,
-    icon: "Star",
+    icon: 'Star',
   },
   {
-    id: "goals-5",
-    name: "目標達成者",
-    description: "5つの目標を達成しました",
+    id: 'goals-5',
+    name: '目標達成者',
+    description: '5つの目標を達成しました',
     earned: false,
-    icon: "CheckCircle",
+    icon: 'CheckCircle',
   },
   // 新しい実績を追加
   {
-    id: "streak-60",
-    name: "60日継続の達人",
-    description: "60日連続で記録をつけました",
+    id: 'streak-60',
+    name: '60日継続の達人',
+    description: '60日連続で記録をつけました',
     earned: false,
-    icon: "Crown",
+    icon: 'Crown',
   },
   {
-    id: "goals-15",
-    name: "目標マスター",
-    description: "15個の目標を達成しました",
+    id: 'goals-15',
+    name: '目標マスター',
+    description: '15個の目標を達成しました',
     earned: false,
-    icon: "Trophy",
+    icon: 'Trophy',
   },
   {
-    id: "difficult-5",
-    name: "チャレンジャー",
-    description: "難易度5の達成を3つ記録しました",
+    id: 'difficult-5',
+    name: 'チャレンジャー',
+    description: '難易度5の達成を3つ記録しました',
     earned: false,
-    icon: "Star",
+    icon: 'Star',
   },
 ];
 
 // デフォルトのユーザー設定
 const defaultSettings: UserSettings = {
   reminderEnabled: false,
-  reminderTime: "20:00",
+  reminderTime: '20:00',
   darkMode: false,
-  language: "ja",
+  language: 'ja',
   showTips: true,
 };
 
 // 必要な他の定数も追加
 const moodEmojis: Record<string, string> = {
-  great: "😄",
-  good: "🙂",
-  neutral: "😐",
-  bad: "😕",
-  terrible: "😞",
+  great: '😄',
+  good: '🙂',
+  neutral: '😐',
+  bad: '😕',
+  terrible: '😞',
 };
 
 const moodLabels: Record<string, string> = {
-  great: "とても良い",
-  good: "良い",
-  neutral: "普通",
-  bad: "悪い",
-  terrible: "とても悪い",
+  great: 'とても良い',
+  good: '良い',
+  neutral: '普通',
+  bad: '悪い',
+  terrible: 'とても悪い',
 };
 
 const tagOptions = [
-  { value: "work", label: "仕事" },
-  { value: "health", label: "健康" },
-  { value: "learning", label: "学習" },
-  { value: "social", label: "社交" },
-  { value: "home", label: "家事" },
-  { value: "hobby", label: "趣味" },
-  { value: "small-win", label: "小さな勝利" },
-  { value: "overcome", label: "困難克服" },
+  { value: 'work', label: '仕事' },
+  { value: 'health', label: '健康' },
+  { value: 'learning', label: '学習' },
+  { value: 'social', label: '社交' },
+  { value: 'home', label: '家事' },
+  { value: 'hobby', label: '趣味' },
+  { value: 'small-win', label: '小さな勝利' },
+  { value: 'overcome', label: '困難克服' },
   // 新しいタグを追加
-  { value: "creative", label: "創作活動" },
-  { value: "mindfulness", label: "マインドフルネス" },
-  { value: "productivity", label: "生産性向上" },
-  { value: "personal-growth", label: "自己成長" },
+  { value: 'creative', label: '創作活動' },
+  { value: 'mindfulness', label: 'マインドフルネス' },
+  { value: 'productivity', label: '生産性向上' },
+  { value: 'personal-growth', label: '自己成長' },
 ];
 
 const goalCategories = [
-  { value: "daily", label: "日常習慣" },
-  { value: "weekly", label: "週間目標" },
-  { value: "monthly", label: "月間目標" },
-  { value: "long-term", label: "長期目標" },
+  { value: 'daily', label: '日常習慣' },
+  { value: 'weekly', label: '週間目標' },
+  { value: 'monthly', label: '月間目標' },
+  { value: 'long-term', label: '長期目標' },
 ];
 
 const DiaryPage: React.FC = () => {
   // 状態管理
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
-  const [newAchievement, setNewAchievement] = useState("");
-  const [newMood, setNewMood] = useState("");
+  const [newAchievement, setNewAchievement] = useState('');
+  const [newMood, setNewMood] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<number>(1);
   const [isImportant, setIsImportant] = useState(false);
   const [editingEntry, setEditingEntry] = useState<DiaryEntry | null>(null);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [newGoal, setNewGoal] = useState("");
-  const [newGoalCategory, setNewGoalCategory] = useState("daily");
-  const [newGoalDate, setNewGoalDate] = useState("");
-  const [currentView, setCurrentView] = useState("day");
+  const [newGoal, setNewGoal] = useState('');
+  const [newGoalCategory, setNewGoalCategory] = useState('daily');
+  const [newGoalDate, setNewGoalDate] = useState('');
+  const [currentView, setCurrentView] = useState('day');
   const [streakData, setStreakData] = useState<Streak>({
     currentStreak: 0,
     longestStreak: 0,
     lastEntryDate: null,
   });
-  const [achievements, setAchievements] =
-    useState<Achievement[]>(defaultAchievements);
+  const [achievements, setAchievements] = useState<Achievement[]>(defaultAchievements);
   const [showTips, setShowTips] = useState(true);
   const [isPremium, setIsPremium] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [userSettings, setUserSettings] =
-    useState<UserSettings>(defaultSettings);
+  const [userSettings, setUserSettings] = useState<UserSettings>(defaultSettings);
   const [showMonthlyCalendar, setShowMonthlyCalendar] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // useRefは循環依存を解決するために使用
-  const saveStreakDataRef = useRef<((data: Streak) => void) | undefined>(
-    undefined
-  );
-  const saveEntriesRef = useRef<
-    ((newEntries: DiaryEntry[]) => void) | undefined
-  >(undefined);
-  const calculateStreaksRef = useRef<
-    ((entries: DiaryEntry[]) => void) | undefined
-  >(undefined);
+  const saveStreakDataRef = useRef<((data: Streak) => void) | undefined>(undefined);
+  const saveEntriesRef = useRef<((newEntries: DiaryEntry[]) => void) | undefined>(undefined);
+  const calculateStreaksRef = useRef<((entries: DiaryEntry[]) => void) | undefined>(undefined);
   const checkAchievementsRef = useRef<(() => void) | undefined>(undefined);
 
   // ブレークポイント検出
@@ -218,40 +196,38 @@ const DiaryPage: React.FC = () => {
     checkScreenSize();
 
     // リサイズイベントのリスナーを設定
-    window.addEventListener("resize", checkScreenSize);
+    window.addEventListener('resize', checkScreenSize);
 
     // コンポーネントのアンマウント時にリスナーを削除
     return () => {
-      window.removeEventListener("resize", checkScreenSize);
+      window.removeEventListener('resize', checkScreenSize);
     };
   }, []);
 
   // 励ましのメッセージのリスト
   const encouragementMessages = [
-    "今日の小さな一歩が、明日の大きな変化につながります",
-    "自分を褒めることで、自信が育ちます",
-    "完璧を目指さず、前進していることを評価しましょう",
-    "小さな成功の積み重ねが、大きな達成を生み出します",
-    "今日できたことに注目することで、明日への力になります",
-    "どんなに小さなことでも、達成は達成です。自分を認めましょう",
-    "困難を乗り越えた自分に、ご褒美をあげましょう",
-    "自分の成長を感じることは、最大の自己肯定感につながります",
-    "毎日の小さな成功を記録することで、自分の成長が見えてきます",
-    "今日一日、あなたは素晴らしい努力をしました",
+    '今日の小さな一歩が、明日の大きな変化につながります',
+    '自分を褒めることで、自信が育ちます',
+    '完璧を目指さず、前進していることを評価しましょう',
+    '小さな成功の積み重ねが、大きな達成を生み出します',
+    '今日できたことに注目することで、明日への力になります',
+    'どんなに小さなことでも、達成は達成です。自分を認めましょう',
+    '困難を乗り越えた自分に、ご褒美をあげましょう',
+    '自分の成長を感じることは、最大の自己肯定感につながります',
+    '毎日の小さな成功を記録することで、自分の成長が見えてきます',
+    '今日一日、あなたは素晴らしい努力をしました',
   ];
 
   // ランダムな励ましメッセージを取得
   const randomEncouragement =
-    encouragementMessages[
-      Math.floor(Math.random() * encouragementMessages.length)
-    ];
+    encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
 
   useEffect(() => {
-    const storedEntries = localStorage.getItem("diaryEntries");
-    const storedGoals = localStorage.getItem("diaryGoals");
-    const storedStreak = localStorage.getItem("diaryStreak");
-    const storedAchievements = localStorage.getItem("diaryAchievements");
-    const storedSettings = localStorage.getItem("userSettings");
+    const storedEntries = localStorage.getItem('diaryEntries');
+    const storedGoals = localStorage.getItem('diaryGoals');
+    const storedStreak = localStorage.getItem('diaryStreak');
+    const storedAchievements = localStorage.getItem('diaryAchievements');
+    const storedSettings = localStorage.getItem('userSettings');
 
     if (storedEntries) {
       setEntries(JSON.parse(storedEntries));
@@ -286,12 +262,12 @@ const DiaryPage: React.FC = () => {
   // 関数定義を先に行い、useRefに参照を格納
   const saveStreakData = useCallback((data: Streak) => {
     setStreakData(data);
-    localStorage.setItem("diaryStreak", JSON.stringify(data));
+    localStorage.setItem('diaryStreak', JSON.stringify(data));
   }, []);
 
   const saveAchievements = useCallback((data: Achievement[]) => {
     setAchievements(data);
-    localStorage.setItem("diaryAchievements", JSON.stringify(data));
+    localStorage.setItem('diaryAchievements', JSON.stringify(data));
   }, []);
 
   const calculateStreaks = useCallback((entries: DiaryEntry[]) => {
@@ -395,105 +371,92 @@ const DiaryPage: React.FC = () => {
   }, []);
 
   const checkAchievements = useCallback(() => {
-    let updated = false;
-    const newAchievements = [...achievements];
+    // 最新のachievementsを関数内で取得
+    setAchievements((currentAchievements) => {
+      let updated = false;
+      const newAchievements = [...currentAchievements];
 
-    // 連続日数の達成をチェック
-    const streakAchievements = [
-      { id: "streak-3", days: 3 },
-      { id: "streak-7", days: 7 },
-      { id: "streak-30", days: 30 },
-      { id: "streak-60", days: 60 },
-    ];
+      // 連続日数の達成をチェック
+      const streakAchievements = [
+        { id: 'streak-3', days: 3 },
+        { id: 'streak-7', days: 7 },
+        { id: 'streak-30', days: 30 },
+        { id: 'streak-60', days: 60 },
+      ];
 
-    streakAchievements.forEach(({ id, days }) => {
-      const achievement = newAchievements.find((a) => a.id === id);
-      if (
-        achievement &&
-        !achievement.earned &&
-        streakData.currentStreak >= days
-      ) {
-        achievement.earned = true;
-        achievement.date = new Date().toISOString();
+      streakAchievements.forEach(({ id, days }) => {
+        const achievement = newAchievements.find((a) => a.id === id);
+        if (achievement && !achievement.earned && streakData.currentStreak >= days) {
+          achievement.earned = true;
+          achievement.date = new Date().toISOString();
+          updated = true;
+          toast({
+            title: '新しい実績を獲得しました！',
+            description: achievement.description,
+            duration: 5000,
+          });
+        }
+      });
+
+      // エントリー数の達成をチェック
+      const entriesAchievement = newAchievements.find((a) => a.id === 'entries-10');
+      if (entriesAchievement && !entriesAchievement.earned && entries.length >= 10) {
+        entriesAchievement.earned = true;
+        entriesAchievement.date = new Date().toISOString();
         updated = true;
         toast({
-          title: "新しい実績を獲得しました！",
-          description: achievement.description,
+          title: '新しい実績を獲得しました！',
+          description: entriesAchievement.description,
           duration: 5000,
         });
       }
-    });
 
-    // エントリー数の達成をチェック
-    const entriesAchievement = newAchievements.find(
-      (a) => a.id === "entries-10"
-    );
-    if (
-      entriesAchievement &&
-      !entriesAchievement.earned &&
-      entries.length >= 10
-    ) {
-      entriesAchievement.earned = true;
-      entriesAchievement.date = new Date().toISOString();
-      updated = true;
-      toast({
-        title: "新しい実績を獲得しました！",
-        description: entriesAchievement.description,
-        duration: 5000,
+      // 目標達成数のチェック
+      const completedGoals = goals.filter((goal) => goal.completed).length;
+      const goalAchievements = [
+        { id: 'goals-5', count: 5 },
+        { id: 'goals-15', count: 15 },
+      ];
+
+      goalAchievements.forEach(({ id, count }) => {
+        const achievement = newAchievements.find((a) => a.id === id);
+        if (achievement && !achievement.earned && completedGoals >= count) {
+          achievement.earned = true;
+          achievement.date = new Date().toISOString();
+          updated = true;
+          toast({
+            title: '新しい実績を獲得しました！',
+            description: achievement.description,
+            duration: 5000,
+          });
+        }
       });
-    }
 
-    // 目標達成数のチェック
-    const completedGoals = goals.filter((goal) => goal.completed).length;
-    const goalAchievements = [
-      { id: "goals-5", count: 5 },
-      { id: "goals-15", count: 15 },
-    ];
-
-    goalAchievements.forEach(({ id, count }) => {
-      const achievement = newAchievements.find((a) => a.id === id);
-      if (achievement && !achievement.earned && completedGoals >= count) {
-        achievement.earned = true;
-        achievement.date = new Date().toISOString();
+      // 難しい達成のチェック
+      const difficultAchievements = entries.filter((entry) => entry.difficulty === 5).length;
+      const difficultAchievement = newAchievements.find((a) => a.id === 'difficult-5');
+      if (difficultAchievement && !difficultAchievement.earned && difficultAchievements >= 3) {
+        difficultAchievement.earned = true;
+        difficultAchievement.date = new Date().toISOString();
         updated = true;
         toast({
-          title: "新しい実績を獲得しました！",
-          description: achievement.description,
+          title: '新しい実績を獲得しました！',
+          description: difficultAchievement.description,
           duration: 5000,
         });
       }
+
+      if (updated) {
+        localStorage.setItem('diaryAchievements', JSON.stringify(newAchievements));
+        return newAchievements;
+      }
+      return currentAchievements;
     });
-
-    // 難しい達成のチェック
-    const difficultAchievements = entries.filter(
-      (entry) => entry.difficulty === 5
-    ).length;
-    const difficultAchievement = newAchievements.find(
-      (a) => a.id === "difficult-5"
-    );
-    if (
-      difficultAchievement &&
-      !difficultAchievement.earned &&
-      difficultAchievements >= 3
-    ) {
-      difficultAchievement.earned = true;
-      difficultAchievement.date = new Date().toISOString();
-      updated = true;
-      toast({
-        title: "新しい実績を獲得しました！",
-        description: difficultAchievement.description,
-        duration: 5000,
-      });
-    }
-
-    if (updated) {
-      saveAchievements(newAchievements);
-    }
-  }, [achievements, entries, goals, streakData, saveAchievements]);
+  }, [entries, goals, streakData]);
 
   const saveEntries = useCallback((newEntries: DiaryEntry[]) => {
     setEntries(newEntries);
-    localStorage.setItem("diaryEntries", JSON.stringify(newEntries));
+    localStorage.setItem('diaryEntries', JSON.stringify(newEntries));
     calculateStreaksRef.current?.(newEntries);
   }, []);
 
@@ -507,11 +470,11 @@ const DiaryPage: React.FC = () => {
 
   // 初期データのロード
   useEffect(() => {
-    const storedEntries = localStorage.getItem("diaryEntries");
-    const storedGoals = localStorage.getItem("diaryGoals");
-    const storedStreak = localStorage.getItem("diaryStreak");
-    const storedAchievements = localStorage.getItem("diaryAchievements");
-    const storedSettings = localStorage.getItem("userSettings");
+    const storedEntries = localStorage.getItem('diaryEntries');
+    const storedGoals = localStorage.getItem('diaryGoals');
+    const storedStreak = localStorage.getItem('diaryStreak');
+    const storedAchievements = localStorage.getItem('diaryAchievements');
+    const storedSettings = localStorage.getItem('userSettings');
 
     if (storedEntries) {
       setEntries(JSON.parse(storedEntries));
@@ -544,17 +507,17 @@ const DiaryPage: React.FC = () => {
   // その他の関数
   const saveGoals = (newGoals: Goal[]) => {
     setGoals(newGoals);
-    localStorage.setItem("diaryGoals", JSON.stringify(newGoals));
+    localStorage.setItem('diaryGoals', JSON.stringify(newGoals));
   };
 
   const saveUserSettings = (settings: UserSettings) => {
     setUserSettings(settings);
-    localStorage.setItem("userSettings", JSON.stringify(settings));
+    localStorage.setItem('userSettings', JSON.stringify(settings));
   };
 
   // プログレスバーのアニメーション機能
   const animateProgress = (selector: string, targetValue: number) => {
-    if (typeof document === "undefined") return; // SSRの場合は何もしない
+    if (typeof document === 'undefined') return; // SSRの場合は何もしない
 
     const progressElement = document.querySelector(selector) as HTMLElement;
     if (!progressElement) return;
@@ -579,11 +542,11 @@ const DiaryPage: React.FC = () => {
 
   // タブ切り替え時にプログレスバーをアニメーションさせる
   const handleTabChange = (value: string) => {
-    if (value === "stats") {
+    if (value === 'stats') {
       // 統計タブが選択されたらアニメーションを開始
       setTimeout(() => {
-        animateProgress(".record-progress", (stats.entryCount / 30) * 100);
-        animateProgress(".mood-progress", 100);
+        animateProgress('.record-progress', (stats.entryCount / 30) * 100);
+        animateProgress('.mood-progress', 100);
       }, 200);
     }
   };
@@ -591,9 +554,7 @@ const DiaryPage: React.FC = () => {
   // タグ切り替え処理
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prevTags) =>
-      prevTags.includes(tag)
-        ? prevTags.filter((t) => t !== tag)
-        : [...prevTags, tag]
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
     );
   };
 
@@ -601,8 +562,8 @@ const DiaryPage: React.FC = () => {
   const exportData = () => {
     // エクスポートロジック...
     toast({
-      title: "データをエクスポートしました",
-      description: "すべてのデータが正常にエクスポートされました。",
+      title: 'データをエクスポートしました',
+      description: 'すべてのデータが正常にエクスポートされました。',
     });
   };
 
@@ -619,24 +580,17 @@ const DiaryPage: React.FC = () => {
         if (importedData.entries) setEntries(importedData.entries);
         if (importedData.goals) setGoals(importedData.goals);
         if (importedData.streakData) setStreakData(importedData.streakData);
-        if (importedData.achievements)
-          setAchievements(importedData.achievements);
+        if (importedData.achievements) setAchievements(importedData.achievements);
         if (importedData.userSettings) {
           setUserSettings(importedData.userSettings);
           setShowTips(importedData.userSettings.showTips);
         }
 
         // データを保存
+        localStorage.setItem('diaryEntries', JSON.stringify(importedData.entries || []));
+        localStorage.setItem('diaryGoals', JSON.stringify(importedData.goals || []));
         localStorage.setItem(
-          "diaryEntries",
-          JSON.stringify(importedData.entries || [])
-        );
-        localStorage.setItem(
-          "diaryGoals",
-          JSON.stringify(importedData.goals || [])
-        );
-        localStorage.setItem(
-          "diaryStreak",
+          'diaryStreak',
           JSON.stringify(
             importedData.streakData || {
               currentStreak: 0,
@@ -646,26 +600,26 @@ const DiaryPage: React.FC = () => {
           )
         );
         localStorage.setItem(
-          "diaryAchievements",
+          'diaryAchievements',
           JSON.stringify(importedData.achievements || defaultAchievements)
         );
         localStorage.setItem(
-          "userSettings",
+          'userSettings',
           JSON.stringify(importedData.userSettings || defaultSettings)
         );
 
         toast({
-          title: "データをインポートしました",
-          description: "すべてのデータが正常にインポートされました。",
+          title: 'データをインポートしました',
+          description: 'すべてのデータが正常にインポートされました。',
         });
       } catch (error) {
-        console.error("インポートエラー:", error);
+        console.error('インポートエラー:', error);
         toast({
-          title: "インポートエラー",
+          title: 'インポートエラー',
           description: `データの読み込み中にエラーが発生しました: ${
-            error instanceof Error ? error.message : "不明なエラー"
+            error instanceof Error ? error.message : '不明なエラー'
           }`,
-          variant: "destructive",
+          variant: 'destructive',
         });
       }
     };
@@ -680,10 +634,7 @@ const DiaryPage: React.FC = () => {
 
     const monthEntries = entries.filter((entry) => {
       const entryDate = new Date(entry.date);
-      return (
-        entryDate.getMonth() === selectedMonth &&
-        entryDate.getFullYear() === selectedYear
-      );
+      return entryDate.getMonth() === selectedMonth && entryDate.getFullYear() === selectedYear;
     });
 
     // 気分ごとのカウント
@@ -712,10 +663,8 @@ const DiaryPage: React.FC = () => {
     // 平均難易度
     const avgDifficulty =
       monthEntries.length > 0
-        ? monthEntries.reduce(
-            (sum, entry) => sum + (entry.difficulty || 1),
-            0
-          ) / monthEntries.length
+        ? monthEntries.reduce((sum, entry) => sum + (entry.difficulty || 1), 0) /
+          monthEntries.length
         : 0;
 
     // 週ごとの達成数
@@ -725,8 +674,7 @@ const DiaryPage: React.FC = () => {
       const entryDate = new Date(entry.date);
       // その日の週番号を取得（月の最初の日から何週目か）
       const weekOfMonth = Math.ceil(entryDate.getDate() / 7);
-      weeklyAchievements[weekOfMonth] =
-        (weeklyAchievements[weekOfMonth] || 0) + 1;
+      weeklyAchievements[weekOfMonth] = (weeklyAchievements[weekOfMonth] || 0) + 1;
     });
 
     return {
@@ -741,10 +689,7 @@ const DiaryPage: React.FC = () => {
       completedGoalsThisMonth: goals.filter((g) => {
         if (!g.completed || !g.targetDate) return false;
         const targetDate = new Date(g.targetDate);
-        return (
-          targetDate.getMonth() === selectedMonth &&
-          targetDate.getFullYear() === selectedYear
-        );
+        return targetDate.getMonth() === selectedMonth && targetDate.getFullYear() === selectedYear;
       }).length,
     };
   };
@@ -758,7 +703,7 @@ const DiaryPage: React.FC = () => {
     const dateRange = Array.from({ length: 30 }, (_, i) => {
       const date = new Date(thirtyDaysAgo);
       date.setDate(date.getDate() + i);
-      return format(date, "yyyy-MM-dd");
+      return format(date, 'yyyy-MM-dd');
     });
 
     // 日々のモチベーション値をマッピング（気分をスコアに変換）
@@ -776,7 +721,7 @@ const DiaryPage: React.FC = () => {
       const score = entry?.mood ? moodScores[entry.mood] : defaultScore;
 
       return {
-        date: format(new Date(dateStr), "MM/dd"),
+        date: format(new Date(dateStr), 'MM/dd'),
         value: score,
         difficulty: entry?.difficulty || 0,
         hasEntry: !!entry,
@@ -789,9 +734,9 @@ const DiaryPage: React.FC = () => {
 
     if (!newGoal.trim()) {
       toast({
-        title: "入力エラー",
-        description: "目標内容を入力してください",
-        variant: "destructive",
+        title: '入力エラー',
+        description: '目標内容を入力してください',
+        variant: 'destructive',
       });
       return;
     }
@@ -808,13 +753,13 @@ const DiaryPage: React.FC = () => {
     const updatedGoals = [newGoalObj, ...goals];
     saveGoals(updatedGoals);
 
-    setNewGoal("");
-    setNewGoalCategory("daily");
-    setNewGoalDate("");
+    setNewGoal('');
+    setNewGoalCategory('daily');
+    setNewGoalDate('');
 
     toast({
-      title: "新しい目標を追加しました",
-      description: "新しい目標が正常に追加されました。",
+      title: '新しい目標を追加しました',
+      description: '新しい目標が正常に追加されました。',
     });
   };
 
@@ -830,9 +775,9 @@ const DiaryPage: React.FC = () => {
     saveGoals(updatedGoals);
 
     toast({
-      title: "目標を削除しました",
-      description: "目標が正常に削除されました。",
-      variant: "destructive",
+      title: '目標を削除しました',
+      description: '目標が正常に削除されました。',
+      variant: 'destructive',
     });
   };
 
@@ -863,7 +808,7 @@ const DiaryPage: React.FC = () => {
   const handleEdit = (entry: DiaryEntry) => {
     setEditingEntry(entry);
     setNewAchievement(entry.achievement);
-    setNewMood(entry.mood || "");
+    setNewMood(entry.mood || '');
     setSelectedTags(entry.tags || []);
     setDifficulty(entry.difficulty || 1);
     setIsImportant(entry.isImportant || false);
@@ -874,16 +819,16 @@ const DiaryPage: React.FC = () => {
     const updatedEntries = entries.filter((entry) => entry.id !== id);
     saveEntries(updatedEntries);
     toast({
-      title: "エントリーを削除しました",
-      description: "日記のエントリーが正常に削除されました。",
-      variant: "destructive",
+      title: 'エントリーを削除しました',
+      description: '日記のエントリーが正常に削除されました。',
+      variant: 'destructive',
     });
   };
 
   // フォームリセット
   const resetForm = () => {
-    setNewAchievement("");
-    setNewMood("");
+    setNewAchievement('');
+    setNewMood('');
     setSelectedTags([]);
     setDifficulty(1);
     setIsImportant(false);
@@ -898,24 +843,20 @@ const DiaryPage: React.FC = () => {
   // エントリークラス取得
   const getEntryClass = (entry: DiaryEntry) => {
     if (entry.isImportant) {
-      return "border-l-4 border-amber-400 pl-4";
+      return 'border-l-4 border-amber-400 pl-4';
     }
-    return "";
+    return '';
   };
 
   // JSXレンダリング
   return (
     <div
       className={`container mx-auto p-4 ${
-        userSettings.darkMode ? "dark bg-gray-900 text-white" : ""
+        userSettings.darkMode ? 'dark bg-gray-900 text-white' : ''
       }`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h1
-          className={`text-xl md:text-2xl font-bold ${
-            isMobile ? "text-center mb-2" : ""
-          }`}
-        >
+        <h1 className={`text-xl md:text-2xl font-bold ${isMobile ? 'text-center mb-2' : ''}`}>
           ADHD改善・自己肯定感向上日記
         </h1>
         <div className="flex items-center gap-2">
@@ -937,22 +878,13 @@ const DiaryPage: React.FC = () => {
             className="rounded-full"
             aria-label="プレミアム切り替え"
           >
-            <Crown
-              className={`h-5 w-5 ${
-                isPremium ? "text-amber-500" : "text-gray-400"
-              }`}
-            />
+            <Crown className={`h-5 w-5 ${isPremium ? 'text-amber-500' : 'text-gray-400'}`} />
           </Button>
 
           {!isPremium && (
-            <Button
-              variant="outline"
-              className="gap-1 text-amber-600 border-amber-300"
-            >
+            <Button variant="outline" className="gap-1 text-amber-600 border-amber-300">
               <Crown className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                プレミアムにアップグレード
-              </span>
+              <span className="hidden sm:inline">プレミアムにアップグレード</span>
               <span className="sm:hidden">プレミアム</span>
             </Button>
           )}
@@ -1070,12 +1002,8 @@ const DiaryPage: React.FC = () => {
       {/* マインドフルネスセクション */}
       <MindfulnessSection isPremium={isPremium} />
 
-      <Tabs
-        defaultValue="diary"
-        className="mb-4"
-        onValueChange={handleTabChange}
-      >
-        <TabsList className={`mb-4 ${isMobile ? "flex w-full" : ""}`}>
+      <Tabs defaultValue="diary" className="mb-4" onValueChange={handleTabChange}>
+        <TabsList className={`mb-4 ${isMobile ? 'flex w-full' : ''}`}>
           <TabsTrigger value="diary" className="flex items-center gap-1">
             <Sparkles className="h-4 w-4" />
             日記
@@ -1155,10 +1083,7 @@ const DiaryPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="achievements">
-          <AchievementsList
-            achievements={achievements}
-            streakData={streakData}
-          />
+          <AchievementsList achievements={achievements} streakData={streakData} />
         </TabsContent>
 
         <TabsContent value="stats">
