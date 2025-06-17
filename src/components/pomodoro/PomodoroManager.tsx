@@ -76,6 +76,19 @@ const PomodoroManagerComponent: React.FC = () => {
 
         if (entries) {
           const parsed = JSON.parse(entries);
+
+          // データの妥当性チェック
+          const invalidEntries = parsed.filter((entry: any) => {
+            const hasInvalidTime = entry.startTime && !/^\d{2}:\d{2}$/.test(entry.startTime);
+            const hasInvalidDate = entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(entry.date);
+            return hasInvalidTime || hasInvalidDate;
+          });
+
+          if (invalidEntries.length > 0) {
+            console.warn('⚠️ 無効なデータが検出されました:', invalidEntries.length, '件');
+            console.log('🧹 window.fixPomodoroData() を実行してデータを修正してください');
+          }
+
           const latest = parsed[parsed.length - 1];
           if (latest) {
             console.log('🕐 最新エントリ:', {
@@ -86,6 +99,75 @@ const PomodoroManagerComponent: React.FC = () => {
               duration: `${Math.round(latest.duration / 60)}分`,
             });
           }
+        }
+      };
+    }
+
+    // 無効データ修正機能を追加
+    if (!(window as any).fixPomodoroData) {
+      (window as any).fixPomodoroData = () => {
+        const entries = localStorage.getItem('pomodoro-work-entries');
+        if (!entries) {
+          console.log('📭 修正対象のデータがありません');
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(entries);
+          let fixedCount = 0;
+
+          const fixedEntries = parsed.map((entry: any) => {
+            const fixed = { ...entry };
+            let needsFix = false;
+
+            // startTimeとendTimeの修正
+            if (entry.startTime && !/^\d{2}:\d{2}$/.test(entry.startTime)) {
+              try {
+                const date = new Date(entry.startTime);
+                fixed.startTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                needsFix = true;
+              } catch (error) {
+                fixed.startTime = '09:00'; // デフォルト値
+                needsFix = true;
+              }
+            }
+
+            if (entry.endTime && !/^\d{2}:\d{2}$/.test(entry.endTime)) {
+              try {
+                const date = new Date(entry.endTime);
+                fixed.endTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                needsFix = true;
+              } catch (error) {
+                // startTimeから duration を使って計算
+                const startDate = new Date(`2024-01-01T${fixed.startTime}:00`);
+                const endDate = new Date(startDate.getTime() + (entry.duration || 3600) * 1000);
+                fixed.endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+                needsFix = true;
+              }
+            }
+
+            // dateの修正
+            if (entry.date && !/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) {
+              try {
+                const date = new Date(entry.date);
+                fixed.date = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                needsFix = true;
+              } catch (error) {
+                fixed.date = new Date().toISOString().split('T')[0]; // 今日の日付
+                needsFix = true;
+              }
+            }
+
+            if (needsFix) fixedCount++;
+            return fixed;
+          });
+
+          localStorage.setItem('pomodoro-work-entries', JSON.stringify(fixedEntries));
+          console.log(`✅ ${fixedCount}件のデータを修正しました`);
+          console.log('🔄 ページをリロードしてください');
+        } catch (error) {
+          console.error('❌ データ修正エラー:', error);
+          console.log('🧹 window.clearPomodoroEntries() でデータをクリアしてください');
         }
       };
     }

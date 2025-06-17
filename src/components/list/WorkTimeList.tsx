@@ -45,12 +45,42 @@ export const WorkTimeList: React.FC<WorkTimeListProps> = ({ workTimeEntries }) =
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return '未設定';
-    return formatDateAndTime(dateString, locale, { dateStyle: 'short' });
+
+    // YYYY-MM-DD形式の場合は適切なDate文字列に変換してフォーマット
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      try {
+        const date = new Date(dateString + 'T00:00:00'); // タイムゾーン問題を避けるため時刻を追加
+        return formatDateAndTime(date, locale, { dateStyle: 'short' });
+      } catch (error) {
+        console.warn('日付フォーマットエラー:', { dateString, error });
+        return dateString;
+      }
+    }
+
+    // ISO文字列やその他の形式の場合は従来通りフォーマット
+    try {
+      return formatDateAndTime(dateString, locale, { dateStyle: 'short' });
+    } catch (error) {
+      console.warn('日付フォーマットエラー:', { dateString, error });
+      return dateString; // エラーの場合は元の文字列をそのまま返す
+    }
   };
 
   const formatTime = (dateString: string | undefined) => {
     if (!dateString) return '未設定';
-    return formatDateAndTime(dateString, locale, { timeStyle: 'short' });
+
+    // 既にHH:MM形式の文字列の場合はそのまま返す（ポモドーロエントリ対応）
+    if (/^\d{2}:\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // ISO文字列やDate形式の場合は従来通りフォーマット
+    try {
+      return formatDateAndTime(dateString, locale, { timeStyle: 'short' });
+    } catch (error) {
+      console.warn('時刻フォーマットエラー:', { dateString, error });
+      return dateString; // エラーの場合は元の文字列をそのまま返す
+    }
   };
 
   const formatDuration = (duration: number | undefined) => {
