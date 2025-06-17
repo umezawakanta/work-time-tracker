@@ -4,6 +4,7 @@ import { PomodoroFloatingButton } from './PomodoroFloatingButton';
 import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';
 import { CompletionModal } from './CompletionModal';
 import { PomodoroMode } from '@/types/pomodoro';
+import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
 
 export const PomodoroManager: React.FC = () => {
   console.log('🔄 PomodoroManager: コンポーネントレンダリング開始');
@@ -23,10 +24,30 @@ export const PomodoroManager: React.FC = () => {
         localStorage.removeItem('pomodoro-visibility');
         localStorage.removeItem('pomodoro-settings');
         localStorage.removeItem('pomodoro-position');
-        console.log('✅ Global debug: Pomodoro localStorage cleared');
+        console.log('✅ Pomodoro localStorage cleared');
         window.location.reload();
       };
+
+      // ローカルストレージ関連のデバッグ機能を追加
+      (window as any).showPomodoroEntries = () => {
+        pomodoroWorkTimeIntegration.showLocalStorageInfo();
+      };
+
+      (window as any).clearPomodoroEntries = () => {
+        pomodoroWorkTimeIntegration.clearLocalStorage();
+        console.log('🧹 ポモドーロ作業時間エントリをクリアしました');
+      };
+
+      (window as any).getPomodoroStats = async () => {
+        const stats = await pomodoroWorkTimeIntegration.getTodayPomodoroStats();
+        console.log('📊 今日のポモドーロ統計:', stats);
+        return stats;
+      };
+
       console.log('🛠️ Debug: window.clearPomodoroStorage() function available');
+      console.log('🛠️ Debug: window.showPomodoroEntries() function available');
+      console.log('🛠️ Debug: window.clearPomodoroEntries() function available');
+      console.log('🛠️ Debug: window.getPomodoroStats() function available');
     }
   }, []);
 

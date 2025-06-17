@@ -86,15 +86,71 @@ export class PomodoroWorkTimeIntegrationService {
 
       console.log('🍅 作業時間エントリ作成:', workTimeEntry);
 
-      const response = await workTimeApi.create(workTimeEntry);
-
-      console.log('✅ ポモドーロセッション記録完了:', response.data);
-
-      // 成功通知（オプション）
-      this.showSuccessNotification(session, workTimeEntry);
+      try {
+        const response = await workTimeApi.create(workTimeEntry);
+        console.log('✅ ポモドーロセッション記録完了:', response.data);
+        this.showSuccessNotification(session, workTimeEntry);
+      } catch (apiError: any) {
+        // 開発環境での認証エラー対応
+        if (apiError?.response?.status === 401 && process.env.NODE_ENV === 'development') {
+          console.log('🛠️ 開発環境: 認証エラーのためローカルストレージに保存');
+          this.saveToLocalStorage(workTimeEntry);
+          this.showSuccessNotification(session, workTimeEntry, true);
+        } else {
+          throw apiError; // その他のエラーは再スロー
+        }
+      }
     } catch (error) {
       console.error('❌ ポモドーロセッション記録エラー:', error);
       this.showErrorNotification(error);
+    }
+  }
+
+  /**
+   * 開発環境用：ローカルストレージに作業時間エントリを保存
+   */
+  private saveToLocalStorage(workTimeEntry: PomodoroWorkTimeEntry): void {
+    try {
+      const storageKey = 'pomodoro-work-entries';
+      const existingEntries = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const entryWithId = {
+        ...workTimeEntry,
+        _id: `local-${Date.now()}`,
+        userId: this.userId,
+        createdAt: new Date().toISOString(),
+      };
+
+      existingEntries.push(entryWithId);
+      localStorage.setItem(storageKey, JSON.stringify(existingEntries));
+
+      console.log('💾 ローカルストレージに保存完了:', entryWithId);
+    } catch (error) {
+      console.error('❌ ローカルストレージ保存エラー:', error);
+    }
+  }
+
+  /**
+   * ローカルストレージから作業時間エントリを取得
+   */
+  public getLocalStorageEntries(): any[] {
+    try {
+      const storageKey = 'pomodoro-work-entries';
+      return JSON.parse(localStorage.getItem(storageKey) || '[]');
+    } catch (error) {
+      console.error('❌ ローカルストレージ読み込みエラー:', error);
+      return [];
+    }
+  }
+
+  /**
+   * ローカルストレージをクリア
+   */
+  public clearLocalStorage(): void {
+    try {
+      localStorage.removeItem('pomodoro-work-entries');
+      console.log('🧹 ローカルストレージクリア完了');
+    } catch (error) {
+      console.error('❌ ローカルストレージクリアエラー:', error);
     }
   }
 
@@ -162,7 +218,8 @@ export class PomodoroWorkTimeIntegrationService {
    */
   private showSuccessNotification(
     session: PomodoroSession,
-    workTimeEntry: PomodoroWorkTimeEntry
+    workTimeEntry: PomodoroWorkTimeEntry,
+    isLocalStorage?: boolean
   ): void {
     // デベロッパー向けログ
     console.log('🎉 作業時間自動記録完了:', {
@@ -170,6 +227,7 @@ export class PomodoroWorkTimeIntegrationService {
       duration: `${Math.round(session.duration / 60)}分`,
       projectName: workTimeEntry.projectName,
       time: `${workTimeEntry.startTime} - ${workTimeEntry.endTime}`,
+      isLocalStorage,
     });
   }
 
@@ -193,15 +251,37 @@ export class PomodoroWorkTimeIntegrationService {
     mostProductiveHour: number;
   }> {
     try {
-      const allEntries = await workTimeApi.getAll();
+      let todayPomodoroEntries: any[] = [];
       const today = formatDateString(new Date());
 
-      const todayPomodoroEntries = allEntries.data.filter(
+      // APIからのデータを取得を試行
+      try {
+        const allEntries = await workTimeApi.getAll();
+        todayPomodoroEntries = allEntries.data.filter(
+          (entry) =>
+            entry.date === today &&
+            (entry as any).isFromPomodoro === true &&
+            (entry as any).sessionType === 'work'
+        );
+        console.log('📊 API統計データ取得成功:', todayPomodoroEntries.length);
+      } catch (apiError: any) {
+        if (apiError?.response?.status === 401 && process.env.NODE_ENV === 'development') {
+          console.log('🛠️ 開発環境: API認証エラーのためローカルデータを使用');
+        } else {
+          console.warn('📊 API統計データ取得失敗:', apiError);
+        }
+      }
+
+      // ローカルストレージからのデータを追加
+      const localEntries = this.getLocalStorageEntries().filter(
         (entry) =>
-          entry.date === today &&
-          (entry as any).isFromPomodoro === true &&
-          (entry as any).sessionType === 'work'
+          entry.date === today && entry.isFromPomodoro === true && entry.sessionType === 'work'
       );
+
+      if (localEntries.length > 0) {
+        console.log('📊 ローカル統計データ追加:', localEntries.length);
+        todayPomodoroEntries = [...todayPomodoroEntries, ...localEntries];
+      }
 
       const totalSessions = todayPomodoroEntries.length;
       const totalWorkTime = todayPomodoroEntries.reduce(
@@ -220,6 +300,17 @@ export class PomodoroWorkTimeIntegrationService {
       const mostProductiveHour = Object.entries(hourCounts).sort(([, a], [, b]) => b - a)[0]?.[0]
         ? parseInt(Object.entries(hourCounts).sort(([, a], [, b]) => b - a)[0][0])
         : 9; // デフォルト: 9時
+
+      console.log('📊 統計計算完了:', {
+        totalSessions,
+        totalWorkTime: Math.round(totalWorkTime),
+        averageSessionLength: Math.round(averageSessionLength),
+        mostProductiveHour,
+        sources: {
+          api: todayPomodoroEntries.length - localEntries.length,
+          localStorage: localEntries.length,
+        },
+      });
 
       return {
         totalSessions,
@@ -243,6 +334,24 @@ export class PomodoroWorkTimeIntegrationService {
    */
   public setUserId(userId: string): void {
     this.userId = userId;
+  }
+
+  /**
+   * ローカルストレージのエントリ情報を表示（デバッグ用）
+   */
+  public showLocalStorageInfo(): void {
+    const entries = this.getLocalStorageEntries();
+    console.log('💾 ローカルストレージ保存済みエントリ:', {
+      total: entries.length,
+      today: entries.filter((e) => e.date === formatDateString(new Date())).length,
+      entries: entries.map((e) => ({
+        id: e._id,
+        date: e.date,
+        time: `${e.startTime}-${e.endTime}`,
+        project: e.projectName,
+        duration: `${Math.round(e.duration / 60)}分`,
+      })),
+    });
   }
 }
 
