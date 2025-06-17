@@ -1,9 +1,9 @@
 import React from 'react';
 import { Timer } from 'lucide-react';
-import { usePomodoro } from '@/hooks/usePomodoro';
+import { usePomodoroContext } from '@/context/PomodoroContext';
 
 export const PomodoroFloatingButton: React.FC = () => {
-  const pomodoro = usePomodoro();
+  const { pomodoro } = usePomodoroContext();
 
   console.log('🟡 PomodoroFloatingButton: Render', {
     instanceId: pomodoro.instanceId,

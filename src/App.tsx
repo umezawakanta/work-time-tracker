@@ -15,6 +15,7 @@ import ResetPassword from './pages/ResetPassword';
 import EmailVerification from './pages/EmailVerification';
 import { LocaleProvider } from './context/LocaleContext';
 import { AuthProvider } from './context/AuthContext';
+import { PomodoroProvider } from './context/PomodoroContext';
 import { AssetCalendarPage } from './pages/AssetCalendarPage';
 import ElectionCandidatesPage from './pages/ElectionCandidatesPage';
 import CandidateRegistrationPage from './pages/CandidateRegistrationPage';
@@ -118,7 +119,9 @@ export default function App() {
               <Toaster {...toasterConfig} />
 
               {/* ポモドーロタイマー - 全ページで利用可能 */}
-              <PomodoroManager />
+              <PomodoroProvider>
+                <PomodoroManager />
+              </PomodoroProvider>
 
               <Routes>
                 {/* 認証不要なルート */}

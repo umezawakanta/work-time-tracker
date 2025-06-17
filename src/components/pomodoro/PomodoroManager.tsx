@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePomodoro } from '@/hooks/usePomodoro';
+import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroFloatingButton } from './PomodoroFloatingButton';
 import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';
 import { CompletionModal } from './CompletionModal';
@@ -7,7 +7,7 @@ import { PomodoroMode } from '@/types/pomodoro';
 
 export const PomodoroManager: React.FC = () => {
   console.log('🔄 PomodoroManager: コンポーネントレンダリング開始');
-  const pomodoro = usePomodoro();
+  const { pomodoro } = usePomodoroContext();
   console.log('🔄 PomodoroManager: usePomodoro結果', {
     instanceId: pomodoro.instanceId,
     isVisible: pomodoro.isVisible,
