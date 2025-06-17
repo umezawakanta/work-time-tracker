@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { PomodoroMode, PomodoroStatus, PomodoroSettings, PomodoroSession } from '@/types/pomodoro';
+import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
 
 const DEFAULT_SETTINGS: PomodoroSettings = {
   workDuration: 1,
@@ -10,6 +11,7 @@ const DEFAULT_SETTINGS: PomodoroSettings = {
   autoStartPomodoros: false,
   notificationSound: true,
   volume: 0.7,
+  autoRecordWorkTime: true,
 };
 
 export const usePomodoro = () => {
@@ -496,6 +498,26 @@ export const usePomodoro = () => {
       // 次のモードに切り替え（モーダルが閉じられるまで待機）
       // モーダルが表示されている間は自動切り替えしない
       // ユーザーがモーダルで「次を開始」を選択するか、モーダルを閉じるまで待つ
+
+      // Integration with PomodoroWorkTimeIntegrationService
+      if (currentMode === 'work' && settings.autoRecordWorkTime) {
+        // 今日の総セッション数を計算
+        const today = new Date().toDateString();
+        const todayWorkSessions =
+          completedSessions.filter(
+            (s) => s.mode === 'work' && s.completedAt.toDateString() === today
+          ).length + 1; // 現在のセッションも含める
+
+        try {
+          pomodoroWorkTimeIntegration.recordPomodoroSession(
+            session,
+            todayWorkSessions,
+            todayWorkSessions
+          );
+        } catch (error) {
+          console.error('🚨 Work time recording failed:', error);
+        }
+      }
     }
   }, [remainingTime, status, currentMode, totalTime, currentSession, settings]);
 

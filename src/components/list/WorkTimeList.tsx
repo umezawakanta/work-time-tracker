@@ -1,11 +1,12 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { deleteWorkTimeEntry } from "@/store/workTimeSlice";
-import { WorkTimeEntry } from "@/types/workTimeEntry";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { deleteWorkTimeEntry } from '@/store/workTimeSlice';
+import { WorkTimeEntry } from '@/types/workTimeEntry';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,34 +17,44 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "@/components/ui/use-toast";
-import { useLocale } from "@/hooks/useLocale";
-import { formatDateAndTime } from "@/utils/dateUtils";
+} from '@/components/ui/alert-dialog';
+import { toast } from '@/components/ui/use-toast';
+import { useLocale } from '@/hooks/useLocale';
+import { formatDateAndTime } from '@/utils/dateUtils';
+import { Timer, Hash, Clock } from 'lucide-react';
 
 interface WorkTimeListProps {
   workTimeEntries: WorkTimeEntry[];
 }
 
-export const WorkTimeList: React.FC<WorkTimeListProps> = ({
-  workTimeEntries,
-}) => {
+// ポモドーロエントリの型拡張
+interface PomodoroWorkTimeEntry extends WorkTimeEntry {
+  isFromPomodoro?: boolean;
+  pomodoroSessionId?: string;
+  pomodoroData?: {
+    sessionNumber: number;
+    totalSessions: number;
+    efficiency?: number;
+  };
+}
+
+export const WorkTimeList: React.FC<WorkTimeListProps> = ({ workTimeEntries }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { locale } = useLocale();
   const [selectedEntries, setSelectedEntries] = React.useState<string[]>([]);
 
   const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return "未設定";
-    return formatDateAndTime(dateString, locale, { dateStyle: "short" });
+    if (!dateString) return '未設定';
+    return formatDateAndTime(dateString, locale, { dateStyle: 'short' });
   };
 
   const formatTime = (dateString: string | undefined) => {
-    if (!dateString) return "未設定";
-    return formatDateAndTime(dateString, locale, { timeStyle: "short" });
+    if (!dateString) return '未設定';
+    return formatDateAndTime(dateString, locale, { timeStyle: 'short' });
   };
 
   const formatDuration = (duration: number | undefined) => {
-    if (duration === undefined) return "未設定";
+    if (duration === undefined) return '未設定';
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
     return `${hours}時間${minutes}分`;
@@ -51,9 +62,7 @@ export const WorkTimeList: React.FC<WorkTimeListProps> = ({
 
   const handleCheckboxChange = (entryId: string) => {
     setSelectedEntries((prev) =>
-      prev.includes(entryId)
-        ? prev.filter((id) => id !== entryId)
-        : [...prev, entryId]
+      prev.includes(entryId) ? prev.filter((id) => id !== entryId) : [...prev, entryId]
     );
   };
 
@@ -64,79 +73,140 @@ export const WorkTimeList: React.FC<WorkTimeListProps> = ({
       } catch (error) {
         console.error(`Failed to delete entry ${entryId}:`, error);
         toast({
-          title: "エラー",
+          title: 'エラー',
           description: `エントリー ${entryId} の削除に失敗しました。`,
-          variant: "destructive",
+          variant: 'destructive',
         });
       }
     }
     setSelectedEntries([]);
     toast({
-      title: "成功",
-      description: "選択されたエントリーが削除されました。",
+      title: '成功',
+      description: '選択されたエントリーが削除されました。',
     });
   };
+
+  // ポモドーロエントリかどうかを判定
+  const isPomodoroEntry = (entry: WorkTimeEntry): entry is PomodoroWorkTimeEntry => {
+    return (entry as any).isFromPomodoro === true;
+  };
+
+  // エントリをソート: ポモドーロエントリを上位に表示
+  const sortedEntries = [...workTimeEntries].sort((a, b) => {
+    const aIsPomodoro = isPomodoroEntry(a);
+    const bIsPomodoro = isPomodoroEntry(b);
+
+    if (aIsPomodoro && !bIsPomodoro) return -1;
+    if (!aIsPomodoro && bIsPomodoro) return 1;
+
+    // 同じタイプなら日付順
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
   return (
     <Card className="mb-8">
       <CardHeader>
-        <CardTitle>作業時間エントリー</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          作業時間エントリー
+          <Badge variant="outline" className="text-xs">
+            {workTimeEntries.filter(isPomodoroEntry).length} / {workTimeEntries.length} ポモドーロ
+          </Badge>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {workTimeEntries.length > 0 ? (
+        {sortedEntries.length > 0 ? (
           <div>
-            {workTimeEntries.map((entry) => (
-              <div
-                key={entry._id}
-                className="flex items-center justify-between py-2 border-b"
-              >
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`select-${entry._id}`}
-                    checked={selectedEntries.includes(entry._id || "")}
-                    onCheckedChange={() =>
-                      handleCheckboxChange(entry._id || "")
-                    }
-                  />
-                  <div>
-                    <p className="font-semibold">{entry.projectName}</p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(entry.date)} {formatTime(entry.startTime)} -{" "}
-                      {formatTime(entry.endTime)}
-                    </p>
-                    <p className="text-sm">
-                      作業時間: {formatDuration(entry.duration)}
-                    </p>
+            {sortedEntries.map((entry) => {
+              const isPomodoro = isPomodoroEntry(entry);
+
+              return (
+                <div
+                  key={entry._id}
+                  className={`flex items-center justify-between py-3 border-b transition-colors hover:bg-gray-50 ${
+                    isPomodoro ? 'border-l-4 border-l-red-500 pl-3' : ''
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id={`select-${entry._id}`}
+                      checked={selectedEntries.includes(entry._id || '')}
+                      onCheckedChange={() => handleCheckboxChange(entry._id || '')}
+                    />
+
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        {isPomodoro && <Timer className="h-4 w-4 text-red-500" />}
+                        <p className="font-semibold">{entry.projectName}</p>
+                        {isPomodoro && (
+                          <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">
+                            ポモドーロ
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {formatDate(entry.date)} {formatTime(entry.startTime)} -{' '}
+                            {formatTime(entry.endTime)}
+                          </span>
+                          <span className="font-medium text-blue-600">
+                            {formatDuration(entry.duration)}
+                          </span>
+                        </div>
+
+                        {/* ポモドーロ固有の情報 */}
+                        {isPomodoro && entry.pomodoroData && (
+                          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+                            <span className="flex items-center gap-1">
+                              <Hash className="h-3 w-3" />
+                              {entry.pomodoroData.sessionNumber}セッション目
+                            </span>
+                            <span>今日{entry.pomodoroData.totalSessions}回完了</span>
+                          </div>
+                        )}
+
+                        {/* 説明文 */}
+                        {entry.description && (
+                          <p className="text-xs text-gray-500 italic mt-1">{entry.description}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
             {selectedEntries.length > 0 && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="mt-4">
-                    選択したエントリーを削除
+                    選択したエントリーを削除 ({selectedEntries.length}件)
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>削除の確認</AlertDialogTitle>
                     <AlertDialogDescription>
-                      選択したエントリーを削除してもよろしいですか？この操作は取り消せません。
+                      選択した{selectedEntries.length}
+                      件のエントリーを削除してもよろしいですか？この操作は取り消せません。
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>キャンセル</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      削除
-                    </AlertDialogAction>
+                    <AlertDialogAction onClick={handleDelete}>削除</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             )}
           </div>
         ) : (
-          <p>作業時間エントリーがありません。</p>
+          <div className="text-center py-8 text-gray-500">
+            <Timer className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+            <p>作業時間エントリーがありません。</p>
+            <p className="text-sm mt-1">ポモドーロタイマーを使用して自動記録を開始しましょう！</p>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -11,6 +11,7 @@ export interface PomodoroSettings {
   autoStartPomodoros: boolean;
   notificationSound: boolean;
   volume: number; // 0-1
+  autoRecordWorkTime: boolean; // 作業時間の自動記録
 }
 
 export interface PomodoroSession {

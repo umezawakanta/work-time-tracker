@@ -1,18 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { useLocale } from "../hooks/useLocale";
-import { WorkTimeList } from "@/components/list/WorkTimeList";
-import { WorkTimeCharts } from "@/components/chart/WorkTimeChars";
-import { useReportData } from "@/hooks/useReportData";
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { useLocale } from '../hooks/useLocale';
+import { WorkTimeList } from '@/components/list/WorkTimeList';
+import { WorkTimeCharts } from '@/components/chart/WorkTimeChars';
+import { PomodoroStatsWidget } from '@/components/pomodoro/PomodoroStatsWidget';
+import { useReportData } from '@/hooks/useReportData';
 
 export default function WorkTimeReports() {
   const { locale } = useLocale();
-  const workTimeEntries = useSelector(
-    (state: RootState) => state.workTime.entries
-  );
+  const workTimeEntries = useSelector((state: RootState) => state.workTime.entries);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +22,8 @@ export default function WorkTimeReports() {
       try {
         setIsLoading(false);
       } catch (err) {
-        console.error("Failed to load work time report data:", err);
-        setError("Failed to load work time report data. Please try again.");
+        console.error('Failed to load work time report data:', err);
+        setError('Failed to load work time report data. Please try again.');
         setIsLoading(false);
       }
     };
@@ -42,6 +41,11 @@ export default function WorkTimeReports() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">作業時間レポート</h1>
+
+      {/* ポモドーロ統計 */}
+      <div className="mb-6">
+        <PomodoroStatsWidget />
+      </div>
 
       <WorkTimeCharts workTimeEntries={workTimeEntries} locale={locale} />
 
