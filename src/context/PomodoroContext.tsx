@@ -28,6 +28,20 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
       pomodoro.isMinimized,
       pomodoro.showCompletionModal,
       pomodoro.currentTaskName,
+      pomodoro.progress,
+      pomodoro.position.x,
+      pomodoro.position.y,
+      pomodoro.settings.workDuration,
+      pomodoro.settings.shortBreakDuration,
+      pomodoro.settings.longBreakDuration,
+      pomodoro.settings.longBreakInterval,
+      pomodoro.settings.autoStartBreaks,
+      pomodoro.settings.autoStartPomodoros,
+      pomodoro.settings.notificationSound,
+      pomodoro.settings.volume,
+      pomodoro.settings.autoRecordWorkTime,
+      pomodoro.todayStats.completedPomodoros,
+      pomodoro.todayStats.totalFocusTime,
     ]
   );
 
@@ -42,7 +56,7 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
 
 export const usePomodoroContext = (): PomodoroContextType => {
   const context = useContext(PomodoroContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('usePomodoroContext must be used within a PomodoroProvider');
   }
 

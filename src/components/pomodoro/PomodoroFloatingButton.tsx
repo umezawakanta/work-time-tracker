@@ -1,37 +1,27 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Timer } from 'lucide-react';
 import { usePomodoroContext } from '@/context/PomodoroContext';
 
-export const PomodoroFloatingButton: React.FC = () => {
+const PomodoroFloatingButtonComponent: React.FC = () => {
   const { pomodoro } = usePomodoroContext();
 
-  console.log('🟡 PomodoroFloatingButton: Render', {
-    instanceId: pomodoro.instanceId,
-    isVisible: pomodoro.isVisible,
-    shouldShow: !pomodoro.isVisible,
-    status: pomodoro.status,
-  });
+  const handleToggleVisibility = useCallback(() => {
+    pomodoro.toggleVisibility();
+  }, [pomodoro.toggleVisibility]);
+
+  const handleClearStorage = useCallback(() => {
+    pomodoro.clearPomodoroStorage();
+    window.location.reload();
+  }, [pomodoro.clearPomodoroStorage]);
 
   if (pomodoro.isVisible) {
-    console.log('🟡 FloatingButton: タイマーが表示中のため非表示', {
-      instanceId: pomodoro.instanceId,
-    });
     return null;
   }
-
-  console.log('🟡 FloatingButton: ボタンを表示します', {
-    instanceId: pomodoro.instanceId,
-  });
 
   return (
     <>
       <button
-        onClick={() => {
-          console.log('🟡 FloatingButton: クリック - タイマー表示を要求', {
-            instanceId: pomodoro.instanceId,
-          });
-          pomodoro.toggleVisibility();
-        }}
+        onClick={handleToggleVisibility}
         className={`
           fixed bottom-6 right-6 z-40 
           w-14 h-14 rounded-full shadow-lg 
@@ -70,11 +60,7 @@ export const PomodoroFloatingButton: React.FC = () => {
       {/* Debug button for development */}
       {process.env.NODE_ENV === 'development' && (
         <button
-          onClick={() => {
-            console.log('🧹 Debug: localStorage クリア実行');
-            pomodoro.clearPomodoroStorage();
-            window.location.reload();
-          }}
+          onClick={handleClearStorage}
           className="fixed bottom-6 right-24 z-40 w-12 h-12 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white text-xs shadow-lg"
           title="Debug: Clear Pomodoro Storage"
         >
@@ -84,3 +70,5 @@ export const PomodoroFloatingButton: React.FC = () => {
     </>
   );
 };
+
+export const PomodoroFloatingButton = memo(PomodoroFloatingButtonComponent);

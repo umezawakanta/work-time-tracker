@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroFloatingButton } from './PomodoroFloatingButton';
 import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';
@@ -6,50 +6,48 @@ import { CompletionModal } from './CompletionModal';
 import { PomodoroMode } from '@/types/pomodoro';
 import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
 
-export const PomodoroManager: React.FC = () => {
-  console.log('🔄 PomodoroManager: コンポーネントレンダリング開始');
+const PomodoroManagerComponent: React.FC = () => {
   const { pomodoro } = usePomodoroContext();
-  console.log('🔄 PomodoroManager: usePomodoro結果', {
-    instanceId: pomodoro.instanceId,
-    isVisible: pomodoro.isVisible,
-    status: pomodoro.status,
-    currentTaskName: pomodoro.currentTaskName,
-  });
 
-  // Add global debug function for development
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      (window as any).clearPomodoroStorage = () => {
-        console.log('🧹 Global debug: Clearing Pomodoro localStorage...');
-        localStorage.removeItem('pomodoro-visibility');
-        localStorage.removeItem('pomodoro-settings');
-        localStorage.removeItem('pomodoro-position');
-        console.log('✅ Pomodoro localStorage cleared');
+  // デバッグ関数をグローバルに登録（開発環境のみ）
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    // すでに登録されている場合はスキップ
+    if (!window.clearPomodoroStorage) {
+      window.clearPomodoroStorage = () => {
+        pomodoro.clearPomodoroStorage();
         window.location.reload();
       };
-
-      // ローカルストレージ関連のデバッグ機能を追加
-      (window as any).showPomodoroEntries = () => {
-        pomodoroWorkTimeIntegration.showLocalStorageInfo();
-      };
-
-      (window as any).clearPomodoroEntries = () => {
-        pomodoroWorkTimeIntegration.clearLocalStorage();
-        console.log('🧹 ポモドーロ作業時間エントリをクリアしました');
-      };
-
-      (window as any).getPomodoroStats = async () => {
-        const stats = await pomodoroWorkTimeIntegration.getTodayPomodoroStats();
-        console.log('📊 今日のポモドーロ統計:', stats);
-        return stats;
-      };
-
-      console.log('🛠️ Debug: window.clearPomodoroStorage() function available');
-      console.log('🛠️ Debug: window.showPomodoroEntries() function available');
-      console.log('🛠️ Debug: window.clearPomodoroEntries() function available');
-      console.log('🛠️ Debug: window.getPomodoroStats() function available');
     }
-  }, []);
+
+    if (!window.showPomodoroEntries) {
+      window.showPomodoroEntries = () => {
+        const entries = localStorage.getItem('pomodoro-work-entries');
+        if (entries) {
+          console.table(JSON.parse(entries));
+        } else {
+          console.log('Pomodoro entries not found');
+        }
+      };
+    }
+
+    if (!window.clearPomodoroEntries) {
+      window.clearPomodoroEntries = () => {
+        localStorage.removeItem('pomodoro-work-entries');
+        console.log('Pomodoro entries cleared');
+      };
+    }
+
+    if (!window.getPomodoroStats) {
+      window.getPomodoroStats = () => {
+        // Import and use the service to get stats
+        import('@/services/PomodoroWorkTimeIntegrationService').then((module) => {
+          module.PomodoroWorkTimeIntegrationService.getTodayPomodoroStats().then((stats) => {
+            console.log('Today Pomodoro Stats:', stats);
+          });
+        });
+      };
+    }
+  }
 
   // 次のモードを計算
   const getNextMode = (): PomodoroMode => {
@@ -78,23 +76,16 @@ export const PomodoroManager: React.FC = () => {
 
   return (
     <>
-      {/* フローティングボタン（タイマーが非表示の時のみ表示） */}
+      {/* フローティングボタン（タイマーが非表示の時に表示） */}
       <PomodoroFloatingButton />
 
-      {/* フローティングタイマー（表示設定がONの時のみ表示） */}
-      {pomodoro.isVisible && <FloatingPomodoroTimer onClose={handleClose} />}
+      {/* フローティングタイマー（表示状態の時のみ） */}
+      {pomodoro.isVisible && <FloatingPomodoroTimer />}
 
       {/* 完了モーダル */}
-      <CompletionModal
-        isOpen={pomodoro.showCompletionModal}
-        onClose={pomodoro.closeCompletionModal}
-        onStopSound={pomodoro.stopSound}
-        currentMode={pomodoro.currentMode}
-        nextMode={getNextMode()}
-        sessionNumber={pomodoro.currentSession}
-        onStartNext={handleStartNext}
-        taskName={pomodoro.currentTaskName}
-      />
+      {pomodoro.showCompletionModal && <CompletionModal />}
     </>
   );
 };
+
+export const PomodoroManager = memo(PomodoroManagerComponent);

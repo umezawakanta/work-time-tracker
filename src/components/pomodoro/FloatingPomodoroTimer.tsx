@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import {
   Play,
   Pause,
@@ -17,9 +17,7 @@ interface FloatingPomodoroTimerProps {
   onClose?: () => void;
 }
 
-export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ onClose }) => {
-  console.log('🎯 FloatingPomodoroTimer: レンダリング開始');
-
+const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ onClose }) => {
   const { pomodoro } = usePomodoroContext();
   const [isDragging, setIsDragging] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -28,15 +26,8 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
   const dragOffset = useRef({ x: 0, y: 0 });
   const timerRef = useRef<HTMLDivElement>(null);
 
-  console.log('🎯 FloatingPomodoroTimer: 状態取得完了', {
-    instanceId: pomodoro.instanceId,
-    isVisible: pomodoro.isVisible,
-    status: pomodoro.status,
-    currentTaskName: pomodoro.currentTaskName,
-  });
-
-  // ドラッグ機能
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // ドラッグ機能をメモ化
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (timerRef.current) {
       const rect = timerRef.current.getBoundingClientRect();
       dragOffset.current = {
@@ -45,27 +36,30 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
       };
       setIsDragging(true);
     }
-  };
+  }, []);
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (isDragging) {
-      const newX = e.clientX - dragOffset.current.x;
-      const newY = e.clientY - dragOffset.current.y;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isDragging) {
+        const newX = e.clientX - dragOffset.current.x;
+        const newY = e.clientY - dragOffset.current.y;
 
-      // 画面境界内に制限
-      const maxX = window.innerWidth - 300;
-      const maxY = window.innerHeight - 200;
+        // 画面境界内に制限
+        const maxX = window.innerWidth - 300;
+        const maxY = window.innerHeight - 200;
 
-      const boundedX = Math.max(0, Math.min(newX, maxX));
-      const boundedY = Math.max(0, Math.min(newY, maxY));
+        const boundedX = Math.max(0, Math.min(newX, maxX));
+        const boundedY = Math.max(0, Math.min(newY, maxY));
 
-      pomodoro.updatePosition({ x: boundedX, y: boundedY });
-    }
-  };
+        pomodoro.updatePosition({ x: boundedX, y: boundedY });
+      }
+    },
+    [isDragging, pomodoro.updatePosition]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isDragging) {
@@ -77,10 +71,10 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  // モードの色とアイコン
-  const getModeColor = (mode: PomodoroMode) => {
+  // モードの色とアイコンをメモ化
+  const getModeColor = useCallback((mode: PomodoroMode) => {
     switch (mode) {
       case 'work':
         return 'bg-red-500 text-white';
@@ -89,9 +83,9 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
       case 'longBreak':
         return 'bg-blue-500 text-white';
     }
-  };
+  }, []);
 
-  const getModeLabel = (mode: PomodoroMode) => {
+  const getModeLabel = useCallback((mode: PomodoroMode) => {
     switch (mode) {
       case 'work':
         return '作業時間';
@@ -100,7 +94,20 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
       case 'longBreak':
         return '長休憩';
     }
-  };
+  }, []);
+
+  // ハンドラーをメモ化
+  const handleStartTimer = useCallback(() => {
+    const taskName = taskInputValue.trim();
+    pomodoro.startTimer(taskName || undefined);
+    if (taskName) setTaskInputValue('');
+  }, [taskInputValue, pomodoro.startTimer]);
+
+  const handleCloseClick = useCallback(() => {
+    if (onClose) {
+      onClose();
+    }
+  }, [onClose]);
 
   // 最小化された状態
   if (pomodoro.isMinimized) {
@@ -166,10 +173,7 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
               </button>
               {onClose && (
                 <button
-                  onClick={() => {
-                    console.log('❌ FloatingPomodoroTimer: 閉じるボタンクリック - onClose実行');
-                    onClose();
-                  }}
+                  onClick={handleCloseClick}
                   className="p-1 hover:bg-white/20 rounded"
                   title="閉じる"
                 >
@@ -250,12 +254,7 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
                 </button>
               ) : (
                 <button
-                  onClick={() => {
-                    const taskName = taskInputValue.trim();
-                    pomodoro.startTimer(taskName || undefined);
-                    // タスク名入力をクリア（次回のため）
-                    if (taskName) setTaskInputValue('');
-                  }}
+                  onClick={handleStartTimer}
                   className="flex items-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                 >
                   <Play size={16} />
@@ -487,3 +486,5 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
     </>
   );
 };
+
+export const FloatingPomodoroTimer = memo(FloatingPomodoroTimerComponent);
