@@ -10,7 +10,7 @@ import {
   X,
   Timer,
 } from 'lucide-react';
-import { usePomodoro } from '@/hooks/usePomodoro';
+import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroMode } from '@/types/pomodoro';
 
 interface FloatingPomodoroTimerProps {
@@ -20,7 +20,7 @@ interface FloatingPomodoroTimerProps {
 export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ onClose }) => {
   console.log('🎯 FloatingPomodoroTimer: レンダリング開始');
 
-  const pomodoro = usePomodoro();
+  const { pomodoro } = usePomodoroContext();
   const [isDragging, setIsDragging] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [applyImmediately, setApplyImmediately] = useState(false);
@@ -29,6 +29,7 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
   const timerRef = useRef<HTMLDivElement>(null);
 
   console.log('🎯 FloatingPomodoroTimer: 状態取得完了', {
+    instanceId: pomodoro.instanceId,
     isVisible: pomodoro.isVisible,
     status: pomodoro.status,
     currentTaskName: pomodoro.currentTaskName,
