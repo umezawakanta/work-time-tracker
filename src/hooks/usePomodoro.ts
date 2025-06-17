@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { PomodoroMode, PomodoroStatus, PomodoroSettings, PomodoroSession } from '@/types/pomodoro';
 import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
 
@@ -823,62 +823,102 @@ export const usePomodoro = () => {
   // 進捗の計算
   const progress = totalTime > 0 ? ((totalTime - remainingTime) / totalTime) * 100 : 0;
 
-  // 今日の統計
-  const todayStats = {
-    date: new Date().toDateString(),
-    completedPomodoros: completedSessionsRef.current.filter(
-      (s) => s.mode === 'work' && s.completedAt.toDateString() === new Date().toDateString()
-    ).length,
-    totalFocusTime: completedSessionsRef.current
-      .filter(
-        (s) => s.mode === 'work' && s.completedAt.toDateString() === new Date().toDateString()
-      )
-      .reduce((sum, s) => sum + s.duration / 60, 0),
-    totalBreakTime: completedSessionsRef.current
-      .filter(
-        (s) => s.mode !== 'work' && s.completedAt.toDateString() === new Date().toDateString()
-      )
-      .reduce((sum, s) => sum + s.duration / 60, 0),
-  };
+  // 今日の統計（メモ化）
+  const todayStats = useMemo(() => {
+    const today = new Date().toDateString();
+    return {
+      date: today,
+      completedPomodoros: completedSessionsRef.current.filter(
+        (s) => s.mode === 'work' && s.completedAt.toDateString() === today
+      ).length,
+      totalFocusTime: completedSessionsRef.current
+        .filter((s) => s.mode === 'work' && s.completedAt.toDateString() === today)
+        .reduce((sum, s) => sum + s.duration / 60, 0),
+      totalBreakTime: completedSessionsRef.current
+        .filter((s) => s.mode !== 'work' && s.completedAt.toDateString() === today)
+        .reduce((sum, s) => sum + s.duration / 60, 0),
+    };
+  }, [completedSessions]); // completedSessionsに依存
 
-  return {
-    // 状態
-    currentMode,
-    status,
-    remainingTime,
-    totalTime,
-    currentSession,
-    completedSessions,
-    settings,
-    isMinimized,
-    isVisible,
-    position,
-    progress,
-    todayStats,
-    showCompletionModal,
-    currentTaskName,
+  return useMemo(
+    () => ({
+      // 状態
+      currentMode,
+      status,
+      remainingTime,
+      totalTime,
+      currentSession,
+      completedSessions,
+      settings,
+      isMinimized,
+      isVisible,
+      position,
+      progress,
+      todayStats,
+      showCompletionModal,
+      currentTaskName,
 
-    // アクション
-    startTimer,
-    pauseTimer,
-    resetTimer,
-    skipSession,
-    switchMode,
-    toggleMinimized,
-    toggleVisibility,
-    updatePosition,
-    updateSettings,
-    updateSettingsImmediately,
-    closeCompletionModal,
-    stopSound,
-    setTaskName,
-    clearTaskName,
-    speakMessage,
-    stopSpeaking,
-    formatTime,
+      // アクション
+      startTimer,
+      pauseTimer,
+      resetTimer,
+      skipSession,
+      switchMode,
+      toggleMinimized,
+      toggleVisibility,
+      updatePosition,
+      updateSettings,
+      updateSettingsImmediately,
+      closeCompletionModal,
+      stopSound,
+      setTaskName,
+      clearTaskName,
+      speakMessage,
+      stopSpeaking,
+      formatTime,
 
-    // Debug utilities
-    clearPomodoroStorage,
-    instanceId: instanceId.current,
-  };
+      // Debug utilities
+      clearPomodoroStorage,
+      instanceId: instanceId.current,
+    }),
+    [
+      // 状態の依存関係
+      currentMode,
+      status,
+      remainingTime,
+      totalTime,
+      currentSession,
+      completedSessions,
+      settings,
+      isMinimized,
+      isVisible,
+      position,
+      progress,
+      showCompletionModal,
+      currentTaskName,
+
+      // アクション関数の依存関係
+      startTimer,
+      pauseTimer,
+      resetTimer,
+      skipSession,
+      switchMode,
+      toggleMinimized,
+      toggleVisibility,
+      updatePosition,
+      updateSettings,
+      updateSettingsImmediately,
+      closeCompletionModal,
+      stopSound,
+      setTaskName,
+      clearTaskName,
+      speakMessage,
+      stopSpeaking,
+      formatTime,
+      clearPomodoroStorage,
+
+      // todayStatsの依存関係（すでにメモ化済み）
+      todayStats,
+    ]
+  );
 };

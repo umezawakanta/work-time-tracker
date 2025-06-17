@@ -5,6 +5,8 @@ import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';
 import { CompletionModal } from './CompletionModal';
 import { PomodoroMode } from '@/types/pomodoro';
 import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
+import { store } from '@/store';
+import { fetchWorkTimeEntries } from '@/store/workTimeSlice';
 
 const PomodoroManagerComponent: React.FC = () => {
   const { pomodoro } = usePomodoroContext();
@@ -169,6 +171,46 @@ const PomodoroManagerComponent: React.FC = () => {
           console.error('❌ データ修正エラー:', error);
           console.log('🧹 window.clearPomodoroEntries() でデータをクリアしてください');
         }
+      };
+    }
+
+    // Redux store の作業時間エントリ確認機能を追加
+    if (!(window as any).checkReduxWorkTimeEntries) {
+      (window as any).checkReduxWorkTimeEntries = () => {
+        const state = (window as any).__store?.getState() || store.getState();
+        const workTimeEntries = state.workTime?.entries || [];
+        const isLoading = state.workTime?.isLoading || false;
+        const error = state.workTime?.error || null;
+
+        console.log('🔍 Redux WorkTime Store 状況:', {
+          entriesCount: workTimeEntries.length,
+          isLoading,
+          error,
+          entries: workTimeEntries.map((entry: any) => ({
+            id: entry._id,
+            date: entry.date,
+            time: `${entry.startTime} - ${entry.endTime}`,
+            project: entry.projectName,
+            duration: entry.duration ? `${Math.round(entry.duration / 60)}分` : 'N/A',
+            isFromPomodoro: entry.isFromPomodoro || false,
+          })),
+        });
+
+        if (workTimeEntries.length === 0) {
+          console.log('⚠️ Redux storeに作業時間エントリがありません');
+          console.log('🔄 fetchWorkTimeEntries を実行してデータを取得してください');
+        }
+      };
+    }
+
+    // Redux store から最新データを強制取得する機能
+    if (!(window as any).refreshWorkTimeData) {
+      (window as any).refreshWorkTimeData = () => {
+        store.dispatch(fetchWorkTimeEntries());
+        console.log('🔄 作業時間データの再取得を開始しました');
+        setTimeout(() => {
+          (window as any).checkReduxWorkTimeEntries();
+        }, 2000);
       };
     }
   }

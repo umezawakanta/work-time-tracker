@@ -1,6 +1,8 @@
 import { PomodoroSession, PomodoroMode } from '@/types/pomodoro';
 import { WorkTimeEntry } from '@/types/workTimeEntry';
 import { workTimeApi } from './api/workTimeApi';
+import { store } from '@/store';
+import { createWorkTimeEntry } from '@/store/workTimeSlice';
 
 // ヘルパー関数: YYYY-MM-DD形式の日付文字列を生成
 const formatDateString = (date: Date): string => {
@@ -87,9 +89,15 @@ export class PomodoroWorkTimeIntegrationService {
       console.log('🍅 作業時間エントリ作成:', workTimeEntry);
 
       try {
-        const response = await workTimeApi.create(workTimeEntry);
-        console.log('✅ ポモドーロセッション記録完了 (API):', response.data);
-        this.showSuccessNotification(session, workTimeEntry);
+        // Redux storeのアクションを使用してAPIとstoreの両方を更新
+        const result = await store.dispatch(createWorkTimeEntry(workTimeEntry));
+
+        if (createWorkTimeEntry.fulfilled.match(result)) {
+          console.log('✅ ポモドーロセッション記録完了 (Redux + API):', result.payload);
+          this.showSuccessNotification(session, workTimeEntry);
+        } else {
+          throw new Error(result.payload as string);
+        }
       } catch (apiError: any) {
         // 開発環境での認証エラー対応
         if (apiError?.response?.status === 401 && process.env.NODE_ENV === 'development') {

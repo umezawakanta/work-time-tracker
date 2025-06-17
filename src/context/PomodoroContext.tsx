@@ -16,33 +16,7 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
 
   const contextValue = useMemo(
     () => ({ pomodoro }),
-    [
-      pomodoro.instanceId,
-      pomodoro.status,
-      pomodoro.isVisible,
-      pomodoro.currentMode,
-      pomodoro.remainingTime,
-      pomodoro.totalTime,
-      pomodoro.currentSession,
-      pomodoro.completedSessions.length,
-      pomodoro.isMinimized,
-      pomodoro.showCompletionModal,
-      pomodoro.currentTaskName,
-      pomodoro.progress,
-      pomodoro.position.x,
-      pomodoro.position.y,
-      pomodoro.settings.workDuration,
-      pomodoro.settings.shortBreakDuration,
-      pomodoro.settings.longBreakDuration,
-      pomodoro.settings.longBreakInterval,
-      pomodoro.settings.autoStartBreaks,
-      pomodoro.settings.autoStartPomodoros,
-      pomodoro.settings.notificationSound,
-      pomodoro.settings.volume,
-      pomodoro.settings.autoRecordWorkTime,
-      pomodoro.todayStats.completedPomodoros,
-      pomodoro.todayStats.totalFocusTime,
-    ]
+    [pomodoro] // pomodoroオブジェクト自体がすでにメモ化されているため、これだけで十分
   );
 
   console.log('🏭 PomodoroProvider: コンテキスト初期化', {

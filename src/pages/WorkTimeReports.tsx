@@ -1,34 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
 import { useLocale } from '../hooks/useLocale';
 import { WorkTimeList } from '@/components/list/WorkTimeList';
 import { WorkTimeCharts } from '@/components/chart/WorkTimeChars';
 import { PomodoroStatsWidget } from '@/components/pomodoro/PomodoroStatsWidget';
 import { useReportData } from '@/hooks/useReportData';
+import { fetchWorkTimeEntries } from '@/store/workTimeSlice';
 
 export default function WorkTimeReports() {
   const { locale } = useLocale();
   const workTimeEntries = useSelector((state: RootState) => state.workTime.entries);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const isLoading = useSelector((state: RootState) => state.workTime.isLoading);
+  const error = useSelector((state: RootState) => state.workTime.error);
+  const dispatch = useDispatch<AppDispatch>();
 
   useReportData();
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Failed to load work time report data:', err);
-        setError('Failed to load work time report data. Please try again.');
-        setIsLoading(false);
-      }
-    };
-    loadData();
-  }, []);
+    // ページ表示時に最新データを取得
+    dispatch(fetchWorkTimeEntries());
+  }, [dispatch]);
 
   if (isLoading) {
     return <div className="text-center mt-8">Loading...</div>;
