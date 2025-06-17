@@ -276,15 +276,20 @@ export class PomodoroWorkTimeIntegrationService {
         console.warn('📊 API統計データ取得失敗:', apiError.message);
       }
 
-      // ローカルストレージからのデータを追加
-      const localEntries = this.getLocalStorageEntries().filter(
+      // 追加: 旧ポモドーロストレージからのデータも取得（下位互換性）
+      const legacyEntries = this.getLocalStorageEntries().filter(
         (entry) =>
           entry.date === today && entry.isFromPomodoro === true && entry.sessionType === 'work'
       );
 
-      if (localEntries.length > 0) {
-        console.log('📊 ローカル統計データ使用:', localEntries.length, '件');
-        todayPomodoroEntries = [...todayPomodoroEntries, ...localEntries];
+      let uniqueLegacyEntries: any[] = [];
+      if (legacyEntries.length > 0) {
+        console.log('📊 レガシーローカル統計データ使用:', legacyEntries.length, '件');
+
+        // 重複を除去して統合（APIデータを優先）
+        const apiIds = new Set(todayPomodoroEntries.map((e) => e._id));
+        uniqueLegacyEntries = legacyEntries.filter((e) => !apiIds.has(e._id));
+        todayPomodoroEntries = [...todayPomodoroEntries, ...uniqueLegacyEntries];
       }
 
       const totalSessions = todayPomodoroEntries.length;
@@ -313,8 +318,8 @@ export class PomodoroWorkTimeIntegrationService {
           averageSessionLength: Math.round(averageSessionLength),
           mostProductiveHour,
           sources: {
-            api: todayPomodoroEntries.length - localEntries.length,
-            localStorage: localEntries.length,
+            api: todayPomodoroEntries.length - uniqueLegacyEntries.length,
+            legacy: uniqueLegacyEntries.length,
           },
         });
       }

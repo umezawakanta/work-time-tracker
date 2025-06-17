@@ -213,6 +213,54 @@ const PomodoroManagerComponent: React.FC = () => {
         }, 2000);
       };
     }
+
+    // Mock API ストレージのデバッグ機能を追加
+    if (!(window as any).checkMockApiEntries) {
+      (window as any).checkMockApiEntries = () => {
+        const mockEntries = localStorage.getItem('mock-api-work-entries');
+        if (mockEntries) {
+          const parsed = JSON.parse(mockEntries);
+          console.log('🎭 Mock API保存済みエントリ:', parsed.length, '件');
+          console.table(
+            parsed.map((e: any) => ({
+              id: e._id,
+              date: e.date,
+              time: `${e.startTime} - ${e.endTime}`,
+              project: e.projectName,
+              duration: `${Math.round(e.duration / 60)}分`,
+              isFromPomodoro: e.isFromPomodoro || false,
+            }))
+          );
+        } else {
+          console.log('❌ Mock API entries not found');
+        }
+      };
+    }
+
+    // 全ストレージのサマリーを表示する機能
+    if (!(window as any).showAllWorkTimeData) {
+      (window as any).showAllWorkTimeData = () => {
+        console.log('📊 === 全作業時間データサマリー ===');
+
+        // Mock APIストレージ
+        const mockEntries = localStorage.getItem('mock-api-work-entries');
+        const mockCount = mockEntries ? JSON.parse(mockEntries).length : 0;
+        console.log('🎭 Mock API Storage:', mockCount, '件');
+
+        // ポモドーロストレージ（レガシー）
+        const pomodoroEntries = localStorage.getItem('pomodoro-work-entries');
+        const pomodoroCount = pomodoroEntries ? JSON.parse(pomodoroEntries).length : 0;
+        console.log('🍅 Pomodoro Storage (Legacy):', pomodoroCount, '件');
+
+        // Redux store
+        (window as any).checkReduxWorkTimeEntries();
+
+        console.log('===============================');
+        console.log('💡 推奨アクション:');
+        console.log('1. window.refreshWorkTimeData() - 最新データを取得');
+        console.log('2. 作業時間レポートページでデータを確認');
+      };
+    }
   }
 
   // 次のモードを計算
