@@ -13,6 +13,11 @@ const DEFAULT_SETTINGS: PomodoroSettings = {
 };
 
 export const usePomodoro = () => {
+  // Unique instance ID for debugging
+  const instanceId = useRef(Math.random().toString(36).substr(2, 9));
+  console.log('🚀 usePomodoro: フック初期化開始');
+  console.log('🆔 usePomodoro: インスタンスID', instanceId.current);
+
   const [currentMode, setCurrentMode] = useState<PomodoroMode>('work');
   const [status, setStatus] = useState<PomodoroStatus>('idle');
   const [remainingTime, setRemainingTime] = useState(DEFAULT_SETTINGS.workDuration * 60);
@@ -326,6 +331,11 @@ export const usePomodoro = () => {
   }, [position]);
 
   useEffect(() => {
+    console.log('💾 Saving visibility to localStorage:', {
+      instanceId: instanceId.current,
+      isVisible: isVisible,
+      stringValue: isVisible.toString(),
+    });
     localStorage.setItem('pomodoro-visibility', isVisible.toString());
   }, [isVisible]);
 
@@ -596,7 +606,30 @@ export const usePomodoro = () => {
   }, []);
 
   const toggleVisibility = useCallback(() => {
-    setIsVisible((prev) => !prev);
+    console.log('🔄 toggleVisibility called - Before:', {
+      instanceId: instanceId.current,
+      currentIsVisible: isVisible,
+      willBecome: !isVisible,
+    });
+
+    setIsVisible((prev) => {
+      const newValue = !prev;
+      console.log('🔄 toggleVisibility - Setting visibility:', {
+        instanceId: instanceId.current,
+        from: prev,
+        to: newValue,
+      });
+      return newValue;
+    });
+  }, [isVisible]);
+
+  // Debug utility to clear localStorage
+  const clearPomodoroStorage = useCallback(() => {
+    console.log('🧹 Clearing Pomodoro localStorage...');
+    localStorage.removeItem('pomodoro-visibility');
+    localStorage.removeItem('pomodoro-settings');
+    localStorage.removeItem('pomodoro-position');
+    console.log('✅ Pomodoro localStorage cleared');
   }, []);
 
   const updatePosition = useCallback((newPosition: { x: number; y: number }) => {
@@ -808,5 +841,9 @@ export const usePomodoro = () => {
     speakMessage,
     stopSpeaking,
     formatTime,
+
+    // Debug utilities
+    clearPomodoroStorage,
+    instanceId: instanceId.current,
   };
 };

@@ -164,7 +164,14 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
                 <Minimize2 size={14} />
               </button>
               {onClose && (
-                <button onClick={onClose} className="p-1 hover:bg-white/20 rounded" title="閉じる">
+                <button
+                  onClick={() => {
+                    console.log('❌ FloatingPomodoroTimer: 閉じるボタンクリック - onClose実行');
+                    onClose();
+                  }}
+                  className="p-1 hover:bg-white/20 rounded"
+                  title="閉じる"
+                >
                   <X size={14} />
                 </button>
               )}
