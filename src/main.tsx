@@ -7,9 +7,11 @@ import App from './App';
 import './styles/global.css';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// StrictModeは無限ループデバッグのため一時的に無効化
+const enableStrictMode = false; // デバッグ後は true に戻す
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  // 開発環境でのみStrictModeを有効にする
-  process.env.NODE_ENV === 'development' ? (
+  enableStrictMode ? (
     <React.StrictMode>
       <ErrorBoundary>
         <Provider store={store}>

@@ -115,13 +115,36 @@ export const api = axios.create({
 });
 
 let tokenCache: string | null = null;
+let tokenFetchPromise: Promise<string> | null = null;
 
 api.interceptors.request.use(
   async (config) => {
-    // トークンがキャッシュされていなければAPIから取得
-    if (!tokenCache) {
-      tokenCache = await fetchTokenFromDB();
+    // /auth/token エンドポイントへのリクエストではトークンを追加しない（無限ループ防止）
+    if (config.url?.includes('/auth/token')) {
+      return config;
     }
+
+    // トークンがキャッシュされていなければAPIから取得（重複リクエスト防止）
+    if (!tokenCache && !tokenFetchPromise) {
+      tokenFetchPromise = fetchTokenFromDB().finally(() => {
+        tokenFetchPromise = null;
+      });
+
+      try {
+        tokenCache = await tokenFetchPromise;
+      } catch (error) {
+        console.warn('Token fetch failed in interceptor:', error);
+        // トークン取得に失敗してもリクエストを続行
+      }
+    } else if (tokenFetchPromise) {
+      // 既にトークン取得中の場合は待機
+      try {
+        tokenCache = await tokenFetchPromise;
+      } catch (error) {
+        console.warn('Token fetch failed while waiting:', error);
+      }
+    }
+
     if (tokenCache) {
       config.headers['Authorization'] = `Bearer ${tokenCache}`;
     }
@@ -157,6 +180,13 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    // 認証エラーの場合はトークンキャッシュをクリア
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.warn('Authentication error detected, clearing token cache');
+      tokenCache = null;
+      tokenFetchPromise = null;
+    }
+
     // サーバー接続エラーの詳細情報をログに出力
     if (error.code === 'ECONNREFUSED' || error.code === 'NETWORK_ERROR' || !error.response) {
       console.warn('⚠️ Server connection failed:', {
@@ -187,3 +217,10 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// トークンキャッシュをリセットする関数をエクスポート
+export const clearTokenCache = () => {
+  tokenCache = null;
+  tokenFetchPromise = null;
+  console.log('Token cache cleared');
+};
