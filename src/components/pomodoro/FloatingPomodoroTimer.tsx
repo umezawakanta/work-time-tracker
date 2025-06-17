@@ -18,6 +18,8 @@ interface FloatingPomodoroTimerProps {
 }
 
 export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ onClose }) => {
+  console.log('🎯 FloatingPomodoroTimer: レンダリング開始');
+
   const pomodoro = usePomodoro();
   const [isDragging, setIsDragging] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -25,6 +27,12 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
   const [taskInputValue, setTaskInputValue] = useState('');
   const dragOffset = useRef({ x: 0, y: 0 });
   const timerRef = useRef<HTMLDivElement>(null);
+
+  console.log('🎯 FloatingPomodoroTimer: 状態取得完了', {
+    isVisible: pomodoro.isVisible,
+    status: pomodoro.status,
+    currentTaskName: pomodoro.currentTaskName,
+  });
 
   // ドラッグ機能
   const handleMouseDown = (e: React.MouseEvent) => {

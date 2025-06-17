@@ -201,38 +201,61 @@ export const usePomodoro = () => {
   // 音声読み上げ機能
   const speakMessage = useCallback(
     (message: string) => {
-      // 既存の音声を停止
-      if (speechRef.current) {
-        speechSynthesis.cancel();
-      }
+      try {
+        console.log('🎤 音声読み上げ開始:', message);
 
-      // Web Speech APIがサポートされているかチェック
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(message);
-        speechRef.current = utterance;
-
-        // 日本語の音声を設定
-        const voices = speechSynthesis.getVoices();
-        const japaneseVoice = voices.find(
-          (voice) => voice.lang.includes('ja') || voice.name.includes('Japanese')
-        );
-
-        if (japaneseVoice) {
-          utterance.voice = japaneseVoice;
+        // 既存の音声を停止
+        if (speechRef.current) {
+          speechSynthesis.cancel();
         }
 
-        // 音声設定
-        utterance.rate = 1.0; // 話速
-        utterance.pitch = 1.0; // ピッチ
-        utterance.volume = settings.volume; // 音量
+        // Web Speech APIがサポートされているかチェック
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(message);
+          speechRef.current = utterance;
 
-        // エラーハンドリング
-        utterance.onerror = (event) => {
-          console.warn('Speech synthesis error:', event);
-        };
+          // 日本語の音声を設定
+          try {
+            const voices = speechSynthesis.getVoices();
+            console.log('🎤 利用可能な音声:', voices.length);
 
-        // 音声再生
-        speechSynthesis.speak(utterance);
+            const japaneseVoice = voices.find(
+              (voice) => voice.lang.includes('ja') || voice.name.includes('Japanese')
+            );
+
+            if (japaneseVoice) {
+              utterance.voice = japaneseVoice;
+              console.log('🎤 日本語音声設定:', japaneseVoice.name);
+            }
+          } catch (voiceError) {
+            console.warn('🎤 音声設定エラー:', voiceError);
+          }
+
+          // 音声設定
+          utterance.rate = 1.0; // 話速
+          utterance.pitch = 1.0; // ピッチ
+          utterance.volume = Math.max(0, Math.min(1, settings.volume)); // 音量（0-1の範囲に制限）
+
+          // エラーハンドリング
+          utterance.onerror = (event) => {
+            console.warn('🎤 Speech synthesis error:', event);
+          };
+
+          utterance.onstart = () => {
+            console.log('🎤 音声読み上げ開始');
+          };
+
+          utterance.onend = () => {
+            console.log('🎤 音声読み上げ完了');
+          };
+
+          // 音声再生
+          speechSynthesis.speak(utterance);
+        } else {
+          console.warn('🎤 Speech synthesis not supported');
+        }
+      } catch (error) {
+        console.error('🎤 音声読み上げエラー:', error);
       }
     },
     [settings.volume]
@@ -240,10 +263,16 @@ export const usePomodoro = () => {
 
   // 音声を停止
   const stopSpeaking = useCallback(() => {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
+    try {
+      console.log('🎤 音声停止要求');
+      if ('speechSynthesis' in window && speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        console.log('🎤 音声停止完了');
+      }
+      speechRef.current = null;
+    } catch (error) {
+      console.error('🎤 音声停止エラー:', error);
     }
-    speechRef.current = null;
   }, []);
 
   // LocalStorage からの設定読み込み
@@ -441,7 +470,11 @@ export const usePomodoro = () => {
       if (settings.notificationSound) {
         // 音楽の後に音声メッセージを再生（2秒遅延）
         setTimeout(() => {
-          speakMessage(customMessage.speech);
+          try {
+            speakMessage(customMessage.speech);
+          } catch (error) {
+            console.error('音声読み上げでエラーが発生しました:', error);
+          }
         }, 2000);
       }
 
