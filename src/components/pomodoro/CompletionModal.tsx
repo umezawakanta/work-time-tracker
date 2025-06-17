@@ -10,6 +10,7 @@ interface CompletionModalProps {
   nextMode: PomodoroMode;
   sessionNumber: number;
   onStartNext: () => void;
+  taskName?: string;
 }
 
 export const CompletionModal: React.FC<CompletionModalProps> = ({
@@ -20,6 +21,7 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
   nextMode,
   sessionNumber,
   onStartNext,
+  taskName,
 }) => {
   const [isFlashing, setIsFlashing] = useState(true);
 
@@ -44,8 +46,8 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
     switch (mode) {
       case 'work':
         return {
-          title: '作業時間完了！',
-          subtitle: 'お疲れ様でした！',
+          title: taskName ? `「${taskName}」完了！` : '作業時間完了！',
+          subtitle: taskName ? `「${taskName}」お疲れ様でした！` : 'お疲れ様でした！',
           icon: <CheckCircle size={64} className="text-green-500" />,
           bgColor: 'bg-gradient-to-br from-green-400 to-green-600',
           nextAction: '休憩を開始',

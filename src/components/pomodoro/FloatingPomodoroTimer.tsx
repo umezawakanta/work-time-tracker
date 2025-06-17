@@ -22,6 +22,7 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
   const [isDragging, setIsDragging] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [applyImmediately, setApplyImmediately] = useState(false);
+  const [taskInputValue, setTaskInputValue] = useState('');
   const dragOffset = useRef({ x: 0, y: 0 });
   const timerRef = useRef<HTMLDivElement>(null);
 
@@ -193,6 +194,34 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
               {pomodoro.status === 'completed' && '完了！'}
             </div>
 
+            {/* タスク名入力（アイドル状態のみ表示） */}
+            {pomodoro.status === 'idle' && (
+              <div className="mb-4">
+                <label htmlFor="task-input" className="block text-xs text-gray-600 mb-1">
+                  作業内容（任意）
+                </label>
+                <input
+                  id="task-input"
+                  type="text"
+                  value={taskInputValue}
+                  onChange={(e) => setTaskInputValue(e.target.value)}
+                  placeholder="例: メールの返信、資料作成など"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            )}
+
+            {/* 現在のタスク名表示（実行中・一時停止中） */}
+            {(pomodoro.status === 'running' || pomodoro.status === 'paused') &&
+              pomodoro.currentTaskName && (
+                <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="text-xs text-gray-600 mb-1">現在の作業</div>
+                  <div className="text-sm font-medium text-gray-800">
+                    {pomodoro.currentTaskName}
+                  </div>
+                </div>
+              )}
+
             {/* コントロールボタン */}
             <div className="flex justify-center space-x-2 mb-4">
               {pomodoro.status === 'running' ? (
@@ -205,7 +234,12 @@ export const FloatingPomodoroTimer: React.FC<FloatingPomodoroTimerProps> = ({ on
                 </button>
               ) : (
                 <button
-                  onClick={pomodoro.startTimer}
+                  onClick={() => {
+                    const taskName = taskInputValue.trim();
+                    pomodoro.startTimer(taskName || undefined);
+                    // タスク名入力をクリア（次回のため）
+                    if (taskName) setTaskInputValue('');
+                  }}
                   className="flex items-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                 >
                   <Play size={16} />

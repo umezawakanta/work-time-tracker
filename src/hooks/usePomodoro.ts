@@ -24,6 +24,7 @@ export const usePomodoro = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 20, y: 20 });
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [currentTaskName, setCurrentTaskName] = useState<string>('');
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const soundRef = useRef<AudioContext | null>(null);
@@ -31,6 +32,7 @@ export const usePomodoro = () => {
   const notificationRef = useRef<Notification | null>(null);
   const originalTitle = useRef<string>(document.title);
   const originalFavicon = useRef<string>('');
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // 強化された完了音を再生する関数
   const playCompletionSound = useCallback(
@@ -196,6 +198,54 @@ export const usePomodoro = () => {
     [showCompletionModal, focusWindow]
   );
 
+  // 音声読み上げ機能
+  const speakMessage = useCallback(
+    (message: string) => {
+      // 既存の音声を停止
+      if (speechRef.current) {
+        speechSynthesis.cancel();
+      }
+
+      // Web Speech APIがサポートされているかチェック
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(message);
+        speechRef.current = utterance;
+
+        // 日本語の音声を設定
+        const voices = speechSynthesis.getVoices();
+        const japaneseVoice = voices.find(
+          (voice) => voice.lang.includes('ja') || voice.name.includes('Japanese')
+        );
+
+        if (japaneseVoice) {
+          utterance.voice = japaneseVoice;
+        }
+
+        // 音声設定
+        utterance.rate = 1.0; // 話速
+        utterance.pitch = 1.0; // ピッチ
+        utterance.volume = settings.volume; // 音量
+
+        // エラーハンドリング
+        utterance.onerror = (event) => {
+          console.warn('Speech synthesis error:', event);
+        };
+
+        // 音声再生
+        speechSynthesis.speak(utterance);
+      }
+    },
+    [settings.volume]
+  );
+
+  // 音声を停止
+  const stopSpeaking = useCallback(() => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+    speechRef.current = null;
+  }, []);
+
   // LocalStorage からの設定読み込み
   useEffect(() => {
     const savedSettings = localStorage.getItem('pomodoro-settings');
@@ -303,25 +353,62 @@ export const usePomodoro = () => {
         mode: currentMode,
         duration: totalTime,
         completedAt: new Date(),
+        taskName: currentTaskName || undefined,
       };
 
       setCompletedSessions((prev) => [...prev, session]);
       setStatus('completed');
       setShowCompletionModal(true);
 
-      // 通知メッセージ
-      const messages = {
-        work: '作業時間が終了しました！休憩しましょう。',
-        shortBreak: '短い休憩が終了しました！次のタスクに取り組みましょう。',
-        longBreak: '長い休憩が終了しました！リフレッシュして作業を再開しましょう。',
+      // カスタマイズされた通知メッセージ
+      const getCustomMessage = () => {
+        if (currentTaskName) {
+          switch (currentMode) {
+            case 'work':
+              return {
+                notification: `「${currentTaskName}」の作業時間が終了しました！休憩しましょう。`,
+                speech: `${currentTaskName}の作業を終了してください。お疲れ様でした。休憩の時間です。`,
+                title: `${currentTaskName} 完了！`,
+              };
+            case 'shortBreak':
+              return {
+                notification: '短い休憩が終了しました！次のタスクに取り組みましょう。',
+                speech: '休憩時間が終了しました。次のタスクを開始してください。',
+                title: '休憩完了！',
+              };
+            case 'longBreak':
+              return {
+                notification: '長い休憩が終了しました！リフレッシュして作業を再開しましょう。',
+                speech: '長い休憩が終了しました。リフレッシュして作業を再開してください。',
+                title: '長い休憩完了！',
+              };
+          }
+        } else {
+          return {
+            notification:
+              currentMode === 'work'
+                ? '作業時間が終了しました！休憩しましょう。'
+                : currentMode === 'shortBreak'
+                  ? '短い休憩が終了しました！次のタスクに取り組みましょう。'
+                  : '長い休憩が終了しました！リフレッシュして作業を再開しましょう。',
+            speech:
+              currentMode === 'work'
+                ? '作業時間が終了しました。休憩してください。'
+                : currentMode === 'shortBreak'
+                  ? '休憩時間が終了しました。次のタスクを開始してください。'
+                  : '長い休憩が終了しました。作業を再開してください。',
+            title: currentMode === 'work' ? 'タイマー完了！' : '休憩完了！',
+          };
+        }
       };
 
-      const message = messages[currentMode];
+      const customMessage = getCustomMessage();
+      const message = customMessage.notification;
 
       // 🚨 強化された通知システム 🚨
 
       // 1. ブラウザタブのタイトルを点滅
-      startTitleBlink(currentMode === 'work' ? 'タイマー完了！' : '休憩完了！');
+      startTitleBlink(customMessage.title);
 
       // 2. ファビコンを変更
       changeFavicon(currentMode === 'work' ? '✅' : '☕');
@@ -350,6 +437,14 @@ export const usePomodoro = () => {
         }
       }
 
+      // 6. 音声メッセージ読み上げ
+      if (settings.notificationSound) {
+        // 音楽の後に音声メッセージを再生（2秒遅延）
+        setTimeout(() => {
+          speakMessage(customMessage.speech);
+        }, 2000);
+      }
+
       // 次のモードに切り替え（モーダルが閉じられるまで待機）
       // モーダルが表示されている間は自動切り替えしない
       // ユーザーがモーダルで「次を開始」を選択するか、モーダルを閉じるまで待つ
@@ -357,15 +452,23 @@ export const usePomodoro = () => {
   }, [remainingTime, status, currentMode, totalTime, currentSession, settings]);
 
   // タイマー制御
-  const startTimer = useCallback(() => {
-    if (status === 'idle' || status === 'paused') {
-      setStatus('running');
+  const startTimer = useCallback(
+    (taskName?: string) => {
+      if (status === 'idle' || status === 'paused') {
+        // タスク名を設定（新しいセッション開始時のみ）
+        if (status === 'idle' && taskName !== undefined) {
+          setCurrentTaskName(taskName);
+        }
 
-      if (Notification.permission === 'default') {
-        Notification.requestPermission();
+        setStatus('running');
+
+        if (Notification.permission === 'default') {
+          Notification.requestPermission();
+        }
       }
-    }
-  }, [status]);
+    },
+    [status]
+  );
 
   const pauseTimer = useCallback(() => {
     if (status === 'running') {
@@ -473,18 +576,31 @@ export const usePomodoro = () => {
       soundRef.current = null;
     }
 
-    // 2. タイトル点滅を停止
+    // 2. 音声読み上げを停止
+    stopSpeaking();
+
+    // 3. タイトル点滅を停止
     stopTitleBlink();
 
-    // 3. ファビコンを元に戻す
+    // 4. ファビコンを元に戻す
     restoreFavicon();
 
-    // 4. デスクトップ通知を閉じる
+    // 5. デスクトップ通知を閉じる
     if (notificationRef.current) {
       notificationRef.current.close();
       notificationRef.current = null;
     }
-  }, [stopTitleBlink, restoreFavicon]);
+  }, [stopTitleBlink, restoreFavicon, stopSpeaking]);
+
+  // タスク名を設定
+  const setTaskName = useCallback((taskName: string) => {
+    setCurrentTaskName(taskName);
+  }, []);
+
+  // タスク名をクリア
+  const clearTaskName = useCallback(() => {
+    setCurrentTaskName('');
+  }, []);
 
   // 音を停止
   const stopSound = useCallback(() => {
@@ -492,7 +608,9 @@ export const usePomodoro = () => {
       soundRef.current.close();
       soundRef.current = null;
     }
-  }, []);
+    // 音声読み上げも停止
+    stopSpeaking();
+  }, [stopSpeaking]);
 
   // 設定更新
   const updateSettings = useCallback(
@@ -632,6 +750,7 @@ export const usePomodoro = () => {
     progress,
     todayStats,
     showCompletionModal,
+    currentTaskName,
 
     // アクション
     startTimer,
@@ -646,6 +765,10 @@ export const usePomodoro = () => {
     updateSettingsImmediately,
     closeCompletionModal,
     stopSound,
+    setTaskName,
+    clearTaskName,
+    speakMessage,
+    stopSpeaking,
     formatTime,
   };
 };

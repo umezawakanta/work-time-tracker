@@ -42,6 +42,7 @@ export const PomodoroManager: React.FC = () => {
         nextMode={getNextMode()}
         sessionNumber={pomodoro.currentSession}
         onStartNext={handleStartNext}
+        taskName={pomodoro.currentTaskName}
       />
     </>
   );
