@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { PomodoroMode, PomodoroStatus, PomodoroSettings, PomodoroSession } from '@/types/pomodoro';
 
 const DEFAULT_SETTINGS: PomodoroSettings = {
-  workDuration: 25,
+  workDuration: 1,
   shortBreakDuration: 5,
   longBreakDuration: 15,
   longBreakInterval: 4,
