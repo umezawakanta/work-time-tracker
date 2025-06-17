@@ -5,9 +5,19 @@ import { usePomodoro } from '@/hooks/usePomodoro';
 export const PomodoroFloatingButton: React.FC = () => {
   const pomodoro = usePomodoro();
 
+  console.log(
+    '🟡 PomodoroFloatingButton: isVisible =',
+    pomodoro.isVisible,
+    'shouldShow =',
+    !pomodoro.isVisible
+  );
+
   if (pomodoro.isVisible) {
+    console.log('🟡 FloatingButton: タイマーが表示中のため非表示');
     return null;
   }
+
+  console.log('🟡 FloatingButton: ボタンを表示します');
 
   return (
     <button

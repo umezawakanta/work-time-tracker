@@ -302,12 +302,17 @@ export const usePomodoro = () => {
     }
 
     const savedVisibility = localStorage.getItem('pomodoro-visibility');
+    console.log('🔍 LocalStorage visibility読み込み:', savedVisibility);
 
     if (savedVisibility === 'true') {
+      console.log('📱 タイマーを表示状態に設定');
       setIsVisible(true);
     } else if (savedVisibility === null) {
       // 初回利用時は表示する
+      console.log('🆕 初回利用: タイマーを表示状態に設定');
       setIsVisible(true);
+    } else {
+      console.log('❌ タイマーを非表示状態に設定:', savedVisibility);
     }
   }, [status]);
 
