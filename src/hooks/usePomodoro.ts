@@ -223,7 +223,11 @@ export const usePomodoro = () => {
     }
 
     const savedVisibility = localStorage.getItem('pomodoro-visibility');
+
     if (savedVisibility === 'true') {
+      setIsVisible(true);
+    } else if (savedVisibility === null) {
+      // 初回利用時は表示する
       setIsVisible(true);
     }
   }, [status]);

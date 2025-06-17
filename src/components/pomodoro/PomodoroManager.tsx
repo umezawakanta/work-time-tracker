@@ -8,8 +8,6 @@ import { PomodoroMode } from '@/types/pomodoro';
 export const PomodoroManager: React.FC = () => {
   const pomodoro = usePomodoro();
 
-  console.log('PomodoroManager: isVisible =', pomodoro.isVisible, 'status =', pomodoro.status);
-
   // 次のモードを計算
   const getNextMode = (): PomodoroMode => {
     if (pomodoro.currentMode === 'work') {
