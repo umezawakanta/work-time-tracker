@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Timer, TrendingUp, Clock, Target } from 'lucide-react';
@@ -11,7 +11,7 @@ interface PomodoroStats {
   mostProductiveHour: number;
 }
 
-export const PomodoroStatsWidget: React.FC = () => {
+const PomodoroStatsWidgetComponent: React.FC = () => {
   const [stats, setStats] = useState<PomodoroStats>({
     totalSessions: 0,
     totalWorkTime: 0,
@@ -19,21 +19,35 @@ export const PomodoroStatsWidget: React.FC = () => {
     mostProductiveHour: 9,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
+    // 重複読み込みを防ぐ
+    if (hasLoadedRef.current) {
+      return;
+    }
+
     const loadStats = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
+
         const pomodoroStats = await pomodoroWorkTimeIntegration.getTodayPomodoroStats();
         setStats(pomodoroStats);
-      } catch (error) {
-        console.error('ポモドーロ統計の取得に失敗しました:', error);
+        hasLoadedRef.current = true;
+      } catch (error: any) {
+        console.warn('ポモドーロ統計の取得に失敗:', error.message);
+        setError('統計データの取得に失敗しました');
+        // エラーがあっても読み込み済みとしてマーク（無限ループを防ぐ）
+        hasLoadedRef.current = true;
       } finally {
         setIsLoading(false);
       }
     };
 
     loadStats();
-  }, []);
+  }, []); // 依存配列を空にして初回のみ実行
 
   const formatHour = (hour: number): string => {
     return `${hour.toString().padStart(2, '0')}:00`;
@@ -58,6 +72,25 @@ export const PomodoroStatsWidget: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground">読み込み中...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Timer className="h-5 w-5" />
+            今日のポモドーロ統計
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-muted-foreground">
+            <p>{error}</p>
+            <p className="text-xs mt-2">ローカルデータのみ表示中（開発環境）</p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -151,3 +184,5 @@ export const PomodoroStatsWidget: React.FC = () => {
     </Card>
   );
 };
+
+export const PomodoroStatsWidget = memo(PomodoroStatsWidgetComponent);
