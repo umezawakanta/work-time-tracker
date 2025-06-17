@@ -12,39 +12,81 @@ const PomodoroManagerComponent: React.FC = () => {
   // デバッグ関数をグローバルに登録（開発環境のみ）
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     // すでに登録されている場合はスキップ
-    if (!window.clearPomodoroStorage) {
-      window.clearPomodoroStorage = () => {
+    if (!(window as any).clearPomodoroStorage) {
+      (window as any).clearPomodoroStorage = () => {
         pomodoro.clearPomodoroStorage();
         window.location.reload();
       };
     }
 
-    if (!window.showPomodoroEntries) {
-      window.showPomodoroEntries = () => {
+    if (!(window as any).showPomodoroEntries) {
+      (window as any).showPomodoroEntries = () => {
         const entries = localStorage.getItem('pomodoro-work-entries');
         if (entries) {
-          console.table(JSON.parse(entries));
+          const parsed = JSON.parse(entries);
+          console.log('💾 ローカルストレージ保存済みエントリ:', parsed.length, '件');
+          console.table(parsed);
+
+          // 今日のエントリをフィルタ
+          const today = new Date().toISOString().split('T')[0];
+          const todayEntries = parsed.filter((e: any) => e.date === today);
+          console.log('📅 今日のエントリ:', todayEntries.length, '件');
+          if (todayEntries.length > 0) {
+            console.table(todayEntries);
+          }
         } else {
-          console.log('Pomodoro entries not found');
+          console.log('❌ Pomodoro entries not found in localStorage');
         }
       };
     }
 
-    if (!window.clearPomodoroEntries) {
-      window.clearPomodoroEntries = () => {
+    if (!(window as any).clearPomodoroEntries) {
+      (window as any).clearPomodoroEntries = () => {
         localStorage.removeItem('pomodoro-work-entries');
-        console.log('Pomodoro entries cleared');
+        console.log('🧹 Pomodoro entries cleared');
       };
     }
 
-    if (!window.getPomodoroStats) {
-      window.getPomodoroStats = () => {
+    if (!(window as any).getPomodoroStats) {
+      (window as any).getPomodoroStats = () => {
         // Import and use the service to get stats
         import('@/services/PomodoroWorkTimeIntegrationService').then((module) => {
-          module.PomodoroWorkTimeIntegrationService.getTodayPomodoroStats().then((stats) => {
-            console.log('Today Pomodoro Stats:', stats);
-          });
+          module.PomodoroWorkTimeIntegrationService.getInstance()
+            .getTodayPomodoroStats()
+            .then((stats) => {
+              console.log('📊 Today Pomodoro Stats:', stats);
+            });
         });
+      };
+    }
+
+    // 作業時間記録状況の詳細確認機能を追加
+    if (!(window as any).checkWorkTimeRecording) {
+      (window as any).checkWorkTimeRecording = () => {
+        const settings = localStorage.getItem('pomodoro-settings');
+        const entries = localStorage.getItem('pomodoro-work-entries');
+
+        console.log('🔍 作業時間記録設定確認:');
+        if (settings) {
+          const parsed = JSON.parse(settings);
+          console.log('⚙️ autoRecordWorkTime:', parsed.autoRecordWorkTime);
+        }
+
+        console.log('💾 保存済み作業エントリ数:', entries ? JSON.parse(entries).length : 0);
+
+        if (entries) {
+          const parsed = JSON.parse(entries);
+          const latest = parsed[parsed.length - 1];
+          if (latest) {
+            console.log('🕐 最新エントリ:', {
+              date: latest.date,
+              time: `${latest.startTime} - ${latest.endTime}`,
+              project: latest.projectName,
+              description: latest.description,
+              duration: `${Math.round(latest.duration / 60)}分`,
+            });
+          }
+        }
       };
     }
   }

@@ -1,32 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Coffee, Play, VolumeX, Timer } from 'lucide-react';
 import { PomodoroMode } from '@/types/pomodoro';
+import { usePomodoroContext } from '@/context/PomodoroContext';
 
-interface CompletionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onStopSound: () => void;
-  currentMode: PomodoroMode;
-  nextMode: PomodoroMode;
-  sessionNumber: number;
-  onStartNext: () => void;
-  taskName?: string;
-}
-
-export const CompletionModal: React.FC<CompletionModalProps> = ({
-  isOpen,
-  onClose,
-  onStopSound,
-  currentMode,
-  nextMode,
-  sessionNumber,
-  onStartNext,
-  taskName,
-}) => {
+export const CompletionModal: React.FC = () => {
+  const { pomodoro } = usePomodoroContext();
   const [isFlashing, setIsFlashing] = useState(true);
 
   useEffect(() => {
-    if (isOpen) {
+    if (pomodoro.showCompletionModal) {
       setIsFlashing(true);
       // 10秒後に点滅を停止
       const timer = setTimeout(() => setIsFlashing(false), 10000);
@@ -38,16 +20,33 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [pomodoro.showCompletionModal]);
 
-  if (!isOpen) return null;
+  if (!pomodoro.showCompletionModal) return null;
+
+  // 次のモードを計算
+  const getNextMode = (): PomodoroMode => {
+    if (pomodoro.currentMode === 'work') {
+      const shouldTakeLongBreak =
+        pomodoro.currentSession % pomodoro.settings.longBreakInterval === 0;
+      return shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
+    } else {
+      return 'work';
+    }
+  };
+
+  const nextMode = getNextMode();
 
   const getModeInfo = (mode: PomodoroMode) => {
     switch (mode) {
       case 'work':
         return {
-          title: taskName ? `「${taskName}」完了！` : '作業時間完了！',
-          subtitle: taskName ? `「${taskName}」お疲れ様でした！` : 'お疲れ様でした！',
+          title: pomodoro.currentTaskName
+            ? `「${pomodoro.currentTaskName}」完了！`
+            : '作業時間完了！',
+          subtitle: pomodoro.currentTaskName
+            ? `「${pomodoro.currentTaskName}」お疲れ様でした！`
+            : 'お疲れ様でした！',
           icon: <CheckCircle size={64} className="text-green-500" />,
           bgColor: 'bg-gradient-to-br from-green-400 to-green-600',
           nextAction: '休憩を開始',
@@ -71,8 +70,14 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
     }
   };
 
-  const currentInfo = getModeInfo(currentMode);
+  const currentInfo = getModeInfo(pomodoro.currentMode);
   const nextInfo = getModeInfo(nextMode);
+
+  const handleStartNext = () => {
+    pomodoro.switchMode(nextMode);
+    pomodoro.startTimer();
+    pomodoro.closeCompletionModal();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -94,7 +99,9 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
           <div className="mb-4 flex justify-center">{currentInfo.icon}</div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{currentInfo.title}</h1>
           <p className="text-lg text-gray-600">{currentInfo.subtitle}</p>
-          <div className="mt-2 text-sm text-gray-500">セッション #{sessionNumber} 完了</div>
+          <div className="mt-2 text-sm text-gray-500">
+            セッション #{pomodoro.currentSession} 完了
+          </div>
         </div>
 
         {/* 次のアクション */}
@@ -108,10 +115,7 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
         {/* アクションボタン */}
         <div className="space-y-3">
           <button
-            onClick={() => {
-              onStartNext();
-              onClose();
-            }}
+            onClick={handleStartNext}
             className={`w-full py-3 px-4 ${nextInfo.bgColor} text-white rounded-lg font-medium text-lg hover:opacity-90 transition-opacity flex items-center justify-center space-x-2`}
           >
             <Play size={20} />
@@ -120,7 +124,7 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
 
           <div className="flex space-x-2">
             <button
-              onClick={onStopSound}
+              onClick={pomodoro.stopSound}
               className="flex-1 py-2 px-4 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center space-x-1"
             >
               <VolumeX size={16} />
@@ -128,7 +132,7 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
             </button>
 
             <button
-              onClick={onClose}
+              onClick={pomodoro.closeCompletionModal}
               className="flex-1 py-2 px-4 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
             >
               閉じる
@@ -138,13 +142,15 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
 
         {/* 進捗表示 */}
         <div className="mt-6 text-center">
-          <div className="text-xs text-gray-500">今日の完了セッション: {sessionNumber}</div>
+          <div className="text-xs text-gray-500">
+            今日の完了セッション: {pomodoro.currentSession}
+          </div>
           <div className="mt-2 flex justify-center space-x-1">
-            {Array.from({ length: Math.min(sessionNumber, 8) }).map((_, i) => (
+            {Array.from({ length: Math.min(pomodoro.currentSession, 8) }).map((_, i) => (
               <div key={i} className="w-2 h-2 bg-green-500 rounded-full" />
             ))}
-            {sessionNumber > 8 && (
-              <span className="text-xs text-gray-500 ml-1">+{sessionNumber - 8}</span>
+            {pomodoro.currentSession > 8 && (
+              <span className="text-xs text-gray-500 ml-1">+{pomodoro.currentSession - 8}</span>
             )}
           </div>
         </div>

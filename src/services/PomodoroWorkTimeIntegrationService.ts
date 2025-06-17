@@ -2,6 +2,9 @@ import { PomodoroSession, PomodoroMode } from '@/types/pomodoro';
 import { WorkTimeEntry } from '@/types/workTimeEntry';
 import { workTimeApi } from './api/workTimeApi';
 
+// 開発環境での401エラー警告表示フラグ
+let authWarningShown = false;
+
 // ヘルパー関数: YYYY-MM-DD形式の日付文字列を生成
 const formatDateString = (date: Date): string => {
   const year = date.getFullYear();
@@ -88,7 +91,7 @@ export class PomodoroWorkTimeIntegrationService {
 
       try {
         const response = await workTimeApi.create(workTimeEntry);
-        console.log('✅ ポモドーロセッション記録完了:', response.data);
+        console.log('✅ ポモドーロセッション記録完了 (API):', response.data);
         this.showSuccessNotification(session, workTimeEntry);
       } catch (apiError: any) {
         // 開発環境での認証エラー対応
@@ -254,7 +257,7 @@ export class PomodoroWorkTimeIntegrationService {
       let todayPomodoroEntries: any[] = [];
       const today = formatDateString(new Date());
 
-      // APIからのデータを取得を試行
+      // APIからのデータを取得を試行（401エラーは無視）
       try {
         const allEntries = await workTimeApi.getAll();
         todayPomodoroEntries = allEntries.data.filter(
@@ -265,10 +268,15 @@ export class PomodoroWorkTimeIntegrationService {
         );
         console.log('📊 API統計データ取得成功:', todayPomodoroEntries.length);
       } catch (apiError: any) {
+        // 401エラーは開発環境では予想される動作なので、警告レベルに下げる
         if (apiError?.response?.status === 401 && process.env.NODE_ENV === 'development') {
-          console.log('🛠️ 開発環境: API認証エラーのためローカルデータを使用');
+          // 401エラーのログを抑制（初回のみ表示）
+          if (!authWarningShown) {
+            console.warn('🛠️ 開発環境: API認証が無効のため、ローカルデータのみ使用します');
+            authWarningShown = true;
+          }
         } else {
-          console.warn('📊 API統計データ取得失敗:', apiError);
+          console.warn('📊 API統計データ取得失敗:', apiError.message);
         }
       }
 
@@ -279,7 +287,7 @@ export class PomodoroWorkTimeIntegrationService {
       );
 
       if (localEntries.length > 0) {
-        console.log('📊 ローカル統計データ追加:', localEntries.length);
+        console.log('📊 ローカル統計データ使用:', localEntries.length, '件');
         todayPomodoroEntries = [...todayPomodoroEntries, ...localEntries];
       }
 
@@ -301,16 +309,19 @@ export class PomodoroWorkTimeIntegrationService {
         ? parseInt(Object.entries(hourCounts).sort(([, a], [, b]) => b - a)[0][0])
         : 9; // デフォルト: 9時
 
-      console.log('📊 統計計算完了:', {
-        totalSessions,
-        totalWorkTime: Math.round(totalWorkTime),
-        averageSessionLength: Math.round(averageSessionLength),
-        mostProductiveHour,
-        sources: {
-          api: todayPomodoroEntries.length - localEntries.length,
-          localStorage: localEntries.length,
-        },
-      });
+      // 詳細ログは開発環境でのみ表示
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 統計計算完了:', {
+          totalSessions,
+          totalWorkTime: Math.round(totalWorkTime),
+          averageSessionLength: Math.round(averageSessionLength),
+          mostProductiveHour,
+          sources: {
+            api: todayPomodoroEntries.length - localEntries.length,
+            localStorage: localEntries.length,
+          },
+        });
+      }
 
       return {
         totalSessions,
