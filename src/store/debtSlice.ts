@@ -2,9 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { debtApi } from '../services/api';
 import { DebtEntry } from '@/types';
 
-// 開発環境での401エラー警告表示フラグ
-let debtFetchAuthWarningShown = false;
-
 interface DebtState {
   entries: DebtEntry[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -24,15 +21,6 @@ export const fetchDebtEntries = createAsyncThunk<DebtEntry[], void, { rejectValu
       const response = await debtApi.getAll();
       return response.data;
     } catch (error: any) {
-      // 開発環境での401エラーは警告を抑制
-      if (error?.response?.status === 401 && process.env.NODE_ENV === 'development') {
-        if (!debtFetchAuthWarningShown) {
-          console.warn('🛠️ [DebtSlice] 開発環境: API認証が無効のため、空のデータを返します');
-          debtFetchAuthWarningShown = true;
-        }
-        // 空の配列を返してエラーではなく成功扱いにする
-        return [];
-      }
       console.error('負債エントリーの取得中にエラーが発生しました:', error);
       return rejectWithValue(
         error instanceof Error ? error.message : '負債エントリーの取得に失敗しました'

@@ -10,24 +10,18 @@ export const useReportData = () => {
   const hasInitialized = useRef(false);
 
   useEffect(() => {
-    // 開発環境での重複実行を防ぐ
+    // 重複実行を防ぐ
     if (hasInitialized.current) {
       return;
     }
 
-    const initializeData = async () => {
-      try {
-        // 並列実行ではなく順次実行に変更（エラー時の影響を最小化）
-        await dispatch(fetchWorkTimeEntries());
-        await dispatch(fetchAssetEntries());
-        await dispatch(fetchDebtEntries());
+    const initializeData = () => {
+      // モックデータ使用により401エラーは発生しないため、シンプルに並列実行
+      dispatch(fetchWorkTimeEntries());
+      dispatch(fetchAssetEntries());
+      dispatch(fetchDebtEntries());
 
-        hasInitialized.current = true;
-      } catch (error) {
-        console.warn('📊 ReportData初期化エラー（一部データの取得に失敗）:', error);
-        // エラーがあっても初期化済みとしてマーク（無限ループを防ぐ）
-        hasInitialized.current = true;
-      }
+      hasInitialized.current = true;
     };
 
     initializeData();

@@ -3,9 +3,6 @@ import { WorkTimeEntry } from '../types/workTimeEntry';
 import { workTimeApi } from '../services/api/workTimeApi';
 import { WorkTimeApiResponse, WorkState } from '@/types';
 
-// 開発環境での401エラー警告表示フラグ
-let fetchAuthWarningShown = false;
-
 export const fetchWorkTimeEntries = createAsyncThunk(
   'workTime/fetchEntries',
   async (_, { rejectWithValue }) => {
@@ -13,15 +10,6 @@ export const fetchWorkTimeEntries = createAsyncThunk(
       const response = await workTimeApi.getAll();
       return response.data;
     } catch (error: any) {
-      // 開発環境での401エラーは警告を抑制
-      if (error?.response?.status === 401 && process.env.NODE_ENV === 'development') {
-        if (!fetchAuthWarningShown) {
-          console.warn('🛠️ [WorkTimeSlice] 開発環境: API認証が無効のため、空のデータを返します');
-          fetchAuthWarningShown = true;
-        }
-        // 空の配列を返してエラーではなく成功扱いにする
-        return [];
-      }
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch work time entries');
     }
   }

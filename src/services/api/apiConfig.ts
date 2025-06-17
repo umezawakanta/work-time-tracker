@@ -13,6 +13,10 @@ declare global {
 export const USE_MOCK_DATA =
   import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
   (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
+  // 開発環境では認証エラーを回避するためモックデータを優先使用
+  (import.meta.env.DEV &&
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ||
   // 本番環境でAPIが存在しない場合は自動的にモックモードを有効化
   (typeof window !== 'undefined' &&
     window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
@@ -20,12 +24,24 @@ export const USE_MOCK_DATA =
     !import.meta.env.VITE_API_BASE_URL?.includes('railway') &&
     !import.meta.env.VITE_API_BASE_URL?.includes('render'));
 
-console.log('🔧 Determining API Base URL...');
-console.log('📋 Environment variables:', {
-  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+// デバッグ情報をログ出力
+console.log('🔧 Determining API Configuration...');
+console.log('📋 Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
   DEV: import.meta.env.DEV,
   PROD: import.meta.env.PROD,
+  VITE_USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK_DATA,
+  USE_MOCK_DATA: USE_MOCK_DATA,
 });
+
+if (USE_MOCK_DATA) {
+  console.log(
+    '🎭 モックデータモード有効: APIサーバーへの接続は行わず、ローカルのモックデータを使用します'
+  );
+  console.log('✅ 401エラーは発生しません');
+} else {
+  console.log('🌐 API接続モード有効: 実際のAPIサーバーに接続します');
+}
 
 const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
 console.log('🌐 Current hostname:', hostname);

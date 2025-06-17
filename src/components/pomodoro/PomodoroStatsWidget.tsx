@@ -19,7 +19,6 @@ const PomodoroStatsWidgetComponent: React.FC = () => {
     mostProductiveHour: 9,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -31,15 +30,13 @@ const PomodoroStatsWidgetComponent: React.FC = () => {
     const loadStats = async () => {
       try {
         setIsLoading(true);
-        setError(null);
 
         const pomodoroStats = await pomodoroWorkTimeIntegration.getTodayPomodoroStats();
         setStats(pomodoroStats);
         hasLoadedRef.current = true;
       } catch (error: any) {
-        console.warn('ポモドーロ統計の取得に失敗:', error.message);
-        setError('統計データの取得に失敗しました');
-        // エラーがあっても読み込み済みとしてマーク（無限ループを防ぐ）
+        console.error('ポモドーロ統計の取得に失敗:', error);
+        // モックデータ使用によりエラーは稀なので、読み込み済みとしてマーク
         hasLoadedRef.current = true;
       } finally {
         setIsLoading(false);
@@ -72,25 +69,6 @@ const PomodoroStatsWidgetComponent: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground">読み込み中...</div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Timer className="h-5 w-5" />
-            今日のポモドーロ統計
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center text-muted-foreground">
-            <p>{error}</p>
-            <p className="text-xs mt-2">ローカルデータのみ表示中（開発環境）</p>
-          </div>
         </CardContent>
       </Card>
     );
