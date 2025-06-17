@@ -28,6 +28,12 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
       setIsFlashing(true);
       // 10秒後に点滅を停止
       const timer = setTimeout(() => setIsFlashing(false), 10000);
+
+      // 通知許可を要求（まだ許可されていない場合）
+      if (Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
