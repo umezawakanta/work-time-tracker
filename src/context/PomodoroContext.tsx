@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { usePomodoro } from '@/hooks/usePomodoro';
 
 interface PomodoroContextType {
@@ -14,13 +14,30 @@ interface PomodoroProviderProps {
 export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) => {
   const pomodoro = usePomodoro();
 
+  const contextValue = useMemo(
+    () => ({ pomodoro }),
+    [
+      pomodoro.instanceId,
+      pomodoro.status,
+      pomodoro.isVisible,
+      pomodoro.currentMode,
+      pomodoro.remainingTime,
+      pomodoro.totalTime,
+      pomodoro.currentSession,
+      pomodoro.completedSessions.length,
+      pomodoro.isMinimized,
+      pomodoro.showCompletionModal,
+      pomodoro.currentTaskName,
+    ]
+  );
+
   console.log('🏭 PomodoroProvider: コンテキスト初期化', {
     instanceId: pomodoro.instanceId,
     isVisible: pomodoro.isVisible,
     status: pomodoro.status,
   });
 
-  return <PomodoroContext.Provider value={{ pomodoro }}>{children}</PomodoroContext.Provider>;
+  return <PomodoroContext.Provider value={contextValue}>{children}</PomodoroContext.Provider>;
 };
 
 export const usePomodoroContext = (): PomodoroContextType => {

@@ -40,6 +40,18 @@ export const usePomodoro = () => {
   const originalTitle = useRef<string>(document.title);
   const originalFavicon = useRef<string>('');
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const settingsRef = useRef<PomodoroSettings>(DEFAULT_SETTINGS);
+  const completedSessionsRef = useRef<PomodoroSession[]>([]);
+
+  // settingsRefを更新
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+
+  // completedSessionsRefを更新
+  useEffect(() => {
+    completedSessionsRef.current = completedSessions;
+  }, [completedSessions]);
 
   // 強化された完了音を再生する関数
   const playCompletionSound = useCallback(
@@ -321,7 +333,7 @@ export const usePomodoro = () => {
     } else {
       console.log('❌ タイマーを非表示状態に設定:', savedVisibility);
     }
-  }, [status]);
+  }, []); // 依存配列を空にして初回のみ実行
 
   // 設定の保存
   useEffect(() => {
@@ -475,16 +487,16 @@ export const usePomodoro = () => {
       }
 
       // 5. 音声通知（強化版）
-      if (settings.notificationSound) {
+      if (settingsRef.current.notificationSound) {
         try {
-          playCompletionSound(settings.volume);
+          playCompletionSound(settingsRef.current.volume);
         } catch (error) {
           console.warn('Audio notification failed:', error);
         }
       }
 
       // 6. 音声メッセージ読み上げ
-      if (settings.notificationSound) {
+      if (settingsRef.current.notificationSound) {
         // 音楽の後に音声メッセージを再生（2秒遅延）
         setTimeout(() => {
           try {
@@ -500,11 +512,11 @@ export const usePomodoro = () => {
       // ユーザーがモーダルで「次を開始」を選択するか、モーダルを閉じるまで待つ
 
       // Integration with PomodoroWorkTimeIntegrationService
-      if (currentMode === 'work' && settings.autoRecordWorkTime) {
+      if (currentMode === 'work' && settingsRef.current.autoRecordWorkTime) {
         // 今日の総セッション数を計算
         const today = new Date().toDateString();
         const todayWorkSessions =
-          completedSessions.filter(
+          completedSessionsRef.current.filter(
             (s) => s.mode === 'work' && s.completedAt.toDateString() === today
           ).length + 1; // 現在のセッションも含める
 
@@ -519,7 +531,7 @@ export const usePomodoro = () => {
         }
       }
     }
-  }, [remainingTime, status, currentMode, totalTime, currentSession, settings]);
+  }, [remainingTime, status, currentMode, totalTime, currentTaskName]); // 依存配列を最小限に
 
   // タイマー制御
   const startTimer = useCallback(
@@ -547,16 +559,17 @@ export const usePomodoro = () => {
   }, [status]);
 
   const resetTimer = useCallback(() => {
+    const currentSettings = settingsRef.current;
     const duration =
       currentMode === 'work'
-        ? settings.workDuration
+        ? currentSettings.workDuration
         : currentMode === 'shortBreak'
-          ? settings.shortBreakDuration
-          : settings.longBreakDuration;
+          ? currentSettings.shortBreakDuration
+          : currentSettings.longBreakDuration;
 
     console.log('resetTimer called:', {
       currentMode,
-      settings,
+      settings: currentSettings,
       calculatedDuration: duration,
       durationInSeconds: duration * 60,
     });
@@ -564,26 +577,27 @@ export const usePomodoro = () => {
     setStatus('idle');
     setRemainingTime(duration * 60);
     setTotalTime(duration * 60);
-  }, [currentMode, settings]);
+  }, [currentMode]);
 
   // モード切り替え
   const switchMode = useCallback(
     (mode: PomodoroMode) => {
+      const currentSettings = settingsRef.current;
       let duration: number;
 
       switch (mode) {
         case 'work':
-          duration = settings.workDuration;
+          duration = currentSettings.workDuration;
           // 休憩から作業に切り替わる時、セッション番号を増加
           if (currentMode === 'shortBreak' || currentMode === 'longBreak') {
             setCurrentSession((prev) => prev + 1);
           }
           break;
         case 'shortBreak':
-          duration = settings.shortBreakDuration;
+          duration = currentSettings.shortBreakDuration;
           break;
         case 'longBreak':
-          duration = settings.longBreakDuration;
+          duration = currentSettings.longBreakDuration;
           break;
       }
 
@@ -592,10 +606,11 @@ export const usePomodoro = () => {
       setRemainingTime(duration * 60);
       setTotalTime(duration * 60);
     },
-    [settings, currentMode]
+    [currentMode]
   );
 
   const skipSession = useCallback(() => {
+    const currentSettings = settingsRef.current;
     // 現在のセッションを完了としてマーク
     const session: PomodoroSession = {
       id: Date.now().toString(),
@@ -610,7 +625,7 @@ export const usePomodoro = () => {
     let nextMode: PomodoroMode;
 
     if (currentMode === 'work') {
-      const shouldTakeLongBreak = currentSession % settings.longBreakInterval === 0;
+      const shouldTakeLongBreak = currentSession % currentSettings.longBreakInterval === 0;
       nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
     } else {
       nextMode = 'work';
@@ -620,7 +635,7 @@ export const usePomodoro = () => {
     }
 
     switchMode(nextMode);
-  }, [currentMode, totalTime, remainingTime, currentSession, settings, switchMode]);
+  }, [currentMode, totalTime, remainingTime, currentSession, switchMode]);
 
   // UI制御
   const toggleMinimized = useCallback(() => {
@@ -630,8 +645,6 @@ export const usePomodoro = () => {
   const toggleVisibility = useCallback(() => {
     console.log('🔄 toggleVisibility called - Before:', {
       instanceId: instanceId.current,
-      currentIsVisible: isVisible,
-      willBecome: !isVisible,
     });
 
     setIsVisible((prev) => {
@@ -643,7 +656,7 @@ export const usePomodoro = () => {
       });
       return newValue;
     });
-  }, [isVisible]);
+  }, []); // 依存配列を空にして無限ループを防ぐ
 
   // Debug utility to clear localStorage
   const clearPomodoroStorage = useCallback(() => {
@@ -813,15 +826,15 @@ export const usePomodoro = () => {
   // 今日の統計
   const todayStats = {
     date: new Date().toDateString(),
-    completedPomodoros: completedSessions.filter(
+    completedPomodoros: completedSessionsRef.current.filter(
       (s) => s.mode === 'work' && s.completedAt.toDateString() === new Date().toDateString()
     ).length,
-    totalFocusTime: completedSessions
+    totalFocusTime: completedSessionsRef.current
       .filter(
         (s) => s.mode === 'work' && s.completedAt.toDateString() === new Date().toDateString()
       )
       .reduce((sum, s) => sum + s.duration / 60, 0),
-    totalBreakTime: completedSessions
+    totalBreakTime: completedSessionsRef.current
       .filter(
         (s) => s.mode !== 'work' && s.completedAt.toDateString() === new Date().toDateString()
       )
