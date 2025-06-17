@@ -23,8 +23,53 @@ export const usePomodoro = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const soundRef = useRef<AudioContext | null>(null);
+
+  // 強化された完了音を再生する関数
+  const playCompletionSound = useCallback(
+    (volume: number) => {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      soundRef.current = audioContext;
+
+      // メロディックな通知音（3回のbeep）
+      const frequencies = [800, 1000, 1200]; // 上昇音階
+      const beepDuration = 0.4; // 各beepの長さ
+      const pauseDuration = 0.2; // beep間の間隔
+
+      frequencies.forEach((frequency, index) => {
+        const startTime = audioContext.currentTime + index * (beepDuration + pauseDuration);
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        oscillator.type = 'sine';
+
+        // エンベロープ（フェードイン/アウト）
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + beepDuration - 0.05);
+        gainNode.gain.linearRampToValueAtTime(0, startTime + beepDuration);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + beepDuration);
+      });
+
+      // 3秒後に繰り返し（最大3回）
+      setTimeout(() => {
+        if (showCompletionModal) {
+          playCompletionSound(volume * 0.8); // 音量を少し下げて繰り返し
+        }
+      }, 3000);
+    },
+    [showCompletionModal]
+  );
 
   // LocalStorage からの設定読み込み
   useEffect(() => {
@@ -109,87 +154,34 @@ export const usePomodoro = () => {
 
       setCompletedSessions((prev) => [...prev, session]);
       setStatus('completed');
+      setShowCompletionModal(true);
 
       // 通知表示
-      if (settings.notificationSound && Notification.permission === 'granted') {
-        const messages = {
-          work: '作業時間が終了しました！休憩しましょう。',
-          shortBreak: '短い休憩が終了しました！次のタスクに取り組みましょう。',
-          longBreak: '長い休憩が終了しました！リフレッシュして作業を再開しましょう。',
-        };
+      const messages = {
+        work: '作業時間が終了しました！休憩しましょう。',
+        shortBreak: '短い休憩が終了しました！次のタスクに取り組みましょう。',
+        longBreak: '長い休憩が終了しました！リフレッシュして作業を再開しましょう。',
+      };
 
+      if (Notification.permission === 'granted') {
         new Notification('ポモドーロタイマー', {
           body: messages[currentMode],
           icon: '/favicon.ico',
         });
+      }
 
-        // 音声通知
+      // 音声通知（強化版）
+      if (settings.notificationSound) {
         try {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(settings.volume, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.5);
+          playCompletionSound(settings.volume);
         } catch (error) {
           console.warn('Audio notification failed:', error);
         }
       }
 
-      // 次のモードに切り替え
-      setTimeout(() => {
-        let nextMode: PomodoroMode;
-
-        if (currentMode === 'work') {
-          const shouldTakeLongBreak = currentSession % settings.longBreakInterval === 0;
-          nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
-        } else {
-          nextMode = 'work';
-          if (currentMode === 'shortBreak' || currentMode === 'longBreak') {
-            setCurrentSession((prev) => prev + 1);
-          }
-        }
-
-        // モード切り替え実行
-        let duration: number;
-        switch (nextMode) {
-          case 'work':
-            duration = settings.workDuration;
-            break;
-          case 'shortBreak':
-            duration = settings.shortBreakDuration;
-            break;
-          case 'longBreak':
-            duration = settings.longBreakDuration;
-            break;
-        }
-
-        setCurrentMode(nextMode);
-        setStatus('idle');
-        setRemainingTime(duration * 60);
-        setTotalTime(duration * 60);
-
-        // 自動開始設定チェック
-        const shouldAutoStart =
-          (nextMode === 'work' && settings.autoStartPomodoros) ||
-          (nextMode !== 'work' && settings.autoStartBreaks);
-
-        if (shouldAutoStart) {
-          setTimeout(() => {
-            setStatus('running');
-            if (Notification.permission === 'default') {
-              Notification.requestPermission();
-            }
-          }, 1000);
-        }
-      }, 2000);
+      // 次のモードに切り替え（モーダルが閉じられるまで待機）
+      // モーダルが表示されている間は自動切り替えしない
+      // ユーザーがモーダルで「次を開始」を選択するか、モーダルを閉じるまで待つ
     }
   }, [remainingTime, status, currentMode, totalTime, currentSession, settings]);
 
@@ -238,6 +230,10 @@ export const usePomodoro = () => {
       switch (mode) {
         case 'work':
           duration = settings.workDuration;
+          // 休憩から作業に切り替わる時、セッション番号を増加
+          if (currentMode === 'shortBreak' || currentMode === 'longBreak') {
+            setCurrentSession((prev) => prev + 1);
+          }
           break;
         case 'shortBreak':
           duration = settings.shortBreakDuration;
@@ -252,7 +248,7 @@ export const usePomodoro = () => {
       setRemainingTime(duration * 60);
       setTotalTime(duration * 60);
     },
-    [settings]
+    [settings, currentMode]
   );
 
   const skipSession = useCallback(() => {
@@ -293,6 +289,24 @@ export const usePomodoro = () => {
 
   const updatePosition = useCallback((newPosition: { x: number; y: number }) => {
     setPosition(newPosition);
+  }, []);
+
+  // 完了モーダルを閉じる
+  const closeCompletionModal = useCallback(() => {
+    setShowCompletionModal(false);
+    // 音を停止
+    if (soundRef.current) {
+      soundRef.current.close();
+      soundRef.current = null;
+    }
+  }, []);
+
+  // 音を停止
+  const stopSound = useCallback(() => {
+    if (soundRef.current) {
+      soundRef.current.close();
+      soundRef.current = null;
+    }
   }, []);
 
   // 設定更新
@@ -432,6 +446,7 @@ export const usePomodoro = () => {
     position,
     progress,
     todayStats,
+    showCompletionModal,
 
     // アクション
     startTimer,
@@ -444,6 +459,8 @@ export const usePomodoro = () => {
     updatePosition,
     updateSettings,
     updateSettingsImmediately,
+    closeCompletionModal,
+    stopSound,
     formatTime,
   };
 };
