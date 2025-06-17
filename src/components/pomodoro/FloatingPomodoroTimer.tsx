@@ -321,6 +321,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
             <button
               onClick={() => setShowSettings(false)}
               className="p-1 hover:bg-gray-100 rounded"
+              title="設定を閉じる"
             >
               <X size={16} />
             </button>
@@ -363,6 +364,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   }
                 }}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                title="作業時間を分単位で設定"
               />
             </div>
 
@@ -382,6 +384,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   }
                 }}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                title="短休憩時間を分単位で設定"
               />
             </div>
 
@@ -401,6 +404,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   }
                 }}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                title="長休憩時間を分単位で設定"
               />
             </div>
 
@@ -420,6 +424,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   }
                 }}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                title="何セッション後に長休憩を取るかを設定"
               />
             </div>
 
@@ -477,6 +482,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   value={pomodoro.settings.volume}
                   onChange={(e) => pomodoro.updateSettings({ volume: parseFloat(e.target.value) })}
                   className="w-full"
+                  title="通知音の音量を調整"
                 />
               </div>
             )}
