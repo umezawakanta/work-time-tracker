@@ -55,6 +55,7 @@ import TodoManagerPage from './pages/TodoManagerPage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import ApiTest from './pages/ApiTest';
+import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 
 const theme = createTheme({
   palette: {
@@ -115,6 +116,10 @@ export default function App() {
             <CssBaseline />
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
               <Toaster {...toasterConfig} />
+
+              {/* ポモドーロタイマー - 全ページで利用可能 */}
+              <PomodoroManager />
+
               <Routes>
                 {/* 認証不要なルート */}
                 <Route path="/login" element={<Login />} />
