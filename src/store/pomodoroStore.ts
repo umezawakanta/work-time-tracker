@@ -98,7 +98,9 @@ export const usePomodoroStore = create<PomodoroStore>(
         });
 
         // Update stats and switch to next mode
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (get() as any).updateDailyStats();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (get() as any).switchToNextMode();
       },
 
@@ -197,7 +199,9 @@ export const usePomodoroStore = create<PomodoroStore>(
           status: 'completed',
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (get() as any).updateDailyStats();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (get() as any).showNotification();
       },
 
@@ -325,6 +329,7 @@ export const usePomodoroTimer = () => {
         if (newRemainingTime <= 0) {
           // タイマー完了
           store.completeSession();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (store as any).switchToNextMode();
         } else {
           usePomodoroStore.setState({ remainingTime: newRemainingTime });
