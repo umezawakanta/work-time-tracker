@@ -54,6 +54,26 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
           photoURL: null,
           emailVerified: true,
           createdAt: new Date().toISOString(),
+          _id: 'dev-user-id',
+          id: 'dev-user',
+          name: 'Development User',
+          username: 'dev-user',
+          isAdmin: false,
+          permissions: ['read', 'write'],
+          roles: ['user'],
+          lastActivityAt: new Date(),
+          subscriptionStatus: 'premium' as const,
+          preferences: {
+            theme: 'light' as const,
+            language: 'ja' as const,
+            timezone: 'Asia/Tokyo',
+            notifications: {
+              email: true,
+              push: true,
+              daily: true,
+              weekly: true,
+            },
+          },
         });
         setIsAuthenticated(true);
       }

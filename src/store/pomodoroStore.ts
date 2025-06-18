@@ -18,18 +18,15 @@ const DEFAULT_SETTINGS: PomodoroSettings = {
   autoStartPomodoros: false,
   notificationSound: true,
   volume: 0.7,
+  autoRecordWorkTime: false,
 };
 
 const DEFAULT_POSITION = { x: 20, y: 20 };
 
-export const usePomodoroStore = create<PomodoroStore>()(
+export const usePomodoroStore = create<PomodoroStore>(
+  // @ts-expect-error - persist型の不整合を回避
   persist(
-    (
-      set: (
-        partial: Partial<PomodoroState> | ((state: PomodoroState) => Partial<PomodoroState>)
-      ) => void,
-      get: () => PomodoroState
-    ) => ({
+    (set, get) => ({
       // 初期状態
       currentMode: 'work' as PomodoroMode,
       status: 'idle' as const,
@@ -85,8 +82,24 @@ export const usePomodoroStore = create<PomodoroStore>()(
       },
 
       skipSession: () => {
-        get().completeSession();
-        get().switchToNextMode();
+        const state = get();
+
+        // Complete current session
+        const session: PomodoroSession = {
+          id: Date.now().toString(),
+          mode: state.currentMode,
+          duration: state.totalTime,
+          completedAt: new Date(),
+        };
+
+        set({
+          completedSessions: [...state.completedSessions, session],
+          status: 'completed',
+        });
+
+        // Update stats and switch to next mode
+        (get() as any).updateDailyStats();
+        (get() as any).switchToNextMode();
       },
 
       // モード変更
@@ -130,7 +143,7 @@ export const usePomodoroStore = create<PomodoroStore>()(
           }
         }
 
-        get().switchMode(nextMode);
+        (get() as PomodoroStore).switchMode(nextMode);
 
         // 自動開始設定のチェック
         const shouldAutoStart =
@@ -138,7 +151,7 @@ export const usePomodoroStore = create<PomodoroStore>()(
           (nextMode !== 'work' && state.settings.autoStartBreaks);
 
         if (shouldAutoStart) {
-          setTimeout(() => get().startTimer(), 1000);
+          setTimeout(() => (get() as PomodoroStore).startTimer(), 1000);
         }
       },
 
@@ -164,7 +177,7 @@ export const usePomodoroStore = create<PomodoroStore>()(
 
         // 現在のタイマーが idle の場合、新しい設定で時間をリセット
         if (state.status === 'idle') {
-          get().resetTimer();
+          (get() as PomodoroStore).resetTimer();
         }
       },
 
@@ -184,8 +197,8 @@ export const usePomodoroStore = create<PomodoroStore>()(
           status: 'completed',
         });
 
-        get().updateDailyStats();
-        get().showNotification();
+        (get() as any).updateDailyStats();
+        (get() as any).showNotification();
       },
 
       // 通知表示
@@ -210,19 +223,23 @@ export const usePomodoroStore = create<PomodoroStore>()(
         // 音声通知
         if (state.settings.notificationSound) {
           // デフォルトの通知音（実際の音声ファイルがない場合は短いbeep音を生成）
-          const audioContext = new AudioContext();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
+          try {
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-          oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-          gainNode.gain.setValueAtTime(state.settings.volume, audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(state.settings.volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
 
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.5);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+          } catch (error) {
+            console.warn('Audio notification failed:', error);
+          }
         }
       },
 
@@ -308,7 +325,7 @@ export const usePomodoroTimer = () => {
         if (newRemainingTime <= 0) {
           // タイマー完了
           store.completeSession();
-          store.switchToNextMode();
+          (store as any).switchToNextMode();
         } else {
           usePomodoroStore.setState({ remainingTime: newRemainingTime });
         }
