@@ -55,6 +55,16 @@ const IntegratedDashboard: React.FC = () => {
     const today = new Date().toISOString().split('T')[0];
     console.log('[IntegratedDashboard] 📅 本日の日付:', today);
 
+    // 配列チェックを追加
+    if (!Array.isArray(actualTodos)) {
+      console.warn(
+        '[IntegratedDashboard] ⚠️ actualTodosが配列ではありません:',
+        typeof actualTodos,
+        actualTodos
+      );
+      return [];
+    }
+
     const todaysTodos = actualTodos.filter((todo) => {
       const isCreatedToday = todo.createdAt?.startsWith(today);
       const hasDeadlineToday = todo.deadline === today;

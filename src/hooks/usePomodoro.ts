@@ -840,9 +840,10 @@ export const usePomodoro = () => {
     };
   }, [completedSessions]); // completedSessionsに依存
 
+  // メモ化されたレスポンスオブジェクト
   return useMemo(
     () => ({
-      // 状態
+      instanceId: instanceId.current,
       currentMode,
       status,
       remainingTime,
@@ -853,36 +854,24 @@ export const usePomodoro = () => {
       isMinimized,
       isVisible,
       position,
-      progress,
-      todayStats,
       showCompletionModal,
       currentTaskName,
-
-      // アクション
       startTimer,
       pauseTimer,
       resetTimer,
-      skipSession,
       switchMode,
+      skipSession,
       toggleMinimized,
       toggleVisibility,
       updatePosition,
       updateSettings,
       updateSettingsImmediately,
-      closeCompletionModal,
-      stopSound,
-      setTaskName,
-      clearTaskName,
-      speakMessage,
-      stopSpeaking,
       formatTime,
-
-      // Debug utilities
+      progress,
+      todayStats,
       clearPomodoroStorage,
-      instanceId: instanceId.current,
     }),
     [
-      // 状態の依存関係
       currentMode,
       status,
       remainingTime,
@@ -893,32 +882,22 @@ export const usePomodoro = () => {
       isMinimized,
       isVisible,
       position,
-      progress,
       showCompletionModal,
       currentTaskName,
-
-      // アクション関数の依存関係
       startTimer,
       pauseTimer,
       resetTimer,
-      skipSession,
       switchMode,
+      skipSession,
       toggleMinimized,
       toggleVisibility,
       updatePosition,
       updateSettings,
       updateSettingsImmediately,
-      closeCompletionModal,
-      stopSound,
-      setTaskName,
-      clearTaskName,
-      speakMessage,
-      stopSpeaking,
       formatTime,
-      clearPomodoroStorage,
-
-      // todayStatsの依存関係（すでにメモ化済み）
+      progress,
       todayStats,
+      clearPomodoroStorage,
     ]
   );
 };

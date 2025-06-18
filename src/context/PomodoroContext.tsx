@@ -14,16 +14,15 @@ interface PomodoroProviderProps {
 export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) => {
   const pomodoro = usePomodoro();
 
-  const contextValue = useMemo(
-    () => ({ pomodoro }),
-    [pomodoro] // pomodoroオブジェクト自体がすでにメモ化されているため、これだけで十分
-  );
+  const contextValue = useMemo(() => ({ pomodoro }), [pomodoro]);
 
-  console.log('🏭 PomodoroProvider: コンテキスト初期化', {
-    instanceId: pomodoro.instanceId,
-    isVisible: pomodoro.isVisible,
-    status: pomodoro.status,
-  });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🏭 PomodoroProvider: コンテキスト初期化', {
+      instanceId: pomodoro.instanceId,
+      isVisible: pomodoro.isVisible,
+      status: pomodoro.status,
+    });
+  }
 
   return <PomodoroContext.Provider value={contextValue}>{children}</PomodoroContext.Provider>;
 };
@@ -34,11 +33,13 @@ export const usePomodoroContext = (): PomodoroContextType => {
     throw new Error('usePomodoroContext must be used within a PomodoroProvider');
   }
 
-  console.log('🔗 usePomodoroContext: コンテキスト取得', {
-    instanceId: context.pomodoro.instanceId,
-    isVisible: context.pomodoro.isVisible,
-    status: context.pomodoro.status,
-  });
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔗 usePomodoroContext: コンテキスト取得', {
+      instanceId: context.pomodoro.instanceId,
+      isVisible: context.pomodoro.isVisible,
+      status: context.pomodoro.status,
+    });
+  }
 
   return context;
 };

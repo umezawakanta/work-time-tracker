@@ -121,7 +121,7 @@ export const useMongoTodos = (): UseMongoTodosReturn => {
   }, [fetchTodos]);
 
   return {
-    todos,
+    todos: todos || [],
     loading,
     error,
     addTodo,
