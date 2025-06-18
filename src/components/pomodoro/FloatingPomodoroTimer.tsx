@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
-import {
-  Play,
-  Pause,
-  RotateCcw,
-  SkipForward,
-  Settings,
-  Minimize2,
-  Maximize2,
-  X,
-  Timer,
-} from 'lucide-react';
+import { Play, Pause, RotateCcw, SkipForward, Settings, Minimize2, X, Timer } from 'lucide-react';
 import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroMode } from '@/types/pomodoro';
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { logger } from '../../utils/logger';
 import { fetchTokenFromDB } from './tokenService';
-import { getEnv, getBooleanEnv, isDev } from '../../utils/env';
+import { getEnv, getBooleanEnv, isDev, isProd } from '../../utils/env';
 
 // Extend Window interface for custom properties
 declare global {
