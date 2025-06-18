@@ -16,9 +16,4 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
   moduleDirectories: ['node_modules', 'src'],
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
 };
