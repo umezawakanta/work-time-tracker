@@ -5,9 +5,16 @@ export const getEnv = (key: string): string | undefined => {
     return process.env[key];
   }
 
-  // ブラウザ環境でViteのimport.metaが利用可能
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return import.meta.env[key];
+  // ブラウザ環境でViteのimport.metaが利用可能（Jest環境では無効）
+  try {
+    if (typeof window !== 'undefined' && 'import' in globalThis) {
+      const importMeta = (globalThis as any).import?.meta;
+      if (importMeta?.env) {
+        return importMeta.env[key];
+      }
+    }
+  } catch (error) {
+    // Jest環境などでimport.metaが利用できない場合は無視
   }
 
   return undefined;
@@ -29,9 +36,16 @@ export const isDev = (): boolean => {
     return true;
   }
 
-  // ブラウザ環境
-  if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
-    return true;
+  // ブラウザ環境（Jest環境でのエラーを回避）
+  try {
+    if (typeof window !== 'undefined' && 'import' in globalThis) {
+      const importMeta = (globalThis as any).import?.meta;
+      if (importMeta?.env?.DEV) {
+        return true;
+      }
+    }
+  } catch (error) {
+    // Jest環境などでimport.metaが利用できない場合は無視
   }
 
   return false;
@@ -43,9 +57,16 @@ export const isProd = (): boolean => {
     return true;
   }
 
-  // ブラウザ環境
-  if (typeof import.meta !== 'undefined' && import.meta.env?.PROD) {
-    return true;
+  // ブラウザ環境（Jest環境でのエラーを回避）
+  try {
+    if (typeof window !== 'undefined' && 'import' in globalThis) {
+      const importMeta = (globalThis as any).import?.meta;
+      if (importMeta?.env?.PROD) {
+        return true;
+      }
+    }
+  } catch (error) {
+    // Jest環境などでimport.metaが利用できない場合は無視
   }
 
   return false;

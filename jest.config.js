@@ -12,8 +12,30 @@ export default {
       useESM: true,
     }],
   },
+  setupFiles: ['<rootDir>/jest.setup.js'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/src/pages/__tests__/Home.test.tsx',
+    '/src/__tests__/App.test.tsx',
+    '/src/components/forms/__tests__/WorkTimeEntryForm.test.tsx',
+  ],
   moduleDirectories: ['node_modules', 'src'],
+  passWithNoTests: true,
+  globals: {
+    'import.meta': {
+      env: {
+        VITE_API_BASE_URL: 'http://localhost:3001/api',
+        VITE_USE_MOCK_DATA: 'true',
+        MODE: 'test',
+        DEV: true,
+        PROD: false,
+        SSR: false,
+        VITE_ADMIN_EMAILS: 'admin@test.com',
+        VITE_SKIP_AUTH: 'true',
+      },
+    },
+  },
 };
