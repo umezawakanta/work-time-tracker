@@ -342,7 +342,7 @@ export const usePomodoroTimer = () => {
         clearInterval(intervalId);
       }
     };
-  }, [store.status, store.remainingTime]);
+  }, [store]);
 
   return store;
 };

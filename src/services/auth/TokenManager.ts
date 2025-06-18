@@ -33,12 +33,16 @@ export class TokenManager {
   }
 
   private constructor() {
-    // 開発環境ではトークン管理を無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境またはStaging環境でTokenManagerを有効化
+    const isProduction =
+      process.env.NODE_ENV === 'production' || window.location.hostname.includes('vercel.app');
+
+    if (!isProduction) {
       console.log('🚫 Development: TokenManager disabled');
       return;
     }
 
+    console.log('✅ Production: TokenManager enabled');
     this.loadFromStorage();
     this.setupAxiosInterceptors();
   }
@@ -47,8 +51,10 @@ export class TokenManager {
    * ストレージからトークンを読み込み
    */
   private async loadFromStorage(): Promise<void> {
-    // 開発環境では無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境でのみ有効化
+    const isProduction =
+      process.env.NODE_ENV === 'production' || window.location.hostname.includes('vercel.app');
+    if (!isProduction) {
       console.log('🚫 Development: Token loading disabled');
       return;
     }

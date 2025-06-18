@@ -209,7 +209,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   }, []);
 
   const refreshAuth = useCallback(async () => {
-    if (!isFirebaseEnabled) return;
+    if (!isFirebaseEnabled) {
+      return;
+    }
     // 実装...
   }, []);
 

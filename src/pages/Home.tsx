@@ -53,7 +53,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
 
-  const todos = useSelector((state: RootState) => state.todo.items);
+  const todos = useSelector((state: RootState) => state.todo.items) || [];
   const isUserLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
 
