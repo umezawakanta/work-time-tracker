@@ -55,12 +55,24 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // IntersectionObserver mock
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  observe() {}
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  constructor(
+    _callback: IntersectionObserverCallback,
+    _options?: IntersectionObserverInit
+  ) {}
+  observe(_target: Element) {}
+  unobserve(_target: Element) {}
   disconnect() {}
-  unobserve() {}
-};
+  takeRecords(): IntersectionObserverEntry[] { return []; }
+}
+Object.defineProperty(global, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver,
+});
 
 // Location mockの追加
 Object.defineProperty(window, 'location', {
