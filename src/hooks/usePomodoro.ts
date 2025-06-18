@@ -870,6 +870,10 @@ export const usePomodoro = () => {
       progress,
       todayStats,
       clearPomodoroStorage,
+      closeCompletionModal,
+      stopSound,
+      setTaskName,
+      clearTaskName,
     }),
     [
       currentMode,
@@ -898,6 +902,10 @@ export const usePomodoro = () => {
       progress,
       todayStats,
       clearPomodoroStorage,
+      closeCompletionModal,
+      stopSound,
+      setTaskName,
+      clearTaskName,
     ]
   );
 };
