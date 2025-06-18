@@ -14,11 +14,19 @@
         "lint:fix": "eslint . --ext ts,tsx --fix",
         "preview": "vite preview",
         "server": "node --loader ts-node/esm src/server/server.ts",
-        "dev": "concurrently \"npm run start\" \"npm run server\"",
+        "dev": "concurrently \"pnpm run start\" \"pnpm run server\"",
         "test": "jest",
         "test:unit": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:watch-all": "jest --watchAll",
+        "test:file": "jest --testPathPattern",
+        "test:specific": "jest --testNamePattern",
         "test:integration": "jest --config jest.integration.config.js",
         "test:e2e": "cypress run",
+        "test:e2e:open": "cypress open",
+        "test:coverage": "jest --coverage --coverageReporters=text-lcov",
+        "test:coverage:html": "jest --coverage --coverageReporters=html",
+        "test:ci": "jest --ci --coverage --watchAll=false",
         "pre-commit": "lint-staged",
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
@@ -208,7 +216,7 @@
     "husky": {
         "hooks": {
             "pre-commit": "lint-staged",
-            "pre-push": "npm run type-check && npm run test:unit"
+            "pre-push": "pnpm run type-check && pnpm run test:unit"
         }
     }
 }

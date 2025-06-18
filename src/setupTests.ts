@@ -12,13 +12,21 @@ const mockImport = {
   },
 };
 
+// import.meta.envのモック
 Object.defineProperty(globalThis, 'import', {
   value: {
     meta: {
       env: mockImport.env,
     },
   },
+  writable: true,
+  configurable: true,
 });
+
+// ES module環境でのJest設定
+declare global {
+  var jest: typeof import('@jest/globals').jest;
+}
 
 // Jestのグローバル関数をモック
 type MockFunction = jest.MockInstance<unknown, unknown[]>;
