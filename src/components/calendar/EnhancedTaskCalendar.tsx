@@ -109,6 +109,9 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   const todos = useSelector((state: RootState) => state.todo.items);
   const todoStatus = useSelector((state: RootState) => state.todo.status);
 
+  // Ensure todos is always an array for safety
+  const safeTodos = Array.isArray(todos) ? todos : [];
+
   // Load todos
   useEffect(() => {
     if (todoStatus === 'idle') {
@@ -118,7 +121,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
 
   // Convert todos to task events with date filtering
   const taskEvents: TaskEvent[] = useMemo(() => {
-    return todos
+    return safeTodos
       .filter((todo) => {
         // Filter by completion status
         if (filterStatus === 'active' && todo.completed) return false;
@@ -143,7 +146,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
         tags: todo.tags,
         estimatedDuration: todo.estimatedDuration,
       }));
-  }, [todos, filterStatus, filterPriority]);
+  }, [safeTodos, filterStatus, filterPriority]);
 
   // Navigation functions
   const navigateDate = (direction: 'prev' | 'next') => {
@@ -224,7 +227,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   const handleTaskClick = useCallback(
     (task: TaskEvent) => {
       setSelectedTask(task);
-      const todo = todos.find((t) => t._id === task.taskId);
+      const todo = safeTodos.find((t) => t._id === task.taskId);
       if (todo) {
         setTaskForm({
           title: todo.task,
@@ -239,7 +242,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
       }
       setShowTaskModal(true);
     },
-    [todos]
+    [safeTodos]
   );
 
   // Handle date click
@@ -507,7 +510,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   const monthYear = currentDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
 
   // ToDoをカレンダーイベントに変換
-  const events: CalendarEvent[] = todos
+  const events: CalendarEvent[] = safeTodos
     .filter((todo) => todo.deadline)
     .map((todo) => ({
       id: todo._id,
@@ -596,14 +599,14 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   // タスク選択（編集）
   const handleSelectEvent = useCallback(
     (event: CalendarEvent) => {
-      const task = todos.find((todo) => todo._id === event.id);
+      const task = safeTodos.find((todo) => todo._id === event.id);
       if (task) {
         // Convert TodoItem to TaskEvent format or use task directly
         setSelectedTask(task as any); // Quick fix
         setShowTaskModal(true);
       }
     },
-    [todos]
+    [safeTodos]
   );
 
   return (

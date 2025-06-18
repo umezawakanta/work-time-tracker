@@ -60,6 +60,9 @@ const Home: React.FC = () => {
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [isLoadingCalendar, setIsLoadingCalendar] = useState(false);
 
+  // Ensure todos is always an array for safety
+  const safeTodos = Array.isArray(todos) ? todos : [];
+
   // ToDoデータの初期化
   useEffect(() => {
     if (isAuthenticated && isUserLoggedIn) {
@@ -109,7 +112,7 @@ const Home: React.FC = () => {
   // 連続記録の計算
   const calculateStreakDays = (): number => {
     // 簡易実装：実際にはより複雑なロジックが必要
-    const completedDates = todos
+    const completedDates = safeTodos
       .filter((todo) => todo.completed && todo.completedDate)
       .map((todo) => new Date(todo.completedDate!).toDateString())
       .sort()
@@ -140,7 +143,7 @@ const Home: React.FC = () => {
     const todayStr = today.toDateString();
 
     // ToDo統計
-    const todayTasks = todos.filter((todo) => {
+    const todayTasks = safeTodos.filter((todo) => {
       const createdDate = todo.createdAt ? new Date(todo.createdAt).toDateString() : todayStr;
       return createdDate === todayStr;
     });
@@ -150,7 +153,7 @@ const Home: React.FC = () => {
     const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
 
     // 期限切れタスク
-    const overdueTasks = todos.filter((todo) => {
+    const overdueTasks = safeTodos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
       return new Date(todo.deadline) < today;
     }).length;
@@ -166,7 +169,7 @@ const Home: React.FC = () => {
     ).length;
 
     // 高優先度タスク
-    const highPriorityTasks = todos.filter(
+    const highPriorityTasks = safeTodos.filter(
       (todo) => !todo.completed && (todo.isPrioritized || (todo.priority && todo.priority > 3))
     ).length;
 
@@ -211,14 +214,14 @@ const Home: React.FC = () => {
         change: { value: 0, period: '目標30日' },
       },
     ];
-  }, [todos, calendarEvents]);
+  }, [safeTodos, calendarEvents]);
 
   // 統合アクティビティの取得
   const getIntegratedActivities = (): ActivityData[] => {
     const activities: ActivityData[] = [];
 
     // 最近完了したToDo
-    const recentTodos = todos
+    const recentTodos = safeTodos
       .filter((todo) => todo.completed && todo.completedDate)
       .sort((a, b) => {
         const dateA = new Date(a.completedDate!).getTime();
@@ -293,7 +296,7 @@ const Home: React.FC = () => {
   // 緊急度の高いアラートを表示
   const getUrgentAlerts = () => {
     const alerts = [];
-    const overdueTasks = todos.filter((todo) => {
+    const overdueTasks = safeTodos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
       return new Date(todo.deadline) < new Date();
     });
@@ -307,7 +310,7 @@ const Home: React.FC = () => {
       });
     }
 
-    const todayDeadlines = todos.filter((todo) => {
+    const todayDeadlines = safeTodos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
       const deadline = new Date(todo.deadline);
       const today = new Date();
@@ -384,7 +387,7 @@ const Home: React.FC = () => {
         {/* 左側：AIタスク提案 */}
         <div className="xl:col-span-1">
           <NextTaskSuggestionComponent
-            todos={todos}
+            todos={safeTodos}
             calendarEvents={calendarEvents}
             onTaskSelect={handleTaskSelect}
             className="h-fit"
