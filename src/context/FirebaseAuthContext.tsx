@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { isFirebaseEnabled } from '@/config/firebase';
 import AuthService from '@/services/auth/AuthService';
-import { AuthUser, AuthError } from '@/types/auth';
+import { AuthUser, AuthError as _AuthError } from '@/types/auth';
 import { logger } from '@/utils/logger';
 
 interface FirebaseAuthContextType {
@@ -82,7 +82,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     }
 
     // Firebase認証状態のリスナー設定（Firebase有効時のみ）
-    const unsubscribe = AuthService.subscribeToAuthState((authUser) => {
+    return AuthService.subscribeToAuthState((authUser) => {
       setUser(authUser);
       setIsAuthenticated(!!authUser);
       setSessionExpired(false);
@@ -95,8 +95,6 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         });
       }
     });
-
-    return unsubscribe;
   }, []);
 
   // 認証メソッドの実装
@@ -215,26 +213,30 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     // 実装...
   }, []);
 
-  const value: FirebaseAuthContextType = {
-    // 基本認証状態
-    isAuthenticated,
-    user,
-    loading,
-    isFirebaseEnabled,
+  return (
+    <FirebaseAuthContext.Provider
+      value={{
+        // 基本認証状態
+        isAuthenticated,
+        user,
+        loading,
+        isFirebaseEnabled,
 
-    // 認証アクション
-    signIn,
-    signUp,
-    signInWithGoogle,
-    signOut,
-    resetPassword,
+        // 認証アクション
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signOut,
+        resetPassword,
 
-    // セッション管理
-    refreshAuth,
-    sessionExpired,
-  };
-
-  return <FirebaseAuthContext.Provider value={value}>{children}</FirebaseAuthContext.Provider>;
+        // セッション管理
+        refreshAuth,
+        sessionExpired,
+      }}
+    >
+      {children}
+    </FirebaseAuthContext.Provider>
+  );
 }
 
 export default FirebaseAuthContext;
