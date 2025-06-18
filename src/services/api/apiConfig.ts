@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { logger } from '../../utils/logger';
 import { fetchTokenFromDB } from './tokenService';
+import { getEnv, getBooleanEnv, isDev } from '../../utils/env';
 
 // Extend Window interface for custom properties
 declare global {
@@ -11,26 +12,26 @@ declare global {
 }
 
 export const USE_MOCK_DATA =
-  import.meta.env.VITE_USE_MOCK_DATA === 'true' ||
+  getBooleanEnv('VITE_USE_MOCK_DATA') ||
   (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
   // 開発環境では認証エラーを回避するためモックデータを優先使用
-  (import.meta.env.DEV &&
+  (isDev() &&
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ||
   // 本番環境でAPIが存在しない場合は自動的にモックモードを有効化
   (typeof window !== 'undefined' &&
     window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
-    !import.meta.env.VITE_API_BASE_URL?.includes('herokuapp') &&
-    !import.meta.env.VITE_API_BASE_URL?.includes('railway') &&
-    !import.meta.env.VITE_API_BASE_URL?.includes('render'));
+    !getEnv('VITE_API_BASE_URL')?.includes('herokuapp') &&
+    !getEnv('VITE_API_BASE_URL')?.includes('railway') &&
+    !getEnv('VITE_API_BASE_URL')?.includes('render'));
 
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');
 console.log('📋 Environment:', {
-  NODE_ENV: process.env.NODE_ENV,
-  DEV: import.meta.env.DEV,
-  PROD: import.meta.env.PROD,
-  VITE_USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK_DATA,
+  NODE_ENV: getEnv('NODE_ENV'),
+  DEV: isDev(),
+  PROD: isProd(),
+  VITE_USE_MOCK_DATA: getEnv('VITE_USE_MOCK_DATA'),
   USE_MOCK_DATA: USE_MOCK_DATA,
 });
 
@@ -56,17 +57,15 @@ if (hostname === 'work-time-tracker-5d9q.vercel.app') {
   console.log('🔧 Preview: Using production API server:', baseURL);
 } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
   // ローカル開発環境
-  if (
-    import.meta.env.VITE_API_BASE_URL?.includes('vercel.app') ||
-    import.meta.env.VITE_API_BASE_URL?.includes('railway.app')
-  ) {
-    baseURL = import.meta.env.VITE_API_BASE_URL;
+  const viteApiUrl = getEnv('VITE_API_BASE_URL');
+  if (viteApiUrl?.includes('vercel.app') || viteApiUrl?.includes('railway.app')) {
+    baseURL = viteApiUrl;
     console.log('🛰️ Development: Using remote API server:', baseURL);
   } else {
     baseURL = 'http://localhost:3001/api';
-    if (import.meta.env.DEV) {
+    if (isDev()) {
       console.log('🛠️ Development: Using local dev server');
-      if (import.meta.env.VITE_API_BASE_URL) {
+      if (viteApiUrl) {
         console.log('💡 Note: Ignoring VITE_API_BASE_URL for localhost development');
       }
     }
@@ -129,8 +128,8 @@ let tokenFetchPromise: Promise<string> | null = null;
 api.interceptors.request.use(
   async (config) => {
     // 開発環境では本番でのトークン機能を無効化
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🚫 Development: Token authentication disabled');
+    if (getEnv('NODE_ENV') === 'development' || getEnv('NODE_ENV') === 'test') {
+      console.log('🚫 Development/Test: Token authentication disabled');
       return config;
     }
 
@@ -213,7 +212,10 @@ api.interceptors.response.use(
       });
 
       // 本番環境でAPIサーバーに接続できない場合の案内
-      if (window.location.hostname === 'work-time-tracker-5d9q.vercel.app') {
+      if (
+        typeof window !== 'undefined' &&
+        window.location.hostname === 'work-time-tracker-5d9q.vercel.app'
+      ) {
         console.warn(
           '💡 本番環境: APIサーバーに接続できません。デモモードの利用を検討してください。'
         );
@@ -222,7 +224,7 @@ api.interceptors.response.use(
       }
 
       // 開発環境でのサーバー未起動を通知
-      if (baseURL.includes('localhost:3001') && import.meta.env.DEV) {
+      if (baseURL.includes('localhost:3001') && isDev()) {
         console.warn(
           '💡 Hint: Make sure your development server is running on http://localhost:3001'
         );
