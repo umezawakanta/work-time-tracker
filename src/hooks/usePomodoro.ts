@@ -56,7 +56,17 @@ export const usePomodoro = () => {
   // 強化された完了音を再生する関数
   const playCompletionSound = useCallback(
     (volume: number) => {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // ✅ 型安全な方法でAudioContextを作成
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+      if (!AudioContextClass) {
+        console.warn('AudioContext not supported');
+        return;
+      }
+
+      const audioContext = new AudioContextClass();
       soundRef.current = audioContext;
 
       // メロディックな通知音（3回のbeep）
