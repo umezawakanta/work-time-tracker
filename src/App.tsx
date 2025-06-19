@@ -142,7 +142,6 @@ export default function App() {
                 <Route path="/site-dev" element={<SiteDevWBS />} />
                 <Route path="/404" element={<NotFound />} />
                 <Route path="/update-history" element={<UpdateHistoryPage />} />
-                <Route path="/abstinence" element={<AbstinenceManager />} />
 
                 {/* 認証が必要なルート */}
                 <Route element={<PrivateRoute />}>
@@ -387,6 +386,14 @@ export default function App() {
                     element={
                       <LayoutWrapper>
                         <BillingHistoryPage />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/abstinence"
+                    element={
+                      <LayoutWrapper>
+                        <AbstinenceManager />
                       </LayoutWrapper>
                     }
                   />
