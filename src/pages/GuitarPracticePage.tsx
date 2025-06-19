@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
+import React, { useState, useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
 import {
   Card,
   CardContent,
@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -34,34 +34,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import {
   Guitar,
   Music,
@@ -76,13 +72,13 @@ import {
   Edit,
   Crown,
   ExternalLink,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   fetchGuitarPractices,
   addGuitarPractice,
   deleteGuitarPractice,
   addMockGuitarPractices,
-} from "@/store/guitarPracticeSlice";
+} from '@/store/guitarPracticeSlice';
 
 // ギター練習のタイプ定義
 export interface GuitarPractice {
@@ -102,34 +98,55 @@ export interface GuitarPractice {
 // フォーム検証スキーマ
 const practiceFormSchema = z.object({
   date: z.date({
-    required_error: "練習日を選択してください",
+    required_error: '練習日を選択してください',
   }),
   duration: z
     .number({
-      required_error: "練習時間を入力してください",
-      invalid_type_error: "練習時間は数値で入力してください",
+      required_error: '練習時間を入力してください',
+      invalid_type_error: '練習時間は数値で入力してください',
     })
-    .min(1, "1分以上の練習時間を入力してください"),
+    .min(1, '1分以上の練習時間を入力してください'),
   technique: z.string({
-    required_error: "練習内容を選択してください",
+    required_error: '練習内容を選択してください',
   }),
   song: z.string().optional(),
   bpm: z.number().optional(),
   difficulty: z
     .number({
-      required_error: "難易度を選択してください",
+      required_error: '難易度を選択してください',
     })
     .min(1)
     .max(5),
   notes: z.string().optional(),
   satisfaction: z
     .number({
-      required_error: "満足度を選択してください",
+      required_error: '満足度を選択してください',
     })
     .min(1)
     .max(5),
   isMilestone: z.boolean(), // .default(false)を削除して、明示的にbooleanにする
 });
+
+// 日付検証用のヘルパー関数を追加
+const isValidDate = (dateString: any): boolean => {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  return !isNaN(date.getTime()) && date.getTime() > 0;
+};
+
+const formatSafeDate = (dateString: any, formatString: string = 'yyyy年MM月dd日'): string => {
+  if (!isValidDate(dateString)) {
+    console.warn('Invalid date detected:', dateString);
+    return '日付不明';
+  }
+
+  try {
+    return format(new Date(dateString), formatString, { locale: ja });
+  } catch (error) {
+    console.error('Date formatting error:', error, 'Date value:', dateString);
+    return '日付エラー';
+  }
+};
 
 // 新しい練習記録を作成するコンポーネント
 const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
@@ -140,11 +157,11 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
     defaultValues: {
       date: new Date(),
       duration: 30,
-      technique: "",
-      song: "",
+      technique: '',
+      song: '',
       bpm: 80,
       difficulty: 3,
-      notes: "",
+      notes: '',
       satisfaction: 3,
       isMilestone: false,
     },
@@ -172,23 +189,23 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
       form.reset();
       onSuccess();
     } catch (error) {
-      console.error("練習記録の保存に失敗しました:", error);
+      console.error('練習記録の保存に失敗しました:', error);
     }
   };
 
   const techniqueOptions = [
-    { value: "コード", label: "コード" },
-    { value: "スケール", label: "スケール" },
-    { value: "アルペジオ", label: "アルペジオ" },
-    { value: "ピッキング", label: "ピッキング" },
-    { value: "フィンガリング", label: "フィンガリング" },
-    { value: "リズム", label: "リズム" },
-    { value: "ソロ", label: "ソロ" },
-    { value: "曲の練習", label: "曲の練習" },
-    { value: "耳コピ", label: "耳コピ" },
-    { value: "作曲", label: "作曲" },
-    { value: "即興", label: "即興" },
-    { value: "その他", label: "その他" },
+    { value: 'コード', label: 'コード' },
+    { value: 'スケール', label: 'スケール' },
+    { value: 'アルペジオ', label: 'アルペジオ' },
+    { value: 'ピッキング', label: 'ピッキング' },
+    { value: 'フィンガリング', label: 'フィンガリング' },
+    { value: 'リズム', label: 'リズム' },
+    { value: 'ソロ', label: 'ソロ' },
+    { value: '曲の練習', label: '曲の練習' },
+    { value: '耳コピ', label: '耳コピ' },
+    { value: '作曲', label: '作曲' },
+    { value: '即興', label: '即興' },
+    { value: 'その他', label: 'その他' },
   ];
 
   return (
@@ -205,17 +222,13 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        variant={"outline"}
+                        variant={'outline'}
                         className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          'w-full pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
                         )}
                       >
-                        {field.value ? (
-                          format(field.value, "yyyy年MM月dd日", { locale: ja })
-                        ) : (
-                          <span>日付を選択</span>
-                        )}
+                        {field.value ? formatSafeDate(field.value) : <span>日付を選択</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -258,10 +271,7 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>練習内容</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="練習した内容を選択" />
@@ -287,11 +297,7 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
               <FormItem>
                 <FormLabel>曲名（任意）</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="練習した曲名"
-                    {...field}
-                    value={field.value || ""}
-                  />
+                  <Input placeholder="練習した曲名" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -310,11 +316,9 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     placeholder="練習時のテンポ"
                     {...field}
                     onChange={(e) =>
-                      field.onChange(
-                        e.target.value ? parseInt(e.target.value) : undefined
-                      )
+                      field.onChange(e.target.value ? parseInt(e.target.value) : undefined)
                     }
-                    value={field.value || ""}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -383,7 +387,7 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
                     placeholder="練習の感想や気づきなど"
                     className="min-h-[100px]"
                     {...field}
-                    value={field.value || ""}
+                    value={field.value || ''}
                   />
                 </FormControl>
                 <FormMessage />
@@ -397,10 +401,7 @@ const NewPracticeForm = ({ onSuccess }: { onSuccess: () => void }) => {
             render={({ field }) => (
               <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>マイルストーン</FormLabel>
@@ -428,20 +429,14 @@ const PracticeDetails = ({ practice }: { practice: GuitarPractice }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h4 className="text-sm font-medium text-muted-foreground">練習日</h4>
-          <p>
-            {format(new Date(practice.date), "yyyy年MM月dd日", { locale: ja })}
-          </p>
+          <p>{formatSafeDate(practice.date)}</p>
         </div>
         <div>
-          <h4 className="text-sm font-medium text-muted-foreground">
-            練習時間
-          </h4>
+          <h4 className="text-sm font-medium text-muted-foreground">練習時間</h4>
           <p>{practice.duration}分</p>
         </div>
         <div>
-          <h4 className="text-sm font-medium text-muted-foreground">
-            練習内容
-          </h4>
+          <h4 className="text-sm font-medium text-muted-foreground">練習内容</h4>
           <p>{practice.technique}</p>
         </div>
         {practice.song && (
@@ -463,7 +458,7 @@ const PracticeDetails = ({ practice }: { practice: GuitarPractice }) => {
               <div
                 key={i}
                 className={`w-4 h-4 rounded-full mr-1 ${
-                  i < practice.difficulty ? "bg-primary" : "bg-gray-200"
+                  i < practice.difficulty ? 'bg-primary' : 'bg-gray-200'
                 }`}
               />
             ))}
@@ -476,7 +471,7 @@ const PracticeDetails = ({ practice }: { practice: GuitarPractice }) => {
               <div
                 key={i}
                 className={`w-4 h-4 rounded-full mr-1 ${
-                  i < practice.satisfaction ? "bg-green-500" : "bg-gray-200"
+                  i < practice.satisfaction ? 'bg-green-500' : 'bg-gray-200'
                 }`}
               />
             ))}
@@ -504,15 +499,10 @@ const PracticeDetails = ({ practice }: { practice: GuitarPractice }) => {
 // 練習統計の視覚化コンポーネント
 const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
   // 総練習時間（分）
-  const totalPracticeTime = practices.reduce(
-    (total, practice) => total + practice.duration,
-    0
-  );
+  const totalPracticeTime = practices.reduce((total, practice) => total + practice.duration, 0);
 
   // 練習日数
-  const uniqueDatesSet = new Set(
-    practices.map((practice) => practice.date.substring(0, 10))
-  );
+  const uniqueDatesSet = new Set(practices.map((practice) => practice.date.substring(0, 10)));
   const totalPracticeDays = uniqueDatesSet.size;
 
   // 最近7日間の練習日数
@@ -522,14 +512,17 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
     return date.toISOString().substring(0, 10);
   });
 
-  const practicesByDate = practices.reduce((acc, practice) => {
-    const dateStr = practice.date.substring(0, 10);
-    if (!acc[dateStr]) {
-      acc[dateStr] = [];
-    }
-    acc[dateStr].push(practice);
-    return acc;
-  }, {} as Record<string, GuitarPractice[]>);
+  const practicesByDate = practices.reduce(
+    (acc, practice) => {
+      const dateStr = practice.date.substring(0, 10);
+      if (!acc[dateStr]) {
+        acc[dateStr] = [];
+      }
+      acc[dateStr].push(practice);
+      return acc;
+    },
+    {} as Record<string, GuitarPractice[]>
+  );
 
   const last7DaysPractice = last7Days.map((date) => {
     return {
@@ -556,9 +549,7 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
   const avgSatisfaction =
     practices.length > 0
       ? Math.round(
-          (practices.reduce((sum, p) => sum + p.satisfaction, 0) /
-            practices.length) *
-            10
+          (practices.reduce((sum, p) => sum + p.satisfaction, 0) / practices.length) * 10
         ) / 10
       : 0;
 
@@ -571,12 +562,9 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.floor(totalPracticeTime / 60)}時間 {totalPracticeTime % 60}
-              分
+              {Math.floor(totalPracticeTime / 60)}時間 {totalPracticeTime % 60}分
             </div>
-            <p className="text-xs text-muted-foreground">
-              {practices.length}回の練習記録
-            </p>
+            <p className="text-xs text-muted-foreground">{practices.length}回の練習記録</p>
           </CardContent>
         </Card>
 
@@ -587,10 +575,7 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
           <CardContent>
             <div className="text-2xl font-bold">{totalPracticeDays}日</div>
             <p className="text-xs text-muted-foreground">
-              平均:{" "}
-              {practices.length > 0
-                ? Math.round(totalPracticeTime / totalPracticeDays)
-                : 0}
+              平均: {practices.length > 0 ? Math.round(totalPracticeTime / totalPracticeDays) : 0}
               分/日
             </p>
           </CardContent>
@@ -607,9 +592,7 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
                 <div
                   key={i}
                   className={`w-5 h-2 mr-1 rounded-sm ${
-                    i < Math.floor(avgSatisfaction)
-                      ? "bg-green-500"
-                      : "bg-gray-200"
+                    i < Math.floor(avgSatisfaction) ? 'bg-green-500' : 'bg-gray-200'
                   }`}
                 />
               ))}
@@ -642,27 +625,22 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
                 .reverse()
                 .map((day, i) => {
                   const date = new Date(day.date);
-                  const totalMinutes = day.practices.reduce(
-                    (total, p) => total + p.duration,
-                    0
-                  );
+                  const totalMinutes = day.practices.reduce((total, p) => total + p.duration, 0);
 
                   return (
                     <div key={i} className="flex flex-col items-center">
                       <div className="text-xs text-muted-foreground">
-                        {format(date, "E", { locale: ja })}
+                        {formatSafeDate(date, 'E')}
                       </div>
                       <div
                         className={`w-8 h-8 flex items-center justify-center rounded-full mt-1 ${
-                          day.hasPractice
-                            ? "bg-primary text-white"
-                            : "bg-gray-100 text-gray-400"
+                          day.hasPractice ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
                         }`}
                       >
                         {date.getDate()}
                       </div>
                       <div className="text-xs mt-1">
-                        {totalMinutes > 0 ? `${totalMinutes}分` : "-"}
+                        {totalMinutes > 0 ? `${totalMinutes}分` : '-'}
                       </div>
                     </div>
                   );
@@ -700,37 +678,31 @@ const PracticeStats = ({ practices }: { practices: GuitarPractice[] }) => {
 // メインのギター練習ページコンポーネント
 const GuitarPracticePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const practices = useSelector(
-    (state: RootState) => state.guitarPractice.practices
-  );
+  const practices = useSelector((state: RootState) => state.guitarPractice.practices);
   const status = useSelector((state: RootState) => state.guitarPractice.status);
   const error = useSelector((state: RootState) => state.guitarPractice.error);
-  const isPremium =
-    useSelector((state: RootState) => state.user?.hasActiveSubscription) ||
-    false;
+  const isPremium = useSelector((state: RootState) => state.user?.hasActiveSubscription) || false;
 
-  const [activeTab, setActiveTab] = useState<string>("log");
-  const [selectedPractice, setSelectedPractice] =
-    useState<GuitarPractice | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('log');
+  const [selectedPractice, setSelectedPractice] = useState<GuitarPractice | null>(null);
   const [showMotivationTip, setShowMotivationTip] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   // 練習記録のモチベーションヒント
   const motivationTips = [
-    "毎日少しずつの練習が大きな進歩につながります。15分でも継続が大切です。",
-    "練習を記録することで自分の成長を実感できます。達成感がモチベーションを高めます。",
-    "難しいフレーズは遅いテンポから始め、少しずつBPMを上げていくと効果的です。",
-    "ギターは音楽を楽しむための道具です。時には好きな曲を演奏する時間も大切にしましょう。",
-    "技術的な練習と曲の練習をバランスよく組み合わせると、モチベーションを保ちやすくなります。",
+    '毎日少しずつの練習が大きな進歩につながります。15分でも継続が大切です。',
+    '練習を記録することで自分の成長を実感できます。達成感がモチベーションを高めます。',
+    '難しいフレーズは遅いテンポから始め、少しずつBPMを上げていくと効果的です。',
+    'ギターは音楽を楽しむための道具です。時には好きな曲を演奏する時間も大切にしましょう。',
+    '技術的な練習と曲の練習をバランスよく組み合わせると、モチベーションを保ちやすくなります。',
   ];
 
-  const randomTip =
-    motivationTips[Math.floor(Math.random() * motivationTips.length)];
+  const randomTip = motivationTips[Math.floor(Math.random() * motivationTips.length)];
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === 'idle') {
       // 開発環境では、APIが未実装の場合はモックデータを使用
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === 'development') {
         // バックエンドAPIが実装されていない場合、モックデータを使用
         dispatch(addMockGuitarPractices());
       } else {
@@ -740,13 +712,19 @@ const GuitarPracticePage: React.FC = () => {
     }
   }, [status, dispatch]);
 
-  // 最新の練習を表示するためにソート
-  const sortedPractices = [...practices].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  // sortedPracticesの処理も安全にする
+  const sortedPractices = useMemo(() => {
+    return [...practices]
+      .filter((practice) => isValidDate(practice.date)) // 無効な日付をフィルタリング
+      .sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB.getTime() - dateA.getTime();
+      });
+  }, [practices]);
 
   // データ取得中の表示
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen">
         <div className="text-center">
@@ -758,16 +736,13 @@ const GuitarPracticePage: React.FC = () => {
   }
 
   // エラー表示
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen">
         <div className="text-center">
           <div className="text-red-500 text-xl mb-4">エラーが発生しました</div>
           <p className="text-gray-600">{error}</p>
-          <Button
-            onClick={() => dispatch(fetchGuitarPractices())}
-            className="mt-4"
-          >
+          <Button onClick={() => dispatch(fetchGuitarPractices())} className="mt-4">
             再読み込み
           </Button>
         </div>
@@ -798,9 +773,7 @@ const GuitarPracticePage: React.FC = () => {
               <Sparkles className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h3 className="font-medium text-blue-800 mb-1">
-                今日の練習モチベーション
-              </h3>
+              <h3 className="font-medium text-blue-800 mb-1">今日の練習モチベーション</h3>
               <p className="text-blue-700">{randomTip}</p>
             </div>
           </div>
@@ -808,11 +781,7 @@ const GuitarPracticePage: React.FC = () => {
       )}
 
       {/* メインのタブナビゲーション */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full mb-8"
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-8">
         <TabsList className="mb-4 flex flex-wrap justify-center">
           <TabsTrigger value="log" className="flex items-center gap-1">
             <Guitar className="h-4 w-4" />
@@ -842,15 +811,10 @@ const GuitarPracticePage: React.FC = () => {
                     <Guitar className="h-5 w-5 text-primary" />
                     練習記録
                   </CardTitle>
-                  <CardDescription>
-                    あなたのギター練習の記録を管理します
-                  </CardDescription>
+                  <CardDescription>あなたのギター練習の記録を管理します</CardDescription>
                 </div>
 
-                <Dialog
-                  open={isAddDialogOpen}
-                  onOpenChange={setIsAddDialogOpen}
-                >
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
                     <Button>
                       <Plus className="h-4 w-4 mr-2" />
@@ -864,9 +828,7 @@ const GuitarPracticePage: React.FC = () => {
                         今日の練習内容を記録して、あなたの上達を追跡しましょう
                       </DialogDescription>
                     </DialogHeader>
-                    <NewPracticeForm
-                      onSuccess={() => setIsAddDialogOpen(false)}
-                    />
+                    <NewPracticeForm onSuccess={() => setIsAddDialogOpen(false)} />
                   </DialogContent>
                 </Dialog>
               </div>
@@ -875,39 +837,23 @@ const GuitarPracticePage: React.FC = () => {
               {practices.length === 0 ? (
                 <div className="text-center p-8">
                   <Guitar className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    まだ練習記録がありません
-                  </h3>
-                  <p className="text-gray-500 mb-4">
-                    練習を記録して、あなたの上達を追跡しましょう
-                  </p>
-                  <Button onClick={() => setIsAddDialogOpen(true)}>
-                    最初の練習を記録
-                  </Button>
+                  <h3 className="text-lg font-medium mb-2">まだ練習記録がありません</h3>
+                  <p className="text-gray-500 mb-4">練習を記録して、あなたの上達を追跡しましょう</p>
+                  <Button onClick={() => setIsAddDialogOpen(true)}>最初の練習を記録</Button>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {sortedPractices.map((practice) => (
                     <Card key={practice._id} className="overflow-hidden">
                       <div
-                        className={`${
-                          practice.isMilestone
-                            ? "border-l-4 border-amber-400"
-                            : ""
-                        }`}
+                        className={`${practice.isMilestone ? 'border-l-4 border-amber-400' : ''}`}
                       >
                         <div className="p-4">
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="flex items-center gap-2">
-                                <h3 className="font-medium">
-                                  {practice.technique}
-                                </h3>
-                                {practice.song && (
-                                  <Badge variant="outline">
-                                    {practice.song}
-                                  </Badge>
-                                )}
+                                <h3 className="font-medium">{practice.technique}</h3>
+                                {practice.song && <Badge variant="outline">{practice.song}</Badge>}
                                 {practice.isMilestone && (
                                   <Badge className="bg-amber-100 text-amber-800 border-amber-200">
                                     <Award className="h-3 w-3 mr-1" />
@@ -916,12 +862,7 @@ const GuitarPracticePage: React.FC = () => {
                                 )}
                               </div>
                               <div className="text-sm text-muted-foreground mt-1">
-                                {format(
-                                  new Date(practice.date),
-                                  "yyyy年MM月dd日",
-                                  { locale: ja }
-                                )}{" "}
-                                | {practice.duration}分間
+                                {formatSafeDate(practice.date)} | {practice.duration}分間
                                 {practice.bpm && ` | ${practice.bpm} BPM`}
                               </div>
                             </div>
@@ -939,9 +880,7 @@ const GuitarPracticePage: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  dispatch(deleteGuitarPractice(practice._id))
-                                }
+                                onClick={() => dispatch(deleteGuitarPractice(practice._id))}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -956,9 +895,7 @@ const GuitarPracticePage: React.FC = () => {
                                   <div
                                     key={i}
                                     className={`w-4 h-4 rounded-full mr-1 ${
-                                      i < practice.difficulty
-                                        ? "bg-primary"
-                                        : "bg-gray-200"
+                                      i < practice.difficulty ? 'bg-primary' : 'bg-gray-200'
                                     }`}
                                   />
                                 ))}
@@ -971,9 +908,7 @@ const GuitarPracticePage: React.FC = () => {
                                   <div
                                     key={i}
                                     className={`w-4 h-4 rounded-full mr-1 ${
-                                      i < practice.satisfaction
-                                        ? "bg-green-500"
-                                        : "bg-gray-200"
+                                      i < practice.satisfaction ? 'bg-green-500' : 'bg-gray-200'
                                     }`}
                                   />
                                 ))}
@@ -999,13 +934,9 @@ const GuitarPracticePage: React.FC = () => {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>練習の詳細</DialogTitle>
-                        <DialogDescription>
-                          練習記録の詳細情報を確認できます。
-                        </DialogDescription>
+                        <DialogDescription>練習記録の詳細情報を確認できます。</DialogDescription>
                       </DialogHeader>
-                      {selectedPractice && (
-                        <PracticeDetails practice={selectedPractice} />
-                      )}
+                      {selectedPractice && <PracticeDetails practice={selectedPractice} />}
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -1030,15 +961,11 @@ const GuitarPracticePage: React.FC = () => {
               ) : (
                 <div className="text-center p-8">
                   <BarChart2 className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    まだデータがありません
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">まだデータがありません</h3>
                   <p className="text-gray-500 mb-4">
                     練習を記録すると、ここに統計情報が表示されます
                   </p>
-                  <Button onClick={() => setIsAddDialogOpen(true)}>
-                    最初の練習を記録
-                  </Button>
+                  <Button onClick={() => setIsAddDialogOpen(true)}>最初の練習を記録</Button>
                 </div>
               )}
             </CardContent>
@@ -1053,9 +980,7 @@ const GuitarPracticePage: React.FC = () => {
                 <Award className="h-5 w-5 text-amber-500" />
                 マイルストーン
               </CardTitle>
-              <CardDescription>
-                あなたのギター上達における重要な節目
-              </CardDescription>
+              <CardDescription>あなたのギター上達における重要な節目</CardDescription>
             </CardHeader>
             <CardContent>
               {practices.filter((p) => p.isMilestone).length > 0 ? (
@@ -1076,15 +1001,9 @@ const GuitarPracticePage: React.FC = () => {
                           <Card className="flex-1">
                             <CardHeader className="pb-2">
                               <div className="flex justify-between items-start">
-                                <CardTitle className="text-base">
-                                  {practice.technique}
-                                </CardTitle>
+                                <CardTitle className="text-base">{practice.technique}</CardTitle>
                                 <div className="text-sm text-muted-foreground">
-                                  {format(
-                                    new Date(practice.date),
-                                    "yyyy年MM月dd日",
-                                    { locale: ja }
-                                  )}
+                                  {formatSafeDate(practice.date)}
                                 </div>
                               </div>
                               {practice.song && (
@@ -1118,15 +1037,11 @@ const GuitarPracticePage: React.FC = () => {
               ) : (
                 <div className="text-center p-8">
                   <Award className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    マイルストーンがありません
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">マイルストーンがありません</h3>
                   <p className="text-gray-500 mb-4">
                     特に重要な進歩や達成があった練習を「マイルストーン」としてマークしましょう
                   </p>
-                  <Button onClick={() => setIsAddDialogOpen(true)}>
-                    練習を記録
-                  </Button>
+                  <Button onClick={() => setIsAddDialogOpen(true)}>練習を記録</Button>
                 </div>
               )}
             </CardContent>
@@ -1148,18 +1063,19 @@ const GuitarPracticePage: React.FC = () => {
                 <div className="space-y-8">
                   {/* テクニック別グラフ - 簡易的な実装 */}
                   <div>
-                    <h3 className="text-lg font-medium mb-4">
-                      テクニック別練習時間
-                    </h3>
+                    <h3 className="text-lg font-medium mb-4">テクニック別練習時間</h3>
                     <div className="space-y-4">
                       {Object.entries(
-                        practices.reduce((acc, practice) => {
-                          if (!acc[practice.technique]) {
-                            acc[practice.technique] = 0;
-                          }
-                          acc[practice.technique] += practice.duration;
-                          return acc;
-                        }, {} as Record<string, number>)
+                        practices.reduce(
+                          (acc, practice) => {
+                            if (!acc[practice.technique]) {
+                              acc[practice.technique] = 0;
+                            }
+                            acc[practice.technique] += practice.duration;
+                            return acc;
+                          },
+                          {} as Record<string, number>
+                        )
                       )
                         .sort((a, b) => b[1] - a[1])
                         .map(([technique, totalMinutes], i) => (
@@ -1169,17 +1085,13 @@ const GuitarPracticePage: React.FC = () => {
                               <span>
                                 {Math.floor(totalMinutes / 60) > 0
                                   ? `${Math.floor(totalMinutes / 60)}時間 `
-                                  : ""}
+                                  : ''}
                                 {totalMinutes % 60}分
                               </span>
                             </div>
                             <Progress
                               value={
-                                (totalMinutes /
-                                  practices.reduce(
-                                    (sum, p) => sum + p.duration,
-                                    0
-                                  )) *
+                                (totalMinutes / practices.reduce((sum, p) => sum + p.duration, 0)) *
                                 100
                               }
                               className="h-2"
@@ -1191,9 +1103,7 @@ const GuitarPracticePage: React.FC = () => {
 
                   {/* テクニック詳細テーブル */}
                   <div>
-                    <h3 className="text-lg font-medium mb-4">
-                      テクニック別詳細
-                    </h3>
+                    <h3 className="text-lg font-medium mb-4">テクニック別詳細</h3>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -1207,68 +1117,66 @@ const GuitarPracticePage: React.FC = () => {
                       </TableHeader>
                       <TableBody>
                         {Object.entries(
-                          practices.reduce(
-                            (acc, practice) => {
-                              if (!acc[practice.technique]) {
-                                acc[practice.technique] = {
-                                  count: 0,
-                                  totalTime: 0,
-                                  totalDifficulty: 0,
-                                  totalSatisfaction: 0,
-                                  latestDate: new Date(0),
-                                };
-                              }
+                          practices
+                            .filter((practice) => isValidDate(practice.date)) // 無効な日付をフィルタリング
+                            .reduce(
+                              (acc, practice) => {
+                                if (!acc[practice.technique]) {
+                                  acc[practice.technique] = {
+                                    count: 0,
+                                    totalTime: 0,
+                                    totalDifficulty: 0,
+                                    totalSatisfaction: 0,
+                                    latestDate: new Date(0),
+                                  };
+                                }
 
-                              const entry = acc[practice.technique];
-                              entry.count += 1;
-                              entry.totalTime += practice.duration;
-                              entry.totalDifficulty += practice.difficulty;
-                              entry.totalSatisfaction += practice.satisfaction;
+                                const entry = acc[practice.technique];
+                                entry.count += 1;
+                                entry.totalTime += practice.duration;
+                                entry.totalDifficulty += practice.difficulty;
+                                entry.totalSatisfaction += practice.satisfaction;
 
-                              const practiceDate = new Date(practice.date);
-                              if (practiceDate > entry.latestDate) {
-                                entry.latestDate = practiceDate;
-                              }
+                                const practiceDate = new Date(practice.date);
+                                if (isValidDate(practice.date) && practiceDate > entry.latestDate) {
+                                  entry.latestDate = practiceDate;
+                                }
 
-                              return acc;
-                            },
-                            {} as Record<
-                              string,
-                              {
-                                count: number;
-                                totalTime: number;
-                                totalDifficulty: number;
-                                totalSatisfaction: number;
-                                latestDate: Date;
-                              }
-                            >
-                          )
+                                return acc;
+                              },
+                              {} as Record<
+                                string,
+                                {
+                                  count: number;
+                                  totalTime: number;
+                                  totalDifficulty: number;
+                                  totalSatisfaction: number;
+                                  latestDate: Date;
+                                }
+                              >
+                            )
                         )
                           .sort((a, b) => b[1].totalTime - a[1].totalTime)
                           .map(([technique, data], i) => (
                             <TableRow key={i}>
-                              <TableCell className="font-medium">
-                                {technique}
-                              </TableCell>
+                              <TableCell className="font-medium">{technique}</TableCell>
                               <TableCell>{data.count}回</TableCell>
                               <TableCell>
                                 {Math.floor(data.totalTime / 60) > 0
                                   ? `${Math.floor(data.totalTime / 60)}時間 `
-                                  : ""}
+                                  : ''}
                                 {data.totalTime % 60}分
                               </TableCell>
                               <TableCell>
                                 {(data.totalDifficulty / data.count).toFixed(1)}
                               </TableCell>
                               <TableCell>
-                                {(data.totalSatisfaction / data.count).toFixed(
-                                  1
-                                )}
+                                {(data.totalSatisfaction / data.count).toFixed(1)}
                               </TableCell>
                               <TableCell>
-                                {format(data.latestDate, "yyyy年MM月dd日", {
-                                  locale: ja,
-                                })}
+                                {data.latestDate.getTime() > 0
+                                  ? formatSafeDate(data.latestDate, 'yyyy年MM月dd日')
+                                  : '記録なし'}
                               </TableCell>
                             </TableRow>
                           ))}
@@ -1279,15 +1187,11 @@ const GuitarPracticePage: React.FC = () => {
               ) : (
                 <div className="text-center p-8">
                   <Layers className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">
-                    まだデータがありません
-                  </h3>
+                  <h3 className="text-lg font-medium mb-2">まだデータがありません</h3>
                   <p className="text-gray-500 mb-4">
                     練習を記録すると、テクニック別の分析が表示されます
                   </p>
-                  <Button onClick={() => setIsAddDialogOpen(true)}>
-                    練習を記録
-                  </Button>
+                  <Button onClick={() => setIsAddDialogOpen(true)}>練習を記録</Button>
                 </div>
               )}
             </CardContent>
@@ -1302,18 +1206,14 @@ const GuitarPracticePage: React.FC = () => {
                 <Music className="h-5 w-5 text-green-500" />
                 ギター練習リソース
               </CardTitle>
-              <CardDescription>
-                効果的な練習のための参考資料とリンク集
-              </CardDescription>
+              <CardDescription>効果的な練習のための参考資料とリンク集</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ビデオレッスン */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">
-                      おすすめのビデオレッスン
-                    </CardTitle>
+                    <CardTitle className="text-base">おすすめのビデオレッスン</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="border rounded-md p-3">
@@ -1329,19 +1229,14 @@ const GuitarPracticePage: React.FC = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         基本コードから応用まで、段階的に学べるレッスン
                       </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        disabled={!isPremium}
-                      >
+                      <Button variant="outline" size="sm" className="mt-2" disabled={!isPremium}>
                         {isPremium ? (
                           <>
                             <ExternalLink className="h-3 w-3 mr-1" />
                             視聴する
                           </>
                         ) : (
-                          "プレミアム限定"
+                          'プレミアム限定'
                         )}
                       </Button>
                     </div>
@@ -1373,9 +1268,7 @@ const GuitarPracticePage: React.FC = () => {
                 {/* 練習方法ガイド */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">
-                      効果的な練習方法
-                    </CardTitle>
+                    <CardTitle className="text-base">効果的な練習方法</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="border rounded-md p-3">
@@ -1402,19 +1295,14 @@ const GuitarPracticePage: React.FC = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         正確で速いピッキングを身につける練習メニュー
                       </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-2"
-                        disabled={!isPremium}
-                      >
+                      <Button variant="outline" size="sm" className="mt-2" disabled={!isPremium}>
                         {isPremium ? (
                           <>
                             <ExternalLink className="h-3 w-3 mr-1" />
                             記事を読む
                           </>
                         ) : (
-                          "プレミアム限定"
+                          'プレミアム限定'
                         )}
                       </Button>
                     </div>
@@ -1455,9 +1343,7 @@ const GuitarPracticePage: React.FC = () => {
                             <TableCell className="font-medium">C</TableCell>
                             <TableCell>メジャー</TableCell>
                             <TableCell>C, E, G</TableCell>
-                            <TableCell>
-                              1弦: 0, 2弦: 1, 3弦: 0, 4弦: 2, 5弦: 3, 6弦: X
-                            </TableCell>
+                            <TableCell>1弦: 0, 2弦: 1, 3弦: 0, 4弦: 2, 5弦: 3, 6弦: X</TableCell>
                             <TableCell>★</TableCell>
                             <TableCell>Let It Be</TableCell>
                           </TableRow>
@@ -1465,9 +1351,7 @@ const GuitarPracticePage: React.FC = () => {
                             <TableCell className="font-medium">G</TableCell>
                             <TableCell>メジャー</TableCell>
                             <TableCell>G, B, D</TableCell>
-                            <TableCell>
-                              1弦: 3, 2弦: 0, 3弦: 0, 4弦: 0, 5弦: 2, 6弦: 3
-                            </TableCell>
+                            <TableCell>1弦: 3, 2弦: 0, 3弦: 0, 4弦: 0, 5弦: 2, 6弦: 3</TableCell>
                             <TableCell>★</TableCell>
                             <TableCell>Country Roads</TableCell>
                           </TableRow>
@@ -1475,9 +1359,7 @@ const GuitarPracticePage: React.FC = () => {
                             <TableCell className="font-medium">D</TableCell>
                             <TableCell>メジャー</TableCell>
                             <TableCell>D, F#, A</TableCell>
-                            <TableCell>
-                              1弦: 2, 2弦: 3, 3弦: 2, 4弦: 0, 5弦: X, 6弦: X
-                            </TableCell>
+                            <TableCell>1弦: 2, 2弦: 3, 3弦: 2, 4弦: 0, 5弦: X, 6弦: X</TableCell>
                             <TableCell>★</TableCell>
                             <TableCell>Knockin' on Heaven's Door</TableCell>
                           </TableRow>
@@ -1485,9 +1367,7 @@ const GuitarPracticePage: React.FC = () => {
                             <TableCell className="font-medium">Am</TableCell>
                             <TableCell>マイナー</TableCell>
                             <TableCell>A, C, E</TableCell>
-                            <TableCell>
-                              1弦: 0, 2弦: 1, 3弦: 2, 4弦: 2, 5弦: 0, 6弦: X
-                            </TableCell>
+                            <TableCell>1弦: 0, 2弦: 1, 3弦: 2, 4弦: 2, 5弦: 0, 6弦: X</TableCell>
                             <TableCell>★</TableCell>
                             <TableCell>House of the Rising Sun</TableCell>
                           </TableRow>
@@ -1495,9 +1375,7 @@ const GuitarPracticePage: React.FC = () => {
                             <TableCell className="font-medium">F</TableCell>
                             <TableCell>メジャー</TableCell>
                             <TableCell>F, A, C</TableCell>
-                            <TableCell>
-                              1弦: 1, 2弦: 1, 3弦: 2, 4弦: 3, 5弦: 3, 6弦: 1
-                            </TableCell>
+                            <TableCell>1弦: 1, 2弦: 1, 3弦: 2, 4弦: 3, 5弦: 3, 6弦: 1</TableCell>
                             <TableCell>★★★</TableCell>
                             <TableCell>Hey Jude</TableCell>
                           </TableRow>
@@ -1582,9 +1460,7 @@ const GuitarPracticePage: React.FC = () => {
               <span className="font-bold text-2xl">¥980</span>
               <span className="text-sm text-muted-foreground ml-1">/ 月</span>
             </div>
-            <Button className="bg-amber-600 hover:bg-amber-700">
-              プレミアムを始める
-            </Button>
+            <Button className="bg-amber-600 hover:bg-amber-700">プレミアムを始める</Button>
           </CardFooter>
         </Card>
       )}

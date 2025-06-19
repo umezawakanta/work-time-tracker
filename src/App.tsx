@@ -57,6 +57,7 @@ import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import ApiTest from './pages/ApiTest';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
+import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
 
 const theme = createTheme({
   palette: {
@@ -229,7 +230,9 @@ export default function App() {
                     path="/guitar-practice"
                     element={
                       <LayoutWrapper>
-                        <GuitarPracticePage />
+                        <GuitarPracticeErrorBoundary>
+                          <GuitarPracticePage />
+                        </GuitarPracticeErrorBoundary>
                       </LayoutWrapper>
                     }
                   />

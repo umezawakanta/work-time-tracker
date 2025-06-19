@@ -31,50 +31,53 @@ interface GuitarPracticeState {
 const initialState: GuitarPracticeState = {
   practices: [],
   status: 'idle',
-  error: null
+  error: null,
 };
 
 // ギター練習データを取得する非同期アクション
-export const fetchGuitarPractices = createAsyncThunk<GuitarPractice[], void, { rejectValue: string }>(
-  'guitarPractice/fetchAll',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get('/api/guitar-practices');
-      return response.data;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '練習記録の取得に失敗しました。';
-      return rejectWithValue(errorMessage);
-    }
+export const fetchGuitarPractices = createAsyncThunk<
+  GuitarPractice[],
+  void,
+  { rejectValue: string }
+>('guitarPractice/fetchAll', async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get('/api/guitar-practices');
+    return response.data;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : '練習記録の取得に失敗しました。';
+    return rejectWithValue(errorMessage);
   }
-);
+});
 
 // ギター練習を追加する非同期アクション
-export const addGuitarPractice = createAsyncThunk<GuitarPractice, NewGuitarPractice, { rejectValue: string }>(
-  'guitarPractice/add',
-  async (practice, { rejectWithValue }) => {
-    try {
-      const response = await axios.post('/api/guitar-practices', practice);
-      return response.data;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '練習記録の追加に失敗しました。';
-      return rejectWithValue(errorMessage);
-    }
+export const addGuitarPractice = createAsyncThunk<
+  GuitarPractice,
+  NewGuitarPractice,
+  { rejectValue: string }
+>('guitarPractice/add', async (practice, { rejectWithValue }) => {
+  try {
+    const response = await axios.post('/api/guitar-practices', practice);
+    return response.data;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : '練習記録の追加に失敗しました。';
+    return rejectWithValue(errorMessage);
   }
-);
+});
 
 // ギター練習を更新する非同期アクション
-export const updateGuitarPractice = createAsyncThunk<GuitarPractice, GuitarPractice, { rejectValue: string }>(
-  'guitarPractice/update',
-  async (practice, { rejectWithValue }) => {
-    try {
-      const response = await axios.put(`/api/guitar-practices/${practice._id}`, practice);
-      return response.data;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '練習記録の更新に失敗しました。';
-      return rejectWithValue(errorMessage);
-    }
+export const updateGuitarPractice = createAsyncThunk<
+  GuitarPractice,
+  GuitarPractice,
+  { rejectValue: string }
+>('guitarPractice/update', async (practice, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(`/api/guitar-practices/${practice._id}`, practice);
+    return response.data;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : '練習記録の更新に失敗しました。';
+    return rejectWithValue(errorMessage);
   }
-);
+});
 
 // ギター練習を削除する非同期アクション
 export const deleteGuitarPractice = createAsyncThunk<string, string, { rejectValue: string }>(
@@ -91,112 +94,113 @@ export const deleteGuitarPractice = createAsyncThunk<string, string, { rejectVal
 );
 
 // モック用テストデータを追加するアクション（開発用）
-export const addMockGuitarPractices = createAsyncThunk<GuitarPractice[], void, { rejectValue: string }>(
-  'guitarPractice/addMock',
-  async (_, { rejectWithValue }) => {
-    try {
-      // 実際のAPIが未実装の場合のモックデータ
-      const mockPractices: GuitarPractice[] = [
-        {
-          _id: '1',
-          date: '2024-02-01T15:00:00.000Z',
-          duration: 45,
-          technique: 'コード',
-          song: 'Wonderwall',
-          bpm: 90,
-          difficulty: 3,
-          satisfaction: 4,
-          notes: '基本的なコード進行の練習。Am, C, G, Fのコード切り替えがスムーズになってきた。',
-          isMilestone: false,
-          createdAt: '2024-02-01T15:45:00.000Z'
-        },
-        {
-          _id: '2',
-          date: '2024-02-03T16:30:00.000Z',
-          duration: 60,
-          technique: 'スケール',
-          song: '',
-          bpm: 60,
-          difficulty: 4,
-          satisfaction: 3,
-          notes: 'ペンタトニックスケールの練習。まだ速く弾けないが少しずつ上達している。',
-          isMilestone: false,
-          createdAt: '2024-02-03T17:30:00.000Z'
-        },
-        {
-          _id: '3',
-          date: '2024-02-05T19:00:00.000Z',
-          duration: 30,
-          technique: 'ピッキング',
-          song: '',
-          bpm: 80,
-          difficulty: 4,
-          satisfaction: 2,
-          notes: 'オルタネイトピッキングの練習。まだリズムが安定しない。',
-          isMilestone: false,
-          createdAt: '2024-02-05T19:30:00.000Z'
-        },
-        {
-          _id: '4',
-          date: '2024-02-08T20:15:00.000Z',
-          duration: 75,
-          technique: '曲の練習',
-          song: 'ブルースの即興',
-          bpm: 100,
-          difficulty: 3,
-          satisfaction: 5,
-          notes: 'ブルース進行での即興練習。思い通りのフレーズが弾けるようになってきた！',
-          isMilestone: true,
-          createdAt: '2024-02-08T21:30:00.000Z'
-        },
-        {
-          _id: '5',
-          date: '2024-02-10T14:00:00.000Z',
-          duration: 40,
-          technique: 'コード',
-          song: 'Hotel California',
-          bpm: 75,
-          difficulty: 5,
-          satisfaction: 3,
-          notes: 'バレーコードの練習。手が疲れるが少しずつ綺麗に鳴るようになってきた。',
-          isMilestone: false,
-          createdAt: '2024-02-10T14:40:00.000Z'
-        },
-        {
-          _id: '6',
-          date: '2024-02-12T18:30:00.000Z',
-          duration: 90,
-          technique: 'アルペジオ',
-          song: '',
-          bpm: 70,
-          difficulty: 4,
-          satisfaction: 4,
-          notes: 'メジャー・マイナーアルペジオの練習。指の独立性が良くなってきた。',
-          isMilestone: false,
-          createdAt: '2024-02-12T20:00:00.000Z'
-        },
-        {
-          _id: '7',
-          date: new Date().toISOString(),
-          duration: 60,
-          technique: 'ソロ',
-          song: 'Stairway to Heaven',
-          bpm: 85,
-          difficulty: 5,
-          satisfaction: 5,
-          notes: 'ソロの練習。ついに最後まで弾けるようになった！長い道のりだった。',
-          isMilestone: true,
-          createdAt: new Date().toISOString()
-        }
-      ];
-      
-      return mockPractices;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'モックデータの追加に失敗しました。';
-      return rejectWithValue(errorMessage);
-    }
+export const addMockGuitarPractices = createAsyncThunk<
+  GuitarPractice[],
+  void,
+  { rejectValue: string }
+>('guitarPractice/addMock', async (_, { rejectWithValue }) => {
+  try {
+    // 実際のAPIが未実装の場合のモックデータ
+    const mockPractices: GuitarPractice[] = [
+      {
+        _id: '1',
+        date: '2024-02-01T15:00:00.000Z',
+        duration: 45,
+        technique: 'コード',
+        song: 'Wonderwall',
+        bpm: 90,
+        difficulty: 3,
+        satisfaction: 4,
+        notes: '基本的なコード進行の練習。Am, C, G, Fのコード切り替えがスムーズになってきた。',
+        isMilestone: false,
+        createdAt: '2024-02-01T15:45:00.000Z',
+      },
+      {
+        _id: '2',
+        date: '2024-02-03T16:30:00.000Z',
+        duration: 60,
+        technique: 'スケール',
+        song: '',
+        bpm: 60,
+        difficulty: 4,
+        satisfaction: 3,
+        notes: 'ペンタトニックスケールの練習。まだ速く弾けないが少しずつ上達している。',
+        isMilestone: false,
+        createdAt: '2024-02-03T17:30:00.000Z',
+      },
+      {
+        _id: '3',
+        date: '2024-02-05T19:00:00.000Z',
+        duration: 30,
+        technique: 'ピッキング',
+        song: '',
+        bpm: 80,
+        difficulty: 4,
+        satisfaction: 2,
+        notes: 'オルタネイトピッキングの練習。まだリズムが安定しない。',
+        isMilestone: false,
+        createdAt: '2024-02-05T19:30:00.000Z',
+      },
+      {
+        _id: '4',
+        date: '2024-02-08T20:15:00.000Z',
+        duration: 75,
+        technique: '曲の練習',
+        song: 'ブルースの即興',
+        bpm: 100,
+        difficulty: 3,
+        satisfaction: 5,
+        notes: 'ブルース進行での即興練習。思い通りのフレーズが弾けるようになってきた！',
+        isMilestone: true,
+        createdAt: '2024-02-08T21:30:00.000Z',
+      },
+      {
+        _id: '5',
+        date: '2024-02-10T14:00:00.000Z',
+        duration: 40,
+        technique: 'コード',
+        song: 'Hotel California',
+        bpm: 75,
+        difficulty: 5,
+        satisfaction: 3,
+        notes: 'バレーコードの練習。手が疲れるが少しずつ綺麗に鳴るようになってきた。',
+        isMilestone: false,
+        createdAt: '2024-02-10T14:40:00.000Z',
+      },
+      {
+        _id: '6',
+        date: '2024-02-12T18:30:00.000Z',
+        duration: 90,
+        technique: 'アルペジオ',
+        song: '',
+        bpm: 70,
+        difficulty: 4,
+        satisfaction: 4,
+        notes: 'メジャー・マイナーアルペジオの練習。指の独立性が良くなってきた。',
+        isMilestone: false,
+        createdAt: '2024-02-12T20:00:00.000Z',
+      },
+      {
+        _id: '7',
+        date: new Date().toISOString(),
+        duration: 60,
+        technique: 'ソロ',
+        song: 'Stairway to Heaven',
+        bpm: 85,
+        difficulty: 5,
+        satisfaction: 5,
+        notes: 'ソロの練習。ついに最後まで弾けるようになった！長い道のりだった。',
+        isMilestone: true,
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    return mockPractices;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'モックデータの追加に失敗しました。';
+    return rejectWithValue(errorMessage);
   }
-);
+});
 
 // Reduxスライス
 const guitarPracticeSlice = createSlice({
@@ -213,14 +217,21 @@ const guitarPracticeSlice = createSlice({
       })
       .addCase(fetchGuitarPractices.fulfilled, (state, action: PayloadAction<GuitarPractice[]>) => {
         state.status = 'succeeded';
-        state.practices = action.payload;
+        // 不正な日付データをフィルタリング
+        state.practices = action.payload.filter((practice) => {
+          const isValidDate = practice.date && !isNaN(new Date(practice.date).getTime());
+          if (!isValidDate) {
+            console.warn('Invalid practice date detected and filtered:', practice);
+          }
+          return isValidDate;
+        });
         state.error = null;
       })
       .addCase(fetchGuitarPractices.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       })
-      
+
       // ギター練習の追加
       .addCase(addGuitarPractice.fulfilled, (state, action: PayloadAction<GuitarPractice>) => {
         state.practices.push(action.payload);
@@ -229,10 +240,10 @@ const guitarPracticeSlice = createSlice({
       .addCase(addGuitarPractice.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
+
       // ギター練習の更新
       .addCase(updateGuitarPractice.fulfilled, (state, action: PayloadAction<GuitarPractice>) => {
-        const index = state.practices.findIndex(practice => practice._id === action.payload._id);
+        const index = state.practices.findIndex((practice) => practice._id === action.payload._id);
         if (index !== -1) {
           state.practices[index] = action.payload;
         }
@@ -241,30 +252,33 @@ const guitarPracticeSlice = createSlice({
       .addCase(updateGuitarPractice.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
+
       // ギター練習の削除
       .addCase(deleteGuitarPractice.fulfilled, (state, action: PayloadAction<string>) => {
-        state.practices = state.practices.filter(practice => practice._id !== action.payload);
+        state.practices = state.practices.filter((practice) => practice._id !== action.payload);
         state.error = null;
       })
       .addCase(deleteGuitarPractice.rejected, (state, action) => {
         state.error = action.payload as string;
       })
-      
+
       // モックデータの追加（開発用）
-      .addCase(addMockGuitarPractices.fulfilled, (state, action: PayloadAction<GuitarPractice[]>) => {
-        state.practices = action.payload;
-        state.status = 'succeeded';
-        state.error = null;
-      });
-  }
+      .addCase(
+        addMockGuitarPractices.fulfilled,
+        (state, action: PayloadAction<GuitarPractice[]>) => {
+          state.practices = action.payload;
+          state.status = 'succeeded';
+          state.error = null;
+        }
+      );
+  },
 });
 
 // セレクター
 export const selectAllGuitarPractices = (state: RootState) => state.guitarPractice.practices;
-export const selectGuitarPracticeById = (state: RootState, id: string) => 
-  state.guitarPractice.practices.find(practice => practice._id === id);
-export const selectMilestonePractices = (state: RootState) => 
-  state.guitarPractice.practices.filter(practice => practice.isMilestone);
+export const selectGuitarPracticeById = (state: RootState, id: string) =>
+  state.guitarPractice.practices.find((practice) => practice._id === id);
+export const selectMilestonePractices = (state: RootState) =>
+  state.guitarPractice.practices.filter((practice) => practice.isMilestone);
 
 export default guitarPracticeSlice.reducer;
