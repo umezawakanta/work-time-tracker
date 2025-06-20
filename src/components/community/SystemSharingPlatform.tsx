@@ -1,4 +1,10 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Share } from 'lucide-react';
+
 const SystemSharingPlatform: React.FC = () => {
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
