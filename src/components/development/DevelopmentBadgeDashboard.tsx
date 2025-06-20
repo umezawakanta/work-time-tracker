@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Target, Zap, Code, Palette, CheckCircle, Lock } from 'lucide-react';
+import { Trophy, Target, Zap, Code, Palette, CheckCircle } from 'lucide-react';
 import { DevelopmentBadge, BadgeCategory, DEVELOPMENT_BADGES } from '@/types/development-badges';
 
 const difficultyColors = {
