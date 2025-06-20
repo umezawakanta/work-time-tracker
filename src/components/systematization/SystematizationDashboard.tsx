@@ -36,12 +36,12 @@ const SystemMetric = ({
   label,
   value,
   icon,
-  color,
+  _color,
 }: {
   label: string;
   value: string | number;
   icon: React.ReactNode;
-  color: string;
+  _color: string;
 }) => (
   <div className="flex items-center gap-2">
     {icon}
@@ -88,24 +88,24 @@ const SystematizationScore: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <SystemMetric label="自動化度" value={automationLevel} icon={<Bot />} color="blue" />
+          <SystemMetric label="自動化度" value={automationLevel} icon={<Bot />} _color="blue" />
           <SystemMetric
             label="継続性"
             value={consistencyScore}
             icon={<TrendingUp />}
-            color="green"
+            _color="green"
           />
           <SystemMetric
             label="効率向上"
             value={`+${efficiencyGains}%`}
             icon={<Zap />}
-            color="yellow"
+            _color="yellow"
           />
           <SystemMetric
             label="システム健全性"
             value={systemHealth}
             icon={<Shield />}
-            color="purple"
+            _color="purple"
           />
         </div>
       </CardContent>

@@ -1357,11 +1357,13 @@ export default function SubscriptionManagementPage() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">全ての月</SelectItem>
-                              {uniqueMonths.map((month) => (
-                                <SelectItem key={month} value={month}>
-                                  {month}
-                                </SelectItem>
-                              ))}
+                              {uniqueMonths
+                                .filter((month): month is string => month !== null)
+                                .map((month) => (
+                                  <SelectItem key={month} value={month}>
+                                    {month}
+                                  </SelectItem>
+                                ))}
                             </SelectContent>
                           </Select>
                           <Select value={filterType} onValueChange={setFilterType}>

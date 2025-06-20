@@ -50,6 +50,7 @@ import {
   Book,
   Wallet,
   PieChart,
+  Trophy,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -560,6 +561,18 @@ export default function Layout({ children }: LayoutProps) {
               ))}
             </>
           )}
+
+          <div className="pt-4 pb-2">
+            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4">
+              開発バッジ
+            </h3>
+          </div>
+          <NavItem
+            icon={<Trophy />}
+            label="開発バッジ"
+            path="/development-badges"
+            badge={unlockedBadgesCount}
+          />
         </nav>
 
         {/* Enhanced Profile Section */}

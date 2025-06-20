@@ -1,4 +1,29 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus } from 'lucide-react';
+
+// Placeholder components
+const ActiveAutomations = () => (
+  <Card>
+    <CardContent>アクティブな自動化</CardContent>
+  </Card>
+);
+const AutomationTemplates = () => (
+  <Card>
+    <CardContent>テンプレート</CardContent>
+  </Card>
+);
+const AutomationAnalytics = () => (
+  <Card>
+    <CardContent>効果分析</CardContent>
+  </Card>
+);
+
 const AutomationCenter: React.FC = () => {
+  const [createWorkflowOpen, setCreateWorkflowOpen] = useState(false);
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
