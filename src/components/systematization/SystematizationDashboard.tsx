@@ -1,3 +1,57 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Cog, Bot, TrendingUp, Zap, Shield } from 'lucide-react';
+
+// Placeholder hook
+const useSystematizationMetrics = () => ({
+  automationLevel: 75,
+  consistencyScore: 82,
+  efficiencyGains: 15,
+  systemHealth: 90,
+});
+
+// Placeholder components
+const ActiveSystems = () => (
+  <Card>
+    <CardContent>アクティブな仕組み</CardContent>
+  </Card>
+);
+const AutomationImpact = () => (
+  <Card>
+    <CardContent>自動化の効果測定</CardContent>
+  </Card>
+);
+const AISystemSuggestions = () => (
+  <Card>
+    <CardContent>AIによる仕組み提案</CardContent>
+  </Card>
+);
+const CommunityTemplates = () => (
+  <Card>
+    <CardContent>コミュニティテンプレート</CardContent>
+  </Card>
+);
+
+const SystemMetric = ({
+  label,
+  value,
+  icon,
+  color,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: string;
+}) => (
+  <div className="flex items-center gap-2">
+    {icon}
+    <div>
+      <div className="text-sm text-gray-600">{label}</div>
+      <div className="font-semibold">{value}</div>
+    </div>
+  </div>
+);
+
 export const SystematizationDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
