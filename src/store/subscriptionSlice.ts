@@ -20,9 +20,21 @@ const initialState: SubscriptionState = {
 // サブスクリプション一覧を取得する非同期アクション
 export const fetchSubscriptions = createAsyncThunk(
   'subscription/fetchSubscriptions',
-  async () => {
-    const response = await subscriptionApi.fetchSubscriptions();
-    return response;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await subscriptionApi.fetchSubscriptions();
+      // データ検証: 配列でない場合は空配列を返す
+      if (!Array.isArray(response)) {
+        console.warn('Invalid subscription data format received:', response);
+        return [];
+      }
+      return response;
+    } catch (error) {
+      console.error('Fetch subscriptions error:', error);
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'サブスクリプションの取得に失敗しました'
+      );
+    }
   }
 );
 
@@ -38,7 +50,13 @@ export const addSubscription = createAsyncThunk(
 // サブスクリプションを更新する非同期アクション
 export const updateSubscription = createAsyncThunk(
   'subscription/updateSubscription',
-  async ({ _id, subscription }: { _id: string; subscription: Partial<Omit<SubscriptionService, '_id'>> }) => {
+  async ({
+    _id,
+    subscription,
+  }: {
+    _id: string;
+    subscription: Partial<Omit<SubscriptionService, '_id'>>;
+  }) => {
     const response = await subscriptionApi.updateSubscription(_id, subscription);
     return response;
   }
@@ -79,15 +97,23 @@ const subscriptionSlice = createSlice({
       .addCase(fetchSubscriptions.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchSubscriptions.fulfilled, (state, action: PayloadAction<SubscriptionService[]>) => {
-        state.status = 'succeeded';
-        state.subscriptions = action.payload;
-      })
+      .addCase(
+        fetchSubscriptions.fulfilled,
+        (state, action: PayloadAction<SubscriptionService[]>) => {
+          state.status = 'succeeded';
+          // 安全な配列代入
+          state.subscriptions = Array.isArray(action.payload) ? action.payload : [];
+          state.error = null;
+        }
+      )
       .addCase(fetchSubscriptions.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'サブスクリプションの取得に失敗しました。';
+        state.error =
+          typeof action.payload === 'string'
+            ? action.payload
+            : 'サブスクリプションの取得に失敗しました。';
       })
-      
+
       // addSubscription
       .addCase(addSubscription.pending, (state) => {
         state.status = 'loading';
@@ -100,43 +126,49 @@ const subscriptionSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの追加に失敗しました。';
       })
-      
+
       // updateSubscription
       .addCase(updateSubscription.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(updateSubscription.fulfilled, (state, action: PayloadAction<SubscriptionService>) => {
-        state.status = 'succeeded';
-        const index = state.subscriptions.findIndex(sub => sub._id === action.payload._id);
-        if (index !== -1) {
-          state.subscriptions[index] = action.payload;
+      .addCase(
+        updateSubscription.fulfilled,
+        (state, action: PayloadAction<SubscriptionService>) => {
+          state.status = 'succeeded';
+          const index = state.subscriptions.findIndex((sub) => sub._id === action.payload._id);
+          if (index !== -1) {
+            state.subscriptions[index] = action.payload;
+          }
         }
-      })
+      )
       .addCase(updateSubscription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの更新に失敗しました。';
       })
-      
+
       // deleteSubscription
       .addCase(deleteSubscription.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(deleteSubscription.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = 'succeeded';
-        state.subscriptions = state.subscriptions.filter(sub => sub._id !== action.payload);
+        state.subscriptions = state.subscriptions.filter((sub) => sub._id !== action.payload);
       })
       .addCase(deleteSubscription.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'サブスクリプションの削除に失敗しました。';
       })
-      
+
       // updateSubscriptionCheckStatus
-      .addCase(updateSubscriptionCheckStatus.fulfilled, (state, action: PayloadAction<SubscriptionService>) => {
-        const index = state.subscriptions.findIndex(sub => sub._id === action.payload._id);
-        if (index !== -1) {
-          state.subscriptions[index] = action.payload;
+      .addCase(
+        updateSubscriptionCheckStatus.fulfilled,
+        (state, action: PayloadAction<SubscriptionService>) => {
+          const index = state.subscriptions.findIndex((sub) => sub._id === action.payload._id);
+          if (index !== -1) {
+            state.subscriptions[index] = action.payload;
+          }
         }
-      });
+      );
   },
 });
 

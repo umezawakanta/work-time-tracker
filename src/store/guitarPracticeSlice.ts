@@ -42,7 +42,26 @@ export const fetchGuitarPractices = createAsyncThunk<
 >('guitarPractice/fetchAll', async (_, { rejectWithValue }) => {
   try {
     const response = await axios.get('/api/guitar-practices');
-    return response.data;
+
+    // データ検証
+    const data = response.data;
+    if (!Array.isArray(data)) {
+      console.warn('Guitar practice API returned non-array data:', data);
+
+      // オブジェクトの中に配列が含まれている場合
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.practices)) {
+          return data.practices;
+        }
+        if (Array.isArray(data.data)) {
+          return data.data;
+        }
+      }
+
+      return [];
+    }
+
+    return data;
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '練習記録の取得に失敗しました。';
     return rejectWithValue(errorMessage);
@@ -217,14 +236,24 @@ const guitarPracticeSlice = createSlice({
       })
       .addCase(fetchGuitarPractices.fulfilled, (state, action: PayloadAction<GuitarPractice[]>) => {
         state.status = 'succeeded';
+
+        // 安全な配列処理
+        const practices = Array.isArray(action.payload) ? action.payload : [];
+
         // 不正な日付データをフィルタリング
-        state.practices = action.payload.filter((practice) => {
+        state.practices = practices.filter((practice) => {
+          if (!practice || typeof practice !== 'object') {
+            console.warn('Invalid practice object:', practice);
+            return false;
+          }
+
           const isValidDate = practice.date && !isNaN(new Date(practice.date).getTime());
           if (!isValidDate) {
             console.warn('Invalid practice date detected and filtered:', practice);
           }
           return isValidDate;
         });
+
         state.error = null;
       })
       .addCase(fetchGuitarPractices.rejected, (state, action) => {

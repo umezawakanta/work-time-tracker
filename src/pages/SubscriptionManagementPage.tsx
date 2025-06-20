@@ -466,56 +466,109 @@ export default function SubscriptionManagementPage() {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  const sortedAndFilteredSubscriptions = subscriptions
+  // 安全な配列アクセスを保証
+  const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+
+  // sortedAndFilteredSubscriptionsの安全な処理
+  const sortedAndFilteredSubscriptions = safeSubscriptions
     .filter((sub) => {
-      const monthFilter =
-        filterMonth === 'all' ||
-        (() => {
-          const [year, month] = String(sub.billingDate).split('/');
-          return `${year}/${month}` === filterMonth;
-        })();
-      const typeFilter = filterType === 'all' || sub.type === filterType;
+      try {
+        // サブスクリプションオブジェクトの検証
+        if (!sub || typeof sub !== 'object') {
+          console.warn('Invalid subscription object:', sub);
+          return false;
+        }
 
-      // Add check status filter
-      const checkFilter =
-        checkStatus === 'all' ||
-        (checkStatus === 'checked' && (sub.checkedMonths?.length ?? 0) > 0) ||
-        (checkStatus === 'unchecked' && (!sub.checkedMonths || sub.checkedMonths?.length === 0));
+        const monthFilter =
+          filterMonth === 'all' ||
+          (() => {
+            if (!sub.billingDate) return false;
+            const [year, month] = String(sub.billingDate).split('/');
+            return `${year}/${month}` === filterMonth;
+          })();
 
-      // 支払い方法フィルター
-      const paymentMethodType =
-        typeof sub.paymentMethod === 'object' ? sub.paymentMethod?.type : sub.paymentMethod;
+        const typeFilter = filterType === 'all' || sub.type === filterType;
 
-      const paymentFilter = paymentSource === 'all' || paymentMethodType === paymentSource;
+        // Check status filter - 安全なアクセス
+        const checkFilter =
+          checkStatus === 'all' ||
+          (checkStatus === 'checked' &&
+            Array.isArray(sub.checkedMonths) &&
+            sub.checkedMonths.length > 0) ||
+          (checkStatus === 'unchecked' &&
+            (!sub.checkedMonths ||
+              !Array.isArray(sub.checkedMonths) ||
+              sub.checkedMonths.length === 0));
 
-      // 最終的なフィルター適用
-      return monthFilter && typeFilter && checkFilter && paymentFilter;
+        // 支払い方法フィルター - 安全なアクセス
+        const paymentMethodType =
+          typeof sub.paymentMethod === 'object' && sub.paymentMethod
+            ? sub.paymentMethod.type
+            : sub.paymentMethod;
+
+        const paymentFilter = paymentSource === 'all' || paymentMethodType === paymentSource;
+
+        return monthFilter && typeFilter && checkFilter && paymentFilter;
+      } catch (error) {
+        console.error('Error filtering subscription:', error, sub);
+        return false;
+      }
     })
     .sort((a, b) => {
-      // billingDate プロパティが存在しない場合のデフォルト値を設定
-      const dateStrA = a.billingDate ? String(a.billingDate).replace(/\//g, '-') : '1970-01-01';
-      const dateStrB = b.billingDate ? String(b.billingDate).replace(/\//g, '-') : '1970-01-01';
+      try {
+        // billingDate プロパティが存在しない場合のデフォルト値を設定
+        const dateStrA = a.billingDate ? String(a.billingDate).replace(/\//g, '-') : '1970-01-01';
+        const dateStrB = b.billingDate ? String(b.billingDate).replace(/\//g, '-') : '1970-01-01';
 
-      const dateA = new Date(dateStrA);
-      const dateB = new Date(dateStrB);
+        const dateA = new Date(dateStrA);
+        const dateB = new Date(dateStrB);
 
-      return sortOrder === 'asc'
-        ? dateA.getTime() - dateB.getTime()
-        : dateB.getTime() - dateA.getTime();
+        // 無効な日付の場合のフォールバック
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+          return 0;
+        }
+
+        return sortOrder === 'asc'
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime();
+      } catch (error) {
+        console.error('Error sorting subscriptions:', error);
+        return 0;
+      }
     });
 
-  const totalAmount = sortedAndFilteredSubscriptions.reduce((sum, sub) => sum + sub.amount, 0);
+  // 安全な合計計算
+  const totalAmount = sortedAndFilteredSubscriptions.reduce((sum, sub) => {
+    const amount = typeof sub.amount === 'number' ? sub.amount : 0;
+    return sum + amount;
+  }, 0);
 
+  // 安全な月の一意値取得
   const uniqueMonths = Array.from(
     new Set(
-      subscriptions.map((sub) => {
-        const [year, month] = String(sub.billingDate).split('/');
-        return `${year}/${month}`;
-      })
+      safeSubscriptions
+        .filter((sub) => sub.billingDate) // billingDateが存在するもののみ
+        .map((sub) => {
+          try {
+            const [year, month] = String(sub.billingDate).split('/');
+            return year && month ? `${year}/${month}` : null;
+          } catch (error) {
+            console.error('Error parsing billing date:', error, sub.billingDate);
+            return null;
+          }
+        })
+        .filter(Boolean) // null/undefinedを除外
     )
   ).sort();
 
-  const uniqueTypes = Array.from(new Set(subscriptions.map((sub) => sub.type))).sort();
+  // 安全なタイプの一意値取得
+  const uniqueTypes = Array.from(
+    new Set(
+      safeSubscriptions
+        .filter((sub) => sub.type) // typeが存在するもののみ
+        .map((sub) => sub.type)
+    )
+  ).sort();
 
   if (status === 'loading') {
     return (

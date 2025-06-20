@@ -111,3 +111,42 @@ export class GuitarPracticeErrorBoundary extends React.Component<
     return this.props.children;
   }
 }
+
+export class SubscriptionErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Subscription Error:', error, errorInfo);
+
+    // filter関連のエラーの場合は特別な処理
+    if (error.message.includes('filter is not a function')) {
+      console.error('Array filter error detected in Subscription page');
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 text-center">
+          <h2 className="text-xl font-semibold mb-4">
+            サブスクリプションデータの読み込みでエラーが発生しました
+          </h2>
+          <p className="text-gray-600 mb-4">データの形式に問題がある可能性があります。</p>
+          <Button onClick={() => this.setState({ hasError: false })}>再試行</Button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}

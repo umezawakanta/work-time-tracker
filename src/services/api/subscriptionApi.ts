@@ -9,15 +9,43 @@ import { api } from './apiConfig';
 export const fetchSubscriptions = async (): Promise<SubscriptionService[]> => {
   try {
     const response = await api.get('/subscription');
-    return response.data;
+
+    // データ検証とフォールバック
+    const data = response.data;
+
+    // データが配列でない場合の処理
+    if (!Array.isArray(data)) {
+      console.warn('Subscription API returned non-array data:', data);
+
+      // オブジェクトの中に配列が含まれている場合
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.subscriptions)) {
+          return data.subscriptions;
+        }
+        if (Array.isArray(data.data)) {
+          return data.data;
+        }
+        if (Array.isArray(data.items)) {
+          return data.items;
+        }
+      }
+
+      // フォールバック: 空配列を返す
+      return [];
+    }
+
+    return data;
   } catch (error) {
     console.error('Error fetching subscriptions:', error);
-    throw error;
+    // エラー時も空配列を返してクラッシュを防ぐ
+    return [];
   }
 };
 
 // 特定の月のサブスクリプションを取得
-export const fetchSubscriptionsByMonth = async (yearMonth: string): Promise<SubscriptionService[]> => {
+export const fetchSubscriptionsByMonth = async (
+  yearMonth: string
+): Promise<SubscriptionService[]> => {
   try {
     const response = await api.get(`/subscription/month/${yearMonth}`);
     return response.data;
@@ -39,7 +67,9 @@ export const fetchSubscriptionsByType = async (type: string): Promise<Subscripti
 };
 
 // 支払い方法でサブスクリプションをフィルタリング
-export const fetchSubscriptionsByPaymentMethod = async (paymentMethod: string): Promise<SubscriptionService[]> => {
+export const fetchSubscriptionsByPaymentMethod = async (
+  paymentMethod: string
+): Promise<SubscriptionService[]> => {
   try {
     const response = await api.get(`/subscription/payment-method/${paymentMethod}`);
     return response.data;
@@ -78,7 +108,9 @@ export const fetchMonthlyTotalAmount = async (): Promise<{ month: string; amount
 // -----------------------------------------------------
 
 // サブスクリプションを新規追加
-export const addSubscription = async (subscription: Omit<SubscriptionService, '_id'>): Promise<SubscriptionService> => {
+export const addSubscription = async (
+  subscription: Omit<SubscriptionService, '_id'>
+): Promise<SubscriptionService> => {
   try {
     const response = await api.post(`/subscription`, subscription);
     return response.data;
@@ -149,17 +181,17 @@ const subscriptionApi = {
   fetchSubscriptionsByMonth,
   fetchSubscriptionsByType,
   fetchSubscriptionsByPaymentMethod,
-  
+
   // 金額関連
   fetchTotalSubscriptionAmount,
   fetchMonthlyTotalAmount,
-  
+
   // 管理系
   addSubscription,
   updateSubscription,
   deleteSubscription,
   updateSubscriptionCheckStatus,
-  
+
   // エイリアス
   getAll,
   create: addSubscription,
