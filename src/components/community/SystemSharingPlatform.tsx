@@ -38,7 +38,7 @@ const CommunityTemplateCard = ({
 );
 
 const SystemSharingPlatform: React.FC = () => {
-  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [_shareModalOpen, setShareModalOpen] = useState(false);
   const [communityTemplates] = useState<CommunityTemplate[]>([]);
 
   const handleUseTemplate = (template: CommunityTemplate) => {
@@ -72,3 +72,5 @@ const SystemSharingPlatform: React.FC = () => {
     </div>
   );
 };
+
+export default SystemSharingPlatform;

@@ -1,3 +1,52 @@
+export interface UserPreferences {
+  workingHours: { start: string; end: string };
+  focusBlocks: string[];
+  breakIntervals: number;
+  notificationSettings: Record<string, boolean>;
+}
+
+export interface SystemGoal {
+  id: string;
+  title: string;
+  target: number;
+  current: number;
+  deadline: string;
+}
+
+export interface SystemWorkflow {
+  id: string;
+  name: string;
+  isActive: boolean;
+}
+
+export interface SystemTemplate {
+  id: string;
+  name: string;
+  category: string;
+}
+
+export interface CustomSystem {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface BehaviorPattern {
+  type: string;
+  frequency: number;
+}
+
+export interface SystemPrediction {
+  event: string;
+  probability: number;
+}
+
+export interface SystemRecommendation {
+  title: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
 export interface SystematizationData {
   user: {
     id: string;
