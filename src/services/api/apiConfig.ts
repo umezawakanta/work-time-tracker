@@ -186,6 +186,17 @@ api.interceptors.request.use(
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => {
+    // 本番環境でのデータ形式統一
+    if (response.config.url?.includes('/books') && response.config.method === 'get') {
+      // レスポンスが配列でない場合の対応
+      if (response.data && !Array.isArray(response.data)) {
+        if (response.data.books) {
+          response.data = response.data.books;
+        } else if (response.data.data) {
+          response.data = response.data.data;
+        }
+      }
+    }
     const suppressLog =
       response.config.url?.includes('/auth/') || response.config.url?.includes('/notifications/');
 

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
-import { fetchBooks } from "@/store/bookSlice"; // 既存のbookSliceを使用
-import BookShelf from "@/components/BookShelf";
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
+import { fetchBooks } from '@/store/bookSlice'; // 既存のbookSliceを使用
+import BookShelf from '@/components/BookShelf';
 import {
   Card,
   CardContent,
@@ -10,8 +10,8 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   BookOpen,
   Import,
@@ -24,10 +24,10 @@ import {
   PenTool,
   Crown,
   BookText,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -36,11 +36,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import ReadingGoals from "@/components/ReadingGoals";
-import BookImport from "@/components/BookImport";
-import ReadingList from "@/components/ReadingList";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from '@/components/ui/dialog';
+import ReadingGoals from '@/components/ReadingGoals';
+import BookImport from '@/components/BookImport';
+import ReadingList from '@/components/ReadingList';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 // モチベーションを高める読書チャレンジコンポーネント
 const ReadingChallenges = () => {
@@ -62,32 +62,32 @@ const ReadingChallenges = () => {
   const challenges = [
     {
       id: 1,
-      title: "52冊チャレンジ",
-      description: "1年間で52冊の本を読破する",
+      title: '52冊チャレンジ',
+      description: '1年間で52冊の本を読破する',
       progress: 12,
       total: 52,
-      deadline: "2024年12月31日",
-      badge: "ブックマスター",
+      deadline: '2024年12月31日',
+      badge: 'ブックマスター',
       isPremium: false,
     },
     {
       id: 2,
-      title: "ジャンル拡大",
-      description: "10の異なるジャンルから本を読む",
+      title: 'ジャンル拡大',
+      description: '10の異なるジャンルから本を読む',
       progress: 4,
       total: 10,
-      deadline: "2024年6月30日",
-      badge: "エクスプローラー",
+      deadline: '2024年6月30日',
+      badge: 'エクスプローラー',
       isPremium: false,
     },
     {
       id: 3,
-      title: "古典文学マスター",
-      description: "世界の古典文学20選を読破する",
+      title: '古典文学マスター',
+      description: '世界の古典文学20選を読破する',
       progress: 3,
       total: 20,
-      deadline: "2024年12月31日",
-      badge: "文学の達人",
+      deadline: '2024年12月31日',
+      badge: '文学の達人',
       isPremium: true,
     },
   ];
@@ -112,19 +112,12 @@ const ReadingChallenges = () => {
         />
         <div className="flex justify-between">
           <span className="text-sm text-gray-600">
-            目標達成まで: {selectedChallenge.total - selectedChallenge.progress}
-            冊
+            目標達成まで: {selectedChallenge.total - selectedChallenge.progress}冊
           </span>
-          <span className="text-sm text-gray-600">
-            獲得バッジ: {selectedChallenge.badge}
-          </span>
+          <span className="text-sm text-gray-600">獲得バッジ: {selectedChallenge.badge}</span>
         </div>
         <div className="mt-3 text-right">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setSelectedChallenge(undefined)}
-          >
+          <Button size="sm" variant="outline" onClick={() => setSelectedChallenge(undefined)}>
             閉じる
           </Button>
         </div>
@@ -149,25 +142,20 @@ const ReadingChallenges = () => {
             <Card
               key={challenge.id}
               className={`hover:shadow-md transition-shadow ${
-                challenge.isPremium ? "border-amber-200" : ""
+                challenge.isPremium ? 'border-amber-200' : ''
               }`}
             >
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-base">{challenge.title}</CardTitle>
                   {challenge.isPremium && (
-                    <Badge
-                      variant="outline"
-                      className="bg-amber-100 text-amber-800"
-                    >
+                    <Badge variant="outline" className="bg-amber-100 text-amber-800">
                       <Crown className="h-3 w-3 mr-1" />
                       プレミアム
                     </Badge>
                   )}
                 </div>
-                <CardDescription className="text-xs">
-                  {challenge.description}
-                </CardDescription>
+                <CardDescription className="text-xs">{challenge.description}</CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="space-y-2">
@@ -177,10 +165,7 @@ const ReadingChallenges = () => {
                       {challenge.progress}/{challenge.total}
                     </span>
                   </div>
-                  <Progress
-                    value={(challenge.progress / challenge.total) * 100}
-                    className="h-2"
-                  />
+                  <Progress value={(challenge.progress / challenge.total) * 100} className="h-2" />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>期限: {challenge.deadline}</span>
                     <span>獲得バッジ: {challenge.badge}</span>
@@ -221,27 +206,27 @@ const ReadingCommunity = ({ isPremium = false }) => {
   const bookClubs = [
     {
       id: 1,
-      name: "SF愛好会",
+      name: 'SF愛好会',
       members: 128,
-      currentBook: "ニューロマンサー",
-      meetingDate: "毎週水曜日 20:00",
-      avatar: "/images/sf-club.jpg",
+      currentBook: 'ニューロマンサー',
+      meetingDate: '毎週水曜日 20:00',
+      avatar: '/images/sf-club.jpg',
     },
     {
       id: 2,
-      name: "ビジネス書読書会",
+      name: 'ビジネス書読書会',
       members: 85,
-      currentBook: "アトミック・ハビット",
-      meetingDate: "隔週金曜日 19:00",
-      avatar: "/images/business-club.jpg",
+      currentBook: 'アトミック・ハビット',
+      meetingDate: '隔週金曜日 19:00',
+      avatar: '/images/business-club.jpg',
     },
     {
       id: 3,
-      name: "古典文学クラブ",
+      name: '古典文学クラブ',
       members: 52,
-      currentBook: "罪と罰",
-      meetingDate: "毎月第一土曜日 15:00",
-      avatar: "/images/classic-club.jpg",
+      currentBook: '罪と罰',
+      meetingDate: '毎月第一土曜日 15:00',
+      avatar: '/images/classic-club.jpg',
       isPremium: true,
     },
   ];
@@ -253,9 +238,7 @@ const ReadingCommunity = ({ isPremium = false }) => {
           <Users className="h-5 w-5 text-blue-500" />
           読書コミュニティ
         </CardTitle>
-        <CardDescription>
-          同じ本を読む仲間と交流し、読書体験を共有しましょう
-        </CardDescription>
+        <CardDescription>同じ本を読む仲間と交流し、読書体験を共有しましょう</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -263,9 +246,7 @@ const ReadingCommunity = ({ isPremium = false }) => {
             <div
               key={club.id}
               className={`flex items-center p-4 rounded-lg border ${
-                club.isPremium
-                  ? "border-amber-200 bg-amber-50"
-                  : "border-gray-200"
+                club.isPremium ? 'border-amber-200 bg-amber-50' : 'border-gray-200'
               }`}
             >
               <Avatar className="h-12 w-12 mr-4">
@@ -276,29 +257,24 @@ const ReadingCommunity = ({ isPremium = false }) => {
                 <div className="flex items-center">
                   <h3 className="font-medium">{club.name}</h3>
                   {club.isPremium && (
-                    <Badge
-                      variant="outline"
-                      className="ml-2 bg-amber-100 text-amber-800"
-                    >
+                    <Badge variant="outline" className="ml-2 bg-amber-100 text-amber-800">
                       <Crown className="h-3 w-3 mr-1" />
                       プレミアム
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  メンバー: {club.members}人
-                </p>
+                <p className="text-sm text-muted-foreground">メンバー: {club.members}人</p>
                 <p className="text-sm">現在の本: {club.currentBook}</p>
                 <p className="text-xs text-muted-foreground">
                   次回ミーティング: {club.meetingDate}
                 </p>
               </div>
               <Button
-                variant={club.isPremium && !isPremium ? "outline" : "default"}
+                variant={club.isPremium && !isPremium ? 'outline' : 'default'}
                 size="sm"
                 disabled={club.isPremium && !isPremium}
               >
-                {club.isPremium && !isPremium ? "プレミアム限定" : "参加する"}
+                {club.isPremium && !isPremium ? 'プレミアム限定' : '参加する'}
               </Button>
             </div>
           ))}
@@ -321,9 +297,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
           <BarChart className="h-5 w-5 text-indigo-500" />
           読書分析
         </CardTitle>
-        <CardDescription>
-          あなたの読書傾向とハビットを可視化します
-        </CardDescription>
+        <CardDescription>あなたの読書傾向とハビットを可視化します</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -394,9 +368,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
               <CardContent className="py-2">
                 <div className="text-center p-4">
                   <div className="text-xl font-bold">21:00 - 23:00</div>
-                  <div className="text-xs text-muted-foreground">
-                    最も集中できる時間帯
-                  </div>
+                  <div className="text-xs text-muted-foreground">最も集中できる時間帯</div>
                 </div>
               </CardContent>
             </Card>
@@ -408,9 +380,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
               <CardContent className="py-2">
                 <div className="text-center p-4">
                   <div className="text-xl font-bold">8.5 / 10</div>
-                  <div className="text-xs text-muted-foreground">
-                    前月比 +1.2ポイント
-                  </div>
+                  <div className="text-xs text-muted-foreground">前月比 +1.2ポイント</div>
                 </div>
               </CardContent>
             </Card>
@@ -422,9 +392,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
               <CardContent className="py-2">
                 <div className="text-center p-4">
                   <div className="text-xl font-bold">320 WPM</div>
-                  <div className="text-xs text-muted-foreground">
-                    平均より15%速い
-                  </div>
+                  <div className="text-xs text-muted-foreground">平均より15%速い</div>
                 </div>
               </CardContent>
             </Card>
@@ -450,73 +418,69 @@ const ReadingAnalytics = ({ isPremium = false }) => {
 const BookShelfPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [showMotivationTip, setShowMotivationTip] = useState(true);
-  const [activeTab, setActiveTab] = useState("bookshelf");
+  const [activeTab, setActiveTab] = useState('bookshelf');
 
   // Redux ストアからデータを取得
-  const isPremium =
-    useSelector((state: RootState) => state.user?.hasActiveSubscription) ||
-    false;
-  const books = useSelector((state: RootState) => state.book.books);
+  const isPremium = useSelector((state: RootState) => state.user?.hasActiveSubscription) || false;
+  const booksFromStore = useSelector((state: RootState) => state.book.books);
   const booksStatus = useSelector((state: RootState) => state.book.status);
   const booksError = useSelector((state: RootState) => state.book.error);
 
+  // 安全な books の取得
+  const books = Array.isArray(booksFromStore) ? booksFromStore : [];
+
   // コンポーネントマウント時に本のデータを取得
   useEffect(() => {
-    if (booksStatus === "idle") {
+    if (booksStatus === 'idle') {
       dispatch(fetchBooks());
     }
   }, [booksStatus, dispatch]);
 
   // 読書モチベーションのヒント
   const motivationTips = [
-    "1日15分の読書習慣を始めましょう。短い時間から始めることで継続しやすくなります。",
-    "本棚を見える場所に置くと、読書を思い出すきっかけになります。",
-    "読書記録をつけることで、達成感を得られ、モチベーションが続きます。",
-    "読書仲間を見つけると、本の話で盛り上がり、新しい視点も得られます。",
-    "自分の興味のあるジャンルから始め、少しずつ範囲を広げていきましょう。",
+    '1日15分の読書習慣を始めましょう。短い時間から始めることで継続しやすくなります。',
+    '本棚を見える場所に置くと、読書を思い出すきっかけになります。',
+    '読書記録をつけることで、達成感を得られ、モチベーションが続きます。',
+    '読書仲間を見つけると、本の話で盛り上がり、新しい視点も得られます。',
+    '自分の興味のあるジャンルから始め、少しずつ範囲を広げていきましょう。',
   ];
 
-  const randomTip =
-    motivationTips[Math.floor(Math.random() * motivationTips.length)];
+  const randomTip = motivationTips[Math.floor(Math.random() * motivationTips.length)];
 
-  // 読書の統計を計算
+  // 読書の統計を計算（安全な配列処理）
   const calculateStats = () => {
     const currentYear = new Date().getFullYear();
 
-    // 総読書冊数
-    const totalBooks = books.length;
+    // 安全な配列フィルタリング
+    const safeBooks = Array.isArray(books) ? books : [];
 
-    // 現在年に完了した本を計算（createdAtが今年のものと仮定）
-    const completedThisYear = books.filter((book) => {
-      const createdDate = new Date(book.createdAt);
-      return (
-        createdDate.getFullYear() === currentYear &&
-        book.readPages === book.totalPages
-      );
+    const totalBooks = safeBooks.length;
+
+    const completedThisYear = safeBooks.filter((book) => {
+      try {
+        const createdDate = new Date(book.createdAt);
+        return createdDate.getFullYear() === currentYear && book.readPages === book.totalPages;
+      } catch (error) {
+        console.warn('Invalid date in book:', book);
+        return false;
+      }
     }).length;
 
-    // 現在読書中の本（ページが0より大きく、全ページ未満のもの）
-    const currentlyReading = books.filter(
+    const currentlyReading = safeBooks.filter(
       (book) => book.readPages > 0 && book.readPages < book.totalPages
     ).length;
 
-    // 平均ページ/日の計算（簡易的に実装）
-    // 実際のアプリではより複雑な計算が必要かもしれません
     const averagePagesPerDay =
-      books.length > 0
-        ? Math.round(books.reduce((sum, book) => sum + book.readPages, 0) / 30)
+      safeBooks.length > 0
+        ? Math.round(safeBooks.reduce((sum, book) => sum + (book.readPages || 0), 0) / 30)
         : 0;
-
-    // 読書ストリーク（連続日数）
-    // 実際のアプリでは読書セッションのデータが必要ですが、ここでは仮の値を使用
-    const streak = 15; // 仮の値
 
     return {
       totalBooks,
       completedThisYear,
       currentlyReading,
       averagePagesPerDay,
-      streak,
+      streak: 15, // 仮の値
     };
   };
 
@@ -524,7 +488,7 @@ const BookShelfPage: React.FC = () => {
   const stats = calculateStats();
 
   // データ取得中の表示
-  if (booksStatus === "loading") {
+  if (booksStatus === 'loading') {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen">
         <div className="text-center">
@@ -536,7 +500,7 @@ const BookShelfPage: React.FC = () => {
   }
 
   // エラー表示
-  if (booksStatus === "failed") {
+  if (booksStatus === 'failed') {
     return (
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen">
         <div className="text-center">
@@ -573,9 +537,7 @@ const BookShelfPage: React.FC = () => {
               <Sparkles className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h3 className="font-medium text-blue-800 mb-1">
-                今日の読書モチベーション
-              </h3>
+              <h3 className="font-medium text-blue-800 mb-1">今日の読書モチベーション</h3>
               <p className="text-blue-700">{randomTip}</p>
             </div>
           </div>
@@ -620,9 +582,7 @@ const BookShelfPage: React.FC = () => {
           <CardContent>
             <div className="flex items-center">
               <div className="mr-4">
-                <div className="text-3xl font-bold text-primary">
-                  {stats.streak}
-                </div>
+                <div className="text-3xl font-bold text-primary">{stats.streak}</div>
                 <div className="text-sm text-muted-foreground">連続日数</div>
               </div>
               <div className="flex-1">
@@ -630,10 +590,7 @@ const BookShelfPage: React.FC = () => {
                   <span>目標: 30日間</span>
                   <span>{Math.round((stats.streak / 30) * 100)}%</span>
                 </div>
-                <Progress
-                  value={(stats.streak / 30) * 100}
-                  className="h-2 mb-2"
-                />
+                <Progress value={(stats.streak / 30) * 100} className="h-2 mb-2" />
                 <p className="text-xs text-muted-foreground">
                   あと{30 - stats.streak}日で30日間の読書習慣達成！
                 </p>
@@ -650,9 +607,7 @@ const BookShelfPage: React.FC = () => {
                   <div
                     key={i}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                      hasReadingSession
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-gray-400"
+                      hasReadingSession ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
                     }`}
                   >
                     {date.getDate()}
@@ -665,11 +620,7 @@ const BookShelfPage: React.FC = () => {
       </div>
 
       {/* メインタブ以降は元のコードと同じ */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full mb-8"
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-8">
         <TabsList className="mb-4 flex flex-wrap justify-center">
           <TabsTrigger value="bookshelf" className="flex items-center gap-1">
             <BookOpen className="h-4 w-4" />
@@ -711,9 +662,7 @@ const BookShelfPage: React.FC = () => {
                     <BookOpen className="h-5 w-5 text-primary" />
                     あなたの本棚
                   </CardTitle>
-                  <CardDescription>
-                    所有している本を管理し、整理することができます
-                  </CardDescription>
+                  <CardDescription>所有している本を管理し、整理することができます</CardDescription>
                 </div>
 
                 <Dialog>
@@ -796,9 +745,7 @@ const BookShelfPage: React.FC = () => {
               <Crown className="h-5 w-5 text-amber-500" />
               読書の冒険をさらに豊かに
             </CardTitle>
-            <CardDescription>
-              プレミアム機能であなたの読書体験がさらに充実します
-            </CardDescription>
+            <CardDescription>プレミアム機能であなたの読書体験がさらに充実します</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -850,9 +797,7 @@ const BookShelfPage: React.FC = () => {
               <span className="font-bold text-2xl">¥980</span>
               <span className="text-sm text-muted-foreground ml-1">/ 月</span>
             </div>
-            <Button className="bg-amber-600 hover:bg-amber-700">
-              プレミアムを始める
-            </Button>
+            <Button className="bg-amber-600 hover:bg-amber-700">プレミアムを始める</Button>
           </CardFooter>
         </Card>
       )}

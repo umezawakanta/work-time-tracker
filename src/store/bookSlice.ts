@@ -34,7 +34,26 @@ export const fetchBooks = createAsyncThunk<Book[], void, { rejectValue: string }
   async (_, { rejectWithValue }) => {
     try {
       const response = await bookApi.getAll();
-      return response.data;
+
+      // データ検証: 配列でない場合は適切な形式に変換
+      let books: Book[] = [];
+      if (Array.isArray(response.data)) {
+        books = response.data;
+      } else if (response.data && typeof response.data === 'object') {
+        // 安全なプロパティアクセス
+        const data = response.data as any;
+        if (Array.isArray(data.books)) {
+          books = data.books;
+        } else if (Array.isArray(data.data)) {
+          books = data.data;
+        } else {
+          console.warn('Unexpected book data format:', response.data);
+          books = [];
+        }
+      }
+
+      console.log('Fetched books:', books);
+      return books;
     } catch (error) {
       console.error('本の取得中にエラーが発生しました:', error);
       return rejectWithValue(error instanceof Error ? error.message : '本の取得に失敗しました');
@@ -42,18 +61,19 @@ export const fetchBooks = createAsyncThunk<Book[], void, { rejectValue: string }
   }
 );
 
-export const addBook = createAsyncThunk<Book, Omit<Book, '_id' | 'createdAt'>, { rejectValue: string }>(
-  'book/addBook',
-  async (book, { rejectWithValue }) => {
-    try {
-      const response = await bookApi.create(book);
-      return response.data.book;
-    } catch (error) {
-      console.error('本の追加中にエラーが発生しました:', error);
-      return rejectWithValue(error instanceof Error ? error.message : '本の追加に失敗しました');
-    }
+export const addBook = createAsyncThunk<
+  Book,
+  Omit<Book, '_id' | 'createdAt'>,
+  { rejectValue: string }
+>('book/addBook', async (book, { rejectWithValue }) => {
+  try {
+    const response = await bookApi.create(book);
+    return response.data.book;
+  } catch (error) {
+    console.error('本の追加中にエラーが発生しました:', error);
+    return rejectWithValue(error instanceof Error ? error.message : '本の追加に失敗しました');
   }
-);
+});
 
 export const updateBook = createAsyncThunk<Book, Book, { rejectValue: string }>(
   'book/updateBook',
@@ -95,11 +115,12 @@ const bookSlice = createSlice({
       })
       .addCase(fetchBooks.fulfilled, (state, action: PayloadAction<Book[]>) => {
         state.status = 'succeeded';
-        state.books = action.payload;
+        state.books = Array.isArray(action.payload) ? action.payload : [];
         state.error = null;
       })
       .addCase(fetchBooks.rejected, (state, action) => {
         state.status = 'failed';
+        state.books = [];
         state.error = action.payload || '本の取得に失敗しました';
       })
       .addCase(addBook.fulfilled, (state, action: PayloadAction<Book>) => {
@@ -110,7 +131,7 @@ const bookSlice = createSlice({
         state.error = action.payload || '本の追加に失敗しました';
       })
       .addCase(updateBook.fulfilled, (state, action: PayloadAction<Book>) => {
-        const index = state.books.findIndex(book => book._id === action.payload._id);
+        const index = state.books.findIndex((book) => book._id === action.payload._id);
         if (index !== -1) {
           state.books[index] = action.payload;
         }
@@ -120,7 +141,7 @@ const bookSlice = createSlice({
         state.error = action.payload || '本の更新に失敗しました';
       })
       .addCase(removeBook.fulfilled, (state, action: PayloadAction<string>) => {
-        state.books = state.books.filter(book => book._id !== action.payload);
+        state.books = state.books.filter((book) => book._id !== action.payload);
         state.error = null;
       })
       .addCase(removeBook.rejected, (state, action) => {
