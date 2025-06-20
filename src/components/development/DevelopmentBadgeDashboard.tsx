@@ -7,6 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Target, Zap, Code, Palette, CheckCircle, Lock } from 'lucide-react';
 import { DevelopmentBadge, BadgeCategory, DEVELOPMENT_BADGES } from '@/types/development-badges';
 
+const difficultyColors = {
+  bronze: 'bg-amber-100 text-amber-800 border-amber-200',
+  silver: 'bg-gray-100 text-gray-800 border-gray-200',
+  gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  platinum: 'bg-purple-100 text-purple-800 border-purple-200',
+  legendary: 'bg-gradient-to-r from-orange-400 to-pink-400 text-white border-none',
+};
+
 export const DevelopmentBadgeDashboard: React.FC = () => {
   const [badges, setBadges] = useState<DevelopmentBadge[]>(DEVELOPMENT_BADGES);
   const [selectedCategory, setSelectedCategory] = useState<'all' | BadgeCategory>('all');
@@ -87,14 +95,6 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
     community: <Trophy className="h-5 w-5" />,
     systematization: <Target className="h-5 w-5" />,
     completion: <Trophy className="h-5 w-5" />,
-  };
-
-  const difficultyColors = {
-    bronze: 'bg-amber-100 text-amber-800 border-amber-200',
-    silver: 'bg-gray-100 text-gray-800 border-gray-200',
-    gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    platinum: 'bg-purple-100 text-purple-800 border-purple-200',
-    legendary: 'bg-gradient-to-r from-orange-400 to-pink-400 text-white border-none',
   };
 
   const filteredBadges =

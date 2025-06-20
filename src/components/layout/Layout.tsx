@@ -350,6 +350,7 @@ export default function Layout({ children }: LayoutProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const unlockedBadgesCount = 0; // Or implement actual badge counting logic
 
   useEffect(() => {
     const handleScroll = () => {
@@ -567,12 +568,15 @@ export default function Layout({ children }: LayoutProps) {
               開発バッジ
             </h3>
           </div>
-          <NavItem
-            icon={<Trophy />}
-            label="開発バッジ"
-            path="/development-badges"
-            badge={unlockedBadgesCount}
-          />
+          {renderMenuItem({
+            icon: <Trophy className="h-5 w-5" />,
+            label: '開発バッジ',
+            path: '/development-badges',
+            badge: unlockedBadgesCount > 0 ? unlockedBadgesCount.toString() : undefined,
+            description: '開発進捗バッジ',
+            gradient: 'from-yellow-500 via-amber-500 to-orange-500',
+            accentColor: 'yellow',
+          })}
         </nav>
 
         {/* Enhanced Profile Section */}

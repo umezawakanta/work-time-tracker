@@ -58,7 +58,7 @@ import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePag
 import ApiTest from './pages/ApiTest';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
-import DevelopmentBadgeDashboard from './components/development/DevelopmentBadgeDashboard';
+import { DevelopmentBadgeDashboard } from './components/development/DevelopmentBadgeDashboard';
 
 const theme = createTheme({
   palette: {

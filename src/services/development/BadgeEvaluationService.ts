@@ -1,3 +1,16 @@
+import { DevelopmentBadge, DEVELOPMENT_BADGES } from '@/types/development-badges';
+import { githubProgressService } from './GitHubProgressService';
+
+interface EvaluationContext {
+  progress: {
+    commitCount: number;
+    testCoverage: number;
+    performanceScore: number;
+  };
+  fileStructure: string[];
+  uiComponents: any;
+}
+
 class BadgeEvaluationService {
   async evaluateAllBadges(): Promise<DevelopmentBadge[]> {
     const progress = await githubProgressService.analyzeRepositoryProgress();
@@ -93,6 +106,28 @@ class BadgeEvaluationService {
 
     // 実際のアプリケーションでは、
     // toast通知やバッジ獲得アニメーションを表示
+  }
+
+  private async analyzeFileStructure(): Promise<string[]> {
+    return [];
+  }
+
+  private async analyzeUIComponents(): Promise<any> {
+    return {};
+  }
+
+  private isRequirementMet(req: any): boolean {
+    return false;
+  }
+
+  private evaluateResponsiveDesign(
+    context: EvaluationContext
+  ): 'completed' | 'partial' | 'pending' {
+    return 'pending';
+  }
+
+  private evaluateWorkflowEngine(context: EvaluationContext): 'completed' | 'partial' | 'pending' {
+    return 'pending';
   }
 }
 

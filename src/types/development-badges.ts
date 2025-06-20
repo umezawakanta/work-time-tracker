@@ -194,3 +194,23 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     progress: 0,
   },
 ];
+
+export const findNextAchievableBadge = (): DevelopmentBadge | null => {
+  const unlockedBadges = DEVELOPMENT_BADGES.filter((b) => !b.isUnlocked && b.progress > 0);
+  return unlockedBadges.sort((a, b) => b.progress - a.progress)[0] || null;
+};
+
+export const generateDailyDevelopmentGoal = (badge: DevelopmentBadge | null): string => {
+  if (!badge) return '新しいバッジに挑戦しましょう！';
+
+  const incomplete = badge.requirements.find((req) => {
+    if (req.type === 'commit_count' || req.type === 'performance_score') {
+      return Number(req.current) < Number(req.target);
+    }
+    return req.current !== 'completed';
+  });
+
+  return incomplete
+    ? `${badge.name}達成のため: ${incomplete.description}`
+    : '今日も開発を進めましょう！';
+};
