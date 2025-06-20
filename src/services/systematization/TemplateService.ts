@@ -1,3 +1,17 @@
+export interface SuccessMetric {
+  name: string;
+  target: number;
+  current: number;
+  unit: string;
+}
+
+export interface TemplateReview {
+  userId: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
 export interface SystemTemplate {
   id: string;
   name: string;
@@ -35,6 +49,7 @@ const POPULAR_TEMPLATES: SystemTemplate[] = [
           schedule: '06:00-09:00',
           autoTrack: true,
         },
+        dependencies: [],
       },
       {
         type: 'automation_rule',
@@ -42,7 +57,12 @@ const POPULAR_TEMPLATES: SystemTemplate[] = [
           trigger: 'morning_routine_complete',
           action: 'create_daily_priorities',
         },
+        dependencies: ['habit_routine'],
       },
     ],
+    successMetrics: [],
+    userReviews: [],
+    usageCount: 0,
+    effectivenessScore: 0,
   },
 ];
