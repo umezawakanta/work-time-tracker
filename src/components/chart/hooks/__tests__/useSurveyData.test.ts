@@ -1,17 +1,27 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { toast } from 'react-hot-toast';
 import { useSurveyData } from '../useSurveyData';
-import { surveyApi } from '@/services/api/surveyApi';
-import { partyApi } from '@/services/api/partyApi';
 
 // モック設定
 jest.mock('react-hot-toast');
-jest.mock('@/services/api/surveyApi');
-jest.mock('@/services/api/partyApi');
+jest.mock('@/services/api/surveyApi', () => ({
+  surveyApi: {
+    getAll: jest.fn(),
+  },
+}));
+jest.mock('@/services/api/partyApi', () => ({
+  partyApi: {
+    getAll: jest.fn(),
+  },
+}));
 
 const mockToast = toast as jest.Mocked<typeof toast>;
-const mockSurveyApi = surveyApi as jest.Mocked<typeof surveyApi>;
-const mockPartyApi = partyApi as jest.Mocked<typeof partyApi>;
+const mockSurveyApi = {
+  getAll: jest.fn(),
+};
+const mockPartyApi = {
+  getAll: jest.fn(),
+};
 
 describe('useSurveyData', () => {
   beforeEach(() => {
