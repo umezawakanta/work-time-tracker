@@ -92,7 +92,7 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
     };
   };
 
-  const categoryIcons = {
+  const _categoryIcons = {
     foundation: <Code className="h-5 w-5" />,
     features: <Target className="h-5 w-5" />,
     ui_ux: <Palette className="h-5 w-5" />,
@@ -175,7 +175,10 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
       </div>
 
       {/* カテゴリフィルター */}
-      <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as any)}>
+      <Tabs
+        value={selectedCategory}
+        onValueChange={(value) => setSelectedCategory(value as 'all' | BadgeCategory)}
+      >
         <TabsList className="grid grid-cols-5 lg:grid-cols-10 mb-6">
           <TabsTrigger value="all">全て</TabsTrigger>
           <TabsTrigger value="foundation">基盤</TabsTrigger>
