@@ -1,5 +1,6 @@
 # 🛡️ Quality Check & Dashboard Update
 # Updated: 2025-06-21 Node.js 20 & pnpm optimization
+# Fixed: GitHub Actions output format issues
 
 name: 🛡️ Quality Check & Dashboard Update
 
