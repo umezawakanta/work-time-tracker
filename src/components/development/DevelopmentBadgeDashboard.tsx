@@ -15,11 +15,18 @@ const difficultyColors = {
   legendary: 'bg-gradient-to-r from-orange-400 to-pink-400 text-white border-none',
 };
 
+interface RepositoryProgress {
+  commitCount: number;
+  featuresCompleted: string[];
+  testCoverage: number;
+  performanceScore: number;
+}
+
 export const DevelopmentBadgeDashboard: React.FC = () => {
   const [badges, setBadges] = useState<DevelopmentBadge[]>(DEVELOPMENT_BADGES);
   const [selectedCategory, setSelectedCategory] = useState<'all' | BadgeCategory>('all');
 
-  const updateBadgeProgress = useCallback((progress: any) => {
+  const updateBadgeProgress = useCallback((progress: RepositoryProgress) => {
     setBadges((currentBadges) =>
       currentBadges.map((badge) => {
         const updatedBadge = { ...badge };
@@ -31,7 +38,7 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
               req.current = progress.commitCount;
               break;
             case 'feature_complete':
-              req.current = progress.featuresCompleted.includes(req.target)
+              req.current = progress.featuresCompleted.includes(String(req.target))
                 ? 'completed'
                 : 'pending';
               break;
