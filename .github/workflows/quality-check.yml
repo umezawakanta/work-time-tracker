@@ -130,7 +130,7 @@ jobs:
 
     outputs:
       eslint_errors: ${{ steps.eslint.outputs.error_count }}
-      typescript_errors: ${{ steps.typescript.outputs.error_count }}
+      typescript_errors: ${{ steps.typescript.outputs.typescript_error_count }}
 
     steps:
       - name: 📥 Checkout Repository
@@ -156,19 +156,37 @@ jobs:
           # ESLint結果をJSONで出力
           pnpm exec eslint . --ext .ts,.tsx,.js,.jsx --format json --output-file eslint-results.json || true
 
-          # サマリー情報を抽出
-          ERROR_COUNT=$(cat eslint-results.json | jq '[.[] | .messages[] | select(.severity == 2)] | length')
-          WARNING_COUNT=$(cat eslint-results.json | jq '[.[] | .messages[] | select(.severity == 1)] | length')
-          TOTAL_FILES=$(cat eslint-results.json | jq 'length')
+          # JSON ファイルが存在し、有効な JSON かチェック
+          if [ ! -f eslint-results.json ] || ! jq empty eslint-results.json 2>/dev/null; then
+            echo "[]" > eslint-results.json
+          fi
 
-          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
-          echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
-          echo "total_files=$TOTAL_FILES" >> $GITHUB_OUTPUT
+          # サマリー情報を抽出（nullの場合は0に変換）
+          ERROR_COUNT=$(cat eslint-results.json | jq '[.[]? | .messages[]? | select(.severity == 2)] | length' 2>/dev/null || echo "0")
+          WARNING_COUNT=$(cat eslint-results.json | jq '[.[]? | .messages[]? | select(.severity == 1)] | length' 2>/dev/null || echo "0")
+          TOTAL_FILES=$(cat eslint-results.json | jq 'length' 2>/dev/null || echo "0")
 
-          echo "ESLint Results:" >> $GITHUB_STEP_SUMMARY
-          echo "- Files analyzed: $TOTAL_FILES" >> $GITHUB_STEP_SUMMARY
-          echo "- Errors: $ERROR_COUNT" >> $GITHUB_STEP_SUMMARY
-          echo "- Warnings: $WARNING_COUNT" >> $GITHUB_STEP_SUMMARY
+          # null や空の場合のデフォルト値設定
+          ERROR_COUNT=${ERROR_COUNT:-0}
+          WARNING_COUNT=${WARNING_COUNT:-0}
+          TOTAL_FILES=${TOTAL_FILES:-0}
+
+          # null の場合は 0 に変換
+          if [ "$ERROR_COUNT" = "null" ]; then ERROR_COUNT=0; fi
+          if [ "$WARNING_COUNT" = "null" ]; then WARNING_COUNT=0; fi
+          if [ "$TOTAL_FILES" = "null" ]; then TOTAL_FILES=0; fi
+
+          echo "error_count=${ERROR_COUNT}" >> $GITHUB_OUTPUT
+          echo "warning_count=${WARNING_COUNT}" >> $GITHUB_OUTPUT
+          echo "total_files=${TOTAL_FILES}" >> $GITHUB_OUTPUT
+
+          {
+            echo "## 🔍 ESLint Results"
+            echo "- Files analyzed: ${TOTAL_FILES}"
+            echo "- Errors: ${ERROR_COUNT}"
+            echo "- Warnings: ${WARNING_COUNT}"
+            echo ""
+          } >> $GITHUB_STEP_SUMMARY
 
       - name: 🔍 TypeScript Type Check
         id: typescript
@@ -176,13 +194,23 @@ jobs:
           # TypeScript型チェック
           pnpm exec tsc --noEmit --skipLibCheck > typescript-results.txt 2>&1 || true
 
-          # エラー数をカウント
-          ERROR_COUNT=$(grep -c "error TS" typescript-results.txt || echo "0")
+          # エラー数をカウント（ファイルが存在しない場合も対応）
+          if [ -f typescript-results.txt ]; then
+            ERROR_COUNT=$(grep -c "error TS" typescript-results.txt 2>/dev/null || echo "0")
+          else
+            ERROR_COUNT=0
+          fi
 
-          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          # デフォルト値設定
+          ERROR_COUNT=${ERROR_COUNT:-0}
 
-          echo "TypeScript Results:" >> $GITHUB_STEP_SUMMARY
-          echo "- Type errors: $ERROR_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "typescript_error_count=${ERROR_COUNT}" >> $GITHUB_OUTPUT
+
+          {
+            echo "## 🔍 TypeScript Results"
+            echo "- Type errors: ${ERROR_COUNT}"
+            echo ""
+          } >> $GITHUB_STEP_SUMMARY
 
       - name: 📤 Upload Analysis Results
         uses: actions/upload-artifact@v4
@@ -415,7 +443,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Quality Gate**: ![](${{ steps.badges.outputs.quality_gate_badge }})" >> $GITHUB_STEP_SUMMARY
 
-  # 品質通知用のジョブ
+    # 品質通知用のジョブ
   quality-notification:
     name: 📢 Quality Notification
     needs: [update-quality-dashboard]
