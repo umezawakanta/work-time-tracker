@@ -1,3 +1,6 @@
+# 🛡️ Quality Check & Dashboard Update
+# Updated: 2025-06-21 Node.js 20 & pnpm optimization
+
 name: 🛡️ Quality Check & Dashboard Update
 
 on:
