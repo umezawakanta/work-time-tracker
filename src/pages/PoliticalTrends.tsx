@@ -258,6 +258,12 @@ export default function PoliticalTrends() {
 
   // メディア選択オプション
   const mediaOptions = useMemo(() => {
+    // データ検証: mediaListが配列でない場合は空配列を使用
+    if (!Array.isArray(mediaList)) {
+      console.warn('Invalid mediaList format received:', mediaList);
+      return [];
+    }
+
     return mediaList.map((media) => (
       <SelectItem key={media} value={media}>
         {media}
@@ -267,6 +273,12 @@ export default function PoliticalTrends() {
 
   // 政党バッジ
   const renderPartyBadges = useMemo(() => {
+    // データ検証: partiesが配列でない場合は空配列を使用
+    if (!Array.isArray(parties)) {
+      console.warn('Invalid parties format received:', parties);
+      return [];
+    }
+
     return parties.map((party) => (
       <div key={party.shortName} className="inline-block">
         <Badge
@@ -329,21 +341,23 @@ export default function PoliticalTrends() {
       return null;
     }
 
-    // ここを修正します
-    const missingMonths = missingData[currentMedia]
-      .map((month) => {
-        console.log('Missing month:', month);
-        // month が "2025/04" のような形式で来ることを想定
-        const [year, monthNum] = month.split('/');
-        // parseInt の後にエラーチェックを追加
-        const monthInt = parseInt(monthNum);
-        console.log('Parsed month:', monthInt);
-        if (isNaN(monthInt)) {
-          return `${year}年不明月`;
-        }
-        return `${year}年${monthInt}月`;
-      })
-      .join('、');
+    // データ検証を追加して修正
+    const missingMonths = Array.isArray(missingData[currentMedia])
+      ? missingData[currentMedia]
+          .map((month) => {
+            console.log('Missing month:', month);
+            // month が "2025/04" のような形式で来ることを想定
+            const [year, monthNum] = month.split('/');
+            // parseInt の後にエラーチェックを追加
+            const monthInt = parseInt(monthNum);
+            console.log('Parsed month:', monthInt);
+            if (isNaN(monthInt)) {
+              return `${year}年不明月`;
+            }
+            return `${year}年${monthInt}月`;
+          })
+          .join('、')
+      : '不明';
 
     return (
       <Alert className="mb-4 bg-amber-50 border-amber-200 text-amber-800">

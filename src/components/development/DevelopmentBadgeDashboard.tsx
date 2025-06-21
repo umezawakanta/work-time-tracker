@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,33 +19,7 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
   const [badges, setBadges] = useState<DevelopmentBadge[]>(DEVELOPMENT_BADGES);
   const [selectedCategory, setSelectedCategory] = useState<'all' | BadgeCategory>('all');
 
-  // GitHub APIからコミット数や進捗を取得
-  useEffect(() => {
-    fetchDevelopmentProgress();
-  }, []);
-
-  const fetchDevelopmentProgress = async () => {
-    // GitHub API経由で実際の開発進捗を取得
-    // コミット数、PR数、機能完成度などを分析
-    try {
-      const progress = await analyzeRepositoryProgress();
-      updateBadgeProgress(progress);
-    } catch (error) {
-      console.error('Failed to fetch development progress:', error);
-    }
-  };
-
-  const analyzeRepositoryProgress = async () => {
-    // 実装例：GitHub APIを使用した進捗分析
-    return {
-      commitCount: 127,
-      featuresCompleted: ['todo_crud', 'responsive_design'],
-      testCoverage: 75,
-      performanceScore: 85,
-    };
-  };
-
-  const updateBadgeProgress = (progress: any) => {
+  const updateBadgeProgress = useCallback((progress: any) => {
     setBadges((currentBadges) =>
       currentBadges.map((badge) => {
         const updatedBadge = { ...badge };
@@ -83,6 +57,32 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
         return updatedBadge;
       })
     );
+  }, []);
+
+  const fetchDevelopmentProgress = useCallback(async () => {
+    // GitHub API経由で実際の開発進捗を取得
+    // コミット数、PR数、機能完成度などを分析
+    try {
+      const progress = await analyzeRepositoryProgress();
+      updateBadgeProgress(progress);
+    } catch (error) {
+      console.error('Failed to fetch development progress:', error);
+    }
+  }, [updateBadgeProgress]);
+
+  // GitHub APIからコミット数や進捗を取得
+  useEffect(() => {
+    fetchDevelopmentProgress();
+  }, [fetchDevelopmentProgress]);
+
+  const analyzeRepositoryProgress = async () => {
+    // 実装例：GitHub APIを使用した進捗分析
+    return {
+      commitCount: 127,
+      featuresCompleted: ['todo_crud', 'responsive_design'],
+      testCoverage: 75,
+      performanceScore: 85,
+    };
   };
 
   const categoryIcons = {
