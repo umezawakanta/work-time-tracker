@@ -100,7 +100,6 @@ export default function PoliticalTrends() {
   // 初期データ読み込み
   useEffect(() => {
     fetchSurveyData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 政党が読み込まれたら主要政党を自動選択

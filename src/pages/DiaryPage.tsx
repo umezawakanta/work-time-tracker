@@ -250,13 +250,11 @@ const DiaryPage: React.FC = () => {
     if (!storedStreak && storedEntries) {
       calculateStreaks(JSON.parse(storedEntries));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // ストリークデータが変わったら達成状況をチェック
     checkAchievements();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streakData, entries, goals]);
 
   // 関数定義を先に行い、useRefに参照を格納

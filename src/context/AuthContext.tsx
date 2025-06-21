@@ -488,7 +488,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       isMounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkAuthStatus, fetchUser, updateActivity]);
 
   // 定期的な認証チェック
