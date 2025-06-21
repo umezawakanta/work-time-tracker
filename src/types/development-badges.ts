@@ -184,11 +184,10 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     difficulty: 'silver',
     icon: '🛡️',
     requirements: [
-      { type: 'test_coverage', target: 80, current: 75, description: 'テストカバレッジ80%' },
+      { type: 'test_coverage', target: 80, current: 86.11, description: 'テストカバレッジ80%' },
     ],
-    isUnlocked: false,
-    progress: 94, // 75/80 = 93.75%
-    nextMilestone: 'あと5%のテストカバレッジ向上',
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 86.11/80 = 107% (上限100%)
   },
 
   // 完成度バッジ
@@ -207,9 +206,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
         description: '全コア機能完成',
       },
     ],
-    isUnlocked: false,
-    progress: 95, // 31ページ実装済みでほぼ完成
-    nextMilestone: '品質向上とパフォーマンス最適化',
+    isUnlocked: true, // 🎉 バッジ獲得！品質向上により完成！
+    progress: 100, // 31ページ + テスト品質向上で完成
   },
   {
     id: 'grand-master',
@@ -227,8 +225,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       },
     ],
     isUnlocked: false,
-    progress: 75, // 複数のバッジが獲得可能な状況
-    nextMilestone: '残りバッジの段階的獲得',
+    progress: 85, // 2つの重要バッジ獲得により大幅向上
+    nextMilestone: 'パフォーマンス、UI/UX、TODOバッジの獲得',
   },
 ];
 

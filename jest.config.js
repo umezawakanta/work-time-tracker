@@ -14,13 +14,16 @@ export default {
   },
   setupFiles: ['<rootDir>/jest.setup.js'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*\\.mjs$))',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}'
+  ],
   testPathIgnorePatterns: [
     '/node_modules/',
-    '/src/pages/__tests__/Home.test.tsx',
-    '/src/__tests__/App.test.tsx',
-    '/src/components/forms/__tests__/WorkTimeEntryForm.test.tsx',
   ],
   moduleDirectories: ['node_modules', 'src'],
   passWithNoTests: true,
