@@ -59,6 +59,7 @@ import ApiTest from './pages/ApiTest';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
 import { DevelopmentBadgeDashboard } from './components/development/DevelopmentBadgeDashboard';
+import QualityDashboardPage from './pages/QualityDashboardPage';
 
 const theme = createTheme({
   palette: {
@@ -406,6 +407,14 @@ export default function App() {
                     element={
                       <LayoutWrapper>
                         <DevelopmentBadgeDashboard />
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/quality-dashboard"
+                    element={
+                      <LayoutWrapper>
+                        <QualityDashboardPage />
                       </LayoutWrapper>
                     }
                   />

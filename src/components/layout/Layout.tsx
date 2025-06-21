@@ -565,7 +565,7 @@ export default function Layout({ children }: LayoutProps) {
 
           <div className="pt-4 pb-2">
             <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4">
-              開発バッジ
+              開発ツール
             </h3>
           </div>
           {renderMenuItem({
@@ -576,6 +576,15 @@ export default function Layout({ children }: LayoutProps) {
             description: '開発進捗バッジ',
             gradient: 'from-yellow-500 via-amber-500 to-orange-500',
             accentColor: 'yellow',
+          })}
+          {renderMenuItem({
+            icon: <Shield className="h-5 w-5" />,
+            label: '品質ダッシュボード',
+            path: '/quality-dashboard',
+            badge: 'NEW',
+            description: '品質メトリクス・テスト・パフォーマンス',
+            gradient: 'from-blue-500 via-blue-600 to-blue-700',
+            accentColor: 'blue',
           })}
         </nav>
 
