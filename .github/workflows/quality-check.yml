@@ -1,6 +1,6 @@
 # 🛡️ Quality Check & Dashboard Update
 # Updated: 2025-06-21 Node.js 20 & pnpm optimization
-# Fixed: GitHub Actions output format issues
+# Fixed: GitHub Actions output format issues - comprehensive fix with printf and validation
 
 name: 🛡️ Quality Check & Dashboard Update
 
@@ -61,20 +61,31 @@ jobs:
         run: |
           # Jest coverage情報をJSONから抽出
           if [ -f coverage/coverage-summary.json ]; then
-            LINES_PCT=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-            STATEMENTS_PCT=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
-            FUNCTIONS_PCT=$(cat coverage/coverage-summary.json | jq '.total.functions.pct')
-            BRANCHES_PCT=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
+            LINES_PCT=$(jq '.total.lines.pct // 0' coverage/coverage-summary.json 2>/dev/null)
+            STATEMENTS_PCT=$(jq '.total.statements.pct // 0' coverage/coverage-summary.json 2>/dev/null)
+            FUNCTIONS_PCT=$(jq '.total.functions.pct // 0' coverage/coverage-summary.json 2>/dev/null)
+            BRANCHES_PCT=$(jq '.total.branches.pct // 0' coverage/coverage-summary.json 2>/dev/null)
             
-            echo "lines_pct=$LINES_PCT" >> $GITHUB_OUTPUT
-            echo "statements_pct=$STATEMENTS_PCT" >> $GITHUB_OUTPUT
-            echo "functions_pct=$FUNCTIONS_PCT" >> $GITHUB_OUTPUT
-            echo "branches_pct=$BRANCHES_PCT" >> $GITHUB_OUTPUT
+            # 数値でない場合は 0 に設定
+            if ! [[ "$LINES_PCT" =~ ^[0-9]+\.?[0-9]*$ ]]; then LINES_PCT=0; fi
+            if ! [[ "$STATEMENTS_PCT" =~ ^[0-9]+\.?[0-9]*$ ]]; then STATEMENTS_PCT=0; fi
+            if ! [[ "$FUNCTIONS_PCT" =~ ^[0-9]+\.?[0-9]*$ ]]; then FUNCTIONS_PCT=0; fi
+            if ! [[ "$BRANCHES_PCT" =~ ^[0-9]+\.?[0-9]*$ ]]; then BRANCHES_PCT=0; fi
+            
+            # デバッグ出力
+            echo "DEBUG: LINES_PCT='$LINES_PCT'"
+            echo "DEBUG: STATEMENTS_PCT='$STATEMENTS_PCT'"
+            
+            # GitHub 出力に設定
+            printf "lines_pct=%.2f\n" "$LINES_PCT" >> $GITHUB_OUTPUT
+            printf "statements_pct=%.2f\n" "$STATEMENTS_PCT" >> $GITHUB_OUTPUT
+            printf "functions_pct=%.2f\n" "$FUNCTIONS_PCT" >> $GITHUB_OUTPUT
+            printf "branches_pct=%.2f\n" "$BRANCHES_PCT" >> $GITHUB_OUTPUT
             
             # バッジ色の決定
-            if (( $(echo "$LINES_PCT >= 80" | bc -l) )); then
+            if (( $(echo "$LINES_PCT >= 80" | bc -l 2>/dev/null) )); then
               echo "badge_color=brightgreen" >> $GITHUB_OUTPUT
-            elif (( $(echo "$LINES_PCT >= 60" | bc -l) )); then
+            elif (( $(echo "$LINES_PCT >= 60" | bc -l 2>/dev/null) )); then
               echo "badge_color=yellow" >> $GITHUB_OUTPUT
             else
               echo "badge_color=red" >> $GITHUB_OUTPUT
@@ -162,24 +173,25 @@ jobs:
             echo "[]" > eslint-results.json
           fi
 
-          # サマリー情報を抽出（nullの場合は0に変換）
-          ERROR_COUNT=$(cat eslint-results.json | jq '[.[]? | .messages[]? | select(.severity == 2)] | length' 2>/dev/null || echo "0")
-          WARNING_COUNT=$(cat eslint-results.json | jq '[.[]? | .messages[]? | select(.severity == 1)] | length' 2>/dev/null || echo "0")
-          TOTAL_FILES=$(cat eslint-results.json | jq 'length' 2>/dev/null || echo "0")
+          # サマリー情報を抽出（安全な方法で）
+          ERROR_COUNT=$(jq '[.[]? | .messages[]? | select(.severity == 2)] | length' eslint-results.json 2>/dev/null)
+          WARNING_COUNT=$(jq '[.[]? | .messages[]? | select(.severity == 1)] | length' eslint-results.json 2>/dev/null)
+          TOTAL_FILES=$(jq 'length' eslint-results.json 2>/dev/null)
 
-          # null や空の場合のデフォルト値設定
-          ERROR_COUNT=${ERROR_COUNT:-0}
-          WARNING_COUNT=${WARNING_COUNT:-0}
-          TOTAL_FILES=${TOTAL_FILES:-0}
+          # 数値でない場合や null の場合は 0 に設定
+          if ! [[ "$ERROR_COUNT" =~ ^[0-9]+$ ]]; then ERROR_COUNT=0; fi
+          if ! [[ "$WARNING_COUNT" =~ ^[0-9]+$ ]]; then WARNING_COUNT=0; fi
+          if ! [[ "$TOTAL_FILES" =~ ^[0-9]+$ ]]; then TOTAL_FILES=0; fi
 
-          # null の場合は 0 に変換
-          if [ "$ERROR_COUNT" = "null" ]; then ERROR_COUNT=0; fi
-          if [ "$WARNING_COUNT" = "null" ]; then WARNING_COUNT=0; fi
-          if [ "$TOTAL_FILES" = "null" ]; then TOTAL_FILES=0; fi
+          # デバッグ出力
+          echo "DEBUG: ERROR_COUNT='$ERROR_COUNT'"
+          echo "DEBUG: WARNING_COUNT='$WARNING_COUNT'"
+          echo "DEBUG: TOTAL_FILES='$TOTAL_FILES'"
 
-          echo "error_count=${ERROR_COUNT}" >> $GITHUB_OUTPUT
-          echo "warning_count=${WARNING_COUNT}" >> $GITHUB_OUTPUT
-          echo "total_files=${TOTAL_FILES}" >> $GITHUB_OUTPUT
+          # GitHub 出力に設定（値を確実に数値として設定）
+          printf "error_count=%d\n" "$ERROR_COUNT" >> $GITHUB_OUTPUT
+          printf "warning_count=%d\n" "$WARNING_COUNT" >> $GITHUB_OUTPUT
+          printf "total_files=%d\n" "$TOTAL_FILES" >> $GITHUB_OUTPUT
 
           {
             echo "## 🔍 ESLint Results"
@@ -195,17 +207,22 @@ jobs:
           # TypeScript型チェック
           pnpm exec tsc --noEmit --skipLibCheck > typescript-results.txt 2>&1 || true
 
-          # エラー数をカウント（ファイルが存在しない場合も対応）
+          # エラー数をカウント（安全な方法で）
           if [ -f typescript-results.txt ]; then
             ERROR_COUNT=$(grep -c "error TS" typescript-results.txt 2>/dev/null || echo "0")
           else
             ERROR_COUNT=0
           fi
 
-          # デフォルト値設定
-          ERROR_COUNT=${ERROR_COUNT:-0}
+          # 数値でない場合は 0 に設定
+          if ! [[ "$ERROR_COUNT" =~ ^[0-9]+$ ]]; then ERROR_COUNT=0; fi
 
-          echo "typescript_error_count=${ERROR_COUNT}" >> $GITHUB_OUTPUT
+          # デバッグ出力
+          echo "DEBUG: TypeScript ERROR_COUNT='$ERROR_COUNT'"
+          echo "DEBUG: TypeScript ERROR_COUNT type: $(printf '%s' "$ERROR_COUNT" | od -c)"
+
+          # GitHub 出力に設定（printf を使用して確実に数値として設定）
+          printf "typescript_error_count=%d\n" "$ERROR_COUNT" >> $GITHUB_OUTPUT
 
           {
             echo "## 🔍 TypeScript Results"
@@ -270,15 +287,26 @@ jobs:
 
           # 結果を抽出
           if [ -f ".lighthouseci/lhr-*.json" ]; then
-            PERF_SCORE=$(cat .lighthouseci/lhr-*.json | jq '.categories.performance.score * 100' | head -1)
-            ACCESSIBILITY_SCORE=$(cat .lighthouseci/lhr-*.json | jq '.categories.accessibility.score * 100' | head -1)
-            BEST_PRACTICES_SCORE=$(cat .lighthouseci/lhr-*.json | jq '.categories["best-practices"].score * 100' | head -1)
-            SEO_SCORE=$(cat .lighthouseci/lhr-*.json | jq '.categories.seo.score * 100' | head -1)
+            PERF_SCORE=$(jq '.categories.performance.score * 100 // 0' .lighthouseci/lhr-*.json 2>/dev/null | head -1)
+            ACCESSIBILITY_SCORE=$(jq '.categories.accessibility.score * 100 // 0' .lighthouseci/lhr-*.json 2>/dev/null | head -1)
+            BEST_PRACTICES_SCORE=$(jq '.categories["best-practices"].score * 100 // 0' .lighthouseci/lhr-*.json 2>/dev/null | head -1)
+            SEO_SCORE=$(jq '.categories.seo.score * 100 // 0' .lighthouseci/lhr-*.json 2>/dev/null | head -1)
             
-            echo "performance_score=$PERF_SCORE" >> $GITHUB_OUTPUT
-            echo "accessibility_score=$ACCESSIBILITY_SCORE" >> $GITHUB_OUTPUT
-            echo "best_practices_score=$BEST_PRACTICES_SCORE" >> $GITHUB_OUTPUT
-            echo "seo_score=$SEO_SCORE" >> $GITHUB_OUTPUT
+            # 数値でない場合は 0 に設定
+            if ! [[ "$PERF_SCORE" =~ ^[0-9]+\.?[0-9]*$ ]]; then PERF_SCORE=0; fi
+            if ! [[ "$ACCESSIBILITY_SCORE" =~ ^[0-9]+\.?[0-9]*$ ]]; then ACCESSIBILITY_SCORE=0; fi
+            if ! [[ "$BEST_PRACTICES_SCORE" =~ ^[0-9]+\.?[0-9]*$ ]]; then BEST_PRACTICES_SCORE=0; fi
+            if ! [[ "$SEO_SCORE" =~ ^[0-9]+\.?[0-9]*$ ]]; then SEO_SCORE=0; fi
+            
+            # デバッグ出力
+            echo "DEBUG: PERF_SCORE='$PERF_SCORE'"
+            echo "DEBUG: ACCESSIBILITY_SCORE='$ACCESSIBILITY_SCORE'"
+            
+            # GitHub 出力に設定
+            printf "performance_score=%.1f\n" "$PERF_SCORE" >> $GITHUB_OUTPUT
+            printf "accessibility_score=%.1f\n" "$ACCESSIBILITY_SCORE" >> $GITHUB_OUTPUT
+            printf "best_practices_score=%.1f\n" "$BEST_PRACTICES_SCORE" >> $GITHUB_OUTPUT
+            printf "seo_score=%.1f\n" "$SEO_SCORE" >> $GITHUB_OUTPUT
             
             echo "## ⚡ Performance Results" >> $GITHUB_STEP_SUMMARY
             echo "- Performance: ${PERF_SCORE}%" >> $GITHUB_STEP_SUMMARY
@@ -413,18 +441,27 @@ jobs:
         id: badges
         run: |
           # カバレッジバッジ
-          COVERAGE=$(echo "${{ needs.test-coverage.outputs.lines_pct || 0 }}" | cut -d. -f1)
+          COVERAGE_RAW="${{ needs.test-coverage.outputs.lines_pct || 0 }}"
+          COVERAGE=$(printf "%.0f" "$COVERAGE_RAW" 2>/dev/null || echo "0")
           BADGE_COLOR="${{ needs.test-coverage.outputs.badge_color || 'red' }}"
 
-          echo "coverage_badge=https://img.shields.io/badge/Coverage-${COVERAGE}%25-${BADGE_COLOR}?style=for-the-badge&logo=jest" >> $GITHUB_OUTPUT
+          # デバッグ出力
+          echo "DEBUG: COVERAGE_RAW='$COVERAGE_RAW'"
+          echo "DEBUG: COVERAGE='$COVERAGE'"
+
+          printf "coverage_badge=https://img.shields.io/badge/Coverage-%d%%25-%s?style=for-the-badge&logo=jest\n" "$COVERAGE" "$BADGE_COLOR" >> $GITHUB_OUTPUT
 
           # パフォーマンスバッジ
-          PERF_SCORE=$(echo "${{ needs.performance-test.outputs.performance_score || 0 }}" | cut -d. -f1)
+          PERF_SCORE_RAW="${{ needs.performance-test.outputs.performance_score || 0 }}"
+          PERF_SCORE=$(printf "%.0f" "$PERF_SCORE_RAW" 2>/dev/null || echo "0")
           if [ "$PERF_SCORE" -ge 90 ]; then PERF_COLOR="brightgreen"
           elif [ "$PERF_SCORE" -ge 75 ]; then PERF_COLOR="yellow"
           else PERF_COLOR="red"; fi
 
-          echo "performance_badge=https://img.shields.io/badge/Performance-${PERF_SCORE}-${PERF_COLOR}?style=for-the-badge&logo=lighthouse" >> $GITHUB_OUTPUT
+          echo "DEBUG: PERF_SCORE_RAW='$PERF_SCORE_RAW'"
+          echo "DEBUG: PERF_SCORE='$PERF_SCORE'"
+
+          printf "performance_badge=https://img.shields.io/badge/Performance-%d-%s?style=for-the-badge&logo=lighthouse\n" "$PERF_SCORE" "$PERF_COLOR" >> $GITHUB_OUTPUT
 
           # 品質ゲートバッジ
           ESLINT_ERRORS="${{ needs.static-analysis.outputs.eslint_errors || 1 }}"
