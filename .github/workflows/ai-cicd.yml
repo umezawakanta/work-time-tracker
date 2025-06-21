@@ -43,7 +43,7 @@ jobs:
         run: echo "key=node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ env.CACHE_VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --prefer-offline
 
       - name: Type checking
         run: pnpm run type-check
@@ -74,7 +74,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --prefer-offline
 
       - name: Run security audit
         run: pnpm audit --audit-level=high
@@ -88,6 +88,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -95,7 +100,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Run unit tests
         run: pnpm run test:ci
@@ -125,6 +130,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -132,7 +142,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Run integration tests
         run: pnpm run test:integration
@@ -146,6 +156,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -153,7 +168,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -184,6 +199,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -191,7 +211,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Build application
         run: pnpm run build
@@ -248,6 +268,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -255,7 +280,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prefer-offline
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
