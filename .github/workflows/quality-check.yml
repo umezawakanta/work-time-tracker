@@ -31,20 +31,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: 📦 Install Dependencies
         run: |
-          npm ci --prefer-offline --no-audit
-          npm run build --if-present
+          pnpm install --frozen-lockfile --prefer-offline
+          pnpm run build --if-present
 
       - name: 🧪 Run Tests with Coverage
         run: |
-          npm test -- --coverage --watchAll=false --passWithNoTests || true
+          pnpm test -- --coverage --watchAll=false --passWithNoTests || true
 
       - name: 📊 Generate Coverage Summary
         id: coverage
@@ -127,20 +132,25 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: 🔍 ESLint Analysis
         id: eslint
         run: |
           # ESLint結果をJSONで出力
-          npx eslint . --ext .ts,.tsx,.js,.jsx --format json --output-file eslint-results.json || true
+          pnpm exec eslint . --ext .ts,.tsx,.js,.jsx --format json --output-file eslint-results.json || true
 
           # サマリー情報を抽出
           ERROR_COUNT=$(cat eslint-results.json | jq '[.[] | .messages[] | select(.severity == 2)] | length')
@@ -160,7 +170,7 @@ jobs:
         id: typescript
         run: |
           # TypeScript型チェック
-          npx tsc --noEmit --skipLibCheck > typescript-results.txt 2>&1 || true
+          pnpm exec tsc --noEmit --skipLibCheck > typescript-results.txt 2>&1 || true
 
           # エラー数をカウント
           ERROR_COUNT=$(grep -c "error TS" typescript-results.txt || echo "0")
@@ -193,21 +203,26 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: 🚀 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: 📦 Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: 🏗️ Build Application
-        run: npm run build
+        run: pnpm run build
 
       - name: 🌐 Start Application
         run: |
-          npm run preview &
+          pnpm run preview &
           sleep 10
           curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:4173 || true
 
@@ -217,26 +232,8 @@ jobs:
           # Lighthouseをインストールして実行
           npm install -g @lhci/cli@0.12.x
 
-          # 基本的なLighthouse設定
-          cat > lighthouserc.json << EOF
-          {
-            "ci": {
-              "collect": {
-                "url": ["http://localhost:4173"],
-                "numberOfRuns": 1
-              },
-              "assert": {
-                "assertions": {
-                  "categories:performance": ["error", {"minScore": 0.8}],
-                  "categories:accessibility": ["error", {"minScore": 0.9}]
-                }
-              }
-            }
-          }
-          EOF
-
-          # Lighthouse実行
-          lhci collect --config=lighthouserc.json || true
+          # Lighthouse実行（既存のlighthouserc.jsonを使用）
+          lhci collect || true
 
           # 結果を抽出
           if [ -f ".lighthouseci/lhr-*.json" ]; then

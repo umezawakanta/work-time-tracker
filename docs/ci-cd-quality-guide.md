@@ -216,20 +216,24 @@ Lighthouse分析設定
 
 ```bash
 # ローカルでの事前確認
-npm run ci:quality
+pnpm run ci:quality
 
 # ログ確認
 cat ~/.npm/_logs/*.log
+
+# pnpm-lock.yaml が最新であることを確認
+pnpm install
+git add pnpm-lock.yaml
 ```
 
 #### 2. カバレッジ計測失敗
 
 ```bash
 # Jest設定確認
-npx jest --showConfig
+pnpm exec jest --showConfig
 
 # テスト実行詳細
-npm test -- --verbose
+pnpm test -- --verbose
 ```
 
 #### 3. Lighthouse実行失敗

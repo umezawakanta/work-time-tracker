@@ -32,12 +32,12 @@
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
         "analyze": "vite build --mode analyze && npx vite-bundle-analyzer dist",
-        "quality:check": "npm run lint && npm run type-check && npm run test:ci",
-        "quality:full": "npm run quality:check && npm run test:coverage && npm run format:check",
-        "quality:fix": "npm run lint:fix && npm run format && npm run test:coverage",
+        "quality:check": "pnpm run lint && pnpm run type-check && pnpm run test:ci",
+        "quality:full": "pnpm run quality:check && pnpm run test:coverage && pnpm run format:check",
+        "quality:fix": "pnpm run lint:fix && pnpm run format && pnpm run test:coverage",
         "lighthouse": "lhci collect --config=lighthouserc.json",
-        "lighthouse:ci": "npm run build && npm run preview & sleep 5 && npm run lighthouse",
-        "ci:quality": "npm run quality:full && npm run lighthouse:ci"
+        "lighthouse:ci": "pnpm run build && pnpm run preview & sleep 5 && pnpm run lighthouse",
+        "ci:quality": "pnpm run quality:full && pnpm run lighthouse:ci"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
