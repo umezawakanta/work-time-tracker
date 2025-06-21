@@ -46,9 +46,10 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Install Dependencies
-        run: |
-          pnpm install --prefer-offline
-          pnpm run build --if-present
+        run: pnpm install --prefer-offline
+
+      - name: 🏗️ Build Application
+        run: pnpm run build
 
       - name: 🧪 Run Tests with Coverage
         run: |
