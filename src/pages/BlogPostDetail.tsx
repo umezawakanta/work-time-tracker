@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
@@ -9,23 +9,28 @@ import {
   deleteBlogPost,
 } from '@/store/blogSlice';
 import { useAuth } from '@/hooks/useAuth';
-import MarkdownRenderer from '@/components/MarkdownRenderer';
-import {
-  Container,
-  Typography,
-  Box,
-  Chip,
-  Button,
-  Divider,
-  Card,
-  CardContent,
-  CircularProgress,
-  Alert,
-  Menu,
-  MenuItem,
-  IconButton,
-} from '@mui/material';
+
+// ⚡ Dynamic Import for Heavy Components
+const MarkdownRenderer = lazy(() => import('@/components/MarkdownRenderer'));
+
+// ⚡ Selective MUI Imports - Only what we need
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+
+// ⚡ Selective Material Icons
 import { ArrowBack, Share, Edit, Delete, MoreVert, AdminPanelSettings } from '@mui/icons-material';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -296,7 +301,9 @@ const BlogPostDetail: React.FC = () => {
 
         {/* Markdownコンテンツのレンダリング */}
         <Box sx={{ mb: 4 }}>
-          <MarkdownRenderer content={post.content} />
+          <Suspense fallback={<CircularProgress />}>
+            <MarkdownRenderer content={post.content} />
+          </Suspense>
         </Box>
 
         <Divider sx={{ mb: 4 }} />

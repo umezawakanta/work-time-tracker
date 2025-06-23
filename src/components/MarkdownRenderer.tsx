@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {
   Typography,
   Box,
@@ -14,11 +12,80 @@ import {
   TableRow,
   Paper,
   Link,
+  CircularProgress,
 } from '@mui/material';
+
+// ⚡ Dynamic Import for SyntaxHighlighter (Heavy component)
+const SyntaxHighlighter = lazy(() =>
+  import('react-syntax-highlighter').then((module) => ({
+    default: module.Light as React.ComponentType<any>,
+  }))
+);
+
+// ⚡ Dynamic Import for Style (only load when needed)
+const tomorrowStyle = lazy(() =>
+  import('react-syntax-highlighter/dist/esm/styles/hljs/tomorrow').then((module) => ({
+    default: module.default,
+  }))
+);
 
 interface MarkdownRendererProps {
   content: string;
 }
+
+// ⚡ Lightweight Code Block Component
+const CodeBlock: React.FC<{
+  className?: string;
+  children: React.ReactNode;
+}> = ({ className, children, ...props }) => {
+  const match = /language-(\w+)/.exec(className || '');
+  const isInline = !match;
+
+  if (isInline) {
+    return (
+      <Box
+        component="code"
+        sx={{
+          backgroundColor: 'grey.100',
+          padding: '2px 6px',
+          borderRadius: 1,
+          fontFamily: 'monospace',
+          fontSize: '0.9em',
+        }}
+        {...props}
+      >
+        {children}
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ my: 2 }}>
+      <Suspense
+        fallback={
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+            <CircularProgress size={20} />
+          </Box>
+        }
+      >
+        <SyntaxHighlighter
+          language={match[1]}
+          PreTag="div"
+          customStyle={{
+            background: '#2d3748',
+            color: '#e2e8f0',
+            padding: '16px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            lineHeight: '1.5',
+          }}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      </Suspense>
+    </Box>
+  );
+};
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
@@ -53,37 +120,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           </Typography>
         ),
 
-        // コードブロック
-        code: ({ className, children, ...props }) => {
-          const match = /language-(\w+)/.exec(className || '');
-          const isInline = !match;
-
-          return isInline ? (
-            <Box
-              component="code"
-              sx={{
-                backgroundColor: 'grey.100',
-                padding: '2px 6px',
-                borderRadius: 1,
-                fontFamily: 'monospace',
-                fontSize: '0.9em',
-              }}
-              {...props}
-            >
-              {children}
-            </Box>
-          ) : (
-            <Box sx={{ my: 2 }}>
-              <SyntaxHighlighter
-                style={tomorrow as unknown as { [key: string]: React.CSSProperties }}
-                language={match[1]}
-                PreTag="div"
-              >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            </Box>
-          );
-        },
+        // ⚡ Optimized Code Block
+        code: CodeBlock,
 
         // リスト
         ul: ({ children }) => (
