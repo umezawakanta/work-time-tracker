@@ -1,65 +1,93 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
+import { lazy, Suspense } from 'react';
 import { store } from './store';
 import Layout from '@/components/layout/Layout';
-import Home from './pages/Home';
-import WorkTimeEntryForm from './components/forms/WorkTimeEntryForm';
-import WorkTimeReports from './pages/WorkTimeReports';
-import NotFound from './pages/NotFound';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import EmailVerification from './pages/EmailVerification';
 import { LocaleProvider } from './context/LocaleContext';
 import { AuthProvider } from './context/AuthContext';
 import { PomodoroProvider } from './context/PomodoroContext';
-import { AssetCalendarPage } from './pages/AssetCalendarPage';
-import ElectionCandidatesPage from './pages/ElectionCandidatesPage';
-import CandidateRegistrationPage from './pages/CandidateRegistrationPage';
-import DistrictPage from './pages/DistrictPage';
-import SubscriptionManagementPage from './pages/SubscriptionManagementPage';
-import AssetLiabilityReportPage from './pages/AssetLiabilityReportPage';
-import BookShelfPage from './pages/BookShelfPage';
-import SleepTrackerPage from './pages/SleepTrackerPage';
-import BlogPage from './pages/BlogPage';
-import NewBlogPost from './pages/NewBlogPost';
-import BlogPostDetail from './pages/BlogPostDetail';
-import EditBlogPost from './pages/EditBlogPost';
-import UserProfile from './pages/UserProfile';
 import PrivateRoute from './components/PrivateRoute';
-import WBSCreatorPage from './pages/WBSCreatorPage';
-import WBSGeneratorPage from './pages/WBSGeneratorPage';
-import TwitterPage from './pages/TwitterPage';
-import PoliticalTrends from './pages/PoliticalTrends';
-import CalendarPage from './pages/CalendarPage';
-import DiaryPage from './pages/DiaryPage';
-import ImpulseTrackerPage from './pages/ImpulseTrackerPage';
-import GuitarPracticePage from './pages/GuitarPracticePage';
-import SiteDevWBS from './components/features/wbs/SiteDevWBS';
-import SiteImprovementPlan from './pages/SiteImprovementPlan';
-import ImprovementPlanDetail from './pages/ImprovementPlanDetail';
-// import ImprovementImplementation from './pages/ImprovementImplementation';
-import IntegratedDashboard from './pages/IntegratedDashboard';
-import SystemDesignDocuments from './pages/SystemDesignDocuments';
-import AdminDashboard from './pages/AdminDashboard';
 import AdminRoute from './components/admin/AdminRoute';
-import ProductsPage from '@/pages/ProductsPage';
-import ProductDetailPage from '@/pages/ProductDetailPage';
-import UpdateHistoryPage from '@/pages/UpdateHistoryPage';
-import CheckoutPage from '@/pages/CheckoutPage';
-import AbstinenceManager from './pages/AbstinenceManager';
-import ShopPage from './pages/ShopPage';
-import TodoManagerPage from './pages/TodoManagerPage';
-import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
-import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
-import ApiTest from './pages/ApiTest';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
-import { DevelopmentBadgeDashboard } from './components/development/DevelopmentBadgeDashboard';
-import QualityDashboardPage from './pages/QualityDashboardPage';
+
+// 🚀 Core pages (immediate load)
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import NotFound from './pages/NotFound';
+
+// ⚡ Heavy pages - Dynamic Import (lazy load)
+const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
+const IntegratedDashboard = lazy(() => import('./pages/IntegratedDashboard'));
+const TodoManagerPage = lazy(() => import('./pages/TodoManagerPage'));
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const DiaryPage = lazy(() => import('./pages/DiaryPage'));
+const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
+const WBSGeneratorPage = lazy(() => import('./pages/WBSGeneratorPage'));
+const WorkTimeReports = lazy(() => import('./pages/WorkTimeReports'));
+const AssetLiabilityReportPage = lazy(() => import('./pages/AssetLiabilityReportPage'));
+const DevelopmentBadgeDashboard = lazy(() =>
+  import('./components/development/DevelopmentBadgeDashboard').then((module) => ({
+    default: module.DevelopmentBadgeDashboard,
+  }))
+);
+const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
+
+// 📊 Chart-heavy pages
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const TwitterPage = lazy(() => import('./pages/TwitterPage'));
+const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
+const SleepTrackerPage = lazy(() => import('./pages/SleepTrackerPage'));
+const GuitarPracticePage = lazy(() => import('./pages/GuitarPracticePage'));
+const ImpulseTrackerPage = lazy(() => import('./pages/ImpulseTrackerPage'));
+
+// 🛍️ E-commerce pages
+const ShopPage = lazy(() => import('./pages/ShopPage'));
+const ProductsPage = lazy(() => import('@/pages/ProductsPage'));
+const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
+const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
+
+// 📅 Calendar & Asset pages
+const AssetCalendarPage = lazy(() =>
+  import('./pages/AssetCalendarPage').then((module) => ({ default: module.AssetCalendarPage }))
+);
+const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManagementPage'));
+const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
+const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
+
+// 🗳️ Election pages
+const ElectionCandidatesPage = lazy(() => import('./pages/ElectionCandidatesPage'));
+const CandidateRegistrationPage = lazy(() => import('./pages/CandidateRegistrationPage'));
+const DistrictPage = lazy(() => import('./pages/DistrictPage'));
+
+// 👤 User & Auth pages
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const EmailVerification = lazy(() => import('./pages/EmailVerification'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
+
+// 📝 Blog & Content pages
+const NewBlogPost = lazy(() => import('./pages/NewBlogPost'));
+const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
+const EditBlogPost = lazy(() => import('./pages/EditBlogPost'));
+
+// 🏗️ Development & System pages
+const SiteDevWBS = lazy(() => import('./components/features/wbs/SiteDevWBS'));
+const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
+const ImprovementPlanDetail = lazy(() => import('./pages/ImprovementPlanDetail'));
+const SystemDesignDocuments = lazy(() => import('./pages/SystemDesignDocuments'));
+const UpdateHistoryPage = lazy(() => import('@/pages/UpdateHistoryPage'));
+
+// 🔧 Form & Utility pages
+const WorkTimeEntryForm = lazy(() => import('./components/forms/WorkTimeEntryForm'));
+const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
+
+// 👑 Admin pages
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const ApiTest = lazy(() => import('./pages/ApiTest'));
 
 const theme = createTheme({
   palette: {
@@ -74,6 +102,28 @@ const theme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   },
 });
+
+// ⚡ Performance-optimized Loading Component
+const PageLoading: React.FC = () => (
+  <Box
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    minHeight="400px"
+    flexDirection="column"
+    gap={2}
+  >
+    <CircularProgress size={32} thickness={4} />
+    <Box color="text.secondary" fontSize="14px">
+      ページを読み込み中...
+    </Box>
+  </Box>
+);
+
+// Suspense wrapper for lazy components
+const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Suspense fallback={<PageLoading />}>{children}</Suspense>
+);
 
 // 最新のToaster設定でより洗練された通知
 const toasterConfig = {
@@ -130,21 +180,119 @@ export default function App() {
                 {/* 認証不要なルート */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/verify-email" element={<EmailVerification />} />
-                <Route path="/election-candidates" element={<ElectionCandidatesPage />} />
-                <Route path="/candidate-registration" element={<CandidateRegistrationPage />} />
-                <Route path="/district/:prefecture/:district" element={<DistrictPage />} />
-                <Route path="/political-trends" element={<PoliticalTrends />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/products" element={<ProductsPage />} />
-                <Route path="/products/:id" element={<ProductDetailPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/site-dev" element={<SiteDevWBS />} />
+                <Route
+                  path="/forgot-password"
+                  element={
+                    <LazyWrapper>
+                      <ForgotPassword />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/reset-password"
+                  element={
+                    <LazyWrapper>
+                      <ResetPassword />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/verify-email"
+                  element={
+                    <LazyWrapper>
+                      <EmailVerification />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/election-candidates"
+                  element={
+                    <LazyWrapper>
+                      <ElectionCandidatesPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/candidate-registration"
+                  element={
+                    <LazyWrapper>
+                      <CandidateRegistrationPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/district/:prefecture/:district"
+                  element={
+                    <LazyWrapper>
+                      <DistrictPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/political-trends"
+                  element={
+                    <LazyWrapper>
+                      <PoliticalTrends />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/calendar"
+                  element={
+                    <LazyWrapper>
+                      <CalendarPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/shop"
+                  element={
+                    <LazyWrapper>
+                      <ShopPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/products"
+                  element={
+                    <LazyWrapper>
+                      <ProductsPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/products/:id"
+                  element={
+                    <LazyWrapper>
+                      <ProductDetailPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <LazyWrapper>
+                      <CheckoutPage />
+                    </LazyWrapper>
+                  }
+                />
+                <Route
+                  path="/site-dev"
+                  element={
+                    <LazyWrapper>
+                      <SiteDevWBS />
+                    </LazyWrapper>
+                  }
+                />
                 <Route path="/404" element={<NotFound />} />
-                <Route path="/update-history" element={<UpdateHistoryPage />} />
+                <Route
+                  path="/update-history"
+                  element={
+                    <LazyWrapper>
+                      <UpdateHistoryPage />
+                    </LazyWrapper>
+                  }
+                />
 
                 {/* 認証が必要なルート */}
                 <Route element={<PrivateRoute />}>
@@ -160,7 +308,9 @@ export default function App() {
                     path="/integrated-dashboard"
                     element={
                       <LayoutWrapper>
-                        <IntegratedDashboard />
+                        <LazyWrapper>
+                          <IntegratedDashboard />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -168,7 +318,9 @@ export default function App() {
                     path="/todos"
                     element={
                       <LayoutWrapper>
-                        <TodoManagerPage />
+                        <LazyWrapper>
+                          <TodoManagerPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -176,7 +328,9 @@ export default function App() {
                     path="/work-time"
                     element={
                       <LayoutWrapper>
-                        <WorkTimeEntryForm />
+                        <LazyWrapper>
+                          <WorkTimeEntryForm />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -184,7 +338,9 @@ export default function App() {
                     path="/work-time-reports"
                     element={
                       <LayoutWrapper>
-                        <WorkTimeReports />
+                        <LazyWrapper>
+                          <WorkTimeReports />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -192,7 +348,9 @@ export default function App() {
                     path="/asset-liability-report"
                     element={
                       <LayoutWrapper>
-                        <AssetLiabilityReportPage />
+                        <LazyWrapper>
+                          <AssetLiabilityReportPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -200,7 +358,9 @@ export default function App() {
                     path="/subscription-management"
                     element={
                       <LayoutWrapper>
-                        <SubscriptionManagementPage />
+                        <LazyWrapper>
+                          <SubscriptionManagementPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -208,7 +368,9 @@ export default function App() {
                     path="/subscription-upgrade"
                     element={
                       <LayoutWrapper>
-                        <SubscriptionUpgradePage />
+                        <LazyWrapper>
+                          <SubscriptionUpgradePage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -216,7 +378,9 @@ export default function App() {
                     path="/asset-calendar"
                     element={
                       <LayoutWrapper>
-                        <AssetCalendarPage />
+                        <LazyWrapper>
+                          <AssetCalendarPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -224,7 +388,9 @@ export default function App() {
                     path="/bookshelf"
                     element={
                       <LayoutWrapper>
-                        <BookShelfPage />
+                        <LazyWrapper>
+                          <BookShelfPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -233,7 +399,9 @@ export default function App() {
                     element={
                       <LayoutWrapper>
                         <GuitarPracticeErrorBoundary>
-                          <GuitarPracticePage />
+                          <LazyWrapper>
+                            <GuitarPracticePage />
+                          </LazyWrapper>
                         </GuitarPracticeErrorBoundary>
                       </LayoutWrapper>
                     }
@@ -242,7 +410,9 @@ export default function App() {
                     path="/sleep-tracker"
                     element={
                       <LayoutWrapper>
-                        <SleepTrackerPage />
+                        <LazyWrapper>
+                          <SleepTrackerPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -250,7 +420,9 @@ export default function App() {
                     path="/twitter"
                     element={
                       <LayoutWrapper>
-                        <TwitterPage />
+                        <LazyWrapper>
+                          <TwitterPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -258,7 +430,9 @@ export default function App() {
                     path="/blog"
                     element={
                       <LayoutWrapper>
-                        <BlogPage />
+                        <LazyWrapper>
+                          <BlogPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -266,7 +440,9 @@ export default function App() {
                     path="/blog/new"
                     element={
                       <LayoutWrapper>
-                        <NewBlogPost />
+                        <LazyWrapper>
+                          <NewBlogPost />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -274,7 +450,9 @@ export default function App() {
                     path="/blog/:id"
                     element={
                       <LayoutWrapper>
-                        <BlogPostDetail />
+                        <LazyWrapper>
+                          <BlogPostDetail />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -282,7 +460,9 @@ export default function App() {
                     path="/blog/edit/:id"
                     element={
                       <LayoutWrapper>
-                        <EditBlogPost />
+                        <LazyWrapper>
+                          <EditBlogPost />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -290,7 +470,9 @@ export default function App() {
                     path="/profile"
                     element={
                       <LayoutWrapper>
-                        <UserProfile />
+                        <LazyWrapper>
+                          <UserProfile />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -298,7 +480,9 @@ export default function App() {
                     path="/wbs-creator"
                     element={
                       <LayoutWrapper>
-                        <WBSCreatorPage />
+                        <LazyWrapper>
+                          <WBSCreatorPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -306,7 +490,9 @@ export default function App() {
                     path="/wbs"
                     element={
                       <LayoutWrapper>
-                        <WBSCreatorPage />
+                        <LazyWrapper>
+                          <WBSCreatorPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -314,7 +500,9 @@ export default function App() {
                     path="/wbs-generator"
                     element={
                       <LayoutWrapper>
-                        <WBSGeneratorPage />
+                        <LazyWrapper>
+                          <WBSGeneratorPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -322,7 +510,9 @@ export default function App() {
                     path="/diary"
                     element={
                       <LayoutWrapper>
-                        <DiaryPage />
+                        <LazyWrapper>
+                          <DiaryPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -330,7 +520,9 @@ export default function App() {
                     path="/impulse-tracker"
                     element={
                       <LayoutWrapper>
-                        <ImpulseTrackerPage />
+                        <LazyWrapper>
+                          <ImpulseTrackerPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -338,7 +530,9 @@ export default function App() {
                     path="/improvement-plan"
                     element={
                       <LayoutWrapper>
-                        <SiteImprovementPlan />
+                        <LazyWrapper>
+                          <SiteImprovementPlan />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -346,7 +540,9 @@ export default function App() {
                     path="/improvement-plan/detail"
                     element={
                       <LayoutWrapper>
-                        <ImprovementPlanDetail />
+                        <LazyWrapper>
+                          <ImprovementPlanDetail />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -354,7 +550,9 @@ export default function App() {
                     path="/system-design"
                     element={
                       <LayoutWrapper>
-                        <SystemDesignDocuments />
+                        <LazyWrapper>
+                          <SystemDesignDocuments />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -363,7 +561,9 @@ export default function App() {
                     element={
                       <AdminRoute>
                         <LayoutWrapper>
-                          <AdminDashboard />
+                          <LazyWrapper>
+                            <AdminDashboard />
+                          </LazyWrapper>
                         </LayoutWrapper>
                       </AdminRoute>
                     }
@@ -373,24 +573,20 @@ export default function App() {
                     element={
                       <AdminRoute>
                         <LayoutWrapper>
-                          <ApiTest />
+                          <LazyWrapper>
+                            <ApiTest />
+                          </LazyWrapper>
                         </LayoutWrapper>
                       </AdminRoute>
                     }
                   />
-                  {/* <Route
-                    path="/improvement-implementation/:projectId"
-                    element={
-                      <LayoutWrapper>
-                        <ImprovementImplementation />
-                      </LayoutWrapper>
-                    }
-                  /> */}
                   <Route
                     path="/billing-history"
                     element={
                       <LayoutWrapper>
-                        <BillingHistoryPage />
+                        <LazyWrapper>
+                          <BillingHistoryPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -398,7 +594,9 @@ export default function App() {
                     path="/abstinence"
                     element={
                       <LayoutWrapper>
-                        <AbstinenceManager />
+                        <LazyWrapper>
+                          <AbstinenceManager />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -406,7 +604,9 @@ export default function App() {
                     path="/development-badges"
                     element={
                       <LayoutWrapper>
-                        <DevelopmentBadgeDashboard />
+                        <LazyWrapper>
+                          <DevelopmentBadgeDashboard />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />
@@ -414,7 +614,9 @@ export default function App() {
                     path="/quality-dashboard"
                     element={
                       <LayoutWrapper>
-                        <QualityDashboardPage />
+                        <LazyWrapper>
+                          <QualityDashboardPage />
+                        </LazyWrapper>
                       </LayoutWrapper>
                     }
                   />

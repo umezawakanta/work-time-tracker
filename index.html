@@ -1,13 +1,121 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Work Time Tracker</title>
+    
+    <!-- ⚡ Performance Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.openai.com" />
+    <link rel="dns-prefetch" href="https://firebaseapp.com" />
+    
+    <!-- 🎨 Core Styles Preload -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" as="style" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    
+    <!-- 📱 PWA & Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="background-color" content="#ffffff" />
+    <meta name="description" content="効率的な勤怠管理とタスク管理を提供するWork Time Tracker" />
+    <meta name="keywords" content="勤怠管理,タスク管理,生産性,時間管理,ワークタイム" />
+    <meta name="author" content="Work Time Tracker" />
+    
+    <!-- 🔍 SEO Optimization -->
+    <meta property="og:title" content="Work Time Tracker - 効率的な勤怠管理システム" />
+    <meta property="og:description" content="効率的な勤怠管理とタスク管理を提供するWork Time Tracker" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://work-time-tracker-5d9q.vercel.app" />
+    <meta property="og:image" content="/vite.svg" />
+    
+    <!-- 🔐 Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <!-- 🏠 Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" href="/vite.svg" />
+    
+    <title>Work Time Tracker - 効率的な勤怠管理システム</title>
+    
+    <!-- 🚀 Critical CSS Inline (将来的な最適化のため) -->
+    <style>
+      /* Critical styles for initial render */
+      body {
+        margin: 0;
+        font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe, #f3e8ff);
+        min-height: 100vh;
+      }
+      
+      #root {
+        min-height: 100vh;
+      }
+      
+      /* Loading state styles */
+      .loading-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom right, #f8fafc, #e0f2fe, #f3e8ff);
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #1976d2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- 📱 No Script Fallback -->
+    <noscript>
+      <div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f8fafc; font-family: 'Roboto', sans-serif; color: #334155; text-align: center; padding: 20px;">
+        <div>
+          <h1>JavaScript が必要です</h1>
+          <p>このアプリケーションを使用するには JavaScript を有効にしてください。</p>
+        </div>
+      </div>
+    </noscript>
+    
+    <!-- 🏠 Main App Container -->
+    <div id="root">
+      <!-- ⚡ Initial Loading State -->
+      <div class="loading-screen">
+        <div>
+          <div class="loading-spinner"></div>
+          <p style="margin-top: 16px; color: #64748b; font-size: 14px;">Work Time Tracker を読み込み中...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 🚀 Main Script -->
     <script type="module" src="./src/main.tsx"></script>
+    
+    <!-- 📊 Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('Service Worker registered successfully:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
