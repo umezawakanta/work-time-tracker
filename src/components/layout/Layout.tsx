@@ -123,6 +123,15 @@ const menuItems: MenuItem[] = [
     accentColor: 'emerald',
   },
   {
+    icon: <Settings className="h-5 w-5" />,
+    label: '自動化ルール',
+    path: '/automation-rules',
+    description: 'ワークフロー自動化設定',
+    badge: 'AUTO',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    accentColor: 'purple',
+  },
+  {
     icon: <Award className="h-5 w-5" />,
     label: 'WBS作成',
     path: '/wbs',

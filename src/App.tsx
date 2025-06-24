@@ -24,6 +24,7 @@ const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
 const IntegratedDashboard = lazy(() => import('./pages/IntegratedDashboard'));
 const TodoManagerPage = lazy(() => import('./pages/TodoManagerPage'));
 const TodoAnalyticsPage = lazy(() => import('./pages/TodoAnalyticsPage'));
+const AutomationRulesPage = lazy(() => import('./pages/AutomationRulesPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const DiaryPage = lazy(() => import('./pages/DiaryPage'));
 const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
@@ -331,6 +332,16 @@ export default function App() {
                       <LayoutWrapper>
                         <LazyWrapper>
                           <TodoAnalyticsPage />
+                        </LazyWrapper>
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/automation-rules"
+                    element={
+                      <LayoutWrapper>
+                        <LazyWrapper>
+                          <AutomationRulesPage />
                         </LazyWrapper>
                       </LayoutWrapper>
                     }

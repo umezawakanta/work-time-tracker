@@ -122,13 +122,12 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'automation_rules',
-        current: 'in_progress',
+        current: 'completed',
         description: '自動化ルール',
       },
     ],
-    isUnlocked: false,
-    progress: 70, // ワークフローエンジンは実装済み
-    nextMilestone: '自動化ルールの詳細設定',
+    isUnlocked: true, // 🎉 バッジ獲得！自動化ルール詳細設定により達成！
+    progress: 100, // 自動化ルール機能完成により100%達成！
   },
 
   // UI/UX改善バッジ
@@ -218,13 +217,12 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'all_badges',
-        current: 'in_progress',
+        current: 'completed',
         description: '全バッジ獲得',
       },
     ],
-    isUnlocked: false,
-    progress: 78, // 7/9バッジ達成！ (7バッジ獲得済み: 🚀🏗️✅🎨⚡🛡️🎯)
-    nextMilestone: '⚙️仕組み化パイオニアバッジの獲得で完全制覇！',
+    isUnlocked: true, // 🎉 全バッジ制覇達成！8/8バッジ獲得により完全制覇！
+    progress: 100, // 8/8バッジ達成！ (🚀🏗️✅⚙️🎨⚡🛡️🎯)
   },
 ];
 

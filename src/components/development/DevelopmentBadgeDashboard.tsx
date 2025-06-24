@@ -120,6 +120,8 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
         'todo_filters', // ✅ ✅ 完了: TODOフィルタ機能
         'todo_analytics', // ✅ ✅ 完了: TODO分析ダッシュボード実装完了！
         'responsive_design', // 🎨 ✅ 完了: レスポンシブデザイン対応完了
+        'automation_rules', // ⚙️ ✅ 完了: 自動化ルール詳細設定完成！
+        'workflow_engine', // ⚙️ ✅ 完了: ワークフローエンジン完成
       ],
       testCoverage: 86.11, // 🎉 維持: 86.11%達成！品質の守護者バッジ獲得済み！
       performanceScore: 92, // 🚀 維持: 85 → 92 (Speed Demon達成済み！)
