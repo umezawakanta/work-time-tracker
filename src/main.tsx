@@ -5,7 +5,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './store';
 import App from './App.tsx';
 import './styles/global.css';
-import './index.css';
 import './styles/accessibility.css';
 import ErrorBoundary from './components/ErrorBoundary';
 
