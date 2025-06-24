@@ -12,6 +12,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      // lodashのES module互換性を改善
+      lodash: 'lodash',
     },
   },
   build: {
@@ -138,7 +140,17 @@ export default defineConfig({
   },
   // ⚡ パフォーマンス最適化
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', '@mui/material', 'react-hot-toast'],
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@mui/material',
+      'react-hot-toast',
+      'lodash',
+      'lodash/get',
+      'lodash/isObject',
+      'lodash/isArray',
+    ],
     exclude: [
       // 重いライブラリを除外してオンデマンド読み込み
       '@anthropic-ai/sdk',
