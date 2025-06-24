@@ -572,7 +572,6 @@ export default function Layout({ children }: LayoutProps) {
           {/* Navigation Menu */}
           <nav
             className="flex-1 p-6 space-y-2 overflow-y-auto scrollbar-hide"
-            role="menubar"
             aria-label="アプリケーションメニュー"
           >
             {menuItems.map((item) => (

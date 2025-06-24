@@ -321,6 +321,7 @@ export const TodoAnalytics: React.FC = () => {
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as any)}
               className="border rounded-md px-3 py-1"
+              aria-label="時間範囲フィルター"
             >
               <option value="week">過去1週間</option>
               <option value="month">過去1ヶ月</option>
