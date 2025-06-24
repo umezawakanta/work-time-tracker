@@ -98,13 +98,12 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'todo_analytics',
-        current: 'in_progress',
+        current: 'completed',
         description: '分析機能',
       },
     ],
-    isUnlocked: false,
-    progress: 85, // 分析機能が残っている
-    nextMilestone: 'TODO分析ダッシュボードの実装',
+    isUnlocked: true, // 🎉 バッジ獲得！TODO分析ダッシュボード実装により達成！
+    progress: 100, // 分析機能完成により100%達成！
   },
   {
     id: 'systematization-pioneer',
@@ -150,13 +149,12 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'accessibility',
-        current: 'in_progress',
+        current: 'completed',
         description: 'アクセシビリティ',
       },
     ],
-    isUnlocked: false,
-    progress: 80, // レスポンシブ対応済み、アクセシビリティ改善中
-    nextMilestone: 'WCAG 2.1 AA準拠の完全実装',
+    isUnlocked: true, // 🎉 バッジ獲得！WCAG 2.1 AA準拠実装により達成！
+    progress: 100, // アクセシビリティ完全実装により100%達成！
   },
 
   // パフォーマンスバッジ
@@ -225,8 +223,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       },
     ],
     isUnlocked: false,
-    progress: 90, // 5バッジ達成により大幅向上 (Speed Demon + 既存4バッジ)
-    nextMilestone: 'UI/UX、TODOマスター、デザイン完璧主義者バッジの獲得',
+    progress: 78, // 7/9バッジ達成！ (7バッジ獲得済み: 🚀🏗️✅🎨⚡🛡️🎯)
+    nextMilestone: '⚙️仕組み化パイオニアバッジの獲得で完全制覇！',
   },
 ];
 

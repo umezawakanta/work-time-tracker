@@ -23,6 +23,7 @@ import NotFound from './pages/NotFound';
 const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
 const IntegratedDashboard = lazy(() => import('./pages/IntegratedDashboard'));
 const TodoManagerPage = lazy(() => import('./pages/TodoManagerPage'));
+const TodoAnalyticsPage = lazy(() => import('./pages/TodoAnalyticsPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const DiaryPage = lazy(() => import('./pages/DiaryPage'));
 const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
@@ -320,6 +321,16 @@ export default function App() {
                       <LayoutWrapper>
                         <LazyWrapper>
                           <TodoManagerPage />
+                        </LazyWrapper>
+                      </LayoutWrapper>
+                    }
+                  />
+                  <Route
+                    path="/todos-analytics"
+                    element={
+                      <LayoutWrapper>
+                        <LazyWrapper>
+                          <TodoAnalyticsPage />
                         </LazyWrapper>
                       </LayoutWrapper>
                     }
