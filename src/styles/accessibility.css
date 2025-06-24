@@ -1,0 +1,283 @@
+/* ==========================================================================
+   アクセシビリティ向上のためのCSSスタイル
+   ========================================================================== */
+
+/* スクリーンリーダー専用テキスト */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* フォーカス時にスクリーンリーダー専用テキストを表示 */
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: #1d4ed8;
+  color: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+}
+
+/* フォーカス時に表示される要素 */
+.focus-within\:not-sr-only:focus-within .sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0.5rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* 高コントラストモード */
+.high-contrast {
+  --contrast-bg: #000000;
+  --contrast-text: #ffffff;
+  --contrast-border: #ffffff;
+  --contrast-link: #00ffff;
+  --contrast-visited: #ff00ff;
+  --contrast-focus: #ffff00;
+  --contrast-button-bg: #0000ff;
+  --contrast-button-text: #ffffff;
+}
+
+.high-contrast * {
+  background-color: var(--contrast-bg) !important;
+  color: var(--contrast-text) !important;
+  border-color: var(--contrast-border) !important;
+}
+
+.high-contrast a {
+  color: var(--contrast-link) !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast a:visited {
+  color: var(--contrast-visited) !important;
+}
+
+.high-contrast button,
+.high-contrast input[type='button'],
+.high-contrast input[type='submit'] {
+  background-color: var(--contrast-button-bg) !important;
+  color: var(--contrast-button-text) !important;
+  border: 2px solid var(--contrast-border) !important;
+}
+
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  background-color: var(--contrast-bg) !important;
+  color: var(--contrast-text) !important;
+  border: 2px solid var(--contrast-border) !important;
+}
+
+/* フォーカス表示の強化 */
+.high-contrast *:focus {
+  outline: 3px solid var(--contrast-focus) !important;
+  outline-offset: 2px !important;
+  background-color: var(--contrast-bg) !important;
+}
+
+/* モーション削減 */
+.reduce-motion,
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* フォーカス表示の改善 */
+:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* キーボードナビゲーション用のフォーカススタイル */
+.focus-visible:focus {
+  outline: 3px solid #fbbf24;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.2);
+}
+
+/* ボタンのアクセシビリティ向上 */
+button:disabled,
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:focus,
+input:disabled:focus {
+  outline: 2px solid #9ca3af;
+}
+
+/* リンクのアクセシビリティ向上 */
+a:focus {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+/* タブレット/モバイルでのタッチターゲットサイズ確保 */
+@media (max-width: 768px) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* 色盲対応のための追加スタイル */
+.color-blind-friendly {
+  --success: #0f766e; /* より濃い緑 */
+  --warning: #ca8a04; /* より濃い黄色 */
+  --error: #dc2626; /* より濃い赤 */
+  --info: #0369a1; /* より濃い青 */
+}
+
+/* テキストのコントラスト改善 */
+.enhanced-contrast {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* フォームのアクセシビリティ向上 */
+label {
+  cursor: pointer;
+}
+
+input:invalid {
+  border-color: #dc2626;
+}
+
+input:invalid:focus {
+  outline-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+/* ツールチップのアクセシビリティ */
+[role='tooltip'] {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  max-width: 300px;
+  z-index: 9999;
+}
+
+/* スキップリンクのスタイル */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #1d4ed8;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 0 0 4px 4px;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* アニメーション削減時の代替表示 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高コントラスト設定の検出 */
+@media (prefers-contrast: high) {
+  :root {
+    --border-width: 2px;
+    --outline-width: 3px;
+  }
+
+  * {
+    border-width: var(--border-width);
+  }
+
+  *:focus {
+    outline-width: var(--outline-width);
+  }
+}
+
+/* 大きなテキスト設定の対応 */
+@media (min-resolution: 120dpi) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* プリント時のアクセシビリティ */
+@media print {
+  .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+  }
+
+  a::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #666;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --focus-color: #60a5fa;
+    --focus-shadow: rgba(96, 165, 250, 0.2);
+  }
+
+  :focus-visible {
+    outline-color: var(--focus-color);
+    box-shadow: 0 0 0 4px var(--focus-shadow);
+  }
+}

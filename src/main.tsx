@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './store';
-import App from './App';
+import App from './App.tsx';
 import './styles/global.css';
+import './index.css';
+import './styles/accessibility.css';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // StrictModeは無限ループデバッグのため一時的に無効化
