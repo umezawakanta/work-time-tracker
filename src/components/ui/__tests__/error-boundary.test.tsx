@@ -222,7 +222,10 @@ describe('ErrorBoundary', () => {
 
   it('開発環境で詳細情報が表示される', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      configurable: true,
+    });
 
     render(
       <ErrorBoundary>
@@ -232,12 +235,18 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('開発者向け詳細情報')).toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      configurable: true,
+    });
   });
 
   it('本番環境で詳細情報が隠される', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      configurable: true,
+    });
 
     render(
       <ErrorBoundary>
@@ -247,7 +256,10 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText('開発者向け詳細情報')).not.toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      configurable: true,
+    });
   });
 });
 

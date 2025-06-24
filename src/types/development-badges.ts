@@ -232,7 +232,9 @@ export const findNextAchievableBadge = (): DevelopmentBadge | null => {
 };
 
 export const generateDailyDevelopmentGoal = (badge: DevelopmentBadge | null): string => {
-  if (!badge) return '新しいバッジに挑戦しましょう！';
+  if (!badge) {
+    return '新しいバッジに挑戦しましょう！';
+  }
 
   const incomplete = badge.requirements.find((req) => {
     if (req.type === 'commit_count' || req.type === 'performance_score') {
