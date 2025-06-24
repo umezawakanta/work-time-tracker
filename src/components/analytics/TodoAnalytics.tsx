@@ -100,7 +100,7 @@ export const TodoAnalytics: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Redux storeからTODOデータを取得（実際のプロジェクトではここから取得）
-  const todos = useSelector((state: RootState) => state.todos?.items || []);
+  const todos = useSelector((state: RootState) => state.todo?.items || []);
 
   // デモデータ生成（実際の実装では実際のTODOデータを使用）
   const generateDemoTodos = (): TodoItem[] => {

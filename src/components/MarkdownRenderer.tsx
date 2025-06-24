@@ -22,13 +22,6 @@ const SyntaxHighlighter = lazy(() =>
   }))
 );
 
-// ⚡ Dynamic Import for Style (only load when needed)
-const tomorrowStyle = lazy(() =>
-  import('react-syntax-highlighter/dist/esm/styles/hljs/tomorrow').then((module) => ({
-    default: module.default,
-  }))
-);
-
 interface MarkdownRendererProps {
   content: string;
 }
@@ -121,7 +114,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         ),
 
         // ⚡ Optimized Code Block
-        code: CodeBlock,
+        code: CodeBlock as any,
 
         // リスト
         ul: ({ children }) => (
