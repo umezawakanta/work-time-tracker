@@ -488,7 +488,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, [checkAuthStatus, fetchUser, updateActivity]);
+  }, []); // �� 依存配列を空にして無限ループを防ぐ
 
   // 定期的な認証チェック
   useEffect(() => {
