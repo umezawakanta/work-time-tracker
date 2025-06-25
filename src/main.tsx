@@ -7,6 +7,10 @@ import App from './App.tsx';
 import './styles/global.css';
 import './styles/accessibility.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import { registerSW } from 'virtual:pwa-register';
+
+// PWAの自動更新を有効化
+registerSW({ onNeedRefresh() {}, onOfflineReady() {} });
 
 // StrictModeは無限ループデバッグのため一時的に無効化
 const enableStrictMode = false; // デバッグ後は true に戻す
