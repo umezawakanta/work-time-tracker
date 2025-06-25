@@ -34,6 +34,11 @@ const DevelopmentBadgeDashboard = lazy(() =>
     default: module.DevelopmentBadgeDashboard,
   }))
 );
+const ErrorMonitorDashboard = lazy(() =>
+  import('./components/development/ErrorMonitorDashboard').then((module) => ({
+    default: module.ErrorMonitorDashboard,
+  }))
+);
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -625,6 +630,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <DevelopmentBadgeDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/error-monitor"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ErrorMonitorDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

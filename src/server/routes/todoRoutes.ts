@@ -10,10 +10,35 @@ const router = express.Router();
 // GET all todos
 router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
+    // 🐛 エラーエリミネーター: 強化されたエラーハンドリング
     const todos = await TodoItem.find().sort({ completed: 1, isPrioritized: -1, priority: 1 });
+    console.log(`✅ Fetched ${todos.length} todos successfully`);
     res.json(todos);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching todos', error });
+    console.error('❌ Error fetching todos:', error);
+
+    // エラータイプに応じた詳細な応答
+    if (error instanceof Error) {
+      if (error.name === 'MongoNetworkError') {
+        res.status(503).json({
+          message: 'Database connection error',
+          error: 'Service temporarily unavailable',
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.status(500).json({
+          message: 'Error fetching todos',
+          error: error.message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } else {
+      res.status(500).json({
+        message: 'Unknown error occurred',
+        error: 'Internal server error',
+        timestamp: new Date().toISOString(),
+      });
+    }
   }
 });
 

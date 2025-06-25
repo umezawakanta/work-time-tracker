@@ -20,8 +20,42 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // エラーロギングや分析サービスへのレポートをここで行うことができます
-    console.error('Uncaught error:', error, errorInfo);
+    // 🐛 エラーエリミネーター: 詳細なエラーロギング
+    console.error('❌ Uncaught error:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+    });
+
+    // エラーを開発バッジシステムに報告
+    this.reportErrorToBadgeSystem(error, errorInfo);
+  }
+
+  private reportErrorToBadgeSystem(error: Error, errorInfo: ErrorInfo) {
+    // 🐛 エラーエリミネーター: エラー統計の更新
+    try {
+      const errorReport = {
+        type: 'react_error',
+        message: error.message,
+        component: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+      };
+
+      // LocalStorageにエラーログを保存
+      const existingErrors = JSON.parse(localStorage.getItem('error_logs') || '[]');
+      existingErrors.push(errorReport);
+
+      // 最新100件のエラーのみ保持
+      if (existingErrors.length > 100) {
+        existingErrors.splice(0, existingErrors.length - 100);
+      }
+
+      localStorage.setItem('error_logs', JSON.stringify(existingErrors));
+      console.log('🐛 Error reported to badge system');
+    } catch (loggingError) {
+      console.error('Failed to log error:', loggingError);
+    }
   }
 
   render() {

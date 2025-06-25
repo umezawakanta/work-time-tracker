@@ -52,6 +52,7 @@ import {
   Wallet,
   PieChart,
   Trophy,
+  AlertTriangle,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -614,6 +615,15 @@ export default function Layout({ children }: LayoutProps) {
               description: '品質メトリクス・テスト・パフォーマンス',
               gradient: 'from-blue-500 via-blue-600 to-blue-700',
               accentColor: 'blue',
+            })}
+            {renderMenuItem({
+              icon: <AlertTriangle className="h-5 w-5" />,
+              label: 'エラー監視',
+              path: '/error-monitor',
+              badge: 'HOT',
+              description: 'エラーエリミネーター・リアルタイム監視',
+              gradient: 'from-red-500 via-orange-500 to-red-600',
+              accentColor: 'red',
             })}
           </nav>
 

@@ -7,7 +7,11 @@ import App from './App.tsx';
 import './styles/global.css';
 import './styles/accessibility.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import { setupGlobalErrorHandling } from './lib/errorHandler';
 // import { registerSW } from 'virtual:pwa-register';
+
+// 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
+setupGlobalErrorHandling();
 
 // PWAの自動更新を一時的に無効化（デバッグのため）
 // registerSW({ onNeedRefresh() {}, onOfflineReady() {} });

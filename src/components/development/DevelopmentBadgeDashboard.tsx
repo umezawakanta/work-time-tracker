@@ -99,6 +99,39 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
     }
   };
 
+  // 🐛 エラーエリミネーター: エラー統計の監視
+  useEffect(() => {
+    const handleErrorStatsUpdate = (event: CustomEvent) => {
+      const errorStats = event.detail;
+      console.log('🐛 Error stats updated:', errorStats);
+
+      // エラー統計に基づいてバッジ進捗を更新
+      setBadges((currentBadges) =>
+        currentBadges.map((badge) => {
+          if (badge.id === 'error-eliminator') {
+            const updatedBadge = { ...badge };
+
+            // エラー数に基づく進捗計算
+            const errorProgress = errorStats.isUnderLimit ? 100 : errorStats.progress;
+            const apiHealthy = true; // API健全性チェックは別途実装
+
+            updatedBadge.progress = Math.min(100, (errorProgress + (apiHealthy ? 50 : 0)) / 2);
+            updatedBadge.isUnlocked = updatedBadge.progress >= 100;
+
+            return updatedBadge;
+          }
+          return badge;
+        })
+      );
+    };
+
+    window.addEventListener('errorStatsUpdated', handleErrorStatsUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('errorStatsUpdated', handleErrorStatsUpdate as EventListener);
+    };
+  }, []);
+
   const analyzeRepositoryProgress = async (): Promise<RepositoryProgress> => {
     // 🐛 エラーエリミネーター進捗チェック
     const consoleErrors = await checkConsoleErrors();
