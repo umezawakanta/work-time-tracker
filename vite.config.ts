@@ -141,10 +141,29 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
+        secure: false,
+        ws: true,
+        // 接続プール最適化
+        rewrite: (path) => path,
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (proxyReq, _req, _res) => {
+            // Keep-Alive接続を有効にして接続の再利用を促進
+            proxyReq.setHeader('Connection', 'keep-alive');
+            proxyReq.setHeader('Keep-Alive', 'timeout=60, max=100');
+          });
+          proxy.on('error', (err, _req, _res) => {
+            console.log('Proxy error:', err);
+          });
+        },
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          Connection: 'keep-alive',
+        },
       },
     },
   },

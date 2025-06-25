@@ -224,6 +224,103 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: true, // 🎉 全バッジ制覇達成！8/8バッジ獲得により完全制覇！
     progress: 100, // 8/8バッジ達成！ (🚀🏗️✅⚙️🎨⚡🛡️🎯)
   },
+
+  // 🆕 高度な挑戦バッジ（ポストグランドマスター）
+  {
+    id: 'error-eliminator',
+    name: '🐛 エラーエリミネーター',
+    description: 'すべてのコンソールエラーを解決',
+    category: 'testing',
+    difficulty: 'legendary',
+    icon: '🐛',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'zero_console_errors',
+        current: 'in_progress',
+        description: 'コンソールエラー0件',
+      },
+      {
+        type: 'feature_complete',
+        target: 'api_errors_fixed',
+        current: 'in_progress',
+        description: 'API 500エラー解決',
+      },
+    ],
+    isUnlocked: false,
+    progress: 60, // 主要エラーは解決済み、API問題が残る
+    nextMilestone: 'API 500エラーとコンソール警告を解決',
+  },
+  {
+    id: 'performance-ninja',
+    name: '🥷 パフォーマンス忍者',
+    description: 'Lighthouse Score 95+達成',
+    category: 'performance',
+    difficulty: 'legendary',
+    icon: '🥷',
+    requirements: [
+      { type: 'performance_score', target: 95, current: 92, description: 'Lighthouse Score 95+' },
+      {
+        type: 'feature_complete',
+        target: 'bundle_optimization',
+        current: 'completed',
+        description: 'バンドルサイズ最適化',
+      },
+    ],
+    isUnlocked: false,
+    progress: 85, // 92/95 + 最適化完了
+    nextMilestone: 'パフォーマンススコア3ポイント向上',
+  },
+  {
+    id: 'code-quality-master',
+    name: '📏 コード品質マスター',
+    description: 'ESLint警告0件達成',
+    category: 'testing',
+    difficulty: 'legendary',
+    icon: '📏',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'zero_lint_warnings',
+        current: 'in_progress',
+        description: 'ESLint警告0件',
+      },
+      {
+        type: 'test_coverage',
+        target: 90,
+        current: 86.11,
+        description: 'テストカバレッジ90%',
+      },
+    ],
+    isUnlocked: false,
+    progress: 75, // 86.11/90 + 一部警告解決済み
+    nextMilestone: 'ESLint警告解決とテストカバレッジ向上',
+  },
+  {
+    id: 'deployment-deity',
+    name: '🚀 デプロイ神',
+    description: 'CI/CDパイプライン完全自動化',
+    category: 'automation',
+    difficulty: 'legendary',
+    icon: '🚀',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'automated_testing',
+        current: 'completed',
+        description: '自動テスト実行',
+      },
+      {
+        type: 'feature_complete',
+        target: 'automated_deployment',
+        current: 'in_progress',
+        description: '自動デプロイ設定',
+      },
+    ],
+    isUnlocked: false,
+    progress: 70, // テスト自動化完了、デプロイ設定中
+    nextMilestone: 'GitHub Actions完全自動化',
+  },
 ];
 
 export const findNextAchievableBadge = (): DevelopmentBadge | null => {
