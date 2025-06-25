@@ -11,7 +11,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'vite.svg'],
+      includeAssets: ['vite.svg'],
       manifest: {
         name: 'Work Time Tracker',
         short_name: 'TimeTracker',
@@ -19,20 +19,9 @@ export default defineConfig({
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
+            src: 'vite.svg',
+            sizes: '32x32',
+            type: 'image/svg+xml',
           },
         ],
       },
@@ -179,6 +168,7 @@ export default defineConfig({
       'lodash/get',
       'lodash/isObject',
       'lodash/isArray',
+      'react-is', // React 19対応
     ],
     exclude: [
       // 重いライブラリを除外してオンデマンド読み込み
