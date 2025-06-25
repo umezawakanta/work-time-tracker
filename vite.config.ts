@@ -169,6 +169,8 @@ export default defineConfig({
       'lodash/isObject',
       'lodash/isArray',
       'react-is', // React 19対応
+      'prop-types', // ESMエクスポート問題を解決
+      'tailwindcss-animate', // Tailwind CSS Animate問題を解決
     ],
     exclude: [
       // 重いライブラリを除外してオンデマンド読み込み
@@ -177,5 +179,12 @@ export default defineConfig({
       'recharts',
       '@fullcalendar/core',
     ],
+    // ESM互換性の強制
+    force: true,
+    // CommonJS互換性の設定
+    esbuildOptions: {
+      target: 'esnext',
+      platform: 'browser',
+    },
   },
 });

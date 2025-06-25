@@ -490,41 +490,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []); // �� 依存配列を空にして無限ループを防ぐ
 
-  // 定期的な認証チェック
+  // 定期的な認証チェック（一時的に無効化してデバッグ）
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const checkInterval = setInterval(
-      async () => {
-        await refreshAuth();
-      },
-      5 * 60 * 1000
-    ); // 5分ごと
+    // 無限ループ防止のため一時的にコメントアウト
+    // const checkInterval = setInterval(
+    //   async () => {
+    //     await refreshAuth();
+    //   },
+    //   5 * 60 * 1000
+    // ); // 5分ごと
 
-    return () => clearInterval(checkInterval);
-  }, [isAuthenticated, refreshAuth]);
+    // return () => clearInterval(checkInterval);
+  }, [isAuthenticated]);
 
-  // オンライン/オフライン状態の監視
+  // オンライン/オフライン状態の監視（一時的に無効化してデバッグ）
   useEffect(() => {
-    const handleOnline = () => {
-      if (isAuthenticated) {
-        logger.info('Auth', 'Connection restored, refreshing auth');
-        refreshAuth();
-      }
-    };
-
-    const handleOffline = () => {
-      logger.info('Auth', 'Connection lost');
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [isAuthenticated, refreshAuth]);
+    // 無限ループ防止のため一時的にコメントアウト
+    // const handleOnline = () => {
+    //   if (isAuthenticated) {
+    //     logger.info('Auth', 'Connection restored, refreshing auth');
+    //     refreshAuth();
+    //   }
+    // };
+    // const handleOffline = () => {
+    //   logger.info('Auth', 'Connection lost');
+    // };
+    // window.addEventListener('online', handleOnline);
+    // window.addEventListener('offline', handleOffline);
+    // return () => {
+    //   window.removeEventListener('online', handleOnline);
+    //   window.removeEventListener('offline', handleOffline);
+    // };
+  }, [isAuthenticated]);
 
   // ページアンロード時のクリーンアップ
   useEffect(() => {

@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
     
     <!-- 📱 PWA & Meta Tags -->
-    <link rel="manifest" href="/manifest.json" />
+    <!-- <link rel="manifest" href="/manifest.json" /> -->
     <meta name="theme-color" content="#1976d2" />
     <meta name="background-color" content="#ffffff" />
     <meta name="description" content="効率的な勤怠管理とタスク管理を提供するWork Time Tracker" />
@@ -102,19 +102,20 @@
     <!-- 🚀 Main Script -->
     <script type="module" src="./src/main.tsx"></script>
     
-    <!-- 📊 Service Worker Registration -->
+    <!-- 📊 Service Worker Registration (一時的に無効化) -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('Service Worker registered successfully:', registration.scope);
-            })
-            .catch((error) => {
-              console.log('Service Worker registration failed:', error);
-            });
-        });
-      }
+      // Service Workerを一時的に無効化（デバッグのため）
+      // if ('serviceWorker' in navigator) {
+      //   window.addEventListener('load', () => {
+      //     navigator.serviceWorker.register('/sw.js')
+      //       .then((registration) => {
+      //         console.log('Service Worker registered successfully:', registration.scope);
+      //       })
+      //       .catch((error) => {
+      //         console.log('Service Worker registration failed:', error);
+      //       });
+      //   });
+      // }
     </script>
   </body>
 </html>
