@@ -1,6 +1,6 @@
 ﻿import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+// import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'path';
 
 export default defineConfig({
@@ -9,23 +9,24 @@ export default defineConfig({
       // JSX runtime 最適化
       jsxRuntime: 'automatic',
     }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['vite.svg'],
-      manifest: {
-        name: 'Work Time Tracker',
-        short_name: 'TimeTracker',
-        description: 'AI搭載のタスク管理・時間追跡アプリケーション',
-        theme_color: '#ffffff',
-        icons: [
-          {
-            src: 'vite.svg',
-            sizes: '32x32',
-            type: 'image/svg+xml',
-          },
-        ],
-      },
-    }),
+    // PWAプラグインを一時的に無効化（デバッグのため）
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   includeAssets: ['vite.svg'],
+    //   manifest: {
+    //     name: 'Work Time Tracker',
+    //     short_name: 'TimeTracker',
+    //     description: 'AI搭載のタスク管理・時間追跡アプリケーション',
+    //     theme_color: '#ffffff',
+    //     icons: [
+    //       {
+    //         src: 'vite.svg',
+    //         sizes: '32x32',
+    //         type: 'image/svg+xml',
+    //       },
+    //     ],
+    //   },
+    // }),
   ],
   resolve: {
     alias: {
@@ -152,6 +153,7 @@ export default defineConfig({
     'process.env.NEXT_PUBLIC_OPENAI_API_KEY': JSON.stringify(
       process.env.NEXT_PUBLIC_OPENAI_API_KEY
     ),
+    global: 'globalThis',
   },
   css: {
     postcss: './postcss.config.cjs',
@@ -171,6 +173,7 @@ export default defineConfig({
       'react-is', // React 19対応
       'prop-types', // ESMエクスポート問題を解決
       'tailwindcss-animate', // Tailwind CSS Animate問題を解決
+      'eventemitter3', // EventEmitter3のESMエクスポート問題を解決
     ],
     exclude: [
       // 重いライブラリを除外してオンデマンド読み込み
@@ -178,6 +181,11 @@ export default defineConfig({
       'chart.js',
       'recharts',
       '@fullcalendar/core',
+      // Node.jsモジュールは最適化から除外
+      'events',
+      'util',
+      'buffer',
+      'process',
     ],
     // ESM互換性の強制
     force: true,
