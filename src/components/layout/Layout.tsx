@@ -53,6 +53,7 @@ import {
   PieChart,
   Trophy,
   AlertTriangle,
+  Gauge,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -624,6 +625,15 @@ export default function Layout({ children }: LayoutProps) {
               description: 'エラーエリミネーター・リアルタイム監視',
               gradient: 'from-red-500 via-orange-500 to-red-600',
               accentColor: 'red',
+            })}
+            {renderMenuItem({
+              icon: <Gauge className="h-5 w-5" />,
+              label: 'パフォーマンス監視',
+              path: '/performance-monitor',
+              badge: '🥷',
+              description: 'パフォーマンス忍者・Core Web Vitals',
+              gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+              accentColor: 'purple',
             })}
           </nav>
 

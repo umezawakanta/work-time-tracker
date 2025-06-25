@@ -39,6 +39,13 @@ const ErrorMonitorDashboard = lazy(() =>
     default: module.ErrorMonitorDashboard,
   }))
 );
+
+// 🥷 パフォーマンス忍者: パフォーマンス監視ダッシュボード
+const PerformanceDashboard = lazy(() =>
+  import('./components/development/PerformanceDashboard').then((module) => ({
+    default: module.PerformanceDashboard,
+  }))
+);
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -640,6 +647,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ErrorMonitorDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/performance-monitor"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <PerformanceDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

@@ -38,13 +38,16 @@ export default defineConfig({
   build: {
     target: 'esnext',
     sourcemap: true,
-    chunkSizeWarningLimit: 500, // 警告サイズを500KBに下げる
+    chunkSizeWarningLimit: 300, // 🥷 パフォーマンス忍者: 警告サイズを300KBに最適化
     rollupOptions: {
-      // Tree shaking 強化
+      // 🥷 パフォーマンス忍者: Tree shaking 最大強化
       treeshake: {
         moduleSideEffects: false,
         propertyReadSideEffects: false,
         unknownGlobalSideEffects: false,
+        // より積極的なTree shaking
+        tryCatchDeoptimization: false,
+        correctVarValueBeforeDeclaration: false,
       },
       output: {
         manualChunks: {
@@ -54,9 +57,9 @@ export default defineConfig({
           // Routing
           'react-router': ['react-router-dom'],
 
-          // UI Libraries (分割)
+          // UI Libraries (分割) - 🥷 パフォーマンス忍者: MUI最適化
           'mui-core': ['@mui/material'],
-          'mui-icons': ['@mui/icons-material'],
+          // MUIアイコンは個別インポートに変更（バンドルサイズ削減）
           'radix-ui': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
@@ -78,9 +81,10 @@ export default defineConfig({
             '@radix-ui/react-tooltip',
           ],
 
-          // Charts (さらに分割)
+          // Charts (さらに分割) - 🥷 パフォーマンス忍者: 遅延読み込み最適化
           'charts-core': ['chart.js', 'react-chartjs-2'],
           'charts-recharts': ['recharts'],
+          'charts-utils': ['chartjs-adapter-date-fns'],
           calendar: [
             '@fullcalendar/core',
             '@fullcalendar/react',

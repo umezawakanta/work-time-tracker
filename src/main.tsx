@@ -8,10 +8,17 @@ import './styles/global.css';
 import './styles/accessibility.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { setupGlobalErrorHandling } from './lib/errorHandler';
+import PerformanceOptimizer from './lib/performanceOptimizer';
 // import { registerSW } from 'virtual:pwa-register';
 
 // 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
 setupGlobalErrorHandling();
+
+// 🥷 パフォーマンス忍者: パフォーマンス監視の初期化
+const performanceOptimizer = PerformanceOptimizer.getInstance();
+performanceOptimizer.startMetricsCollection();
+performanceOptimizer.preloadCriticalResources();
+performanceOptimizer.setupLazyLoading();
 
 // PWAの自動更新を一時的に無効化（デバッグのため）
 // registerSW({ onNeedRefresh() {}, onOfflineReady() {} });
