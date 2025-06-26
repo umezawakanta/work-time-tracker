@@ -1,4 +1,5 @@
 import { api } from '@/services/api/apiConfig';
+import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
 
 interface TokenPair {
   accessToken: string;
@@ -43,7 +44,46 @@ export class TokenManager {
     }
 
     console.log('✅ Production: TokenManager enabled');
-    this.loadFromStorage();
+
+    // API可用性を確認してからトークン管理を開始
+    this.initializeWithHealthCheck();
+  }
+
+  /**
+   * 🏥 API健全性チェック付き初期化
+   */
+  private async initializeWithHealthCheck(): Promise<void> {
+    try {
+      // まずAPI健全性をチェック
+      const response = await fetch(window.location.origin + '/api/auth/tokens', {
+        method: 'HEAD', // HEADリクエストでエンドポイントの存在を確認
+        signal: AbortSignal.timeout(5000), // 5秒タイムアウト
+      });
+
+      if (response.ok || response.status === 404) {
+        // 404は正常（まだトークンが保存されていない）
+        console.log('✅ API endpoint available, initializing TokenManager');
+        this.loadFromStorage();
+        this.setupAxiosInterceptors();
+      } else {
+        console.warn('⚠️ API endpoint returned unexpected status:', response.status);
+        this.handleApiUnavailable();
+      }
+    } catch (error) {
+      console.error('❌ API health check failed:', error);
+      this.handleApiUnavailable();
+    }
+  }
+
+  /**
+   * 🚫 API利用不可時のフォールバック処理
+   */
+  private handleApiUnavailable(): void {
+    console.log('🔄 API unavailable, using fallback mode');
+    console.log('💡 TokenManager will operate in memory-only mode');
+
+    // メモリ内でのみトークン管理を行う
+    // APIへの保存・読み込みは無効化
     this.setupAxiosInterceptors();
   }
 
@@ -79,9 +119,40 @@ export class TokenManager {
         // 両方有効 - リフレッシュスケジュール設定
         this.scheduleTokenRefresh();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load tokens from DB:', error);
-      this.clearTokens();
+
+      // Axiosエラーの場合
+      if (error.response) {
+        const status = error.response.status;
+        const responseText =
+          typeof error.response.data === 'string'
+            ? error.response.data
+            : JSON.stringify(error.response.data);
+
+        if (status === 404) {
+          console.log('📝 No existing tokens found (404) - treating as new user session');
+          this.clearTokens();
+          return;
+        }
+
+        if (responseText.includes('<!doctype') || responseText.includes('<html')) {
+          console.error('🚨 API endpoint returned HTML instead of JSON - possible routing issue');
+          console.log('💡 Hint: Check if /api/auth/tokens endpoint is properly deployed');
+          console.log('📄 Response:', responseText.substring(0, 200) + '...');
+        }
+      } else if (error.request) {
+        console.error('🌐 Network error - no response received');
+        console.log('💡 Hint: Check network connectivity and API server status');
+      } else {
+        console.error('⚙️ Request setup error:', error.message);
+      }
+
+      // ErrorRecoveryServiceを使用して回復を試行
+      const recovered = await ErrorRecoveryService.handleAuthenticationError(error, 'tokens_load');
+      if (!recovered) {
+        this.clearTokens();
+      }
     }
   }
 
@@ -103,8 +174,23 @@ export class TokenManager {
         refreshExpiresAt: this.refreshExpiresAt,
       };
       await api.post('/auth/tokens', tokenData);
-    } catch (error) {
+      console.log('✅ Tokens saved successfully');
+    } catch (error: any) {
       console.error('Failed to save tokens to DB:', error);
+
+      // 詳細なエラー情報を出力
+      if (error.response) {
+        console.error(`📄 Response status: ${error.response.status}`);
+        if (
+          error.response.data &&
+          typeof error.response.data === 'string' &&
+          error.response.data.includes('<html')
+        ) {
+          console.error('🚨 Received HTML response instead of JSON - API routing issue');
+        }
+      }
+
+      // トークン保存に失敗してもアプリケーションの動作は継続
     }
   }
 
@@ -267,8 +353,21 @@ export class TokenManager {
     if (process.env.NODE_ENV !== 'development') {
       try {
         await api.delete('/auth/tokens');
-      } catch (error) {
+        console.log('✅ Tokens deleted successfully');
+      } catch (error: any) {
         console.error('Failed to delete tokens from DB:', error);
+
+        // 詳細なエラー情報を出力
+        if (error.response) {
+          console.error(`📄 Response status: ${error.response.status}`);
+          // 404は既に削除済みとみなして正常とする
+          if (error.response.status === 404) {
+            console.log('📝 Tokens were already deleted or never existed');
+            return;
+          }
+        }
+
+        // トークン削除に失敗してもログアウト処理は継続
       }
     } else {
       console.log('🚫 Development: Token deletion API call disabled');

@@ -39,6 +39,10 @@ export default defineConfig({
     target: 'esnext',
     sourcemap: true,
     chunkSizeWarningLimit: 250, // 🥷 パフォーマンス忍者: より厳しい制限で最適化
+
+    // 🚫 プリロード警告解決: 不要なプリロードを制御
+    assetsInlineLimit: 4096, // 4KB以下のアセットをインライン化
+
     rollupOptions: {
       // 🥷 パフォーマンス忍者: Tree shaking 最大強化
       treeshake: {
