@@ -91,44 +91,50 @@ export class TokenManager {
    * ストレージからトークンを読み込み
    */
   private async loadFromStorage(): Promise<void> {
-    // 本番環境でのみ有効化
-    const isProduction =
-      process.env.NODE_ENV === 'production' || window.location.hostname.includes('vercel.app');
+    // 本番環境判定を改善
+    const isProduction = this.isProductionEnvironment();
     if (!isProduction) {
       console.log('🚫 Development: Token loading disabled');
       return;
     }
 
     try {
+      console.log('📡 Loading tokens from API...');
       const response = await api.get<TokenPair>('/auth/tokens');
       const parsed = response.data;
+
       this.accessToken = parsed.accessToken;
       this.refreshToken = parsed.refreshToken;
       this.expiresAt = parsed.expiresAt;
       this.refreshExpiresAt = parsed.refreshExpiresAt;
 
+      console.log('✅ Tokens loaded successfully from API');
+
       // 有効期限チェック
       const now = Date.now();
       if (this.refreshExpiresAt <= now) {
         // リフレッシュトークンも期限切れ
+        console.log('⏰ Refresh token expired, clearing tokens');
         this.clearTokens();
       } else if (this.expiresAt <= now) {
         // アクセストークンのみ期限切れ - 自動更新を試行
+        console.log('⏰ Access token expired, scheduling refresh');
         this.scheduleTokenRefresh();
       } else {
         // 両方有効 - リフレッシュスケジュール設定
+        console.log('✅ Tokens are valid, scheduling refresh');
         this.scheduleTokenRefresh();
       }
     } catch (error: any) {
-      console.error('Failed to load tokens from DB:', error);
+      console.error('❌ Failed to load tokens from API:', error);
 
-      // Axiosエラーの場合
+      // Axiosエラーの詳細な処理
       if (error.response) {
         const status = error.response.status;
-        const responseText =
-          typeof error.response.data === 'string'
-            ? error.response.data
-            : JSON.stringify(error.response.data);
+        const responseData = error.response.data;
+
+        console.log(`📄 Response status: ${status}`);
+        console.log(`📄 Response headers:`, error.response.headers);
 
         if (status === 404) {
           console.log('📝 No existing tokens found (404) - treating as new user session');
@@ -136,32 +142,76 @@ export class TokenManager {
           return;
         }
 
-        if (responseText.includes('<!doctype') || responseText.includes('<html')) {
-          console.error('🚨 API endpoint returned HTML instead of JSON - possible routing issue');
-          console.log('💡 Hint: Check if /api/auth/tokens endpoint is properly deployed');
-          console.log('📄 Response:', responseText.substring(0, 200) + '...');
+        // HTMLレスポンスの場合（Vercelルーティング問題）
+        if (typeof responseData === 'string' && responseData.includes('<!doctype')) {
+          console.error('🚨 CRITICAL: API endpoint returned HTML instead of JSON');
+          console.error('💡 This indicates a Vercel routing issue');
+          console.error('🔧 Check vercel.json configuration and deployment status');
+          console.error('📄 HTML Response preview:', responseData.substring(0, 200) + '...');
+
+          // フォールバックモードで動作継続
+          this.handleApiUnavailable();
+          return;
         }
       } else if (error.request) {
         console.error('🌐 Network error - no response received');
-        console.log('💡 Hint: Check network connectivity and API server status');
+        console.error('💡 Check network connectivity and API server status');
       } else {
         console.error('⚙️ Request setup error:', error.message);
       }
 
       // ErrorRecoveryServiceを使用して回復を試行
-      const recovered = await ErrorRecoveryService.handleAuthenticationError(error, 'tokens_load');
-      if (!recovered) {
-        this.clearTokens();
+      try {
+        const recovered = await ErrorRecoveryService.handleAuthenticationError(
+          error,
+          'tokens_load'
+        );
+        if (!recovered) {
+          console.log('🔄 Falling back to memory-only mode');
+          this.handleApiUnavailable();
+        }
+      } catch (recoveryError) {
+        console.error('❌ Recovery service failed:', recoveryError);
+        this.handleApiUnavailable();
       }
     }
+  }
+
+  /**
+   * 🌍 本番環境判定を改善
+   */
+  private isProductionEnvironment(): boolean {
+    // NODE_ENV チェック
+    if (process.env.NODE_ENV === 'production') {
+      return true;
+    }
+
+    // ブラウザ環境でのドメインチェック
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const isVercel = hostname.includes('vercel.app') || hostname.includes('.vercel.app');
+      const isCustomDomain =
+        !hostname.includes('localhost') &&
+        !hostname.includes('127.0.0.1') &&
+        hostname !== 'localhost';
+
+      console.log(
+        `🌍 Environment check: hostname=${hostname}, isVercel=${isVercel}, isCustomDomain=${isCustomDomain}`
+      );
+
+      return isVercel || isCustomDomain;
+    }
+
+    return false;
   }
 
   /**
    * ストレージにトークンを保存
    */
   private async saveToStorage(): Promise<void> {
-    // 開発環境では無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境判定を改善
+    const isProduction = this.isProductionEnvironment();
+    if (!isProduction) {
       console.log('🚫 Development: Token saving disabled');
       return;
     }
@@ -173,10 +223,12 @@ export class TokenManager {
         expiresAt: this.expiresAt,
         refreshExpiresAt: this.refreshExpiresAt,
       };
+
+      console.log('💾 Saving tokens to API...');
       await api.post('/auth/tokens', tokenData);
-      console.log('✅ Tokens saved successfully');
+      console.log('✅ Tokens saved successfully to API');
     } catch (error: any) {
-      console.error('Failed to save tokens to DB:', error);
+      console.error('❌ Failed to save tokens to API:', error);
 
       // 詳細なエラー情報を出力
       if (error.response) {
@@ -186,11 +238,13 @@ export class TokenManager {
           typeof error.response.data === 'string' &&
           error.response.data.includes('<html')
         ) {
-          console.error('🚨 Received HTML response instead of JSON - API routing issue');
+          console.error('🚨 Received HTML response instead of JSON - API routing issue detected');
+          console.error('🔧 Check Vercel deployment and vercel.json configuration');
         }
       }
 
       // トークン保存に失敗してもアプリケーションの動作は継続
+      console.log('⚠️ Continuing without persistent token storage');
     }
   }
 
@@ -254,32 +308,38 @@ export class TokenManager {
    * アクセストークンを更新
    */
   private async refreshAccessToken(): Promise<string | null> {
-    // 開発環境では無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境判定を改善
+    const isProduction = this.isProductionEnvironment();
+    if (!isProduction) {
       console.log('🚫 Development: Token refresh disabled');
       return null;
     }
 
     if (this.isRefreshing && this.refreshPromise) {
+      console.log('🔄 Token refresh already in progress, waiting...');
       return this.refreshPromise;
     }
 
     if (!this.refreshToken) {
+      console.log('❌ No refresh token available');
       this.clearTokens();
       return null;
     }
 
     const now = Date.now();
     if (this.refreshExpiresAt <= now) {
+      console.log('⏰ Refresh token expired');
       this.clearTokens();
       return null;
     }
 
+    console.log('🔄 Starting token refresh...');
     this.isRefreshing = true;
     this.refreshPromise = this.performTokenRefresh();
 
     try {
       const newAccessToken = await this.refreshPromise;
+      console.log('✅ Token refresh completed');
       return newAccessToken;
     } finally {
       this.isRefreshing = false;
@@ -291,28 +351,37 @@ export class TokenManager {
    * トークン更新の実行
    */
   private async performTokenRefresh(): Promise<string | null> {
-    // 開発環境では無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境判定を改善
+    const isProduction = this.isProductionEnvironment();
+    if (!isProduction) {
       console.log('🚫 Development: Token refresh request disabled');
       return null;
     }
 
     try {
+      console.log('📡 Requesting token refresh from API...');
       const response = await api.post<RefreshResponse>('/auth/refresh', {
         refreshToken: this.refreshToken,
       });
 
       const { accessToken, refreshToken, expiresIn, refreshExpiresIn } = response.data;
 
-      this.setTokens(accessToken, refreshToken, expiresIn, refreshExpiresIn);
+      console.log('✅ New tokens received, updating...');
+      await this.setTokens(accessToken, refreshToken, expiresIn, refreshExpiresIn);
 
-      console.log('Token refreshed successfully');
+      console.log('✅ Token refreshed successfully');
       return accessToken;
-    } catch (error) {
-      console.error('Token refresh failed:', error);
+    } catch (error: any) {
+      console.error('❌ Token refresh failed:', error);
+
+      if (error.response) {
+        console.error(`📄 Refresh response status: ${error.response.status}`);
+      }
+
       this.clearTokens();
 
       // トークン更新失敗時は再ログインが必要
+      console.log('🔔 Dispatching token-expired event');
       window.dispatchEvent(new CustomEvent('auth:token-expired'));
       return null;
     }
@@ -339,6 +408,8 @@ export class TokenManager {
    * トークンをクリア
    */
   public async clearTokens(): Promise<void> {
+    console.log('🧹 Clearing tokens...');
+
     this.accessToken = null;
     this.refreshToken = null;
     this.expiresAt = 0;
@@ -349,42 +420,48 @@ export class TokenManager {
       this.refreshTimer = null;
     }
 
-    // 開発環境ではAPI呼び出しを無効化
-    if (process.env.NODE_ENV !== 'development') {
+    // 本番環境でのAPI呼び出し
+    const isProduction = this.isProductionEnvironment();
+    if (isProduction) {
       try {
+        console.log('🗑️ Deleting tokens from API...');
         await api.delete('/auth/tokens');
-        console.log('✅ Tokens deleted successfully');
+        console.log('✅ Tokens deleted successfully from API');
       } catch (error: any) {
-        console.error('Failed to delete tokens from DB:', error);
+        console.error('❌ Failed to delete tokens from API:', error);
 
         // 詳細なエラー情報を出力
         if (error.response) {
-          console.error(`📄 Response status: ${error.response.status}`);
+          console.error(`📄 Delete response status: ${error.response.status}`);
           // 404は既に削除済みとみなして正常とする
           if (error.response.status === 404) {
             console.log('📝 Tokens were already deleted or never existed');
-            return;
           }
         }
 
         // トークン削除に失敗してもログアウト処理は継続
+        console.log('⚠️ Continuing with logout despite API error');
       }
     } else {
       console.log('🚫 Development: Token deletion API call disabled');
     }
 
     delete api.defaults.headers.common['Authorization'];
+    console.log('✅ Token cleanup completed');
   }
 
   /**
    * Axiosインターセプターの設定
    */
   private setupAxiosInterceptors(): void {
-    // 開発環境では無効化
-    if (process.env.NODE_ENV === 'development') {
+    // 本番環境判定を改善
+    const isProduction = this.isProductionEnvironment();
+    if (!isProduction) {
       console.log('🚫 Development: Axios interceptors for TokenManager disabled');
       return;
     }
+
+    console.log('🔧 Setting up Axios interceptors for production');
 
     // リクエストインターセプター
     api.interceptors.request.use(
