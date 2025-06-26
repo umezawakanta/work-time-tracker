@@ -48,6 +48,8 @@ const CrossBrowserTestPage = lazy(() =>
   }))
 );
 
+const DatabaseBackupPage = lazy(() => import('./pages/DatabaseBackupPage'));
+
 // 🥷 パフォーマンス忍者: パフォーマンス監視ダッシュボード
 const PerformanceDashboard = lazy(() =>
   import('./components/development/PerformanceDashboard').then((module) => ({
@@ -724,6 +726,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <CrossBrowserTestPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/database-backup"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <DatabaseBackupPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

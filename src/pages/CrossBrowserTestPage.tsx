@@ -6,7 +6,7 @@ export const CrossBrowserTestPage: React.FC = () => {
   return (
     <PageLayout
       title="🎨 クロスブラウザテスト"
-      description="フロントエンド技術の完全マスター - 全ブラウザ互換性テスト"
+      subtitle="フロントエンド技術の完全マスター - 全ブラウザ互換性テスト"
     >
       <CrossBrowserTestingDashboard />
     </PageLayout>

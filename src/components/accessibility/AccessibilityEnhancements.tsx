@@ -115,7 +115,7 @@ export const AccessibilityEnhancements: React.FC = () => {
   };
 
   // 📢 スクリーンリーダー対応
-  const announceChange = (setting: string, value: boolean | number) => {
+  const announceChange = (setting: string, value: boolean | number | string) => {
     const message =
       typeof value === 'boolean'
         ? `${setting} ${value ? '有効' : '無効'}になりました`
