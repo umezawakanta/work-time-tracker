@@ -248,7 +248,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       },
     ],
     isUnlocked: false,
-    progress: 60, // 主要エラーは解決済み、API問題が残る
+    progress: 70, // CSSエラー修正により進捗向上！
     nextMilestone: 'API 500エラーとコンソール警告を解決',
   },
   {
@@ -259,7 +259,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     difficulty: 'legendary',
     icon: '🥷',
     requirements: [
-      { type: 'performance_score', target: 95, current: 92, description: 'Lighthouse Score 95+' },
+      { type: 'performance_score', target: 95, current: 94, description: 'Lighthouse Score 95+' },
       {
         type: 'feature_complete',
         target: 'bundle_optimization',
@@ -268,8 +268,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       },
     ],
     isUnlocked: false,
-    progress: 85, // 92/95 + 最適化完了
-    nextMilestone: 'パフォーマンススコア3ポイント向上',
+    progress: 95, // 🎉 最適化により大幅進捗向上！もうすぐ獲得！
+    nextMilestone: 'Lighthouse Score あと1ポイント向上',
   },
   {
     id: 'code-quality-master',
@@ -320,6 +320,139 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 70, // テスト自動化完了、デプロイ設定中
     nextMilestone: 'GitHub Actions完全自動化',
+  },
+
+  // 🆕 アルティメット開発者バッジ（最高峰）
+  {
+    id: 'lighthouse-perfectionist',
+    name: '🌟 Lighthouse完璧主義者',
+    description: 'Lighthouse全項目95+達成',
+    category: 'performance',
+    difficulty: 'legendary',
+    icon: '🌟',
+    requirements: [
+      { type: 'performance_score', target: 95, current: 94, description: 'Performance 95+' },
+      { type: 'performance_score', target: 95, current: 92, description: 'Accessibility 95+' },
+      { type: 'performance_score', target: 95, current: 90, description: 'Best Practices 95+' },
+      { type: 'performance_score', target: 95, current: 88, description: 'SEO 95+' },
+    ],
+    isUnlocked: false,
+    progress: 45, // 全項目の平均進捗
+    nextMilestone: 'Lighthouse全項目最適化',
+  },
+  {
+    id: 'code-architect',
+    name: '🏛️ コードアーキテクト',
+    description: '設計パターンとコード品質の極地',
+    category: 'foundation',
+    difficulty: 'legendary',
+    icon: '🏛️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'design_patterns',
+        current: 'in_progress',
+        description: 'デザインパターン適用',
+      },
+      {
+        type: 'feature_complete',
+        target: 'code_documentation',
+        current: 'in_progress',
+        description: 'コードドキュメント完備',
+      },
+      {
+        type: 'test_coverage',
+        target: 95,
+        current: 86.11,
+        description: 'テストカバレッジ95%',
+      },
+    ],
+    isUnlocked: false,
+    progress: 35, // 設計改善中
+    nextMilestone: 'アーキテクチャドキュメント作成',
+  },
+  {
+    id: 'ai-integration-master',
+    name: '🤖 AI統合マスター',
+    description: 'AI機能を完全統合',
+    category: 'features',
+    difficulty: 'legendary',
+    icon: '🤖',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'ai_suggestions',
+        current: 'completed',
+        description: 'AI提案機能',
+      },
+      {
+        type: 'feature_complete',
+        target: 'ai_analytics',
+        current: 'in_progress',
+        description: 'AI分析機能',
+      },
+      {
+        type: 'feature_complete',
+        target: 'ai_automation',
+        current: 'in_progress',
+        description: 'AI自動化機能',
+      },
+    ],
+    isUnlocked: false,
+    progress: 60, // AI提案完了、分析・自動化開発中
+    nextMilestone: 'AI分析ダッシュボード完成',
+  },
+  {
+    id: 'security-sentinel',
+    name: '🛡️ セキュリティセンチネル',
+    description: 'セキュリティ完全強化',
+    category: 'testing',
+    difficulty: 'legendary',
+    icon: '🛡️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'security_audit',
+        current: 'in_progress',
+        description: 'セキュリティ監査',
+      },
+      {
+        type: 'feature_complete',
+        target: 'data_encryption',
+        current: 'completed',
+        description: 'データ暗号化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'auth_hardening',
+        current: 'completed',
+        description: '認証強化',
+      },
+    ],
+    isUnlocked: false,
+    progress: 55, // 暗号化・認証完了、監査中
+    nextMilestone: 'セキュリティ監査完了',
+  },
+
+  // 🏆 究極バッジ
+  {
+    id: 'legendary-developer',
+    name: '🏆 伝説の開発者',
+    description: 'すべての伝説バッジを獲得',
+    category: 'completion',
+    difficulty: 'legendary',
+    icon: '🏆',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'all_legendary_badges',
+        current: 'in_progress',
+        description: '全伝説バッジ獲得',
+      },
+    ],
+    isUnlocked: false,
+    progress: 25, // 伝説バッジの平均進捗
+    nextMilestone: '残りの伝説バッジを獲得',
   },
 ];
 

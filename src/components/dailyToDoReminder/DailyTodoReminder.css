@@ -1,6 +1,6 @@
-/* プレミアムバッジ - 完全な上書き版 */
+/* プレミアムバッジ - 最適化版 */
 .premium-badge {
-  /* Badgeコンポーネントのデフォルトスタイルを上書き */
+  /* Badgeコンポーネントのベーススタイル */
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.125rem !important;
@@ -14,51 +14,18 @@
   white-space: nowrap !important;
   border-radius: 9999px !important;
   line-height: 1 !important;
-  /* shadcn/uiのpaddingを強制的に上書き */
-  padding-top: 0.125rem !important;
-  padding-bottom: 0.125rem !important;
-  padding-left: 0.375rem !important;
-  padding-right: 0.375rem !important;
 }
 
-/* badgeクラスのデフォルトスタイルも上書き */
-.premium-badge.rounded-full {
-  padding: 0.125rem 0.375rem !important;
-}
-
-/* SVGアイコンのサイズ */
+/* 🥷 パフォーマンス忍者: 不要なCSS競合を削除し、軽量化 */
 .premium-badge svg {
   width: 10px !important;
   height: 10px !important;
   flex-shrink: 0 !important;
-  min-width: 10px !important;
-  min-height: 10px !important;
-  max-width: 10px !important;
-  max-height: 10px !important;
-  margin: 0 !important;
 }
 
-/* プレミアムバッジ内のテキスト */
 .premium-badge span {
   font-size: 0.625rem !important;
   line-height: 1 !important;
-  margin: 0 !important;
-}
-
-/* px-2.5 py-0.5 クラスを無効化 */
-.premium-badge.px-2\\.5 {
-  padding-left: 0.375rem !important;
-  padding-right: 0.375rem !important;
-}
-
-.premium-badge.py-0\\.5 {
-  padding-top: 0.125rem !important;
-  padding-bottom: 0.125rem !important;
-}
-
-/* text-xs クラスを無効化 */
-.premium-badge.text-xs {
-  font-size: 0.625rem !important;
 }
 
 /* リセットボタン */
@@ -74,23 +41,19 @@
   height: 16px !important;
 }
 
-/* レスポンシブ対応 */
+/* 🥷 パフォーマンス忍者: レスポンシブ最適化 */
 @media (max-width: 640px) {
   .premium-badge {
     font-size: 0.5rem !important;
     padding: 0.125rem 0.25rem !important;
     height: 1rem !important;
   }
-  
+
   .premium-badge svg {
     width: 8px !important;
     height: 8px !important;
-    min-width: 8px !important;
-    min-height: 8px !important;
-    max-width: 8px !important;
-    max-height: 8px !important;
   }
-  
+
   .premium-badge span {
     font-size: 0.5rem !important;
   }

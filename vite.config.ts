@@ -38,7 +38,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     sourcemap: true,
-    chunkSizeWarningLimit: 300, // 🥷 パフォーマンス忍者: 警告サイズを300KBに最適化
+    chunkSizeWarningLimit: 250, // 🥷 パフォーマンス忍者: より厳しい制限で最適化
     rollupOptions: {
       // 🥷 パフォーマンス忍者: Tree shaking 最大強化
       treeshake: {
@@ -57,91 +57,117 @@ export default defineConfig({
           // Routing
           'react-router': ['react-router-dom'],
 
-          // UI Libraries (分割) - 🥷 パフォーマンス忍者: MUI最適化
-          'mui-core': ['@mui/material'],
-          // MUIアイコンは個別インポートに変更（バンドルサイズ削減）
-          'radix-ui': [
+          // UI Libraries (さらに細分化) - 🥷 パフォーマンス忍者: 最適化
+          'mui-core': ['@mui/material/Container', '@mui/material/Typography', '@mui/material/Box'],
+          'mui-components': [
+            '@mui/material/Button',
+            '@mui/material/Card',
+            '@mui/material/TextField',
+          ],
+          'mui-icons': ['@mui/icons-material/ArrowBack', '@mui/icons-material/Share'],
+
+          'radix-core': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
             '@radix-ui/react-toast',
+          ],
+          'radix-components': [
             '@radix-ui/react-select',
             '@radix-ui/react-popover',
             '@radix-ui/react-accordion',
             '@radix-ui/react-alert-dialog',
+          ],
+          'radix-form': [
             '@radix-ui/react-avatar',
             '@radix-ui/react-checkbox',
             '@radix-ui/react-label',
+            '@radix-ui/react-switch',
+          ],
+          'radix-utils': [
             '@radix-ui/react-progress',
             '@radix-ui/react-scroll-area',
             '@radix-ui/react-separator',
             '@radix-ui/react-slider',
-            '@radix-ui/react-switch',
             '@radix-ui/react-tabs',
             '@radix-ui/react-toggle',
             '@radix-ui/react-tooltip',
           ],
 
-          // Charts (さらに分割) - 🥷 パフォーマンス忍者: 遅延読み込み最適化
-          'charts-core': ['chart.js', 'react-chartjs-2'],
+          // Charts (さらに細分化) - 🥷 パフォーマンス忍者: 遅延読み込み最適化
+          'charts-core': ['chart.js'],
+          'charts-react': ['react-chartjs-2'],
           'charts-recharts': ['recharts'],
           'charts-utils': ['chartjs-adapter-date-fns'],
-          calendar: [
-            '@fullcalendar/core',
-            '@fullcalendar/react',
-            '@fullcalendar/daygrid',
-            '@fullcalendar/timegrid',
-            '@fullcalendar/interaction',
-          ],
 
-          // Utilities (分割)
-          'date-utils': ['date-fns', 'date-fns-tz', 'moment'],
-          'file-utils': ['lodash', 'uuid', 'file-saver', 'axios'],
+          // Calendar (分割)
+          'calendar-core': ['@fullcalendar/core', '@fullcalendar/react'],
+          'calendar-views': ['@fullcalendar/daygrid', '@fullcalendar/timegrid'],
+          'calendar-interaction': ['@fullcalendar/interaction'],
+
+          // Utilities (さらに分割)
+          'date-utils': ['date-fns'],
+          'date-tz': ['date-fns-tz'],
+          'moment-utils': ['moment'],
+          'file-utils': ['uuid', 'file-saver'],
+          'lodash-utils': ['lodash'],
+          'http-utils': ['axios'],
 
           // State Management
           redux: ['@reduxjs/toolkit', 'react-redux', 'redux'],
 
-          // Firebase
-          firebase: [
-            'firebase/app',
-            'firebase/auth',
-            'firebase/firestore',
-            'firebase/storage',
-            'firebase/analytics',
-          ],
+          // Firebase (分割)
+          'firebase-core': ['firebase/app'],
+          'firebase-auth': ['firebase/auth'],
+          'firebase-db': ['firebase/firestore'],
+          'firebase-storage': ['firebase/storage', 'firebase/analytics'],
 
           // Form Libraries
-          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'forms-core': ['react-hook-form'],
+          'forms-validation': ['@hookform/resolvers', 'zod'],
 
           // Animation & Effects
-          animations: ['react-hot-toast', 'react-toastify'],
+          'toast-notifications': ['react-hot-toast'],
+          animations: ['react-toastify'],
 
           // Development Tools
           'dev-tools': ['@anthropic-ai/sdk'],
         },
-        // ファイル名を最適化
-        chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js',
+        // 🥷 パフォーマンス忍者: ファイル名とアセット最適化
+        chunkFileNames: (chunkInfo) => {
+          const name = chunkInfo.name;
+          // 大きなチャンクにはhashを短縮
+          return name.includes('index') ? 'js/[name]-[hash:8].js' : 'js/[name]-[hash].js';
+        },
+        entryFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || 'unknown';
           const info = name.split('.');
           const extType = info[info.length - 1];
           if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i.test(name)) {
-            return `media/[name]-[hash].${extType}`;
+            return `media/[name]-[hash:8].${extType}`;
           }
           if (/\.(png|jpe?g|gif|svg|webp|avif)(\?.*)?$/i.test(name)) {
-            return `img/[name]-[hash].${extType}`;
+            return `img/[name]-[hash:8].${extType}`;
           }
           if (/\.(woff2?|eot|ttf|otf)(\?.*)?$/i.test(name)) {
-            return `fonts/[name]-[hash].${extType}`;
+            return `fonts/[name]-[hash:8].${extType}`;
           }
-          return `assets/[name]-[hash].${extType}`;
+          return `assets/[name]-[hash:8].${extType}`;
         },
       },
     },
     cssCodeSplit: true,
     minify: 'esbuild',
-    // gzip圧縮を有効化
+    // 🥷 パフォーマンス忍者: 圧縮最適化
     reportCompressedSize: true,
+  },
+  // 🥷 パフォーマンス忍者: esbuild最適化設定
+  esbuild: {
+    drop: ['console', 'debugger'],
+    legalComments: 'none',
+    minifyIdentifiers: true,
+    minifySyntax: true,
+    minifyWhitespace: true,
   },
   server: {
     port: 3000,
@@ -180,6 +206,8 @@ export default defineConfig({
   },
   css: {
     postcss: './postcss.config.cjs',
+    // 🥷 パフォーマンス忍者: CSS最適化
+    devSourcemap: false,
   },
   // ⚡ パフォーマンス最適化
   optimizeDeps: {
