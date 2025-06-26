@@ -98,6 +98,9 @@ const ElectionCandidatesPage = lazy(() => import('./pages/ElectionCandidatesPage
 const CandidateRegistrationPage = lazy(() => import('./pages/CandidateRegistrationPage'));
 const DistrictPage = lazy(() => import('./pages/DistrictPage'));
 
+// ⚡ Performance pages
+const PerformanceOptimizationPage = lazy(() => import('./pages/PerformanceOptimizationPage'));
+
 // 👤 User & Auth pages
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -736,6 +739,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <DatabaseBackupPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/performance-optimization"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <PerformanceOptimizationPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
