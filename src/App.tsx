@@ -107,6 +107,9 @@ const DataVisualizationPage = lazy(() => import('./pages/DataVisualizationPage')
 // 🎮 Gamification pages
 const GamificationPage = lazy(() => import('./pages/GamificationPage'));
 
+// 📱 PWA pages
+const PWAPage = lazy(() => import('./pages/PWAPage'));
+
 // 👤 User & Auth pages
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -775,6 +778,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <GamificationPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/pwa"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <PWAPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
