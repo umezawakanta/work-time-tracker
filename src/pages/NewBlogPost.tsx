@@ -26,19 +26,18 @@ import {
   Tooltip,
   Grid,
 } from '@mui/material';
-import {
-  AutoAwesome,
-  Psychology,
-  TipsAndUpdates,
-  Category,
-  LocalOffer,
-  CheckCircle,
-  Error,
-  ExpandMore,
-  ExpandLess,
-  Refresh,
-  ContentCopy,
-} from '@mui/icons-material';
+// 🥷 パフォーマンス忍者: 個別インポートでバンドルサイズを最適化
+import AutoAwesome from '@mui/icons-material/AutoAwesome';
+import Psychology from '@mui/icons-material/Psychology';
+import TipsAndUpdates from '@mui/icons-material/TipsAndUpdates';
+import Category from '@mui/icons-material/Category';
+import LocalOffer from '@mui/icons-material/LocalOffer';
+import CheckCircle from '@mui/icons-material/CheckCircle';
+import Error from '@mui/icons-material/Error';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import Refresh from '@mui/icons-material/Refresh';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 
 interface AISuggestion {
   title: string;

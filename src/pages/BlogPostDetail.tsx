@@ -29,7 +29,13 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 
 // ⚡ Selective Material Icons
-import { ArrowBack, Share, Edit, Delete, MoreVert, AdminPanelSettings } from '@mui/icons-material';
+// 🥷 パフォーマンス忍者: 個別インポートでバンドルサイズを最適化
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import Share from '@mui/icons-material/Share';
+import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
+import MoreVert from '@mui/icons-material/MoreVert';
+import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
 
 import {
   AlertDialog,

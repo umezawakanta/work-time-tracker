@@ -32,7 +32,12 @@ import {
   Badge,
   Alert,
 } from '@mui/material';
-import { Add, MoreVert, Edit, Delete, AdminPanelSettings } from '@mui/icons-material';
+// 🥷 パフォーマンス忍者: 個別インポートでバンドルサイズを最適化
+import Add from '@mui/icons-material/Add';
+import MoreVert from '@mui/icons-material/MoreVert';
+import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
+import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
 import {
   AlertDialog,
   AlertDialogAction,
