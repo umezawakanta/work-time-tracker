@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { LocaleProvider } from './context/LocaleContext';
 import { AuthProvider } from './context/AuthContext';
@@ -10,6 +10,8 @@ import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/admin/AdminRoute';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
+import ErrorDashboardPage from './pages/ErrorDashboardPage';
+import { ErrorRecoveryService } from './services/ErrorRecoveryService';
 
 // 🚀 Core pages (immediate load)
 import Home from './pages/Home';
@@ -187,6 +189,16 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 );
 
 export default function App() {
+  // 🐛 エラーエリミネーター: エラー回復サービス初期化
+  useEffect(() => {
+    const errorRecoveryService = ErrorRecoveryService.getInstance();
+    console.log('🐛 エラー回復システム初期化完了');
+
+    return () => {
+      console.log('🐛 エラー回復システム終了');
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <LocaleProvider>
@@ -699,6 +711,7 @@ export default function App() {
                     </LayoutWrapper>
                   }
                 />
+                <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/404" replace />} />
