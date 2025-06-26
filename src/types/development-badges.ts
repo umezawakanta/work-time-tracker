@@ -31,10 +31,19 @@ export type BadgeCategory =
   | 'promotion' // プロモーション
   | 'maintenance' // メンテナンス
   | 'documentation' // ドキュメント
-  | 'community' // コミュニティ
   | 'content' // コンテンツ
   | 'seo' // SEO
-  | 'social'; // ソーシャル
+  | 'social' // ソーシャル
+  | 'cicd' // CI/CD
+  | 'deployment' // デプロイ
+  | 'hosting' // ホスティング
+  | 'product_selection' // 製品選定
+  | 'architecture' // 設計・アーキテクチャ
+  | 'quality_assurance' // 品質保証
+  | 'infrastructure' // インフラストラクチャ
+  | 'security' // セキュリティ
+  | 'devops' // DevOps
+  | 'reliability'; // 信頼性
 
 export interface BadgeRequirement {
   type:
@@ -402,19 +411,20 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'ai_analytics',
-        current: 'in_progress',
+        current: 'completed', // ✅ AIAnalyticsService実装完了！
         description: 'AI分析機能',
       },
       {
         type: 'feature_complete',
         target: 'ai_automation',
-        current: 'in_progress',
+        current: 'completed', // ✅ AIAutomationService実装完了！
         description: 'AI自動化機能',
       },
     ],
-    isUnlocked: false,
-    progress: 60, // AI提案完了、分析・自動化開発中
-    nextMilestone: 'AI分析ダッシュボード完成',
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🤖 AI統合マスターバッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
   },
   {
     id: 'security-sentinel',
@@ -1687,6 +1697,379 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 15,
     nextMilestone: '冗長化設定完了',
+  },
+
+  // 🆕 CI/CD・デプロイメント バッジ
+  {
+    id: 'cicd-pipeline-master',
+    name: '🔄 CI/CDパイプライン専門家',
+    description: 'GitHub Actions・自動テスト・デプロイメント自動化・品質ゲート',
+    category: 'cicd',
+    difficulty: 'platinum',
+    icon: '🔄',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'github_actions_setup',
+        current: 'completed', // ✅ GitHub Actions設定完了！
+        description: 'GitHub Actions設定',
+      },
+      {
+        type: 'feature_complete',
+        target: 'automated_testing',
+        current: 'completed', // ✅ 自動テスト設定完了！
+        description: '自動テスト統合',
+      },
+      {
+        type: 'feature_complete',
+        target: 'quality_gates',
+        current: 'in_progress',
+        description: '品質ゲート設定',
+      },
+      {
+        type: 'feature_complete',
+        target: 'deployment_automation',
+        current: 'completed', // ✅ Vercel自動デプロイメント設定完了！
+        description: 'デプロイメント自動化',
+      },
+    ],
+    isUnlocked: false,
+    progress: 75,
+    nextMilestone: '品質ゲート設定完了',
+  },
+  {
+    id: 'deployment-strategist',
+    name: '🚀 デプロイメント戦略家',
+    description: 'Blue-Green・カナリア・ローリング・A/Bデプロイメント',
+    category: 'deployment',
+    difficulty: 'gold',
+    icon: '🚀',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'blue_green_deployment',
+        current: 'planned',
+        description: 'Blue-Greenデプロイメント',
+      },
+      {
+        type: 'feature_complete',
+        target: 'canary_deployment',
+        current: 'planned',
+        description: 'カナリアデプロイメント',
+      },
+      {
+        type: 'feature_complete',
+        target: 'rolling_deployment',
+        current: 'in_progress',
+        description: 'ローリングデプロイメント',
+      },
+      {
+        type: 'feature_complete',
+        target: 'rollback_strategy',
+        current: 'planned',
+        description: 'ロールバック戦略',
+      },
+    ],
+    isUnlocked: false,
+    progress: 25,
+    nextMilestone: 'ローリングデプロイメント完成',
+  },
+  {
+    id: 'hosting-infrastructure-architect',
+    name: '🏗️ ホスティング・インフラ設計者',
+    description: 'CDN・ロードバランサー・スケーリング・マルチリージョン',
+    category: 'hosting',
+    difficulty: 'platinum',
+    icon: '🏗️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'cdn_implementation',
+        current: 'completed', // ✅ Vercel CDN設定完了！
+        description: 'CDN実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'load_balancing',
+        current: 'planned',
+        description: 'ロードバランシング',
+      },
+      {
+        type: 'feature_complete',
+        target: 'auto_scaling',
+        current: 'planned',
+        description: '自動スケーリング',
+      },
+      {
+        type: 'feature_complete',
+        target: 'multi_region_deployment',
+        current: 'planned',
+        description: 'マルチリージョン展開',
+      },
+    ],
+    isUnlocked: false,
+    progress: 25,
+    nextMilestone: 'ロードバランシング設定',
+  },
+  {
+    id: 'tech-stack-curator',
+    name: '🔧 技術選定キュレーター',
+    description: '技術評価・アーキテクチャ決定・ライブラリ選定・互換性管理',
+    category: 'product_selection',
+    difficulty: 'gold',
+    icon: '🔧',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'technology_evaluation',
+        current: 'completed', // ✅ React + TypeScript + Vite技術選定完了！
+        description: '技術評価・選定',
+      },
+      {
+        type: 'feature_complete',
+        target: 'dependency_management',
+        current: 'completed', // ✅ package.json管理完了！
+        description: '依存関係管理',
+      },
+      {
+        type: 'feature_complete',
+        target: 'compatibility_matrix',
+        current: 'in_progress',
+        description: '互換性マトリックス',
+      },
+      {
+        type: 'feature_complete',
+        target: 'architecture_documentation',
+        current: 'in_progress',
+        description: 'アーキテクチャドキュメント',
+      },
+    ],
+    isUnlocked: false,
+    progress: 60,
+    nextMilestone: '互換性マトリックス作成',
+  },
+  {
+    id: 'software-architect',
+    name: '🏛️ ソフトウェアアーキテクト',
+    description: 'システム設計・マイクロサービス・DDD・設計パターン',
+    category: 'architecture',
+    difficulty: 'legendary',
+    icon: '🏛️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'system_design',
+        current: 'completed', // ✅ 現在のアプリケーション設計完了！
+        description: 'システム設計',
+      },
+      {
+        type: 'feature_complete',
+        target: 'design_patterns',
+        current: 'in_progress',
+        description: 'デザインパターン適用',
+      },
+      {
+        type: 'feature_complete',
+        target: 'domain_driven_design',
+        current: 'planned',
+        description: 'ドメイン駆動設計',
+      },
+      {
+        type: 'feature_complete',
+        target: 'microservices_architecture',
+        current: 'planned',
+        description: 'マイクロサービス設計',
+      },
+    ],
+    isUnlocked: false,
+    progress: 40,
+    nextMilestone: 'デザインパターン適用完了',
+  },
+  {
+    id: 'quality-assurance-champion',
+    name: '🧪 品質保証チャンピオン',
+    description: 'E2Eテスト・パフォーマンステスト・セキュリティテスト・品質メトリクス',
+    category: 'quality_assurance',
+    difficulty: 'platinum',
+    icon: '🧪',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'e2e_testing',
+        current: 'planned',
+        description: 'E2Eテスト',
+      },
+      {
+        type: 'feature_complete',
+        target: 'performance_testing',
+        current: 'completed', // ✅ Lighthouse性能測定完了！
+        description: 'パフォーマンステスト',
+      },
+      {
+        type: 'feature_complete',
+        target: 'security_testing',
+        current: 'in_progress',
+        description: 'セキュリティテスト',
+      },
+      {
+        type: 'test_coverage',
+        target: '90',
+        current: '86.11',
+        description: 'テストカバレッジ90%',
+      },
+    ],
+    isUnlocked: false,
+    progress: 65,
+    nextMilestone: 'E2Eテスト実装',
+  },
+  {
+    id: 'infrastructure-automation-expert',
+    name: '⚙️ インフラ自動化エキスパート',
+    description: 'IaC・コンテナ化・オーケストレーション・プロビジョニング',
+    category: 'infrastructure',
+    difficulty: 'platinum',
+    icon: '⚙️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'infrastructure_as_code',
+        current: 'planned',
+        description: 'Infrastructure as Code',
+      },
+      {
+        type: 'feature_complete',
+        target: 'containerization',
+        current: 'planned',
+        description: 'コンテナ化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'orchestration',
+        current: 'planned',
+        description: 'オーケストレーション',
+      },
+      {
+        type: 'feature_complete',
+        target: 'automated_provisioning',
+        current: 'planned',
+        description: '自動プロビジョニング',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'Infrastructure as Code導入',
+  },
+  {
+    id: 'security-fortress-builder',
+    name: '🔒 セキュリティ要塞構築者',
+    description: '認証・認可・暗号化・OWASP対応・セキュリティ監査',
+    category: 'security',
+    difficulty: 'legendary',
+    icon: '🔒',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'authentication_system',
+        current: 'completed', // ✅ Firebase Auth実装完了！
+        description: '認証システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'authorization_framework',
+        current: 'completed', // ✅ 認可フレームワーク実装完了！
+        description: '認可フレームワーク',
+      },
+      {
+        type: 'feature_complete',
+        target: 'data_encryption',
+        current: 'completed', // ✅ データ暗号化実装完了！
+        description: 'データ暗号化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'owasp_compliance',
+        current: 'completed', // ✅ OWASPComplianceService実装完了！
+        description: 'OWASP準拠',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🔒 セキュリティ要塞構築者バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'devops-culture-evangelist',
+    name: '🤝 DevOps文化伝道師',
+    description: 'チーム連携・自動化文化・継続的改善・DevOpsツールチェーン',
+    category: 'devops',
+    difficulty: 'gold',
+    icon: '🤝',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'collaboration_tools',
+        current: 'completed', // ✅ GitHub・Slack連携完了！
+        description: 'コラボレーションツール',
+      },
+      {
+        type: 'feature_complete',
+        target: 'automation_culture',
+        current: 'in_progress',
+        description: '自動化文化の浸透',
+      },
+      {
+        type: 'feature_complete',
+        target: 'continuous_improvement',
+        current: 'in_progress',
+        description: '継続的改善プロセス',
+      },
+      {
+        type: 'feature_complete',
+        target: 'devops_toolchain',
+        current: 'completed', // ✅ DevOpsツールチェーン構築完了！
+        description: 'DevOpsツールチェーン',
+      },
+    ],
+    isUnlocked: false,
+    progress: 70,
+    nextMilestone: '自動化文化浸透',
+  },
+  {
+    id: 'site-reliability-engineer',
+    name: '⚡ サイト信頼性エンジニア',
+    description: '可用性・レイテンシ・エラー率・容量計画・信頼性指標',
+    category: 'reliability',
+    difficulty: 'legendary',
+    icon: '⚡',
+    requirements: [
+      {
+        type: 'performance_score',
+        target: '99.95',
+        current: '95.5',
+        description: '可用性99.95%達成',
+      },
+      {
+        type: 'performance_score',
+        target: '200',
+        current: '250',
+        description: 'レイテンシ200ms以下',
+      },
+      {
+        type: 'performance_score',
+        target: '0.1',
+        current: '0.5',
+        description: 'エラー率0.1%以下',
+      },
+      {
+        type: 'feature_complete',
+        target: 'capacity_planning',
+        current: 'planned',
+        description: '容量計画策定',
+      },
+    ],
+    isUnlocked: false,
+    progress: 35,
+    nextMilestone: 'レイテンシ最適化',
   },
 ];
 
