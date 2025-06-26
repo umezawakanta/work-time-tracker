@@ -216,6 +216,15 @@ const menuItems: MenuItem[] = [
     accentColor: 'cyan',
   },
   {
+    icon: <Brain className="h-5 w-5" />,
+    label: 'ADHD集中サポート',
+    path: '/adhd-support',
+    description: '妄想防止と集中力向上',
+    badge: 'NEW',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    accentColor: 'indigo',
+  },
+  {
     icon: <Lightbulb className="h-5 w-5" />,
     label: '改善計画',
     path: '/improvement-plan',

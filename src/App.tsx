@@ -46,6 +46,19 @@ const PerformanceDashboard = lazy(() =>
     default: module.PerformanceDashboard,
   }))
 );
+
+// 🧠 ADHD集中サポート
+const ADHDSupportPage = lazy(() =>
+  import('./pages/ADHDSupportPage').then((module) => ({
+    default: module.ADHDSupportPage,
+  }))
+);
+
+const ADHDFloatingButton = lazy(() =>
+  import('./components/adhd/ADHDFloatingButton').then((module) => ({
+    default: module.ADHDFloatingButton,
+  }))
+);
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -186,6 +199,11 @@ export default function App() {
             <PomodoroProvider>
               <PomodoroManager />
             </PomodoroProvider>
+
+            {/* ADHD緊急サポートボタン - 全ページで利用可能 */}
+            <LazyWrapper>
+              <ADHDFloatingButton />
+            </LazyWrapper>
 
             <Routes>
               {/* 認証不要なルート */}
@@ -657,6 +675,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <PerformanceDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/adhd-support"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ADHDSupportPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
