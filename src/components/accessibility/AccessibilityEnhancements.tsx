@@ -212,7 +212,7 @@ export const AccessibilityEnhancements: React.FC = () => {
     };
 
     setSettings(presets[preset]);
-    announceChange('プリセット', preset);
+    announceChange('プリセット', String(preset));
   };
 
   return (

@@ -5,13 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   MicroInteraction,
-  SparkleEffect,
-  AnimatedLikeButton,
-  AnimatedStarRating,
-  AnimatedLoader,
-  AnimatedFeedback,
-  FloatingActionButton,
-  InViewAnimation,
+  SparkleEffectCSS,
+  AnimatedLikeButtonCSS,
+  AnimatedStarRatingCSS,
+  AnimatedLoaderCSS,
+  AnimatedFeedbackCSS,
 } from './MicroInteractions';
 import {
   Heart,
@@ -203,7 +201,9 @@ export const AnimationShowcase: React.FC = () => {
                 <div>
                   <h4 className="font-semibold mb-3">いいねボタン（スパークル効果付き）</h4>
                   <div className="flex gap-4 flex-wrap">
-                    <AnimatedLikeButton onToggle={(liked) => liked && setShowSparkles(true)} />
+                    <AnimatedLikeButtonCSS
+                      onToggle={(liked: boolean) => liked && setShowSparkles(true)}
+                    />
                     <SparkleEffect trigger={showSparkles}>
                       <Button variant="outline" onClick={() => setShowSparkles(true)}>
                         <Sparkles className="h-4 w-4 mr-2" />

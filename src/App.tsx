@@ -42,6 +42,12 @@ const ErrorMonitorDashboard = lazy(() =>
   }))
 );
 
+const CrossBrowserTestPage = lazy(() =>
+  import('./pages/CrossBrowserTestPage').then((module) => ({
+    default: module.CrossBrowserTestPage,
+  }))
+);
+
 // 🥷 パフォーマンス忍者: パフォーマンス監視ダッシュボード
 const PerformanceDashboard = lazy(() =>
   import('./components/development/PerformanceDashboard').then((module) => ({
@@ -712,6 +718,16 @@ export default function App() {
                   }
                 />
                 <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
+                <Route
+                  path="/cross-browser-test"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <CrossBrowserTestPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
               </Route>
 
               <Route path="*" element={<Navigate to="/404" replace />} />

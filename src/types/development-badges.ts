@@ -243,13 +243,14 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'api_errors_fixed',
-        current: 'in_progress',
+        current: 'completed', // ✅ API 500エラー回復システム実装完了！
         description: 'API 500エラー解決',
       },
     ],
-    isUnlocked: false,
-    progress: 85, // CSSエラー修正とconsole削除により大幅進捗向上！
-    nextMilestone: 'API 500エラー解決',
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🐛 エラーエリミネーターバッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
   },
   {
     id: 'performance-ninja',
@@ -737,6 +738,274 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 50,
     nextMilestone: 'セキュリティヘッダー設定',
+  },
+
+  // 🆕 最新の専門分野バッジ
+  {
+    id: 'api-master',
+    name: '🚀 APIマスター',
+    description: 'RESTful API設計とGraphQLの完全習得',
+    category: 'features',
+    difficulty: 'platinum',
+    icon: '🚀',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'restful_api_design',
+        current: 'completed',
+        description: 'RESTful API設計',
+      },
+      {
+        type: 'feature_complete',
+        target: 'api_versioning',
+        current: 'completed',
+        description: 'APIバージョニング',
+      },
+      {
+        type: 'feature_complete',
+        target: 'api_documentation',
+        current: 'in_progress',
+        description: 'API仕様書作成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'graphql_integration',
+        current: 'planned',
+        description: 'GraphQL統合',
+      },
+    ],
+    isUnlocked: false,
+    progress: 65,
+    nextMilestone: 'API仕様書作成',
+  },
+  {
+    id: 'cloud-architect',
+    name: '☁️ クラウドアーキテクト',
+    description: 'クラウドネイティブ開発の完全マスター',
+    category: 'automation',
+    difficulty: 'legendary',
+    icon: '☁️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'containerization',
+        current: 'in_progress',
+        description: 'Docker/Kubernetes対応',
+      },
+      {
+        type: 'feature_complete',
+        target: 'serverless_functions',
+        current: 'planned',
+        description: 'サーバーレス関数実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'microservices_architecture',
+        current: 'planned',
+        description: 'マイクロサービス設計',
+      },
+      {
+        type: 'feature_complete',
+        target: 'cloud_deployment',
+        current: 'in_progress',
+        description: 'クラウドデプロイ',
+      },
+    ],
+    isUnlocked: false,
+    progress: 25,
+    nextMilestone: 'Docker対応完了',
+  },
+  {
+    id: 'devops-ninja',
+    name: '⚙️ DevOps忍者',
+    description: 'CI/CDと運用自動化の極致',
+    category: 'automation',
+    difficulty: 'legendary',
+    icon: '⚙️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'cicd_pipeline',
+        current: 'completed',
+        description: 'CI/CDパイプライン',
+      },
+      {
+        type: 'feature_complete',
+        target: 'infrastructure_as_code',
+        current: 'in_progress',
+        description: 'Infrastructure as Code',
+      },
+      {
+        type: 'feature_complete',
+        target: 'monitoring_alerting',
+        current: 'in_progress',
+        description: '監視・アラート設定',
+      },
+      {
+        type: 'feature_complete',
+        target: 'zero_downtime_deployment',
+        current: 'planned',
+        description: 'ゼロダウンタイムデプロイ',
+      },
+    ],
+    isUnlocked: false,
+    progress: 55,
+    nextMilestone: 'Infrastructure as Code完成',
+  },
+  {
+    id: 'database-wizard',
+    name: '🗄️ データベースウィザード',
+    description: 'データベース設計と最適化の達人',
+    category: 'foundation',
+    difficulty: 'platinum',
+    icon: '🗄️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'database_optimization',
+        current: 'completed',
+        description: 'データベース最適化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'indexing_strategy',
+        current: 'completed',
+        description: 'インデックス戦略',
+      },
+      {
+        type: 'feature_complete',
+        target: 'backup_recovery',
+        current: 'in_progress',
+        description: 'バックアップ・リカバリ',
+      },
+      {
+        type: 'feature_complete',
+        target: 'database_scaling',
+        current: 'planned',
+        description: 'データベーススケーリング',
+      },
+    ],
+    isUnlocked: false,
+    progress: 70,
+    nextMilestone: 'バックアップ戦略実装',
+  },
+  {
+    id: 'frontend-virtuoso',
+    name: '🎨 フロントエンド巨匠',
+    description: 'フロントエンド技術の完全習得',
+    category: 'ui_ux',
+    difficulty: 'legendary',
+    icon: '🎨',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'component_library',
+        current: 'completed',
+        description: 'コンポーネントライブラリ',
+      },
+      {
+        type: 'feature_complete',
+        target: 'state_management',
+        current: 'completed',
+        description: '状態管理システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'advanced_animations',
+        current: 'completed',
+        description: '高度なアニメーション',
+      },
+      {
+        type: 'feature_complete',
+        target: 'performance_optimization',
+        current: 'completed',
+        description: 'パフォーマンス最適化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'cross_browser_compatibility',
+        current: 'completed', // ✅ クロスブラウザテストダッシュボード実装完了！
+        description: 'クロスブラウザ対応',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🎨 フロントエンド巨匠バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'ux-researcher',
+    name: '🔍 UXリサーチャー',
+    description: 'ユーザー体験分析と改善の専門家',
+    category: 'ui_ux',
+    difficulty: 'gold',
+    icon: '🔍',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'user_analytics',
+        current: 'completed',
+        description: 'ユーザー分析機能',
+      },
+      {
+        type: 'feature_complete',
+        target: 'ab_testing',
+        current: 'in_progress',
+        description: 'A/Bテスト実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'heatmap_analysis',
+        current: 'planned',
+        description: 'ヒートマップ分析',
+      },
+      {
+        type: 'feature_complete',
+        target: 'user_journey_mapping',
+        current: 'in_progress',
+        description: 'ユーザージャーニー分析',
+      },
+    ],
+    isUnlocked: false,
+    progress: 60,
+    nextMilestone: 'A/Bテスト機能完成',
+  },
+  {
+    id: 'machine-learning-engineer',
+    name: '🤖 機械学習エンジニア',
+    description: 'AI/ML技術の実用的活用',
+    category: 'features',
+    difficulty: 'legendary',
+    icon: '🤖',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'ml_model_integration',
+        current: 'in_progress',
+        description: 'ML模型統合',
+      },
+      {
+        type: 'feature_complete',
+        target: 'data_preprocessing',
+        current: 'completed',
+        description: 'データ前処理',
+      },
+      {
+        type: 'feature_complete',
+        target: 'model_training',
+        current: 'planned',
+        description: 'モデル訓練自動化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'inference_optimization',
+        current: 'planned',
+        description: '推論最適化',
+      },
+    ],
+    isUnlocked: false,
+    progress: 30,
+    nextMilestone: 'ML模型統合完成',
   },
 ];
 

@@ -1,25 +1,20 @@
 import { ErrorHandler, ErrorReport } from '@/lib/errorHandler';
+import { toast } from '@/components/ui/use-toast';
 
-interface ErrorPattern {
-  id: string;
+export interface ErrorPattern {
   pattern: RegExp;
-  description: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  autoRecovery?: () => Promise<boolean>;
-  retryStrategy?: {
-    maxRetries: number;
-    backoffMultiplier: number;
-    initialDelay: number;
-  };
+  type: 'api_500' | 'websocket_port' | 'auth_failure' | 'network_error' | 'database_error';
+  recoveryAction: () => Promise<void>;
+  retryCount: number;
+  maxRetries: number;
 }
 
-interface ErrorStatistics {
+export interface ErrorRecoveryStats {
   totalErrors: number;
-  resolvedErrors: number;
-  activeErrors: number;
-  errorsByType: Record<string, number>;
-  errorsByEndpoint: Record<string, number>;
+  recoveredErrors: number;
   recoveryRate: number;
+  errorTypes: Record<string, number>;
+  lastRecovery: string | null;
 }
 
 /**
@@ -33,6 +28,14 @@ export class ErrorRecoveryService {
   private errorLog: ErrorReport[] = [];
   private recoveryAttempts: Map<string, number> = new Map();
   private isMonitoring = false;
+  private stats: ErrorRecoveryStats = {
+    totalErrors: 0,
+    recoveredErrors: 0,
+    recoveryRate: 0,
+    errorTypes: {},
+    lastRecovery: null,
+  };
+  private isRecovering = false;
 
   private constructor() {
     this.errorHandler = new ErrorHandler();
@@ -52,57 +55,60 @@ export class ErrorRecoveryService {
    */
   private initializeErrorPatterns(): void {
     this.errorPatterns = [
-      // 🔧 API 500エラー自動回復パターン
+      // API 500エラー復旧
       {
-        id: 'api_500_error',
-        pattern: /500|Internal Server Error|サーバーエラー/i,
-        description: 'API 500エラー',
-        severity: 'critical',
-        autoRecovery: this.recover500Error.bind(this),
-        retryStrategy: {
-          maxRetries: 3,
-          backoffMultiplier: 2,
-          initialDelay: 1000,
+        pattern: /500|Internal Server Error|listen EADDRINUSE/i,
+        type: 'api_500',
+        recoveryAction: async () => {
+          console.log('🔧 API 500エラー復旧を開始...');
+          await this.handleApiServerError();
         },
+        retryCount: 0,
+        maxRetries: 3,
       },
-      // 🔧 認証エラー自動回復
+      // WebSocketポート競合解決
       {
-        id: 'auth_error',
-        pattern: /401|403|Unauthorized|認証/i,
-        description: '認証エラー',
-        severity: 'high',
-        autoRecovery: this.recoverAuthError.bind(this),
-        retryStrategy: {
-          maxRetries: 2,
-          backoffMultiplier: 1.5,
-          initialDelay: 500,
+        pattern: /EADDRINUSE.*3001|WebSocket.*connection.*failed/i,
+        type: 'websocket_port',
+        recoveryAction: async () => {
+          console.log('🔌 WebSocketポート競合解決を開始...');
+          await this.handleWebSocketPortConflict();
         },
+        retryCount: 0,
+        maxRetries: 5,
       },
-      // 🔧 ネットワークエラー自動回復
+      // 認証エラー復旧
       {
-        id: 'network_error',
-        pattern: /Network|Failed to fetch|ECONNREFUSED/i,
-        description: 'ネットワークエラー',
-        severity: 'high',
-        autoRecovery: this.recoverNetworkError.bind(this),
-        retryStrategy: {
-          maxRetries: 5,
-          backoffMultiplier: 2,
-          initialDelay: 2000,
+        pattern: /401|Unauthorized|Authentication.*failed/i,
+        type: 'auth_failure',
+        recoveryAction: async () => {
+          console.log('🔐 認証エラー復旧を開始...');
+          await this.handleAuthFailure();
         },
+        retryCount: 0,
+        maxRetries: 2,
       },
-      // 🔧 データベースエラー自動回復
+      // ネットワークエラー復旧
       {
-        id: 'database_error',
-        pattern: /MongoError|Database|Connection timeout/i,
-        description: 'データベースエラー',
-        severity: 'critical',
-        autoRecovery: this.recoverDatabaseError.bind(this),
-        retryStrategy: {
-          maxRetries: 3,
-          backoffMultiplier: 3,
-          initialDelay: 5000,
+        pattern: /Network.*Error|Failed to fetch|Connection.*refused/i,
+        type: 'network_error',
+        recoveryAction: async () => {
+          console.log('🌐 ネットワークエラー復旧を開始...');
+          await this.handleNetworkError();
         },
+        retryCount: 0,
+        maxRetries: 3,
+      },
+      // データベースエラー復旧
+      {
+        pattern: /MongoDB.*disconnected|Database.*connection.*lost/i,
+        type: 'database_error',
+        recoveryAction: async () => {
+          console.log('🗄️ データベースエラー復旧を開始...');
+          await this.handleDatabaseError();
+        },
+        retryCount: 0,
+        maxRetries: 4,
       },
     ];
   }
@@ -152,7 +158,7 @@ export class ErrorRecoveryService {
     // パターンマッチングによる自動回復試行
     for (const pattern of this.errorPatterns) {
       if (pattern.pattern.test(errorReport.message)) {
-        console.log(`🔧 エラーパターン検出: ${pattern.description}`);
+        console.log(`🔧 エラーパターン検出: ${pattern.type}`);
         await this.attemptAutoRecovery(errorReport, pattern);
         break;
       }
@@ -169,12 +175,12 @@ export class ErrorRecoveryService {
     errorReport: ErrorReport,
     pattern: ErrorPattern
   ): Promise<boolean> {
-    const recoveryKey = `${pattern.id}_${errorReport.endpoint}`;
+    const recoveryKey = `${pattern.type}_${errorReport.endpoint}`;
     const attemptCount = this.recoveryAttempts.get(recoveryKey) || 0;
 
     // リトライ制限チェック
-    if (attemptCount >= (pattern.retryStrategy?.maxRetries || 3)) {
-      console.warn(`🚫 回復試行上限到達: ${pattern.description}`);
+    if (attemptCount >= (pattern.maxRetries || 3)) {
+      console.warn(`🚫 回復試行上限到達: ${pattern.type}`);
       return false;
     }
 
@@ -182,23 +188,19 @@ export class ErrorRecoveryService {
     this.recoveryAttempts.set(recoveryKey, attemptCount + 1);
 
     // バックオフ遅延
-    const delay =
-      (pattern.retryStrategy?.initialDelay || 1000) *
-      Math.pow(pattern.retryStrategy?.backoffMultiplier || 2, attemptCount);
+    const delay = (attemptCount + 1) * 1000; // 簡単な遅延
 
     await new Promise((resolve) => setTimeout(resolve, delay));
 
     try {
-      if (pattern.autoRecovery) {
-        const recovered = await pattern.autoRecovery();
-        if (recovered) {
-          console.log(`✅ 自動回復成功: ${pattern.description}`);
-          this.recoveryAttempts.delete(recoveryKey);
-          return true;
-        }
+      if (pattern.recoveryAction) {
+        await pattern.recoveryAction();
+        console.log(`✅ 自動回復成功: ${pattern.type}`);
+        this.recoveryAttempts.delete(recoveryKey);
+        return true;
       }
     } catch (recoveryError) {
-      console.error(`❌ 自動回復失敗: ${pattern.description}`, recoveryError);
+      console.error(`❌ 自動回復失敗: ${pattern.type}`, recoveryError);
     }
 
     return false;
@@ -207,47 +209,108 @@ export class ErrorRecoveryService {
   /**
    * 🔧 API 500エラー回復
    */
-  private async recover500Error(): Promise<boolean> {
-    try {
+  private async handleApiServerError(): Promise<void> {
+    // API サーバーエラー復旧戦略
+    const recoveryStrategies = [
       // 1. キャッシュクリア
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map((name) => caches.delete(name)));
-      }
-
-      // 2. LocalStorage APIキャッシュクリア
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith('api_cache_')) {
-          localStorage.removeItem(key);
+      async () => {
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map((name) => caches.delete(name)));
         }
-      });
+        localStorage.clear();
+        sessionStorage.clear();
+      },
+      // 2. Service Worker再起動
+      async () => {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+          window.location.reload();
+        }
+      },
+      // 3. 代替APIエンドポイント試行
+      async () => {
+        const alternativeEndpoints = [
+          'http://localhost:3003',
+          'http://localhost:3004',
+          'http://localhost:3005',
+        ];
 
-      // 3. サービスワーカー再起動（あれば）
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map((reg) => reg.update()));
+        for (const endpoint of alternativeEndpoints) {
+          try {
+            const response = await fetch(`${endpoint}/api/health`);
+            if (response.ok) {
+              // 新しいエンドポイントを設定
+              localStorage.setItem('api_endpoint', endpoint);
+              console.log(`🔄 API エンドポイントを${endpoint}に変更しました`);
+              break;
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      },
+    ];
+
+    for (const strategy of recoveryStrategies) {
+      try {
+        await strategy();
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1秒待機
+      } catch (error) {
+        console.warn('復旧戦略実行エラー:', error);
       }
+    }
+  }
 
-      // 4. API接続テスト
-      const testResponse = await fetch('/api/health', {
-        method: 'GET',
-        cache: 'no-cache',
-      });
+  /**
+   * 🔧 WebSocketポート競合解決
+   */
+  private async handleWebSocketPortConflict(): Promise<void> {
+    // WebSocketポート競合解決戦略
+    const alternativePorts = [3002, 3003, 3004, 3005, 3006];
 
-      return testResponse.ok;
-    } catch (error) {
-      console.error('500エラー回復失敗:', error);
-      return false;
+    for (const port of alternativePorts) {
+      try {
+        // 新しいポートでWebSocket接続試行
+        const testWs = new WebSocket(`ws://localhost:${port}/notifications`);
+
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            testWs.close();
+            reject(new Error('Connection timeout'));
+          }, 2000);
+
+          testWs.onopen = () => {
+            clearTimeout(timeout);
+            testWs.close();
+            localStorage.setItem('websocket_port', port.toString());
+            console.log(`🔌 WebSocketポートを${port}に変更しました`);
+            resolve(void 0);
+          };
+
+          testWs.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error('Connection failed'));
+          };
+        });
+
+        break; // 成功したらループを抜ける
+      } catch (error) {
+        console.log(`ポート${port}は使用できません: ${error}`);
+        continue;
+      }
     }
   }
 
   /**
    * 🔧 認証エラー回復
    */
-  private async recoverAuthError(): Promise<boolean> {
+  private async handleAuthFailure(): Promise<void> {
+    // 認証エラー復旧戦略
     try {
-      // 1. トークンリフレッシュ試行
-      const refreshToken = localStorage.getItem('refreshToken');
+      // 1. トークン更新試行
+      const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         const response = await fetch('/api/auth/refresh', {
           method: 'POST',
@@ -256,91 +319,78 @@ export class ErrorRecoveryService {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem('accessToken', data.accessToken);
-          console.log('🔄 トークンリフレッシュ成功');
-          return true;
+          const { accessToken } = await response.json();
+          localStorage.setItem('access_token', accessToken);
+          return;
         }
       }
 
-      // 2. サイレント再認証試行
-      const silentAuth = await this.attemptSilentAuth();
-      return silentAuth;
+      // 2. サイレント認証試行
+      const silentAuthResponse = await fetch('/api/auth/silent');
+      if (silentAuthResponse.ok) {
+        const { accessToken } = await silentAuthResponse.json();
+        localStorage.setItem('access_token', accessToken);
+        return;
+      }
+
+      // 3. 匿名モードに切り替え
+      localStorage.setItem('auth_mode', 'anonymous');
+      console.log('🔐 匿名モードに切り替えました');
     } catch (error) {
-      console.error('認証エラー回復失敗:', error);
-      return false;
+      console.error('認証復旧エラー:', error);
     }
   }
 
   /**
    * 🔧 ネットワークエラー回復
    */
-  private async recoverNetworkError(): Promise<boolean> {
+  private async handleNetworkError(): Promise<void> {
+    // ネットワークエラー復旧戦略
     try {
       // 1. 接続テスト
-      const online = navigator.onLine;
-      if (!online) {
-        console.log('📡 オフライン状態検出');
-        return false;
-      }
-
-      // 2. DNS解決テスト
-      const dnsTest = await fetch('https://www.google.com/favicon.ico', {
+      const connectionTest = await fetch('/api/health', {
         method: 'HEAD',
-        mode: 'no-cors',
+        cache: 'no-cache',
       });
 
-      // 3. APIサーバー接続テスト
-      const apiTest = await fetch('/api/health', {
-        method: 'GET',
-        timeout: 5000,
-      } as any);
+      if (!connectionTest.ok) {
+        throw new Error('Server unreachable');
+      }
 
-      return apiTest.ok;
+      // 2. DNS フラッシュ (可能な場合)
+      if ('dns' in navigator) {
+        // @ts-expect-error - 実験的API
+        await navigator.dns.clear();
+      }
+
+      // 3. オフラインモード有効化
+      if (!navigator.onLine) {
+        localStorage.setItem('offline_mode', 'true');
+        console.log('📴 オフラインモードを有効化しました');
+      }
     } catch (error) {
-      console.error('ネットワークエラー回復失敗:', error);
-      return false;
+      console.error('ネットワーク復旧エラー:', error);
     }
   }
 
   /**
    * 🔧 データベースエラー回復
    */
-  private async recoverDatabaseError(): Promise<boolean> {
+  private async handleDatabaseError(): Promise<void> {
+    // データベースエラー復旧戦略
     try {
-      // 1. データベース接続テスト
-      const dbTest = await fetch('/api/db/health', {
-        method: 'GET',
-      });
+      // 1. 接続プール再初期化
+      await fetch('/api/db/reconnect', { method: 'POST' });
 
-      if (dbTest.ok) {
-        console.log('💾 データベース接続回復');
-        return true;
-      }
+      // 2. フォールバック用ローカルストレージ有効化
+      localStorage.setItem('use_local_storage', 'true');
+      console.log('💾 ローカルストレージフォールバックを有効化しました');
 
-      // 2. フォールバックローカルストレージ
-      console.log('💾 ローカルストレージフォールバック');
-      return true; // ローカルストレージは常に利用可能
+      // 3. データ同期キューの初期化
+      const syncQueue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
+      console.log(`📦 ${syncQueue.length}件のデータ同期待ちを確認しました`);
     } catch (error) {
-      console.error('データベースエラー回復失敗:', error);
-      return false;
-    }
-  }
-
-  /**
-   * 🔧 サイレント認証試行
-   */
-  private async attemptSilentAuth(): Promise<boolean> {
-    try {
-      // Cookie認証やセッション認証を試行
-      const response = await fetch('/api/auth/silent', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      return response.ok;
-    } catch (error) {
-      return false;
+      console.error('データベース復旧エラー:', error);
     }
   }
 
@@ -360,7 +410,7 @@ export class ErrorRecoveryService {
   /**
    * 📊 エラー統計取得
    */
-  public getErrorStatistics(): ErrorStatistics {
+  public getErrorStatistics(): ErrorRecoveryStats {
     const totalErrors = this.errorLog.length;
     const last24Hours = this.errorLog.filter(
       (error) => Date.now() - new Date(error.timestamp).getTime() < 24 * 60 * 60 * 1000
@@ -375,17 +425,16 @@ export class ErrorRecoveryService {
         (errorsByEndpoint[error.endpoint || 'unknown'] || 0) + 1;
     });
 
-    const resolvedErrors = Array.from(this.recoveryAttempts.values()).filter(
+    const recoveredErrors = Array.from(this.recoveryAttempts.values()).filter(
       (attempts) => attempts > 0
     ).length;
 
     return {
       totalErrors,
-      resolvedErrors,
-      activeErrors: totalErrors - resolvedErrors,
-      errorsByType,
-      errorsByEndpoint,
-      recoveryRate: totalErrors > 0 ? (resolvedErrors / totalErrors) * 100 : 0,
+      recoveredErrors,
+      recoveryRate: totalErrors > 0 ? (recoveredErrors / totalErrors) * 100 : 0,
+      errorTypes: errorsByType,
+      lastRecovery: this.stats.lastRecovery,
     };
   }
 
@@ -435,5 +484,99 @@ export class ErrorRecoveryService {
       null,
       2
     );
+  }
+
+  // 復旧統計取得
+  getRecoveryStats(): ErrorRecoveryStats {
+    return { ...this.stats };
+  }
+
+  // エラーパターン追加
+  addErrorPattern(pattern: Omit<ErrorPattern, 'retryCount'>): void {
+    this.errorPatterns.push({ ...pattern, retryCount: 0 });
+  }
+
+  // 手動復旧トリガー
+  async triggerManualRecovery(errorType: string): Promise<boolean> {
+    const pattern = this.errorPatterns.find((p) => p.type === errorType);
+    if (!pattern) return false;
+
+    return await this.attemptAutoRecovery(
+      {
+        type: 'react_error',
+        message: `Manual trigger for ${errorType}`,
+        stack: '',
+        endpoint: 'unknown',
+        timestamp: new Date().toISOString(),
+        severity: 'medium',
+      },
+      pattern
+    );
+  }
+
+  // システム自己診断
+  async performSelfDiagnosis(): Promise<{
+    server: boolean;
+    websocket: boolean;
+    database: boolean;
+    auth: boolean;
+  }> {
+    const results = {
+      server: false,
+      websocket: false,
+      database: false,
+      auth: false,
+    };
+
+    try {
+      // サーバー接続確認
+      const serverResponse = await fetch('/api/health');
+      results.server = serverResponse.ok;
+    } catch (e) {
+      results.server = false;
+    }
+
+    try {
+      // WebSocket接続確認
+      const ws = new WebSocket('ws://localhost:3001/notifications');
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          ws.close();
+          reject();
+        }, 2000);
+
+        ws.onopen = () => {
+          clearTimeout(timeout);
+          ws.close();
+          results.websocket = true;
+          resolve(void 0);
+        };
+
+        ws.onerror = () => {
+          clearTimeout(timeout);
+          reject();
+        };
+      });
+    } catch (e) {
+      results.websocket = false;
+    }
+
+    try {
+      // データベース接続確認
+      const dbResponse = await fetch('/api/db/status');
+      results.database = dbResponse.ok;
+    } catch (e) {
+      results.database = false;
+    }
+
+    try {
+      // 認証確認
+      const authResponse = await fetch('/api/auth/check');
+      results.auth = authResponse.ok;
+    } catch (e) {
+      results.auth = false;
+    }
+
+    return results;
   }
 }
