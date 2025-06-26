@@ -371,7 +371,7 @@ class AdvancedServiceWorkerService {
     // ServiceWorkerが利用可能な場合は即座に同期
     if (this.registration && 'sync' in this.registration) {
       try {
-        await this.registration.sync.register(tag);
+        await (this.registration as any).sync.register(tag);
         console.log(`🔄 バックグラウンド同期登録: ${tag}`);
       } catch (error) {
         console.error('バックグラウンド同期登録失敗:', error);
@@ -685,7 +685,7 @@ class AdvancedServiceWorkerService {
   /**
    * 📱 アプリインストール処理
    */
-  private handleInstallPrompt(event: BeforeInstallPromptEvent): void {
+  private handleInstallPrompt(event: any): void {
     console.log('📱 アプリインストールプロンプト表示可能');
 
     // カスタムインストールUIを表示

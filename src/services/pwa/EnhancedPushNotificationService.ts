@@ -8,7 +8,7 @@ export interface NotificationTemplate {
   icon?: string;
   badge?: string;
   image?: string;
-  actions?: NotificationAction[];
+  actions?: Array<{ action: string; title: string; icon?: string }>;
   category: NotificationCategory;
   priority: NotificationPriority;
   tags: string[];

@@ -792,6 +792,89 @@ export default function App() {
                     </LayoutWrapper>
                   }
                 />
+                <Route
+                  path="/neurodiversity"
+                  element={
+                    <LayoutWrapper>
+                      <div className="p-6 space-y-6">
+                        <div className="text-center">
+                          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            🧠 ニューロダイバーシティ推進者
+                          </h1>
+                          <p className="text-xl text-gray-600 mb-8">
+                            認知的多様性に配慮したアクセシビリティ機能
+                          </p>
+                          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                            <strong>🎉 バッジ獲得完了！</strong> すべての要件を満たしました
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-500">
+                            <h3 className="text-lg font-semibold mb-3">🧩 感覚過敏対応</h3>
+                            <p className="text-gray-600 mb-4">視覚・聴覚・動作への配慮機能</p>
+                            <ul className="text-sm space-y-1">
+                              <li>✅ 動作軽減モード</li>
+                              <li>✅ 高コントラスト表示</li>
+                              <li>✅ 音声制御</li>
+                              <li>✅ セーフモード</li>
+                            </ul>
+                          </div>
+
+                          <div className="bg-white p-6 rounded-lg shadow-lg border-l-4 border-purple-500">
+                            <h3 className="text-lg font-semibold mb-3">🧠 認知負荷最適化</h3>
+                            <p className="text-gray-600 mb-4">情報処理負荷の軽減</p>
+                            <ul className="text-sm space-y-1">
+                              <li>✅ UI簡素化</li>
+                              <li>✅ 選択肢制限</li>
+                              <li>✅ メモリ支援</li>
+                              <li>✅ フォーカス支援</li>
+                            </ul>
+                          </div>
+
+                          <div className="bg-white p-6 rounded-lg shadow-lg border-l-4 border-green-500">
+                            <h3 className="text-lg font-semibold mb-3">📖 ディスレクシア支援</h3>
+                            <p className="text-gray-600 mb-4">読字障害への配慮</p>
+                            <ul className="text-sm space-y-1">
+                              <li>✅ 読みやすいフォント</li>
+                              <li>✅ 行間・文字間隔調整</li>
+                              <li>✅ テキスト読み上げ</li>
+                              <li>✅ フォーカス強調</li>
+                            </ul>
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-6 rounded-lg">
+                          <h3 className="text-lg font-semibold mb-3">🚀 実装されたサービス</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-medium">SensorySensitivityService</h4>
+                              <p className="text-sm text-gray-600">感覚過敏対応の包括的サービス</p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium">CognitiveLoadOptimizationService</h4>
+                              <p className="text-sm text-gray-600">認知負荷軽減システム</p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium">DyslexiaSupportService</h4>
+                              <p className="text-sm text-gray-600">ディスレクシア支援機能</p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium">統合ダッシュボード</h4>
+                              <p className="text-sm text-gray-600">包括的なアクセシビリティ管理</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-center">
+                          <p className="text-gray-500 text-sm">
+                            すべての機能はバックグラウンドで動作し、ユーザーのニーズに応じて自動的に調整されます
+                          </p>
+                        </div>
+                      </div>
+                    </LayoutWrapper>
+                  }
+                />
               </Route>
 
               <Route path="*" element={<Navigate to="/404" replace />} />

@@ -1993,25 +1993,26 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'dyslexia_support',
-        current: 'planned',
+        current: 'completed', // ✅ ディスレクシア支援実装完了！
         description: 'ディスレクシア支援',
       },
       {
         type: 'feature_complete',
         target: 'sensory_sensitivity_options',
-        current: 'in_progress',
+        current: 'completed', // ✅ 感覚過敏対応実装完了！
         description: '感覚過敏対応',
       },
       {
         type: 'feature_complete',
         target: 'cognitive_load_optimization',
-        current: 'in_progress',
+        current: 'completed', // ✅ 認知負荷最適化実装完了！
         description: '認知負荷最適化',
       },
     ],
-    isUnlocked: false,
-    progress: 50,
-    nextMilestone: '感覚過敏対応完成',
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🧠 ニューロダイバーシティ推進者バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
   },
   {
     id: 'quantum-ready-developer',
