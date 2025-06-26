@@ -104,6 +104,9 @@ const PerformanceOptimizationPage = lazy(() => import('./pages/PerformanceOptimi
 // 📊 Data Visualization pages
 const DataVisualizationPage = lazy(() => import('./pages/DataVisualizationPage'));
 
+// 🎮 Gamification pages
+const GamificationPage = lazy(() => import('./pages/GamificationPage'));
+
 // 👤 User & Auth pages
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -762,6 +765,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <DataVisualizationPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/gamification"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <GamificationPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

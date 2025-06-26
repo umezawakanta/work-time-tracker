@@ -665,8 +665,9 @@ class InteractiveChartService {
           });
         }
         break;
+      }
 
-      case 'heatmap':
+      case 'heatmap': {
         const hours = 24;
         const days = 7;
         for (let day = 0; day < days; day++) {
@@ -682,6 +683,7 @@ class InteractiveChartService {
           }
         }
         break;
+      }
 
       default:
         for (let i = 0; i < count; i++) {
