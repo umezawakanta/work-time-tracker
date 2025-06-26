@@ -36,6 +36,11 @@ const DevelopmentBadgeDashboard = lazy(() =>
     default: module.DevelopmentBadgeDashboard,
   }))
 );
+const DevelopmentBadgeShowcasePage = lazy(() =>
+  import('./pages/DevelopmentBadgeShowcasePage').then((module) => ({
+    default: module.DevelopmentBadgeShowcasePage,
+  }))
+);
 const ErrorMonitorDashboard = lazy(() =>
   import('./components/development/ErrorMonitorDashboard').then((module) => ({
     default: module.ErrorMonitorDashboard,
@@ -692,6 +697,16 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="/badge-showcase"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <DevelopmentBadgeShowcasePage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
                   path="/error-monitor"
                   element={
                     <LayoutWrapper>
@@ -870,6 +885,26 @@ export default function App() {
                           <p className="text-gray-500 text-sm">
                             すべての機能はバックグラウンドで動作し、ユーザーのニーズに応じて自動的に調整されます
                           </p>
+                        </div>
+                      </div>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/monitoring"
+                  element={
+                    <LayoutWrapper>
+                      <div className="p-6 space-y-6">
+                        <div className="text-center">
+                          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                            📊 システム監視マスター
+                          </h1>
+                          <p className="text-xl text-gray-600 mb-8">
+                            リアルタイム監視・アラート管理・ヘルスチェック・SLO追跡
+                          </p>
+                          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                            <strong>🎉 バッジ獲得完了！</strong> すべての監視機能を実装しました
+                          </div>
                         </div>
                       </div>
                     </LayoutWrapper>

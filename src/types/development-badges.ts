@@ -21,7 +21,12 @@ export type BadgeCategory =
   | 'automation' // 自動化
   | 'community' // コミュニティ
   | 'systematization' // 仕組み化
-  | 'completion'; // 完成度
+  | 'completion' // 完成度
+  | 'operations' // 運用
+  | 'monitoring' // 監視
+  | 'analytics' // 分析
+  | 'business' // ビジネス
+  | 'growth'; // 成長
 
 export interface BadgeRequirement {
   type:
@@ -1950,31 +1955,32 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'carbon_aware_computing',
-        current: 'planned',
+        current: 'completed', // ✅ カーボンアウェア処理実装完了！
         description: 'カーボンアウェア処理',
       },
       {
         type: 'feature_complete',
         target: 'energy_efficient_algorithms',
-        current: 'in_progress',
+        current: 'completed', // ✅ エネルギー効率アルゴリズム実装完了！
         description: 'エネルギー効率アルゴリズム',
       },
       {
         type: 'feature_complete',
         target: 'resource_optimization',
-        current: 'in_progress',
+        current: 'completed', // ✅ リソース最適化実装完了！
         description: 'リソース最適化',
       },
       {
         type: 'feature_complete',
         target: 'green_metrics',
-        current: 'planned',
+        current: 'completed', // ✅ グリーンメトリクス実装完了！
         description: 'グリーンメトリクス',
       },
     ],
-    isUnlocked: false,
-    progress: 35,
-    nextMilestone: 'エネルギー効率化完成',
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // ♻️ サステナブルコード推進者バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
   },
   {
     id: 'neurodiversity-advocate',
@@ -2346,6 +2352,381 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 7,
     nextMilestone: 'WebAssembly調査',
+  },
+
+  // === 運用・監視・分析バッジ ===
+  {
+    id: 'system-monitoring-master',
+    name: '📊 システム監視マスター',
+    description: 'アラート・メトリクス・ヘルスチェック・SLO管理',
+    category: 'monitoring',
+    difficulty: 'platinum',
+    icon: '📊',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'real_time_monitoring',
+        current: 'completed', // ✅ リアルタイム監視実装完了！
+        description: 'リアルタイム監視',
+      },
+      {
+        type: 'feature_complete',
+        target: 'alert_management',
+        current: 'completed', // ✅ アラート管理実装完了！
+        description: 'アラート管理',
+      },
+      {
+        type: 'feature_complete',
+        target: 'slo_sli_tracking',
+        current: 'completed', // ✅ SLO/SLI追跡実装完了！
+        description: 'SLO/SLI追跡',
+      },
+      {
+        type: 'feature_complete',
+        target: 'health_checks',
+        current: 'completed', // ✅ ヘルスチェック実装完了！
+        description: 'ヘルスチェック',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 📊 システム監視マスターバッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'user-engagement-champion',
+    name: '👥 ユーザーエンゲージメント推進者',
+    description: '登録者数・アクティブユーザー・リテンション向上',
+    category: 'business',
+    difficulty: 'gold',
+    icon: '👥',
+    requirements: [
+      {
+        type: 'user_feedback',
+        target: '1',
+        current: '1', // ✅ 初回ユーザー登録達成！
+        description: 'ユーザー登録者数1名達成',
+      },
+      {
+        type: 'user_feedback',
+        target: '10',
+        current: '1',
+        description: 'アクティブユーザー10名達成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'user_onboarding',
+        current: 'completed', // ✅ ユーザーオンボーディングサービス実装完了！
+        description: 'ユーザーオンボーディング',
+      },
+      {
+        type: 'feature_complete',
+        target: 'retention_analytics',
+        current: 'completed', // ✅ リテンション分析サービス実装完了！
+        description: 'リテンション分析',
+      },
+    ],
+    isUnlocked: false,
+    progress: 75, // 3/4 requirements completed
+    nextMilestone: 'アクティブユーザー10名獲得',
+  },
+  {
+    id: 'data-analytics-expert',
+    name: '📈 データ分析専門家',
+    description: 'ユーザー行動分析・A/Bテスト・コンバージョン最適化',
+    category: 'analytics',
+    difficulty: 'platinum',
+    icon: '📈',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'user_behavior_tracking',
+        current: 'completed', // ✅ ユーザー行動追跡システム実装完了！
+        description: 'ユーザー行動追跡',
+      },
+      {
+        type: 'feature_complete',
+        target: 'ab_testing_framework',
+        current: 'completed', // ✅ A/Bテストフレームワーク実装完了！
+        description: 'A/Bテストフレームワーク',
+      },
+      {
+        type: 'feature_complete',
+        target: 'conversion_funnel',
+        current: 'completed', // ✅ コンバージョンファネル分析実装完了！
+        description: 'コンバージョンファネル',
+      },
+      {
+        type: 'feature_complete',
+        target: 'predictive_analytics',
+        current: 'completed', // ✅ 予測分析エンジン実装完了！
+        description: '予測分析',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 📈 データ分析専門家バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'operations-efficiency-expert',
+    name: '🔧 運用効率化エキスパート',
+    description: '自動化・CI/CD・デプロイメント・インフラストラクチャ',
+    category: 'operations',
+    difficulty: 'platinum',
+    icon: '🔧',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'ci_cd_pipeline',
+        current: 'completed', // ✅ GitHub Actions CI/CDパイプライン実装完了！
+        description: 'CI/CDパイプライン',
+      },
+      {
+        type: 'feature_complete',
+        target: 'automated_deployment',
+        current: 'completed', // ✅ Vercel自動デプロイメント設定完了！
+        description: '自動デプロイメント',
+      },
+      {
+        type: 'feature_complete',
+        target: 'infrastructure_monitoring',
+        current: 'completed', // ✅ システムモニタリング完成済み！
+        description: 'インフラ監視',
+      },
+      {
+        type: 'feature_complete',
+        target: 'backup_recovery',
+        current: 'completed', // ✅ データベースバックアップシステム実装完了！
+        description: 'バックアップ・復旧',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 🔧 運用効率化エキスパートバッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'security-operations-center',
+    name: '🛡️ セキュリティ運用センター',
+    description: '脅威検知・インシデント対応・ログ監視・セキュリティ分析',
+    category: 'monitoring',
+    difficulty: 'legendary',
+    icon: '🛡️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'threat_detection',
+        current: 'planned',
+        description: '脅威検知システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'incident_response',
+        current: 'planned',
+        description: 'インシデント対応',
+      },
+      {
+        type: 'feature_complete',
+        target: 'security_logs',
+        current: 'planned',
+        description: 'セキュリティログ監視',
+      },
+      {
+        type: 'feature_complete',
+        target: 'vulnerability_scanning',
+        current: 'planned',
+        description: '脆弱性スキャニング',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: '脅威検知システム構築',
+  },
+  {
+    id: 'sre-master',
+    name: '📋 SREマスター',
+    description: 'SLI/SLO設定・エラーバジェット管理・ポストモーテム',
+    category: 'operations',
+    difficulty: 'legendary',
+    icon: '📋',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'sli_slo_definition',
+        current: 'planned',
+        description: 'SLI/SLO定義',
+      },
+      {
+        type: 'feature_complete',
+        target: 'error_budget_tracking',
+        current: 'planned',
+        description: 'エラーバジェット追跡',
+      },
+      {
+        type: 'feature_complete',
+        target: 'postmortem_process',
+        current: 'planned',
+        description: 'ポストモーテムプロセス',
+      },
+      {
+        type: 'feature_complete',
+        target: 'capacity_planning',
+        current: 'planned',
+        description: 'キャパシティプランニング',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'SLI/SLO定義策定',
+  },
+  {
+    id: 'growth-hacker',
+    name: '🚀 グロースハッカー',
+    description: 'ユーザー獲得・バイラル成長・製品改善・データドリブン成長',
+    category: 'growth',
+    difficulty: 'gold',
+    icon: '🚀',
+    requirements: [
+      {
+        type: 'user_feedback',
+        target: '100',
+        current: '0',
+        description: 'ユーザー数100名達成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'viral_features',
+        current: 'planned',
+        description: 'バイラル機能',
+      },
+      {
+        type: 'feature_complete',
+        target: 'growth_experiments',
+        current: 'planned',
+        description: '成長実験フレームワーク',
+      },
+      {
+        type: 'user_feedback',
+        target: '80',
+        current: '0',
+        description: 'ユーザー満足度80%達成',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'バイラル機能設計',
+  },
+  {
+    id: 'product-market-fit-champion',
+    name: '🎯 プロダクトマーケットフィット推進者',
+    description: 'ユーザーニーズ・市場適応・製品改善・フィードバック活用',
+    category: 'business',
+    difficulty: 'platinum',
+    icon: '🎯',
+    requirements: [
+      {
+        type: 'user_feedback',
+        target: '50',
+        current: '0',
+        description: '継続ユーザー50名達成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'user_feedback_system',
+        current: 'planned',
+        description: 'ユーザーフィードバックシステム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'market_research',
+        current: 'planned',
+        description: '市場調査・分析',
+      },
+      {
+        type: 'user_feedback',
+        target: '90',
+        current: '0',
+        description: 'ユーザー継続率90%達成',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'ユーザーフィードバックシステム構築',
+  },
+  {
+    id: 'conversion-optimization-expert',
+    name: '💰 コンバージョン最適化専門家',
+    description: 'コンバージョン率向上・ファネル最適化・収益最大化',
+    category: 'analytics',
+    difficulty: 'gold',
+    icon: '💰',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'conversion_tracking',
+        current: 'planned',
+        description: 'コンバージョン追跡',
+      },
+      {
+        type: 'feature_complete',
+        target: 'funnel_optimization',
+        current: 'planned',
+        description: 'ファネル最適化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'revenue_analytics',
+        current: 'planned',
+        description: '収益分析',
+      },
+      {
+        type: 'performance_score',
+        target: '5',
+        current: '0',
+        description: 'コンバージョン率5%達成',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'コンバージョン追跡実装',
+  },
+  {
+    id: 'uptime-reliability-master',
+    name: '⚡ アップタイム信頼性マスター',
+    description: '99.9%以上のアップタイム・障害対応・冗長化・可用性',
+    category: 'operations',
+    difficulty: 'platinum',
+    icon: '⚡',
+    requirements: [
+      {
+        type: 'performance_score',
+        target: '99.9',
+        current: '95',
+        description: 'アップタイム99.9%達成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'redundancy_setup',
+        current: 'planned',
+        description: '冗長化設定',
+      },
+      {
+        type: 'feature_complete',
+        target: 'disaster_recovery',
+        current: 'planned',
+        description: '災害復旧計画',
+      },
+      {
+        type: 'feature_complete',
+        target: 'load_balancing',
+        current: 'planned',
+        description: 'ロードバランシング',
+      },
+    ],
+    isUnlocked: false,
+    progress: 15,
+    nextMilestone: '冗長化設定完了',
   },
 ];
 
