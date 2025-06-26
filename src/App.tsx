@@ -101,6 +101,9 @@ const DistrictPage = lazy(() => import('./pages/DistrictPage'));
 // ⚡ Performance pages
 const PerformanceOptimizationPage = lazy(() => import('./pages/PerformanceOptimizationPage'));
 
+// 📊 Data Visualization pages
+const DataVisualizationPage = lazy(() => import('./pages/DataVisualizationPage'));
+
 // 👤 User & Auth pages
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
@@ -749,6 +752,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <PerformanceOptimizationPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/data-visualization"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <DataVisualizationPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
