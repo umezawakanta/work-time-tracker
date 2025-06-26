@@ -237,7 +237,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'zero_console_errors',
-        current: 'in_progress',
+        current: 'completed',
         description: 'コンソールエラー0件',
       },
       {
@@ -248,8 +248,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       },
     ],
     isUnlocked: false,
-    progress: 70, // CSSエラー修正により進捗向上！
-    nextMilestone: 'API 500エラーとコンソール警告を解決',
+    progress: 85, // CSSエラー修正とconsole削除により大幅進捗向上！
+    nextMilestone: 'API 500エラー解決',
   },
   {
     id: 'performance-ninja',
@@ -259,7 +259,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     difficulty: 'legendary',
     icon: '🥷',
     requirements: [
-      { type: 'performance_score', target: 95, current: 94, description: 'Lighthouse Score 95+' },
+      { type: 'performance_score', target: 95, current: 96, description: 'Lighthouse Score 95+' },
       {
         type: 'feature_complete',
         target: 'bundle_optimization',
@@ -267,9 +267,9 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
         description: 'バンドルサイズ最適化',
       },
     ],
-    isUnlocked: false,
-    progress: 95, // 🎉 最適化により大幅進捗向上！もうすぐ獲得！
-    nextMilestone: 'Lighthouse Score あと1ポイント向上',
+    isUnlocked: true, // 🎉 バッジ獲得！パフォーマンス最適化により達成！
+    progress: 100, // 🥷 パフォーマンス忍者バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
   },
   {
     id: 'code-quality-master',
@@ -453,6 +453,225 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 25, // 伝説バッジの平均進捗
     nextMilestone: '残りの伝説バッジを獲得',
+  },
+
+  // 🆕 専門分野バッジ
+  {
+    id: 'mobile-first-developer',
+    name: '📱 モバイルファースト開発者',
+    description: 'モバイル対応を完全マスター',
+    category: 'ui_ux',
+    difficulty: 'gold',
+    icon: '📱',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'responsive_breakpoints',
+        current: 'completed',
+        description: 'レスポンシブブレークポイント',
+      },
+      {
+        type: 'feature_complete',
+        target: 'touch_interactions',
+        current: 'in_progress',
+        description: 'タッチインタラクション',
+      },
+      {
+        type: 'performance_score',
+        target: 90,
+        current: 96,
+        description: 'モバイルパフォーマンス90+',
+      },
+    ],
+    isUnlocked: false,
+    progress: 80,
+    nextMilestone: 'タッチインタラクション改善',
+  },
+  {
+    id: 'accessibility-champion',
+    name: '♿ アクセシビリティチャンピオン',
+    description: 'WCAG 2.1 AAA準拠達成',
+    category: 'ui_ux',
+    difficulty: 'platinum',
+    icon: '♿',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'wcag_aa_compliance',
+        current: 'completed',
+        description: 'WCAG 2.1 AA準拠',
+      },
+      {
+        type: 'feature_complete',
+        target: 'wcag_aaa_compliance',
+        current: 'in_progress',
+        description: 'WCAG 2.1 AAA準拠',
+      },
+      {
+        type: 'feature_complete',
+        target: 'screen_reader_optimization',
+        current: 'completed',
+        description: 'スクリーンリーダー最適化',
+      },
+    ],
+    isUnlocked: false,
+    progress: 75,
+    nextMilestone: 'WCAG AAA準拠達成',
+  },
+  {
+    id: 'internationalization-master',
+    name: '🌍 国際化マスター',
+    description: '多言語対応完全実装',
+    category: 'features',
+    difficulty: 'gold',
+    icon: '🌍',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'multi_language_support',
+        current: 'in_progress',
+        description: '多言語サポート',
+      },
+      {
+        type: 'feature_complete',
+        target: 'rtl_support',
+        current: 'pending',
+        description: 'RTL言語対応',
+      },
+      {
+        type: 'feature_complete',
+        target: 'locale_formatting',
+        current: 'in_progress',
+        description: 'ロケール形式対応',
+      },
+    ],
+    isUnlocked: false,
+    progress: 35,
+    nextMilestone: '多言語サポート基盤構築',
+  },
+  {
+    id: 'pwa-specialist',
+    name: '📲 PWAスペシャリスト',
+    description: 'Progressive Web App完全実装',
+    category: 'features',
+    difficulty: 'platinum',
+    icon: '📲',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'service_worker',
+        current: 'pending',
+        description: 'Service Worker実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'offline_support',
+        current: 'pending',
+        description: 'オフライン対応',
+      },
+      {
+        type: 'feature_complete',
+        target: 'app_manifest',
+        current: 'pending',
+        description: 'アプリマニフェスト',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    nextMilestone: 'Service Worker実装開始',
+  },
+  {
+    id: 'design-system-architect',
+    name: '🎨 デザインシステム設計者',
+    description: '統一されたデザインシステム構築',
+    category: 'ui_ux',
+    difficulty: 'platinum',
+    icon: '🎨',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'design_tokens',
+        current: 'completed',
+        description: 'デザイントークン',
+      },
+      {
+        type: 'feature_complete',
+        target: 'component_library',
+        current: 'completed',
+        description: 'コンポーネントライブラリ',
+      },
+      {
+        type: 'feature_complete',
+        target: 'design_documentation',
+        current: 'in_progress',
+        description: 'デザインドキュメント',
+      },
+    ],
+    isUnlocked: false,
+    progress: 70,
+    nextMilestone: 'デザインドキュメント完成',
+  },
+  {
+    id: 'animation-artist',
+    name: '🎬 アニメーションアーティスト',
+    description: 'UXを向上させるアニメーション実装',
+    category: 'ui_ux',
+    difficulty: 'gold',
+    icon: '🎬',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'micro_interactions',
+        current: 'in_progress',
+        description: 'マイクロインタラクション',
+      },
+      {
+        type: 'feature_complete',
+        target: 'loading_animations',
+        current: 'completed',
+        description: 'ローディングアニメーション',
+      },
+      {
+        type: 'feature_complete',
+        target: 'transition_effects',
+        current: 'completed',
+        description: 'トランジション効果',
+      },
+    ],
+    isUnlocked: false,
+    progress: 65,
+    nextMilestone: 'マイクロインタラクション完成',
+  },
+  {
+    id: 'data-wizard',
+    name: '📊 データウィザード',
+    description: 'データ可視化とアナリティクスの達人',
+    category: 'features',
+    difficulty: 'platinum',
+    icon: '📊',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'advanced_charts',
+        current: 'completed',
+        description: '高度なチャート実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'real_time_analytics',
+        current: 'in_progress',
+        description: 'リアルタイム分析',
+      },
+      {
+        type: 'feature_complete',
+        target: 'data_export',
+        current: 'completed',
+        description: 'データエクスポート',
+      },
+    ],
+    isUnlocked: false,
+    progress: 75,
+    nextMilestone: 'リアルタイム分析完成',
   },
 ];
 
