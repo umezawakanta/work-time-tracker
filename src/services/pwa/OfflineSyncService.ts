@@ -633,7 +633,7 @@ class OfflineSyncService {
         if (!merged[key] || new Date(clientData[key]) > new Date(merged[key])) {
           merged[key] = clientData[key];
         }
-      } else if (!merged.hasOwnProperty(key)) {
+      } else if (!Object.prototype.hasOwnProperty.call(merged, key)) {
         // サーバーにないフィールドはクライアントから追加
         merged[key] = clientData[key];
       }

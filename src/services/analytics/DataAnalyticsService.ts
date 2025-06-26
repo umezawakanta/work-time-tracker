@@ -700,7 +700,7 @@ class DataAnalyticsService {
   ): UserPrediction['prediction'] {
     // Simplified prediction calculation - in production, use trained ML models
     let value = 0;
-    let confidence = 0.7;
+    const confidence = 0.7;
     const factors: Record<string, number> = {};
 
     switch (modelType) {

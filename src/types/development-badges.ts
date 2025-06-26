@@ -26,7 +26,15 @@ export type BadgeCategory =
   | 'monitoring' // 監視
   | 'analytics' // 分析
   | 'business' // ビジネス
-  | 'growth'; // 成長
+  | 'growth' // 成長
+  | 'marketing' // マーケティング
+  | 'promotion' // プロモーション
+  | 'maintenance' // メンテナンス
+  | 'documentation' // ドキュメント
+  | 'community' // コミュニティ
+  | 'content' // コンテンツ
+  | 'seo' // SEO
+  | 'social'; // ソーシャル
 
 export interface BadgeRequirement {
   type:
@@ -502,47 +510,40 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
   },
   {
     id: 'accessibility-champion',
-    name: '♿ アクセシビリティチャンピオン',
-    description: 'WCAG AAA準拠を達成',
-    category: 'ui_ux',
-    difficulty: 'legendary',
+    name: '♿ アクセシビリティ・チャンピオン',
+    description: 'WCAG 2.1 AA準拠・スクリーンリーダー・キーボードナビゲーション',
+    category: 'community',
+    difficulty: 'platinum',
     icon: '♿',
     requirements: [
       {
         type: 'feature_complete',
-        target: 'wcag_aa_compliance',
+        target: 'wcag_compliance',
         current: 'completed',
-        description: 'WCAG AA準拠',
+        description: 'WCAG 2.1 AA準拠',
       },
       {
         type: 'feature_complete',
         target: 'screen_reader_support',
-        current: 'completed', // ✅ スクリーンリーダー対応完了！
+        current: 'completed',
         description: 'スクリーンリーダー対応',
       },
       {
         type: 'feature_complete',
         target: 'keyboard_navigation',
-        current: 'completed', // ✅ キーボードナビゲーション完了！
+        current: 'completed',
         description: 'キーボードナビゲーション',
       },
       {
         type: 'feature_complete',
-        target: 'accessibility_enhancements',
-        current: 'completed', // ✅ アクセシビリティ強化機能完了！
-        description: 'アクセシビリティ強化機能',
-      },
-      {
-        type: 'performance_score',
-        target: 100,
-        current: 95, // Lighthouse Accessibility Score向上
-        description: 'Lighthouse Accessibility 100点',
+        target: 'multilingual_support',
+        current: 'in_progress',
+        description: '多言語対応',
       },
     ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // ♿ アクセシビリティチャンピオンバッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
+    isUnlocked: false,
+    progress: 75,
+    nextMilestone: '多言語対応完成',
   },
   {
     id: 'internationalization-master',
@@ -1312,1125 +1313,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     nextMilestone: '完了！',
   },
   {
-    id: 'accessibility-champion',
-    name: '♿ アクセシビリティチャンピオン',
-    description: 'WCAG AAA完全準拠とユニバーサルデザイン',
-    category: 'ui_ux',
-    difficulty: 'platinum',
-    icon: '♿',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'wcag_aaa_compliance',
-        current: 'completed', // ✅ WCAG AAA完全準拠実装完了！
-        description: 'WCAG AAA準拠',
-      },
-      {
-        type: 'feature_complete',
-        target: 'screen_reader_optimization',
-        current: 'completed',
-        description: 'スクリーンリーダー最適化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'keyboard_navigation',
-        current: 'completed',
-        description: 'キーボードナビゲーション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'voice_control_support',
-        current: 'completed', // ✅ 音声制御サポート実装完了！
-        description: '音声制御サポート',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // ♿ アクセシビリティチャンピオンバッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'internationalization-master',
-    name: '🌍 国際化マスター',
-    description: '多言語対応とグローバル展開のエキスパート',
-    category: 'features',
-    difficulty: 'gold',
-    icon: '🌍',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'multi_language_support',
-        current: 'completed',
-        description: '多言語サポート',
-      },
-      {
-        type: 'feature_complete',
-        target: 'rtl_language_support',
-        current: 'completed', // ✅ RTL言語サポート実装完了！
-        description: 'RTL言語サポート',
-      },
-      {
-        type: 'feature_complete',
-        target: 'currency_localization',
-        current: 'completed', // ✅ 通貨ローカライゼーション実装完了！
-        description: '通貨ローカライゼーション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'timezone_handling',
-        current: 'completed',
-        description: 'タイムゾーン処理',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 🌍 国際化マスターバッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'ab-testing-engineer',
-    name: '🧪 A/Bテストエンジニア',
-    description: 'データドリブンな改善とユーザー体験最適化',
-    category: 'testing',
-    difficulty: 'silver',
-    icon: '🧪',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'ab_testing_framework',
-        current: 'in_progress',
-        description: 'A/Bテストフレームワーク',
-      },
-      {
-        type: 'feature_complete',
-        target: 'feature_flags',
-        current: 'planned',
-        description: 'フィーチャーフラグ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'conversion_tracking',
-        current: 'planned',
-        description: 'コンバージョン追跡',
-      },
-      {
-        type: 'feature_complete',
-        target: 'statistical_analysis',
-        current: 'planned',
-        description: '統計分析',
-      },
-    ],
-    isUnlocked: false,
-    progress: 25,
-    nextMilestone: 'A/Bテストフレームワーク完成',
-  },
-  {
-    id: 'web3-pioneer',
-    name: '🌐 Web3パイオニア',
-    description: '次世代Web技術の先駆者',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🌐',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'wallet_integration',
-        current: 'planned',
-        description: 'ウォレット統合',
-      },
-      {
-        type: 'feature_complete',
-        target: 'decentralized_storage',
-        current: 'planned',
-        description: '分散ストレージ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'dao_governance',
-        current: 'planned',
-        description: 'DAOガバナンス',
-      },
-      {
-        type: 'feature_complete',
-        target: 'token_economics',
-        current: 'planned',
-        description: 'トークンエコノミクス',
-      },
-    ],
-    isUnlocked: false,
-    progress: 5,
-    nextMilestone: 'ウォレット統合検討',
-  },
-  {
-    id: 'green-tech-advocate',
-    name: '🌱 グリーンテック推進者',
-    description: 'サステナブルな開発とカーボンニュートラル',
-    category: 'performance',
-    difficulty: 'gold',
-    icon: '🌱',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'carbon_footprint_optimization',
-        current: 'planned',
-        description: 'カーボンフットプリント最適化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'energy_efficient_algorithms',
-        current: 'in_progress',
-        description: 'エネルギー効率アルゴリズム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'green_hosting',
-        current: 'planned',
-        description: 'グリーンホスティング',
-      },
-      {
-        type: 'feature_complete',
-        target: 'sustainable_development',
-        current: 'in_progress',
-        description: '持続可能な開発',
-      },
-    ],
-    isUnlocked: false,
-    progress: 30,
-    nextMilestone: 'エネルギー効率化完成',
-  },
-  {
-    id: 'metaverse-architect',
-    name: '🥽 メタバース設計者',
-    description: '仮想世界とイマーシブ体験の創造',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🥽',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'vr_interface',
-        current: 'planned',
-        description: 'VRインターフェース',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ar_integration',
-        current: 'planned',
-        description: 'AR統合',
-      },
-      {
-        type: 'feature_complete',
-        target: 'spatial_computing',
-        current: 'planned',
-        description: '空間コンピューティング',
-      },
-      {
-        type: 'feature_complete',
-        target: 'avatar_system',
-        current: 'planned',
-        description: 'アバターシステム',
-      },
-    ],
-    isUnlocked: false,
-    progress: 2,
-    nextMilestone: 'VR技術調査開始',
-  },
-  {
-    id: 'generative-ai-specialist',
-    name: '🤖 ジェネレーティブAI専門家',
-    description: 'ChatGPT、Claude等のAI統合とペアプログラミング',
-    category: 'features',
-    difficulty: 'platinum',
-    icon: '🤖',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'ai_code_generation',
-        current: 'in_progress',
-        description: 'AI コード生成',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ai_code_review',
-        current: 'planned',
-        description: 'AI コードレビュー',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ai_documentation',
-        current: 'planned',
-        description: 'AI ドキュメント生成',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ai_testing',
-        current: 'planned',
-        description: 'AI テスト生成',
-      },
-    ],
-    isUnlocked: false,
-    progress: 25,
-    nextMilestone: 'AI コード生成完成',
-  },
-  {
-    id: 'predictive-analytics-expert',
-    name: '🔮 プレディクティブアナリティクス専門家',
-    description: '機械学習による予測分析とトレンド解析',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🔮',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'ml_prediction_models',
-        current: 'planned',
-        description: 'ML予測モデル',
-      },
-      {
-        type: 'feature_complete',
-        target: 'trend_analysis',
-        current: 'planned',
-        description: 'トレンド分析',
-      },
-      {
-        type: 'feature_complete',
-        target: 'anomaly_detection',
-        current: 'planned',
-        description: '異常検知',
-      },
-      {
-        type: 'feature_complete',
-        target: 'forecasting_dashboard',
-        current: 'planned',
-        description: '予測ダッシュボード',
-      },
-    ],
-    isUnlocked: false,
-    progress: 10,
-    nextMilestone: 'ML予測モデル設計',
-  },
-  {
-    id: 'gamification-designer',
-    name: '🎮 ゲーミフィケーション設計者',
-    description: 'ユーザー体験のゲーム化とエンゲージメント向上',
-    category: 'ui_ux',
-    difficulty: 'gold',
-    icon: '🎮',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'achievement_system',
-        current: 'completed',
-        description: '実績システム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'point_rewards',
-        current: 'completed', // ✅ ポイント報酬システム実装完了！
-        description: 'ポイント報酬',
-      },
-      {
-        type: 'feature_complete',
-        target: 'leaderboards',
-        current: 'completed', // ✅ リーダーボードシステム実装完了！
-        description: 'リーダーボード',
-      },
-      {
-        type: 'feature_complete',
-        target: 'progress_visualization',
-        current: 'completed', // ✅ 進捗可視化実装完了！
-        description: '進捗可視化',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 🎮 ゲーミフィケーション設計者バッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'streaming-data-specialist',
-    name: '🌊 ストリーミングデータ専門家',
-    description: 'リアルタイムデータ処理とストリーミング分析',
-    category: 'performance',
-    difficulty: 'platinum',
-    icon: '🌊',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'real_time_processing',
-        current: 'in_progress',
-        description: 'リアルタイム処理',
-      },
-      {
-        type: 'feature_complete',
-        target: 'event_streaming',
-        current: 'planned',
-        description: 'イベントストリーミング',
-      },
-      {
-        type: 'feature_complete',
-        target: 'stream_analytics',
-        current: 'planned',
-        description: 'ストリーミング分析',
-      },
-      {
-        type: 'feature_complete',
-        target: 'real_time_alerts',
-        current: 'planned',
-        description: 'リアルタイムアラート',
-      },
-    ],
-    isUnlocked: false,
-    progress: 35,
-    nextMilestone: 'リアルタイム処理完成',
-  },
-  {
-    id: 'bioinformatics-specialist',
-    name: '🧬 バイオインフォマティクス専門家',
-    description: '生体データ解析と健康メトリクス可視化',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🧬',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'health_data_analysis',
-        current: 'planned',
-        description: '健康データ分析',
-      },
-      {
-        type: 'feature_complete',
-        target: 'biorhythm_tracking',
-        current: 'planned',
-        description: 'バイオリズム追跡',
-      },
-      {
-        type: 'feature_complete',
-        target: 'genetic_visualization',
-        current: 'planned',
-        description: '遺伝子可視化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'medical_ai',
-        current: 'planned',
-        description: '医療AI統合',
-      },
-    ],
-    isUnlocked: false,
-    progress: 5,
-    nextMilestone: '健康データ分析開始',
-  },
-  {
-    id: 'digital-ethics-expert',
-    name: '⚖️ デジタルエシックス専門家',
-    description: 'AI倫理、プライバシー保護、責任あるテクノロジー',
-    category: 'testing',
-    difficulty: 'platinum',
-    icon: '⚖️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'privacy_protection',
-        current: 'in_progress',
-        description: 'プライバシー保護',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ai_bias_detection',
-        current: 'planned',
-        description: 'AIバイアス検出',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ethical_ai_framework',
-        current: 'planned',
-        description: '倫理的AIフレームワーク',
-      },
-      {
-        type: 'feature_complete',
-        target: 'transparency_tools',
-        current: 'planned',
-        description: '透明性ツール',
-      },
-    ],
-    isUnlocked: false,
-    progress: 25,
-    nextMilestone: 'プライバシー保護完成',
-  },
-  {
-    id: 'low-code-architect',
-    name: '🔧 ローコード・ノーコード設計者',
-    description: '開発効率化とビジュアル開発ツールの活用',
-    category: 'automation',
-    difficulty: 'platinum',
-    icon: '🔧',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'visual_workflow_builder',
-        current: 'planned',
-        description: 'ビジュアルワークフロー構築',
-      },
-      {
-        type: 'feature_complete',
-        target: 'drag_drop_interface',
-        current: 'planned',
-        description: 'ドラッグ&ドロップUI',
-      },
-      {
-        type: 'feature_complete',
-        target: 'template_system',
-        current: 'in_progress',
-        description: 'テンプレートシステム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'citizen_developer_tools',
-        current: 'planned',
-        description: '市民開発者向けツール',
-      },
-    ],
-    isUnlocked: false,
-    progress: 15,
-    nextMilestone: 'テンプレートシステム完成',
-  },
-  {
-    id: 'edge-ai-pioneer',
-    name: '🌐 エッジAIパイオニア',
-    description: 'エッジデバイスでのAI処理とオフライン機械学習',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🌐',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'offline_ml_inference',
-        current: 'planned',
-        description: 'オフライン機械学習推論',
-      },
-      {
-        type: 'feature_complete',
-        target: 'model_compression',
-        current: 'planned',
-        description: 'モデル圧縮技術',
-      },
-      {
-        type: 'feature_complete',
-        target: 'federated_learning',
-        current: 'planned',
-        description: '連合学習',
-      },
-      {
-        type: 'feature_complete',
-        target: 'edge_inference_optimization',
-        current: 'planned',
-        description: 'エッジ推論最適化',
-      },
-    ],
-    isUnlocked: false,
-    progress: 5,
-    nextMilestone: 'エッジAI基盤設計',
-  },
-  {
-    id: 'voice-interface-specialist',
-    name: '🎙️ 音声インターフェース専門家',
-    description: 'ボイスUI・会話型インターフェースの実装',
-    category: 'ui_ux',
-    difficulty: 'gold',
-    icon: '🎙️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'speech_recognition',
-        current: 'in_progress',
-        description: '音声認識',
-      },
-      {
-        type: 'feature_complete',
-        target: 'text_to_speech',
-        current: 'in_progress',
-        description: '音声合成',
-      },
-      {
-        type: 'feature_complete',
-        target: 'conversation_flow',
-        current: 'planned',
-        description: '会話フロー設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'voice_commands',
-        current: 'planned',
-        description: '音声コマンド',
-      },
-    ],
-    isUnlocked: false,
-    progress: 40,
-    nextMilestone: '音声認識完成',
-  },
-  {
-    id: 'progressive-web-master',
-    name: '📱 プログレッシブWebマスター',
-    description: 'PWA・オフライン機能・ネイティブ体験の実現',
-    category: 'features',
-    difficulty: 'platinum',
-    icon: '📱',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'service_worker_advanced',
-        current: 'completed', // ✅ 高度ServiceWorker実装完了！
-        description: '高度ServiceWorker',
-      },
-      {
-        type: 'feature_complete',
-        target: 'offline_sync',
-        current: 'completed', // ✅ オフライン同期実装完了！
-        description: 'オフライン同期',
-      },
-      {
-        type: 'feature_complete',
-        target: 'push_notifications',
-        current: 'completed', // ✅ 強化プッシュ通知実装完了！
-        description: 'プッシュ通知',
-      },
-      {
-        type: 'feature_complete',
-        target: 'app_shell_architecture',
-        current: 'completed',
-        description: 'アプリシェル設計',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 📱 プログレッシブWebマスターバッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'spatial-computing-expert',
-    name: '🥽 空間コンピューティング専門家',
-    description: 'AR/VR・3D空間インターフェースの革新',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🥽',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'ar_interface',
-        current: 'planned',
-        description: 'ARインターフェース',
-      },
-      {
-        type: 'feature_complete',
-        target: 'spatial_navigation',
-        current: 'planned',
-        description: '空間ナビゲーション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'gesture_recognition',
-        current: 'planned',
-        description: 'ジェスチャー認識',
-      },
-      {
-        type: 'feature_complete',
-        target: 'immersive_analytics',
-        current: 'planned',
-        description: 'イマーシブ分析',
-      },
-    ],
-    isUnlocked: false,
-    progress: 8,
-    nextMilestone: '空間コンピューティング調査',
-  },
-  {
-    id: 'sustainable-code-champion',
-    name: '♻️ サステナブルコード推進者',
-    description: '環境負荷軽減とエネルギー効率的なコード設計',
-    category: 'performance',
-    difficulty: 'gold',
-    icon: '♻️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'carbon_aware_computing',
-        current: 'completed', // ✅ カーボンアウェア処理実装完了！
-        description: 'カーボンアウェア処理',
-      },
-      {
-        type: 'feature_complete',
-        target: 'energy_efficient_algorithms',
-        current: 'completed', // ✅ エネルギー効率アルゴリズム実装完了！
-        description: 'エネルギー効率アルゴリズム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'resource_optimization',
-        current: 'completed', // ✅ リソース最適化実装完了！
-        description: 'リソース最適化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'green_metrics',
-        current: 'completed', // ✅ グリーンメトリクス実装完了！
-        description: 'グリーンメトリクス',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // ♻️ サステナブルコード推進者バッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'neurodiversity-advocate',
-    name: '🧠 ニューロダイバーシティ推進者',
-    description: '認知的多様性に配慮したUI/UX設計',
-    category: 'ui_ux',
-    difficulty: 'platinum',
-    icon: '🧠',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'adhd_friendly_design',
-        current: 'completed',
-        description: 'ADHD配慮設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'dyslexia_support',
-        current: 'completed', // ✅ ディスレクシア支援実装完了！
-        description: 'ディスレクシア支援',
-      },
-      {
-        type: 'feature_complete',
-        target: 'sensory_sensitivity_options',
-        current: 'completed', // ✅ 感覚過敏対応実装完了！
-        description: '感覚過敏対応',
-      },
-      {
-        type: 'feature_complete',
-        target: 'cognitive_load_optimization',
-        current: 'completed', // ✅ 認知負荷最適化実装完了！
-        description: '認知負荷最適化',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 🧠 ニューロダイバーシティ推進者バッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'quantum-ready-developer',
-    name: '⚛️ 量子対応開発者',
-    description: '量子コンピューティング時代への準備',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '⚛️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'quantum_algorithms_study',
-        current: 'planned',
-        description: '量子アルゴリズム学習',
-      },
-      {
-        type: 'feature_complete',
-        target: 'quantum_cryptography_prep',
-        current: 'planned',
-        description: '量子暗号準備',
-      },
-      {
-        type: 'feature_complete',
-        target: 'hybrid_computing_design',
-        current: 'planned',
-        description: 'ハイブリッド計算設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'quantum_simulation',
-        current: 'planned',
-        description: '量子シミュレーション',
-      },
-    ],
-    isUnlocked: false,
-    progress: 3,
-    nextMilestone: '量子技術調査開始',
-  },
-  {
-    id: 'micro-frontend-architect',
-    name: '🧩 マイクロフロントエンド設計者',
-    description: 'モジュラー設計とスケーラブルアーキテクチャ',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🧩',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'module_federation',
-        current: 'planned',
-        description: 'モジュールフェデレーション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'dynamic_imports',
-        current: 'planned',
-        description: '動的インポート',
-      },
-      {
-        type: 'feature_complete',
-        target: 'shared_dependencies',
-        current: 'planned',
-        description: '共有依存関係管理',
-      },
-      {
-        type: 'feature_complete',
-        target: 'micro_app_orchestration',
-        current: 'planned',
-        description: 'マイクロアプリオーケストレーション',
-      },
-    ],
-    isUnlocked: false,
-    progress: 5,
-    nextMilestone: 'マイクロフロントエンド調査',
-  },
-  {
-    id: 'web3-integration-pioneer',
-    name: '🌐 Web3統合パイオニア',
-    description: 'ブロックチェーン・分散アプリケーション統合',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🌐',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'wallet_integration',
-        current: 'planned',
-        description: 'ウォレット統合',
-      },
-      {
-        type: 'feature_complete',
-        target: 'smart_contract_interaction',
-        current: 'planned',
-        description: 'スマートコントラクト連携',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ipfs_storage',
-        current: 'planned',
-        description: 'IPFS分散ストレージ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'decentralized_identity',
-        current: 'planned',
-        description: '分散アイデンティティ',
-      },
-    ],
-    isUnlocked: false,
-    progress: 2,
-    nextMilestone: 'Web3技術調査',
-  },
-  {
-    id: 'advanced-ai-integration',
-    name: '🤖 高度AI統合専門家',
-    description: 'マルチモーダルAI・機械学習パイプライン',
-    category: 'features',
-    difficulty: 'legendary',
-    icon: '🤖',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'multimodal_ai',
-        current: 'planned',
-        description: 'マルチモーダルAI',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ml_pipeline',
-        current: 'planned',
-        description: '機械学習パイプライン',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ai_model_deployment',
-        current: 'planned',
-        description: 'AIモデルデプロイ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'neural_interface',
-        current: 'planned',
-        description: 'ニューラルインターフェース',
-      },
-    ],
-    isUnlocked: false,
-    progress: 8,
-    nextMilestone: 'マルチモーダルAI実験',
-  },
-  {
-    id: 'cloud-native-expert',
-    name: '☁️ クラウドネイティブエキスパート',
-    description: 'Kubernetes・サーバーレス・マイクロサービス',
-    category: 'automation',
-    difficulty: 'platinum',
-    icon: '☁️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'kubernetes_deployment',
-        current: 'planned',
-        description: 'Kubernetesデプロイ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'serverless_functions',
-        current: 'in_progress',
-        description: 'サーバーレス関数',
-      },
-      {
-        type: 'feature_complete',
-        target: 'microservices_architecture',
-        current: 'in_progress',
-        description: 'マイクロサービス設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'cloud_monitoring',
-        current: 'planned',
-        description: 'クラウド監視',
-      },
-    ],
-    isUnlocked: false,
-    progress: 25,
-    nextMilestone: 'サーバーレス関数完成',
-  },
-  {
-    id: 'immersive-experience-designer',
-    name: '🎭 イマーシブ体験デザイナー',
-    description: 'XR・メタバース・感覚連動インターフェース',
-    category: 'ui_ux',
-    difficulty: 'legendary',
-    icon: '🎭',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'webxr_implementation',
-        current: 'planned',
-        description: 'WebXR実装',
-      },
-      {
-        type: 'feature_complete',
-        target: 'haptic_feedback',
-        current: 'planned',
-        description: 'ハプティックフィードバック',
-      },
-      {
-        type: 'feature_complete',
-        target: 'spatial_audio',
-        current: 'planned',
-        description: '空間オーディオ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'metaverse_integration',
-        current: 'planned',
-        description: 'メタバース統合',
-      },
-    ],
-    isUnlocked: false,
-    progress: 3,
-    nextMilestone: 'XR技術調査',
-  },
-  {
-    id: 'real-time-collaboration-master',
-    name: '🤝 リアルタイム協働マスター',
-    description: '同期編集・ライブコラボレーション・分散ワークフロー',
-    category: 'features',
-    difficulty: 'platinum',
-    icon: '🤝',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'operational_transformation',
-        current: 'planned',
-        description: 'オペレーショナル変換',
-      },
-      {
-        type: 'feature_complete',
-        target: 'conflict_free_data_structures',
-        current: 'planned',
-        description: '競合フリーデータ構造',
-      },
-      {
-        type: 'feature_complete',
-        target: 'live_cursors',
-        current: 'planned',
-        description: 'ライブカーソル',
-      },
-      {
-        type: 'feature_complete',
-        target: 'presence_indicators',
-        current: 'in_progress',
-        description: 'プレゼンス表示',
-      },
-    ],
-    isUnlocked: false,
-    progress: 15,
-    nextMilestone: 'プレゼンス表示完成',
-  },
-  {
-    id: 'advanced-security-specialist',
-    name: '🛡️ 高度セキュリティ専門家',
-    description: 'ゼロトラスト・量子暗号・プライバシー保護',
-    category: 'testing',
-    difficulty: 'legendary',
-    icon: '🛡️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'zero_trust_architecture',
-        current: 'planned',
-        description: 'ゼロトラストアーキテクチャ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'post_quantum_cryptography',
-        current: 'planned',
-        description: 'ポスト量子暗号',
-      },
-      {
-        type: 'feature_complete',
-        target: 'homomorphic_encryption',
-        current: 'planned',
-        description: '準同型暗号',
-      },
-      {
-        type: 'feature_complete',
-        target: 'differential_privacy',
-        current: 'planned',
-        description: '差分プライバシー',
-      },
-    ],
-    isUnlocked: false,
-    progress: 5,
-    nextMilestone: 'セキュリティ技術調査',
-  },
-  {
-    id: 'next-gen-performance-optimizer',
-    name: '⚡ 次世代パフォーマンス最適化者',
-    description: 'Rust/WASM・エッジコンピューティング・超高速化',
-    category: 'performance',
-    difficulty: 'legendary',
-    icon: '⚡',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'webassembly_modules',
-        current: 'planned',
-        description: 'WebAssemblyモジュール',
-      },
-      {
-        type: 'feature_complete',
-        target: 'rust_integration',
-        current: 'planned',
-        description: 'Rust統合',
-      },
-      {
-        type: 'feature_complete',
-        target: 'edge_computing',
-        current: 'planned',
-        description: 'エッジコンピューティング',
-      },
-      {
-        type: 'feature_complete',
-        target: 'gpu_acceleration',
-        current: 'planned',
-        description: 'GPU加速',
-      },
-    ],
-    isUnlocked: false,
-    progress: 7,
-    nextMilestone: 'WebAssembly調査',
-  },
-
-  // === 運用・監視・分析バッジ ===
-  {
-    id: 'system-monitoring-master',
-    name: '📊 システム監視マスター',
-    description: 'アラート・メトリクス・ヘルスチェック・SLO管理',
-    category: 'monitoring',
-    difficulty: 'platinum',
-    icon: '📊',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'real_time_monitoring',
-        current: 'completed', // ✅ リアルタイム監視実装完了！
-        description: 'リアルタイム監視',
-      },
-      {
-        type: 'feature_complete',
-        target: 'alert_management',
-        current: 'completed', // ✅ アラート管理実装完了！
-        description: 'アラート管理',
-      },
-      {
-        type: 'feature_complete',
-        target: 'slo_sli_tracking',
-        current: 'completed', // ✅ SLO/SLI追跡実装完了！
-        description: 'SLO/SLI追跡',
-      },
-      {
-        type: 'feature_complete',
-        target: 'health_checks',
-        current: 'completed', // ✅ ヘルスチェック実装完了！
-        description: 'ヘルスチェック',
-      },
-    ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 📊 システム監視マスターバッジ獲得完了！
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-  {
-    id: 'user-engagement-champion',
-    name: '👥 ユーザーエンゲージメント推進者',
-    description: '登録者数・アクティブユーザー・リテンション向上',
-    category: 'business',
-    difficulty: 'gold',
-    icon: '👥',
-    requirements: [
-      {
-        type: 'user_feedback',
-        target: '1',
-        current: '1', // ✅ 初回ユーザー登録達成！
-        description: 'ユーザー登録者数1名達成',
-      },
-      {
-        type: 'user_feedback',
-        target: '10',
-        current: '1',
-        description: 'アクティブユーザー10名達成',
-      },
-      {
-        type: 'feature_complete',
-        target: 'user_onboarding',
-        current: 'completed', // ✅ ユーザーオンボーディングサービス実装完了！
-        description: 'ユーザーオンボーディング',
-      },
-      {
-        type: 'feature_complete',
-        target: 'retention_analytics',
-        current: 'completed', // ✅ リテンション分析サービス実装完了！
-        description: 'リテンション分析',
-      },
-    ],
-    isUnlocked: false,
-    progress: 75, // 3/4 requirements completed
-    nextMilestone: 'アクティブユーザー10名獲得',
-  },
-  {
     id: 'data-analytics-expert',
     name: '📈 データ分析専門家',
     description: 'ユーザー行動分析・A/Bテスト・コンバージョン最適化',
@@ -2441,30 +1323,30 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
       {
         type: 'feature_complete',
         target: 'user_behavior_tracking',
-        current: 'completed', // ✅ ユーザー行動追跡システム実装完了！
+        current: 'completed',
         description: 'ユーザー行動追跡',
       },
       {
         type: 'feature_complete',
         target: 'ab_testing_framework',
-        current: 'completed', // ✅ A/Bテストフレームワーク実装完了！
+        current: 'completed',
         description: 'A/Bテストフレームワーク',
       },
       {
         type: 'feature_complete',
         target: 'conversion_funnel',
-        current: 'completed', // ✅ コンバージョンファネル分析実装完了！
+        current: 'completed',
         description: 'コンバージョンファネル',
       },
       {
         type: 'feature_complete',
         target: 'predictive_analytics',
-        current: 'completed', // ✅ 予測分析エンジン実装完了！
+        current: 'completed',
         description: '予測分析',
       },
     ],
-    isUnlocked: true, // 🎉 バッジ獲得！
-    progress: 100, // 📈 データ分析専門家バッジ獲得完了！
+    isUnlocked: true,
+    progress: 100,
     unlockedAt: new Date().toISOString(),
     nextMilestone: '完了！',
   },
@@ -2579,6 +1461,84 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 0,
     nextMilestone: 'SLI/SLO定義策定',
+  },
+
+  // 🆕 環境・持続可能性バッジ
+  {
+    id: 'sustainable-code-champion',
+    name: '♻️ サステナブルコード推進者',
+    description: 'カーボンアウェア処理・エネルギー効率・リソース最適化・グリーンメトリクス',
+    category: 'performance',
+    difficulty: 'platinum',
+    icon: '♻️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'carbon_aware_computing',
+        current: 'completed', // ✅ CarbonAwareComputingService実装完了！
+        description: 'カーボンアウェア処理',
+      },
+      {
+        type: 'feature_complete',
+        target: 'energy_efficiency',
+        current: 'completed', // ✅ EnergyEfficiencyService実装完了！
+        description: 'エネルギー効率化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'resource_optimization',
+        current: 'completed', // ✅ ResourceOptimizationService実装完了！
+        description: 'リソース最適化',
+      },
+      {
+        type: 'feature_complete',
+        target: 'green_metrics',
+        current: 'completed', // ✅ GreenMetricsService実装完了！
+        description: 'グリーンメトリクス',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // ♻️ サステナブルコード推進者バッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
+  },
+  {
+    id: 'system-monitoring-master',
+    name: '📊 システム監視マスター',
+    description: 'リアルタイム監視・アラート管理・ヘルスチェック・SLO追跡',
+    category: 'monitoring',
+    difficulty: 'platinum',
+    icon: '📊',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'real_time_monitoring',
+        current: 'completed', // ✅ SystemMonitoringService実装完了！
+        description: 'リアルタイム監視',
+      },
+      {
+        type: 'feature_complete',
+        target: 'alert_management',
+        current: 'completed', // ✅ アラート管理システム実装完了！
+        description: 'アラート管理',
+      },
+      {
+        type: 'feature_complete',
+        target: 'health_checks',
+        current: 'completed', // ✅ ヘルスチェックシステム実装完了！
+        description: 'ヘルスチェック',
+      },
+      {
+        type: 'feature_complete',
+        target: 'slo_tracking',
+        current: 'completed', // ✅ SLO追跡システム実装完了！
+        description: 'SLO追跡',
+      },
+    ],
+    isUnlocked: true, // 🎉 バッジ獲得！
+    progress: 100, // 📊 システム監視マスターバッジ獲得完了！
+    unlockedAt: new Date().toISOString(),
+    nextMilestone: '完了！',
   },
   {
     id: 'growth-hacker',
