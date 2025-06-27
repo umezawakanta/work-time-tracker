@@ -499,7 +499,7 @@ class ComprehensiveBadgeService {
    * 🚀 バッジシステム初期化
    */
   private initializeBadgeSystem(): void {
-    this.loadComprehensiveBadgeData();
+    this.initializeBadgeDatabase();
     this.initializePageSyncData();
     this.calculateAllBadgeProgress();
     console.log('🏆 バッジシステム初期化:', this.badges.size, 'バッジ');
@@ -508,633 +508,967 @@ class ComprehensiveBadgeService {
   /**
    * 📊 包括的バッジデータ読み込み
    */
-  private loadComprehensiveBadgeData(): void {
-    const comprehensiveBadges: DevelopmentBadge[] = [
-      // 技術基盤系
-      {
-        id: 'code-architect',
-        name: 'コードアーキテクト',
-        description: '優れたコード構造とアーキテクチャを設計する能力を証明',
-        category: 'architecture',
-        difficulty: 'platinum',
-        icon: '🏗️',
-        requirements: [
-          {
-            type: 'feature_complete',
-            target: 100,
-            description: 'アーキテクチャ設計の完了',
-            progress: 85,
-            isCompleted: false,
-          },
-          {
-            type: 'code_quality',
-            target: 95,
-            description: 'コード品質スコア95%以上',
-            progress: 88,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 86,
-        isCompleted: false,
-        points: 1000,
-        prerequisites: ['foundation-master'],
-      },
+  private initializeBadgeDatabase(): void {
+    this.badges = new Map([
+      // 🏗️ アーキテクチャ・設計バッジ
+      [
+        'architect',
+        {
+          id: 'architect',
+          name: 'システムアーキテクト',
+          description: '拡張可能なシステム設計の専門家',
+          category: 'architecture',
+          difficulty: 'platinum',
+          icon: '🏗️',
+          requirements: [
+            {
+              type: 'feature_complete',
+              target: 100,
+              description: 'アーキテクチャ設計の完了',
+              progress: 85,
+              isCompleted: false,
+            },
+            {
+              type: 'code_quality',
+              target: 95,
+              description: 'コード品質スコア95%以上',
+              progress: 88,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 86,
+          points: 500,
+          rewards: ['設計ドキュメント自動生成', 'アーキテクチャレビューツール'],
+        },
+      ],
 
-      // CI/CD・DevOps系
-      {
-        id: 'cicd-master',
-        name: 'CI/CDマスター',
-        description: '継続的インテグレーション・デプロイメントのエキスパート',
-        category: 'cicd',
-        difficulty: 'gold',
-        icon: '🔄',
-        requirements: [
-          {
-            type: 'pipeline_setup',
-            target: 100,
-            description: 'CI/CDパイプラインの構築',
-            progress: 75,
-            isCompleted: false,
-          },
-          {
-            type: 'automation',
-            target: 90,
-            description: '自動化スコア90%以上',
-            progress: 70,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 72,
-        isCompleted: false,
-        points: 800,
-      },
+      // 🔄 CI/CDマスターバッジ
+      [
+        'cicd_master',
+        {
+          id: 'cicd_master',
+          name: 'CI/CDマスター',
+          description: '継続的インテグレーション・デプロイの達人',
+          category: 'cicd',
+          difficulty: 'gold',
+          icon: '🔄',
+          requirements: [
+            {
+              type: 'pipeline_setup',
+              target: 100,
+              description: 'CI/CDパイプラインの構築',
+              progress: 75,
+              isCompleted: false,
+            },
+            {
+              type: 'automation',
+              target: 90,
+              description: '自動化スコア90%以上',
+              progress: 70,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 72,
+          points: 300,
+          rewards: ['自動デプロイツール', 'パイプライン監視ダッシュボード'],
+        },
+      ],
 
-      {
-        id: 'deployment-specialist',
-        name: 'デプロイメントスペシャリスト',
-        description: '安全で効率的なデプロイメント戦略を実行',
-        category: 'deployment',
-        difficulty: 'silver',
-        icon: '🚀',
-        requirements: [
-          {
-            type: 'deployment_success',
-            target: 95,
-            description: 'デプロイ成功率95%以上',
-            progress: 90,
-            isCompleted: false,
-          },
-          {
-            type: 'rollback_strategy',
-            target: 100,
-            description: 'ロールバック戦略の実装',
-            progress: 85,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 87,
-        isCompleted: false,
-        points: 600,
-        prerequisites: ['cicd-master'],
-      },
+      // 🚀 デプロイメント・スペシャリストバッジ
+      [
+        'deployment_specialist',
+        {
+          id: 'deployment_specialist',
+          name: 'デプロイメント・スペシャリスト',
+          description: 'ゼロダウンタイムデプロイのエキスパート',
+          category: 'deployment',
+          difficulty: 'gold',
+          icon: '🚀',
+          requirements: [
+            {
+              type: 'deployment_success',
+              target: 95,
+              description: 'デプロイ成功率95%以上',
+              progress: 90,
+              isCompleted: false,
+            },
+            {
+              type: 'rollback_strategy',
+              target: 100,
+              description: 'ロールバック戦略の実装',
+              progress: 85,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 87,
+          points: 300,
+          rewards: ['ブルーグリーンデプロイ', 'カナリアリリース機能'],
+        },
+      ],
 
-      {
-        id: 'container-orchestrator',
-        name: 'コンテナオーケストレーター',
-        description: 'Docker・Kubernetesを使いこなすコンテナ技術者',
-        category: 'virtualization',
-        difficulty: 'gold',
-        icon: '🐳',
-        requirements: [
-          {
-            type: 'container_deployment',
-            target: 100,
-            description: 'コンテナデプロイの実装',
-            progress: 60,
-            isCompleted: false,
-          },
-          {
-            type: 'orchestration',
-            target: 90,
-            description: 'オーケストレーション設定',
-            progress: 55,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 57,
-        isCompleted: false,
-        points: 750,
-      },
+      // 🐳 コンテナ・オーケストレーターバッジ
+      [
+        'container_orchestrator',
+        {
+          id: 'container_orchestrator',
+          name: 'コンテナ・オーケストレーター',
+          description: 'Docker/Kubernetesの操作を極めた専門家',
+          category: 'virtualization',
+          difficulty: 'platinum',
+          icon: '🐳',
+          requirements: [
+            {
+              type: 'container_deployment',
+              target: 100,
+              description: 'コンテナデプロイの実装',
+              progress: 60,
+              isCompleted: false,
+            },
+            {
+              type: 'orchestration',
+              target: 90,
+              description: 'オーケストレーション設定',
+              progress: 55,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 57,
+          points: 500,
+          rewards: ['Kubernetes管理ツール', 'マイクロサービス監視'],
+        },
+      ],
 
-      {
-        id: 'cloud-architect',
-        name: 'クラウドアーキテクト',
-        description: 'スケーラブルなクラウドインフラを設計・構築',
-        category: 'infrastructure',
-        difficulty: 'platinum',
-        icon: '☁️',
-        requirements: [
-          {
-            type: 'cloud_deployment',
-            target: 100,
-            description: 'クラウド環境の構築',
-            progress: 70,
-            isCompleted: false,
-          },
-          {
-            type: 'scalability',
-            target: 95,
-            description: 'スケーラビリティの実装',
-            progress: 65,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 67,
-        isCompleted: false,
-        points: 1200,
-      },
+      // ☁️ クラウドアーキテクトバッジ
+      [
+        'cloud_architect',
+        {
+          id: 'cloud_architect',
+          name: 'クラウドアーキテクト',
+          description: 'クラウドネイティブソリューションの設計者',
+          category: 'cloud_computing',
+          difficulty: 'platinum',
+          icon: '☁️',
+          requirements: [
+            {
+              type: 'cloud_deployment',
+              target: 100,
+              description: 'クラウド環境の構築',
+              progress: 70,
+              isCompleted: false,
+            },
+            {
+              type: 'scalability',
+              target: 95,
+              description: 'スケーラビリティの実装',
+              progress: 65,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 67,
+          points: 500,
+          rewards: ['オートスケーリング', 'クラウドコスト最適化'],
+        },
+      ],
 
-      {
-        id: 'performance-optimizer',
-        name: 'パフォーマンスオプティマイザー',
-        description: 'システムパフォーマンスを極限まで最適化',
-        category: 'scaling',
-        difficulty: 'gold',
-        icon: '⚡',
-        requirements: [
-          {
-            type: 'performance_improvement',
-            target: 50,
-            description: 'パフォーマンス50%向上',
-            progress: 35,
-            isCompleted: false,
-          },
-          {
-            type: 'load_testing',
-            target: 100,
-            description: '負荷テストの実施',
-            progress: 80,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 57,
-        isCompleted: false,
-        points: 900,
-      },
+      // ⚡ パフォーマンス・オプティマイザーバッジ
+      [
+        'performance_optimizer',
+        {
+          id: 'performance_optimizer',
+          name: 'パフォーマンス・オプティマイザー',
+          description: 'システム性能を限界まで引き出す最適化のプロ',
+          category: 'performance',
+          difficulty: 'gold',
+          icon: '⚡',
+          requirements: [
+            {
+              type: 'performance_improvement',
+              target: 50,
+              description: 'パフォーマンス50%向上',
+              progress: 35,
+              isCompleted: false,
+            },
+            {
+              type: 'load_testing',
+              target: 100,
+              description: '負荷テストの実施',
+              progress: 80,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 57,
+          points: 300,
+          rewards: ['パフォーマンス監視ツール', 'ボトルネック分析機能'],
+        },
+      ],
 
-      {
-        id: 'monitoring-specialist',
-        name: '監視スペシャリスト',
-        description: '包括的なシステム監視とアラート体制を構築',
-        category: 'monitoring',
-        difficulty: 'silver',
-        icon: '📊',
-        requirements: [
-          {
-            type: 'monitoring_setup',
-            target: 100,
-            description: '監視システムの構築',
-            progress: 95,
-            isCompleted: false,
-          },
-          {
-            type: 'alert_configuration',
-            target: 100,
-            description: 'アラート設定の完了',
-            progress: 90,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 92,
-        isCompleted: false,
-        points: 700,
-      },
+      // 📊 モニタリング・スペシャリストバッジ
+      [
+        'monitoring_specialist',
+        {
+          id: 'monitoring_specialist',
+          name: 'モニタリング・スペシャリスト',
+          description: 'システム監視とアラートの専門家',
+          category: 'monitoring',
+          difficulty: 'silver',
+          icon: '📊',
+          requirements: [
+            {
+              type: 'monitoring_setup',
+              target: 100,
+              description: '監視システムの構築',
+              progress: 95,
+              isCompleted: false,
+            },
+            {
+              type: 'alert_configuration',
+              target: 100,
+              description: 'アラート設定の完了',
+              progress: 90,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 92,
+          points: 200,
+          rewards: ['リアルタイムダッシュボード', 'プロアクティブアラート'],
+        },
+      ],
 
-      // プロジェクト管理系
-      {
-        id: 'project-maestro',
-        name: 'プロジェクトマエストロ',
-        description: '複雑なプロジェクトを成功に導くプロジェクト管理の達人',
-        category: 'project_management',
-        difficulty: 'gold',
-        icon: '🎯',
-        requirements: [
-          {
-            type: 'project_completion',
-            target: 95,
-            description: 'プロジェクト成功率95%以上',
-            progress: 88,
-            isCompleted: false,
-          },
-          {
-            type: 'team_satisfaction',
-            target: 90,
-            description: 'チーム満足度90%以上',
-            progress: 85,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 86,
-        isCompleted: false,
-        points: 850,
-      },
+      // 🎯 プロダクトマネージャーバッジ
+      [
+        'product_manager',
+        {
+          id: 'product_manager',
+          name: 'プロダクトマネージャー',
+          description: 'プロダクト戦略と実行を統括するリーダー',
+          category: 'project_management',
+          difficulty: 'gold',
+          icon: '🎯',
+          requirements: [
+            {
+              type: 'project_completion',
+              target: 95,
+              description: 'プロジェクト成功率95%以上',
+              progress: 88,
+              isCompleted: false,
+            },
+            {
+              type: 'team_satisfaction',
+              target: 90,
+              description: 'チーム満足度90%以上',
+              progress: 85,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 86,
+          points: 300,
+          rewards: ['プロダクト分析ツール', 'ロードマップ管理機能'],
+        },
+      ],
 
-      {
-        id: 'agile-champion',
-        name: 'アジャイルチャンピオン',
-        description: 'アジャイル開発手法をマスターし、チームを牽引',
-        category: 'agile',
-        difficulty: 'silver',
-        icon: '🔄',
-        requirements: [
-          {
-            type: 'sprint_velocity',
-            target: 90,
-            description: 'スプリント目標達成率90%',
-            progress: 82,
-            isCompleted: false,
-          },
-          {
-            type: 'retrospective_insights',
-            target: 50,
-            description: '改善提案50件以上',
-            progress: 35,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 58,
-        isCompleted: false,
-        points: 600,
-      },
+      // 🔄 アジャイルコーチバッジ
+      [
+        'agile_coach',
+        {
+          id: 'agile_coach',
+          name: 'アジャイルコーチ',
+          description: 'アジャイル開発の導入と改善を支援する専門家',
+          category: 'agile',
+          difficulty: 'gold',
+          icon: '🔄',
+          requirements: [
+            {
+              type: 'sprint_velocity',
+              target: 90,
+              description: 'スプリント目標達成率90%',
+              progress: 82,
+              isCompleted: false,
+            },
+            {
+              type: 'retrospective_insights',
+              target: 50,
+              description: '改善提案50件以上',
+              progress: 35,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 58,
+          points: 300,
+          rewards: ['スプリント分析ツール', 'チーム改善提案機能'],
+        },
+      ],
 
-      {
-        id: 'skill-mapper',
-        name: 'スキルマッパー',
-        description: '包括的なスキルマップを作成し、チーム能力を可視化',
-        category: 'skill_mapping',
-        difficulty: 'gold',
-        icon: '🗺️',
-        requirements: [
-          {
-            type: 'skill_assessment',
-            target: 100,
-            description: 'スキル評価システムの完成',
-            progress: 100,
-            isCompleted: true,
-          },
-          {
-            type: 'development_plan',
-            target: 80,
-            description: '育成計画の策定',
-            progress: 75,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 87,
-        isCompleted: false,
-        points: 750,
-      },
+      // 🗺️ スキルマップアーキテクトバッジ
+      [
+        'skill_map_architect',
+        {
+          id: 'skill_map_architect',
+          name: 'スキルマップアーキテクト',
+          description: 'チームのスキル開発戦略を設計する専門家',
+          category: 'skill_mapping',
+          difficulty: 'gold',
+          icon: '🗺️',
+          requirements: [
+            {
+              type: 'skill_assessment',
+              target: 100,
+              description: 'スキル評価システムの完成',
+              progress: 100,
+              isCompleted: true,
+            },
+            {
+              type: 'development_plan',
+              target: 80,
+              description: '育成計画の策定',
+              progress: 75,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 87,
+          points: 300,
+          rewards: ['スキル可視化ツール', '成長予測機能'],
+        },
+      ],
 
-      // ビジネス系
-      {
-        id: 'business-strategist',
-        name: 'ビジネスストラテジスト',
-        description: '戦略的思考でビジネス価値を最大化',
-        category: 'business',
-        difficulty: 'gold',
-        icon: '💼',
-        requirements: [
-          {
-            type: 'strategy_development',
-            target: 100,
-            description: 'ビジネス戦略の策定',
-            progress: 70,
-            isCompleted: false,
-          },
-          {
-            type: 'roi_improvement',
-            target: 25,
-            description: 'ROI25%改善',
-            progress: 18,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 44,
-        isCompleted: false,
-        points: 900,
-      },
+      // 💼 ビジネスストラテジストバッジ
+      [
+        'business_strategist',
+        {
+          id: 'business_strategist',
+          name: 'ビジネスストラテジスト',
+          description: 'ビジネス戦略の立案と実行を指揮する戦略家',
+          category: 'business',
+          difficulty: 'platinum',
+          icon: '💼',
+          requirements: [
+            {
+              type: 'strategy_development',
+              target: 100,
+              description: 'ビジネス戦略の策定',
+              progress: 70,
+              isCompleted: false,
+            },
+            {
+              type: 'roi_improvement',
+              target: 25,
+              description: 'ROI25%改善',
+              progress: 18,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 44,
+          points: 500,
+          rewards: ['戦略分析ツール', 'ROI予測機能'],
+        },
+      ],
 
-      {
-        id: 'startup-founder',
-        name: 'スタートアップファウンダー',
-        description: '起業家精神を発揮し、新規事業を立ち上げ',
-        category: 'entrepreneurship',
-        difficulty: 'platinum',
-        icon: '🚀',
-        requirements: [
-          {
-            type: 'business_launch',
-            target: 100,
-            description: '事業立ち上げの完了',
-            progress: 30,
-            isCompleted: false,
-          },
-          {
-            type: 'revenue_generation',
-            target: 100,
-            description: '収益化の達成',
-            progress: 15,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 22,
-        isCompleted: false,
-        points: 1500,
-      },
+      // 🚀 スタートアップファウンダーバッジ
+      [
+        'startup_founder',
+        {
+          id: 'startup_founder',
+          name: 'スタートアップファウンダー',
+          description: '革新的な事業を立ち上げる起業家',
+          category: 'entrepreneurship',
+          difficulty: 'legendary',
+          icon: '🚀',
+          requirements: [
+            {
+              type: 'business_launch',
+              target: 100,
+              description: '事業立ち上げの完了',
+              progress: 30,
+              isCompleted: false,
+            },
+            {
+              type: 'revenue_generation',
+              target: 100,
+              description: '収益化の達成',
+              progress: 15,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 22,
+          points: 1000,
+          rewards: ['ビジネスモデル分析', '投資家マッチング機能'],
+        },
+      ],
 
-      {
-        id: 'marketing-guru',
-        name: 'マーケティンググル',
-        description: 'デジタルマーケティングで圧倒的な成果を創出',
-        category: 'marketing',
-        difficulty: 'gold',
-        icon: '📢',
-        requirements: [
-          {
-            type: 'campaign_success',
-            target: 80,
-            description: 'キャンペーン成功率80%',
-            progress: 65,
-            isCompleted: false,
-          },
-          {
-            type: 'conversion_rate',
-            target: 5,
-            description: 'コンバージョン率5%達成',
-            progress: 3.2,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 55,
-        isCompleted: false,
-        points: 800,
-      },
+      // 📢 マーケティンググルバッジ
+      [
+        'marketing_guru',
+        {
+          id: 'marketing_guru',
+          name: 'マーケティンググル',
+          description: 'デジタルマーケティングとブランド戦略の専門家',
+          category: 'marketing',
+          difficulty: 'gold',
+          icon: '📢',
+          requirements: [
+            {
+              type: 'campaign_success',
+              target: 80,
+              description: 'キャンペーン成功率80%',
+              progress: 65,
+              isCompleted: false,
+            },
+            {
+              type: 'conversion_rate',
+              target: 5,
+              description: 'コンバージョン率5%達成',
+              progress: 3.2,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 68,
+          points: 300,
+          rewards: ['マーケティング自動化', 'コンバージョン最適化'],
+        },
+      ],
 
-      // 教育・文化系
-      {
-        id: 'knowledge-master',
-        name: 'ナレッジマスター',
-        description: '知識共有と学習文化の醸成に貢献',
-        category: 'education',
-        difficulty: 'silver',
-        icon: '📚',
-        requirements: [
-          {
-            type: 'knowledge_sharing',
-            target: 100,
-            description: 'ナレッジ共有システムの構築',
-            progress: 90,
-            isCompleted: false,
-          },
-          {
-            type: 'learning_impact',
-            target: 80,
-            description: '学習効果80%向上',
-            progress: 75,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 82,
-        isCompleted: false,
-        points: 650,
-      },
+      // 📚 ナレッジマスターバッジ
+      [
+        'knowledge_master',
+        {
+          id: 'knowledge_master',
+          name: 'ナレッジマスター',
+          description: '組織の知識管理とスキル向上を推進する専門家',
+          category: 'education',
+          difficulty: 'gold',
+          icon: '📚',
+          requirements: [
+            {
+              type: 'knowledge_sharing',
+              target: 100,
+              description: 'ナレッジ共有システムの構築',
+              progress: 90,
+              isCompleted: false,
+            },
+            {
+              type: 'learning_impact',
+              target: 80,
+              description: '学習効果80%向上',
+              progress: 75,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 82,
+          points: 300,
+          rewards: ['学習管理システム', 'ナレッジマップ機能'],
+        },
+      ],
 
-      {
-        id: 'certification-champion',
-        name: '認定資格チャンピオン',
-        description: '複数の専門資格を取得し、専門性を証明',
-        category: 'certification',
-        difficulty: 'gold',
-        icon: '🏆',
-        requirements: [
-          {
-            type: 'certifications_earned',
-            target: 5,
-            description: '専門資格5つ以上取得',
-            progress: 3,
-            isCompleted: false,
-          },
-          {
-            type: 'skill_validation',
-            target: 95,
-            description: 'スキル検証95%以上',
-            progress: 88,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 72,
-        isCompleted: false,
-        points: 850,
-      },
+      // 🏆 認定チャンピオンバッジ
+      [
+        'certification_champion',
+        {
+          id: 'certification_champion',
+          name: '認定チャンピオン',
+          description: '多数の専門資格を取得したスキルのプロ',
+          category: 'certification',
+          difficulty: 'platinum',
+          icon: '🏆',
+          requirements: [
+            {
+              type: 'certifications_earned',
+              target: 5,
+              description: '専門資格5つ以上取得',
+              progress: 3,
+              isCompleted: false,
+            },
+            {
+              type: 'skill_validation',
+              target: 95,
+              description: 'スキル検証95%以上',
+              progress: 88,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 78,
+          points: 500,
+          rewards: ['認定管理システム', 'スキル証明書自動生成'],
+        },
+      ],
 
-      {
-        id: 'content-creator',
-        name: 'コンテンツクリエイター',
-        description: '価値あるコンテンツを継続的に創出・発信',
-        category: 'information_sharing',
-        difficulty: 'silver',
-        icon: '📝',
-        requirements: [
-          {
-            type: 'content_published',
-            target: 50,
-            description: '高品質コンテンツ50件公開',
-            progress: 32,
-            isCompleted: false,
-          },
-          {
-            type: 'audience_engagement',
-            target: 80,
-            description: 'エンゲージメント率80%',
-            progress: 70,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 64,
-        isCompleted: false,
-        points: 600,
-      },
+      // 📝 コンテンツクリエイターバッジ
+      [
+        'content_creator',
+        {
+          id: 'content_creator',
+          name: 'コンテンツクリエイター',
+          description: '質の高いコンテンツを継続的に制作する専門家',
+          category: 'information_sharing',
+          difficulty: 'silver',
+          icon: '📝',
+          requirements: [
+            {
+              type: 'content_published',
+              target: 50,
+              description: '高品質コンテンツ50件公開',
+              progress: 32,
+              isCompleted: false,
+            },
+            {
+              type: 'audience_engagement',
+              target: 80,
+              description: 'エンゲージメント率80%',
+              progress: 70,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 71,
+          points: 200,
+          rewards: ['コンテンツ分析ツール', 'エンゲージメント予測'],
+        },
+      ],
 
-      // AI・先端技術系
-      {
-        id: 'ai-pioneer',
-        name: 'AI開拓者',
-        description: 'AI・機械学習技術を実用的なソリューションに応用',
-        category: 'ai_ml',
-        difficulty: 'platinum',
-        icon: '🤖',
-        requirements: [
-          {
-            type: 'ai_model_deployment',
-            target: 100,
-            description: 'AIモデルの本番デプロイ',
-            progress: 45,
-            isCompleted: false,
-          },
-          {
-            type: 'ml_accuracy',
-            target: 90,
-            description: 'モデル精度90%以上',
-            progress: 85,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 65,
-        isCompleted: false,
-        points: 1300,
-      },
+      // �� AIパイオニアバッジ
+      [
+        'ai_pioneer',
+        {
+          id: 'ai_pioneer',
+          name: 'AIパイオニア',
+          description: 'AI・機械学習技術の先駆者',
+          category: 'ai_ml',
+          difficulty: 'legendary',
+          icon: '🤖',
+          requirements: [
+            {
+              type: 'ai_model_deployment',
+              target: 100,
+              description: 'AIモデルの本番デプロイ',
+              progress: 45,
+              isCompleted: false,
+            },
+            {
+              type: 'ml_accuracy',
+              target: 90,
+              description: 'モデル精度90%以上',
+              progress: 85,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 65,
+          points: 1000,
+          rewards: ['AI開発プラットフォーム', '自動モデル最適化'],
+        },
+      ],
 
-      {
-        id: 'security-sentinel',
-        name: 'セキュリティセンチネル',
-        description: 'システムとデータを守り抜くサイバーセキュリティの専門家',
-        category: 'cybersecurity',
-        difficulty: 'gold',
-        icon: '🛡️',
-        requirements: [
-          {
-            type: 'security_assessment',
-            target: 100,
-            description: 'セキュリティ監査の実施',
-            progress: 80,
-            isCompleted: false,
-          },
-          {
-            type: 'vulnerability_remediation',
-            target: 95,
-            description: '脆弱性対応95%完了',
-            progress: 88,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 84,
-        isCompleted: false,
-        points: 950,
-      },
+      // 🛡️ セキュリティセンチネルバッジ
+      [
+        'security_sentinel',
+        {
+          id: 'security_sentinel',
+          name: 'セキュリティセンチネル',
+          description: 'サイバーセキュリティの最前線を守る護衛',
+          category: 'cybersecurity',
+          difficulty: 'platinum',
+          icon: '🛡️',
+          requirements: [
+            {
+              type: 'security_assessment',
+              target: 100,
+              description: 'セキュリティ監査の実施',
+              progress: 80,
+              isCompleted: false,
+            },
+            {
+              type: 'vulnerability_remediation',
+              target: 95,
+              description: '脆弱性対応95%完了',
+              progress: 88,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 84,
+          points: 500,
+          rewards: ['セキュリティ監視システム', '脅威検知AI'],
+        },
+      ],
 
-      // デザイン・クリエイティブ系
-      {
-        id: 'ux-maestro',
-        name: 'UXマエストロ',
-        description: 'ユーザー体験を革新的に改善するデザインの匠',
-        category: 'design',
-        difficulty: 'gold',
-        icon: '🎨',
-        requirements: [
-          {
-            type: 'user_satisfaction',
-            target: 95,
-            description: 'ユーザー満足度95%以上',
-            progress: 88,
-            isCompleted: false,
-          },
-          {
-            type: 'usability_improvement',
-            target: 40,
-            description: 'ユーザビリティ40%向上',
-            progress: 32,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 60,
-        isCompleted: false,
-        points: 850,
-      },
+      // 🎨 UXマエストロバッジ
+      [
+        'ux_maestro',
+        {
+          id: 'ux_maestro',
+          name: 'UXマエストロ',
+          description: 'ユーザーエクスペリエンスの芸術家',
+          category: 'design',
+          difficulty: 'gold',
+          icon: '🎨',
+          requirements: [
+            {
+              type: 'user_satisfaction',
+              target: 95,
+              description: 'ユーザー満足度95%以上',
+              progress: 88,
+              isCompleted: false,
+            },
+            {
+              type: 'usability_improvement',
+              target: 40,
+              description: 'ユーザビリティ40%向上',
+              progress: 32,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 75,
+          points: 300,
+          rewards: ['UXアナリティクス', 'ユーザビリティテストツール'],
+        },
+      ],
 
-      {
-        id: 'multimedia-artist',
-        name: 'マルチメディアアーティスト',
-        description: '動画・音声・ビジュアルコンテンツの総合クリエイター',
-        category: 'multimedia',
-        difficulty: 'silver',
-        icon: '🎬',
-        requirements: [
-          {
-            type: 'multimedia_projects',
-            target: 20,
-            description: 'マルチメディア作品20点制作',
-            progress: 12,
-            isCompleted: false,
-          },
-          {
-            type: 'creative_impact',
-            target: 80,
-            description: 'クリエイティブインパクト80%',
-            progress: 70,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 65,
-        isCompleted: false,
-        points: 700,
-      },
+      // 🎬 マルチメディアアーティストバッジ
+      [
+        'multimedia_artist',
+        {
+          id: 'multimedia_artist',
+          name: 'マルチメディアアーティスト',
+          description: '動画・音声・グラフィックを統合したクリエイター',
+          category: 'multimedia',
+          difficulty: 'gold',
+          icon: '🎬',
+          requirements: [
+            {
+              type: 'multimedia_projects',
+              target: 20,
+              description: 'マルチメディア作品20点制作',
+              progress: 12,
+              isCompleted: false,
+            },
+            {
+              type: 'creative_impact',
+              target: 80,
+              description: 'クリエイティブインパクト80%',
+              progress: 70,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 68,
+          points: 300,
+          rewards: ['メディア制作ツール', 'クリエイティブ分析機能'],
+        },
+      ],
 
-      // 社会貢献系
-      {
-        id: 'sustainability-advocate',
-        name: 'サステナビリティアドボケート',
-        description: '持続可能な社会の実現に向けた取り組みを牽引',
-        category: 'sustainability',
-        difficulty: 'gold',
-        icon: '🌱',
-        requirements: [
-          {
-            type: 'carbon_reduction',
-            target: 30,
-            description: 'カーボンフットプリント30%削減',
-            progress: 20,
-            isCompleted: false,
-          },
-          {
-            type: 'esg_initiatives',
-            target: 10,
-            description: 'ESG施策10件実施',
-            progress: 6,
-            isCompleted: false,
-          },
-        ],
-        isUnlocked: true,
-        progress: 43,
-        isCompleted: false,
-        points: 900,
-      },
-    ];
+      // 🌱 サステナビリティアドボケートバッジ
+      [
+        'sustainability_advocate',
+        {
+          id: 'sustainability_advocate',
+          name: 'サステナビリティアドボケート',
+          description: '持続可能な技術と社会の実現を推進する活動家',
+          category: 'sustainability',
+          difficulty: 'platinum',
+          icon: '🌱',
+          requirements: [
+            {
+              type: 'carbon_reduction',
+              target: 30,
+              description: 'カーボンフットプリント30%削減',
+              progress: 20,
+              isCompleted: false,
+            },
+            {
+              type: 'esg_initiatives',
+              target: 10,
+              description: 'ESG施策10件実施',
+              progress: 6,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 52,
+          points: 500,
+          rewards: ['ESG分析ツール', 'サステナビリティレポート'],
+        },
+      ],
 
-    comprehensiveBadges.forEach((badge) => {
-      this.badges.set(badge.id, badge);
-    });
+      // 🎮 ゲーム開発マスターバッジ
+      [
+        'game_dev_master',
+        {
+          id: 'game_dev_master',
+          name: 'ゲーム開発マスター',
+          description: 'エンターテインメント業界の革新者',
+          category: 'game_development',
+          difficulty: 'platinum',
+          icon: '🎮',
+          requirements: [
+            {
+              type: 'game_development_cycle',
+              target: 100,
+              description: 'ゲーム開発サイクルの完了',
+              progress: 40,
+              isCompleted: false,
+            },
+            {
+              type: 'user_engagement',
+              target: 85,
+              description: 'ユーザーエンゲージメント85%',
+              progress: 60,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 50,
+          points: 500,
+          rewards: ['ゲーム分析ツール', 'プレイヤー行動予測'],
+        },
+      ],
 
-    console.log('📊 包括的バッジデータ読み込み完了:', comprehensiveBadges.length, 'バッジ');
+      // 🛍️ Eコマースエキスパートバッジ
+      [
+        'ecommerce_expert',
+        {
+          id: 'ecommerce_expert',
+          name: 'Eコマースエキスパート',
+          description: 'オンライン販売プラットフォームの専門家',
+          category: 'ecommerce',
+          difficulty: 'gold',
+          icon: '🛍️',
+          requirements: [
+            {
+              type: 'ecommerce_integration',
+              target: 100,
+              description: 'Eコマース機能の完全統合',
+              progress: 65,
+              isCompleted: false,
+            },
+            {
+              type: 'conversion_optimization',
+              target: 20,
+              description: 'コンバージョン率20%向上',
+              progress: 12,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 58,
+          points: 300,
+          rewards: ['販売分析ダッシュボード', 'コンバージョン最適化AI'],
+        },
+      ],
+
+      // 💰 インベストメントアナリストバッジ
+      [
+        'investment_analyst',
+        {
+          id: 'investment_analyst',
+          name: 'インベストメントアナリスト',
+          description: '投資戦略と財務分析の専門家',
+          category: 'investment',
+          difficulty: 'platinum',
+          icon: '💰',
+          requirements: [
+            {
+              type: 'investment_portfolio',
+              target: 100,
+              description: '投資ポートフォリオの構築',
+              progress: 35,
+              isCompleted: false,
+            },
+            {
+              type: 'roi_analysis',
+              target: 90,
+              description: 'ROI分析精度90%',
+              progress: 70,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 52,
+          points: 500,
+          rewards: ['投資分析ツール', 'リスク評価AI'],
+        },
+      ],
+
+      // 📋 レギュラトリーコンプライアンスバッジ
+      [
+        'regulatory_compliance',
+        {
+          id: 'regulatory_compliance',
+          name: 'レギュラトリーコンプライアンス',
+          description: '法的規制とコンプライアンスの専門家',
+          category: 'legal',
+          difficulty: 'gold',
+          icon: '📋',
+          requirements: [
+            {
+              type: 'legal_compliance',
+              target: 100,
+              description: '法的コンプライアンス100%',
+              progress: 85,
+              isCompleted: false,
+            },
+            {
+              type: 'regulatory_audit',
+              target: 95,
+              description: '規制監査95%適合',
+              progress: 80,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 82,
+          points: 300,
+          rewards: ['コンプライアンス監視', '法的リスク評価'],
+        },
+      ],
+
+      // 👥 ヒューマンリソースチャンピオンバッジ
+      [
+        'hr_champion',
+        {
+          id: 'hr_champion',
+          name: 'ヒューマンリソースチャンピオン',
+          description: '人材開発と組織運営の専門家',
+          category: 'human_resources',
+          difficulty: 'gold',
+          icon: '👥',
+          requirements: [
+            {
+              type: 'hr_policy_implementation',
+              target: 100,
+              description: 'HR政策の完全実装',
+              progress: 75,
+              isCompleted: false,
+            },
+            {
+              type: 'employee_satisfaction_score',
+              target: 90,
+              description: '従業員満足度90%',
+              progress: 82,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 78,
+          points: 300,
+          rewards: ['HR分析ダッシュボード', '従業員エンゲージメント予測'],
+        },
+      ],
+
+      // 📊 ファイナンシャルプランナーバッジ
+      [
+        'financial_planner',
+        {
+          id: 'financial_planner',
+          name: 'ファイナンシャルプランナー',
+          description: '財務計画と資金管理の専門家',
+          category: 'finance',
+          difficulty: 'gold',
+          icon: '📊',
+          requirements: [
+            {
+              type: 'financial_planning',
+              target: 100,
+              description: '財務計画の完成',
+              progress: 70,
+              isCompleted: false,
+            },
+            {
+              type: 'budget_optimization',
+              target: 20,
+              description: '予算最適化20%改善',
+              progress: 15,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 67,
+          points: 300,
+          rewards: ['財務分析ツール', '予算最適化AI'],
+        },
+      ],
+
+      // 💼 エグゼクティブアシスタントバッジ
+      [
+        'executive_assistant',
+        {
+          id: 'executive_assistant',
+          name: 'エグゼクティブアシスタント',
+          description: '経営陣を支える効率的な業務管理の専門家',
+          category: 'secretary',
+          difficulty: 'silver',
+          icon: '💼',
+          requirements: [
+            {
+              type: 'administrative_efficiency',
+              target: 95,
+              description: '管理業務効率95%',
+              progress: 88,
+              isCompleted: false,
+            },
+            {
+              type: 'executive_support_quality',
+              target: 90,
+              description: '役員サポート品質90%',
+              progress: 85,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 86,
+          points: 200,
+          rewards: ['業務自動化ツール', 'スケジュール最適化AI'],
+        },
+      ],
+
+      // 🌍 グローバルチームリーダーバッジ
+      [
+        'global_team_leader',
+        {
+          id: 'global_team_leader',
+          name: 'グローバルチームリーダー',
+          description: '国際的なチームを統率するリーダー',
+          category: 'leadership',
+          difficulty: 'platinum',
+          icon: '🌍',
+          requirements: [
+            {
+              type: 'global_team_management',
+              target: 100,
+              description: '国際チーム管理の完成',
+              progress: 60,
+              isCompleted: false,
+            },
+            {
+              type: 'cultural_intelligence_assessment',
+              target: 90,
+              description: '文化的知能90%',
+              progress: 75,
+              isCompleted: false,
+            },
+          ],
+          isUnlocked: true,
+          progress: 67,
+          points: 500,
+          rewards: ['グローバルコラボレーションツール', '文化適応支援'],
+        },
+      ],
+    ]);
+
+    console.log('🏆 包括的バッジデータベースを初期化しました', this.badges.size, 'バッジ');
   }
 
   /**
@@ -1179,7 +1513,7 @@ class ComprehensiveBadgeService {
       });
     });
 
-    console.log('📄 ページ同期データ初期化:', pages.length, 'ページ');
+    console.log('🔗 ページ同期データを初期化しました', pages.length, 'ページ');
   }
 
   /**

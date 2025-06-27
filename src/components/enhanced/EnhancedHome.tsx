@@ -47,10 +47,11 @@ import {
   Languages,
   PenTool,
   Microscope,
-  Sync,
   RefreshCw,
 } from 'lucide-react';
 import { useHomeBadgeSync } from '@/hooks/useComprehensiveBadgeSync';
+import { UniversalSyncDashboard } from '@/components/sync/UniversalSyncDashboard';
+import { useUniversalPageSync } from '@/hooks/useUniversalPageSync';
 
 interface QuickAction {
   id: string;
@@ -415,7 +416,7 @@ export const EnhancedHome: React.FC = () => {
               size="sm"
               className="flex items-center gap-2"
             >
-              <Sync className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4" />
               同期
             </Button>
           </div>
@@ -665,6 +666,9 @@ export const EnhancedHome: React.FC = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* ユニバーサル同期ダッシュボード */}
+        <UniversalSyncDashboard currentPageId="home" />
       </div>
     </div>
   );

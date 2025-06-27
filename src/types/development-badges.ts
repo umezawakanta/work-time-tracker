@@ -603,7 +603,21 @@ export interface BadgeRequirement {
     | 'multimedia_projects' // マルチメディアプロジェクト
     | 'creative_impact' // クリエイティブインパクト
     | 'carbon_reduction' // カーボン削減
-    | 'esg_initiatives'; // ESG施策
+    | 'esg_initiatives' // ESG施策
+    | 'game_development_cycle' // ゲーム開発サイクル
+    | 'user_engagement' // ユーザーエンゲージメント
+    | 'ecommerce_integration' // Eコマース統合
+    | 'conversion_optimization' // コンバージョン最適化
+    | 'investment_portfolio' // 投資ポートフォリオ
+    | 'roi_analysis' // ROI分析
+    | 'legal_compliance' // 法的コンプライアンス
+    | 'regulatory_audit' // 規制監査
+    | 'hr_policy_implementation' // HR政策実装
+    | 'employee_satisfaction_score' // 従業員満足度
+    | 'budget_optimization' // 予算最適化
+    | 'executive_support_quality' // 役員サポート品質
+    | 'global_team_management' // グローバルチーム管理
+    | 'cultural_intelligence_assessment'; // 文化的知能評価
   target?: number | string;
   current?: number | string;
   description: string;
