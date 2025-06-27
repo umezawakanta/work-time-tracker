@@ -680,11 +680,12 @@ class SystemMonitoringService {
       let status: SLO['status'] = 'meeting';
 
       switch (slo.type) {
-        case 'availability':
+        case 'availability': {
           const avgUptime =
             this.healthChecks.reduce((sum, hc) => sum + hc.uptime, 0) / this.healthChecks.length;
           currentValue = avgUptime;
           break;
+        }
         case 'latency':
           currentValue = latestMetrics.application.responseTime;
           break;

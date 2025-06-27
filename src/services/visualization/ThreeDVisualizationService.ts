@@ -905,7 +905,7 @@ class ThreeDVisualizationService {
         }
         break;
 
-      case '3d-surface':
+      case '3d-surface': {
         // 3Dサーフェス用のグリッドポイント生成
         const resolution = 20;
         for (let x = 0; x < resolution; x++) {
@@ -929,6 +929,7 @@ class ThreeDVisualizationService {
           }
         }
         break;
+      }
     }
 
     dataSet.metadata.pointCount = dataSet.points.length;

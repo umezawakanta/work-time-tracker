@@ -173,7 +173,7 @@ class CarbonAwareComputingService {
 
     // 軽い計算処理でCPU負荷を推定
     for (let i = 0; i < 1000; i++) {
-      Math.random() * Math.random();
+      void (Math.random() * Math.random());
     }
 
     const endTime = performance.now();

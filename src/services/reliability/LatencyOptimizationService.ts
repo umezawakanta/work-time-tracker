@@ -29,7 +29,7 @@ export interface PerformanceBudget {
   threshold: number;
   current: number;
   isWithinBudget: boolean;
-  priority: 'high' | 'medium' | 'low';
+  priority: 'high' | 'medium' | 'low' | 'critical';
 }
 
 /**

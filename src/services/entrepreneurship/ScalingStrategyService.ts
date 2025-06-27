@@ -86,7 +86,7 @@ class ScalingStrategyService {
         currentValue: 45,
         targetValue: 25,
         unit: 'USD',
-        category: 'marketing',
+        category: 'user_growth',
         growthRate: -20,
         isOnTrack: true,
         lastUpdated: new Date().toISOString(),

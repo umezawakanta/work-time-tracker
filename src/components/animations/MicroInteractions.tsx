@@ -189,6 +189,7 @@ export const AnimatedStarRatingCSS: React.FC<{
           onMouseEnter={() => !readonly && setHoverRating(star)}
           onMouseLeave={() => !readonly && setHoverRating(0)}
           disabled={readonly}
+          aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
         >
           <Star
             className={cn(
@@ -268,7 +269,11 @@ export const AnimatedFeedbackCSS: React.FC<{
       <div className="animate-in spin-in-90">{icons[type]}</div>
       <span className="font-medium">{message}</span>
       {onClose && (
-        <button className="ml-2 opacity-70 hover:opacity-100 transition-opacity" onClick={onClose}>
+        <button
+          className="ml-2 opacity-70 hover:opacity-100 transition-opacity"
+          onClick={onClose}
+          aria-label="Close notification"
+        >
           <X className="h-4 w-4" />
         </button>
       )}

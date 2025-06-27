@@ -645,7 +645,7 @@ class E2ETestingService {
         });
         break;
 
-      case 'wait':
+      case 'wait': {
         const timeout = step.timeout || 5000;
         execution.logs.push({
           timestamp: new Date().toISOString(),
@@ -654,8 +654,9 @@ class E2ETestingService {
           source: 'test',
         });
         break;
+      }
 
-      case 'screenshot':
+      case 'screenshot': {
         const screenshotId = `screenshot_${Date.now()}`;
         execution.screenshots.push(screenshotId);
         execution.logs.push({
@@ -665,6 +666,7 @@ class E2ETestingService {
           source: 'test',
         });
         break;
+      }
 
       case 'assert':
         execution.logs.push({

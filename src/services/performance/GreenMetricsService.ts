@@ -316,11 +316,12 @@ class GreenMetricsService {
           goal.currentValue = this.environmentalImpact.renewableEnergyRatio * 100;
           goal.progress = goal.currentValue;
           break;
-        case 'page-speed':
+        case 'page-speed': {
           const performanceMetrics = energyEfficiencyService.getPerformanceMetrics();
           goal.currentValue = performanceMetrics.energyScore;
           goal.progress = goal.currentValue;
           break;
+        }
       }
     });
   }

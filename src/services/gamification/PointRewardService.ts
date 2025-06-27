@@ -1015,9 +1015,10 @@ class PointRewardService {
 
     return conditions.every((condition) => {
       switch (condition.type) {
-        case 'time_range':
+        case 'time_range': {
           const days = condition.value.days;
           return days.includes(now.getDay());
+        }
         case 'streak':
           return userPoints && userPoints.streakCount >= condition.value;
         case 'achievement':
