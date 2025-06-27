@@ -325,6 +325,356 @@ class BadgeCompletionEstimator {
         isCompleted: false,
         confidenceLevel: 30,
       },
+
+      // 🆕 新しく追加されたバッジ（22個）
+
+      // プロジェクト管理・アジャイル関連
+      {
+        badgeId: 'agile-master',
+        badgeName: '🌪️ アジャイルマスター',
+        category: 'agile',
+        difficulty: 'gold',
+        currentProgress: 25,
+        estimatedHours: 35,
+        remainingHours: 26, // 75%残り
+        estimatedCompletionDate: this.calculateCompletionDate(26),
+        priority: 'high',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 85,
+      },
+      {
+        badgeId: 'project-management-pro',
+        badgeName: '📋 プロジェクト管理プロ',
+        category: 'project_management',
+        difficulty: 'platinum',
+        currentProgress: 58,
+        estimatedHours: 55,
+        remainingHours: 23, // 42%残り
+        estimatedCompletionDate: this.calculateCompletionDate(23),
+        priority: 'high',
+        dependencies: ['agile-master'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 90,
+      },
+
+      // デザイン・クリエイティブ関連
+      {
+        badgeId: 'design-systems-architect',
+        badgeName: '🎨 デザインシステム設計者',
+        category: 'design',
+        difficulty: 'gold',
+        currentProgress: 62,
+        estimatedHours: 40,
+        remainingHours: 15, // 38%残り
+        estimatedCompletionDate: this.calculateCompletionDate(15),
+        priority: 'medium',
+        dependencies: ['ui-ux-master'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 80,
+      },
+      {
+        badgeId: 'ux-research-specialist',
+        badgeName: '🔍 UXリサーチスペシャリスト',
+        category: 'visual_design',
+        difficulty: 'platinum',
+        currentProgress: 75,
+        estimatedHours: 50,
+        remainingHours: 13, // 25%残り
+        estimatedCompletionDate: this.calculateCompletionDate(13),
+        priority: 'high',
+        dependencies: ['design-systems-architect'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 95,
+      },
+
+      // スキルマップ・要件定義関連
+      {
+        badgeId: 'requirements-engineer',
+        badgeName: '📝 要件定義エンジニア',
+        category: 'requirements_analysis',
+        difficulty: 'gold',
+        currentProgress: 78,
+        estimatedHours: 30,
+        remainingHours: 7, // 22%残り
+        estimatedCompletionDate: this.calculateCompletionDate(7),
+        priority: 'high',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 92,
+      },
+      {
+        badgeId: 'skill-mapper',
+        badgeName: '🗺️ スキルマッパー',
+        category: 'skill_mapping',
+        difficulty: 'platinum',
+        currentProgress: 85,
+        estimatedHours: 45,
+        remainingHours: 7, // 15%残り
+        estimatedCompletionDate: this.calculateCompletionDate(7),
+        priority: 'medium',
+        dependencies: ['requirements-engineer'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 90,
+      },
+
+      // デジタルマーケティング・ブランディング関連
+      {
+        badgeId: 'digital-marketing-ninja',
+        badgeName: '🥷 デジタルマーケティング忍者',
+        category: 'digital_marketing',
+        difficulty: 'gold',
+        currentProgress: 65,
+        estimatedHours: 35,
+        remainingHours: 12, // 35%残り
+        estimatedCompletionDate: this.calculateCompletionDate(12),
+        priority: 'medium',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 85,
+      },
+      {
+        badgeId: 'brand-builder',
+        badgeName: '👑 ブランドビルダー',
+        category: 'brand_building',
+        difficulty: 'platinum',
+        currentProgress: 70,
+        estimatedHours: 60,
+        remainingHours: 18, // 30%残り
+        estimatedCompletionDate: this.calculateCompletionDate(18),
+        priority: 'medium',
+        dependencies: ['digital-marketing-ninja'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 80,
+      },
+
+      // データサイエンス・機械学習関連
+      {
+        badgeId: 'data-scientist',
+        badgeName: '📊 データサイエンティスト',
+        category: 'data_science',
+        difficulty: 'legendary',
+        currentProgress: 45,
+        estimatedHours: 120,
+        remainingHours: 66, // 55%残り
+        estimatedCompletionDate: this.calculateCompletionDate(66),
+        priority: 'high',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 75,
+      },
+      {
+        badgeId: 'ai-ethics-guardian',
+        badgeName: '🤖 AI倫理ガーディアン',
+        category: 'machine_learning',
+        difficulty: 'legendary',
+        currentProgress: 32,
+        estimatedHours: 100,
+        remainingHours: 68, // 68%残り
+        estimatedCompletionDate: this.calculateCompletionDate(68),
+        priority: 'medium',
+        dependencies: ['data-scientist'],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 65,
+      },
+
+      // リーダーシップ・経営関連
+      {
+        badgeId: 'transformational-leader-new',
+        badgeName: '✨ 変革リーダー',
+        category: 'leadership',
+        difficulty: 'legendary',
+        currentProgress: 40,
+        estimatedHours: 90,
+        remainingHours: 54, // 60%残り
+        estimatedCompletionDate: this.calculateCompletionDate(54),
+        priority: 'high',
+        dependencies: ['project-management-pro'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 80,
+      },
+      {
+        badgeId: 'negotiation-master',
+        badgeName: '🤝 交渉マスター',
+        category: 'negotiation',
+        difficulty: 'gold',
+        currentProgress: 25,
+        estimatedHours: 40,
+        remainingHours: 30, // 75%残り
+        estimatedCompletionDate: this.calculateCompletionDate(30),
+        priority: 'medium',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 70,
+      },
+
+      // プレゼンテーション・情報発信関連
+      {
+        badgeId: 'presentation-virtuoso',
+        badgeName: '🎤 プレゼンテーション・ヴィルトゥオーゾ',
+        category: 'presentation',
+        difficulty: 'gold',
+        currentProgress: 35,
+        estimatedHours: 30,
+        remainingHours: 20, // 65%残り
+        estimatedCompletionDate: this.calculateCompletionDate(20),
+        priority: 'medium',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 75,
+      },
+
+      // 税務・会計関連
+      {
+        badgeId: 'tax-strategist',
+        badgeName: '🧮 税務ストラテジスト',
+        category: 'taxation',
+        difficulty: 'platinum',
+        currentProgress: 15,
+        estimatedHours: 70,
+        remainingHours: 60, // 85%残り
+        estimatedCompletionDate: this.calculateCompletionDate(60),
+        priority: 'low',
+        dependencies: [],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 50,
+      },
+      {
+        badgeId: 'financial-analyst',
+        badgeName: '💹 財務アナリスト',
+        category: 'accounting',
+        difficulty: 'gold',
+        currentProgress: 35,
+        estimatedHours: 45,
+        remainingHours: 29, // 65%残り
+        estimatedCompletionDate: this.calculateCompletionDate(29),
+        priority: 'medium',
+        dependencies: [],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 75,
+      },
+
+      // 追加の高難度バッジ
+      {
+        badgeId: 'customer-success-champion',
+        badgeName: '🌟 カスタマーサクセスチャンピオン',
+        category: 'customer_success',
+        difficulty: 'platinum',
+        currentProgress: 20,
+        estimatedHours: 55,
+        remainingHours: 44, // 80%残り
+        estimatedCompletionDate: this.calculateCompletionDate(44),
+        priority: 'medium',
+        dependencies: ['brand-builder'],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 65,
+      },
+      {
+        badgeId: 'sustainability-innovator',
+        badgeName: '🌱 持続可能性イノベーター',
+        category: 'sustainability',
+        difficulty: 'legendary',
+        currentProgress: 25,
+        estimatedHours: 80,
+        remainingHours: 60, // 75%残り
+        estimatedCompletionDate: this.calculateCompletionDate(60),
+        priority: 'medium',
+        dependencies: ['environmental-champion'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 70,
+      },
+      {
+        badgeId: 'blockchain-architect',
+        badgeName: '⛓️ ブロックチェーンアーキテクト',
+        category: 'blockchain',
+        difficulty: 'legendary',
+        currentProgress: 10,
+        estimatedHours: 150,
+        remainingHours: 135, // 90%残り
+        estimatedCompletionDate: this.calculateCompletionDate(135),
+        priority: 'low',
+        dependencies: ['data-scientist'],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 40,
+      },
+      {
+        badgeId: 'innovation-catalyst-advanced',
+        badgeName: '💡 イノベーション触媒（上級）',
+        category: 'innovation',
+        difficulty: 'legendary',
+        currentProgress: 30,
+        estimatedHours: 100,
+        remainingHours: 70, // 70%残り
+        estimatedCompletionDate: this.calculateCompletionDate(70),
+        priority: 'medium',
+        dependencies: ['transformational-leader-new'],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 60,
+      },
+      {
+        badgeId: 'creative-director',
+        badgeName: '🎭 クリエイティブディレクター',
+        category: 'creative',
+        difficulty: 'platinum',
+        currentProgress: 40,
+        estimatedHours: 65,
+        remainingHours: 39, // 60%残り
+        estimatedCompletionDate: this.calculateCompletionDate(39),
+        priority: 'medium',
+        dependencies: ['ux-research-specialist'],
+        isUnlocked: false,
+        isCompleted: false,
+        confidenceLevel: 70,
+      },
+      {
+        badgeId: 'content-marketing-strategist',
+        badgeName: '📝 コンテンツマーケティングストラテジスト',
+        category: 'content_marketing',
+        difficulty: 'gold',
+        currentProgress: 50,
+        estimatedHours: 35,
+        remainingHours: 18, // 50%残り
+        estimatedCompletionDate: this.calculateCompletionDate(18),
+        priority: 'medium',
+        dependencies: ['digital-marketing-ninja'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 85,
+      },
+      {
+        badgeId: 'scrum-master-certified',
+        badgeName: '🏃 スクラムマスター認定',
+        category: 'scrum',
+        difficulty: 'platinum',
+        currentProgress: 60,
+        estimatedHours: 50,
+        remainingHours: 20, // 40%残り
+        estimatedCompletionDate: this.calculateCompletionDate(20),
+        priority: 'high',
+        dependencies: ['agile-master'],
+        isUnlocked: true,
+        isCompleted: false,
+        confidenceLevel: 90,
+      },
     ];
 
     badgeTimeEstimates.forEach((estimate) => {
@@ -500,12 +850,13 @@ class BadgeCompletionEstimator {
       });
 
     const weeksToGenerate = 12; // 3ヶ月分
-    let currentDate = new Date();
-
     for (let week = 0; week < weeksToGenerate; week++) {
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() + week * 7);
+
       const weekStart = new Date(currentDate);
       const weekEnd = new Date(currentDate);
-      weekEnd.setDate(weekEnd.getDate() + 6);
+      weekEnd.setDate(currentDate.getDate() + 6);
 
       // その週に対象となるバッジを選定
       const weeklyHours = this.workSchedule.weeklyHours;
@@ -542,8 +893,6 @@ class BadgeCompletionEstimator {
         estimatedCompletions,
         categoryFocus,
       });
-
-      currentDate.setDate(currentDate.getDate() + 7);
     }
 
     return weeklyPlans;

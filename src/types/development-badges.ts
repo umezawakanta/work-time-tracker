@@ -71,7 +71,29 @@ export type BadgeCategory =
   | 'linguistics' // 語学
   | 'literature' // 文学
   | 'publishing' // 出版
-  | 'editing'; // 編集
+  | 'editing' // 編集
+  | 'project_management' // プロジェクト管理
+  | 'agile' // アジャイル開発
+  | 'scrum' // スクラム
+  | 'design' // デザイン
+  | 'creative' // クリエイティブ
+  | 'visual_design' // ビジュアルデザイン
+  | 'skill_mapping' // スキルマップ
+  | 'requirements_analysis' // 要件定義
+  | 'taxation' // 税務
+  | 'accounting' // 会計
+  | 'digital_marketing' // デジタルマーケティング
+  | 'content_marketing' // コンテンツマーケティング
+  | 'brand_building' // ブランディング
+  | 'customer_success' // カスタマーサクセス
+  | 'data_science' // データサイエンス
+  | 'machine_learning' // 機械学習
+  | 'blockchain' // ブロックチェーン
+  | 'sustainability' // 持続可能性
+  | 'innovation' // イノベーション
+  | 'leadership' // リーダーシップ
+  | 'negotiation' // 交渉術
+  | 'presentation'; // プレゼンテーション
 
 export interface BadgeRequirement {
   type:
@@ -2838,6 +2860,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['product_market_fit_achiever'],
     isUnlocked: true,
     isCompleted: false,
+    progress: 33,
     points: 50,
     rewards: ['収益化ノウハウ', 'ビジネスモデル構築力'],
   },
@@ -2871,6 +2894,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['revenue-architect'],
     isUnlocked: false,
     isCompleted: false,
+    progress: 40,
     points: 65,
     rewards: ['フリーミアム戦略ノウハウ', 'ユーザー行動分析力'],
   },
@@ -2904,6 +2928,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['startup-founder'],
     isUnlocked: true,
     isCompleted: false,
+    progress: 53,
     points: 45,
     rewards: ['企画力向上', 'ビジョン構築力'],
   },
@@ -2937,6 +2962,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['product-visionary'],
     isUnlocked: false,
     isCompleted: false,
+    progress: 35,
     points: 75,
     rewards: ['イノベーション創出力', '革新的思考力'],
   },
@@ -2970,6 +2996,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['marketing-automation-specialist'],
     isUnlocked: true,
     isCompleted: false,
+    progress: 13,
     points: 45,
     rewards: ['営業効率化ノウハウ', 'セールステック活用力'],
   },
@@ -3003,8 +3030,520 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     prerequisites: ['sales-automation-expert'],
     isUnlocked: false,
     isCompleted: false,
+    progress: 20,
     points: 60,
     rewards: ['グロースハック手法', 'データ分析力'],
+  },
+
+  // 🆕 プロジェクト管理・アジャイル関連バッジ
+  {
+    id: 'agile-master',
+    name: '🌪️ アジャイルマスター',
+    description: 'スクラム・カンバン・リーンを駆使したアジャイル開発',
+    category: 'agile',
+    difficulty: 'gold',
+    icon: '🌪️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'scrum_implementation',
+        current: 'in_progress',
+        description: 'スクラム実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'kanban_system',
+        current: 'planned',
+        description: 'カンバンシステム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'retrospective_process',
+        current: 'planned',
+        description: 'ふりかえりプロセス',
+      },
+    ],
+    isUnlocked: true,
+    progress: 25,
+    nextMilestone: 'スクラム実装完了',
+    points: 40,
+    rewards: ['アジャイル実践力', 'チーム運営力'],
+  },
+  {
+    id: 'project-management-pro',
+    name: '📋 プロジェクト管理プロ',
+    description: 'リスク管理・工程管理・品質管理・コスト管理',
+    category: 'project_management',
+    difficulty: 'platinum',
+    icon: '📋',
+    requirements: [
+      {
+        type: 'strategic_planning',
+        description: 'プロジェクト戦略策定',
+        progress: 60,
+        isCompleted: false,
+      },
+      {
+        type: 'risk_management',
+        description: 'リスク管理体制',
+        progress: 45,
+        isCompleted: false,
+      },
+      {
+        type: 'quality_management',
+        description: '品質管理システム',
+        progress: 70,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 58,
+    nextMilestone: '品質管理システム完成',
+    points: 55,
+    rewards: ['プロジェクト管理ノウハウ', 'リーダーシップ力'],
+  },
+
+  // 🆕 デザイン・クリエイティブ関連バッジ
+  {
+    id: 'design-systems-architect',
+    name: '🎨 デザインシステム設計者',
+    description: '統一されたデザイン言語とコンポーネントライブラリ',
+    category: 'design',
+    difficulty: 'gold',
+    icon: '🎨',
+    requirements: [
+      {
+        type: 'ui_artistry',
+        description: 'デザインシステム構築',
+        progress: 80,
+        isCompleted: false,
+      },
+      {
+        type: 'visual_storytelling',
+        description: 'ブランドビジュアル統一',
+        progress: 65,
+        isCompleted: false,
+      },
+      {
+        type: 'creative_system',
+        description: 'クリエイティブワークフロー',
+        progress: 40,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 62,
+    nextMilestone: 'デザインシステム完成',
+    points: 45,
+    rewards: ['デザイン統一力', 'ブランディング力'],
+  },
+  {
+    id: 'ux-research-specialist',
+    name: '🔍 UXリサーチスペシャリスト',
+    description: 'ユーザー調査・ペルソナ設計・ユーザビリティテスト',
+    category: 'visual_design',
+    difficulty: 'platinum',
+    icon: '🔍',
+    requirements: [
+      {
+        type: 'user_feedback',
+        target: '500',
+        current: '280',
+        description: 'ユーザーインタビュー500件',
+      },
+      {
+        type: 'feature_complete',
+        target: 'persona_design',
+        current: 'completed',
+        description: 'ペルソナ設計',
+      },
+      {
+        type: 'feature_complete',
+        target: 'usability_testing',
+        current: 'in_progress',
+        description: 'ユーザビリティテスト',
+      },
+    ],
+    isUnlocked: true,
+    progress: 75,
+    nextMilestone: 'ユーザーインタビュー完了',
+    points: 60,
+    rewards: ['UXリサーチ力', 'ユーザー理解力'],
+  },
+
+  // 🆕 スキルマップ・要件定義関連バッジ
+  {
+    id: 'requirements-engineer',
+    name: '📝 要件定義エンジニア',
+    description: 'ステークホルダー管理・要件分析・仕様書作成',
+    category: 'requirements_analysis',
+    difficulty: 'gold',
+    icon: '📝',
+    requirements: [
+      {
+        type: 'documentation_system',
+        description: '要件定義書システム',
+        progress: 90,
+        isCompleted: false,
+      },
+      {
+        type: 'api_documentation',
+        description: 'API仕様書完備',
+        progress: 85,
+        isCompleted: false,
+      },
+      {
+        type: 'user_guides',
+        description: 'ユーザーガイド作成',
+        progress: 60,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 78,
+    nextMilestone: '要件定義書完成',
+    points: 45,
+    rewards: ['要件定義力', 'ドキュメント作成力'],
+  },
+  {
+    id: 'skill-mapper',
+    name: '🗺️ スキルマッパー',
+    description: 'チームスキル可視化・学習ロードマップ・キャリアパス設計',
+    category: 'skill_mapping',
+    difficulty: 'platinum',
+    icon: '🗺️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'skill_assessment',
+        current: 'completed',
+        description: 'スキル評価システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'learning_path',
+        current: 'completed',
+        description: '学習パス作成',
+      },
+      {
+        type: 'feature_complete',
+        target: 'career_planning',
+        current: 'in_progress',
+        description: 'キャリアプランニング',
+      },
+    ],
+    isUnlocked: true,
+    progress: 85,
+    nextMilestone: 'キャリアプランニング完成',
+    points: 65,
+    rewards: ['スキルマップ作成力', 'キャリア設計力'],
+  },
+
+  // 🆕 デジタルマーケティング・ブランディング関連バッジ
+  {
+    id: 'digital-marketing-ninja',
+    name: '🥷 デジタルマーケティング忍者',
+    description: 'SEO・SEM・SNS・メール・コンテンツマーケティング',
+    category: 'digital_marketing',
+    difficulty: 'gold',
+    icon: '🥷',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'seo_optimization',
+        current: 'completed',
+        description: 'SEO最適化',
+      },
+      {
+        type: 'social_engagement',
+        target: '10000',
+        current: '3500',
+        description: 'SNSエンゲージメント1万',
+      },
+      {
+        type: 'blog_content',
+        target: '50',
+        current: '23',
+        description: 'ブログコンテンツ50記事',
+      },
+    ],
+    isUnlocked: true,
+    progress: 65,
+    nextMilestone: 'SNSエンゲージメント向上',
+    points: 50,
+    rewards: ['デジタルマーケティング力', 'コンテンツ作成力'],
+  },
+  {
+    id: 'brand-builder',
+    name: '👑 ブランドビルダー',
+    description: 'ブランド戦略・視覚的アイデンティティ・ブランド体験設計',
+    category: 'brand_building',
+    difficulty: 'platinum',
+    icon: '👑',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'brand_identity',
+        current: 'completed',
+        description: 'ブランドアイデンティティ',
+      },
+      {
+        type: 'feature_complete',
+        target: 'brand_guidelines',
+        current: 'in_progress',
+        description: 'ブランドガイドライン',
+      },
+      {
+        type: 'user_feedback',
+        target: '1000',
+        current: '420',
+        description: 'ブランド認知度調査1000件',
+      },
+    ],
+    isUnlocked: true,
+    progress: 70,
+    nextMilestone: 'ブランドガイドライン完成',
+    points: 60,
+    rewards: ['ブランド構築力', 'ブランド戦略力'],
+  },
+
+  // 🆕 データサイエンス・機械学習関連バッジ
+  {
+    id: 'data-scientist',
+    name: '📊 データサイエンティスト',
+    description: 'データ分析・統計学・機械学習・データ可視化',
+    category: 'data_science',
+    difficulty: 'legendary',
+    icon: '📊',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'data_pipeline',
+        current: 'in_progress',
+        description: 'データパイプライン構築',
+      },
+      {
+        type: 'feature_complete',
+        target: 'ml_models',
+        current: 'planned',
+        description: '機械学習モデル実装',
+      },
+      {
+        type: 'feature_complete',
+        target: 'data_visualization',
+        current: 'completed',
+        description: 'データ可視化システム',
+      },
+    ],
+    isUnlocked: true,
+    progress: 45,
+    nextMilestone: 'データパイプライン完成',
+    points: 75,
+    rewards: ['データ分析力', '機械学習実装力'],
+  },
+  {
+    id: 'ai-ethics-guardian',
+    name: '🤖 AI倫理ガーディアン',
+    description: 'AI倫理・バイアス検出・公平性確保・透明性実現',
+    category: 'machine_learning',
+    difficulty: 'legendary',
+    icon: '🤖',
+    requirements: [
+      {
+        type: 'ethics_framework',
+        description: 'AI倫理フレームワーク構築',
+        progress: 30,
+        isCompleted: false,
+      },
+      {
+        type: 'philosophical_analysis',
+        description: '哲学的分析システム',
+        progress: 25,
+        isCompleted: false,
+      },
+      {
+        type: 'ethical_ai',
+        description: '倫理的AI実装',
+        progress: 40,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 32,
+    nextMilestone: 'AI倫理フレームワーク完成',
+    points: 85,
+    rewards: ['AI倫理力', '哲学的思考力'],
+  },
+
+  // 🆕 リーダーシップ・経営関連バッジ
+  {
+    id: 'transformational-leader',
+    name: '✨ 変革リーダー',
+    description: 'チーム変革・組織改革・ビジョン浸透・人材育成',
+    category: 'leadership',
+    difficulty: 'legendary',
+    icon: '✨',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'team_development',
+        current: 'in_progress',
+        description: 'チーム開発プログラム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'mentoring_system',
+        current: 'planned',
+        description: 'メンタリングシステム',
+      },
+      {
+        type: 'performance_metrics',
+        target: '80',
+        current: '65',
+        description: 'チーム満足度80%',
+      },
+    ],
+    isUnlocked: true,
+    progress: 40,
+    nextMilestone: 'チーム開発プログラム完成',
+    points: 80,
+    rewards: ['リーダーシップ力', '変革推進力'],
+  },
+  {
+    id: 'negotiation-master',
+    name: '🤝 交渉マスター',
+    description: 'Win-Win交渉・契約締結・ステークホルダー調整',
+    category: 'negotiation',
+    difficulty: 'gold',
+    icon: '🤝',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'contract_management',
+        current: 'planned',
+        description: '契約管理システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'stakeholder_alignment',
+        current: 'in_progress',
+        description: 'ステークホルダー調整',
+      },
+      {
+        type: 'user_feedback',
+        target: '20',
+        current: '5',
+        description: '成功交渉20件',
+      },
+    ],
+    isUnlocked: true,
+    progress: 25,
+    nextMilestone: 'ステークホルダー調整完成',
+    points: 45,
+    rewards: ['交渉術', 'ステークホルダー管理力'],
+  },
+
+  // 🆕 プレゼンテーション・情報発信関連バッジ
+  {
+    id: 'presentation-virtuoso',
+    name: '🎤 プレゼンテーション・ヴィルトゥオーゾ',
+    description: 'ストーリーテリング・データ可視化・聴衆エンゲージメント',
+    category: 'presentation',
+    difficulty: 'gold',
+    icon: '🎤',
+    requirements: [
+      {
+        type: 'conference_speaking',
+        target: '10',
+        current: '2',
+        description: 'カンファレンス講演10回',
+      },
+      {
+        type: 'video_content',
+        target: '50',
+        current: '15',
+        description: '動画コンテンツ50本',
+      },
+      {
+        type: 'knowledge_sharing',
+        target: '100',
+        current: '35',
+        description: 'ナレッジシェア100回',
+      },
+    ],
+    isUnlocked: true,
+    progress: 35,
+    nextMilestone: 'カンファレンス講演増加',
+    points: 50,
+    rewards: ['プレゼンテーション力', 'ストーリーテリング力'],
+  },
+
+  // 🆕 税務・会計関連バッジ
+  {
+    id: 'tax-strategist',
+    name: '🧮 税務ストラテジスト',
+    description: '税務最適化・節税戦略・法人税務・国際税務',
+    category: 'taxation',
+    difficulty: 'platinum',
+    icon: '🧮',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'tax_optimization',
+        current: 'planned',
+        description: '税務最適化システム',
+      },
+      {
+        type: 'feature_complete',
+        target: 'tax_reporting',
+        current: 'planned',
+        description: '税務レポート自動化',
+      },
+      {
+        type: 'performance_score',
+        target: '20',
+        current: '5',
+        description: '税務最適化20%向上',
+      },
+    ],
+    isUnlocked: false,
+    progress: 15,
+    nextMilestone: '税務システム企画',
+    points: 65,
+    rewards: ['税務知識', '最適化戦略力'],
+  },
+  {
+    id: 'financial-analyst',
+    name: '💹 財務アナリスト',
+    description: '財務分析・投資評価・リスク管理・資金調達',
+    category: 'accounting',
+    difficulty: 'gold',
+    icon: '💹',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 'financial_dashboard',
+        current: 'in_progress',
+        description: '財務ダッシュボード',
+      },
+      {
+        type: 'feature_complete',
+        target: 'roi_analysis',
+        current: 'planned',
+        description: 'ROI分析システム',
+      },
+      {
+        type: 'performance_metrics',
+        target: '15',
+        current: '8',
+        description: 'ROI15%向上',
+      },
+    ],
+    isUnlocked: true,
+    progress: 35,
+    nextMilestone: '財務ダッシュボード完成',
+    points: 50,
+    rewards: ['財務分析力', '投資評価力'],
   },
 ];
 
@@ -3065,6 +3604,28 @@ export const getBadgeStatsByCategory = () => {
     literature: { total: 0, unlocked: 0, progress: 0 },
     publishing: { total: 0, unlocked: 0, progress: 0 },
     editing: { total: 0, unlocked: 0, progress: 0 },
+    project_management: { total: 0, unlocked: 0, progress: 0 },
+    agile: { total: 0, unlocked: 0, progress: 0 },
+    scrum: { total: 0, unlocked: 0, progress: 0 },
+    design: { total: 0, unlocked: 0, progress: 0 },
+    creative: { total: 0, unlocked: 0, progress: 0 },
+    visual_design: { total: 0, unlocked: 0, progress: 0 },
+    skill_mapping: { total: 0, unlocked: 0, progress: 0 },
+    requirements_analysis: { total: 0, unlocked: 0, progress: 0 },
+    taxation: { total: 0, unlocked: 0, progress: 0 },
+    accounting: { total: 0, unlocked: 0, progress: 0 },
+    digital_marketing: { total: 0, unlocked: 0, progress: 0 },
+    content_marketing: { total: 0, unlocked: 0, progress: 0 },
+    brand_building: { total: 0, unlocked: 0, progress: 0 },
+    customer_success: { total: 0, unlocked: 0, progress: 0 },
+    data_science: { total: 0, unlocked: 0, progress: 0 },
+    machine_learning: { total: 0, unlocked: 0, progress: 0 },
+    blockchain: { total: 0, unlocked: 0, progress: 0 },
+    sustainability: { total: 0, unlocked: 0, progress: 0 },
+    innovation: { total: 0, unlocked: 0, progress: 0 },
+    leadership: { total: 0, unlocked: 0, progress: 0 },
+    negotiation: { total: 0, unlocked: 0, progress: 0 },
+    presentation: { total: 0, unlocked: 0, progress: 0 },
   };
 
   DEVELOPMENT_BADGES.forEach((badge) => {
