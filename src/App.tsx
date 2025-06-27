@@ -41,6 +41,12 @@ const DevelopmentBadgeShowcasePage = lazy(() =>
     default: module.DevelopmentBadgeShowcasePage,
   }))
 );
+
+const BadgeCompletionPage = lazy(() =>
+  import('./pages/BadgeCompletionPage').then((module) => ({
+    default: module.BadgeCompletionPage,
+  }))
+);
 const ErrorMonitorDashboard = lazy(() =>
   import('./components/development/ErrorMonitorDashboard').then((module) => ({
     default: module.ErrorMonitorDashboard,
@@ -702,6 +708,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <DevelopmentBadgeShowcasePage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/badge-completion"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <BadgeCompletionPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
