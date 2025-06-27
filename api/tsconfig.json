@@ -15,17 +15,16 @@
     "isolatedModules": true,
     "declaration": false,
     "outDir": "./dist",
-    "rootDir": ".",
-    "baseUrl": ".",
+    "baseUrl": "..",
     "paths": {
       "@/*": [
-        "../src/*"
+        "src/*"
       ]
     }
   },
   "include": [
-    "**/*.ts",
-    "../src/types/**/*.ts"
+    "api/**/*.ts",
+    "src/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

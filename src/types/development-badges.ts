@@ -6739,6 +6739,12 @@ export const getBadgeStatsByCategory = () => {
     leadership: { total: 0, unlocked: 0, progress: 0 },
     negotiation: { total: 0, unlocked: 0, progress: 0 },
     presentation: { total: 0, unlocked: 0, progress: 0 },
+    internationalization: { total: 0, unlocked: 0, progress: 0 },
+    ai_ml: { total: 0, unlocked: 0, progress: 0 },
+    sustainability: { total: 0, unlocked: 0, progress: 0 },
+    arts: { total: 0, unlocked: 0, progress: 0 },
+    gamification: { total: 0, unlocked: 0, progress: 0 },
+    accessibility: { total: 0, unlocked: 0, progress: 0 },
   };
 
   DEVELOPMENT_BADGES.forEach((badge) => {

@@ -86,9 +86,8 @@ export const BadgeShowcase: React.FC = () => {
    * 📊 バッジグループ化
    */
   const createBadgeGroupings = (allBadges: DevelopmentBadge[]): BadgeGrouping[] => {
-    const categoryMap: Record<
-      BadgeCategory,
-      { name: string; icon: React.ElementType; color: string }
+    const categoryMap: Partial<
+      Record<BadgeCategory, { name: string; icon: React.ElementType; color: string }>
     > = {
       foundation: { name: 'プラットフォーム基盤', icon: Trophy, color: 'text-blue-600' },
       features: { name: '機能開発', icon: Zap, color: 'text-green-600' },
@@ -97,49 +96,42 @@ export const BadgeShowcase: React.FC = () => {
       testing: { name: 'テスト・品質', icon: CheckCircle2, color: 'text-teal-600' },
       automation: { name: '自動化・CI/CD', icon: Target, color: 'text-red-600' },
       community: { name: 'コミュニティ', icon: Award, color: 'text-pink-600' },
-      ai_ml: { name: 'AI・機械学習', icon: Crown, color: 'text-indigo-600' },
-      internationalization: { name: '国際化', icon: Medal, color: 'text-cyan-600' },
       entrepreneurship: { name: '起業・事業', icon: Gem, color: 'text-yellow-600' },
-      agile: { name: 'アジャイル', icon: Zap, color: 'text-lime-600' },
-      design: { name: 'デザイン', icon: Star, color: 'text-rose-600' },
-      devops: { name: 'DevOps・インフラ', icon: BarChart3, color: 'text-slate-600' },
-      skill_mapping: { name: 'スキルマップ', icon: Trophy, color: 'text-amber-600' },
       business: { name: 'ビジネス・経営', icon: Crown, color: 'text-emerald-600' },
       finance: { name: '財務・会計', icon: Medal, color: 'text-green-700' },
       legal: { name: '法務・コンプライアンス', icon: Award, color: 'text-gray-600' },
-      accounting: { name: '会計・税務', icon: BarChart3, color: 'text-blue-700' },
       hr: { name: '人事・労務', icon: Trophy, color: 'text-purple-700' },
       marketing: { name: 'マーケティング', icon: TrendingUp, color: 'text-pink-700' },
       sales: { name: '営業・販売', icon: Target, color: 'text-orange-700' },
       monetization: { name: 'マネタイゼーション', icon: Gem, color: 'text-yellow-700' },
       content: { name: 'コンテンツ制作', icon: Star, color: 'text-indigo-700' },
       publishing: { name: '出版・編集', icon: Medal, color: 'text-cyan-700' },
-      sustainability: { name: '持続可能性', icon: Trophy, color: 'text-lime-700' },
-      philosophy: { name: '哲学・思想', icon: Crown, color: 'text-gray-700' },
       economics: { name: '経済・投資', icon: BarChart3, color: 'text-emerald-700' },
       culture: { name: '文化・歴史', icon: Award, color: 'text-amber-700' },
-      arts: { name: '芸術・創作', icon: Star, color: 'text-rose-700' },
       literature: { name: '文学・言語', icon: Medal, color: 'text-blue-800' },
       politics: { name: '政治・社会', icon: Trophy, color: 'text-red-700' },
       security: { name: 'セキュリティ', icon: Target, color: 'text-red-800' },
-      gamification: { name: 'ゲーミフィケーション', icon: Zap, color: 'text-purple-800' },
-      accessibility: { name: 'アクセシビリティ', icon: CheckCircle2, color: 'text-teal-700' },
     };
 
     const categories = Object.keys(categoryMap) as BadgeCategory[];
 
     return categories
       .map((category) => {
+        const categoryInfo = categoryMap[category];
+        if (!categoryInfo) {
+          return null;
+        }
+
         const categoryBadges = allBadges.filter((badge) => badge.category === category);
         return {
           category,
-          name: categoryMap[category].name,
-          icon: categoryMap[category].icon,
-          color: categoryMap[category].color,
+          name: categoryInfo.name,
+          icon: categoryInfo.icon,
+          color: categoryInfo.color,
           badges: categoryBadges,
         };
       })
-      .filter((group) => group.badges.length > 0);
+      .filter((group) => group !== null && group.badges.length > 0) as BadgeGrouping[];
   };
 
   /**
@@ -217,29 +209,40 @@ export const BadgeShowcase: React.FC = () => {
    * 🏆 バッジカードレンダリング
    */
   const renderBadgeCard = (badge: DevelopmentBadge) => {
-    const difficultyStyle = getDifficultyStyle(badge.difficulty);
-    const isCompleted = badge.isCompleted;
-    const isInProgress = !isCompleted && badge.progress > 0;
-    const isLocked = !badge.isUnlocked;
+    const {
+      id,
+      icon,
+      name,
+      category,
+      description,
+      progress,
+      points,
+      difficulty,
+      isCompleted,
+      isUnlocked,
+    } = badge;
+    const difficultyStyle = getDifficultyStyle(difficulty);
+    const isInProgress = !isCompleted && progress > 0;
+    const isLocked = !isUnlocked;
 
     return (
       <Card
-        key={badge.id}
+        key={id}
         className={`
-          cursor-pointer transition-all duration-200 hover:shadow-lg
-          ${isCompleted ? 'ring-2 ring-green-500 bg-green-50' : ''}
-          ${isInProgress ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
-          ${isLocked ? 'opacity-60 grayscale' : ''}
-        `}
+            cursor-pointer transition-all duration-200 hover:shadow-lg
+            ${isCompleted ? 'ring-2 ring-green-500 bg-green-50' : ''}
+            ${isInProgress ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
+            ${isLocked ? 'opacity-60 grayscale' : ''}
+          `}
         onClick={() => setSelectedBadge(badge)}
       >
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">{badge.icon}</span>
+              <span className="text-3xl">{icon}</span>
               <div>
-                <h3 className="font-semibold text-sm">{badge.name}</h3>
-                <p className="text-xs text-muted-foreground">{badge.category}</p>
+                <h3 className="font-semibold text-sm">{name}</h3>
+                <p className="text-xs text-muted-foreground">{category}</p>
               </div>
             </div>
 
@@ -248,7 +251,7 @@ export const BadgeShowcase: React.FC = () => {
                 variant="outline"
                 className={`text-xs ${difficultyStyle.color} ${difficultyStyle.bg} ${difficultyStyle.border}`}
               >
-                {badge.difficulty}
+                {difficulty}
               </Badge>
 
               {isCompleted && <CheckCircle2 className="w-4 h-4 text-green-600" />}
@@ -257,22 +260,22 @@ export const BadgeShowcase: React.FC = () => {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{badge.description}</p>
+          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{description}</p>
 
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span>進捗</span>
-              <span className="font-medium">{badge.progress}%</span>
+              <span className="font-medium">{progress}%</span>
             </div>
-            <Progress value={badge.progress} className="h-2" />
+            <Progress value={progress} className="h-2" />
           </div>
 
-          {badge.points && (
+          {points && (
             <div className="flex justify-between items-center mt-3 pt-2 border-t">
               <span className="text-xs text-muted-foreground">獲得ポイント</span>
               <div className="flex items-center gap-1">
                 <Star className="w-3 h-3 text-yellow-500" />
-                <span className="text-xs font-medium">{badge.points}</span>
+                <span className="text-xs font-medium">{points}</span>
               </div>
             </div>
           )}
@@ -400,6 +403,7 @@ export const BadgeShowcase: React.FC = () => {
               value={filters.category}
               onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value as any }))}
               className="px-3 py-2 border rounded-md text-sm"
+              aria-label="カテゴリフィルター"
             >
               <option value="all">全カテゴリ</option>
               {groupedBadges.map((group) => (
@@ -413,6 +417,7 @@ export const BadgeShowcase: React.FC = () => {
               value={filters.difficulty}
               onChange={(e) => setFilters((prev) => ({ ...prev, difficulty: e.target.value }))}
               className="px-3 py-2 border rounded-md text-sm"
+              aria-label="難易度フィルター"
             >
               <option value="all">全難易度</option>
               <option value="bronze">ブロンズ</option>
@@ -426,6 +431,7 @@ export const BadgeShowcase: React.FC = () => {
               value={filters.status}
               onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value as any }))}
               className="px-3 py-2 border rounded-md text-sm"
+              aria-label="ステータスフィルター"
             >
               <option value="all">全ステータス</option>
               <option value="completed">完了済み</option>
@@ -480,118 +486,131 @@ export const BadgeShowcase: React.FC = () => {
         <Card>
           <CardContent className="p-0">
             <div className="divide-y">
-              {badges.map((badge) => (
-                <div
-                  key={badge.id}
-                  className="p-4 hover:bg-muted/50 cursor-pointer flex items-center justify-between"
-                  onClick={() => setSelectedBadge(badge)}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-2xl">{badge.icon}</span>
-                    <div>
-                      <h3 className="font-semibold">{badge.name}</h3>
-                      <p className="text-sm text-muted-foreground">{badge.description}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <div className="text-sm font-medium">{badge.progress}%</div>
-                      <Progress value={badge.progress} className="w-20 h-2" />
+              {badges.map((badge) => {
+                const { id, icon, name, description, progress, difficulty } = badge;
+                return (
+                  <div
+                    key={id}
+                    className="p-4 hover:bg-muted/50 cursor-pointer flex items-center justify-between"
+                    onClick={() => setSelectedBadge(badge)}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl">{icon}</span>
+                      <div>
+                        <h3 className="font-semibold">{name}</h3>
+                        <p className="text-sm text-muted-foreground">{description}</p>
+                      </div>
                     </div>
 
-                    <Badge variant="outline" className={getDifficultyStyle(badge.difficulty).color}>
-                      {badge.difficulty}
-                    </Badge>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm font-medium">{progress}%</div>
+                        <Progress value={progress} className="w-20 h-2" />
+                      </div>
 
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      <Badge variant="outline" className={getDifficultyStyle(difficulty).color}>
+                        {difficulty}
+                      </Badge>
+
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
       )}
 
       {/* バッジ詳細モーダル */}
-      {selectedBadge && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-          onClick={() => setSelectedBadge(null)}
-        >
-          <Card
-            className="max-w-2xl w-full max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <span className="text-4xl">{selectedBadge.icon}</span>
-                <div>
-                  <h2 className="text-xl">{selectedBadge.name}</h2>
-                  <Badge
-                    variant="outline"
-                    className={getDifficultyStyle(selectedBadge.difficulty).color}
-                  >
-                    {selectedBadge.difficulty}
-                  </Badge>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">{selectedBadge.description}</p>
+      {selectedBadge &&
+        (() => {
+          const {
+            icon,
+            name,
+            difficulty,
+            description,
+            progress,
+            requirements,
+            points,
+            completedAt,
+          } = selectedBadge;
+          return (
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+              onClick={() => setSelectedBadge(null)}
+            >
+              <Card
+                className="max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="text-4xl">{icon}</span>
+                    <div>
+                      <h2 className="text-xl">{name}</h2>
+                      <Badge variant="outline" className={getDifficultyStyle(difficulty).color}>
+                        {difficulty}
+                      </Badge>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground">{description}</p>
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>進捗状況</span>
-                  <span className="font-medium">{selectedBadge.progress}%</span>
-                </div>
-                <Progress value={selectedBadge.progress} className="h-3" />
-              </div>
-
-              {selectedBadge.requirements && (
-                <div>
-                  <h3 className="font-semibold mb-2">達成要件</h3>
                   <div className="space-y-2">
-                    {selectedBadge.requirements.map((req, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 rounded bg-muted/50"
-                      >
-                        <span className="text-sm">{req.description}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">
-                            {req.progress || 0}/{req.target}
-                          </span>
-                          {req.isCompleted && <CheckCircle2 className="w-4 h-4 text-green-600" />}
-                        </div>
+                    <div className="flex justify-between text-sm">
+                      <span>進捗状況</span>
+                      <span className="font-medium">{progress}%</span>
+                    </div>
+                    <Progress value={progress} className="h-3" />
+                  </div>
+
+                  {requirements && (
+                    <div>
+                      <h3 className="font-semibold mb-2">達成要件</h3>
+                      <div className="space-y-2">
+                        {requirements.map((req, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-2 rounded bg-muted/50"
+                          >
+                            <span className="text-sm">{req.description}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">
+                                {req.progress || 0}/{req.target}
+                              </span>
+                              {req.isCompleted && (
+                                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
+                  )}
 
-              {selectedBadge.points && (
-                <div className="flex items-center justify-between p-3 rounded bg-yellow-50 border border-yellow-200">
-                  <span className="font-medium">獲得ポイント</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    <span className="font-bold text-lg">{selectedBadge.points}</span>
-                  </div>
-                </div>
-              )}
+                  {points && (
+                    <div className="flex items-center justify-between p-3 rounded bg-yellow-50 border border-yellow-200">
+                      <span className="font-medium">獲得ポイント</span>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-5 h-5 text-yellow-500" />
+                        <span className="font-bold text-lg">{points}</span>
+                      </div>
+                    </div>
+                  )}
 
-              {selectedBadge.completedAt && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="w-4 h-4" />
-                  <span>
-                    完了日: {new Date(selectedBadge.completedAt).toLocaleDateString('ja-JP')}
-                  </span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                  {completedAt && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      <span>完了日: {new Date(completedAt).toLocaleDateString('ja-JP')}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          );
+        })()}
     </div>
   );
 };
