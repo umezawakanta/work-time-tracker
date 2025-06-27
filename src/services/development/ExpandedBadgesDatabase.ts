@@ -1,5 +1,8 @@
 import { DevelopmentBadge, BadgeCategory, BadgeRequirement } from '@/types/development-badges';
 
+// Export the types for external use
+export type { DevelopmentBadge, BadgeCategory, BadgeRequirement };
+
 /**
  * 🏆 包括的バッジデータベース - 全分野対応
  */

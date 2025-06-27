@@ -40,6 +40,46 @@ export interface CrossPageMapping {
   }>;
 }
 
+// Define missing types for page synchronization
+export type PageKey =
+  | 'home'
+  | 'dashboard'
+  | 'todos'
+  | 'badge-dashboard'
+  | 'badge-showcase'
+  | 'badge-prediction'
+  | 'wbs'
+  | 'ai-wbs'
+  | 'gamification'
+  | 'attendance'
+  | 'reports'
+  | 'improvement-planning'
+  | 'system-design'
+  | 'admin'
+  | 'api-testing'
+  | 'quality'
+  | 'error-monitoring'
+  | 'performance-monitoring'
+  | 'profile'
+  | 'settings'
+  | 'achievements';
+
+export interface PageState {
+  pageName: string;
+  isActive: boolean;
+  lastUpdated: string;
+  metrics: Record<string, number>;
+  badgeProgress: Record<string, number>;
+  syncStatus: 'idle' | 'syncing' | 'synced' | 'error';
+  pendingUpdates: number;
+}
+
+export interface PageSubscriber {
+  id: string;
+  callback: (state: PageState) => void;
+  lastNotified: string;
+}
+
 /**
  * 🔄 ページ同期サービス - 全ページ間のデータ連携・整合性管理
  * 25以上のページ間でリアルタイム同期を実現

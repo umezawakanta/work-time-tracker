@@ -13,7 +13,7 @@ import {
   Code,
   FileText,
   GitBranch,
-  Home,
+  HomeIcon,
   Lightbulb,
   MonitorSpeaker,
   Network,
@@ -460,12 +460,10 @@ export const Home: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold flex items-center gap-3">
-              <Home className="w-10 h-10 text-primary" />
+              <HomeIcon className="w-10 h-10 text-primary" />
               Work Time Tracker
             </h1>
-            <p className="text-xl text-muted-foreground mt-2">
-              包括的な生産性・スキル開発プラットフォーム
-            </p>
+            <p className="text-xl text-muted-foreground mt-2">統合開発生産性プラットフォーム</p>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <div className="flex items-center gap-1">

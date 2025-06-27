@@ -25,6 +25,8 @@ import {
   Network,
   Navigation,
   Code,
+  Shield,
+  Globe,
 } from 'lucide-react';
 import {
   DevelopmentBadge,

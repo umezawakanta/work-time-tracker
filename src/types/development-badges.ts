@@ -298,7 +298,17 @@ export type BadgeCategory =
   | 'editorial_workflow' // 編集ワークフロー
   | 'content_strategy_editing' // コンテンツ戦略編集
   | 'multimedia_editing' // マルチメディア編集
-  | 'collaborative_editing_platforms'; // 協働編集プラットフォーム
+  | 'collaborative_editing_platforms' // 協働編集プラットフォーム
+  // 新しく追加されたカテゴリ
+  | 'scaling' // スケーリング・パフォーマンス
+  | 'specification' // 仕様・要件定義
+  | 'ecommerce' // EC・オンライン販売
+  | 'secretary' // 秘書・事務管理
+  | 'education' // 教育・学習支援
+  | 'certification' // 資格・認定試験
+  | 'information_sharing' // 情報発信・コミュニティ
+  | 'multimedia' // 動画・マルチメディア
+  | 'game_development'; // ゲーム開発
 
 export interface BadgeRequirement {
   type:
@@ -555,7 +565,45 @@ export interface BadgeRequirement {
     | 'editorial_efficiency'
     | 'content_strategy_success'
     | 'multimedia_content_creation'
-    | 'collaborative_platform_adoption';
+    | 'collaborative_platform_adoption'
+    // 新しく追加された要件タイプ
+    | 'code_quality' // コード品質
+    | 'pipeline_setup' // パイプライン設定
+    | 'automation' // 自動化
+    | 'deployment_success' // デプロイ成功
+    | 'rollback_strategy' // ロールバック戦略
+    | 'orchestration' // オーケストレーション
+    | 'cloud_deployment' // クラウドデプロイ
+    | 'scalability' // スケーラビリティ
+    | 'performance_improvement' // パフォーマンス改善
+    | 'load_testing' // 負荷テスト
+    | 'monitoring_setup' // 監視設定
+    | 'alert_configuration' // アラート設定
+    | 'project_completion' // プロジェクト完了
+    | 'team_satisfaction' // チーム満足度
+    | 'sprint_velocity' // スプリント速度
+    | 'retrospective_insights' // レトロスペクティブ洞察
+    | 'skill_assessment' // スキル評価
+    | 'development_plan' // 開発計画
+    | 'strategy_development' // 戦略開発
+    | 'roi_improvement' // ROI改善
+    | 'business_launch' // ビジネス立ち上げ
+    | 'revenue_generation' // 収益生成
+    | 'campaign_success' // キャンペーン成功
+    | 'learning_impact' // 学習効果
+    | 'certifications_earned' // 取得資格
+    | 'skill_validation' // スキル検証
+    | 'content_published' // コンテンツ公開
+    | 'audience_engagement' // オーディエンスエンゲージメント
+    | 'ml_accuracy' // 機械学習精度
+    | 'security_assessment' // セキュリティ評価
+    | 'vulnerability_remediation' // 脆弱性修正
+    | 'user_satisfaction' // ユーザー満足度
+    | 'usability_improvement' // ユーザビリティ改善
+    | 'multimedia_projects' // マルチメディアプロジェクト
+    | 'creative_impact' // クリエイティブインパクト
+    | 'carbon_reduction' // カーボン削減
+    | 'esg_initiatives'; // ESG施策
   target?: number | string;
   current?: number | string;
   description: string;
