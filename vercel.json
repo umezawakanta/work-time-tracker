@@ -6,7 +6,7 @@
   "devCommand": "pnpm run dev",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
@@ -37,5 +37,11 @@
         }
       ]
     }
-  ]
+  ],
+  "regions": [
+    "iad1"
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

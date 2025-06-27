@@ -180,19 +180,16 @@ npm run test:coverage
 ### GitHub Actions ワークフロー
 
 1. **🧪 テスト実行**
-
    - Jest単体テスト
    - カバレッジ計測
    - 結果レポート生成
 
 2. **🔍 静的解析**
-
    - ESLint実行
    - TypeScript型チェック
    - セキュリティスキャン
 
 3. **⚡ パフォーマンステスト**
-
    - Lighthouse実行
    - Core Web Vitals測定
    - 改善提案生成
@@ -275,3 +272,133 @@ MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
 - 📊 **パフォーマンス分析**: Lighthouse統合
 
 **🚀 継続的な品質向上で、より良いコードベースを構築しています！**
+
+## 🌟 特徴
+
+- **AI搭載タスク管理**: 自然言語処理による智的なタスク提案
+- **リアルタイム分析**: 生産性の可視化とインサイト
+- **多言語対応**: 日本語・英語・中国語・韓国語・RTL言語サポート
+- **アクセシビリティ**: WCAG 2.1 AA準拠
+- **PWA対応**: オフライン機能とプッシュ通知
+- **ダークモード**: 目に優しいテーマ切り替え
+
+## 🚀 デプロイメント
+
+### Vercel デプロイメント
+
+このプロジェクトは Vercel にデプロイ可能です：
+
+1. **自動デプロイ**: GitHubリポジトリに接続して自動デプロイ
+2. **API関数**: `/api` ルートは自動的にサーバーレス関数として動作
+3. **環境変数**: Vercel ダッシュボードで必要な環境変数を設定
+
+#### 必要な環境変数
+
+```
+NODE_ENV=production
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+#### デプロイコマンド
+
+```bash
+# 本番ビルド
+pnpm run vercel-build
+
+# ローカル Vercel 開発
+vercel dev
+```
+
+### トラブルシューティング
+
+#### ビルドエラー: "Function Runtimes must have a valid version"
+
+この問題は `vercel.json` の設定で解決済みです。Node.js ランタイムバージョンが正しく指定されています。
+
+#### TypeScript コンパイルエラー
+
+- API関数用の専用 `tsconfig.json` が `api/` フォルダに配置されています
+- Vercel のビルドプロセスと互換性があります
+
+## 📦 インストール
+
+```bash
+# 依存関係のインストール
+pnpm install
+
+# 開発サーバー起動
+pnpm run dev
+
+# ビルド
+pnpm run build
+
+# テスト実行
+pnpm run test
+```
+
+## 🛠️ 開発
+
+### プロジェクト構造
+
+```
+work-time-tracker/
+├── api/                    # Vercel サーバーレス関数
+│   ├── auth/              # 認証API
+│   ├── todos/             # Todo管理API
+│   └── tsconfig.json      # API用TypeScript設定
+├── src/                   # React アプリケーション
+│   ├── components/        # Reactコンポーネント
+│   ├── services/          # ビジネスロジック
+│   ├── types/            # TypeScript型定義
+│   └── utils/            # ユーティリティ
+├── vercel.json           # Vercel設定
+├── vite.config.ts        # Vite設定
+└── tsconfig.json         # TypeScript設定
+```
+
+### 開発ガイドライン
+
+- **TypeScript**: strict モード有効、明示的型定義必須
+- **React**: 関数コンポーネント、カスタムフック使用
+- **スタイル**: Tailwind CSS、レスポンシブデザイン
+- **テスト**: Jest + Testing Library、カバレッジ 80% 以上
+
+## 🧪 テスト
+
+```bash
+# 単体テスト
+pnpm run test:unit
+
+# 統合テスト
+pnpm run test:integration
+
+# E2Eテスト
+pnpm run test:e2e
+
+# カバレッジレポート
+pnpm run test:coverage
+```
+
+## 🌐 対応ブラウザ
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## 📄 ライセンス
+
+MIT License
+
+## 🤝 コントリビューション
+
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+**Made with ❤️ by the Work Time Tracker Team**
