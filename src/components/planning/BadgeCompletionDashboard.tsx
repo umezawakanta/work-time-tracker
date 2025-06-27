@@ -9,7 +9,6 @@ import {
   CheckCircle,
   AlertCircle,
   BarChart3,
-  Timeline,
   Trophy,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -147,7 +146,7 @@ export const BadgeCompletionDashboard: React.FC<BadgeCompletionDashboardProps> =
   /**
    * 🎯 優先度バッジ取得
    */
-  const getPriorityBadge = (priority: string): JSX.Element => {
+  const getPriorityBadge = (priority: string): React.ReactElement => {
     const variants: Record<
       string,
       { variant: 'default' | 'secondary' | 'destructive' | 'outline'; color: string }
@@ -168,7 +167,7 @@ export const BadgeCompletionDashboard: React.FC<BadgeCompletionDashboardProps> =
   /**
    * 🏆 難易度バッジ取得
    */
-  const getDifficultyBadge = (difficulty: string): JSX.Element => {
+  const getDifficultyBadge = (difficulty: string): React.ReactElement => {
     const configs: Record<string, { icon: string; color: string }> = {
       bronze: { icon: '🥉', color: 'bg-amber-100 text-amber-800' },
       silver: { icon: '🥈', color: 'bg-gray-100 text-gray-800' },

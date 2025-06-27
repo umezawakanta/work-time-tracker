@@ -42,11 +42,7 @@ const DevelopmentBadgeShowcasePage = lazy(() =>
   }))
 );
 
-const BadgeCompletionPage = lazy(() =>
-  import('./pages/BadgeCompletionPage').then((module) => ({
-    default: module.BadgeCompletionPage,
-  }))
-);
+const BadgeCompletionPage = lazy(() => import('./pages/BadgeCompletionPage'));
 const ErrorMonitorDashboard = lazy(() =>
   import('./components/development/ErrorMonitorDashboard').then((module) => ({
     default: module.ErrorMonitorDashboard,
