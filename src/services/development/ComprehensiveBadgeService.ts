@@ -1854,7 +1854,9 @@ class ComprehensiveBadgeService {
    */
   private async updateCategoryMetrics(category: string, record: ActivityRecord): Promise<void> {
     const metrics = this.categoryMetrics.get(category);
-    if (!metrics) return;
+    if (!metrics) {
+      return;
+    }
 
     metrics.totalActivities++;
     metrics.progressContributions += record.impact;
