@@ -937,14 +937,16 @@ class PointRewardService {
 
     // 自動適用条件をチェック
     Array.from(this.multipliers.values()).forEach((multiplier) => {
-      if (multiplier.enabled && !validMultipliers.some((um) => um.multiplierId === multiplier.id)) {
-        if (this.checkMultiplierConditions(multiplier.conditions, userId)) {
-          this.activateMultiplier(userId, multiplier.id);
-          if (multiplier.stackable) {
-            totalMultiplier *= multiplier.factor;
-          } else {
-            totalMultiplier = Math.max(totalMultiplier, multiplier.factor);
-          }
+      if (
+        multiplier.enabled &&
+        !validMultipliers.some((um) => um.multiplierId === multiplier.id) &&
+        this.checkMultiplierConditions(multiplier.conditions, userId)
+      ) {
+        this.activateMultiplier(userId, multiplier.id);
+        if (multiplier.stackable) {
+          totalMultiplier *= multiplier.factor;
+        } else {
+          totalMultiplier = Math.max(totalMultiplier, multiplier.factor);
         }
       }
     });
@@ -1016,7 +1018,7 @@ class PointRewardService {
     return conditions.every((condition) => {
       switch (condition.type) {
         case 'time_range': {
-          const days = condition.value.days;
+          const { days } = condition.value;
           return days.includes(now.getDay());
         }
         case 'streak':
@@ -1068,12 +1070,24 @@ class PointRewardService {
    * 🏆 ランク計算
    */
   private calculateRank(userPoints: UserPoints): string {
-    if (userPoints.level >= 50) return 'Grandmaster';
-    if (userPoints.level >= 40) return 'Master';
-    if (userPoints.level >= 30) return 'Expert';
-    if (userPoints.level >= 20) return 'Advanced';
-    if (userPoints.level >= 10) return 'Intermediate';
-    if (userPoints.level >= 5) return 'Novice';
+    if (userPoints.level >= 50) {
+      return 'Grandmaster';
+    }
+    if (userPoints.level >= 40) {
+      return 'Master';
+    }
+    if (userPoints.level >= 30) {
+      return 'Expert';
+    }
+    if (userPoints.level >= 20) {
+      return 'Advanced';
+    }
+    if (userPoints.level >= 10) {
+      return 'Intermediate';
+    }
+    if (userPoints.level >= 5) {
+      return 'Novice';
+    }
     return 'Beginner';
   }
 
@@ -1159,7 +1173,9 @@ class PointRewardService {
 
   getAvailableRewards(userId: string): Reward[] {
     const userPoints = this.userPoints.get(userId);
-    if (!userPoints) return [];
+    if (!userPoints) {
+      return [];
+    }
 
     return this.getAllRewards().filter((reward) => {
       // 在庫チェック
