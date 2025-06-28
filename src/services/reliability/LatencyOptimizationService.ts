@@ -365,15 +365,26 @@ class LatencyOptimizationService {
     const overallScore = Math.round((latencyScore + errorScore + budgetScore) / 3);
 
     let status: 'excellent' | 'good' | 'fair' | 'poor';
-    if (overallScore >= 90) status = 'excellent';
-    else if (overallScore >= 75) status = 'good';
-    else if (overallScore >= 60) status = 'fair';
-    else status = 'poor';
+    if (overallScore >= 90) {
+      status = 'excellent';
+    } else if (overallScore >= 75) {
+      status = 'good';
+    } else if (overallScore >= 60) {
+      status = 'fair';
+    } else {
+      status = 'poor';
+    }
 
     const issues: string[] = [];
-    if (avgLatency > 150) issues.push('平均レスポンス時間が高い');
-    if (avgErrorRate > 0.5) issues.push('エラー率が高い');
-    if (budgetsWithin < this.performanceBudgets.length) issues.push('パフォーマンス予算超過');
+    if (avgLatency > 150) {
+      issues.push('平均レスポンス時間が高い');
+    }
+    if (avgErrorRate > 0.5) {
+      issues.push('エラー率が高い');
+    }
+    if (budgetsWithin < this.performanceBudgets.length) {
+      issues.push('パフォーマンス予算超過');
+    }
 
     const recommendations = this.generateReliabilityRecommendations(metrics, optimizationRules);
 
