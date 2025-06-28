@@ -21,10 +21,13 @@ import {
   Star,
   ArrowRight,
   RefreshCw,
+  Lightbulb,
+  Settings,
 } from 'lucide-react';
-import { comprehensiveBadgeSyncService } from '@/services/integration/ComprehensiveBadgeSyncService';
+import comprehensiveBadgeSyncService from '@/services/integration/ComprehensiveBadgeSyncService';
 import { badgeCompletionEstimator } from '@/services/planning/BadgeCompletionEstimator';
 import { toast } from '@/components/ui/use-toast';
+import { expandedBadgeService } from '@/services/badges/ExpandedBadgeService';
 
 interface SyncStatus {
   pageId: string;
@@ -51,6 +54,8 @@ export const UniversalSyncDashboard: React.FC = () => {
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(true);
   const [lastSyncTime, setLastSyncTime] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [weeklyPlan, setWeeklyPlan] = useState<any>(null);
+  const [expandedBadgeStats, setExpandedBadgeStats] = useState<any>(null);
 
   const allPages = [
     { id: 'home', name: '🏠 ホーム', category: 'core' },
@@ -108,9 +113,25 @@ export const UniversalSyncDashboard: React.FC = () => {
 
   useEffect(() => {
     initializeSyncDashboard();
+    loadExpandedBadgeData();
     const interval = setInterval(updateSyncStatuses, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  /**
+   * 🏆 拡張バッジデータ読み込み
+   */
+  const loadExpandedBadgeData = async () => {
+    try {
+      const stats = expandedBadgeService.getBadgeStatistics();
+      const weeklyGoals = expandedBadgeService.generateWeeklyGoals();
+
+      setExpandedBadgeStats(stats);
+      setWeeklyPlan(weeklyGoals);
+    } catch (error) {
+      console.error('拡張バッジデータ読み込みエラー:', error);
+    }
+  };
 
   /**
    * 🚀 同期ダッシュボード初期化
@@ -189,6 +210,7 @@ export const UniversalSyncDashboard: React.FC = () => {
       setLoading(true);
       await comprehensiveBadgeSyncService.syncAllPages();
       await initializeSyncDashboard();
+      loadExpandedBadgeData();
 
       toast({
         title: '🔄 同期完了',
@@ -281,20 +303,113 @@ export const UniversalSyncDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">🌐 統合同期ダッシュボード</h1>
-          <p className="text-gray-600 mt-2">全ページ間のリアルタイム同期状況とバッジ進捗を管理</p>
+          <p className="text-gray-600 mt-2">
+            全ページ間のリアルタイム同期状況とバッジ進捗を管理
+            <br />
+            🏆 包括的バッジシステム統合 - 全分野対応
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-sm text-gray-500">最終同期: {formatTimeAgo(lastSyncTime)}</div>
           <Button
-            onClick={triggerManualSync}
+            onClick={() => {
+              triggerManualSync();
+              loadExpandedBadgeData();
+            }}
             disabled={loading}
             className="bg-blue-600 hover:bg-blue-700"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
-            手動同期
+            完全同期
           </Button>
         </div>
       </div>
+
+      {/* 拡張バッジ統計カード */}
+      {expandedBadgeStats && (
+        <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-purple-700">
+              <Trophy className="h-6 w-6" />
+              🏆 包括的バッジシステム統計
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {expandedBadgeStats.totalBadges}
+                </div>
+                <div className="text-sm text-gray-600">総バッジ数</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {expandedBadgeStats.unlockedBadges}
+                </div>
+                <div className="text-sm text-gray-600">アンロック済み</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {expandedBadgeStats.completedBadges}
+                </div>
+                <div className="text-sm text-gray-600">完了済み</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {Math.round(expandedBadgeStats.completionRate)}%
+                </div>
+                <div className="text-sm text-gray-600">完了率</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 週次計画カード */}
+      {weeklyPlan && (
+        <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-teal-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-700">
+              <Calendar className="h-6 w-6" />
+              📅 今週の開発計画
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <h4 className="font-semibold mb-2">目標バッジ</h4>
+                <div className="space-y-2">
+                  {weeklyPlan.targetBadges.slice(0, 3).map((badge: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between text-sm">
+                      <span className="truncate">{badge.name}</span>
+                      <Badge variant="outline">{badge.progress}%</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">重点分野</h4>
+                <div className="flex flex-wrap gap-1">
+                  {weeklyPlan.focusAreas.slice(0, 4).map((area: string, index: number) => (
+                    <Badge key={index} className="text-xs bg-green-100 text-green-800">
+                      {area}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">予想時間</h4>
+                <div className="text-2xl font-bold text-green-600">
+                  {weeklyPlan.estimatedHours}時間
+                </div>
+                <div className="text-sm text-gray-600">
+                  目標: {weeklyPlan.weeklyTarget}バッジ完了
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* メトリクスカード */}
       {metrics && (
@@ -377,27 +492,132 @@ export const UniversalSyncDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* 推奨アクション */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lightbulb className="h-5 w-5" />
+            🎯 今週の推奨アクション & 開発フォーカス
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-semibold mb-2 text-blue-800">📊 システム統合</h4>
+              <p className="text-sm text-blue-700">
+                全46ページの同期状況を確認し、統合性を向上させましょう
+              </p>
+            </div>
+
+            {expandedBadgeStats && expandedBadgeStats.unlockedBadges > 0 && (
+              <>
+                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <h4 className="font-semibold mb-2 text-purple-800">🏆 バッジ完了</h4>
+                  <p className="text-sm text-purple-700">
+                    {expandedBadgeStats.unlockedBadges}
+                    個のアンロック済みバッジの完了を目指しましょう
+                  </p>
+                </div>
+
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold mb-2 text-green-800">🚀 技術向上</h4>
+                  <p className="text-sm text-green-700">
+                    仮想化、スケーリング、マルチメディア制作などの新分野に挑戦しましょう
+                  </p>
+                </div>
+              </>
+            )}
+
+            {weeklyPlan && weeklyPlan.targetBadges.length > 0 && (
+              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <h4 className="font-semibold mb-2 text-amber-800">📅 週次計画</h4>
+                <p className="text-sm text-amber-700">
+                  今週は「{weeklyPlan.targetBadges[0]?.name}」バッジに優先的に取り組みましょう
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6">
+            <h4 className="font-semibold mb-3">🌟 分野別開発推奨事項</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🔧</div>
+                <div className="text-xs font-medium">仮想化・コンテナ</div>
+                <div className="text-xs text-gray-600">Docker, Kubernetes</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🎬</div>
+                <div className="text-xs font-medium">マルチメディア</div>
+                <div className="text-xs text-gray-600">動画制作・配信</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🎮</div>
+                <div className="text-xs font-medium">ゲーム開発</div>
+                <div className="text-xs text-gray-600">インディーゲーム</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🛒</div>
+                <div className="text-xs font-medium">EC・販売</div>
+                <div className="text-xs text-gray-600">オンラインストア</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">📚</div>
+                <div className="text-xs font-medium">教育・学習</div>
+                <div className="text-xs text-gray-600">プラットフォーム</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">💼</div>
+                <div className="text-xs font-medium">起業・投資</div>
+                <div className="text-xs text-gray-600">スタートアップ</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🎨</div>
+                <div className="text-xs font-medium">デジタルアート</div>
+                <div className="text-xs text-gray-600">NFT・クリエイティブ</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg">
+                <div className="text-2xl mb-1">🌍</div>
+                <div className="text-xs font-medium">国際化・多言語</div>
+                <div className="text-xs text-gray-600">グローバル対応</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* 設定パネル */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            同期設定
+            統合同期設定
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold">自動同期</h3>
-              <p className="text-sm text-gray-600">30秒ごとにページ間の自動同期を実行</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">自動同期</h3>
+                <p className="text-sm text-gray-600">30秒ごとにページ間の自動同期を実行</p>
+              </div>
+              <Button
+                variant={isAutoSyncEnabled ? 'default' : 'outline'}
+                onClick={() => setIsAutoSyncEnabled(!isAutoSyncEnabled)}
+                className="w-20"
+              >
+                {isAutoSyncEnabled ? 'ON' : 'OFF'}
+              </Button>
             </div>
-            <Button
-              variant={isAutoSyncEnabled ? 'default' : 'outline'}
-              onClick={() => setIsAutoSyncEnabled(!isAutoSyncEnabled)}
-              className="w-20"
-            >
-              {isAutoSyncEnabled ? 'ON' : 'OFF'}
-            </Button>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">拡張バッジ統合</h3>
+                <p className="text-sm text-gray-600">全分野バッジシステムとの連携</p>
+              </div>
+              <Button variant="default" onClick={loadExpandedBadgeData} className="w-20">
+                更新
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
