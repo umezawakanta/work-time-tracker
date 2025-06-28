@@ -34,7 +34,7 @@ import {
   Gem,
   Gamepad2,
 } from 'lucide-react';
-import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -618,17 +618,93 @@ const Home: React.FC = () => {
           />
         </div>
 
-        {/* 右側：追加のToDo表示（従来のToDoとの統合） */}
-        <div className="xl:col-span-1">
+        {/* 右側：AI提案とクイックアクション */}
+        <div className="xl:col-span-1 space-y-6">
+          {/* クイックToDo追加 */}
           <Card className="border-0 shadow-md bg-white/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckSquare className="h-5 w-5 text-blue-500" />
-                追加のToDo管理
+                <Plus className="h-5 w-5 text-green-500" />
+                クイックタスク追加
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DailyTodoReminder isPremium={hasActiveSubscription} />
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  統合タスクダッシュボードで全てのタスクを管理できます。
+                  上記のダッシュボードからタスクを追加・管理してください。
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('/todos')}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckSquare className="h-4 w-4" />
+                    詳細ToDo管理
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('/gamification')}
+                    className="flex items-center gap-2"
+                  >
+                    <Gamepad2 className="h-4 w-4" />
+                    ゲーム詳細
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 統計サマリー */}
+          <Card className="border-0 shadow-md bg-white/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-purple-500" />
+                今日の進捗サマリー
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">レベル進捗</span>
+                  <span className="font-semibold">Lv.{gamificationStats.level}</span>
+                </div>
+                <Progress
+                  value={Math.round(
+                    (gamificationStats.currentXP / gamificationStats.xpToNextLevel) * 100
+                  )}
+                  className="h-2"
+                />
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{gamificationStats.currentXP} XP</span>
+                  <span>{gamificationStats.xpToNextLevel} XP</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Flame className="h-4 w-4 text-orange-500" />
+                      <span className="text-lg font-bold text-orange-600">
+                        {gamificationStats.streakDays}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600">日ストリーク</p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Crown className="h-4 w-4 text-purple-500" />
+                      <span className="text-lg font-bold text-purple-600">
+                        {gamificationStats.unlockedBadges}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600">バッジ獲得</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

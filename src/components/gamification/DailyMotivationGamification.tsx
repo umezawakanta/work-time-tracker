@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '@/store';
+import { addTodoItem, updateTodoItem, deleteTodoItem, fetchTodoItems } from '@/store/todoSlice';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,8 +29,11 @@ import {
   Rocket,
   Heart,
   Brain,
+  CheckSquare,
+  Trash2,
 } from 'lucide-react';
 import { useUnifiedPageSync } from '@/hooks/useUnifiedPageSync';
+import { toast } from 'react-hot-toast';
 
 interface DailyTask {
   id: string;
@@ -41,6 +47,11 @@ interface DailyTask {
   streak: number;
   isHabit: boolean;
   priority: 'low' | 'medium' | 'high';
+  // Redux ToDo統合のための追加フィールド
+  sourceType: 'gamification' | 'todo' | 'hybrid';
+  todoId?: string; // Redux ToDoのIDを参照
+  deadline?: string;
+  createdAt?: string;
 }
 
 interface PlayerStats {
@@ -81,7 +92,13 @@ interface DailyChallenge {
 }
 
 export const DailyMotivationGamification: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { recordActivity, getUnifiedStats } = useUnifiedPageSync('gamification');
+
+  // Redux state
+  const todos = useSelector((state: RootState) => state.todo.items) || [];
+  const safeTodos = Array.isArray(todos) ? todos : [];
+
   const [playerStats, setPlayerStats] = useState<PlayerStats>({
     level: 1,
     currentXP: 0,
@@ -95,7 +112,11 @@ export const DailyMotivationGamification: React.FC = () => {
     monthlyXP: 0,
   });
 
-  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([
+  // 統合タスクリスト（ゲーミフィケーション + Redux Todo）
+  const [integratedTasks, setIntegratedTasks] = useState<DailyTask[]>([]);
+
+  // ゲーミフィケーション専用タスク（習慣など）
+  const [gamificationTasks] = useState<DailyTask[]>([
     {
       id: '1',
       title: '朝の運動',
@@ -107,6 +128,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 3,
       isHabit: true,
       priority: 'high',
+      sourceType: 'gamification',
     },
     {
       id: '2',
@@ -119,6 +141,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 5,
       isHabit: true,
       priority: 'high',
+      sourceType: 'gamification',
     },
     {
       id: '3',
@@ -131,6 +154,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 2,
       isHabit: true,
       priority: 'medium',
+      sourceType: 'gamification',
     },
     {
       id: '4',
@@ -143,6 +167,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 1,
       isHabit: true,
       priority: 'medium',
+      sourceType: 'gamification',
     },
     {
       id: '5',
@@ -155,6 +180,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 0,
       isHabit: false,
       priority: 'high',
+      sourceType: 'gamification',
     },
     {
       id: '6',
@@ -167,6 +193,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 7,
       isHabit: true,
       priority: 'medium',
+      sourceType: 'gamification',
     },
     {
       id: '7',
@@ -179,6 +206,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 4,
       isHabit: true,
       priority: 'low',
+      sourceType: 'gamification',
     },
     {
       id: '8',
@@ -191,6 +219,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 0,
       isHabit: false,
       priority: 'medium',
+      sourceType: 'gamification',
     },
     {
       id: '9',
@@ -203,6 +232,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 2,
       isHabit: true,
       priority: 'medium',
+      sourceType: 'gamification',
     },
     {
       id: '10',
@@ -215,6 +245,7 @@ export const DailyMotivationGamification: React.FC = () => {
       streak: 1,
       isHabit: true,
       priority: 'low',
+      sourceType: 'gamification',
     },
   ]);
 
@@ -294,6 +325,79 @@ export const DailyMotivationGamification: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<'tasks' | 'achievements' | 'challenges' | 'stats'>(
     'tasks'
   );
+
+  // 統合タスク管理のための関数
+  const convertTodoToTask = (todo: any): DailyTask => {
+    const getCategoryFromTodo = (task: string): DailyTask['category'] => {
+      const title = task.toLowerCase();
+      if (title.includes('運動') || title.includes('健康') || title.includes('exercise'))
+        return 'health';
+      if (title.includes('学習') || title.includes('勉強') || title.includes('learn'))
+        return 'learning';
+      if (title.includes('会議') || title.includes('打ち合わせ') || title.includes('meeting'))
+        return 'social';
+      return 'work';
+    };
+
+    const getDifficultyFromTodo = (priority: number = 3): DailyTask['difficulty'] => {
+      if (priority >= 4) return 'hard';
+      if (priority >= 3) return 'medium';
+      return 'easy';
+    };
+
+    const getXPReward = (difficulty: DailyTask['difficulty']): number => {
+      switch (difficulty) {
+        case 'easy':
+          return 15;
+        case 'medium':
+          return 25;
+        case 'hard':
+          return 40;
+        default:
+          return 20;
+      }
+    };
+
+    const category = getCategoryFromTodo(todo.task);
+    const difficulty = getDifficultyFromTodo(todo.priority);
+
+    return {
+      id: `todo-${todo.id}`,
+      title: todo.task,
+      description: todo.description || '詳細なし',
+      category,
+      difficulty,
+      xpReward: getXPReward(difficulty),
+      isCompleted: todo.completed || false,
+      completedAt: todo.completedDate,
+      streak: 0,
+      isHabit: false,
+      priority: todo.isPrioritized ? 'high' : todo.priority >= 3 ? 'medium' : 'low',
+      sourceType: 'todo',
+      todoId: todo.id,
+      deadline: todo.deadline,
+      createdAt: todo.createdAt,
+    };
+  };
+
+  // 統合タスクリストの構築
+  useEffect(() => {
+    const todoTasks = safeTodos
+      .filter((todo) => {
+        // 今日作成されたものや、未完了のもの
+        if (!todo.completed) return true;
+        if (todo.createdAt) {
+          const today = new Date().toDateString();
+          return new Date(todo.createdAt).toDateString() === today;
+        }
+        return false;
+      })
+      .map(convertTodoToTask);
+
+    // ゲーミフィケーションタスクとTodoタスクを統合
+    const combinedTasks = [...gamificationTasks, ...todoTasks];
+    setIntegratedTasks(combinedTasks);
+  }, [safeTodos, gamificationTasks]);
 
   /**
    * タスク完了処理
@@ -485,10 +589,7 @@ export const DailyMotivationGamification: React.FC = () => {
    * 通知表示
    */
   const showXPGainNotification = (xp: number, taskTitle: string) => {
-    console.log(`✨ +${xp} XP獲得! "${taskTitle}" 完了`);
-
-    // より良い視覚的フィードバックのために、将来的にtoast通知を追加可能
-    // toast.success(`✨ +${xp} XP獲得! ${taskTitle}を完了しました！`);
+    toast.success(`✨ +${xp} XP獲得! ${taskTitle}を完了しました！`);
   };
 
   const showLevelUpNotification = (newLevel: number) => {
@@ -547,6 +648,18 @@ export const DailyMotivationGamification: React.FC = () => {
    */
   const addNewTask = () => {
     if (newTaskTitle.trim()) {
+      // Redux ToDoとしても追加
+      if (dispatch) {
+        dispatch(
+          addTodoItem({
+            task: newTaskTitle,
+            description: 'ゲーミフィケーションタスク',
+            priority: 3,
+            createdAt: new Date().toISOString(),
+          })
+        );
+      }
+
       const newTask: DailyTask = {
         id: Date.now().toString(),
         title: newTaskTitle,
@@ -558,11 +671,18 @@ export const DailyMotivationGamification: React.FC = () => {
         streak: 0,
         isHabit: false,
         priority: 'medium',
+        sourceType: 'hybrid',
       };
 
-      setDailyTasks((prev) => [...prev, newTask]);
+      // 既存のdailyTasksに追加（互換性のため）
+      if (typeof setIntegratedTasks !== 'undefined') {
+        setIntegratedTasks((prev) => [...prev, newTask]);
+      }
       setNewTaskTitle('');
       setShowAddTask(false);
+
+      // 成功通知
+      toast.success(`新しいタスクを追加しました: ${newTaskTitle}`);
     }
   };
 
