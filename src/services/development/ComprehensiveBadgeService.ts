@@ -1642,7 +1642,9 @@ class ComprehensiveBadgeService {
 
   private completeBadge(badgeId: string): void {
     const badge = this.badges.get(badgeId);
-    if (!badge) return;
+    if (!badge) {
+      return;
+    }
 
     badge.isCompleted = true;
     badge.completedAt = new Date().toISOString();
@@ -1754,8 +1756,12 @@ class ComprehensiveBadgeService {
     const highDemandCategories = ['ai_ml', 'cybersecurity', 'cicd', 'infrastructure'];
     const mediumDemandCategories = ['marketing', 'finance', 'hr', 'sustainability'];
 
-    if (highDemandCategories.includes(category)) return 0.9;
-    if (mediumDemandCategories.includes(category)) return 0.7;
+    if (highDemandCategories.includes(category)) {
+      return 0.9;
+    }
+    if (mediumDemandCategories.includes(category)) {
+      return 0.7;
+    }
     return 0.5;
   }
 
