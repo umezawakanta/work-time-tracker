@@ -5335,40 +5335,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     rewards: ['監視設計力', '可観測性構築力'],
   },
 
-  // 💰 財務・会計・税務関連バッジ
-  {
-    id: 'financial-analyst',
-    name: '💰 財務アナリスト',
-    description: '財務分析・予算管理・投資分析・リスク評価・財務戦略',
-    category: 'finance',
-    difficulty: 'platinum',
-    icon: '💰',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'financial_dashboard',
-        current: 'planned',
-        description: '財務ダッシュボード',
-      },
-      {
-        type: 'feature_complete',
-        target: 'budget_management',
-        current: 'planned',
-        description: '予算管理システム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'investment_analysis',
-        current: 'planned',
-        description: '投資分析ツール',
-      },
-    ],
-    isUnlocked: false,
-    progress: 15,
-    nextMilestone: '財務ダッシュボード企画',
-    points: 75,
-    rewards: ['財務分析力', '投資判断力'],
-  },
   {
     id: 'accountant',
     name: '📊 会計エキスパート',
@@ -5739,40 +5705,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     rewards: ['宗教学知識', '比較分析力'],
   },
 
-  // 📈 データサイエンス・AI・新技術関連バッジ
-  {
-    id: 'data-scientist',
-    name: '📊 データサイエンティスト',
-    description: 'データ分析・機械学習・統計・予測モデル・ビッグデータ',
-    category: 'data_science',
-    difficulty: 'platinum',
-    icon: '📊',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'data_pipeline',
-        current: 'planned',
-        description: 'データパイプライン',
-      },
-      {
-        type: 'feature_complete',
-        target: 'ml_models',
-        current: 'planned',
-        description: '機械学習モデル',
-      },
-      {
-        type: 'feature_complete',
-        target: 'data_visualization',
-        current: 'planned',
-        description: 'データ可視化',
-      },
-    ],
-    isUnlocked: false,
-    progress: 15,
-    nextMilestone: 'データパイプライン設計',
-    points: 80,
-    rewards: ['データ分析力', '予測モデル構築力'],
-  },
   {
     id: 'blockchain-developer',
     name: '⛓️ ブロックチェーン開発者',
@@ -5838,39 +5770,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     nextMilestone: 'グリーンテクノロジー向上',
     points: 75,
     rewards: ['持続可能性設計力', '環境配慮力'],
-  },
-  {
-    id: 'innovation-catalyst',
-    name: '💡 イノベーション触媒',
-    description: '創造的思考・破壊的イノベーション・新技術導入・変革推進',
-    category: 'innovation',
-    difficulty: 'legendary',
-    icon: '💡',
-    requirements: [
-      {
-        type: 'innovation_methodology',
-        description: 'イノベーション手法',
-        progress: 30,
-        isCompleted: false,
-      },
-      {
-        type: 'prototype_development',
-        description: 'プロトタイプ開発',
-        progress: 60,
-        isCompleted: false,
-      },
-      {
-        type: 'idea_validation',
-        description: 'アイデア検証',
-        progress: 50,
-        isCompleted: false,
-      },
-    ],
-    isUnlocked: true,
-    progress: 47,
-    nextMilestone: 'プロトタイプ開発完成',
-    points: 90,
-    rewards: ['イノベーション創出力', '変革推進力'],
   },
 
   // 🎤 プレゼンテーション・コミュニケーション関連バッジ
