@@ -4210,40 +4210,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     rewards: ['ビジュアルデザイン力', 'アート性'],
   },
 
-  // 🆕 起業・投資関連バッジ
-  {
-    id: 'startup-founder',
-    name: '🚀 スタートアップ創業者',
-    description: 'ビジネスモデル・MVP・資金調達・チーム構築',
-    category: 'entrepreneurship',
-    difficulty: 'legendary',
-    icon: '🚀',
-    requirements: [
-      {
-        type: 'vision_definition',
-        description: 'ビジョン定義',
-        progress: 80,
-        isCompleted: false,
-      },
-      {
-        type: 'prototype_development',
-        description: 'MVP開発',
-        progress: 60,
-        isCompleted: false,
-      },
-      {
-        type: 'idea_validation',
-        description: 'アイデア検証',
-        progress: 50,
-        isCompleted: false,
-      },
-    ],
-    isUnlocked: true,
-    progress: 63,
-    nextMilestone: 'ビジョン定義完成',
-    points: 90,
-    rewards: ['起業家精神', 'ビジネス構築力'],
-  },
   {
     id: 'investment-advisor',
     name: '💰 投資アドバイザー',
@@ -4311,39 +4277,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     nextMilestone: 'CRM実装完成',
     points: 55,
     rewards: ['営業力', '顧客関係構築力'],
-  },
-  {
-    id: 'growth-hacker',
-    name: '📈 グロースハッカー',
-    description: 'A/Bテスト・コンバージョン最適化・ユーザー獲得・データ分析',
-    category: 'growth',
-    difficulty: 'platinum',
-    icon: '📈',
-    requirements: [
-      {
-        type: 'ab_testing',
-        description: 'A/Bテスト',
-        progress: 80,
-        isCompleted: false,
-      },
-      {
-        type: 'conversion_optimization',
-        description: 'コンバージョン最適化',
-        progress: 70,
-        isCompleted: false,
-      },
-      {
-        type: 'user_segmentation',
-        description: 'ユーザーセグメンテーション',
-        progress: 60,
-        isCompleted: false,
-      },
-    ],
-    isUnlocked: true,
-    progress: 70,
-    nextMilestone: 'A/Bテスト完成',
-    points: 65,
-    rewards: ['グロースハック力', 'データ最適化力'],
   },
 
   // 🆕 法務・人事関連バッジ
@@ -5023,41 +4956,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     points: 65,
     rewards: ['要件定義力', '分析力'],
   },
-  {
-    id: 'skill-mapper',
-    name: '🗺️ スキルマップマスター',
-    description: 'スキル評価・人材育成計画・キャリアパス設計・能力開発',
-    category: 'skill_mapping',
-    difficulty: 'gold',
-    icon: '🗺️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'skill_assessment',
-        current: 'completed',
-        description: 'スキル評価システム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'career_path_design',
-        current: 'completed',
-        description: 'キャリアパス設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'development_planning',
-        current: 'completed',
-        description: '能力開発計画',
-      },
-    ],
-    isUnlocked: true,
-    progress: 100,
-    isCompleted: true,
-    completedAt: new Date().toISOString(),
-    nextMilestone: 'スキルマップ完成',
-    points: 70,
-    rewards: ['スキル分析力', '人材育成力'],
-  },
+
   {
     id: 'project-manager',
     name: '📊 プロジェクトマネージャー',
@@ -5093,39 +4992,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
   },
 
   // 🏃‍♂️ アジャイル・スクラム関連バッジ
-  {
-    id: 'agile-coach',
-    name: '🏃‍♂️ アジャイルコーチ',
-    description: 'アジャイル手法・チーム支援・プロセス改善・変革推進',
-    category: 'agile',
-    difficulty: 'platinum',
-    icon: '🏃‍♂️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'agile_methodology',
-        current: 'in_progress',
-        description: 'アジャイル手法実装',
-      },
-      {
-        type: 'feature_complete',
-        target: 'team_coaching',
-        current: 'planned',
-        description: 'チームコーチング',
-      },
-      {
-        type: 'performance_metrics',
-        target: '80',
-        current: '60',
-        description: 'チーム生産性80%向上',
-      },
-    ],
-    isUnlocked: true,
-    progress: 55,
-    nextMilestone: 'アジャイル手法実装完成',
-    points: 70,
-    rewards: ['アジャイル推進力', 'チーム変革力'],
-  },
+
   {
     id: 'scrum-master-advanced',
     name: '🎯 上級スクラムマスター',
@@ -5231,39 +5098,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     points: 80,
     rewards: ['UX戦略力', 'デザイン思考力'],
   },
-  {
-    id: 'visual-designer',
-    name: '🖼️ ビジュアルデザイナー',
-    description: 'ビジュアルアイデンティティ・グラフィック・タイポグラフィ・色彩理論',
-    category: 'visual_design',
-    difficulty: 'gold',
-    icon: '🖼️',
-    requirements: [
-      {
-        type: 'ui_artistry',
-        description: 'UI芸術性',
-        progress: 75,
-        isCompleted: false,
-      },
-      {
-        type: 'visual_storytelling',
-        description: 'ビジュアルストーリーテリング',
-        progress: 70,
-        isCompleted: false,
-      },
-      {
-        type: 'creative_system',
-        description: 'クリエイティブシステム',
-        progress: 60,
-        isCompleted: false,
-      },
-    ],
-    isUnlocked: true,
-    progress: 68,
-    nextMilestone: 'UI芸術性向上',
-    points: 60,
-    rewards: ['ビジュアルデザイン力', 'アート性'],
-  },
+
   {
     id: 'interaction-designer',
     name: '🔗 インタラクションデザイナー',
@@ -6182,166 +6017,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     nextMilestone: '自動デプロイ完成',
   },
 
-  // スキルマップ・人材開発バッジ
-  {
-    id: 'skill-mapper',
-    name: '🗺️ スキルマッパー',
-    description: '技術スキル・能力評価・成長戦略の体系化',
-    category: 'skill_mapping',
-    difficulty: 'gold',
-    icon: '🗺️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'skill_assessment_system',
-        current: 'completed',
-        description: 'スキル評価システム',
-      },
-      {
-        type: 'feature_complete',
-        target: 'competency_matrix',
-        current: 'completed',
-        description: 'コンピテンシーマトリックス',
-      },
-      {
-        type: 'feature_complete',
-        target: 'learning_path_design',
-        current: 'completed',
-        description: '学習パス設計',
-      },
-      {
-        type: 'feature_complete',
-        target: 'progress_tracking',
-        current: 'completed',
-        description: '進捗追跡システム',
-      },
-    ],
-    isUnlocked: true, // 🎉 CareerPlanningDashboard実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
-  // UX戦略バッジ
-  {
-    id: 'ux-strategist',
-    name: '🎯 UX戦略家',
-    description: 'ユーザー体験設計・ユーザビリティテスト・UXリサーチ',
-    category: 'design',
-    difficulty: 'platinum',
-    icon: '🎯',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'usability_testing_framework',
-        current: 'completed',
-        description: 'ユーザビリティテスト',
-      },
-      {
-        type: 'feature_complete',
-        target: 'user_research_methodology',
-        current: 'completed',
-        description: 'ユーザーリサーチ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'persona_development',
-        current: 'completed',
-        description: 'ペルソナ開発',
-      },
-      {
-        type: 'feature_complete',
-        target: 'journey_mapping',
-        current: 'completed',
-        description: 'ジャーニーマップ',
-      },
-    ],
-    isUnlocked: true, // 🎉 UsabilityTestingDashboard実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
-  // DevOpsアーキテクトバッジ
-  {
-    id: 'devops-architect',
-    name: '⚙️ DevOpsアーキテクト',
-    description: 'インフラ自動化・監視・SRE・運用効率化',
-    category: 'devops',
-    difficulty: 'legendary',
-    icon: '⚙️',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'infrastructure_as_code',
-        current: 'completed',
-        description: 'Infrastructure as Code',
-      },
-      {
-        type: 'feature_complete',
-        target: 'monitoring_alerting',
-        current: 'completed',
-        description: '監視・アラート',
-      },
-      {
-        type: 'feature_complete',
-        target: 'sre_practices',
-        current: 'completed',
-        description: 'SREプラクティス',
-      },
-      {
-        type: 'feature_complete',
-        target: 'incident_management',
-        current: 'completed',
-        description: 'インシデント管理',
-      },
-    ],
-    isUnlocked: true, // 🎉 SystemMonitoringService + LatencyOptimizationService実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
-  // スクラムマスターバッジ
-  {
-    id: 'scrum-master',
-    name: '🏃 スクラムマスター',
-    description: 'アジャイル開発・スプリント管理・チーム効率化',
-    category: 'scrum',
-    difficulty: 'gold',
-    icon: '🏃',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'sprint_planning',
-        current: 'completed',
-        description: 'スプリント計画',
-      },
-      {
-        type: 'feature_complete',
-        target: 'impediment_removal',
-        current: 'completed',
-        description: '障害除去',
-      },
-      {
-        type: 'feature_complete',
-        target: 'retrospective_facilitation',
-        current: 'completed',
-        description: 'レトロスペクティブ',
-      },
-      {
-        type: 'feature_complete',
-        target: 'team_velocity_optimization',
-        current: 'completed',
-        description: 'チーム速度最適化',
-      },
-    ],
-    isUnlocked: true, // 🎉 ImpedimentRemovalDashboard実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
   // E2Eテスト実装バッジ
   {
     id: 'e2e-testing-ninja',
@@ -6422,86 +6097,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     nextMilestone: '完了！',
   },
 
-  // アニメーションアーティストバッジ
-  {
-    id: 'animation-artist',
-    name: '🎬 アニメーションアーティスト',
-    description: 'マイクロインタラクション・CSS アニメーション・UX向上',
-    category: 'visual_design',
-    difficulty: 'gold',
-    icon: '🎬',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'micro_interactions',
-        current: 'completed',
-        description: 'マイクロインタラクション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'css_animations',
-        current: 'completed',
-        description: 'CSSアニメーション',
-      },
-      {
-        type: 'feature_complete',
-        target: 'transition_effects',
-        current: 'completed',
-        description: 'トランジション効果',
-      },
-      {
-        type: 'feature_complete',
-        target: 'loading_animations',
-        current: 'completed',
-        description: 'ローディングアニメーション',
-      },
-    ],
-    isUnlocked: true, // 🎉 MicroInteractions実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
-  // データビジュアライゼーションマスターバッジ
-  {
-    id: 'data-visualization-master',
-    name: '📊 データビジュアライゼーションマスター',
-    description: '3D可視化・インタラクティブチャート・データストーリーテリング',
-    category: 'analytics',
-    difficulty: 'legendary',
-    icon: '📊',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: '3d_visualization',
-        current: 'completed',
-        description: '3D可視化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'interactive_charts',
-        current: 'completed',
-        description: 'インタラクティブチャート',
-      },
-      {
-        type: 'feature_complete',
-        target: 'real_time_data_viz',
-        current: 'completed',
-        description: 'リアルタイム可視化',
-      },
-      {
-        type: 'feature_complete',
-        target: 'data_storytelling',
-        current: 'completed',
-        description: 'データストーリーテリング',
-      },
-    ],
-    isUnlocked: true, // 🎉 ThreeDVisualizationService実装により獲得！
-    progress: 100,
-    unlockedAt: new Date().toISOString(),
-    nextMilestone: '完了！',
-  },
-
   // サステナブルコード推進者バッジ
   {
     id: 'sustainable-code-advocate',
@@ -6547,7 +6142,7 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     id: 'internationalization-specialist',
     name: '🌍 国際化スペシャリスト',
     description: '多言語対応・文化適応・グローバル展開',
-    category: 'internationalization',
+    category: 'linguistics',
     difficulty: 'gold',
     icon: '🌍',
     requirements: [
@@ -6618,45 +6213,6 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 75,
     nextMilestone: '自然言語処理機能実装',
-  },
-
-  // スタートアップ創設者バッジ
-  {
-    id: 'startup-founder',
-    name: '🚀 スタートアップ創設者',
-    description: '事業企画・MVP開発・資金調達・成長戦略',
-    category: 'entrepreneurship',
-    difficulty: 'legendary',
-    icon: '🚀',
-    requirements: [
-      {
-        type: 'feature_complete',
-        target: 'business_plan',
-        current: 'in_progress',
-        description: '事業計画策定',
-      },
-      {
-        type: 'feature_complete',
-        target: 'mvp_development',
-        current: 'completed',
-        description: 'MVP開発',
-      },
-      {
-        type: 'feature_complete',
-        target: 'market_validation',
-        current: 'in_progress',
-        description: '市場検証',
-      },
-      {
-        type: 'user_feedback',
-        target: '100',
-        current: '25',
-        description: 'ユーザー数100名獲得',
-      },
-    ],
-    isUnlocked: false,
-    progress: 60,
-    nextMilestone: '市場検証完了',
   },
 ];
 
@@ -6739,12 +6295,7 @@ export const getBadgeStatsByCategory = () => {
     leadership: { total: 0, unlocked: 0, progress: 0 },
     negotiation: { total: 0, unlocked: 0, progress: 0 },
     presentation: { total: 0, unlocked: 0, progress: 0 },
-    internationalization: { total: 0, unlocked: 0, progress: 0 },
     ai_ml: { total: 0, unlocked: 0, progress: 0 },
-    sustainability: { total: 0, unlocked: 0, progress: 0 },
-    arts: { total: 0, unlocked: 0, progress: 0 },
-    gamification: { total: 0, unlocked: 0, progress: 0 },
-    accessibility: { total: 0, unlocked: 0, progress: 0 },
   };
 
   DEVELOPMENT_BADGES.forEach((badge) => {
