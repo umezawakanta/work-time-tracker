@@ -5,9 +5,7 @@
   "installCommand": "pnpm install",
   "framework": null,
   "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@20.x"
-    }
+    "api/**/*.ts": {}
   },
   "rewrites": [
     {
