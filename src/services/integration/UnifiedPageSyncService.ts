@@ -574,9 +574,15 @@ class UnifiedPageSyncService {
       (Date.now() - new Date(metrics.lastVisited).getTime()) / (1000 * 60 * 60);
     const actionsToday = recentEvents.length;
 
-    if (hoursSinceLastVisit < 1 && actionsToday > 5) return 'excellent';
-    if (hoursSinceLastVisit < 6 && actionsToday > 2) return 'good';
-    if (hoursSinceLastVisit < 24) return 'warning';
+    if (hoursSinceLastVisit < 1 && actionsToday > 5) {
+      return 'excellent';
+    }
+    if (hoursSinceLastVisit < 6 && actionsToday > 2) {
+      return 'good';
+    }
+    if (hoursSinceLastVisit < 24) {
+      return 'warning';
+    }
     return 'critical';
   }
 }
