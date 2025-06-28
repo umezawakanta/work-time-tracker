@@ -5,7 +5,11 @@
   "installCommand": "pnpm install",
   "framework": null,
   "functions": {
-    "api/**/*.ts": {}
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x",
+      "memory": 1024,
+      "maxDuration": 30
+    }
   },
   "rewrites": [
     {
