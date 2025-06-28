@@ -73,6 +73,55 @@ export interface PageSpecificBadgeData {
   recommendations: string[];
 }
 
+export type PageKey =
+  | 'home'
+  | 'integrated-dashboard'
+  | 'todos'
+  | 'automation-rules'
+  | 'work-time'
+  | 'work-time-reports'
+  | 'diary'
+  | 'impulse-tracker'
+  | 'abstinence'
+  | 'adhd-support'
+  | 'blog'
+  | 'bookshelf'
+  | 'asset-calendar'
+  | 'asset-liability-report'
+  | 'subscription-management'
+  | 'billing-history'
+  | 'development-badge-dashboard'
+  | 'badge-completion-prediction'
+  | 'badge-showcase'
+  | 'quality-dashboard'
+  | 'error-monitoring'
+  | 'performance-monitoring'
+  | 'cross-browser-testing'
+  | 'performance-optimization'
+  | 'database-backup'
+  | 'system-monitoring'
+  | 'wbs-creation'
+  | 'ai-wbs-generation'
+  | 'data-visualization'
+  | 'gamification'
+  | 'improvement-plan'
+  | 'system-design'
+  | 'pwa-features'
+  | 'neurodiverse-support'
+  | 'guitar-practice'
+  | 'shop'
+  | 'products'
+  | 'twitter'
+  | 'political-trends'
+  | 'election-candidates'
+  | 'candidate-registration'
+  | 'calendar'
+  | 'admin-dashboard'
+  | 'api-test'
+  | 'profile'
+  | 'settings'
+  | 'achievements-badges';
+
 /**
  * 🔄 包括的バッジ同期サービス
  * 全ページ間でのバッジ進捗・活動同期を管理
@@ -115,6 +164,78 @@ class ComprehensiveBadgeSyncService {
       autoProgressEnabled: true,
       syncPriority: 8,
     },
+    'work-time': {
+      associatedCategories: ['productivity', 'analytics', 'tracking'],
+      activityTriggers: ['time_entry', 'work_tracking', 'productivity_measurement'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'work-time-reports': {
+      associatedCategories: ['analytics', 'reporting', 'business_intelligence'],
+      activityTriggers: ['report_generation', 'data_analysis', 'insights_review'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    diary: {
+      associatedCategories: ['content', 'documentation', 'personal_development'],
+      activityTriggers: ['diary_entry', 'reflection', 'content_creation'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    'impulse-tracker': {
+      associatedCategories: ['health', 'tracking', 'personal_development'],
+      activityTriggers: ['impulse_tracking', 'behavior_monitoring', 'self_control'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    abstinence: {
+      associatedCategories: ['health', 'gamification', 'personal_development'],
+      activityTriggers: ['abstinence_tracking', 'goal_achievement', 'streak_building'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'adhd-support': {
+      associatedCategories: ['accessibility', 'health', 'productivity'],
+      activityTriggers: ['focus_support', 'accessibility_usage', 'cognitive_assistance'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    blog: {
+      associatedCategories: ['content', 'marketing', 'information_dissemination'],
+      activityTriggers: ['blog_post', 'content_creation', 'knowledge_sharing'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    bookshelf: {
+      associatedCategories: ['education', 'literature', 'content'],
+      activityTriggers: ['book_management', 'reading_tracking', 'knowledge_curation'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    'asset-calendar': {
+      associatedCategories: ['finance', 'planning', 'asset_management'],
+      activityTriggers: ['asset_tracking', 'financial_planning', 'calendar_management'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'asset-liability-report': {
+      associatedCategories: ['finance', 'accounting', 'reporting'],
+      activityTriggers: ['financial_reporting', 'asset_analysis', 'liability_tracking'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'subscription-management': {
+      associatedCategories: ['business', 'finance', 'monetization'],
+      activityTriggers: ['subscription_management', 'billing_oversight', 'revenue_tracking'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'billing-history': {
+      associatedCategories: ['finance', 'accounting', 'customer_success'],
+      activityTriggers: ['billing_review', 'payment_tracking', 'financial_history'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
     'development-badge-dashboard': {
       associatedCategories: ['foundation', 'testing', 'cicd', 'architecture'],
       activityTriggers: ['badge_review', 'progress_tracking', 'skill_assessment'],
@@ -128,100 +249,178 @@ class ComprehensiveBadgeSyncService {
       syncPriority: 7,
     },
     'badge-showcase': {
-      associatedCategories: ['achievement', 'social', 'presentation'],
+      associatedCategories: ['presentation', 'marketing', 'achievement'],
       activityTriggers: ['badge_showcase', 'achievement_sharing', 'portfolio_review'],
       autoProgressEnabled: true,
       syncPriority: 6,
     },
-    'wbs-creation': {
-      associatedCategories: ['project_management', 'planning', 'systematization'],
-      activityTriggers: ['wbs_creation', 'project_planning', 'task_breakdown'],
-      autoProgressEnabled: true,
-      syncPriority: 8,
-    },
-    'ai-wbs-generation': {
-      associatedCategories: ['ai_ml', 'automation', 'project_management'],
-      activityTriggers: ['ai_wbs_generation', 'intelligent_planning', 'automated_breakdown'],
-      autoProgressEnabled: true,
-      syncPriority: 7,
-    },
-    gamification: {
-      associatedCategories: ['engagement', 'motivation', 'social'],
-      activityTriggers: ['gamification_interaction', 'point_earning', 'achievement_unlocking'],
-      autoProgressEnabled: true,
-      syncPriority: 6,
-    },
-    'attendance-management': {
-      associatedCategories: ['productivity', 'systematization', 'operations'],
-      activityTriggers: ['time_tracking', 'attendance_logging', 'productivity_measurement'],
-      autoProgressEnabled: true,
-      syncPriority: 7,
-    },
-    reports: {
-      associatedCategories: ['analytics', 'business', 'documentation'],
-      activityTriggers: ['report_generation', 'data_analysis', 'insight_discovery'],
-      autoProgressEnabled: true,
-      syncPriority: 8,
-    },
-    'improvement-planning': {
-      associatedCategories: ['planning', 'optimization', 'systematization'],
-      activityTriggers: ['improvement_planning', 'optimization_strategy', 'enhancement_tracking'],
-      autoProgressEnabled: true,
-      syncPriority: 7,
-    },
-    'system-design': {
-      associatedCategories: ['architecture', 'design', 'systematization'],
-      activityTriggers: ['system_design', 'architecture_planning', 'design_documentation'],
-      autoProgressEnabled: true,
-      syncPriority: 8,
-    },
-    'admin-dashboard': {
-      associatedCategories: ['management', 'operations', 'systematization'],
-      activityTriggers: ['admin_operations', 'system_management', 'administrative_tasks'],
-      autoProgressEnabled: true,
-      syncPriority: 7,
-    },
-    'api-testing': {
-      associatedCategories: ['testing', 'quality_assurance', 'automation'],
-      activityTriggers: ['api_testing', 'quality_validation', 'test_automation'],
-      autoProgressEnabled: true,
-      syncPriority: 8,
-    },
     'quality-dashboard': {
-      associatedCategories: ['quality_assurance', 'monitoring', 'testing'],
-      activityTriggers: ['quality_monitoring', 'metrics_review', 'quality_improvement'],
+      associatedCategories: ['testing', 'quality_assurance', 'monitoring'],
+      activityTriggers: ['quality_review', 'test_monitoring', 'qa_oversight'],
       autoProgressEnabled: true,
       syncPriority: 8,
     },
     'error-monitoring': {
-      associatedCategories: ['monitoring', 'reliability', 'operations'],
-      activityTriggers: ['error_tracking', 'incident_response', 'reliability_monitoring'],
-      autoProgressEnabled: true,
-      syncPriority: 9,
-    },
-    'performance-monitoring': {
-      associatedCategories: ['performance', 'optimization', 'monitoring'],
-      activityTriggers: ['performance_analysis', 'optimization_tracking', 'metrics_monitoring'],
+      associatedCategories: ['monitoring', 'reliability', 'debugging'],
+      activityTriggers: ['error_tracking', 'bug_monitoring', 'system_health'],
       autoProgressEnabled: true,
       syncPriority: 8,
     },
-    profile: {
-      associatedCategories: ['personal', 'achievement', 'social'],
-      activityTriggers: ['profile_update', 'achievement_review', 'personal_analytics'],
+    'performance-monitoring': {
+      associatedCategories: ['performance', 'monitoring', 'optimization'],
+      activityTriggers: ['performance_tracking', 'optimization_analysis', 'metrics_review'],
       autoProgressEnabled: true,
-      syncPriority: 5,
+      syncPriority: 8,
     },
-    settings: {
-      associatedCategories: ['systematization', 'operations', 'customization'],
-      activityTriggers: ['settings_configuration', 'system_customization', 'preference_setup'],
+    'cross-browser-testing': {
+      associatedCategories: ['testing', 'quality_assurance', 'compatibility'],
+      activityTriggers: ['browser_testing', 'compatibility_check', 'cross_platform_validation'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'performance-optimization': {
+      associatedCategories: ['performance', 'optimization', 'scaling'],
+      activityTriggers: ['performance_tuning', 'optimization_implementation', 'speed_improvement'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'database-backup': {
+      associatedCategories: ['infrastructure', 'reliability', 'data_management'],
+      activityTriggers: ['backup_management', 'data_protection', 'disaster_recovery'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'system-monitoring': {
+      associatedCategories: ['monitoring', 'operations', 'infrastructure'],
+      activityTriggers: ['system_monitoring', 'infrastructure_oversight', 'operational_metrics'],
+      autoProgressEnabled: true,
+      syncPriority: 8,
+    },
+    'wbs-creation': {
+      associatedCategories: ['project_management', 'planning', 'organization'],
+      activityTriggers: ['wbs_creation', 'project_planning', 'task_structuring'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'ai-wbs-generation': {
+      associatedCategories: ['ai_ml', 'project_management', 'automation'],
+      activityTriggers: ['ai_assistance', 'automated_planning', 'intelligent_structuring'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'data-visualization': {
+      associatedCategories: ['analytics', 'visualization', 'business_intelligence'],
+      activityTriggers: ['data_visualization', 'chart_creation', 'insight_discovery'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    gamification: {
+      associatedCategories: ['gamification', 'engagement', 'motivation'],
+      activityTriggers: ['gamification_usage', 'engagement_tracking', 'motivation_systems'],
+      autoProgressEnabled: true,
+      syncPriority: 8,
+    },
+    'improvement-plan': {
+      associatedCategories: ['planning', 'business', 'optimization'],
+      activityTriggers: ['improvement_planning', 'strategy_development', 'optimization_roadmap'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'system-design': {
+      associatedCategories: ['architecture', 'design', 'documentation'],
+      activityTriggers: ['system_design', 'architecture_planning', 'technical_documentation'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'pwa-features': {
+      associatedCategories: ['mobile', 'pwa', 'user_experience'],
+      activityTriggers: ['pwa_usage', 'mobile_optimization', 'offline_functionality'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'neurodiverse-support': {
+      associatedCategories: ['accessibility', 'inclusion', 'user_experience'],
+      activityTriggers: ['accessibility_features', 'inclusive_design', 'cognitive_support'],
+      autoProgressEnabled: true,
+      syncPriority: 7,
+    },
+    'guitar-practice': {
+      associatedCategories: ['music', 'creative', 'personal_development'],
+      activityTriggers: ['music_practice', 'skill_development', 'creative_expression'],
       autoProgressEnabled: true,
       syncPriority: 4,
     },
-    'achievements-badges': {
-      associatedCategories: ['achievement', 'social', 'presentation'],
-      activityTriggers: ['achievement_tracking', 'badge_management', 'progress_celebration'],
+    shop: {
+      associatedCategories: ['ecommerce', 'business', 'sales'],
+      activityTriggers: ['shop_management', 'product_browsing', 'sales_activity'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    products: {
+      associatedCategories: ['ecommerce', 'catalog', 'inventory'],
+      activityTriggers: ['product_management', 'catalog_maintenance', 'inventory_tracking'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    twitter: {
+      associatedCategories: ['social', 'marketing', 'communication'],
+      activityTriggers: ['social_media', 'content_sharing', 'community_engagement'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    'political-trends': {
+      associatedCategories: ['politics', 'analytics', 'data_science'],
+      activityTriggers: ['political_analysis', 'trend_monitoring', 'data_insights'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    'election-candidates': {
+      associatedCategories: ['politics', 'database', 'public_service'],
+      activityTriggers: ['candidate_tracking', 'political_data', 'civic_engagement'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    'candidate-registration': {
+      associatedCategories: ['politics', 'registration', 'data_management'],
+      activityTriggers: ['candidate_registration', 'political_participation', 'civic_duty'],
+      autoProgressEnabled: true,
+      syncPriority: 5,
+    },
+    calendar: {
+      associatedCategories: ['productivity', 'planning', 'time_management'],
+      activityTriggers: ['calendar_management', 'scheduling', 'time_organization'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'admin-dashboard': {
+      associatedCategories: ['administration', 'management', 'oversight'],
+      activityTriggers: ['admin_tasks', 'system_management', 'user_administration'],
+      autoProgressEnabled: true,
+      syncPriority: 9,
+    },
+    'api-test': {
+      associatedCategories: ['testing', 'development', 'api_design'],
+      activityTriggers: ['api_testing', 'endpoint_validation', 'integration_testing'],
       autoProgressEnabled: true,
       syncPriority: 7,
+    },
+    profile: {
+      associatedCategories: ['user_management', 'personalization', 'settings'],
+      activityTriggers: ['profile_management', 'user_customization', 'personal_settings'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    settings: {
+      associatedCategories: ['configuration', 'customization', 'preferences'],
+      activityTriggers: ['settings_configuration', 'preference_management', 'system_customization'],
+      autoProgressEnabled: true,
+      syncPriority: 6,
+    },
+    'achievements-badges': {
+      associatedCategories: ['achievement', 'gamification', 'progress_tracking'],
+      activityTriggers: ['achievement_viewing', 'badge_collection', 'progress_celebration'],
+      autoProgressEnabled: true,
+      syncPriority: 8,
     },
   };
 
