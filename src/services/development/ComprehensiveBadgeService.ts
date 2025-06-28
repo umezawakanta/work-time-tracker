@@ -129,7 +129,16 @@ class ComprehensiveBadgeService {
   private syncVersion: number = 0;
 
   // 大幅に拡張されたカテゴリ情報
-  private readonly CATEGORY_CONFIG = {
+  private readonly CATEGORY_CONFIG: Record<
+    string,
+    {
+      name: string;
+      trackingWeight: number;
+      autoProgressTriggers: string[];
+      skillAreas: string[];
+      prerequisites: string[];
+    }
+  > = {
     // 技術系基盤
     foundation: {
       name: '技術基盤',
@@ -1816,7 +1825,7 @@ class ComprehensiveBadgeService {
    * 🔍 関連カテゴリ発見
    */
   private findRelatedCategories(category: string): string[] {
-    const synergies = {
+    const synergies: Record<string, string[]> = {
       cicd: ['deployment', 'testing', 'monitoring'],
       ai_ml: ['analytics', 'data_science', 'automation'],
       marketing: ['analytics', 'content', 'social'],

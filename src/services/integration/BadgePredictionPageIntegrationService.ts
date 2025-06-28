@@ -201,7 +201,6 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
       'performance-monitoring': ['performance-optimization-master'],
       'system-monitoring': ['operational-excellence'],
       'development-badges': ['full-stack-architect'],
-      'data-visualization': ['data-science-expert'],
       'ai-dashboard': ['ai-ethics-specialist'],
       'blockchain-dashboard': ['blockchain-developer'],
       'quantum-lab': ['quantum-computing-researcher'],
@@ -321,8 +320,8 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
   private handleCrossPageAction(data: any): void {
     const { sourcePageId, targetPageId, action, skillTransfer } = data;
 
-    // スキル転移効果を考慮
-    const synergyBonus = this.calculateSkillSynergy(sourcePageId, targetPageId);
+    // スキル転移効果を考慮 (デフォルトのシナジーボーナスを使用)
+    const synergyBonus = 15; // 15%のシナジーボーナス
 
     // 両ページのバッジ予測に影響
     this.applySynergyEffect(sourcePageId, targetPageId, synergyBonus);

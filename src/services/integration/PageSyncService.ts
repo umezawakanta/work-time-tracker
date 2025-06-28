@@ -45,24 +45,40 @@ export type PageKey =
   | 'home'
   | 'dashboard'
   | 'todos'
+  | 'development-badges'
   | 'badge-dashboard'
   | 'badge-showcase'
   | 'badge-prediction'
   | 'wbs'
+  | 'wbs-creation'
   | 'ai-wbs'
+  | 'ai-wbs-generation'
   | 'gamification'
   | 'attendance'
+  | 'time-tracking'
   | 'reports'
   | 'improvement-planning'
+  | 'improvement-plan'
   | 'system-design'
   | 'admin'
+  | 'admin-dashboard'
   | 'api-testing'
   | 'quality'
+  | 'quality-dashboard'
   | 'error-monitoring'
   | 'performance-monitoring'
   | 'profile'
   | 'settings'
-  | 'achievements';
+  | 'achievements'
+  | 'analytics'
+  | 'team-collaboration'
+  | 'project-management'
+  | 'resource-planning'
+  | 'security-audit'
+  | 'deployment-status'
+  | 'ci-cd-pipeline'
+  | 'documentation'
+  | 'knowledge-base';
 
 export interface PageState {
   pageName: string;
@@ -78,6 +94,30 @@ export interface PageSubscriber {
   id: string;
   callback: (state: PageState) => void;
   lastNotified: string;
+}
+
+export interface SyncOperation {
+  id: string;
+  fromPage: PageKey;
+  targetPages: PageKey[];
+  data: any;
+  timestamp: string;
+  priority: number;
+  status: 'pending' | 'completed' | 'failed';
+  retryCount: number;
+  maxRetries: number;
+}
+
+export interface SyncStatistics {
+  totalPages: number;
+  activePages: number;
+  syncedPages: number;
+  conflictsCount: number;
+  queueLength: number;
+  isProcessing: boolean;
+  lastHealthCheck: string;
+  averageResponseTime: number;
+  successRate: number;
 }
 
 /**

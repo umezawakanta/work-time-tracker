@@ -29,7 +29,7 @@ const RTL_LANGUAGES: RTLLanguage[] = [
   { code: 'ur', name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰', region: 'South Asia' },
 ];
 
-const RTL_TRANSLATIONS = {
+const RTL_TRANSLATIONS: Record<string, Record<string, string>> = {
   ar: {
     'work-tracker': 'متتبع وقت العمل',
     dashboard: 'لوحة المعلومات',
@@ -93,7 +93,7 @@ export const RTLSupport: React.FC = () => {
   };
 
   const translate = (key: string): string => {
-    const translations = RTL_TRANSLATIONS[selectedLanguage.code as keyof typeof RTL_TRANSLATIONS];
+    const translations = RTL_TRANSLATIONS[selectedLanguage.code];
     return translations?.[key] || key;
   };
 

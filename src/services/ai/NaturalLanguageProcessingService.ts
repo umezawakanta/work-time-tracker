@@ -464,12 +464,13 @@ export class NaturalLanguageProcessingService {
   }
 
   private recognizeIntent(input: string, analysis: NLPAnalysisResult): string {
-    const intents = {
+    const intents: Record<string, RegExp> = {
       task_creation: /(?:タスク|作業).*?(?:作る|作成|追加|登録)/,
       time_tracking: /(?:時間|タイマー).*?(?:測定|記録|開始|停止)/,
       report_request: /(?:レポート|報告|分析|統計).*?(?:見る|表示|確認)/,
       help_request: /(?:助けて|手伝って|分からない|教えて|ヘルプ)/,
       productivity_query: /(?:生産性|効率|パフォーマンス).*?(?:どう|改善|向上)/,
+      general_query: /.*/,
     };
 
     for (const [intent, pattern] of Object.entries(intents)) {
@@ -486,7 +487,7 @@ export class NaturalLanguageProcessingService {
     analysis: NLPAnalysisResult,
     context?: any
   ): Promise<string> {
-    const responses = {
+    const responses: Record<string, string> = {
       task_creation: 'タスクの作成をお手伝いします。どのようなタスクを作成したいですか？',
       time_tracking:
         '時間トラッキングについてサポートします。タイマーの開始や停止、記録の確認ができます。',
@@ -504,7 +505,7 @@ export class NaturalLanguageProcessingService {
     intent: string,
     analysis: NLPAnalysisResult
   ): Array<{ type: string; data: any }> {
-    const actionSuggestions = {
+    const actionSuggestions: Record<string, Array<{ type: string; data: any }>> = {
       task_creation: [{ type: 'open_task_form', data: { priority: analysis.priority } }],
       time_tracking: [{ type: 'start_timer', data: {} }],
       report_request: [{ type: 'generate_report', data: { period: 'week' } }],
@@ -515,7 +516,7 @@ export class NaturalLanguageProcessingService {
   }
 
   private generateFollowUpQuestions(intent: string, analysis: NLPAnalysisResult): string[] {
-    const questions = {
+    const questions: Record<string, string[]> = {
       task_creation: [
         'タスクの締切はありますか？',
         '担当者を指定しますか？',

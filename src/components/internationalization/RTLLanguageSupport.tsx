@@ -338,7 +338,7 @@ export const RTLLanguageSupport: React.FC = () => {
   // 翻訳関数
   const translate = (key: string): string => {
     const translations = RTL_TRANSLATIONS[selectedLanguage.code as keyof typeof RTL_TRANSLATIONS];
-    return translations?.[key] || key;
+    return (translations as Record<string, string>)?.[key] || key;
   };
 
   // RTL CSS スタイル

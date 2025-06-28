@@ -250,7 +250,7 @@ export const UniversalSyncDashboard: React.FC = () => {
   };
 
   const getCategoryIcon = (category: string) => {
-    const icons: Record<string, React.ComponentType> = {
+    const icons: Record<string, React.ComponentType<{ className?: string }>> = {
       core: Activity,
       analytics: BarChart3,
       productivity: Target,
@@ -721,7 +721,7 @@ const PageSyncGrid: React.FC<PageSyncGridProps> = ({ statuses }) => {
   };
 
   const getCategoryIcon = (category: string) => {
-    const icons: Record<string, React.ComponentType> = {
+    const icons: Record<string, React.ComponentType<{ className?: string }>> = {
       core: Activity,
       analytics: BarChart3,
       productivity: Target,

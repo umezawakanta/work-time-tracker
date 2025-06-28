@@ -463,7 +463,7 @@ class ComprehensiveBadgeSyncService {
       syncPriority: 9,
     },
     'api-test': {
-      associatedCategories: ['testing', 'development', 'api_design'],
+      associatedCategories: ['testing', 'foundation', 'architecture'],
       activityTriggers: ['api_testing', 'endpoint_validation', 'integration_testing'],
       autoProgressEnabled: true,
       syncPriority: 7,
@@ -624,7 +624,7 @@ class ComprehensiveBadgeSyncService {
       config.associatedCategories.includes(badge.category)
     );
 
-    const categoryProgress: Record<BadgeCategory, number> = {};
+    const categoryProgress = {} as Record<BadgeCategory, number>;
     config.associatedCategories.forEach((category) => {
       categoryProgress[category] = this.calculateCategoryProgress(category);
     });
@@ -972,7 +972,8 @@ class ComprehensiveBadgeSyncService {
     if (!pageConfig) return [];
 
     const relevantBadges = this.comprehensiveBadgeService
-      .getBadgesByCategory(pageConfig.associatedCategories[0])
+      .getAllBadges()
+      .filter((badge) => pageConfig.associatedCategories.includes(badge.category))
       .filter((badge) => !badge.isCompleted);
 
     return relevantBadges.slice(0, 5).map((badge, index) => ({
@@ -1142,7 +1143,7 @@ class ComprehensiveBadgeSyncService {
     );
 
     return Object.entries(categoryCount)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 3)
       .map(([category]) => category as BadgeCategory);
   }
@@ -1205,7 +1206,7 @@ class ComprehensiveBadgeSyncService {
   private calculateWeeklyProgress(plan: WeeklyBadgePlan): WeeklyBadgePlan['actualProgress'] {
     // 実際の週次進捗計算
     const completed = plan.plannedBadges.filter(
-      (b) => this.comprehensiveBadgeService.getBadgeById(b.badgeId)?.isCompleted
+      (b) => this.comprehensiveBadgeService.getBadge(b.badgeId)?.isCompleted
     ).length;
 
     return {
