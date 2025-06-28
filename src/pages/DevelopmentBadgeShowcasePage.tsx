@@ -447,7 +447,7 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
 
         {/* Latest achievements showcase */}
         {recentAchievements.length > 0 && (
-          <Card className="mb-8 border-4 border-gradient-to-r from-gold-400 to-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
+          <Card className="mb-8 border-4 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50">
             <CardHeader>
               <CardTitle className="text-2xl flex items-center">
                 <Star className="w-6 h-6 mr-2 text-yellow-500" />
