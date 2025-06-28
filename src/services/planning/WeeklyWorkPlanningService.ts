@@ -3,7 +3,7 @@
  * サイバーセキュリティバッジ学習計画に基づく包括的な作業スケジュール管理
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/EventEmitter';
 import {
   CYBERSECURITY_SPECIALIST_BADGE,
   SecurityBadge,

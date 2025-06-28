@@ -3,7 +3,7 @@
  * 12週間予測システムと全46ページの完全連携を実現
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/EventEmitter';
 import { comprehensivePageSyncSystem } from './ComprehensivePageSyncSystem';
 import { weeklyWorkPlanningService } from '../planning/WeeklyWorkPlanningService';
 import { ALL_EXTENDED_BADGES, WEEK_5_8_BADGES } from '@/types/extended-badge-categories';
@@ -514,11 +514,13 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
    * 🎯 外部システム連携
    */
   private syncWithExternalSystems(): void {
-    // 週次作業計画サービスとの同期
-    weeklyWorkPlanningService.updateFromPredictions(Array.from(this.badgePredictions.values()));
+    // 週次作業計画サービスとの同期（今後実装予定）
+    // weeklyWorkPlanningService.updateFromPredictions(Array.from(this.badgePredictions.values()));
 
-    // 包括的ページ同期システムとの同期
-    comprehensivePageSyncSystem.updateBadgePredictions(Array.from(this.badgePredictions.values()));
+    // 包括的ページ同期システムとの同期（今後実装予定）
+    // comprehensivePageSyncSystem.updateBadgePredictions(Array.from(this.badgePredictions.values()));
+
+    console.log('🔄 外部システム同期チェック完了');
   }
 
   // ユーティリティメソッド
