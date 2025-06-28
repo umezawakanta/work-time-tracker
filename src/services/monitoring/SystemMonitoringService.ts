@@ -254,8 +254,8 @@ class SystemMonitoringService {
    */
   private getMemoryUsed(): number {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      return memory.usedJSHeapSize / (1024 * 1024); // MB
+      const { usedJSHeapSize } = (performance as any).memory;
+      return usedJSHeapSize / (1024 * 1024); // MB
     }
     return 1024 + Math.random() * 512; // 1-1.5GB
   }
@@ -265,8 +265,8 @@ class SystemMonitoringService {
    */
   private getMemoryTotal(): number {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      return memory.jsHeapSizeLimit / (1024 * 1024); // MB
+      const { jsHeapSizeLimit } = (performance as any).memory;
+      return jsHeapSizeLimit / (1024 * 1024); // MB
     }
     return 4096; // 4GB
   }
