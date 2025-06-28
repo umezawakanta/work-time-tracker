@@ -160,14 +160,14 @@ export const IntegratedTaskDashboard: React.FC<{
       .filter((todo) => !todo.completed && isToday(todo.createdAt))
       .slice(0, 7) // 最大7件
       .map((todo, index) => ({
-        id: `todo-${todo.id}`,
+        id: `todo-${todo._id}`,
         title: todo.task,
-        description: todo.description || '詳細なし',
+        description: todo.note || '詳細なし',
         category: getCategoryFromTodo(todo),
         difficulty: getDifficultyFromTodo(todo),
         xpReward: getXPRewardFromTodo(todo),
         isCompleted: todo.completed,
-        completedAt: todo.completedDate,
+        completedAt: todo.completedDate || undefined,
         streak: 0,
         isHabit: false,
         priority: getPriorityFromTodo(todo),
@@ -287,9 +287,11 @@ export const IntegratedTaskDashboard: React.FC<{
             const todoId = task.id.replace('todo-', '');
             dispatch(
               updateTodoItem({
-                id: todoId,
-                completed: true,
-                completedDate: new Date().toISOString(),
+                _id: todoId,
+                updates: {
+                  completed: true,
+                  completedDate: new Date().toISOString(),
+                },
               })
             );
           }
@@ -412,8 +414,8 @@ export const IntegratedTaskDashboard: React.FC<{
     dispatch(
       addTodoItem({
         task: newTaskTitle,
-        description: 'カスタムタスク',
         priority: 3,
+        isPrioritized: false,
         createdAt: new Date().toISOString(),
       })
     );

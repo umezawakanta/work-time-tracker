@@ -244,7 +244,7 @@ export const ultimateBadgeDatabase: DevelopmentBadge[] = [
 export const badgeStatistics = {
   totalBadges: ultimateBadgeDatabase.length,
   completedBadges: ultimateBadgeDatabase.filter((badge) => badge.progress >= 100).length,
-  totalPoints: ultimateBadgeDatabase.reduce((sum, badge) => sum + badge.points, 0),
+  totalPoints: ultimateBadgeDatabase.reduce((sum, badge) => sum + (badge.points || 0), 0),
   averageProgress:
     ultimateBadgeDatabase.reduce((sum, badge) => sum + badge.progress, 0) /
     ultimateBadgeDatabase.length,

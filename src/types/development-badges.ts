@@ -15,6 +15,7 @@ export interface DevelopmentBadge {
   completedAt?: string;
   points?: number;
   rewards?: string[];
+  tags?: string[];
 }
 
 export type BadgeCategory =
@@ -53,7 +54,9 @@ export type BadgeCategory =
   | 'investment' // 投資・資金調達
   | 'legal' // 法務
   | 'hr' // 労務・人事
+  | 'human_resources' // 人的資源
   | 'finance' // 財務・会計・税務
+  | 'asset_management' // 資産管理
   | 'secretarial' // 秘書・アシスタント
   | 'social_contribution' // 社会貢献
   | 'monetization' // マネタイズ
@@ -470,6 +473,9 @@ export interface BadgeRequirement {
     | 'content_management'
     | 'distribution_network'
     | 'editing_workflow'
+    | 'editorial_workflow'
+    | 'technical_documentation'
+    | 'ebook_production'
     | 'quality_control'
     | 'collaborative_editing'
     | 'ethics_framework'
@@ -719,6 +725,7 @@ export interface BadgeRequirement {
     | 'hr_policy_implementation' // HR政策実装
     | 'employee_satisfaction_score' // 従業員満足度
     | 'budget_optimization' // 予算最適化
+    | 'financial_planning' // 財務計画
     | 'executive_support_quality' // 役員サポート品質
     | 'global_team_management' // グローバルチーム管理
     | 'cultural_intelligence_assessment'; // 文化的知能評価

@@ -1656,23 +1656,6 @@ class ComprehensiveBadgeService {
   }
 
   /**
-   * 📝 活動記録
-   */
-  public recordActivity(activityData: Omit<BadgeActivity, 'id' | 'timestamp'>): void {
-    const activity: BadgeActivity = {
-      id: `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      ...activityData,
-    };
-
-    this.activities.push(activity);
-
-    if (this.activities.length > 1000) {
-      this.activities = this.activities.slice(-1000);
-    }
-  }
-
-  /**
    * 📊 統計取得
    */
   public getBadgeStatistics(): BadgeStatistics {

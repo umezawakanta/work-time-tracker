@@ -688,7 +688,7 @@ class ComprehensivePageSyncSystem extends EventEmitter {
       this.pageData.set(page.id, {
         pageId: page.id,
         pageName: page.name,
-        category: page.category,
+        category: page.category as PageCategory,
         priority: page.priority,
         lastAccessed: new Date(),
         sessionDuration: 0,
@@ -1201,8 +1201,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
         (b) => b.id === 'cybersecurity-specialist'
       );
       if (cyberBadge) {
-        cyberBadge.progress = currentProgress.progressPercentage;
-        this.badgeProgressCache.set('cybersecurity-specialist', cyberBadge.progress);
+        const badge = cyberBadge as unknown as ComprehensiveBadge;
+        badge.progress = currentProgress.progressPercentage;
+        this.badgeProgressCache.set('cybersecurity-specialist', badge.progress);
       }
     }
   }
