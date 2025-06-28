@@ -320,7 +320,9 @@ class UnifiedPageSyncService {
     const relevantBadges = this.getPageRelevantBadges(pageName);
 
     relevantBadges.forEach((badge) => {
-      if (badge.isCompleted) return;
+      if (badge.isCompleted) {
+        return;
+      }
 
       let progressDelta = 0;
       let reason = '';
