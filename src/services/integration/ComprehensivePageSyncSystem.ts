@@ -3,10 +3,12 @@
  * 全46ページ間のリアルタイム同期とバッジ完了予測による週次計画管理
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/EventEmitter';
 import {
   COMPREHENSIVE_BADGE_CATEGORIES,
   PAGE_CATEGORY_MAPPING,
+  type ComprehensiveBadge,
+  type BadgeRequirement,
 } from '@/types/comprehensive-badge-categories';
 import { weeklyWorkPlanningService } from '@/services/planning/WeeklyWorkPlanningService';
 
@@ -659,7 +661,7 @@ class ComprehensivePageSyncSystem extends EventEmitter {
   private activeConnections: Set<string> = new Set();
   private syncQueue: CrossPageAction[] = [];
   private badgeProgressCache: Map<string, number> = new Map();
-  private syncInterval: NodeJS.Timeout | null = null;
+  private syncInterval: number | null = null;
   private conflictResolutionQueue: SyncEvent[] = [];
 
   private constructor() {
@@ -719,7 +721,7 @@ class ComprehensivePageSyncSystem extends EventEmitter {
       this.updateBadgeProgress();
       this.checkCrossPageIntegrity();
       this.generateSyncReports();
-    }, 30000); // 30秒ごと
+    }, 30000) as unknown as number; // 30秒ごと
 
     console.log('🔄 包括的ページ同期プロセス開始');
   }

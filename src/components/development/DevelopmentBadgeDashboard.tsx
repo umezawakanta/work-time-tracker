@@ -6,6 +6,10 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Target, Zap, Code, Palette, CheckCircle } from 'lucide-react';
 import { DevelopmentBadge, BadgeCategory, DEVELOPMENT_BADGES } from '@/types/development-badges';
+import {
+  unifiedBadgeManagementService,
+  BadgeSyncData,
+} from '@/services/badges/UnifiedBadgeManagementService';
 
 const difficultyColors = {
   bronze: 'bg-amber-100 text-amber-800 border-amber-200',
@@ -25,6 +29,8 @@ interface RepositoryProgress {
 export const DevelopmentBadgeDashboard: React.FC = () => {
   const [badges, setBadges] = useState<DevelopmentBadge[]>(DEVELOPMENT_BADGES);
   const [selectedCategory, setSelectedCategory] = useState<'all' | BadgeCategory>('all');
+  const [syncData, setSyncData] = useState<BadgeSyncData | null>(null);
+  const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
 
   const updateBadgeProgress = useCallback((progress: RepositoryProgress) => {
     setBadges((currentBadges) =>
@@ -77,9 +83,44 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
     }
   }, [updateBadgeProgress]);
 
-  // GitHub APIからコミット数や進捗を取得
+  // 統一バッジ管理サービスとの同期
   useEffect(() => {
+    // 統一サービスからバッジデータを取得
+    const unifiedBadges = unifiedBadgeManagementService.getBadgeData();
+    setBadges(unifiedBadges);
+
+    // 同期イベントリスナーの設定
+    const handleBadgeProgressUpdate = (data: any) => {
+      const updatedBadges = unifiedBadgeManagementService.getBadgeData();
+      setBadges(updatedBadges);
+      setLastSyncTime(new Date());
+    };
+
+    const handleSyncDataUpdate = (data: BadgeSyncData) => {
+      setSyncData(data);
+      setLastSyncTime(new Date());
+    };
+
+    const handleBadgeUnlocked = (data: any) => {
+      const updatedBadges = unifiedBadgeManagementService.getBadgeData();
+      setBadges(updatedBadges);
+      console.log('🎉 バッジアンロック通知:', data.badge.name);
+    };
+
+    // イベントリスナー登録
+    unifiedBadgeManagementService.on('badge-progress-updated', handleBadgeProgressUpdate);
+    unifiedBadgeManagementService.on('sync-data-updated', handleSyncDataUpdate);
+    unifiedBadgeManagementService.on('badge-unlocked', handleBadgeUnlocked);
+
+    // GitHub進捗取得
     fetchDevelopmentProgress();
+
+    // クリーンアップ
+    return () => {
+      unifiedBadgeManagementService.off('badge-progress-updated', handleBadgeProgressUpdate);
+      unifiedBadgeManagementService.off('sync-data-updated', handleSyncDataUpdate);
+      unifiedBadgeManagementService.off('badge-unlocked', handleBadgeUnlocked);
+    };
   }, [fetchDevelopmentProgress]);
 
   // 🐛 エラーエリミネーター: コンソールエラーチェック
@@ -302,10 +343,50 @@ export const DevelopmentBadgeDashboard: React.FC = () => {
               サイト開発の進捗をバッジで可視化・ゲーミフィケーション
             </p>
           </div>
-          <Button onClick={fetchDevelopmentProgress} variant="outline">
-            進捗を更新
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={fetchDevelopmentProgress} variant="outline">
+              進捗を更新
+            </Button>
+            <Button
+              onClick={() => unifiedBadgeManagementService.forceSyncAll()}
+              variant="outline"
+              size="sm"
+            >
+              🔄 同期テスト
+            </Button>
+          </div>
         </div>
+
+        {/* 同期ステータス */}
+        {syncData && (
+          <Card className="mb-4 border border-green-200 bg-green-50">
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-green-700">3つのページが同期中</span>
+                </div>
+                <div className="text-xs text-green-600">
+                  最終同期: {lastSyncTime.toLocaleTimeString('ja-JP')}
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 mt-2 text-xs">
+                <div>
+                  <span className="font-medium">開発ダッシュボード:</span>{' '}
+                  {syncData.developmentDashboard.completedBadges}個完了
+                </div>
+                <div>
+                  <span className="font-medium">予測システム:</span>{' '}
+                  {syncData.predictionSystem.accuracyRate}% 精度
+                </div>
+                <div>
+                  <span className="font-medium">実績ページ:</span>{' '}
+                  {syncData.showcaseView.recentAchievements}個 最近の達成
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* 全体進捗 */}
         <Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">

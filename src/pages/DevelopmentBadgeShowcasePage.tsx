@@ -27,6 +27,7 @@ import {
 import { DevelopmentBadge, DEVELOPMENT_BADGES } from '@/types/development-badges';
 import { useAuth } from '@/hooks/useAuth';
 import { UserOnboardingModal } from '@/components/engagement/UserOnboardingModal';
+import { unifiedBadgeManagementService } from '@/services/badges/UnifiedBadgeManagementService';
 
 const difficultyColors = {
   bronze: 'bg-amber-100 text-amber-800 border-amber-200',
@@ -77,8 +78,11 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
   const [achievements, setAchievements] = useState<DevelopmentBadge[]>([]);
 
   useEffect(() => {
-    // Initialize badges and sort by achievement status
-    const sortedBadges = [...DEVELOPMENT_BADGES].sort((a, b) => {
+    // 統一バッジ管理サービスからバッジデータを取得
+    const unifiedBadges = unifiedBadgeManagementService.getBadgeData();
+
+    // バッジデータをソート
+    const sortedBadges = [...unifiedBadges].sort((a, b) => {
       if (a.isUnlocked && !b.isUnlocked) return -1;
       if (!a.isUnlocked && b.isUnlocked) return 1;
       if (a.isUnlocked && b.isUnlocked) {
@@ -87,6 +91,37 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
       return b.progress - a.progress;
     });
     setAchievements(sortedBadges);
+
+    // 統一サービスのイベントリスナー設定
+    const handleBadgeUpdate = () => {
+      const updatedBadges = unifiedBadgeManagementService.getBadgeData();
+      const sortedUpdatedBadges = [...updatedBadges].sort((a, b) => {
+        if (a.isUnlocked && !b.isUnlocked) return -1;
+        if (!a.isUnlocked && b.isUnlocked) return 1;
+        if (a.isUnlocked && b.isUnlocked) {
+          return new Date(b.unlockedAt || 0).getTime() - new Date(a.unlockedAt || 0).getTime();
+        }
+        return b.progress - a.progress;
+      });
+      setAchievements(sortedUpdatedBadges);
+    };
+
+    const handleBadgeUnlocked = (data: any) => {
+      console.log('🏆 実績ページ: 新しいバッジがアンロックされました！', data.badge.name);
+      handleBadgeUpdate(); // データを再取得
+    };
+
+    // イベントリスナー登録
+    unifiedBadgeManagementService.on('badge-progress-updated', handleBadgeUpdate);
+    unifiedBadgeManagementService.on('badge-unlocked', handleBadgeUnlocked);
+    unifiedBadgeManagementService.on('sync-data-updated', handleBadgeUpdate);
+
+    // クリーンアップ
+    return () => {
+      unifiedBadgeManagementService.off('badge-progress-updated', handleBadgeUpdate);
+      unifiedBadgeManagementService.off('badge-unlocked', handleBadgeUnlocked);
+      unifiedBadgeManagementService.off('sync-data-updated', handleBadgeUpdate);
+    };
   }, []);
 
   const filteredBadges =
