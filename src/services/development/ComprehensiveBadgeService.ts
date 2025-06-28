@@ -1814,7 +1814,9 @@ class ComprehensiveBadgeService {
    */
   private async handleCategoryInteractions(primaryCategory: string, impact: number): Promise<void> {
     const config = this.CATEGORY_CONFIG[primaryCategory];
-    if (!config || !config.prerequisites) return;
+    if (!config || !config.prerequisites) {
+      return;
+    }
 
     // 前提条件カテゴリにも影響を与える
     for (const prerequisite of config.prerequisites) {
