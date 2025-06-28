@@ -317,9 +317,9 @@ const linguisticsBadges: DevelopmentBadge[] = [
 // 📖 文学・出版バッジ
 const literatureBadges: DevelopmentBadge[] = [
   {
-    id: 'digital-publisher',
-    name: 'Digital Publisher',
-    description: 'デジタル出版の開拓者',
+    id: 'indie-publisher',
+    name: 'Indie Publisher',
+    description: 'インディペンデント出版の開拓者',
     category: 'literature',
     difficulty: 'silver',
     icon: '📖',

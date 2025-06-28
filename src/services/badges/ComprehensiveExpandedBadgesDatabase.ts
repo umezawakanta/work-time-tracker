@@ -485,9 +485,9 @@ export const internationalizationBadges: DevelopmentBadge[] = [
 // 📚 文学・出版バッジ
 export const literaturePublishingBadges: DevelopmentBadge[] = [
   {
-    id: 'digital-publisher',
-    name: 'Digital Publisher',
-    description: 'デジタル出版の開拓者',
+    id: 'platform-publisher',
+    name: 'Platform Publisher',
+    description: 'プラットフォーム出版の開拓者',
     category: 'digital_publishing',
     difficulty: 'silver',
     icon: '📖',
@@ -537,7 +537,7 @@ export const literaturePublishingBadges: DevelopmentBadge[] = [
     isUnlocked: false,
     progress: 0,
     points: 150,
-    prerequisites: ['digital-publisher'],
+    prerequisites: ['platform-publisher'],
   },
 ];
 

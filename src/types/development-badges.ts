@@ -6220,8 +6220,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
 
   // 🔧 仮想化・コンテナ関連バッジ
   {
-    id: 'virtualization-expert',
-    name: '🔧 仮想化エキスパート',
+    id: 'containerization-master',
+    name: '🔧 コンテナ化マスター',
     description: 'VM・Docker・Kubernetes・コンテナオーケストレーション',
     category: 'virtualization',
     difficulty: 'platinum',
@@ -6500,8 +6500,8 @@ export const DEVELOPMENT_BADGES: DevelopmentBadge[] = [
 
   // 📚 文学・出版関連バッジ
   {
-    id: 'digital-publisher',
-    name: '📚 デジタル出版者',
+    id: 'ebook-publisher',
+    name: '📚 電子書籍出版者',
     description: '電子書籍・出版プラットフォーム・コンテンツ管理・著作権管理',
     category: 'literature',
     difficulty: 'gold',
