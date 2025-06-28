@@ -980,7 +980,9 @@ class ThreeDVisualizationService {
    * 🔄 パフォーマンス監視開始
    */
   private startPerformanceMonitoring(): void {
-    if (this.isMonitoring) return;
+    if (this.isMonitoring) {
+      return;
+    }
 
     this.isMonitoring = true;
     setInterval(() => {
