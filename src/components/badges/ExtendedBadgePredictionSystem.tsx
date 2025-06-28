@@ -23,6 +23,9 @@ import {
   Sun,
   Moon,
   AlertCircle,
+  ChevronRight,
+  Star,
+  ArrowRight,
 } from 'lucide-react';
 
 // 日次タスク関連のインターフェース
@@ -100,6 +103,38 @@ interface MonthlyOverview {
   }>;
 }
 
+// 週次計画のインターフェース
+interface WeeklyBadgePlan {
+  badgeId: string;
+  badgeName: string;
+  badgeEmoji: string;
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+  estimatedHours: number;
+  actualHours: number;
+  targetDate: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'delayed';
+  dependencies: string[];
+  progress: number;
+  confidence: number;
+}
+
+interface WeeklySchedule {
+  weekNumber: number;
+  startDate: string;
+  endDate: string;
+  theme: string;
+  plannedBadges: WeeklyBadgePlan[];
+  totalPlannedHours: number;
+  totalActualHours: number;
+  completionRate: number;
+  efficiency: number;
+  onTrackScore: number;
+  riskLevel: 'low' | 'medium' | 'high';
+  keyMilestones: string[];
+  notes: string;
+}
+
 export const ExtendedBadgePredictionSystem: React.FC = () => {
   const [currentView, setCurrentView] = useState<
     'daily' | 'weekly' | 'monthly' | 'vs' | 'timeline' | 'analysis'
@@ -129,12 +164,273 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
     ],
   });
 
+  // 週次計画関連のstate
+  const [expandedWeek, setExpandedWeek] = useState<number | null>(1);
+  const [weeklySchedules, setWeeklySchedules] = useState<WeeklySchedule[]>([]);
+
   // メインメトリクス
   const mainMetrics = {
     totalPredictedBadges: 75,
     completedBadges: 93,
     totalLearningHours: 620,
     accuracy: predictionAccuracy,
+  };
+
+  // 週次スケジュールデータの初期化
+  const initializeWeeklySchedules = () => {
+    const schedules: WeeklySchedule[] = [
+      {
+        weekNumber: 1,
+        startDate: '2025-06-28',
+        endDate: '2025-07-04',
+        theme: 'セキュリティ基盤構築',
+        plannedBadges: [
+          {
+            badgeId: 'security-basics',
+            badgeName: 'セキュリティ基礎',
+            badgeEmoji: '🔐',
+            category: 'セキュリティ',
+            priority: 'high',
+            estimatedHours: 12,
+            actualHours: 8,
+            targetDate: '2025-07-02',
+            status: 'in_progress',
+            dependencies: [],
+            progress: 65,
+            confidence: 85,
+          },
+          {
+            badgeId: 'network-security',
+            badgeName: 'ネットワークセキュリティ',
+            badgeEmoji: '🛡️',
+            category: 'セキュリティ',
+            priority: 'high',
+            estimatedHours: 8,
+            actualHours: 0,
+            targetDate: '2025-07-04',
+            status: 'not_started',
+            dependencies: ['security-basics'],
+            progress: 0,
+            confidence: 75,
+          },
+        ],
+        totalPlannedHours: 20,
+        totalActualHours: 8,
+        completionRate: 40,
+        efficiency: 85,
+        onTrackScore: 78,
+        riskLevel: 'low',
+        keyMilestones: ['セキュリティ基礎概念の理解', 'ネットワーク脆弱性スキャン実践'],
+        notes: '基礎から着実に積み上げる週。理論と実践のバランスを重視。',
+      },
+      {
+        weekNumber: 2,
+        startDate: '2025-07-05',
+        endDate: '2025-07-11',
+        theme: 'ペネトレーションテスト実践',
+        plannedBadges: [
+          {
+            badgeId: 'penetration-testing',
+            badgeName: 'ペネトレーションテスト',
+            badgeEmoji: '🔍',
+            category: 'セキュリティ',
+            priority: 'high',
+            estimatedHours: 15,
+            actualHours: 0,
+            targetDate: '2025-07-11',
+            status: 'not_started',
+            dependencies: ['network-security'],
+            progress: 0,
+            confidence: 70,
+          },
+          {
+            badgeId: 'vulnerability-assessment',
+            badgeName: '脆弱性評価',
+            badgeEmoji: '🎯',
+            category: 'セキュリティ',
+            priority: 'medium',
+            estimatedHours: 5,
+            actualHours: 0,
+            targetDate: '2025-07-09',
+            status: 'not_started',
+            dependencies: ['security-basics'],
+            progress: 0,
+            confidence: 80,
+          },
+        ],
+        totalPlannedHours: 20,
+        totalActualHours: 0,
+        completionRate: 0,
+        efficiency: 85,
+        onTrackScore: 72,
+        riskLevel: 'medium',
+        keyMilestones: ['Kali Linuxツール習得', '実際のシステムでのテスト実施'],
+        notes: '実践的なスキル構築。ハンズオン重視で進める。',
+      },
+      {
+        weekNumber: 3,
+        startDate: '2025-07-12',
+        endDate: '2025-07-18',
+        theme: 'セキュリティツール習得',
+        plannedBadges: [
+          {
+            badgeId: 'security-tools-mastery',
+            badgeName: 'セキュリティツールマスター',
+            badgeEmoji: '⚒️',
+            category: 'セキュリティ',
+            priority: 'high',
+            estimatedHours: 18,
+            actualHours: 0,
+            targetDate: '2025-07-18',
+            status: 'not_started',
+            dependencies: ['penetration-testing'],
+            progress: 0,
+            confidence: 75,
+          },
+        ],
+        totalPlannedHours: 20,
+        totalActualHours: 0,
+        completionRate: 0,
+        efficiency: 85,
+        onTrackScore: 70,
+        riskLevel: 'medium',
+        keyMilestones: ['複数ツールの組み合わせ活用', 'カスタムスクリプト作成'],
+        notes: 'ツールの深い理解と応用力を身につける。',
+      },
+      {
+        weekNumber: 4,
+        startDate: '2025-07-19',
+        endDate: '2025-07-25',
+        theme: 'セキュリティ統合・完成',
+        plannedBadges: [
+          {
+            badgeId: 'security-specialist-final',
+            badgeName: 'サイバーセキュリティスペシャリスト',
+            badgeEmoji: '🔐',
+            category: 'セキュリティ',
+            priority: 'high',
+            estimatedHours: 10,
+            actualHours: 0,
+            targetDate: '2025-07-25',
+            status: 'not_started',
+            dependencies: ['security-tools-mastery'],
+            progress: 0,
+            confidence: 85,
+          },
+          {
+            badgeId: 'skill-map-expert',
+            badgeName: 'スキルマップエキスパート',
+            badgeEmoji: '🗺️',
+            category: 'プロジェクト管理',
+            priority: 'medium',
+            estimatedHours: 8,
+            actualHours: 0,
+            targetDate: '2025-07-25',
+            status: 'not_started',
+            dependencies: [],
+            progress: 0,
+            confidence: 90,
+          },
+        ],
+        totalPlannedHours: 18,
+        totalActualHours: 0,
+        completionRate: 0,
+        efficiency: 85,
+        onTrackScore: 88,
+        riskLevel: 'low',
+        keyMilestones: ['セキュリティ分野完全習得', 'スキルマップ作成開始'],
+        notes: 'セキュリティ分野の集大成。次のフェーズの準備も開始。',
+      },
+      {
+        weekNumber: 5,
+        startDate: '2025-07-26',
+        endDate: '2025-08-01',
+        theme: 'UX・アクセシビリティ強化',
+        plannedBadges: [
+          {
+            badgeId: 'accessibility-champion',
+            badgeName: 'アクセシビリティチャンピオン',
+            badgeEmoji: '♿',
+            category: 'アクセシビリティ',
+            priority: 'high',
+            estimatedHours: 7,
+            actualHours: 0,
+            targetDate: '2025-08-01',
+            status: 'not_started',
+            dependencies: [],
+            progress: 0,
+            confidence: 85,
+          },
+          {
+            badgeId: 'ux-researcher',
+            badgeName: 'UXリサーチスペシャリスト',
+            badgeEmoji: '🔍',
+            category: 'デザイン',
+            priority: 'medium',
+            estimatedHours: 7,
+            actualHours: 0,
+            targetDate: '2025-08-01',
+            status: 'not_started',
+            dependencies: [],
+            progress: 0,
+            confidence: 80,
+          },
+          {
+            badgeId: 'requirements-specialist',
+            badgeName: '要件定義スペシャリスト',
+            badgeEmoji: '📊',
+            category: 'PM',
+            priority: 'high',
+            estimatedHours: 6,
+            actualHours: 0,
+            targetDate: '2025-08-01',
+            status: 'not_started',
+            dependencies: [],
+            progress: 0,
+            confidence: 90,
+          },
+        ],
+        totalPlannedHours: 20,
+        totalActualHours: 0,
+        completionRate: 0,
+        efficiency: 85,
+        onTrackScore: 85,
+        riskLevel: 'low',
+        keyMilestones: ['WCAG準拠サイト構築', 'ユーザビリティテスト実施'],
+        notes: 'ユーザー中心設計の理解を深める。実践的なUXスキル習得。',
+      },
+      {
+        weekNumber: 6,
+        startDate: '2025-08-02',
+        endDate: '2025-08-08',
+        theme: 'AI・機械学習基礎',
+        plannedBadges: [
+          {
+            badgeId: 'ai-fundamentals',
+            badgeName: 'AI基礎',
+            badgeEmoji: '🤖',
+            category: 'AI・機械学習',
+            priority: 'high',
+            estimatedHours: 15,
+            actualHours: 0,
+            targetDate: '2025-08-08',
+            status: 'not_started',
+            dependencies: [],
+            progress: 0,
+            confidence: 70,
+          },
+        ],
+        totalPlannedHours: 15,
+        totalActualHours: 0,
+        completionRate: 0,
+        efficiency: 85,
+        onTrackScore: 75,
+        riskLevel: 'medium',
+        keyMilestones: ['Python機械学習環境構築', '基本アルゴリズム理解'],
+        notes: 'AI分野への本格参入。数学的基礎も並行して学習。',
+      },
+    ];
+    setWeeklySchedules(schedules);
   };
 
   // 日次タスクの初期化
@@ -210,6 +506,7 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
 
   useEffect(() => {
     initializeDailyTasks();
+    initializeWeeklySchedules();
   }, [selectedDate]);
 
   // タイマー機能
