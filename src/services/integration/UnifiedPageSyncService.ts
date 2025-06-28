@@ -566,7 +566,9 @@ class UnifiedPageSyncService {
     metrics: PageMetrics | undefined,
     recentEvents: PageSyncEvent[]
   ): 'excellent' | 'good' | 'warning' | 'critical' {
-    if (!metrics || !metrics.lastVisited) return 'critical';
+    if (!metrics || !metrics.lastVisited) {
+      return 'critical';
+    }
 
     const hoursSinceLastVisit =
       (Date.now() - new Date(metrics.lastVisited).getTime()) / (1000 * 60 * 60);
