@@ -431,11 +431,21 @@ class CarbonAwareComputingService {
 
     const combinedScore = score * 0.7 + renewableRatio * 100 * 0.3;
 
-    if (combinedScore >= 95) return 'A+';
-    if (combinedScore >= 90) return 'A';
-    if (combinedScore >= 75) return 'B';
-    if (combinedScore >= 60) return 'C';
-    if (combinedScore >= 40) return 'D';
+    if (combinedScore >= 95) {
+      return 'A+';
+    }
+    if (combinedScore >= 90) {
+      return 'A';
+    }
+    if (combinedScore >= 75) {
+      return 'B';
+    }
+    if (combinedScore >= 60) {
+      return 'C';
+    }
+    if (combinedScore >= 40) {
+      return 'D';
+    }
     return 'F';
   }
 
