@@ -360,7 +360,9 @@ class CarbonAwareComputingService {
    */
   private processQueuedTasks(): void {
     const readyTasks = this.taskQueue.filter((task) => {
-      if (!task.scheduledTime) return true;
+      if (!task.scheduledTime) {
+        return true;
+      }
       return new Date(task.scheduledTime) <= new Date();
     });
 
