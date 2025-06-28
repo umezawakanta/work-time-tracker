@@ -4,11 +4,6 @@
   "framework": null,
   "installCommand": "pnpm install",
   "devCommand": "pnpm run dev",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
