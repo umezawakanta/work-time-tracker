@@ -366,7 +366,9 @@ class SystemMonitoringService {
    * 🚨 アラート評価
    */
   private evaluateAlerts(): void {
-    if (!this.alertingEnabled || this.metrics.length === 0) return;
+    if (!this.alertingEnabled || this.metrics.length === 0) {
+      return;
+    }
 
     const latestMetrics = this.metrics[this.metrics.length - 1];
     const threshold = this.config.alertThresholds;
