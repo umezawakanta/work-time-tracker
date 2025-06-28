@@ -673,7 +673,9 @@ class SystemMonitoringService {
    * 📊 SLO評価
    */
   private evaluateSLOs(): void {
-    if (this.metrics.length === 0) return;
+    if (this.metrics.length === 0) {
+      return;
+    }
 
     const latestMetrics = this.metrics[this.metrics.length - 1];
 
@@ -706,10 +708,8 @@ class SystemMonitoringService {
         if (currentValue > slo.target) {
           status = currentValue > slo.threshold ? 'violated' : 'at_risk';
         }
-      } else {
-        if (currentValue < slo.target) {
-          status = currentValue < slo.threshold ? 'violated' : 'at_risk';
-        }
+      } else if (currentValue < slo.target) {
+        status = currentValue < slo.threshold ? 'violated' : 'at_risk';
       }
 
       slo.status = status;

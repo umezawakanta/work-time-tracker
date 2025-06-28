@@ -138,8 +138,7 @@ export default defineConfig({
           'dev-tools': ['@anthropic-ai/sdk'],
         },
         // 🥷 パフォーマンス忍者: ファイル名とアセット最適化
-        chunkFileNames: (chunkInfo) => {
-          const name = chunkInfo.name;
+        chunkFileNames: ({ name }) => {
           // 大きなチャンクにはhashを短縮
           return name.includes('index') ? 'js/[name]-[hash:8].js' : 'js/[name]-[hash].js';
         },
