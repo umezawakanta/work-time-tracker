@@ -492,6 +492,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = () => {
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value as BadgeCategory | 'all')}
                     className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                    aria-label="カテゴリを選択"
                   >
                     <option value="all">全カテゴリ</option>
                     <option value="cybersecurity">🔐 サイバーセキュリティ</option>
@@ -505,6 +506,7 @@ const ComprehensiveBadgeManagementDashboard: React.FC = () => {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
                     className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white"
+                    aria-label="ソート方法を選択"
                   >
                     <option value="progress">進捗順</option>
                     <option value="points">ポイント順</option>
