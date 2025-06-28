@@ -142,7 +142,9 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
 
   // Get recent achievements (last 30 days)
   const recentAchievements = unlockedBadges.filter((badge) => {
-    if (!badge.unlockedAt) return false;
+    if (!badge.unlockedAt) {
+      return false;
+    }
     const achievementDate = new Date(badge.unlockedAt);
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     return achievementDate > thirtyDaysAgo;
@@ -212,7 +214,9 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
     };
 
     const highlight = highlights[badgeId as keyof typeof highlights];
-    if (!highlight) return null;
+    if (!highlight) {
+      return null;
+    }
 
     return (
       <Card className="border-l-4 border-l-green-500 bg-green-50">
