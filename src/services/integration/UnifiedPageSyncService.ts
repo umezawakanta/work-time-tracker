@@ -46,7 +46,7 @@ class UnifiedPageSyncService {
   private static instance: UnifiedPageSyncService;
   private pageMetrics: Map<string, PageMetrics> = new Map();
   private syncEvents: PageSyncEvent[] = [];
-  private listeners: Map<string, Function[]> = new Map();
+  private listeners: Map<string, ((event: PageSyncEvent) => void)[]> = new Map();
 
   // ページ定義と関連バッジカテゴリ
   private pageDefinitions = {
