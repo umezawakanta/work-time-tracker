@@ -668,7 +668,9 @@ class CarbonFootprintService {
    */
   private updateEnvironmentalGoals(): void {
     const currentMetrics = this.metricsHistory[this.metricsHistory.length - 1];
-    if (!currentMetrics) return;
+    if (!currentMetrics) {
+      return;
+    }
 
     for (const goal of this.environmentalGoals.values()) {
       switch (goal.category) {
