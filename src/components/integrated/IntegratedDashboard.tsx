@@ -394,7 +394,7 @@ export const IntegratedDashboard: React.FC = () => {
     const pageCategories: Record<string, string[]> = {
       home: ['business', 'analytics', 'management'],
       'integrated-dashboard': ['analytics', 'monitoring', 'business'],
-      todos: ['productivity', 'project_management', 'systematization'],
+      todos: ['business', 'project_management', 'systematization'],
       'automation-rules': ['automation', 'systematization'],
       'development-badges': ['foundation', 'testing', 'cicd'],
       'badge-prediction': ['analytics', 'ai_ml', 'planning'],
@@ -402,7 +402,7 @@ export const IntegratedDashboard: React.FC = () => {
       'wbs-creation': ['project_management', 'planning'],
       'ai-wbs-generation': ['ai_ml', 'automation'],
       gamification: ['engagement', 'motivation'],
-      'attendance-management': ['productivity', 'operations'],
+      'attendance-management': ['business', 'operations'],
       reports: ['analytics', 'business', 'documentation'],
       'improvement-planning': ['planning', 'optimization'],
       'system-design': ['architecture', 'design'],
@@ -432,7 +432,7 @@ export const IntegratedDashboard: React.FC = () => {
           reason = `${pageName}への訪問`;
           break;
         case 'task_completion':
-          if (badge.category === 'productivity') {
+          if (badge.category === 'business') {
             progressDelta = 2;
             reason = 'タスク完了';
           }
@@ -532,7 +532,7 @@ export const IntegratedDashboard: React.FC = () => {
       badgeProgress: {},
       relevantBadges: EXPANDED_BADGES_DATABASE.filter((badge) => {
         const pageCategories: Record<string, string[]> = {
-          todos: ['productivity', 'project_management'],
+          todos: ['business', 'project_management'],
           'development-badges': ['foundation', 'testing', 'cicd'],
           reports: ['analytics', 'business'],
           'api-testing': ['testing', 'quality_assurance'],
