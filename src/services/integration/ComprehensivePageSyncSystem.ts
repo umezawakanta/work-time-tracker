@@ -8,6 +8,7 @@ import {
   COMPREHENSIVE_BADGE_CATEGORIES,
   PAGE_CATEGORY_MAPPING,
 } from '@/types/comprehensive-badge-categories';
+import { weeklyWorkPlanningService } from '@/services/planning/WeeklyWorkPlanningService';
 
 // ローカルで定義する優先度マトリックス
 const BADGE_PRIORITY_MATRIX = {
@@ -61,31 +62,118 @@ export interface WeeklyResource {
 
 export interface PageSyncData {
   pageId: string;
-  lastUpdated: string;
-  metrics: Record<string, number>;
-  badgeProgress: Record<string, number>;
-  activeFeatures: string[];
-  completedTasks: number;
-  pendingTasks: number;
-  userEngagement: number;
-  performance: {
-    loadTime: number;
-    errorRate: number;
-    satisfaction: number;
-  };
+  pageName: string;
+  category: PageCategory;
+  priority: PagePriority;
+  lastAccessed: Date;
+  sessionDuration: number;
+  activityCount: number;
+  featuresUsed: string[];
+  dataModified: boolean;
+  integrationScore: number;
+  relatedBadges: string[];
+  crossPageConnections: string[];
+  syncStatus: SyncStatus;
+  metrics: PageMetrics;
 }
 
-export interface BadgePrediction {
-  badgeId: string;
-  badgeName: string;
-  category: string;
-  currentProgress: number;
-  predictedCompletion: string;
-  confidence: number;
-  requiredEffort: number;
-  dependencies: string[];
-  relatedPages: string[];
+export interface PageMetrics {
+  dailyActiveTime: number;
+  weeklyActiveTime: number;
+  monthlyActiveTime: number;
+  taskCompletionRate: number;
+  featureUtilization: number;
+  userEngagement: number;
+  dataIntegrity: number;
+  performanceScore: number;
 }
+
+export interface CrossPageAction {
+  actionId: string;
+  sourcePageId: string;
+  targetPageIds: string[];
+  actionType: ActionType;
+  timestamp: Date;
+  data: any;
+  impactedBadges: string[];
+  syncRequired: boolean;
+  priority: number;
+}
+
+export interface SyncEvent {
+  eventId: string;
+  timestamp: Date;
+  eventType: SyncEventType;
+  affectedPages: string[];
+  badgeUpdates: BadgeUpdate[];
+  dataChanges: DataChange[];
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+}
+
+export interface BadgeUpdate {
+  badgeId: string;
+  requirementId: string;
+  oldValue: string | number;
+  newValue: string | number;
+  progressChange: number;
+  pageSource: string;
+}
+
+export interface DataChange {
+  pageId: string;
+  field: string;
+  oldValue: any;
+  newValue: any;
+  changeType: 'create' | 'update' | 'delete';
+  timestamp: Date;
+}
+
+export type PageCategory =
+  | 'core'
+  | 'management'
+  | 'analytics'
+  | 'development'
+  | 'quality'
+  | 'business'
+  | 'finance'
+  | 'content'
+  | 'community'
+  | 'learning'
+  | 'integration'
+  | 'monitoring'
+  | 'gamification'
+  | 'planning'
+  | 'design'
+  | 'security'
+  | 'operations'
+  | 'marketing';
+
+export type PagePriority = 'critical' | 'high' | 'medium' | 'low';
+
+export type SyncStatus = 'synchronized' | 'pending' | 'conflicted' | 'error';
+
+export type ActionType =
+  | 'task_completion'
+  | 'data_creation'
+  | 'feature_usage'
+  | 'time_tracking'
+  | 'goal_achievement'
+  | 'collaboration'
+  | 'content_creation'
+  | 'analysis'
+  | 'configuration'
+  | 'integration'
+  | 'notification'
+  | 'export';
+
+export type SyncEventType =
+  | 'page_navigation'
+  | 'data_sync'
+  | 'badge_progress'
+  | 'cross_reference'
+  | 'bulk_update'
+  | 'conflict_resolution'
+  | 'performance_tracking';
 
 // 全46ページの定義
 const ALL_PAGES: PageDefinition[] = [
@@ -567,17 +655,17 @@ const ALL_PAGES: PageDefinition[] = [
  */
 class ComprehensivePageSyncSystem extends EventEmitter {
   private static instance: ComprehensivePageSyncSystem | null = null;
-  private pageStates: Map<string, PageSyncData> = new Map();
-  private weeklyPlans: Map<string, WeeklyPlan> = new Map();
-  private badgePredictions: Map<string, BadgePrediction> = new Map();
+  private pageData: Map<string, PageSyncData> = new Map();
+  private activeConnections: Set<string> = new Set();
+  private syncQueue: CrossPageAction[] = [];
+  private badgeProgressCache: Map<string, number> = new Map();
   private syncInterval: NodeJS.Timeout | null = null;
-  private weeklyPlanningInterval: NodeJS.Timeout | null = null;
+  private conflictResolutionQueue: SyncEvent[] = [];
 
   private constructor() {
     super();
-    this.initializePageStates();
-    this.startSyncSystem();
-    this.startWeeklyPlanning();
+    this.initializePages();
+    this.startSyncProcess();
   }
 
   public static getInstance(): ComprehensivePageSyncSystem {
@@ -588,507 +676,529 @@ class ComprehensivePageSyncSystem extends EventEmitter {
   }
 
   /**
-   * 📋 ページ状態初期化
+   * 📊 ページ初期化
    */
-  private initializePageStates(): void {
+  private initializePages(): void {
     ALL_PAGES.forEach((page) => {
-      const badgeProgress: Record<string, number> = {};
-
-      // 関連バッジカテゴリの初期化
-      page.relatedBadgeCategories.forEach((badgeId) => {
-        badgeProgress[badgeId] = 0;
-      });
-
-      this.pageStates.set(page.id, {
+      this.pageData.set(page.id, {
         pageId: page.id,
-        lastUpdated: new Date().toISOString(),
+        pageName: page.name,
+        category: page.category,
+        priority: page.priority,
+        lastAccessed: new Date(),
+        sessionDuration: 0,
+        activityCount: 0,
+        featuresUsed: [],
+        dataModified: false,
+        integrationScore: 100,
+        relatedBadges: page.relatedBadgeCategories,
+        crossPageConnections: [],
+        syncStatus: 'synchronized',
         metrics: {
-          visitCount: 0,
-          avgSessionTime: 0,
+          dailyActiveTime: 0,
+          weeklyActiveTime: 0,
+          monthlyActiveTime: 0,
           taskCompletionRate: 0,
-          userSatisfaction: 0,
-        },
-        badgeProgress,
-        activeFeatures: [],
-        completedTasks: 0,
-        pendingTasks: 0,
-        userEngagement: 0,
-        performance: {
-          loadTime: 0,
-          errorRate: 0,
-          satisfaction: 0,
+          featureUtilization: 0,
+          userEngagement: 0,
+          dataIntegrity: 100,
+          performanceScore: 0,
         },
       });
     });
 
-    console.log('🔗 包括的ページ同期システム初期化完了:', ALL_PAGES.length, 'ページ');
+    console.log('🔄 包括的ページ同期システム初期化完了:', ALL_PAGES.length, 'ページ');
   }
 
   /**
-   * 🔄 同期システム開始
+   * 🔄 同期プロセス開始
    */
-  private startSyncSystem(): void {
+  private startSyncProcess(): void {
     this.syncInterval = setInterval(() => {
-      this.performGlobalSync();
-    }, 30000); // 30秒ごとに同期
+      this.processSyncQueue();
+      this.updateBadgeProgress();
+      this.checkCrossPageIntegrity();
+      this.generateSyncReports();
+    }, 30000); // 30秒ごと
 
-    console.log('🔄 グローバル同期システム開始');
+    console.log('🔄 包括的ページ同期プロセス開始');
   }
 
   /**
-   * 📅 週次計画システム開始
+   * 📈 ページアクティビティ記録
    */
-  private startWeeklyPlanning(): void {
-    this.weeklyPlanningInterval = setInterval(() => {
-      this.generateWeeklyPlan();
-      this.updateBadgePredictions();
-    }, 3600000); // 1時間ごとに週次計画更新
+  public recordPageActivity(
+    pageId: string,
+    activityType: ActionType,
+    duration: number,
+    features: string[] = [],
+    data: any = null
+  ): void {
+    const page = this.pageData.get(pageId);
+    if (!page) return;
 
-    // 初回実行
-    this.generateWeeklyPlan();
-    this.updateBadgePredictions();
+    // ページデータ更新
+    page.lastAccessed = new Date();
+    page.sessionDuration += duration;
+    page.activityCount += 1;
+    page.featuresUsed = [...new Set([...page.featuresUsed, ...features])];
+    page.dataModified = data !== null;
 
-    console.log('📅 週次計画システム開始');
-  }
+    // メトリクス更新
+    page.metrics.dailyActiveTime += duration;
+    page.metrics.featureUtilization = (page.featuresUsed.length / 10) * 100; // 仮定：各ページ10機能
+    page.metrics.userEngagement = Math.min(100, page.activityCount * 2);
 
-  /**
-   * ⚡ グローバル同期実行
-   */
-  private async performGlobalSync(): Promise<void> {
-    try {
-      // 全ページの状態更新
-      for (const [pageId, pageState] of this.pageStates) {
-        await this.updatePageState(pageId, pageState);
-      }
+    // バッジ進捗更新をトリガー
+    this.updateRelatedBadges(pageId, activityType, duration, features);
 
-      // ページ間依存関係の同期
-      await this.syncPageDependencies();
-
-      // バッジ進捗の同期
-      await this.syncBadgeProgress();
-
-      // パフォーマンスメトリクスの更新
-      await this.updatePerformanceMetrics();
-
-      this.emit('sync-completed', {
-        timestamp: new Date().toISOString(),
-        syncedPages: this.pageStates.size,
-      });
-
-      console.log('⚡ グローバル同期完了');
-    } catch (error) {
-      console.error('❌ グローバル同期エラー:', error);
-      this.emit('sync-error', error);
-    }
-  }
-
-  /**
-   * 📊 週次計画生成
-   */
-  private generateWeeklyPlan(): void {
-    const weekId = this.getWeekId();
-    const startDate = this.getWeekStartDate();
-    const endDate = this.getWeekEndDate(startDate);
-
-    // 優先度に基づくページ選定
-    const targetPages = this.selectTargetPages();
-
-    // 関連バッジの特定
-    const focusBadges = this.identifyFocusBadges(targetPages);
-
-    // 進捗予測
-    const estimatedProgress = this.calculateEstimatedProgress(targetPages, focusBadges);
-
-    // マイルストーン生成
-    const milestones = this.generateMilestones(targetPages, focusBadges);
-
-    // リソース配分
-    const resources = this.allocateResources(targetPages);
-
-    const weeklyPlan: WeeklyPlan = {
-      weekId,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      targetPages,
-      focusBadges,
-      estimatedProgress,
-      milestones,
-      resources,
+    // クロスページアクション生成
+    const crossPageAction: CrossPageAction = {
+      actionId: `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      sourcePageId: pageId,
+      targetPageIds: page.crossPageConnections,
+      actionType: activityType,
+      timestamp: new Date(),
+      data: { duration, features, activityData: data },
+      impactedBadges: page.relatedBadges,
+      syncRequired: true,
+      priority: this.calculateActionPriority(pageId, activityType),
     };
 
-    this.weeklyPlans.set(weekId, weeklyPlan);
-
-    this.emit('weekly-plan-generated', weeklyPlan);
-    console.log('📊 週次計画生成完了:', weekId);
+    this.syncQueue.push(crossPageAction);
+    this.emit('page-activity-recorded', { pageId, activity: crossPageAction });
   }
 
   /**
-   * 🎯 ターゲットページ選定
+   * 🏆 関連バッジ更新
    */
-  private selectTargetPages(): string[] {
-    const criticalPages = ALL_PAGES.filter((page) => page.priority === 'critical').map(
-      (page) => page.id
-    );
+  private updateRelatedBadges(
+    pageId: string,
+    activityType: ActionType,
+    duration: number,
+    features: string[]
+  ): void {
+    const page = this.pageData.get(pageId);
+    if (!page) return;
 
-    const highPriorityPages = ALL_PAGES.filter((page) => page.priority === 'high')
-      .sort((a, b) => a.estimatedWeeklyHours - b.estimatedWeeklyHours)
-      .slice(0, 5)
-      .map((page) => page.id);
+    page.relatedBadges.forEach((badgeId) => {
+      const badge = COMPREHENSIVE_BADGE_CATEGORIES.find((b) => b.id === badgeId);
+      if (!badge) return;
 
-    return [...criticalPages, ...highPriorityPages];
-  }
-
-  /**
-   * 🏆 フォーカスバッジ特定
-   */
-  private identifyFocusBadges(targetPages: string[]): string[] {
-    const badgeCategories = new Set<string>();
-
-    targetPages.forEach((pageId) => {
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-      if (page) {
-        page.relatedBadgeCategories.forEach((category) => {
-          badgeCategories.add(category);
-        });
-      }
-    });
-
-    // 優先度の高いバッジカテゴリを選定
-    const prioritizedBadges = Array.from(badgeCategories)
-      .filter((category) => {
-        const allPriorityCategories = [
-          ...BADGE_PRIORITY_MATRIX.critical,
-          ...BADGE_PRIORITY_MATRIX.high,
-        ] as string[];
-        return allPriorityCategories.includes(category);
-      })
-      .slice(0, 8);
-
-    return prioritizedBadges;
-  }
-
-  /**
-   * 📈 進捗予測計算
-   */
-  private calculateEstimatedProgress(
-    targetPages: string[],
-    focusBadges: string[]
-  ): Record<string, number> {
-    const progress: Record<string, number> = {};
-
-    // ページごとの進捗予測
-    targetPages.forEach((pageId) => {
-      const currentState = this.pageStates.get(pageId);
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-
-      if (currentState && page) {
-        const baseProgress =
-          (currentState.completedTasks /
-            Math.max(1, currentState.completedTasks + currentState.pendingTasks)) *
-          100;
-        const weeklyIncrease = Math.min(25, page.estimatedWeeklyHours * 2);
-        progress[pageId] = Math.min(100, baseProgress + weeklyIncrease);
-      }
-    });
-
-    // バッジごとの進捗予測
-    focusBadges.forEach((badgeId) => {
-      const relatedPages = targetPages.filter((pageId) => {
-        const page = ALL_PAGES.find((p) => p.id === pageId);
-        return page?.relatedBadgeCategories.includes(badgeId);
-      });
-
-      const averagePageProgress =
-        relatedPages.length > 0
-          ? relatedPages.reduce((sum, pageId) => sum + (progress[pageId] || 0), 0) /
-            relatedPages.length
-          : 0;
-
-      progress[`badge_${badgeId}`] = Math.min(100, averagePageProgress * 0.8);
-    });
-
-    return progress;
-  }
-
-  /**
-   * 🎯 マイルストーン生成
-   */
-  private generateMilestones(targetPages: string[], focusBadges: string[]): WeeklyMilestone[] {
-    const milestones: WeeklyMilestone[] = [];
-    let milestoneId = 1;
-
-    // ページベースのマイルストーン
-    targetPages.slice(0, 3).forEach((pageId) => {
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-      if (page) {
-        milestones.push({
-          id: `milestone_${milestoneId++}`,
-          title: `${page.name}機能強化`,
-          description: `${page.name}の主要機能を実装・改善`,
-          targetDate: this.getTargetDate(3).toISOString(),
-          relatedPages: [pageId],
-          relatedBadges: page.relatedBadgeCategories.slice(0, 2),
-          priority: page.priority,
-          estimatedHours: page.estimatedWeeklyHours,
-          dependencies: page.dependencies,
-        });
-      }
-    });
-
-    // バッジベースのマイルストーン
-    focusBadges.slice(0, 2).forEach((badgeId) => {
-      const category = COMPREHENSIVE_BADGE_CATEGORIES.find((c) => c.id === badgeId);
-      if (category) {
-        const allPriorityCategories = [
-          ...BADGE_PRIORITY_MATRIX.critical,
-          ...BADGE_PRIORITY_MATRIX.high,
-        ] as string[];
-        milestones.push({
-          id: `milestone_${milestoneId++}`,
-          title: `${category.name}バッジ進捗`,
-          description: `${category.description}の習得`,
-          targetDate: this.getTargetDate(5).toISOString(),
-          relatedPages: targetPages.filter((pageId) => {
-            const page = ALL_PAGES.find((p) => p.id === pageId);
-            return page?.relatedBadgeCategories.includes(badgeId);
-          }),
-          relatedBadges: [badgeId],
-          priority: allPriorityCategories.includes(badgeId) ? 'critical' : 'high',
-          estimatedHours: category.estimatedHours / 4, // 週間での時間
-          dependencies: category.prerequisites || [],
-        });
-      }
-    });
-
-    return milestones;
-  }
-
-  /**
-   * 💼 リソース配分
-   */
-  private allocateResources(targetPages: string[]): WeeklyResource[] {
-    const resources: WeeklyResource[] = [];
-
-    // 時間リソース
-    const totalHours = targetPages.reduce((sum, pageId) => {
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-      return sum + (page?.estimatedWeeklyHours || 0);
-    }, 0);
-
-    resources.push({
-      type: 'time',
-      name: '開発時間',
-      allocation: Math.min(40, totalHours),
-      pages: targetPages,
-      badges: [],
-    });
-
-    // スキルリソース
-    const requiredSkills = new Set<string>();
-    targetPages.forEach((pageId) => {
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-      page?.relatedBadgeCategories.forEach((badgeId) => {
-        const category = COMPREHENSIVE_BADGE_CATEGORIES.find((c) => c.id === badgeId);
-        category?.requiredSkills.forEach((skill) => requiredSkills.add(skill));
-      });
-    });
-
-    Array.from(requiredSkills)
-      .slice(0, 5)
-      .forEach((skill) => {
-        resources.push({
-          type: 'skill',
-          name: skill,
-          allocation: 100,
-          pages: targetPages,
-          badges: [],
-        });
-      });
-
-    return resources;
-  }
-
-  /**
-   * 🔮 バッジ予測更新
-   */
-  private updateBadgePredictions(): void {
-    COMPREHENSIVE_BADGE_CATEGORIES.forEach((category) => {
-      const relatedPages = ALL_PAGES.filter((page) =>
-        page.relatedBadgeCategories.includes(category.id)
-      );
-
-      const averageProgress =
-        relatedPages.length > 0
-          ? relatedPages.reduce((sum, page) => {
-              const state = this.pageStates.get(page.id);
-              const badgeProgress = state?.badgeProgress[category.id];
-              return sum + (badgeProgress !== undefined ? badgeProgress : 0);
-            }, 0) / relatedPages.length
-          : 0;
-
-      const estimatedDays = this.calculateCompletionDays(averageProgress, category.estimatedHours);
-      const confidence = this.calculateConfidence(averageProgress, relatedPages.length);
-
-      const prediction: BadgePrediction = {
-        badgeId: category.id,
-        badgeName: category.name,
-        category: category.id,
-        currentProgress: averageProgress,
-        predictedCompletion: this.getTargetDate(estimatedDays).toISOString(),
-        confidence,
-        requiredEffort: category.estimatedHours * (1 - averageProgress / 100),
-        dependencies: category.prerequisites || [],
-        relatedPages: relatedPages.map((p) => p.id),
-      };
-
-      this.badgePredictions.set(category.id, prediction);
-    });
-
-    this.emit('badge-predictions-updated', Array.from(this.badgePredictions.values()));
-    console.log('🔮 バッジ予測更新完了');
-  }
-
-  /**
-   * 🔧 ユーティリティメソッド
-   */
-  private getWeekId(): string {
-    const now = new Date();
-    const year = now.getFullYear();
-    const weekNumber = this.getWeekNumber(now);
-    return `${year}-W${weekNumber.toString().padStart(2, '0')}`;
-  }
-
-  private getWeekNumber(date: Date): number {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-  }
-
-  private getWeekStartDate(): Date {
-    const now = new Date();
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(now.setDate(diff));
-  }
-
-  private getWeekEndDate(startDate: Date): Date {
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-    return endDate;
-  }
-
-  private getTargetDate(daysFromNow: number): Date {
-    const date = new Date();
-    date.setDate(date.getDate() + daysFromNow);
-    return date;
-  }
-
-  private calculateCompletionDays(progress: number, estimatedHours: number): number {
-    const remainingProgress = 100 - progress;
-    const dailyProgress = 5; // 1日5%の進捗と仮定
-    return Math.ceil(remainingProgress / dailyProgress);
-  }
-
-  private calculateConfidence(progress: number, relatedPagesCount: number): number {
-    const progressConfidence = Math.min(progress / 50, 1); // 50%以上で高信頼度
-    const dataConfidence = Math.min(relatedPagesCount / 3, 1); // 3ページ以上で高信頼度
-    return Math.round((progressConfidence + dataConfidence) * 50);
-  }
-
-  /**
-   * 🌐 公開API
-   */
-  public getCurrentWeeklyPlan(): WeeklyPlan | null {
-    const currentWeekId = this.getWeekId();
-    return this.weeklyPlans.get(currentWeekId) || null;
-  }
-
-  public getBadgePredictions(): BadgePrediction[] {
-    return Array.from(this.badgePredictions.values());
-  }
-
-  public getPageState(pageId: string): PageSyncData | null {
-    return this.pageStates.get(pageId) || null;
-  }
-
-  public getAllPageStates(): PageSyncData[] {
-    return Array.from(this.pageStates.values());
-  }
-
-  public updatePageMetrics(pageId: string, metrics: Partial<Record<string, number>>): void {
-    const state = this.pageStates.get(pageId);
-    if (state) {
-      state.metrics = { ...state.metrics, ...metrics };
-      state.lastUpdated = new Date().toISOString();
-      this.pageStates.set(pageId, state);
-    }
-  }
-
-  public recordPageActivity(pageId: string, activityType: string, value: number = 1): void {
-    const state = this.pageStates.get(pageId);
-    if (state) {
-      state.metrics.visitCount = (state.metrics.visitCount || 0) + value;
-      state.userEngagement = Math.min(100, (state.userEngagement || 0) + value);
-      state.lastUpdated = new Date().toISOString();
-      this.pageStates.set(pageId, state);
-    }
-  }
-
-  private async updatePageState(pageId: string, pageState: PageSyncData): Promise<void> {
-    // ページ状態の自動更新ロジック
-    pageState.metrics.visitCount = (pageState.metrics.visitCount || 0) + Math.random() * 0.1;
-    pageState.userEngagement = Math.min(100, (pageState.userEngagement || 0) + Math.random() * 2);
-  }
-
-  private async syncPageDependencies(): Promise<void> {
-    // ページ間依存関係の同期
-    ALL_PAGES.forEach((page) => {
-      page.dependencies.forEach((depId) => {
-        const depState = this.pageStates.get(depId);
-        const pageState = this.pageStates.get(page.id);
-        if (depState && pageState) {
-          // 依存関係に基づく状態同期
+      badge.requirements.forEach((req) => {
+        const updateData = this.calculateRequirementUpdate(
+          req,
+          activityType,
+          duration,
+          features,
+          pageId
+        );
+        if (updateData.shouldUpdate) {
+          this.processBadgeRequirementUpdate(badgeId, req, updateData);
         }
       });
     });
   }
 
-  private async syncBadgeProgress(): Promise<void> {
-    // バッジ進捗の同期
-    for (const [pageId, pageState] of this.pageStates) {
-      const page = ALL_PAGES.find((p) => p.id === pageId);
-      if (page) {
-        page.relatedBadgeCategories.forEach((badgeId) => {
-          if (!pageState.badgeProgress[badgeId]) {
-            pageState.badgeProgress[badgeId] = Math.random() * 20;
-          } else {
-            pageState.badgeProgress[badgeId] = Math.min(
-              100,
-              pageState.badgeProgress[badgeId] + Math.random() * 2
-            );
-          }
-        });
+  /**
+   * 📊 要件更新計算
+   */
+  private calculateRequirementUpdate(
+    requirement: BadgeRequirement,
+    activityType: ActionType,
+    duration: number,
+    features: string[],
+    pageId: string
+  ): { shouldUpdate: boolean; incrementValue: number; newProgress: number } {
+    let shouldUpdate = false;
+    let incrementValue = 0;
+
+    // 要件タイプとアクティビティタイプのマッピング
+    const typeMapping: Record<string, ActionType[]> = {
+      time_spent: ['time_tracking'],
+      tasks_completed: ['task_completion'],
+      pages_visited: ['page_navigation'],
+      features_used: ['feature_usage'],
+      projects_created: ['data_creation'],
+      content_created: ['content_creation'],
+      data_analyzed: ['analysis'],
+      collaborations: ['collaboration'],
+      goals_achieved: ['goal_achievement'],
+    };
+
+    if (typeMapping[requirement.type]?.includes(activityType)) {
+      shouldUpdate = true;
+
+      switch (requirement.type) {
+        case 'time_spent':
+          incrementValue = duration / 60; // 分単位に変換
+          break;
+        case 'tasks_completed':
+        case 'projects_created':
+        case 'content_created':
+        case 'collaborations':
+        case 'goals_achieved':
+          incrementValue = 1;
+          break;
+        case 'features_used':
+          incrementValue = features.length;
+          break;
+        case 'pages_visited':
+          incrementValue = 1;
+          break;
+        case 'data_analyzed':
+          incrementValue = features.includes('analysis') ? 1 : 0;
+          break;
+        default:
+          incrementValue = 0;
+          shouldUpdate = false;
+      }
+    }
+
+    const currentValue = parseFloat(requirement.current.toString()) || 0;
+    const newProgress = Math.min(
+      100,
+      ((currentValue + incrementValue) / parseFloat(requirement.target.toString())) * 100
+    );
+
+    return { shouldUpdate, incrementValue, newProgress };
+  }
+
+  /**
+   * 🔄 バッジ要件更新処理
+   */
+  private processBadgeRequirementUpdate(
+    badgeId: string,
+    requirement: BadgeRequirement,
+    updateData: { incrementValue: number; newProgress: number }
+  ): void {
+    const oldValue = parseFloat(requirement.current.toString()) || 0;
+    const newValue = oldValue + updateData.incrementValue;
+
+    requirement.current = newValue.toString();
+    requirement.progress = updateData.newProgress;
+    requirement.isCompleted = updateData.newProgress >= 100;
+
+    const badgeUpdate: BadgeUpdate = {
+      badgeId,
+      requirementId: requirement.type,
+      oldValue: oldValue.toString(),
+      newValue: newValue.toString(),
+      progressChange: updateData.incrementValue,
+      pageSource: requirement.pageIntegration || 'unknown',
+    };
+
+    this.emit('badge-requirement-updated', badgeUpdate);
+
+    // バッジ全体の進捗を更新
+    this.updateBadgeOverallProgress(badgeId);
+  }
+
+  /**
+   * 📊 バッジ全体進捗更新
+   */
+  private updateBadgeOverallProgress(badgeId: string): void {
+    const badge = COMPREHENSIVE_BADGE_CATEGORIES.find((b) => b.id === badgeId);
+    if (!badge) return;
+
+    const totalRequirements = badge.requirements.length;
+    const completedRequirements = badge.requirements.filter((req) => req.isCompleted).length;
+    const avgProgress =
+      badge.requirements.reduce((sum, req) => sum + (req.progress || 0), 0) / totalRequirements;
+
+    badge.progress = avgProgress;
+    badge.isUnlocked = completedRequirements === totalRequirements;
+
+    this.badgeProgressCache.set(badgeId, badge.progress);
+    this.emit('badge-progress-updated', {
+      badgeId,
+      progress: badge.progress,
+      unlocked: badge.isUnlocked,
+    });
+  }
+
+  /**
+   * 🔄 同期キュー処理
+   */
+  private processSyncQueue(): void {
+    if (this.syncQueue.length === 0) return;
+
+    // 優先度順にソート
+    this.syncQueue.sort((a, b) => b.priority - a.priority);
+
+    const batchSize = 10;
+    const batch = this.syncQueue.splice(0, batchSize);
+
+    batch.forEach((action) => {
+      this.processAction(action);
+    });
+
+    this.emit('sync-batch-processed', {
+      processed: batch.length,
+      remaining: this.syncQueue.length,
+    });
+  }
+
+  /**
+   * ⚡ アクション処理
+   */
+  private processAction(action: CrossPageAction): void {
+    action.targetPageIds.forEach((targetPageId) => {
+      const targetPage = this.pageData.get(targetPageId);
+      if (!targetPage) return;
+
+      // ターゲットページの統合スコア更新
+      targetPage.integrationScore = Math.min(100, targetPage.integrationScore + 1);
+
+      // 同期データ更新
+      if (targetPage.metrics) {
+        targetPage.metrics.dataIntegrity = Math.min(100, targetPage.metrics.dataIntegrity + 0.5);
+      }
+    });
+
+    // 週次作業計画サービスとの連携
+    if (action.actionType === 'time_tracking' && action.data.duration > 0) {
+      weeklyWorkPlanningService.recordLearningProgress(
+        1, // 現在の週
+        action.data.duration / 60, // 時間に変換
+        [`${action.sourcePageId}_skill`],
+        []
+      );
+    }
+  }
+
+  /**
+   * 📊 クロスページ整合性チェック
+   */
+  private checkCrossPageIntegrity(): void {
+    const integrityIssues: string[] = [];
+
+    this.pageData.forEach((page, pageId) => {
+      // 接続ページの確認
+      page.crossPageConnections.forEach((connectedPageId) => {
+        const connectedPage = this.pageData.get(connectedPageId);
+        if (!connectedPage) {
+          integrityIssues.push(`${pageId} -> ${connectedPageId}: 接続先が存在しません`);
+        }
+      });
+
+      // バッジ関連の確認
+      page.relatedBadges.forEach((badgeId) => {
+        const badge = COMPREHENSIVE_BADGE_CATEGORIES.find((b) => b.id === badgeId);
+        if (!badge) {
+          integrityIssues.push(`${pageId}: バッジ${badgeId}が見つかりません`);
+        }
+      });
+    });
+
+    if (integrityIssues.length > 0) {
+      this.emit('integrity-issues-detected', integrityIssues);
+    }
+  }
+
+  /**
+   * 📈 同期レポート生成
+   */
+  private generateSyncReports(): void {
+    const report = {
+      timestamp: new Date(),
+      totalPages: this.pageData.size,
+      activePages: Array.from(this.pageData.values()).filter((p) => p.sessionDuration > 0).length,
+      averageIntegrationScore:
+        Array.from(this.pageData.values()).reduce((sum, p) => sum + p.integrationScore, 0) /
+        this.pageData.size,
+      pendingSyncActions: this.syncQueue.length,
+      badgeProgressUpdates: this.badgeProgressCache.size,
+      topActivePages: Array.from(this.pageData.values())
+        .sort((a, b) => b.sessionDuration - a.sessionDuration)
+        .slice(0, 5)
+        .map((p) => ({ pageId: p.pageId, duration: p.sessionDuration })),
+    };
+
+    this.emit('sync-report-generated', report);
+  }
+
+  /**
+   * 🎯 アクション優先度計算
+   */
+  private calculateActionPriority(pageId: string, actionType: ActionType): number {
+    const page = this.pageData.get(pageId);
+    if (!page) return 1;
+
+    let priority = 1;
+
+    // ページ優先度による調整
+    switch (page.priority) {
+      case 'critical':
+        priority += 4;
+        break;
+      case 'high':
+        priority += 3;
+        break;
+      case 'medium':
+        priority += 2;
+        break;
+      case 'low':
+        priority += 1;
+        break;
+    }
+
+    // アクションタイプによる調整
+    switch (actionType) {
+      case 'task_completion':
+        priority += 3;
+        break;
+      case 'goal_achievement':
+        priority += 3;
+        break;
+      case 'data_creation':
+        priority += 2;
+        break;
+      case 'collaboration':
+        priority += 2;
+        break;
+      default:
+        priority += 1;
+        break;
+    }
+
+    return priority;
+  }
+
+  /**
+   * 📊 ページデータ取得
+   */
+  public getPageData(pageId: string): PageSyncData | null {
+    return this.pageData.get(pageId) || null;
+  }
+
+  /**
+   * 📈 全ページ統計取得
+   */
+  public getAllPagesStatistics(): any {
+    const pages = Array.from(this.pageData.values());
+
+    return {
+      totalPages: pages.length,
+      categoriesDistribution: this.getCategoryDistribution(pages),
+      averageMetrics: this.calculateAverageMetrics(pages),
+      topPerformingPages: this.getTopPerformingPages(pages),
+      integrationHealth: this.calculateIntegrationHealth(pages),
+      badgeIntegration: this.getBadgeIntegrationStats(),
+    };
+  }
+
+  /**
+   * 🔧 プライベートヘルパーメソッド
+   */
+  private getCategoryDistribution(pages: PageSyncData[]): Record<string, number> {
+    const distribution: Record<string, number> = {};
+    pages.forEach((page) => {
+      distribution[page.category] = (distribution[page.category] || 0) + 1;
+    });
+    return distribution;
+  }
+
+  private calculateAverageMetrics(pages: PageSyncData[]): PageMetrics {
+    const totals = pages.reduce(
+      (acc, page) => ({
+        dailyActiveTime: acc.dailyActiveTime + page.metrics.dailyActiveTime,
+        weeklyActiveTime: acc.weeklyActiveTime + page.metrics.weeklyActiveTime,
+        monthlyActiveTime: acc.monthlyActiveTime + page.metrics.monthlyActiveTime,
+        taskCompletionRate: acc.taskCompletionRate + page.metrics.taskCompletionRate,
+        featureUtilization: acc.featureUtilization + page.metrics.featureUtilization,
+        userEngagement: acc.userEngagement + page.metrics.userEngagement,
+        dataIntegrity: acc.dataIntegrity + page.metrics.dataIntegrity,
+        performanceScore: acc.performanceScore + page.metrics.performanceScore,
+      }),
+      {
+        dailyActiveTime: 0,
+        weeklyActiveTime: 0,
+        monthlyActiveTime: 0,
+        taskCompletionRate: 0,
+        featureUtilization: 0,
+        userEngagement: 0,
+        dataIntegrity: 0,
+        performanceScore: 0,
+      }
+    );
+
+    const count = pages.length;
+    return {
+      dailyActiveTime: totals.dailyActiveTime / count,
+      weeklyActiveTime: totals.weeklyActiveTime / count,
+      monthlyActiveTime: totals.monthlyActiveTime / count,
+      taskCompletionRate: totals.taskCompletionRate / count,
+      featureUtilization: totals.featureUtilization / count,
+      userEngagement: totals.userEngagement / count,
+      dataIntegrity: totals.dataIntegrity / count,
+      performanceScore: totals.performanceScore / count,
+    };
+  }
+
+  private getTopPerformingPages(pages: PageSyncData[]): PageSyncData[] {
+    return pages.sort((a, b) => b.integrationScore - a.integrationScore).slice(0, 10);
+  }
+
+  private calculateIntegrationHealth(pages: PageSyncData[]): number {
+    const avgIntegrationScore =
+      pages.reduce((sum, p) => sum + p.integrationScore, 0) / pages.length;
+    const syncedPages = pages.filter((p) => p.syncStatus === 'synchronized').length;
+    const syncHealthRatio = syncedPages / pages.length;
+
+    return avgIntegrationScore * 0.7 + syncHealthRatio * 100 * 0.3;
+  }
+
+  private getBadgeIntegrationStats(): any {
+    const badgePageMapping = new Map<string, Set<string>>();
+
+    this.pageData.forEach((page, pageId) => {
+      page.relatedBadges.forEach((badgeId) => {
+        if (!badgePageMapping.has(badgeId)) {
+          badgePageMapping.set(badgeId, new Set());
+        }
+        badgePageMapping.get(badgeId)!.add(pageId);
+      });
+    });
+
+    return {
+      totalBadges: COMPREHENSIVE_BADGE_CATEGORIES.length,
+      integratedBadges: badgePageMapping.size,
+      averagePagesPerBadge:
+        Array.from(badgePageMapping.values()).reduce((sum, pages) => sum + pages.size, 0) /
+        badgePageMapping.size,
+      badgeProgress: Array.from(this.badgeProgressCache.values()),
+      topIntegratedBadges: Array.from(badgePageMapping.entries())
+        .sort((a, b) => b[1].size - a[1].size)
+        .slice(0, 10)
+        .map(([badgeId, pages]) => ({ badgeId, pageCount: pages.size })),
+    };
+  }
+
+  /**
+   * 🔄 バッジ進捗更新（定期実行）
+   */
+  private updateBadgeProgress(): void {
+    // 週次計画サービスとの同期
+    const currentProgress = weeklyWorkPlanningService.getWeeklyProgress(1);
+    if (currentProgress) {
+      // サイバーセキュリティバッジの更新
+      const cyberBadge = COMPREHENSIVE_BADGE_CATEGORIES.find(
+        (b) => b.id === 'cybersecurity-specialist'
+      );
+      if (cyberBadge) {
+        cyberBadge.progress = currentProgress.progressPercentage;
+        this.badgeProgressCache.set('cybersecurity-specialist', cyberBadge.progress);
       }
     }
   }
 
-  private async updatePerformanceMetrics(): Promise<void> {
-    // パフォーマンスメトリクスの更新
-    for (const [pageId, pageState] of this.pageStates) {
-      pageState.performance.loadTime = 800 + Math.random() * 400;
-      pageState.performance.errorRate = Math.random() * 2;
-      pageState.performance.satisfaction = 85 + Math.random() * 10;
-    }
-  }
-
+  /**
+   * 🏁 サービス停止
+   */
   public destroy(): void {
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
-    }
-    if (this.weeklyPlanningInterval) {
-      clearInterval(this.weeklyPlanningInterval);
     }
     this.removeAllListeners();
   }
