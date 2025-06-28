@@ -1614,7 +1614,9 @@ class ComprehensiveBadgeService {
    * 🔄 自動進捗追跡開始
    */
   private startAutoProgressTracking(): void {
-    if (this.progressUpdateInterval) return;
+    if (this.progressUpdateInterval) {
+      return;
+    }
 
     this.progressUpdateInterval = setInterval(
       () => {
