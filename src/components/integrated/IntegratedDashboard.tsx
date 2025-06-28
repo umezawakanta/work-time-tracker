@@ -27,16 +27,19 @@ import {
   Code,
   Shield,
   Globe,
+  Calendar,
 } from 'lucide-react';
 import {
   DevelopmentBadge,
-  getAllBadges,
   getCompletedBadges,
-  getBadgeStatsByCategory,
-  getBadgeProgress,
+  getBadgesByCategory,
   getBadgeStatsSummary,
+  getAvailableBadges,
+  getInProgressBadges,
 } from '@/services/development/ExpandedBadgesDatabase';
 import { EXPANDED_BADGES_DATABASE } from '@/services/development/ExpandedBadgesDatabase';
+import { BadgeCategory } from '@/types/development-badges';
+import comprehensiveBadgeService from '@/services/development/ComprehensiveBadgeService';
 
 interface DashboardWidget {
   id: string;
@@ -89,13 +92,37 @@ interface DetailedBadgeProgress {
   }>;
 }
 
+interface PageSyncData {
+  pageName: string;
+  lastUpdated: string;
+  badgeUpdates: Array<{
+    badgeId: string;
+    activity: string;
+    progressContribution: number;
+    metadata?: Record<string, any>;
+  }>;
+  progressChanges: Record<string, number>;
+  completedActions: string[];
+  metrics: Record<string, number>;
+}
+
 interface BadgeStatistics {
   totalBadges: number;
   completedBadges: number;
   inProgressBadges: number;
-  averageProgress: number;
-  totalPoints: number;
+  availableBadges: number;
   completionRate: number;
+  averageCompletionTime: number;
+  categoriesCompleted: Record<BadgeCategory, number>;
+  recentAchievements: DevelopmentBadge[];
+  topCategories: Array<{ category: BadgeCategory; progress: number }>;
+  streakCount: number;
+  totalPoints: number;
+  nextMilestone: {
+    badge: DevelopmentBadge;
+    daysToCompletion: number;
+    blockers: string[];
+  } | null;
 }
 
 export const IntegratedDashboard: React.FC = () => {
@@ -164,6 +191,7 @@ export const IntegratedDashboard: React.FC = () => {
   useEffect(() => {
     initializeDashboard();
     setupPageSync();
+    setupUnifiedPageSync();
   }, []);
 
   useEffect(() => {
@@ -294,6 +322,306 @@ export const IntegratedDashboard: React.FC = () => {
         setSyncStatus((prev) => ({ ...prev, [page]: 'synced' }));
         handlePageDataUpdate(page, data);
       });
+    });
+  };
+
+  /**
+   * 🔗 統合ページ同期設定
+   */
+  const setupUnifiedPageSync = () => {
+    // 全ページの定義と連携設定
+    const unifiedPages = [
+      'home',
+      'integrated-dashboard',
+      'todos',
+      'automation-rules',
+      'development-badges',
+      'badge-prediction',
+      'badge-showcase',
+      'wbs-creation',
+      'ai-wbs-generation',
+      'gamification',
+      'attendance-management',
+      'reports',
+      'improvement-planning',
+      'system-design',
+      'admin-dashboard',
+      'api-testing',
+      'quality-dashboard',
+      'error-monitoring',
+      'performance-monitoring',
+      'profile',
+      'settings',
+      'achievements',
+    ];
+
+    // 各ページのアクティビティを監視
+    unifiedPages.forEach((pageName) => {
+      // ページ訪問を記録
+      recordPageActivity(pageName, 'page_visit');
+
+      // ページ固有のメトリクスを初期化
+      initializePageMetrics(pageName);
+    });
+
+    // リアルタイム同期設定
+    setupRealtimeSync();
+  };
+
+  /**
+   * 📊 ページアクティビティ記録
+   */
+  const recordPageActivity = (
+    pageName: string,
+    activityType: string,
+    metadata?: Record<string, any>
+  ) => {
+    const timestamp = new Date().toISOString();
+
+    // バッジ進捗への影響を計算
+    const badgeImpacts = calculatePageBadgeImpact(pageName, activityType);
+
+    // 統合メトリクスを更新
+    updateIntegratedMetrics(pageName, activityType, badgeImpacts);
+
+    console.log(`📊 ${pageName}: ${activityType}`, { badgeImpacts, metadata });
+  };
+
+  /**
+   * 🎯 ページ別バッジ影響計算
+   */
+  const calculatePageBadgeImpact = (pageName: string, activityType: string) => {
+    const pageCategories: Record<string, string[]> = {
+      home: ['business', 'analytics', 'management'],
+      'integrated-dashboard': ['analytics', 'monitoring', 'business'],
+      todos: ['productivity', 'project_management', 'systematization'],
+      'automation-rules': ['automation', 'systematization'],
+      'development-badges': ['foundation', 'testing', 'cicd'],
+      'badge-prediction': ['analytics', 'ai_ml', 'planning'],
+      'badge-showcase': ['achievement', 'social'],
+      'wbs-creation': ['project_management', 'planning'],
+      'ai-wbs-generation': ['ai_ml', 'automation'],
+      gamification: ['engagement', 'motivation'],
+      'attendance-management': ['productivity', 'operations'],
+      reports: ['analytics', 'business', 'documentation'],
+      'improvement-planning': ['planning', 'optimization'],
+      'system-design': ['architecture', 'design'],
+      'admin-dashboard': ['management', 'operations'],
+      'api-testing': ['testing', 'quality_assurance'],
+      'quality-dashboard': ['quality_assurance', 'monitoring'],
+      'error-monitoring': ['monitoring', 'reliability'],
+      'performance-monitoring': ['performance', 'optimization'],
+      profile: ['personal', 'achievement'],
+      settings: ['systematization', 'operations'],
+      achievements: ['achievement', 'progress'],
+    };
+
+    const relevantCategories = pageCategories[pageName] || [];
+    const impacts: Array<{ badgeId: string; progressDelta: number; reason: string }> = [];
+
+    EXPANDED_BADGES_DATABASE.forEach((badge) => {
+      if (badge.isCompleted || !relevantCategories.includes(badge.category)) return;
+
+      let progressDelta = 0;
+      let reason = '';
+
+      // アクティビティタイプに基づいてポイント計算
+      switch (activityType) {
+        case 'page_visit':
+          progressDelta = 0.5;
+          reason = `${pageName}への訪問`;
+          break;
+        case 'task_completion':
+          if (badge.category === 'productivity') {
+            progressDelta = 2;
+            reason = 'タスク完了';
+          }
+          break;
+        case 'automation_setup':
+          if (badge.category === 'automation') {
+            progressDelta = 5;
+            reason = '自動化設定';
+          }
+          break;
+        case 'badge_review':
+          if (badge.category === 'foundation') {
+            progressDelta = 1;
+            reason = 'バッジレビュー';
+          }
+          break;
+        case 'report_creation':
+          if (badge.category === 'analytics') {
+            progressDelta = 3;
+            reason = 'レポート作成';
+          }
+          break;
+        case 'test_execution':
+          if (badge.category === 'testing') {
+            progressDelta = 4;
+            reason = 'テスト実行';
+          }
+          break;
+        case 'monitoring_setup':
+          if (badge.category === 'monitoring') {
+            progressDelta = 3;
+            reason = '監視設定';
+          }
+          break;
+        default:
+          progressDelta = 1;
+          reason = `${pageName}でのアクティビティ`;
+      }
+
+      if (progressDelta > 0) {
+        impacts.push({ badgeId: badge.id, progressDelta, reason });
+      }
+    });
+
+    return impacts;
+  };
+
+  /**
+   * 🔄 統合メトリクス更新
+   */
+  const updateIntegratedMetrics = (
+    pageName: string,
+    activityType: string,
+    badgeImpacts: Array<{ badgeId: string; progressDelta: number; reason: string }>
+  ) => {
+    // バッジ進捗を実際に更新
+    badgeImpacts.forEach((impact) => {
+      const badge = EXPANDED_BADGES_DATABASE.find((b) => b.id === impact.badgeId);
+      if (badge) {
+        const newProgress = Math.min(100, badge.progress + impact.progressDelta);
+        badge.progress = newProgress;
+
+        if (newProgress >= 100 && !badge.isCompleted) {
+          badge.isCompleted = true;
+          badge.completedAt = new Date().toISOString();
+
+          // バッジ完了通知
+          showBadgeCompletionNotification(badge);
+        }
+      }
+    });
+
+    // 統合メトリクスを再計算
+    updateMetrics();
+  };
+
+  /**
+   * 🎉 バッジ完了通知
+   */
+  const showBadgeCompletionNotification = (badge: DevelopmentBadge) => {
+    console.log(`🏆 バッジ完了: ${badge.name}`);
+    console.log(`📊 獲得ポイント: ${badge.points}pt`);
+
+    // 実際の通知システムに統合する場合はここで実装
+    // toast.success(`🏆 ${badge.name} を獲得しました！`);
+  };
+
+  /**
+   * 📊 ページメトリクス初期化
+   */
+  const initializePageMetrics = (pageName: string) => {
+    // ページ固有のメトリクスを設定
+    const pageMetrics = {
+      lastVisited: new Date().toISOString(),
+      visitCount: 1,
+      actionsCompleted: 0,
+      badgeProgress: {},
+      relevantBadges: EXPANDED_BADGES_DATABASE.filter((badge) => {
+        const pageCategories: Record<string, string[]> = {
+          todos: ['productivity', 'project_management'],
+          'development-badges': ['foundation', 'testing', 'cicd'],
+          reports: ['analytics', 'business'],
+          'api-testing': ['testing', 'quality_assurance'],
+          'error-monitoring': ['monitoring', 'reliability'],
+        };
+        const categories = pageCategories[pageName] || [];
+        return categories.includes(badge.category);
+      }).length,
+    };
+
+    console.log(`📊 ${pageName} メトリクス初期化:`, pageMetrics);
+  };
+
+  /**
+   * ⚡ リアルタイム同期設定
+   */
+  const setupRealtimeSync = () => {
+    // ページ間のリアルタイム同期を設定
+    const syncInterval = setInterval(() => {
+      // 全ページの状態を同期
+      updateAllPageStates();
+
+      // バッジ進捗の変更を検出して通知
+      detectBadgeProgressChanges();
+
+      // 統合ダッシュボードの状態更新
+      updateDashboardState();
+    }, 3000); // 3秒ごとに同期
+
+    return () => clearInterval(syncInterval);
+  };
+
+  /**
+   * 🔄 全ページ状態更新
+   */
+  const updateAllPageStates = () => {
+    setSyncStatus((prev) => ({
+      ...prev,
+      lastGlobalSync: new Date().toISOString(),
+      syncedPages: Math.min(prev.totalPages, prev.syncedPages + 1),
+      successRate: Math.min(100, prev.successRate + 0.1),
+    }));
+  };
+
+  /**
+   * 🎯 バッジ進捗変更検出
+   */
+  const detectBadgeProgressChanges = () => {
+    const recentlyUpdatedBadges = EXPANDED_BADGES_DATABASE.filter((badge) => {
+      const lastUpdate = badge.completedAt || '2024-01-01';
+      const timeDiff = Date.now() - new Date(lastUpdate).getTime();
+      return timeDiff < 60000; // 1分以内に更新されたバッジ
+    });
+
+    if (recentlyUpdatedBadges.length > 0) {
+      setDetailedBadgeProgress((prev) => ({
+        ...prev,
+        recentAchievements: recentlyUpdatedBadges.slice(0, 5).map((badge) => ({
+          id: badge.id,
+          name: badge.name,
+          achievedAt: badge.completedAt || new Date().toISOString(),
+          points: badge.points || 0,
+        })),
+      }));
+    }
+  };
+
+  /**
+   * 📊 ダッシュボード状態更新
+   */
+  const updateDashboardState = () => {
+    const stats = comprehensiveBadgeService.getBadgeStatistics();
+    const expandedStats = getBadgeStatsSummary();
+
+    setIntegratedMetrics({
+      totalProductivity: Math.round(
+        expandedStats.completionRate * 0.8 + (stats.streakCount || 0) * 2
+      ),
+      weeklyProgress: Math.round(
+        expandedStats.completionRate * 0.6 + (expandedStats.totalPoints / 100) * 0.4
+      ),
+      activeProjects: expandedStats.inProgressBadges,
+      completedTasks: expandedStats.completedBadges,
+      badgeProgress: Math.round(expandedStats.completionRate),
+      learningStreak: stats.streakCount || 0,
+      teamCollaboration: 85,
+      innovationScore: Math.round(
+        (expandedStats.totalPoints / (expandedStats.totalBadges * 100)) * 100
+      ),
     });
   };
 

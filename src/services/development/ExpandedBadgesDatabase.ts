@@ -1347,6 +1347,513 @@ export const EXPANDED_BADGES_DATABASE: DevelopmentBadge[] = [
     points: 750,
   },
 
+  {
+    id: 'game-developer',
+    name: 'ゲーム開発者',
+    description: 'ゲーム企画・開発・リリース',
+    category: 'creative',
+    difficulty: 'platinum',
+    icon: '🎯',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'ゲーム企画・コンセプト設計',
+        progress: 30,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'ゲームエンジン・プログラミング',
+        progress: 25,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 27,
+    isCompleted: false,
+    points: 900,
+  },
+
+  // 🛒 EC・eコマース系バッジ
+  {
+    id: 'ecommerce-specialist',
+    name: 'ECスペシャリスト',
+    description: 'オンラインストア・決済・物流システム',
+    category: 'business',
+    difficulty: 'gold',
+    icon: '🛒',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'オンラインストア構築',
+        progress: 40,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '決済システム・在庫管理',
+        progress: 35,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 37,
+    isCompleted: false,
+    points: 750,
+  },
+
+  // 🎬 動画・コンテンツ制作系バッジ
+  {
+    id: 'video-creator',
+    name: '動画クリエイター',
+    description: '動画企画・撮影・編集・配信',
+    category: 'content',
+    difficulty: 'gold',
+    icon: '🎬',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '動画企画・脚本・撮影',
+        progress: 45,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '動画編集・配信プラットフォーム',
+        progress: 50,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 47,
+    isCompleted: false,
+    points: 650,
+  },
+
+  {
+    id: 'content-strategist',
+    name: 'コンテンツストラテジスト',
+    description: 'コンテンツ戦略・編集・SEO最適化',
+    category: 'content',
+    difficulty: 'gold',
+    icon: '📝',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'コンテンツ戦略・企画',
+        progress: 60,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'SEO・コンテンツマーケティング',
+        progress: 55,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 57,
+    isCompleted: false,
+    points: 700,
+  },
+
+  // 📚 教育・学習・資格系バッジ
+  {
+    id: 'education-specialist',
+    name: '教育スペシャリスト',
+    description: '教育コンテンツ・学習システム・指導法',
+    category: 'education',
+    difficulty: 'gold',
+    icon: '🎓',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '教育コンテンツ・カリキュラム',
+        progress: 70,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'e-ラーニング・学習管理',
+        progress: 65,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 67,
+    isCompleted: false,
+    points: 750,
+  },
+
+  {
+    id: 'certification-expert',
+    name: '資格取得エキスパート',
+    description: '資格試験対策・学習計画・合格支援',
+    category: 'education',
+    difficulty: 'silver',
+    icon: '📜',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '資格試験計画・対策',
+        progress: 80,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '学習進捗・合格サポート',
+        progress: 75,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 77,
+    isCompleted: false,
+    points: 500,
+  },
+
+  // 📢 情報発信・メディア系バッジ
+  {
+    id: 'information-broadcaster',
+    name: '情報発信者',
+    description: 'ブログ・SNS・メディア運営',
+    category: 'content',
+    difficulty: 'silver',
+    icon: '📢',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'ブログ・記事執筆',
+        progress: 85,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'SNS運営・コミュニティ',
+        progress: 80,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 82,
+    isCompleted: false,
+    points: 450,
+  },
+
+  // 🤝 社会貢献・CSR系バッジ
+  {
+    id: 'social-contributor',
+    name: '社会貢献者',
+    description: 'CSR活動・ボランティア・社会課題解決',
+    category: 'social_contribution',
+    difficulty: 'gold',
+    icon: '🤝',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'CSR戦略・社会貢献活動',
+        progress: 60,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'ボランティア・地域連携',
+        progress: 55,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 57,
+    isCompleted: false,
+    points: 700,
+  },
+
+  // 📋 秘書・事務系バッジ
+  {
+    id: 'executive-secretary',
+    name: 'エグゼクティブ秘書',
+    description: '経営サポート・スケジュール管理・文書作成',
+    category: 'secretarial',
+    difficulty: 'gold',
+    icon: '📋',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'スケジュール・会議管理',
+        progress: 90,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '文書作成・事務処理',
+        progress: 85,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 87,
+    isCompleted: false,
+    points: 650,
+  },
+
+  // 🏛️ 政治・社会制度系バッジ
+  {
+    id: 'policy-analyst',
+    name: '政策アナリスト',
+    description: '政策分析・社会問題・公共政策',
+    category: 'politics',
+    difficulty: 'platinum',
+    icon: '🏛️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '政策研究・分析',
+        progress: 20,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '社会課題・解決策',
+        progress: 25,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 22,
+    isCompleted: false,
+    points: 850,
+  },
+
+  // 📊 経済・金融系バッジ
+  {
+    id: 'economic-analyst',
+    name: '経済アナリスト',
+    description: '経済分析・市場予測・投資戦略',
+    category: 'economics',
+    difficulty: 'gold',
+    icon: '📊',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '市場分析・経済指標',
+        progress: 25,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '投資戦略・リスク管理',
+        progress: 30,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 27,
+    isCompleted: false,
+    points: 750,
+  },
+
+  // 🤔 哲学・思想系バッジ
+  {
+    id: 'philosopher',
+    name: '哲学者',
+    description: '哲学的思考・倫理・人生観の探究',
+    category: 'philosophy',
+    difficulty: 'platinum',
+    icon: '🤔',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '哲学的思考・論理構築',
+        progress: 15,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '倫理・価値観の探究',
+        progress: 20,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 17,
+    isCompleted: false,
+    points: 900,
+  },
+
+  // 🏛️ 歴史・文化系バッジ
+  {
+    id: 'cultural-historian',
+    name: '文化歴史学者',
+    description: '歴史研究・文化分析・伝統保存',
+    category: 'culture',
+    difficulty: 'gold',
+    icon: '🏛️',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '歴史調査・文献研究',
+        progress: 20,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '文化遺産・伝統技術',
+        progress: 15,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 17,
+    isCompleted: false,
+    points: 700,
+  },
+
+  // 🎨 芸術・創作系バッジ
+  {
+    id: 'digital-artist',
+    name: 'デジタルアーティスト',
+    description: 'デジタル芸術・創作・表現',
+    category: 'art',
+    difficulty: 'silver',
+    icon: '🎨',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'デジタルアート・イラスト',
+        progress: 60,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '3D・アニメーション',
+        progress: 40,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 50,
+    isCompleted: false,
+    points: 450,
+  },
+
+  // 🌍 語学・国際系バッジ
+  {
+    id: 'linguist',
+    name: '言語学者',
+    description: '多言語習得・翻訳・国際コミュニケーション',
+    category: 'linguistics',
+    difficulty: 'gold',
+    icon: '🌍',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '多言語対応・翻訳',
+        progress: 70,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '国際化・ローカライゼーション',
+        progress: 65,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: true,
+    progress: 67,
+    isCompleted: false,
+    points: 650,
+  },
+
+  // 📖 文学・執筆系バッジ
+  {
+    id: 'literary-writer',
+    name: '文学作家',
+    description: '創作・文学・ストーリーテリング',
+    category: 'literature',
+    difficulty: 'gold',
+    icon: '📖',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '創作・ストーリー執筆',
+        progress: 35,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '文学理論・批評',
+        progress: 25,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 30,
+    isCompleted: false,
+    points: 600,
+  },
+
+  // 📚 出版・編集系バッジ
+  {
+    id: 'publisher-editor',
+    name: '出版・編集者',
+    description: '出版プロセス・編集・品質管理',
+    category: 'publishing',
+    difficulty: 'gold',
+    icon: '📚',
+    requirements: [
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: '編集・校正・品質管理',
+        progress: 45,
+        isCompleted: false,
+      },
+      {
+        type: 'feature_complete',
+        target: 100,
+        description: 'デジタル出版・配信',
+        progress: 35,
+        isCompleted: false,
+      },
+    ],
+    isUnlocked: false,
+    progress: 40,
+    isCompleted: false,
+    points: 650,
+  },
+
   // 🏥 アクセシビリティ・ユニバーサルデザイン系バッジ
   {
     id: 'accessibility-champion',
