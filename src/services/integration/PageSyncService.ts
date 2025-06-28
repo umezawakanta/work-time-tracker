@@ -84,10 +84,29 @@ export interface PageState {
   pageName: string;
   isActive: boolean;
   lastUpdated: string;
+  lastSync: string;
+  version: number;
+  dataHash: string;
+  conflicts: Array<{
+    id: string;
+    type: string;
+    description: string;
+    data: any;
+    timestamp: string;
+    status: 'unresolved' | 'resolved';
+    error?: string;
+    resolvedAt?: string;
+  }>;
   metrics: Record<string, number>;
   badgeProgress: Record<string, number>;
   syncStatus: 'idle' | 'syncing' | 'synced' | 'error';
   pendingUpdates: number;
+  metadata: {
+    pageTitle: string;
+    routePath: string;
+    dependencies: PageKey[];
+    syncPriority: number;
+  };
 }
 
 export interface PageSubscriber {
@@ -193,11 +212,17 @@ class PageSyncService extends EventEmitter {
   private initializePageStates(): void {
     this.MONITORED_PAGES.forEach((pageKey) => {
       this.pageStates.set(pageKey, {
+        pageName: this.getPageTitle(pageKey),
         lastSync: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
         version: 1,
         isActive: false,
         dataHash: '',
         conflicts: [],
+        metrics: {},
+        badgeProgress: {},
+        syncStatus: 'idle',
+        pendingUpdates: 0,
         metadata: {
           pageTitle: this.getPageTitle(pageKey),
           routePath: this.getRoutePath(pageKey),
@@ -217,17 +242,24 @@ class PageSyncService extends EventEmitter {
       dashboard: '統合ダッシュボード',
       todos: 'TODO管理',
       'development-badges': '開発バッジダッシュボード',
+      'badge-dashboard': 'バッジダッシュボード',
       'badge-prediction': 'バッジ完了予測',
       'badge-showcase': 'バッジショーケース',
+      wbs: 'WBS',
       'wbs-creation': 'WBS作成',
+      'ai-wbs': 'AI WBS',
       'ai-wbs-generation': 'AI WBS生成',
       gamification: 'ゲーミフィケーション',
+      attendance: '勤怠管理',
       'time-tracking': '勤怠管理',
       reports: 'レポート',
+      'improvement-planning': '改善計画',
       'improvement-plan': '改善計画',
       'system-design': 'システム設計',
+      admin: '管理者',
       'admin-dashboard': '管理者ダッシュボード',
       'api-testing': 'APIテスト',
+      quality: '品質',
       'quality-dashboard': '品質ダッシュボード',
       'error-monitoring': 'エラー監視',
       'performance-monitoring': 'パフォーマンス監視',
@@ -256,17 +288,24 @@ class PageSyncService extends EventEmitter {
       dashboard: '/dashboard',
       todos: '/todos',
       'development-badges': '/development-badges',
+      'badge-dashboard': '/badge-dashboard',
       'badge-prediction': '/badge-prediction',
       'badge-showcase': '/badge-showcase',
+      wbs: '/wbs',
       'wbs-creation': '/wbs',
+      'ai-wbs': '/ai-wbs',
       'ai-wbs-generation': '/ai-wbs',
       gamification: '/gamification',
+      attendance: '/attendance',
       'time-tracking': '/time-tracking',
       reports: '/reports',
+      'improvement-planning': '/improvement',
       'improvement-plan': '/improvement',
       'system-design': '/system-design',
+      admin: '/admin',
       'admin-dashboard': '/admin',
       'api-testing': '/api-test',
+      quality: '/quality',
       'quality-dashboard': '/quality',
       'error-monitoring': '/errors',
       'performance-monitoring': '/performance',
@@ -293,19 +332,26 @@ class PageSyncService extends EventEmitter {
     const dependencies: Record<PageKey, PageKey[]> = {
       home: ['dashboard', 'todos', 'achievements'],
       dashboard: ['todos', 'development-badges', 'analytics', 'time-tracking'],
-      todos: ['gamification', 'achievements', 'time-tracking'],
+      todos: ['gamification', 'time-tracking', 'achievements'],
       'development-badges': ['badge-prediction', 'badge-showcase', 'achievements'],
+      'badge-dashboard': ['development-badges', 'achievements'],
       'badge-prediction': ['development-badges', 'analytics'],
       'badge-showcase': ['development-badges', 'achievements'],
+      wbs: ['wbs-creation', 'project-management'],
       'wbs-creation': ['project-management', 'team-collaboration'],
+      'ai-wbs': ['ai-wbs-generation', 'system-design'],
       'ai-wbs-generation': ['wbs-creation', 'system-design'],
       gamification: ['achievements', 'todos', 'analytics'],
+      attendance: ['time-tracking', 'reports'],
       'time-tracking': ['reports', 'analytics', 'dashboard'],
       reports: ['analytics', 'time-tracking', 'quality-dashboard'],
+      'improvement-planning': ['quality-dashboard', 'analytics', 'reports'],
       'improvement-plan': ['quality-dashboard', 'analytics', 'reports'],
       'system-design': ['documentation', 'api-testing'],
+      admin: ['admin-dashboard', 'quality-dashboard'],
       'admin-dashboard': ['quality-dashboard', 'error-monitoring', 'performance-monitoring'],
       'api-testing': ['quality-dashboard', 'system-design'],
+      quality: ['quality-dashboard', 'error-monitoring'],
       'quality-dashboard': ['error-monitoring', 'performance-monitoring', 'reports'],
       'error-monitoring': ['performance-monitoring', 'admin-dashboard'],
       'performance-monitoring': ['error-monitoring', 'admin-dashboard'],
@@ -333,6 +379,7 @@ class PageSyncService extends EventEmitter {
       dashboard: 10,
       todos: 9,
       'development-badges': 8,
+      'badge-dashboard': 8,
       achievements: 8,
       gamification: 7,
       'time-tracking': 7,
@@ -347,11 +394,17 @@ class PageSyncService extends EventEmitter {
       'performance-monitoring': 8,
       'badge-prediction': 6,
       'badge-showcase': 5,
+      wbs: 6,
       'wbs-creation': 6,
+      'ai-wbs': 7,
       'ai-wbs-generation': 7,
+      'improvement-planning': 5,
       'improvement-plan': 5,
       'system-design': 4,
+      admin: 5,
       'api-testing': 4,
+      quality: 5,
+      attendance: 7,
       'team-collaboration': 5,
       'project-management': 6,
       'resource-planning': 5,
@@ -443,12 +496,7 @@ class PageSyncService extends EventEmitter {
 
       for (const subscriber of subscribers) {
         try {
-          await subscriber.callback(data, {
-            fromPage,
-            targetPage,
-            timestamp: operation.timestamp,
-            syncId: operation.id,
-          });
+          await subscriber.callback(data);
 
           // ページ状態更新
           const pageState = this.pageStates.get(targetPage);
@@ -603,6 +651,24 @@ class PageSyncService extends EventEmitter {
     this.pageStates.clear();
     this.syncQueue = [];
     console.log('🧹 Enhanced Page Sync Service cleaned up');
+  }
+
+  /**
+   * 🔧 イベントリスナー設定
+   */
+  private setupEventListeners(): void {
+    // グローバルイベントリスナーの設定
+    this.on('sync-started', (operation: SyncOperation) => {
+      console.log('Sync operation started:', operation.id);
+    });
+
+    this.on('sync-completed', (operation: SyncOperation) => {
+      console.log('Sync operation completed:', operation.id);
+    });
+
+    this.on('sync-failed', (operation: SyncOperation, error: any) => {
+      console.error('Sync operation failed:', operation.id, error);
+    });
   }
 }
 

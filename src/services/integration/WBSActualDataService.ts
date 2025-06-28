@@ -1,7 +1,7 @@
 import { WBSNode } from '@/types/wbs';
 import { TodoItem } from '@/types';
 import { Task } from '@/types/implementation';
-import { IWorkTimeEntry } from '@/server/models/WorkTimeEntry';
+// import { IWorkTimeEntry } from '@/server/models/WorkTimeEntry'; // モジュールが見つからないためコメントアウト
 import TodoService from '../data/TodoService';
 import { db } from '@/config/firebase';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
@@ -69,6 +69,18 @@ export interface WBSActualReport {
   topPerformingNodes: string[];
   delayedNodes: string[];
   recommendations: string[];
+}
+
+// ローカルWorkTimeEntryインターフェース定義
+export interface IWorkTimeEntry {
+  id: string;
+  userId: string;
+  date: Date;
+  duration: number;
+  description?: string;
+  projectName: string;
+  category?: string;
+  tags?: string[];
 }
 
 class WBSActualDataService {

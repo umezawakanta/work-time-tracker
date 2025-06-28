@@ -540,7 +540,7 @@ class ComprehensiveBadgeSyncService {
       inProgressBadges: stats.inProgressBadges,
       completionRate: stats.completionRate,
       totalPoints: stats.totalPoints,
-      weeklyProgress: this.calculateWeeklyProgress(),
+      weeklyProgress: this.calculateWeeklyProgressPercentage(),
       streakDays: stats.streakCount || 0,
       activeCategories: Object.keys(stats.categoriesCompleted).length,
       topCategories: this.calculateTopCategories(stats),
@@ -552,7 +552,7 @@ class ComprehensiveBadgeSyncService {
   /**
    * 📈 週次進捗計算
    */
-  private calculateWeeklyProgress(): number {
+  private calculateWeeklyProgressPercentage(): number {
     const activities = this.comprehensiveBadgeService.getRecentActivities(50);
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const recentActivities = activities.filter(
@@ -1035,8 +1035,13 @@ class ComprehensiveBadgeSyncService {
     const plan = this.weeklyPlans.get(currentWeek);
 
     if (plan) {
-      const progress = this.calculateWeeklyProgress(plan);
-      plan.actualProgress = progress;
+      const progress = this.calculateWeeklyProgressPercentage();
+      plan.actualProgress = {
+        completedBadges: Math.round(progress),
+        totalProgressMade: Math.round(progress * 20),
+        completionRate: progress * 100,
+        timeSpent: Math.round(progress * 10),
+      };
       this.weeklyPlans.set(currentWeek, plan);
     }
   }
@@ -1203,27 +1208,14 @@ class ComprehensiveBadgeSyncService {
     console.log(`📦 ${pageId}のデータを事前読み込み中`);
   }
 
-  private calculateWeeklyProgress(plan: WeeklyBadgePlan): WeeklyBadgePlan['actualProgress'] {
-    // 実際の週次進捗計算
-    const completed = plan.plannedBadges.filter(
-      (b) => this.comprehensiveBadgeService.getBadge(b.badgeId)?.isCompleted
-    ).length;
-
-    return {
-      completedBadges: completed,
-      totalProgressMade: completed * 20, // 仮の進捗ポイント
-      completionRate: (completed / plan.plannedBadges.length) * 100,
-      timeSpent: completed * 10, // 仮の時間
-    };
-  }
-
   private async updateBadgeProgressFromActivity(pageId: string, activity: any): Promise<void> {
     const config = this.pageConfigurations.get(pageId);
     if (!config) return;
 
     // ページアクティビティをバッジ進捗に反映
     for (const category of config.associatedCategories) {
-      const badges = this.comprehensiveBadgeService.getBadgesByCategory(category);
+      const allBadges = this.comprehensiveBadgeService.getAllBadges();
+      const badges = allBadges.filter((badge) => badge.category === category);
       for (const badge of badges.slice(0, 3)) {
         if (!badge.isCompleted) {
           // 微小な進捗を追加
