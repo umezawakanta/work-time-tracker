@@ -25,7 +25,9 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
   const elementRef = useRef<HTMLDivElement>(null);
 
   const handleInteraction = () => {
-    if (disabled || !elementRef.current) return;
+    if (disabled || !elementRef.current) {
+      return;
+    }
     setIsAnimating(true);
 
     // アニメーション終了後にリセット
