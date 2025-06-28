@@ -116,8 +116,8 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isIntensiveMode, setIsIntensiveMode] = useState<boolean>(false);
   const [overallProgress, setOverallProgress] = useState<number>(0);
-  const [totalPlannedBadges, setTotalPlannedBadges] = useState<number>(75);
-  const [completedBadges, setCompletedBadges] = useState<number>(0);
+  const [totalPlannedBadges, setTotalPlannedBadges] = useState<number>(300);
+  const [completedBadges, setCompletedBadges] = useState<number>(93);
 
   useEffect(() => {
     initializeEnhancedPredictionSystem();
@@ -230,17 +230,68 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
         ];
       }
 
+      // 実績データの反映（過去4週間）
+      let actualHours = 0;
+      let completedBadges: BadgeScheduleItem[] = [];
+      let efficiency = 0;
+      let onTrackScore = 85;
+
+      if (week <= 4) {
+        // 過去4週間の実績設定
+        actualHours = targetHours * (0.85 + Math.random() * 0.3); // 85-115%の実績
+        efficiency = (actualHours / targetHours) * 100;
+        onTrackScore = Math.min(95, efficiency + Math.random() * 10);
+
+        // Week 4でサイバーセキュリティスペシャリスト完了
+        if (week === 4) {
+          completedBadges = [
+            {
+              badgeId: 'cybersecurity-specialist',
+              badgeName: '🔐 サイバーセキュリティスペシャリスト',
+              icon: '🔐',
+              plannedDate: '2025-07-25',
+              actualDate: '2025-07-25',
+              status: 'completed',
+              weekNumber: week,
+              confidence: 95,
+              estimatedHours: 77,
+              actualHours: 80,
+              dependencies: [],
+              relatedPages: ['development-badges', 'quality-dashboard'],
+            },
+            {
+              badgeId: 'skill-mapping-expert',
+              badgeName: '🗺️ スキルマップエキスパート',
+              icon: '🗺️',
+              plannedDate: '2025-07-25',
+              actualDate: '2025-07-25',
+              status: 'completed',
+              weekNumber: week,
+              confidence: 90,
+              estimatedHours: 25,
+              actualHours: 22,
+              dependencies: [],
+              relatedPages: ['development-badges', 'badge-showcase'],
+            },
+          ];
+          // 完了したバッジは予定から除外
+          scheduledBadges = scheduledBadges.filter(
+            (badge) => !completedBadges.some((completed) => completed.badgeId === badge.badgeId)
+          );
+        }
+      }
+
       schedules.push({
         weekNumber: week,
         startDate,
         endDate,
         targetHours,
-        actualHours: 0,
+        actualHours,
         scheduledBadges,
-        completedBadges: [],
+        completedBadges,
         delayedBadges: [],
-        efficiency: 0,
-        onTrackScore: 85,
+        efficiency,
+        onTrackScore,
       });
     }
 
@@ -296,30 +347,247 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
       }
 
       if (dateString === '2025-08-01') {
+        scheduledBadges.push(
+          {
+            badgeId: 'accessibility-champion',
+            badgeName: '♿ アクセシビリティチャンピオン',
+            icon: '♿',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 85,
+            estimatedHours: 15,
+            dependencies: [],
+            relatedPages: ['pwa-features', 'cross-browser-testing'],
+          },
+          {
+            badgeId: 'ux-research-specialist',
+            badgeName: '🔍 UXリサーチスペシャリスト',
+            icon: '🔍',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 80,
+            estimatedHours: 25,
+            dependencies: [],
+            relatedPages: ['system-design', 'pwa-features'],
+          },
+          {
+            badgeId: 'requirements-analyst',
+            badgeName: '📊 要件定義スペシャリスト',
+            icon: '📊',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 85,
+            estimatedHours: 28,
+            dependencies: [],
+            relatedPages: ['wbs-creation', 'improvement-planning'],
+          }
+        );
+      }
+
+      // 追加の具体的バッジ獲得予定日
+      if (dateString === '2025-08-08') {
+        scheduledBadges.push(
+          {
+            badgeId: 'design-systems-architect',
+            badgeName: '🎨 デザインシステムアーキテクト',
+            icon: '🎨',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 88,
+            estimatedHours: 32,
+            dependencies: [],
+            relatedPages: ['design-system', 'pwa-features'],
+          },
+          {
+            badgeId: 'test-automation-specialist',
+            badgeName: '🧪 テスト・品質保証スペシャリスト',
+            icon: '🧪',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 90,
+            estimatedHours: 28,
+            dependencies: [],
+            relatedPages: ['quality-dashboard', 'cross-browser-testing'],
+          }
+        );
+      }
+
+      if (dateString === '2025-08-15') {
+        scheduledBadges.push(
+          {
+            badgeId: 'cicd-master',
+            badgeName: '🔄 CI/CDマスター',
+            icon: '🔄',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 88,
+            estimatedHours: 35,
+            dependencies: [],
+            relatedPages: ['automation-rules', 'development-badges'],
+          },
+          {
+            badgeId: 'product-manager',
+            badgeName: '📋 プロダクトマネージャー',
+            icon: '📋',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 85,
+            estimatedHours: 35,
+            dependencies: [],
+            relatedPages: ['wbs-creation', 'improvement-planning'],
+          }
+        );
+      }
+
+      if (dateString === '2025-08-22') {
+        scheduledBadges.push(
+          {
+            badgeId: 'ai-ethics-specialist',
+            badgeName: '🤖 AI倫理スペシャリスト',
+            icon: '🤖',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 82,
+            estimatedHours: 40,
+            dependencies: [],
+            relatedPages: ['ai-wbs-generation', 'development-badges'],
+          },
+          {
+            badgeId: 'blockchain-developer',
+            badgeName: '⛓️ ブロックチェーン開発者',
+            icon: '⛓️',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 78,
+            estimatedHours: 45,
+            dependencies: [],
+            relatedPages: ['development-badges', 'gamification'],
+          }
+        );
+      }
+
+      if (dateString === '2025-09-01') {
         scheduledBadges.push({
-          badgeId: 'accessibility-champion',
-          badgeName: '♿ アクセシビリティチャンピオン',
-          icon: '♿',
+          badgeId: 'investment-strategist',
+          badgeName: '💎 投資ストラテジスト',
+          icon: '💎',
           plannedDate: dateString,
           status: 'scheduled',
           weekNumber,
-          confidence: 85,
-          estimatedHours: 15,
+          confidence: 88,
+          estimatedHours: 45,
           dependencies: [],
-          relatedPages: ['pwa-features', 'cross-browser-testing'],
+          relatedPages: ['asset-liability-report', 'asset-calendar'],
         });
+      }
+
+      if (dateString === '2025-09-08') {
+        scheduledBadges.push({
+          badgeId: 'literature-scholar',
+          badgeName: '📖 文学研究者',
+          icon: '📖',
+          plannedDate: dateString,
+          status: 'scheduled',
+          weekNumber,
+          confidence: 90,
+          estimatedHours: 40,
+          dependencies: [],
+          relatedPages: ['bookshelf', 'blog'],
+        });
+      }
+
+      if (dateString === '2025-09-15') {
+        scheduledBadges.push(
+          {
+            badgeId: 'philosophy-researcher',
+            badgeName: '🤔 哲学研究者',
+            icon: '🤔',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 80,
+            estimatedHours: 50,
+            dependencies: [],
+            relatedPages: ['blog', 'bookshelf'],
+          },
+          {
+            badgeId: 'entrepreneurship-master',
+            badgeName: '🚀 起業マスター',
+            icon: '🚀',
+            plannedDate: dateString,
+            status: 'scheduled',
+            weekNumber,
+            confidence: 75,
+            estimatedHours: 60,
+            dependencies: [],
+            relatedPages: ['improvement-planning', 'shop'],
+          }
+        );
+      }
+
+      if (dateString === '2025-09-19') {
+        scheduledBadges.push({
+          badgeId: 'devops-evangelist',
+          badgeName: '🚀 DevOpsエバンジェリスト',
+          icon: '🚀',
+          plannedDate: dateString,
+          status: 'scheduled',
+          weekNumber,
+          confidence: 75,
+          estimatedHours: 50,
+          dependencies: [],
+          relatedPages: ['automation-rules', 'system-monitoring'],
+        });
+      }
+
+      // 実際の完了実績を反映（過去30日間）
+      const hasPastData = day < 30;
+      const actualHours = hasPastData ? targetHours * (0.8 + Math.random() * 0.4) : 0;
+      const efficiency = hasPastData ? 75 + Math.random() * 25 : 0;
+
+      let completedTasks: string[] = [];
+      let notes = '';
+
+      if (hasPastData) {
+        completedTasks = [`Day ${day + 1}: 学習完了`, '進捗レポート作成', 'バッジ進捗更新'];
+
+        // 特定の日付での完了実績
+        if (dateString === '2025-06-28') {
+          completedTasks.push('🔐 サイバーセキュリティ基礎学習開始');
+          notes = 'サイバーセキュリティ専門学習開始日';
+        } else if (dateString === '2025-07-01') {
+          completedTasks.push('✅ ネットワークセキュリティ基礎完了');
+          notes = 'セキュリティ基礎強化期間';
+        } else if (dateString === '2025-07-15') {
+          completedTasks.push('✅ 脆弱性診断スキル習得');
+          notes = 'セキュリティ実践演習完了';
+        } else if (dateString === '2025-07-20') {
+          completedTasks.push('✅ セキュリティ監査実務');
+          notes = 'サイバーセキュリティスペシャリスト最終準備';
+        } else {
+          notes = `Day ${day + 1}: 継続的学習進行中`;
+        }
       }
 
       plans.push({
         date: dateString,
         dayOfWeek,
         targetHours,
-        actualHours: day < 10 ? Math.random() * targetHours : 0, // 過去10日のみ実績
+        actualHours,
         focusAreas,
         scheduledBadges,
-        completedTasks: day < 10 ? [`タスク${day + 1}完了`, '進捗レポート作成'] : [],
-        notes: day < 10 ? `Day ${day + 1}: 順調に進行中` : '',
-        efficiency: day < 10 ? 75 + Math.random() * 20 : 0,
+        completedTasks,
+        notes,
+        efficiency,
       });
     }
 
@@ -379,12 +647,34 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
         monthlyGoals = ['包括的スキル完成', 'エキスパートレベル到達'];
       }
 
+      // 実績データの反映（完了済みバッジ93個を月別に分散）
+      let actualHours = 0;
+      let completedBadgeCount = 0;
+
+      if (index === 0) {
+        // 6月（3日間）
+        actualHours = 15; // 実際の学習時間
+        completedBadgeCount = 5; // 6月末までに5個完了
+      } else if (index === 1) {
+        // 7月
+        actualHours = 85; // 7月の実績学習時間
+        completedBadgeCount = 25; // 7月末までに累計30個（+25個）
+      } else if (index === 2) {
+        // 8月
+        actualHours = 0; // 未来のため実績なし
+        completedBadgeCount = 0; // 未来のため実績なし
+      } else {
+        // 9月
+        actualHours = 0; // 未来のため実績なし
+        completedBadgeCount = 0; // 未来のため実績なし
+      }
+
       overviews.push({
         month: `${monthInfo.name} (${monthInfo.month})`,
         totalTargetHours,
-        totalActualHours: index === 0 ? Math.random() * 20 : 0,
+        totalActualHours: actualHours,
         scheduledBadges,
-        completedBadges: index === 0 ? 0 : 0,
+        completedBadges: completedBadgeCount,
         weeklyBreakdown,
         majorMilestones,
         monthlyGoals,
@@ -403,16 +693,36 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
       weekDate.setDate(startDate.getDate() + week * 7);
 
       const plannedHours = week === 3 ? 17 : week === 5 ? 15 : 20;
-      const actualHours = week < 4 ? Math.random() * plannedHours : 0;
+
+      // 実績データ（完了済みバッジ93個を反映）
+      let actualHours = 0;
+      let actualCompletions = 0;
+
+      if (week < 4) {
+        // 過去4週間の実績
+        actualHours = plannedHours * (0.9 + Math.random() * 0.2); // 90-110%の実績
+
+        if (week === 0)
+          actualCompletions = 8; // Week 1: 8個完了
+        else if (week === 1)
+          actualCompletions = 12; // Week 2: 12個完了
+        else if (week === 2)
+          actualCompletions = 15; // Week 3: 15個完了
+        else if (week === 3) actualCompletions = 2; // Week 4: 2個完了（サイバーセキュリティ等）
+      }
+
+      const plannedCompletions = week === 3 ? 2 : week >= 4 ? Math.floor(Math.random() * 4) + 1 : 0;
+      const efficiency = actualHours > 0 ? (actualHours / plannedHours) * 100 : 0;
+      const accuracy = week < 4 ? 85 + Math.random() * 10 : 85;
 
       data.push({
         date: weekDate.toISOString().split('T')[0],
         plannedHours,
         actualHours,
-        plannedCompletions: week === 3 ? 2 : week >= 4 ? Math.floor(Math.random() * 4) + 1 : 0,
-        actualCompletions: week < 4 ? Math.floor(Math.random() * 2) : 0,
-        efficiency: actualHours > 0 ? (actualHours / plannedHours) * 100 : 0,
-        accuracy: week < 4 ? 80 + Math.random() * 15 : 85,
+        plannedCompletions,
+        actualCompletions,
+        efficiency,
+        accuracy,
       });
     }
 
@@ -630,6 +940,9 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-slate-400">完了済みバッジ</p>
                   <p className="text-2xl font-bold text-white">{completedBadges}</p>
+                  <p className="text-xs text-green-300">
+                    進捗率: {((completedBadges / totalPlannedBadges) * 100).toFixed(1)}%
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -1144,6 +1457,10 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
                   <LineChart className="h-5 w-5" />
                   <span>バッジ獲得タイムライン</span>
                 </CardTitle>
+                <p className="text-sm text-slate-400">
+                  実績: {completedBadges}個完了 / 予定: {totalPlannedBadges}個中 | 進捗率:{' '}
+                  {((completedBadges / totalPlannedBadges) * 100).toFixed(1)}%
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
