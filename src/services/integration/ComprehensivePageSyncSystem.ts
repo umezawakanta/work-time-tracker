@@ -134,6 +134,7 @@ export type PageCategory =
   | 'core'
   | 'management'
   | 'analytics'
+  | 'analysis'
   | 'development'
   | 'quality'
   | 'business'
@@ -148,7 +149,8 @@ export type PageCategory =
   | 'design'
   | 'security'
   | 'operations'
-  | 'marketing';
+  | 'marketing'
+  | 'system';
 
 export type PagePriority = 'critical' | 'high' | 'medium' | 'low';
 
@@ -166,7 +168,8 @@ export type ActionType =
   | 'configuration'
   | 'integration'
   | 'notification'
-  | 'export';
+  | 'export'
+  | 'page_navigation';
 
 export type SyncEventType =
   | 'page_navigation'
@@ -784,10 +787,12 @@ class ComprehensivePageSyncSystem extends EventEmitter {
     if (!page) return;
 
     page.relatedBadges.forEach((badgeId) => {
-      const badge = COMPREHENSIVE_BADGE_CATEGORIES.find((b) => b.id === badgeId);
+      const badge = COMPREHENSIVE_BADGE_CATEGORIES.find(
+        (b) => b.id === badgeId
+      ) as unknown as ComprehensiveBadge;
       if (!badge) return;
 
-      badge.requirements.forEach((req) => {
+      badge.requirements.forEach((req: BadgeRequirement) => {
         const updateData = this.calculateRequirementUpdate(
           req,
           activityType,
@@ -900,13 +905,20 @@ class ComprehensivePageSyncSystem extends EventEmitter {
    * 📊 バッジ全体進捗更新
    */
   private updateBadgeOverallProgress(badgeId: string): void {
-    const badge = COMPREHENSIVE_BADGE_CATEGORIES.find((b) => b.id === badgeId);
+    const badge = COMPREHENSIVE_BADGE_CATEGORIES.find(
+      (b) => b.id === badgeId
+    ) as unknown as ComprehensiveBadge;
     if (!badge) return;
 
     const totalRequirements = badge.requirements.length;
-    const completedRequirements = badge.requirements.filter((req) => req.isCompleted).length;
+    const completedRequirements = badge.requirements.filter(
+      (req: BadgeRequirement) => req.isCompleted
+    ).length;
     const avgProgress =
-      badge.requirements.reduce((sum, req) => sum + (req.progress || 0), 0) / totalRequirements;
+      badge.requirements.reduce(
+        (sum: number, req: BadgeRequirement) => sum + (req.progress || 0),
+        0
+      ) / totalRequirements;
 
     badge.progress = avgProgress;
     badge.isUnlocked = completedRequirements === totalRequirements;
