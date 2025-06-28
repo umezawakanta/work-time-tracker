@@ -220,7 +220,9 @@ class GreenMetricsService {
     this.monitoringActive = true;
 
     const monitorLoop = () => {
-      if (!this.monitoringActive) return;
+      if (!this.monitoringActive) {
+        return;
+      }
 
       this.updateEnvironmentalImpact();
       this.updateGoalProgress();
@@ -287,11 +289,21 @@ class GreenMetricsService {
   private calculateEnvironmentalGrade(): EnvironmentalImpact['environmentalGrade'] {
     const score = this.environmentalImpact.sustainabilityScore;
 
-    if (score >= 95) return 'A+';
-    if (score >= 90) return 'A';
-    if (score >= 75) return 'B';
-    if (score >= 60) return 'C';
-    if (score >= 40) return 'D';
+    if (score >= 95) {
+      return 'A+';
+    }
+    if (score >= 90) {
+      return 'A';
+    }
+    if (score >= 75) {
+      return 'B';
+    }
+    if (score >= 60) {
+      return 'C';
+    }
+    if (score >= 40) {
+      return 'D';
+    }
     return 'F';
   }
 
