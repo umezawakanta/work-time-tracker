@@ -6,9 +6,7 @@
   "framework": null,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs20.x",
-      "memory": 1024,
-      "maxDuration": 30
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
