@@ -1880,7 +1880,9 @@ class ComprehensiveBadgeService {
   private calculateVelocityScore(category: string): number {
     const recentActivities = this.activityLog.filter((a) => a.category === category).slice(-10); // 直近10件
 
-    if (recentActivities.length === 0) return 0;
+    if (recentActivities.length === 0) {
+      return 0;
+    }
 
     const totalImpact = recentActivities.reduce((sum, a) => sum + a.impact, 0);
     const timeSpan = this.getTimeSpanHours(
@@ -1897,7 +1899,9 @@ class ComprehensiveBadgeService {
   private analyzeTrendDirection(category: string): 'accelerating' | 'stable' | 'decelerating' {
     const activities = this.activityLog.filter((a) => a.category === category).slice(-20); // 直近20件
 
-    if (activities.length < 10) return 'stable';
+    if (activities.length < 10) {
+      return 'stable';
+    }
 
     const firstHalf = activities.slice(0, 10);
     const secondHalf = activities.slice(10);
@@ -1907,8 +1911,12 @@ class ComprehensiveBadgeService {
 
     const changeRate = (secondAvg - firstAvg) / firstAvg;
 
-    if (changeRate > 0.2) return 'accelerating';
-    if (changeRate < -0.2) return 'decelerating';
+    if (changeRate > 0.2) {
+      return 'accelerating';
+    }
+    if (changeRate < -0.2) {
+      return 'decelerating';
+    }
     return 'stable';
   }
 
@@ -1955,7 +1963,9 @@ class ComprehensiveBadgeService {
    */
   private calculateOverallProgress(): number {
     const allBadges = this.getAllBadges();
-    if (allBadges.length === 0) return 0;
+    if (allBadges.length === 0) {
+      return 0;
+    }
 
     const totalProgress = allBadges.reduce((sum, badge) => sum + badge.progress, 0);
     return totalProgress / allBadges.length;
