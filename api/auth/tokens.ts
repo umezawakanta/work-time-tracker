@@ -30,5 +30,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  if (req.method === 'GET') {
+    res.status(200).json({ message: 'Token info' });
+    return;
+  }
+
+  if (req.method === 'POST') {
+    res.status(201).json({ message: 'Token created' });
+    return;
+  }
+
   res.status(405).json({ error: 'Method not allowed' });
 }
