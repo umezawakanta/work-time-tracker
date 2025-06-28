@@ -100,8 +100,12 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
     const handleBadgeUpdate = () => {
       const updatedBadges = unifiedBadgeManagementService.getBadgeData();
       const sortedUpdatedBadges = [...updatedBadges].sort((a, b) => {
-        if (a.isUnlocked && !b.isUnlocked) return -1;
-        if (!a.isUnlocked && b.isUnlocked) return 1;
+        if (a.isUnlocked && !b.isUnlocked) {
+          return -1;
+        }
+        if (!a.isUnlocked && b.isUnlocked) {
+          return 1;
+        }
         if (a.isUnlocked && b.isUnlocked) {
           return new Date(b.unlockedAt || 0).getTime() - new Date(a.unlockedAt || 0).getTime();
         }
