@@ -509,8 +509,8 @@ class CarbonAwareComputingService {
 
     // 接続タイプに基づく最適化
     if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+      const { effectiveType } = (navigator as any).connection;
+      if (effectiveType === 'slow-2g' || effectiveType === '2g') {
         this.enableLowCarbonMode();
       }
     }
