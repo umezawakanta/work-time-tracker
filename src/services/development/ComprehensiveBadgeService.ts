@@ -1571,7 +1571,9 @@ class ComprehensiveBadgeService {
   }
 
   private calculateAverageDailyProgress(activities: BadgeActivity[]): number {
-    if (activities.length === 0) return 0;
+    if (activities.length === 0) {
+      return 0;
+    }
     const totalProgress = activities.reduce(
       (sum, activity) => sum + activity.progressContribution,
       0
