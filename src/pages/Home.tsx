@@ -8,6 +8,7 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';
 import { NextTaskSuggestionComponent } from '@/components/ai/NextTaskSuggestion';
+import { DailyMotivationGamification } from '@/components/gamification/DailyMotivationGamification';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -26,6 +27,12 @@ import {
   Users,
   BookOpen,
   Briefcase,
+  Trophy,
+  Star,
+  Flame,
+  Crown,
+  Gem,
+  Gamepad2,
 } from 'lucide-react';
 import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -65,6 +72,20 @@ const Home: React.FC = () => {
   // Ensure todos is always an array for safety
   const safeTodos = Array.isArray(todos) ? todos : [];
 
+  // ゲーミフィケーション統計の取得
+  const [gamificationStats, setGamificationStats] = useState({
+    level: 1,
+    currentXP: 0,
+    xpToNextLevel: 100,
+    totalXP: 0,
+    streakDays: 0,
+    todayTasksCompleted: 0,
+    todayTasksTotal: 0,
+    weeklyXP: 0,
+    unlockedBadges: 0,
+    totalBadges: 0,
+  });
+
   const { isMobile } = useResponsive();
 
   // ToDoデータの初期化
@@ -72,8 +93,18 @@ const Home: React.FC = () => {
     if (isAuthenticated && isUserLoggedIn) {
       dispatch(fetchTodoItems());
       loadCalendarData();
+      loadGamificationStats();
     }
   }, [isAuthenticated, isUserLoggedIn, dispatch]);
+
+  // ゲーミフィケーション統計の定期更新
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadGamificationStats();
+    }, 30000); // 30秒ごとに更新
+
+    return () => clearInterval(interval);
+  }, []);
 
   // カレンダーデータの読み込み
   const loadCalendarData = async () => {
@@ -110,6 +141,70 @@ const Home: React.FC = () => {
       toast.error('カレンダーデータの読み込みに失敗しました');
     } finally {
       setIsLoadingCalendar(false);
+    }
+  };
+
+  // ゲーミフィケーション統計の読み込み
+  const loadGamificationStats = () => {
+    try {
+      // ローカルストレージからゲーミフィケーションデータを読み込み
+      const savedPlayerStats = localStorage.getItem('playerStats');
+      const savedTasks = localStorage.getItem('dailyTasks');
+      const savedAchievements = localStorage.getItem('achievements');
+
+      if (savedPlayerStats) {
+        const playerStats = JSON.parse(savedPlayerStats);
+
+        // 今日のタスク統計を計算
+        let todayTasksCompleted = 0;
+        let todayTasksTotal = 0;
+
+        if (savedTasks) {
+          const tasks = JSON.parse(savedTasks);
+          const today = new Date().toDateString();
+
+          tasks.forEach((task: any) => {
+            if (task.completedAt && new Date(task.completedAt).toDateString() === today) {
+              todayTasksCompleted++;
+            }
+            if (
+              task.isHabit ||
+              (task.completedAt && new Date(task.completedAt).toDateString() === today)
+            ) {
+              todayTasksTotal++;
+            }
+          });
+        }
+
+        // バッジ統計を計算
+        let unlockedBadges = 0;
+        let totalBadges = 0;
+
+        if (savedAchievements) {
+          const achievements = JSON.parse(savedAchievements);
+          achievements.forEach((achievement: any) => {
+            totalBadges++;
+            if (achievement.unlocked) {
+              unlockedBadges++;
+            }
+          });
+        }
+
+        setGamificationStats({
+          level: playerStats.level || 1,
+          currentXP: playerStats.currentXP || 0,
+          xpToNextLevel: playerStats.xpToNextLevel || 100,
+          totalXP: playerStats.totalXP || 0,
+          streakDays: playerStats.streakDays || 0,
+          todayTasksCompleted,
+          todayTasksTotal: Math.max(todayTasksTotal, 10), // 最低10タスクを表示
+          weeklyXP: playerStats.weeklyXP || 0,
+          unlockedBadges,
+          totalBadges: Math.max(totalBadges, 20), // 最低20バッジを表示
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load gamification stats:', error);
     }
   };
 
@@ -182,43 +277,65 @@ const Home: React.FC = () => {
 
     return [
       {
-        title: '今日のタスク',
-        value: totalToday > 0 ? `${completedToday}/${totalToday}` : '0',
-        icon: <CheckCircle className="h-6 w-6" />,
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-50',
-        progress: completionRate,
-        change: { value: completionRate >= 70 ? 12 : -5, period: '先週比' },
+        title: `レベル ${gamificationStats.level}`,
+        value: `${gamificationStats.currentXP}/${gamificationStats.xpToNextLevel} XP`,
+        icon: <Trophy className="h-6 w-6" />,
+        color: 'text-yellow-600',
+        bgColor: 'bg-yellow-50',
+        progress: Math.round((gamificationStats.currentXP / gamificationStats.xpToNextLevel) * 100),
+        change: { value: gamificationStats.weeklyXP, period: '今週獲得XP' },
       },
       {
-        title: '作業時間',
-        value: '6.5h',
-        icon: <Clock className="h-6 w-6" />,
+        title: 'ゲームタスク',
+        value: `${gamificationStats.todayTasksCompleted}/${gamificationStats.todayTasksTotal}`,
+        icon: <Gamepad2 className="h-6 w-6" />,
+        color: 'text-emerald-600',
+        bgColor: 'bg-emerald-50',
+        progress: Math.round(
+          (gamificationStats.todayTasksCompleted / gamificationStats.todayTasksTotal) * 100
+        ),
+        change: { value: gamificationStats.todayTasksCompleted >= 5 ? 15 : -5, period: '昨日比' },
+      },
+      {
+        title: 'ストリーク',
+        value: `${gamificationStats.streakDays}日`,
+        icon: <Flame className="h-6 w-6" />,
+        color: 'text-orange-600',
+        bgColor: 'bg-orange-50',
+        progress: Math.round((gamificationStats.streakDays / 30) * 100),
+        change: { value: gamificationStats.streakDays >= 3 ? 10 : 0, period: '目標30日' },
+      },
+      {
+        title: 'バッジ獲得',
+        value: `${gamificationStats.unlockedBadges}/${gamificationStats.totalBadges}`,
+        icon: <Crown className="h-6 w-6" />,
+        color: 'text-purple-600',
+        bgColor: 'bg-purple-50',
+        progress: Math.round(
+          (gamificationStats.unlockedBadges / gamificationStats.totalBadges) * 100
+        ),
+        change: { value: 2, period: '今月新規' },
+      },
+      {
+        title: 'Todo完了',
+        value: totalToday > 0 ? `${completedToday}/${totalToday}` : '0',
+        icon: <CheckCircle className="h-6 w-6" />,
         color: 'text-blue-600',
         bgColor: 'bg-blue-50',
-        progress: 81,
-        change: { value: 8, period: '昨日比' },
+        progress: completionRate,
+        change: { value: completionRate >= 70 ? 12 : -5, period: '先週比' },
       },
       {
         title: '生産性スコア',
         value: `${Math.max(completionRate, 50)}%`,
         icon: <TrendingUp className="h-6 w-6" />,
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-50',
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-50',
         progress: Math.max(completionRate, 50),
         change: { value: 5, period: '今月平均' },
       },
-      {
-        title: '連続記録',
-        value: `${streakDays}日`,
-        icon: <Award className="h-6 w-6" />,
-        color: 'text-amber-600',
-        bgColor: 'bg-amber-50',
-        progress: Math.round((streakDays / 30) * 100),
-        change: { value: 0, period: '目標30日' },
-      },
     ];
-  }, [safeTodos, calendarEvents]);
+  }, [safeTodos, calendarEvents, gamificationStats]);
 
   // 統合アクティビティの取得
   const getIntegratedActivities = (): ActivityData[] => {
@@ -401,8 +518,96 @@ const Home: React.FC = () => {
       {/* 統計セクション */}
       <StatsGrid stats={stats} className="mb-8" />
 
+      {/* 統合タスクダッシュボード */}
+      <div className="mb-8">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-slate-900">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500">
+                  <Trophy className="h-6 w-6 text-white" />
+                </div>
+                統合タスクダッシュボード
+                <Badge variant="outline" className="ml-2 bg-white/50">
+                  レベル {gamificationStats.level}
+                </Badge>
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/gamification')}
+                  className="flex items-center gap-2 bg-white/70 hover:bg-white/90"
+                >
+                  <Gamepad2 className="h-4 w-4" />
+                  ゲーム詳細
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/todos')}
+                  className="flex items-center gap-2 bg-white/70 hover:bg-white/90"
+                >
+                  <CheckSquare className="h-4 w-4" />
+                  ToDo管理
+                </Button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-yellow-500" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">
+                    {gamificationStats.currentXP} / {gamificationStats.xpToNextLevel} XP
+                  </p>
+                  <Progress
+                    value={Math.round(
+                      (gamificationStats.currentXP / gamificationStats.xpToNextLevel) * 100
+                    )}
+                    className="h-2 bg-white/50 mt-1"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Flame className="h-5 w-5 text-orange-500" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">ストリーク</p>
+                  <p className="text-lg font-bold text-orange-600">
+                    {gamificationStats.streakDays}日
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">今日のタスク</p>
+                  <p className="text-lg font-bold text-green-600">
+                    {gamificationStats.todayTasksCompleted}/{gamificationStats.todayTasksTotal}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-purple-500" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700">バッジ獲得</p>
+                  <p className="text-lg font-bold text-purple-600">
+                    {gamificationStats.unlockedBadges}/{gamificationStats.totalBadges}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <DailyMotivationGamification />
+          </CardContent>
+        </Card>
+      </div>
+
       {/* メインコンテンツ */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
         {/* 左側：AIタスク提案 */}
         <div className="xl:col-span-1">
           <NextTaskSuggestionComponent
@@ -413,150 +618,161 @@ const Home: React.FC = () => {
           />
         </div>
 
-        {/* 中央：DailyTodoReminder */}
+        {/* 右側：追加のToDo表示（従来のToDoとの統合） */}
         <div className="xl:col-span-1">
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-slate-900">今日のToDo</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/todos')}
-                className="flex items-center gap-2"
-              >
-                <CheckSquare className="h-4 w-4" />
-                詳細管理
-              </Button>
-            </div>
-            <DailyTodoReminder isPremium={hasActiveSubscription} />
-          </div>
-        </div>
-
-        {/* 右側：統合アクティビティ */}
-        <div className="xl:col-span-1 space-y-6">
-          {/* 最近のアクティビティ */}
-          <Card className="border-0 shadow-md">
+          <Card className="border-0 shadow-md bg-white/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-500" />
-                最近のアクティビティ
+                <CheckSquare className="h-5 w-5 text-blue-500" />
+                追加のToDo管理
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {activities.length > 0 ? (
-                  activities.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
-                    >
-                      <div
-                        className={cn(
-                          'w-2 h-2 rounded-full',
-                          activity.status === 'completed' && 'bg-emerald-500',
-                          activity.status === 'pending' && 'bg-blue-500',
-                          activity.status === 'in-progress' && 'bg-yellow-500'
-                        )}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-slate-900 truncate">
-                            {activity.task}
-                          </p>
-                          {activity.type && (
-                            <Badge variant="outline" className="text-xs">
-                              {activity.type === 'todo' && <CheckSquare className="h-3 w-3 mr-1" />}
-                              {activity.type === 'calendar' && (
-                                <Calendar className="h-3 w-3 mr-1" />
-                              )}
-                              {activity.type === 'wbs' && <Briefcase className="h-3 w-3 mr-1" />}
-                              {activity.type}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-slate-500">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-6 text-gray-500">
-                    <CheckCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">まだアクティビティがありません</p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => navigate('/todos')}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      タスクを追加
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* カレンダープレビュー */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-purple-500" />
-                今週の予定
-                {isLoadingCalendar && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500" />
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {calendarEvents.length > 0 ? (
-                  calendarEvents.slice(0, 3).map((event, index) => (
-                    <div key={event.id} className="flex items-center gap-3 p-2 rounded">
-                      <div
-                        className={cn(
-                          'w-3 h-3 rounded-full',
-                          event.type === 'meeting' && 'bg-blue-500',
-                          event.type === 'deadline' && 'bg-red-500',
-                          event.type === 'reminder' && 'bg-green-500'
-                        )}
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{event.title}</p>
-                        <p className="text-xs text-gray-500">
-                          {event.start.toLocaleDateString('ja-JP', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-gray-500">
-                    <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">予定がありません</p>
-                  </div>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate('/calendar')}
-                  className="w-full mt-3"
-                >
-                  カレンダーを開く
-                </Button>
-              </div>
+              <DailyTodoReminder isPremium={hasActiveSubscription} />
             </CardContent>
           </Card>
         </div>
       </div>
 
+      {/* 追加コンテンツ：アクティビティとカレンダー */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+        {/* 最近のアクティビティ */}
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-500" />
+              最近のアクティビティ
+              <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-600">
+                統合ビュー
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {activities.length > 0 ? (
+                activities.map((activity, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    <div
+                      className={cn(
+                        'w-2 h-2 rounded-full',
+                        activity.status === 'completed' && 'bg-emerald-500',
+                        activity.status === 'pending' && 'bg-blue-500',
+                        activity.status === 'in-progress' && 'bg-yellow-500'
+                      )}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-slate-900 truncate">
+                          {activity.task}
+                        </p>
+                        {activity.type && (
+                          <Badge variant="outline" className="text-xs">
+                            {activity.type === 'todo' && <CheckSquare className="h-3 w-3 mr-1" />}
+                            {activity.type === 'calendar' && <Calendar className="h-3 w-3 mr-1" />}
+                            {activity.type === 'wbs' && <Briefcase className="h-3 w-3 mr-1" />}
+                            {activity.type}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-500">{activity.time}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-6 text-gray-500">
+                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm">まだアクティビティがありません</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => navigate('/todos')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    タスクを追加
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* カレンダープレビュー */}
+        <Card className="border-0 shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-purple-500" />
+              今週の予定
+              {isLoadingCalendar && (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500" />
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {calendarEvents.length > 0 ? (
+                calendarEvents.slice(0, 3).map((event, index) => (
+                  <div key={event.id} className="flex items-center gap-3 p-2 rounded">
+                    <div
+                      className={cn(
+                        'w-3 h-3 rounded-full',
+                        event.type === 'meeting' && 'bg-blue-500',
+                        event.type === 'deadline' && 'bg-red-500',
+                        event.type === 'reminder' && 'bg-green-500'
+                      )}
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{event.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {event.start.toLocaleDateString('ja-JP', {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm">予定がありません</p>
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/calendar')}
+                className="w-full mt-3"
+              >
+                カレンダーを開く
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* クイックアクションセクション */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
+          {
+            icon: <Gamepad2 className="h-6 w-6" />,
+            title: 'ゲーミフィケーション',
+            description: 'レベルアップとバッジ獲得',
+            path: '/gamification',
+            gradient: 'from-purple-500 to-pink-500',
+          },
+          {
+            icon: <Trophy className="h-6 w-6" />,
+            title: 'バッジコレクション',
+            description: 'アチーブメント確認',
+            path: '/badge-completion',
+            gradient: 'from-yellow-500 to-orange-500',
+          },
           {
             icon: <CheckSquare className="h-6 w-6" />,
             title: 'ToDo管理',
@@ -565,18 +781,18 @@ const Home: React.FC = () => {
             gradient: 'from-green-500 to-green-600',
           },
           {
-            icon: <Clock className="h-6 w-6" />,
-            title: '勤怠記録',
-            description: '今日の作業を記録',
-            path: '/work-time',
-            gradient: 'from-blue-500 to-blue-600',
-          },
-          {
             icon: <Target className="h-6 w-6" />,
             title: 'プロジェクト管理',
             description: 'WBSとプロジェクト',
             path: '/integrated-dashboard',
-            gradient: 'from-purple-500 to-purple-600',
+            gradient: 'from-blue-500 to-indigo-600',
+          },
+          {
+            icon: <Clock className="h-6 w-6" />,
+            title: '勤怠記録',
+            description: '今日の作業を記録',
+            path: '/work-time',
+            gradient: 'from-teal-500 to-cyan-600',
           },
           {
             icon: <BarChart3 className="h-6 w-6" />,
@@ -602,30 +818,31 @@ const Home: React.FC = () => {
 
       {/* プレミアム機能の案内 */}
       {!hasActiveSubscription && (
-        <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 to-purple-50 mt-8">
+        <Card className="border-0 shadow-md bg-gradient-to-r from-purple-50 via-pink-50 to-yellow-50 mt-8">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-blue-600" />
-                  AIプレミアム機能
+                  <Crown className="h-5 w-5 text-purple-600" />
+                  プレミアムゲーミフィケーション
                 </h3>
                 <p className="text-slate-600">
-                  高度なAI分析、チーム協力、自動WBS生成などの機能をご利用いただけます
+                  より多くのバッジ、専用チャレンジ、チーム競争などの特別機能をお楽しみください
                 </p>
                 <ul className="text-sm text-slate-500 mt-2 space-y-1">
-                  <li>• WBSとカレンダーの統合分析</li>
-                  <li>• リアルタイムAI提案</li>
-                  <li>• チーム協力機能</li>
-                  <li>• 詳細レポート</li>
+                  <li>• 限定バッジとアチーブメント</li>
+                  <li>• カスタムチャレンジ作成</li>
+                  <li>• チーム対戦モード</li>
+                  <li>• 詳細統計とランキング</li>
+                  <li>• AI提案とWBS統合分析</li>
                 </ul>
               </div>
               <Button
                 onClick={() => navigate('/subscription-management')}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-600 hover:from-purple-700 hover:via-pink-700 hover:to-yellow-700"
               >
-                <Zap className="h-4 w-4 mr-2" />
-                アップグレード
+                <Gem className="h-4 w-4 mr-2" />
+                プレミアム開始
               </Button>
             </div>
           </CardContent>
