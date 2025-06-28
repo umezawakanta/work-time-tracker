@@ -42,7 +42,7 @@ interface DailyTask {
   difficulty: 'easy' | 'medium' | 'hard';
   xpReward: number;
   isCompleted: boolean;
-  completedAt?: string;
+  completedAt?: string | null;
   streak: number;
   isHabit: boolean;
   priority: 'low' | 'medium' | 'high';
@@ -167,7 +167,7 @@ export const IntegratedTaskDashboard: React.FC<{
         difficulty: getDifficultyFromTodo(todo),
         xpReward: getXPRewardFromTodo(todo),
         isCompleted: todo.completed,
-        completedAt: todo.completedDate || undefined,
+        completedAt: todo.completedDate,
         streak: 0,
         isHabit: false,
         priority: getPriorityFromTodo(todo),

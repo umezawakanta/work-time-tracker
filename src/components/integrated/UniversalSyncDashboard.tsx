@@ -22,7 +22,7 @@ import {
   ArrowRight,
   RefreshCw,
   Lightbulb,
-  Settings,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 import comprehensiveBadgeSyncService from '@/services/integration/ComprehensiveBadgeSyncService';
 import { badgeCompletionEstimator } from '@/services/planning/BadgeCompletionEstimator';
@@ -184,7 +184,7 @@ export const UniversalSyncDashboard: React.FC = () => {
 
     try {
       // リアルタイム同期実行
-      await comprehensiveBadgeSyncService.syncAllPages();
+      await comprehensiveBadgeSyncService.getInstance().syncAllPages();
 
       // 状況更新
       setSyncStatuses((prev) =>
@@ -208,7 +208,7 @@ export const UniversalSyncDashboard: React.FC = () => {
   const triggerManualSync = async () => {
     try {
       setLoading(true);
-      await comprehensiveBadgeSyncService.syncAllPages();
+      await comprehensiveBadgeSyncService.getInstance().syncAllPages();
       await initializeSyncDashboard();
       loadExpandedBadgeData();
 
@@ -263,26 +263,26 @@ export const UniversalSyncDashboard: React.FC = () => {
       education: Trophy,
       finance: TrendingUp,
       business: TrendingUp,
-      development: Settings,
+      development: SettingsIcon,
       achievement: Trophy,
       quality: CheckCircle2,
       monitoring: Activity,
       testing: CheckCircle2,
       optimization: TrendingUp,
-      infrastructure: Settings,
+      infrastructure: SettingsIcon,
       operations: Activity,
       planning: Calendar,
       ai: Star,
       engagement: Trophy,
-      architecture: Settings,
+      architecture: SettingsIcon,
       mobile: Globe,
       creative: Star,
       ecommerce: TrendingUp,
       social: Users,
       politics: Globe,
-      administration: Settings,
+      administration: SettingsIcon,
       user: Users,
-      configuration: Settings,
+      configuration: SettingsIcon,
     };
     const Icon = icons[category] || Activity;
     return <Icon className="h-4 w-4" />;
@@ -590,7 +590,7 @@ export const UniversalSyncDashboard: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
+            <SettingsIcon className="h-5 w-5" />
             統合同期設定
           </CardTitle>
         </CardHeader>
@@ -734,26 +734,26 @@ const PageSyncGrid: React.FC<PageSyncGridProps> = ({ statuses }) => {
       education: Trophy,
       finance: TrendingUp,
       business: TrendingUp,
-      development: Settings,
+      development: SettingsIcon,
       achievement: Trophy,
       quality: CheckCircle2,
       monitoring: Activity,
       testing: CheckCircle2,
       optimization: TrendingUp,
-      infrastructure: Settings,
+      infrastructure: SettingsIcon,
       operations: Activity,
       planning: Calendar,
       ai: Star,
       engagement: Trophy,
-      architecture: Settings,
+      architecture: SettingsIcon,
       mobile: Globe,
       creative: Star,
       ecommerce: TrendingUp,
       social: Users,
       politics: Globe,
-      administration: Settings,
+      administration: SettingsIcon,
       user: Users,
-      configuration: Settings,
+      configuration: SettingsIcon,
     };
     const Icon = icons[category] || Activity;
     return <Icon className="h-4 w-4" />;

@@ -756,13 +756,17 @@ export const IntegratedDashboard: React.FC = () => {
     // バッジ進捗の自動更新
     if (data.badgeUpdates.length > 0) {
       data.badgeUpdates.forEach((update) => {
-        comprehensiveBadgeService.recordActivity({
-          badgeId: update.badgeId,
-          activity: update.activity,
-          progressContribution: update.progressContribution,
-          source: 'automatic',
-          metadata: { page: pageName, ...update.metadata },
-        });
+        comprehensiveBadgeService.recordActivity(
+          update.activity,
+          'page_activity',
+          update.progressContribution,
+          {
+            badgeId: update.badgeId,
+            source: 'automatic',
+            page: pageName,
+            ...update.metadata,
+          }
+        );
       });
 
       // メトリクス再計算
