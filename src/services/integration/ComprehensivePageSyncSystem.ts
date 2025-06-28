@@ -740,7 +740,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
     data: any = null
   ): void {
     const page = this.pageData.get(pageId);
-    if (!page) return;
+    if (!page) {
+      return;
+    }
 
     // ページデータ更新
     page.lastAccessed = new Date();
@@ -784,13 +786,17 @@ class ComprehensivePageSyncSystem extends EventEmitter {
     features: string[]
   ): void {
     const page = this.pageData.get(pageId);
-    if (!page) return;
+    if (!page) {
+      return;
+    }
 
     page.relatedBadges.forEach((badgeId) => {
       const badge = COMPREHENSIVE_BADGE_CATEGORIES.find(
         (b) => b.id === badgeId
       ) as unknown as ComprehensiveBadge;
-      if (!badge) return;
+      if (!badge) {
+        return;
+      }
 
       badge.requirements.forEach((req: BadgeRequirement) => {
         const updateData = this.calculateRequirementUpdate(
@@ -908,7 +914,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
     const badge = COMPREHENSIVE_BADGE_CATEGORIES.find(
       (b) => b.id === badgeId
     ) as unknown as ComprehensiveBadge;
-    if (!badge) return;
+    if (!badge) {
+      return;
+    }
 
     const totalRequirements = badge.requirements.length;
     const completedRequirements = badge.requirements.filter(
@@ -935,7 +943,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
    * 🔄 同期キュー処理
    */
   private processSyncQueue(): void {
-    if (this.syncQueue.length === 0) return;
+    if (this.syncQueue.length === 0) {
+      return;
+    }
 
     // 優先度順にソート
     this.syncQueue.sort((a, b) => b.priority - a.priority);
@@ -959,7 +969,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
   private processAction(action: CrossPageAction): void {
     action.targetPageIds.forEach((targetPageId) => {
       const targetPage = this.pageData.get(targetPageId);
-      if (!targetPage) return;
+      if (!targetPage) {
+        return;
+      }
 
       // ターゲットページの統合スコア更新
       targetPage.integrationScore = Math.min(100, targetPage.integrationScore + 1);
@@ -1037,7 +1049,9 @@ class ComprehensivePageSyncSystem extends EventEmitter {
    */
   private calculateActionPriority(pageId: string, actionType: ActionType): number {
     const page = this.pageData.get(pageId);
-    if (!page) return 1;
+    if (!page) {
+      return 1;
+    }
 
     let priority = 1;
 
