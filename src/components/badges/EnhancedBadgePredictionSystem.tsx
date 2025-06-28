@@ -50,6 +50,29 @@ interface PlanVsActualData {
   accuracy: number;
 }
 
+interface DailyPlan {
+  date: string;
+  dayOfWeek: string;
+  targetHours: number;
+  actualHours: number;
+  focusAreas: string[];
+  scheduledBadges: BadgeScheduleItem[];
+  completedTasks: string[];
+  notes: string;
+  efficiency: number;
+}
+
+interface MonthlyOverview {
+  month: string;
+  totalTargetHours: number;
+  totalActualHours: number;
+  scheduledBadges: number;
+  completedBadges: number;
+  weeklyBreakdown: WeeklySchedule[];
+  majorMilestones: string[];
+  monthlyGoals: string[];
+}
+
 interface BadgeScheduleItem {
   badgeId: string;
   badgeName: string;
@@ -80,8 +103,12 @@ interface WeeklySchedule {
 
 const EnhancedBadgePredictionSystem: React.FC = () => {
   const [weeklySchedules, setWeeklySchedules] = useState<WeeklySchedule[]>([]);
+  const [dailyPlans, setDailyPlans] = useState<DailyPlan[]>([]);
+  const [monthlyOverviews, setMonthlyOverviews] = useState<MonthlyOverview[]>([]);
   const [planVsActual, setPlanVsActual] = useState<PlanVsActualData[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
+  const [selectedMonth, setSelectedMonth] = useState<string>('2025-06');
+  const [selectedDate, setSelectedDate] = useState<string>('2025-06-28');
   const [selectedTimeRange, setSelectedTimeRange] = useState<'4weeks' | '8weeks' | '12weeks'>(
     '12weeks'
   );
@@ -89,7 +116,7 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [isIntensiveMode, setIsIntensiveMode] = useState<boolean>(false);
   const [overallProgress, setOverallProgress] = useState<number>(0);
-  const [totalPlannedBadges, setTotalPlannedBadges] = useState<number>(50);
+  const [totalPlannedBadges, setTotalPlannedBadges] = useState<number>(75);
   const [completedBadges, setCompletedBadges] = useState<number>(0);
 
   useEffect(() => {
@@ -104,6 +131,12 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
   const initializeEnhancedPredictionSystem = () => {
     const schedules = generateWeeklySchedules();
     setWeeklySchedules(schedules);
+
+    const dailyData = generateDailyPlans();
+    setDailyPlans(dailyData);
+
+    const monthlyData = generateMonthlyOverviews();
+    setMonthlyOverviews(monthlyData);
 
     const planActualData = generatePlanVsActualData();
     setPlanVsActual(planActualData);
@@ -212,6 +245,153 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
     }
 
     return schedules;
+  };
+
+  const generateDailyPlans = (): DailyPlan[] => {
+    const plans: DailyPlan[] = [];
+    const startDate = new Date('2025-06-28');
+    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+    // 12週間（84日）の日次計画を生成
+    for (let day = 0; day < 84; day++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + day);
+
+      const dateString = currentDate.toISOString().split('T')[0];
+      const weekNumber = Math.floor(day / 7) + 1;
+      const dayOfWeek = dayNames[currentDate.getDay()];
+
+      // 平日は多め、週末は少なめの学習時間設定
+      const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+      const baseHours = isWeekend ? 4 : 3;
+      const targetHours = day < 30 ? baseHours : baseHours + 1; // 後半は増加
+
+      // 週数に応じたフォーカスエリア
+      let focusAreas: string[] = [];
+      if (weekNumber <= 4) {
+        focusAreas = ['サイバーセキュリティ', 'ネットワーク監視', 'セキュリティ分析'];
+      } else if (weekNumber <= 6) {
+        focusAreas = ['アクセシビリティ', 'UX設計', '要件定義'];
+      } else if (weekNumber <= 8) {
+        focusAreas = ['CI/CD', 'DevOps', 'インフラ管理'];
+      } else {
+        focusAreas = ['AI・機械学習', '起業・ビジネス', '社会貢献'];
+      }
+
+      // 具体的日付でのバッジ獲得予定
+      const scheduledBadges: BadgeScheduleItem[] = [];
+      if (dateString === '2025-07-25') {
+        scheduledBadges.push({
+          badgeId: 'cybersecurity-specialist',
+          badgeName: '🔐 サイバーセキュリティスペシャリスト',
+          icon: '🔐',
+          plannedDate: dateString,
+          status: 'scheduled',
+          weekNumber,
+          confidence: 95,
+          estimatedHours: 77,
+          dependencies: [],
+          relatedPages: ['development-badges', 'quality-dashboard'],
+        });
+      }
+
+      if (dateString === '2025-08-01') {
+        scheduledBadges.push({
+          badgeId: 'accessibility-champion',
+          badgeName: '♿ アクセシビリティチャンピオン',
+          icon: '♿',
+          plannedDate: dateString,
+          status: 'scheduled',
+          weekNumber,
+          confidence: 85,
+          estimatedHours: 15,
+          dependencies: [],
+          relatedPages: ['pwa-features', 'cross-browser-testing'],
+        });
+      }
+
+      plans.push({
+        date: dateString,
+        dayOfWeek,
+        targetHours,
+        actualHours: day < 10 ? Math.random() * targetHours : 0, // 過去10日のみ実績
+        focusAreas,
+        scheduledBadges,
+        completedTasks: day < 10 ? [`タスク${day + 1}完了`, '進捗レポート作成'] : [],
+        notes: day < 10 ? `Day ${day + 1}: 順調に進行中` : '',
+        efficiency: day < 10 ? 75 + Math.random() * 20 : 0,
+      });
+    }
+
+    return plans;
+  };
+
+  const generateMonthlyOverviews = (): MonthlyOverview[] => {
+    const overviews: MonthlyOverview[] = [];
+    const months = [
+      { month: '2025-06', name: '6月', days: 3 }, // 6/28-6/30
+      { month: '2025-07', name: '7月', days: 31 },
+      { month: '2025-08', name: '8月', days: 31 },
+      { month: '2025-09', name: '9月', days: 19 }, // 9/1-9/19
+    ];
+
+    months.forEach((monthInfo, index) => {
+      const weeklyBreakdown = weeklySchedules.filter((week) => {
+        const weekStart = new Date(week.startDate);
+        const monthStart = new Date(monthInfo.month + '-01');
+        return (
+          weekStart.getMonth() === monthStart.getMonth() &&
+          weekStart.getFullYear() === monthStart.getFullYear()
+        );
+      });
+
+      const totalTargetHours = weeklyBreakdown.reduce((sum, week) => sum + week.targetHours, 0);
+      const scheduledBadges = weeklyBreakdown.reduce(
+        (sum, week) => sum + week.scheduledBadges.length,
+        0
+      );
+
+      let majorMilestones: string[] = [];
+      let monthlyGoals: string[] = [];
+
+      if (index === 0) {
+        // 6月
+        majorMilestones = ['サイバーセキュリティ学習開始'];
+        monthlyGoals = ['学習習慣確立', '基礎知識習得'];
+      } else if (index === 1) {
+        // 7月
+        majorMilestones = [
+          '🔐 サイバーセキュリティスペシャリスト獲得 (7/25)',
+          '🗺️ スキルマップエキスパート獲得 (7/25)',
+        ];
+        monthlyGoals = ['セキュリティ専門性確立', 'スキル評価システム構築'];
+      } else if (index === 2) {
+        // 8月
+        majorMilestones = [
+          '♿ アクセシビリティチャンピオン獲得 (8/1)',
+          '🔍 UXリサーチスペシャリスト獲得 (8/1)',
+          '📊 要件定義スペシャリスト獲得 (8/1)',
+        ];
+        monthlyGoals = ['UX・アクセシビリティ向上', 'プロジェクト管理強化'];
+      } else {
+        // 9月
+        majorMilestones = ['🚀 DevOpsエバンジェリスト獲得 (9/19)', '全バッジ獲得完了'];
+        monthlyGoals = ['包括的スキル完成', 'エキスパートレベル到達'];
+      }
+
+      overviews.push({
+        month: `${monthInfo.name} (${monthInfo.month})`,
+        totalTargetHours,
+        totalActualHours: index === 0 ? Math.random() * 20 : 0,
+        scheduledBadges,
+        completedBadges: index === 0 ? 0 : 0,
+        weeklyBreakdown,
+        majorMilestones,
+        monthlyGoals,
+      });
+    });
+
+    return overviews;
   };
 
   const generatePlanVsActualData = (): PlanVsActualData[] => {
@@ -461,7 +641,7 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
                 <Clock className="h-8 w-8 text-blue-400" />
                 <div>
                   <p className="text-sm font-medium text-slate-400">総学習時間</p>
-                  <p className="text-2xl font-bold text-white">450h</p>
+                  <p className="text-2xl font-bold text-white">620h</p>
                 </div>
               </div>
             </CardContent>
@@ -482,10 +662,18 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
 
         {/* メインコンテンツタブ */}
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800">
+          <TabsList className="grid w-full grid-cols-6 bg-slate-800">
+            <TabsTrigger value="daily" className="flex items-center space-x-2">
+              <Calendar className="h-4 w-4" />
+              <span>日次計画</span>
+            </TabsTrigger>
             <TabsTrigger value="schedule" className="flex items-center space-x-2">
               <CalendarDays className="h-4 w-4" />
               <span>週次スケジュール</span>
+            </TabsTrigger>
+            <TabsTrigger value="monthly" className="flex items-center space-x-2">
+              <Clock4 className="h-4 w-4" />
+              <span>月次概要</span>
             </TabsTrigger>
             <TabsTrigger value="plan-vs-actual" className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4" />
@@ -500,6 +688,138 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
               <span>分析ダッシュボード</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* 日次計画 */}
+          <TabsContent value="daily" className="space-y-6">
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">📅 日次詳細計画</h3>
+                <label className="flex items-center space-x-2">
+                  <span className="text-sm text-slate-400">日付選択:</span>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              {dailyPlans.slice(0, 21).map((plan) => (
+                <Card
+                  key={plan.date}
+                  className={`bg-slate-800 border-slate-700 ${plan.date === selectedDate ? 'ring-2 ring-cyan-400' : ''}`}
+                >
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center justify-between">
+                      <span>
+                        {plan.dayOfWeek} {formatDate(plan.date)}
+                      </span>
+                      {plan.scheduledBadges.length > 0 && (
+                        <Badge variant="default" className="bg-yellow-600">
+                          🎯 バッジ獲得日
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* 学習時間 */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">学習時間</span>
+                        <span className="text-cyan-200">
+                          {plan.actualHours.toFixed(1)}h / {plan.targetHours}h
+                        </span>
+                      </div>
+                      <Progress
+                        value={(plan.actualHours / plan.targetHours) * 100}
+                        className="h-2 bg-slate-700"
+                      />
+                    </div>
+
+                    {/* フォーカスエリア */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-white">フォーカスエリア</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {plan.focusAreas.map((area, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {area}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 予定バッジ */}
+                    {plan.scheduledBadges.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-yellow-400">🎯 獲得予定バッジ</h4>
+                        {plan.scheduledBadges.map((badge) => (
+                          <div
+                            key={badge.badgeId}
+                            className="p-2 bg-yellow-900/20 rounded border border-yellow-600"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg">{badge.icon}</span>
+                              <div>
+                                <p className="text-sm font-medium text-yellow-400">
+                                  {badge.badgeName}
+                                </p>
+                                <p className="text-xs text-yellow-300">
+                                  信頼度: {badge.confidence}%
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* 完了タスク */}
+                    {plan.completedTasks.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-green-400">✅ 完了タスク</h4>
+                        <div className="space-y-1">
+                          {plan.completedTasks.map((task, index) => (
+                            <div
+                              key={index}
+                              className="text-xs text-green-300 flex items-center space-x-1"
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                              <span>{task}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 効率性 */}
+                    {plan.efficiency > 0 && (
+                      <div className="text-xs text-right">
+                        <span
+                          className={
+                            plan.efficiency >= 90
+                              ? 'text-green-400'
+                              : plan.efficiency >= 70
+                                ? 'text-yellow-400'
+                                : 'text-red-400'
+                          }
+                        >
+                          効率性: {plan.efficiency.toFixed(1)}%
+                        </span>
+                      </div>
+                    )}
+
+                    {/* メモ */}
+                    {plan.notes && (
+                      <div className="text-xs text-slate-400 italic">{plan.notes}</div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
           {/* 週次スケジュール */}
           <TabsContent value="schedule" className="space-y-6">
@@ -586,6 +906,134 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
                         ))}
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* 月次概要 */}
+          <TabsContent value="monthly" className="space-y-6">
+            <div className="mb-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">📊 月次概要</h3>
+                <label className="flex items-center space-x-2">
+                  <span className="text-sm text-slate-400">月選択:</span>
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
+                  >
+                    <option value="2025-06">2025年6月</option>
+                    <option value="2025-07">2025年7月</option>
+                    <option value="2025-08">2025年8月</option>
+                    <option value="2025-09">2025年9月</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {monthlyOverviews.map((overview) => (
+                <Card
+                  key={overview.month}
+                  className={`bg-slate-800 border-slate-700 ${overview.month.includes(selectedMonth.split('-')[1]) ? 'ring-2 ring-cyan-400' : ''}`}
+                >
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center justify-between">
+                      <span>{overview.month}</span>
+                      <Badge variant="default" className="bg-purple-600">
+                        {overview.scheduledBadges}バッジ予定
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* 学習時間サマリー */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="text-sm text-slate-400">予定学習時間</div>
+                        <div className="text-2xl font-bold text-blue-400">
+                          {overview.totalTargetHours}h
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-sm text-slate-400">実績学習時間</div>
+                        <div className="text-2xl font-bold text-green-400">
+                          {overview.totalActualHours.toFixed(1)}h
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 進捗状況 */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">月次進捗</span>
+                        <span className="text-cyan-200">
+                          {overview.completedBadges}/{overview.scheduledBadges} バッジ完了
+                        </span>
+                      </div>
+                      <Progress
+                        value={
+                          overview.scheduledBadges > 0
+                            ? (overview.completedBadges / overview.scheduledBadges) * 100
+                            : 0
+                        }
+                        className="h-3 bg-slate-700"
+                      />
+                    </div>
+
+                    {/* 主要マイルストーン */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-white">🎯 主要マイルストーン</h4>
+                      <div className="space-y-1">
+                        {overview.majorMilestones.map((milestone, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 p-2 bg-slate-700 rounded"
+                          >
+                            <Star className="h-4 w-4 text-yellow-400" />
+                            <span className="text-sm text-white">{milestone}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 月次目標 */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-white">🎪 月次目標</h4>
+                      <div className="space-y-1">
+                        {overview.monthlyGoals.map((goal, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-2 text-sm text-slate-300"
+                          >
+                            <Target className="h-3 w-3 text-purple-400" />
+                            <span>{goal}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 週別内訳 */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-white">📅 週別内訳</h4>
+                      <div className="space-y-1">
+                        {overview.weeklyBreakdown.map((week) => (
+                          <div
+                            key={week.weekNumber}
+                            className="flex items-center justify-between p-2 bg-slate-700 rounded text-xs"
+                          >
+                            <span className="text-slate-300">Week {week.weekNumber}</span>
+                            <span className="text-cyan-200">
+                              {week.actualHours}h / {week.targetHours}h
+                            </span>
+                            <span className="text-green-400">
+                              {week.completedBadges.length}/{week.scheduledBadges.length}バッジ
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -811,10 +1259,38 @@ const EnhancedBadgePredictionSystem: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm text-slate-400">プロジェクト管理</span>
+                        <span className="text-sm text-slate-400">プロジェクト管理・ビジネス</span>
                         <span className="text-sm text-cyan-200">10バッジ</span>
                       </div>
                       <Progress value={15} className="h-2 bg-slate-700" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-slate-400">マーケティング</span>
+                        <span className="text-sm text-cyan-200">2バッジ</span>
+                      </div>
+                      <Progress value={10} className="h-2 bg-slate-700" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-slate-400">経営・管理</span>
+                        <span className="text-sm text-cyan-200">5バッジ</span>
+                      </div>
+                      <Progress value={8} className="h-2 bg-slate-700" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-slate-400">教育・社会貢献</span>
+                        <span className="text-sm text-cyan-200">3バッジ</span>
+                      </div>
+                      <Progress value={12} className="h-2 bg-slate-700" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-slate-400">クリエイティブ・人文</span>
+                        <span className="text-sm text-cyan-200">5バッジ</span>
+                      </div>
+                      <Progress value={5} className="h-2 bg-slate-700" />
                     </div>
                   </div>
                 </CardContent>

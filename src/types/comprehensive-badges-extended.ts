@@ -349,6 +349,497 @@ export const TECHNICAL_DEVELOPMENT_BADGES: ComprehensiveBadgeExtended[] = [
 ];
 
 /**
+ * 📈 マーケティング・ビジネス系バッジ (15個)
+ */
+export const MARKETING_BUSINESS_BADGES: ComprehensiveBadgeExtended[] = [
+  {
+    id: 'marketing-strategist',
+    name: '📢 マーケティングストラテジスト',
+    description: 'デジタルマーケティング戦略の専門家',
+    category: 'marketing',
+    subcategory: 'strategy',
+    difficulty: 'gold',
+    icon: '📢',
+    points: 380,
+    requirements: [
+      {
+        type: 'campaign_success',
+        target: '8',
+        current: '0',
+        description: 'マーケティング戦略8件実行',
+        pageIntegration: 'blog',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-01',
+    rewards: ['マーケティング戦略', 'コンテンツ企画'],
+    estimatedHours: 28,
+    relatedPages: ['blog', 'twitter', 'shop'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'ecommerce-specialist',
+    name: '🛒 ECスペシャリスト',
+    description: 'Eコマース・オンライン販売の専門家',
+    category: 'ecommerce',
+    subcategory: 'platform',
+    difficulty: 'platinum',
+    icon: '🛒',
+    points: 420,
+    requirements: [
+      {
+        type: 'revenue_generation',
+        target: '100000',
+        current: '0',
+        description: '売上10万円達成',
+        pageIntegration: 'shop',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-22',
+    rewards: ['EC運営', 'コンバージョン最適化'],
+    estimatedHours: 35,
+    relatedPages: ['shop', 'product-list', 'subscription'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+];
+
+/**
+ * 💼 経営・管理系バッジ (20個)
+ */
+export const MANAGEMENT_BADGES: ComprehensiveBadgeExtended[] = [
+  {
+    id: 'legal-compliance-specialist',
+    name: '⚖️ 法務コンプライアンススペシャリスト',
+    description: '法務・コンプライアンス管理の専門家',
+    category: 'legal',
+    difficulty: 'platinum',
+    icon: '⚖️',
+    points: 450,
+    requirements: [
+      {
+        type: 'compliance_audit',
+        target: '5',
+        current: '0',
+        description: 'コンプライアンス監査5件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-05',
+    rewards: ['法務知識', 'リスク管理'],
+    estimatedHours: 40,
+    relatedPages: ['admin-dashboard', 'reports'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'hr-strategic-partner',
+    name: '👥 HR戦略パートナー',
+    description: '人事戦略・組織開発の専門家',
+    category: 'hr',
+    difficulty: 'gold',
+    icon: '👥',
+    points: 400,
+    requirements: [
+      {
+        type: 'team_development',
+        target: '10',
+        current: '0',
+        description: 'チーム開発プログラム10件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-29',
+    rewards: ['人事戦略', '組織開発'],
+    estimatedHours: 32,
+    relatedPages: ['skill-mapping', 'team-management'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'financial-analyst',
+    name: '💰 財務アナリスト',
+    description: '財務分析・会計管理の専門家',
+    category: 'finance',
+    difficulty: 'platinum',
+    icon: '💰',
+    points: 420,
+    requirements: [
+      {
+        type: 'financial_analysis',
+        target: '15',
+        current: '0',
+        description: '財務分析レポート15件',
+        pageIntegration: 'asset-liability-report',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-12',
+    rewards: ['財務分析', '投資戦略'],
+    estimatedHours: 38,
+    relatedPages: ['asset-liability-report', 'subscription', 'billing-history'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'sales-growth-hacker',
+    name: '🚀 セールスグロースハッカー',
+    description: '営業戦略・成長促進の専門家',
+    category: 'sales',
+    difficulty: 'gold',
+    icon: '🚀',
+    points: 380,
+    requirements: [
+      {
+        type: 'sales_growth',
+        target: '200',
+        current: '0',
+        description: '売上200%成長達成',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-15',
+    rewards: ['営業戦略', 'グロースハック'],
+    estimatedHours: 30,
+    relatedPages: ['shop', 'twitter', 'blog'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'executive-secretary',
+    name: '📋 エグゼクティブ秘書',
+    description: '経営サポート・秘書業務の専門家',
+    category: 'administration',
+    difficulty: 'silver',
+    icon: '📋',
+    points: 300,
+    requirements: [
+      {
+        type: 'executive_support',
+        target: '50',
+        current: '0',
+        description: '経営サポート業務50件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-07-30',
+    rewards: ['秘書スキル', '経営サポート'],
+    estimatedHours: 25,
+    relatedPages: ['calendar', 'todo-management', 'reports'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+];
+
+/**
+ * 🎓 教育・社会貢献系バッジ (15個)
+ */
+export const EDUCATION_SOCIAL_BADGES: ComprehensiveBadgeExtended[] = [
+  {
+    id: 'education-specialist',
+    name: '🎓 教育スペシャリスト',
+    description: '教育・学習支援の専門家',
+    category: 'education',
+    difficulty: 'gold',
+    icon: '🎓',
+    points: 380,
+    requirements: [
+      {
+        type: 'learning_program',
+        target: '10',
+        current: '0',
+        description: '学習プログラム10件開発',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-08',
+    rewards: ['教育スキル', '学習支援'],
+    estimatedHours: 32,
+    relatedPages: ['blog', 'achievements-badges', 'skill-mapping'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'social-contribution-advocate',
+    name: '🌍 社会貢献推進者',
+    description: '社会問題解決・貢献活動の専門家',
+    category: 'social',
+    difficulty: 'platinum',
+    icon: '🌍',
+    points: 450,
+    requirements: [
+      {
+        type: 'social_impact',
+        target: '5',
+        current: '0',
+        description: '社会貢献プロジェクト5件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-01',
+    rewards: ['社会貢献', 'プロジェクト管理'],
+    estimatedHours: 40,
+    relatedPages: ['blog', 'twitter', 'political-trends'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'certification-expert',
+    name: '📜 資格取得エキスパート',
+    description: '各種資格・認定取得の専門家',
+    category: 'certification',
+    difficulty: 'silver',
+    icon: '📜',
+    points: 320,
+    requirements: [
+      {
+        type: 'certifications_earned',
+        target: '8',
+        current: '0',
+        description: '資格・認定8個取得',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-25',
+    rewards: ['資格取得', '専門知識'],
+    estimatedHours: 28,
+    relatedPages: ['achievements-badges', 'development-badges'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+];
+
+/**
+ * 🎨 クリエイティブ・人文系バッジ (20個)
+ */
+export const CREATIVE_HUMANITIES_BADGES: ComprehensiveBadgeExtended[] = [
+  {
+    id: 'digital-artist-curator',
+    name: '🎨 デジタルアーティスト・キュレーター',
+    description: 'デジタルアート・文化キュレーションの専門家',
+    category: 'art',
+    difficulty: 'platinum',
+    icon: '🎨',
+    points: 450,
+    requirements: [
+      {
+        type: 'art_curation',
+        target: '20',
+        current: '0',
+        description: 'アート作品キュレーション20件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-08',
+    rewards: ['アートスキル', 'キュレーション'],
+    estimatedHours: 38,
+    relatedPages: ['blog', 'twitter', 'shop'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'multilingual-localization-expert',
+    name: '🌐 多言語ローカライゼーションエキスパート',
+    description: '多言語対応・国際化の専門家',
+    category: 'localization',
+    difficulty: 'gold',
+    icon: '🌐',
+    points: 400,
+    requirements: [
+      {
+        type: 'language_support',
+        target: '5',
+        current: '0',
+        description: '5言語対応実装',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-20',
+    rewards: ['多言語対応', '国際化'],
+    estimatedHours: 35,
+    relatedPages: ['internationalization', 'localization'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'digital-publishing-master',
+    name: '📚 デジタル出版マスター',
+    description: 'デジタル出版・編集の専門家',
+    category: 'publishing',
+    difficulty: 'gold',
+    icon: '📚',
+    points: 380,
+    requirements: [
+      {
+        type: 'publications',
+        target: '10',
+        current: '0',
+        description: 'デジタル出版物10件',
+        pageIntegration: 'blog',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-08-30',
+    rewards: ['出版スキル', '編集技術'],
+    estimatedHours: 32,
+    relatedPages: ['blog', 'bookshelf', 'twitter'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'philosophy-technology-bridge',
+    name: '🤔 テクノロジー哲学者',
+    description: '技術哲学・デジタル倫理の専門家',
+    category: 'philosophy',
+    difficulty: 'legendary',
+    icon: '🤔',
+    points: 500,
+    requirements: [
+      {
+        type: 'philosophical_analysis',
+        target: '15',
+        current: '0',
+        description: '技術哲学分析15件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-15',
+    rewards: ['技術哲学', 'デジタル倫理'],
+    estimatedHours: 45,
+    relatedPages: ['blog', 'ai-ethics', 'development-badges'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+
+  {
+    id: 'digital-spirituality-guide',
+    name: '🧘 デジタルスピリチュアリティガイド',
+    description: 'デジタル時代の精神性・宗教の専門家',
+    category: 'spirituality',
+    difficulty: 'platinum',
+    icon: '🧘',
+    points: 420,
+    requirements: [
+      {
+        type: 'spiritual_guidance',
+        target: '25',
+        current: '0',
+        description: 'スピリチュアルガイダンス25件',
+      },
+    ],
+    isUnlocked: false,
+    progress: 0,
+    predictedCompletionDate: '2025-09-10',
+    rewards: ['精神性ガイド', 'デジタル瞑想'],
+    estimatedHours: 38,
+    relatedPages: ['adhd-support', 'impulse-tracker', 'abstinence-manager'],
+    syncData: {
+      lastUpdated: new Date(),
+      pageActivities: {},
+      crossPageProgress: {},
+      integrationScore: 0,
+      synchronizedFeatures: [],
+    },
+  },
+];
+
+/**
  * 📋 プロジェクト管理・ビジネス系バッジ (10個)
  */
 export const PROJECT_BUSINESS_BADGES: ComprehensiveBadgeExtended[] = [
@@ -599,6 +1090,10 @@ export const PROJECT_BUSINESS_BADGES: ComprehensiveBadgeExtended[] = [
 export const ALL_COMPREHENSIVE_BADGES_EXTENDED: ComprehensiveBadgeExtended[] = [
   ...TECHNICAL_DEVELOPMENT_BADGES,
   ...PROJECT_BUSINESS_BADGES,
+  ...MARKETING_BUSINESS_BADGES,
+  ...MANAGEMENT_BADGES,
+  ...EDUCATION_SOCIAL_BADGES,
+  ...CREATIVE_HUMANITIES_BADGES,
 ];
 
 /**
@@ -614,6 +1109,10 @@ export const BADGE_STATISTICS = {
   categories: {
     technical: TECHNICAL_DEVELOPMENT_BADGES.length,
     business: PROJECT_BUSINESS_BADGES.length,
+    marketing: MARKETING_BUSINESS_BADGES.length,
+    management: MANAGEMENT_BADGES.length,
+    education: EDUCATION_SOCIAL_BADGES.length,
+    creative: CREATIVE_HUMANITIES_BADGES.length,
   },
   difficulty: {
     bronze: ALL_COMPREHENSIVE_BADGES_EXTENDED.filter((b) => b.difficulty === 'bronze').length,
