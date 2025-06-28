@@ -243,11 +243,13 @@ class ScalingStrategyService {
       // Update milestone completion based on timeline
       const now = new Date();
       strategy.timeline.milestones.forEach((milestone) => {
-        if (new Date(milestone.date) <= now && !milestone.isCompleted) {
-          // Simulate completion based on priority and resources
-          if (strategy.priority === 'high' && Math.random() > 0.3) {
-            milestone.isCompleted = true;
-          }
+        if (
+          new Date(milestone.date) <= now &&
+          !milestone.isCompleted &&
+          strategy.priority === 'high' &&
+          Math.random() > 0.3
+        ) {
+          milestone.isCompleted = true;
         }
       });
 
