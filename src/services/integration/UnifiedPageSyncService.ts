@@ -226,7 +226,9 @@ class UnifiedPageSyncService {
    */
   public getPageRelevantBadges(pageName: string): DevelopmentBadge[] {
     const pageConfig = this.pageDefinitions[pageName as keyof typeof this.pageDefinitions];
-    if (!pageConfig) return [];
+    if (!pageConfig) {
+      return [];
+    }
 
     return EXPANDED_BADGES_DATABASE.filter((badge) =>
       pageConfig.categories.includes(badge.category)
