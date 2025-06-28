@@ -23,8 +23,8 @@
     }
   },
   "include": [
-    "api/**/*.ts",
-    "src/types/**/*.ts"
+    "**/*.ts",
+    "../src/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
