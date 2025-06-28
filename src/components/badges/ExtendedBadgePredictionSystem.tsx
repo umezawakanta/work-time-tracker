@@ -15,7 +15,44 @@ import {
   Zap,
   RefreshCw,
   BookOpen,
+  PlayCircle,
+  PauseCircle,
+  RotateCcw,
+  Lightbulb,
+  Coffee,
+  Sun,
+  Moon,
+  AlertCircle,
 } from 'lucide-react';
+
+// 日次タスク関連のインターフェース
+interface DailyTask {
+  id: string;
+  badgeId: string;
+  badgeName: string;
+  badgeEmoji: string;
+  category: string;
+  taskName: string;
+  description: string;
+  estimatedMinutes: number;
+  actualMinutes: number;
+  priority: 'high' | 'medium' | 'low';
+  status: 'not_started' | 'in_progress' | 'completed' | 'paused';
+  startTime?: Date;
+  endTime?: Date;
+  difficulty: number;
+  energyLevel: 'high' | 'medium' | 'low';
+  timeSlot: 'morning' | 'afternoon' | 'evening' | 'flexible';
+}
+
+interface EnergyState {
+  currentLevel: number;
+  optimalLevel: number;
+  consumption: number;
+  recovery: number;
+  timeToRecharge: number;
+  recommendations: string[];
+}
 
 // 基本インターフェース定義
 interface BadgePredictionPlan {
@@ -72,6 +109,26 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
   const [predictionAccuracy, setPredictionAccuracy] = useState(85.0);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
+  // 日次計画関連のstate
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
+  const [currentTask, setCurrentTask] = useState<string | null>(null);
+  const [sessionTime, setSessionTime] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [completedPomodoros, setCompletedPomodoros] = useState(0);
+  const [streakDays, setStreakDays] = useState(3);
+  const [energyState, setEnergyState] = useState<EnergyState>({
+    currentLevel: 75,
+    optimalLevel: 80,
+    consumption: 15,
+    recovery: 10,
+    timeToRecharge: 25,
+    recommendations: [
+      '高エネルギータスクは午前中に実行',
+      '90分集中→20分休憩のサイクルが効果的',
+      '水分補給を忘れずに',
+    ],
+  });
+
   // メインメトリクス
   const mainMetrics = {
     totalPredictedBadges: 75,
@@ -80,10 +137,509 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
     accuracy: predictionAccuracy,
   };
 
+  // 日次タスクの初期化
+  const initializeDailyTasks = () => {
+    const sampleTasks: DailyTask[] = [
+      {
+        id: 'task-1',
+        badgeId: 'security-specialist',
+        badgeName: 'サイバーセキュリティスペシャリスト',
+        badgeEmoji: '🔐',
+        category: 'セキュリティ',
+        taskName: 'ペネトレーションテスト基礎学習',
+        description: 'Kali Linuxを使用した基本的なネットワークスキャン手法の学習',
+        estimatedMinutes: 120,
+        actualMinutes: 75,
+        priority: 'high',
+        status: 'in_progress',
+        difficulty: 4,
+        energyLevel: 'high',
+        timeSlot: 'morning',
+      },
+      {
+        id: 'task-2',
+        badgeId: 'ux-researcher',
+        badgeName: 'UXリサーチスペシャリスト',
+        badgeEmoji: '🔍',
+        category: 'デザイン',
+        taskName: 'ユーザーインタビュー実施',
+        description: 'プロダクトの使用感に関するユーザーインタビュー3件の実施',
+        estimatedMinutes: 90,
+        actualMinutes: 0,
+        priority: 'medium',
+        status: 'not_started',
+        difficulty: 2,
+        energyLevel: 'medium',
+        timeSlot: 'afternoon',
+      },
+      {
+        id: 'task-3',
+        badgeId: 'requirements-specialist',
+        badgeName: '要件定義スペシャリスト',
+        badgeEmoji: '📊',
+        category: 'PM',
+        taskName: '機能仕様書作成',
+        description: '新機能の詳細仕様書ドラフト作成と関係者レビュー準備',
+        estimatedMinutes: 60,
+        actualMinutes: 0,
+        priority: 'high',
+        status: 'not_started',
+        difficulty: 3,
+        energyLevel: 'medium',
+        timeSlot: 'evening',
+      },
+      {
+        id: 'task-4',
+        badgeId: 'ai-specialist',
+        badgeName: 'AIスペシャリスト',
+        badgeEmoji: '🤖',
+        category: 'AI・機械学習',
+        taskName: '機械学習モデル実装',
+        description: 'Pythonでの分類モデル作成、訓練、評価の一連の流れ',
+        estimatedMinutes: 150,
+        actualMinutes: 0,
+        priority: 'medium',
+        status: 'not_started',
+        difficulty: 5,
+        energyLevel: 'high',
+        timeSlot: 'flexible',
+      },
+    ];
+    setDailyTasks(sampleTasks);
+  };
+
+  useEffect(() => {
+    initializeDailyTasks();
+  }, [selectedDate]);
+
+  // タイマー機能
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerRunning && currentTask) {
+      interval = setInterval(() => {
+        setSessionTime((prev) => prev + 1);
+        setDailyTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === currentTask ? { ...task, actualMinutes: task.actualMinutes + 1 / 60 } : task
+          )
+        );
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, currentTask]);
+
+  // タスク操作ハンドラー
+  const handleStartTask = (taskId: string) => {
+    setCurrentTask(taskId);
+    setIsTimerRunning(true);
+    setSessionTime(0);
+    setDailyTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, status: 'in_progress', startTime: new Date() } : task
+      )
+    );
+  };
+
+  const handlePauseTask = (taskId: string) => {
+    setIsTimerRunning(false);
+    setDailyTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === taskId ? { ...task, status: 'paused' } : task))
+    );
+  };
+
+  const handleCompleteTask = (taskId: string) => {
+    setIsTimerRunning(false);
+    setCurrentTask(null);
+    setSessionTime(0);
+    setCompletedPomodoros((prev) => prev + 1);
+    setDailyTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, status: 'completed', endTime: new Date() } : task
+      )
+    );
+  };
+
+  const handleResetTask = (taskId: string) => {
+    if (currentTask === taskId) {
+      setIsTimerRunning(false);
+      setCurrentTask(null);
+      setSessionTime(0);
+    }
+    setDailyTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              status: 'not_started',
+              actualMinutes: 0,
+              startTime: undefined,
+              endTime: undefined,
+            }
+          : task
+      )
+    );
+  };
+
+  // ユーティリティ関数
+  const formatTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  };
+
+  const formatSessionTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'default';
+      case 'low':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+
+  const getEnergyIcon = (level: string) => {
+    switch (level) {
+      case 'high':
+        return <Zap className="w-4 h-4 text-red-500" />;
+      case 'medium':
+        return <Zap className="w-4 h-4 text-yellow-500" />;
+      case 'low':
+        return <Zap className="w-4 h-4 text-green-500" />;
+      default:
+        return <Zap className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  // 日次メトリクス計算
+  const calculateDailyMetrics = () => {
+    const totalPlannedMinutes = dailyTasks.reduce((sum, task) => sum + task.estimatedMinutes, 0);
+    const totalActualMinutes = dailyTasks.reduce((sum, task) => sum + task.actualMinutes, 0);
+    const completedTasks = dailyTasks.filter((task) => task.status === 'completed').length;
+    const totalTasks = dailyTasks.length;
+    const efficiency =
+      totalPlannedMinutes > 0 ? (totalActualMinutes / totalPlannedMinutes) * 100 : 0;
+
+    return {
+      totalPlannedMinutes,
+      totalActualMinutes,
+      completedTasks,
+      totalTasks,
+      efficiency,
+    };
+  };
+
+  const dailyMetrics = calculateDailyMetrics();
+
   const recalculatePredictions = () => {
     setLastUpdated(new Date());
     setPredictionAccuracy(Math.random() * 10 + 80);
   };
+
+  // 日次計画ビューのレンダリング
+  const renderDailyView = () => (
+    <div className="space-y-6">
+      {/* 日次サマリー */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            📅{' '}
+            {selectedDate.toLocaleDateString('ja-JP', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              weekday: 'long',
+            })}{' '}
+            の計画
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <div className="text-xl font-bold text-blue-600">
+                {Math.floor(dailyMetrics.totalPlannedMinutes / 60)}h{' '}
+                {dailyMetrics.totalPlannedMinutes % 60}m
+              </div>
+              <div className="text-xs text-muted-foreground">予定時間</div>
+            </div>
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <div className="text-xl font-bold text-green-600">
+                {dailyMetrics.completedTasks}/{dailyMetrics.totalTasks}
+              </div>
+              <div className="text-xs text-muted-foreground">完了タスク</div>
+            </div>
+            <div className="text-center p-3 bg-purple-50 rounded-lg">
+              <div className="text-xl font-bold text-purple-600">
+                {dailyMetrics.efficiency.toFixed(0)}%
+              </div>
+              <div className="text-xs text-muted-foreground">効率</div>
+            </div>
+            <div className="text-center p-3 bg-orange-50 rounded-lg">
+              <div className="text-xl font-bold text-orange-600">{streakDays}日</div>
+              <div className="text-xs text-muted-foreground">連続実行</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* アクティブタスクタイマー */}
+      {currentTask && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-600" />
+              ⏱️ 実行中のタスク
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">
+                  {dailyTasks.find((t) => t.id === currentTask)?.badgeEmoji}
+                </span>
+                <div>
+                  <div className="font-medium">
+                    {dailyTasks.find((t) => t.id === currentTask)?.taskName}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {dailyTasks.find((t) => t.id === currentTask)?.badgeName}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-mono font-bold text-blue-600">
+                  {formatSessionTime(sessionTime)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  目標:{' '}
+                  {formatTime(dailyTasks.find((t) => t.id === currentTask)?.estimatedMinutes || 0)}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <Button
+                size="sm"
+                variant={isTimerRunning ? 'outline' : 'default'}
+                onClick={() => setIsTimerRunning(!isTimerRunning)}
+                className="flex items-center gap-1"
+              >
+                {isTimerRunning ? (
+                  <>
+                    <PauseCircle className="w-4 h-4" />
+                    一時停止
+                  </>
+                ) : (
+                  <>
+                    <PlayCircle className="w-4 h-4" />
+                    再開
+                  </>
+                )}
+              </Button>
+              <Button
+                size="sm"
+                variant="default"
+                onClick={() => handleCompleteTask(currentTask)}
+                className="flex items-center gap-1"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                完了
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* タスク一覧 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="w-5 h-5" />
+            📋 今日のタスク
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {dailyTasks.map((task) => (
+              <div
+                key={task.id}
+                className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-start gap-4">
+                  <span className="text-2xl">{task.badgeEmoji}</span>
+
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-medium">{task.taskName}</span>
+                      <Badge variant={getPriorityColor(task.priority)}>{task.priority}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        難易度 {task.difficulty}/5
+                      </Badge>
+                      {getEnergyIcon(task.energyLevel)}
+                    </div>
+
+                    <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="flex items-center gap-1">
+                        <Target className="w-4 h-4" />
+                        {task.badgeName}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {formatTime(task.estimatedMinutes)}
+                      </span>
+                      {task.actualMinutes > 0 && (
+                        <span className="text-green-600">
+                          実績: {formatTime(task.actualMinutes)}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 進捗バー */}
+                    {task.status !== 'not_started' && (
+                      <div className="mt-2">
+                        <Progress
+                          value={(task.actualMinutes / task.estimatedMinutes) * 100}
+                          className="h-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* アクションボタン */}
+                  <div className="flex flex-col gap-2">
+                    {task.status === 'not_started' && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleStartTask(task.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <PlayCircle className="w-4 h-4" />
+                        開始
+                      </Button>
+                    )}
+
+                    {task.status === 'in_progress' && currentTask === task.id && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handlePauseTask(task.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <PauseCircle className="w-4 h-4" />
+                        停止
+                      </Button>
+                    )}
+
+                    {task.status === 'in_progress' && currentTask !== task.id && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleStartTask(task.id)}
+                        className="flex items-center gap-1"
+                      >
+                        <PlayCircle className="w-4 h-4" />
+                        再開
+                      </Button>
+                    )}
+
+                    {(task.status === 'in_progress' || task.status === 'paused') && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => handleCompleteTask(task.id)}
+                          className="flex items-center gap-1"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          完了
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleResetTask(task.id)}
+                          className="flex items-center gap-1"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          リセット
+                        </Button>
+                      </>
+                    )}
+
+                    {task.status === 'completed' && (
+                      <Badge variant="default" className="flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        完了済み
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* AI推奨事項 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="w-5 h-5" />
+            🤖 今日のAI推奨事項
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Sun className="w-4 h-4 text-orange-500 mt-1" />
+                <div>
+                  <div className="font-medium text-sm">🌅 朝の集中時間を活用</div>
+                  <div className="text-xs text-muted-foreground">
+                    高エネルギータスク「ペネトレーションテスト学習」を今すぐ開始することをお勧めします
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Target className="w-4 h-4 text-red-500 mt-1" />
+                <div>
+                  <div className="font-medium text-sm">🔥 高優先度タスクに集中</div>
+                  <div className="text-xs text-muted-foreground">
+                    2個の高優先度タスクが残っています。順序良く取り組みましょう
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-gradient-to-r from-yellow-50 to-green-50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Zap className="w-4 h-4 text-green-500 mt-1" />
+                <div>
+                  <div className="font-medium text-sm">⚡ エネルギーレベル良好</div>
+                  <div className="text-xs text-muted-foreground">
+                    現在のエネルギーレベル({energyState.currentLevel}
+                    %)で難しいタスクに挑戦する絶好のタイミングです
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   return (
     <div className="space-y-6 p-6">
@@ -164,7 +720,7 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
         </Card>
       </div>
 
-      {/* タブナビゲーション - 次のファイルで詳細実装 */}
+      {/* タブナビゲーション */}
       <Tabs value={currentView} onValueChange={(value) => setCurrentView(value as any)}>
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="daily">日次計画</TabsTrigger>
@@ -176,23 +732,129 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
         </TabsList>
 
         <TabsContent value="daily" className="mt-6">
+          {renderDailyView()}
+        </TabsContent>
+
+        <TabsContent value="weekly" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                日次計画実装中...
-              </CardTitle>
+              <CardTitle>📅 週次スケジュール</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-muted-foreground">
-                <p>日次計画機能を実装中です</p>
+                <Calendar className="w-12 h-12 mx-auto mb-4" />
+                <p>週次スケジュール表示機能を実装中...</p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* 他のタブコンテンツは次のファイルで実装 */}
+        <TabsContent value="monthly" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>📊 月次概要</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <BarChart3 className="w-12 h-12 mx-auto mb-4" />
+                <p>月次概要機能を実装中...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="vs" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>📈 予定vs実績</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <TrendingUp className="w-12 h-12 mx-auto mb-4" />
+                <p>予定vs実績分析機能を実装中...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="timeline" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>⏰ バッジタイムライン</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <Calendar className="w-12 h-12 mx-auto mb-4" />
+                <p>詳細なタイムライン表示機能を実装中...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analysis" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>🔍 分析ダッシュボード</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <BarChart3 className="w-12 h-12 mx-auto mb-4" />
+                <p>高度な分析機能を実装中...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      {/* 使い方ガイド */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            📚 使い方ガイド
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <h4 className="font-semibold">Step 1</h4>
+              <p className="text-sm text-muted-foreground">スケジュール設定</p>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• 右上の「設定」から週間作業時間を設定</li>
+                <li>• 集中モードを有効にすると1.5倍速で進捗</li>
+                <li>• 個人のペースに合わせて調整することで予測精度が向上</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold">Step 2</h4>
+              <p className="text-sm text-muted-foreground">優先度確認</p>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• 「週次スケジュール」で最適化された獲得順序を確認</li>
+                <li>• 🔥高優先度バッジから着手することを推奨</li>
+                <li>• 依存関係のあるバッジは前提条件を先に完了</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold">Step 3</h4>
+              <p className="text-sm text-muted-foreground">マイルストーン活用</p>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• 「バッジタイムライン」で短期・中期・長期の目標を確認</li>
+                <li>• マイルストーン達成時にモチベーションを維持</li>
+                <li>• 「月次概要」で累積進捗率を把握</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold">Step 4</h4>
+              <p className="text-sm text-muted-foreground">週次計画実行</p>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                <li>• 「日次計画」で具体的な作業スケジュールを確認</li>
+                <li>• カテゴリフォーカスで集中的に学習領域を絞る</li>
+                <li>• 「予定vs実績」で予想完了数を目標に作業効率を最適化</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
