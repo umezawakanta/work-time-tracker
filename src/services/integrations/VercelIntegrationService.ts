@@ -228,10 +228,15 @@ class VercelIntegrationService {
       const startTime = Date.now();
 
       // サイトへのリクエストでヘルスチェック
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(`https://${this.config.domain}`, {
         method: 'HEAD',
-        timeout: 10000,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const responseTime = Date.now() - startTime;
 
