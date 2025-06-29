@@ -518,6 +518,50 @@ const Home: React.FC = () => {
       {/* 統計セクション */}
       <StatsGrid stats={stats} className="mb-8" />
 
+      {/* 🏰 資産形成クエスト - 特別セクション */}
+      <div className="mb-8">
+        <Card
+          className="border-0 shadow-lg bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 hover:shadow-xl transition-all duration-300 cursor-pointer"
+          onClick={() => navigate('/asset-quest')}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                  <Crown className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-1">🏰 資産形成クエスト</h3>
+                  <p className="text-slate-600">
+                    毎月の収支管理で経験値を獲得し、資産形成の勇者になろう！
+                  </p>
+                  <div className="flex items-center gap-4 mt-2">
+                    <Badge variant="outline" className="bg-green-100 text-green-700">
+                      💰 家計管理
+                    </Badge>
+                    <Badge variant="outline" className="bg-blue-100 text-blue-700">
+                      🐉 DQチャットボット付き
+                    </Badge>
+                    <Badge variant="outline" className="bg-purple-100 text-purple-700">
+                      📈 資産成長可視化
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  クエスト開始！
+                </Button>
+                <p className="text-xs text-slate-500 mt-2">ドラクエ風チャットボットがサポート</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* 統合タスクダッシュボード */}
       <div className="mb-8">
         <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
@@ -835,6 +879,13 @@ const Home: React.FC = () => {
       {/* クイックアクションセクション */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
+          {
+            icon: <Crown className="h-6 w-6" />,
+            title: '🏰 資産形成クエスト',
+            description: '毎月の収支管理でレベルアップ',
+            path: '/asset-quest',
+            gradient: 'from-green-500 to-emerald-600',
+          },
           {
             icon: <Gamepad2 className="h-6 w-6" />,
             title: 'ゲーミフィケーション',
