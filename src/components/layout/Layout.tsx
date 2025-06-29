@@ -510,7 +510,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="pt-6 pb-2">
               <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                 <Trophy className="h-3 w-3" />
-                バッジ・実績
+                {t('sidebar.badges_achievements')}
               </h3>
             </div>
             {badgeMenuItems.map((item) => (
@@ -521,7 +521,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="pt-4 pb-2">
               <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                 <Shield className="h-3 w-3" />
-                開発・品質管理
+                {t('sidebar.development_quality')}
               </h3>
             </div>
             {devQualityMenuItems.map((item) => (
@@ -551,7 +551,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="pt-4 pb-2">
               <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                 <Sparkles className="h-3 w-3" />
-                ツール・ユーティリティ
+                {t('sidebar.tools_utilities')}
               </h3>
             </div>
             {toolsMenuItems.map((item) => (
@@ -562,7 +562,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="pt-4 pb-2">
               <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                 <Globe className="h-3 w-3" />
-                その他の機能
+                {t('sidebar.other_features')}
               </h3>
             </div>
             {/* PWA・システム関連 */}
@@ -672,7 +672,7 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="pt-6 pb-2">
                   <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                     <Crown className="h-3 w-3" />
-                    管理者メニュー
+                    {t('sidebar.admin_menu')}
                   </h3>
                 </div>
                 {getCoreMenuItems(t).map((item) => (

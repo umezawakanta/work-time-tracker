@@ -458,7 +458,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
    * 📈 学習速度計算
    */
   private calculateLearningVelocity(activities: PageActivity[]): number {
-    if (activities.length === 0) return 1.0;
+    if (activities.length === 0) {
+      return 1.0;
+    }
 
     const recentActivities = activities.slice(-20); // 最新20件
     const totalContribution = recentActivities.reduce(
@@ -474,7 +476,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
    * 📊 一貫性スコア計算
    */
   private calculateConsistencyScore(activities: PageActivity[]): number {
-    if (activities.length < 5) return 50;
+    if (activities.length < 5) {
+      return 50;
+    }
 
     // 過去7日間のアクティビティ分布を分析
     const last7Days = 7 * 24 * 60 * 60 * 1000;
@@ -633,7 +637,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
 
   private calculateAverageConfidence(): number {
     const predictions = Array.from(this.badgePredictions.values());
-    if (predictions.length === 0) return 0;
+    if (predictions.length === 0) {
+      return 0;
+    }
 
     const totalConfidence = predictions.reduce((sum, p) => sum + p.confidence, 0);
     return Math.round(totalConfidence / predictions.length);
@@ -650,7 +656,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
   // 追加のヘルパーメソッド（実装を簡略化）
   private updateIntegratedPageData(pageId: string, activity: PageActivity): void {
     const pageData = this.integratedPages.get(pageId);
-    if (!pageData) return;
+    if (!pageData) {
+      return;
+    }
 
     pageData.activeLearningTime += activity.timeSpent;
     pageData.lastUpdate = new Date();
@@ -662,7 +670,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
 
   private updateBadgePredictions(pageId: string, activity: PageActivity): void {
     const pageData = this.integratedPages.get(pageId);
-    if (!pageData) return;
+    if (!pageData) {
+      return;
+    }
 
     Object.keys(pageData.badgeContributions).forEach((badgeId) => {
       const prediction = this.badgePredictions.get(badgeId);
@@ -683,7 +693,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
 
   private calculateUpdatedProgress(badgeId: string, activities: PageActivity[]): number {
     const currentPrediction = this.badgePredictions.get(badgeId);
-    if (!currentPrediction) return 0;
+    if (!currentPrediction) {
+      return 0;
+    }
 
     const recentContribution = activities
       .slice(-10)
@@ -693,7 +705,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
   }
 
   private calculateNewCompletionDate(badgeId: string, progress: number, velocity: number): string {
-    if (progress >= 100) return new Date().toISOString().split('T')[0];
+    if (progress >= 100) {
+      return new Date().toISOString().split('T')[0];
+    }
 
     const remainingProgress = 100 - progress;
     const estimatedWeeks = remainingProgress / (velocity * 20); // 20% per week at normal velocity

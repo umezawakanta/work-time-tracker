@@ -285,7 +285,7 @@ const Home: React.FC = () => {
         color: 'text-yellow-600',
         bgColor: 'bg-yellow-50',
         progress: Math.round((gamificationStats.currentXP / gamificationStats.xpToNextLevel) * 100),
-        change: { value: gamificationStats.weeklyXP, period: '今週獲得XP' },
+        change: { value: gamificationStats.weeklyXP, period: t('home.weekly_xp_gained') },
       },
       {
         title: t('home.game_tasks'),
@@ -308,7 +308,10 @@ const Home: React.FC = () => {
         color: 'text-orange-600',
         bgColor: 'bg-orange-50',
         progress: Math.round((gamificationStats.streakDays / 30) * 100),
-        change: { value: gamificationStats.streakDays >= 3 ? 10 : 0, period: '目標30日' },
+        change: {
+          value: gamificationStats.streakDays >= 3 ? 10 : 0,
+          period: t('home.target_30_days'),
+        },
       },
       {
         title: t('home.badges'),
@@ -319,7 +322,7 @@ const Home: React.FC = () => {
         progress: Math.round(
           (gamificationStats.unlockedBadges / gamificationStats.totalBadges) * 100
         ),
-        change: { value: 2, period: '今月新規' },
+        change: { value: 2, period: t('home.new_this_month') },
       },
       {
         title: 'Todo完了',

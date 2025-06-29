@@ -160,6 +160,18 @@ export interface TranslationDictionary {
     running: string;
     paused_status: string;
     completed_status: string;
+    weekly_xp_gained: string;
+    target_30_days: string;
+    new_this_month: string;
+  };
+
+  // サイドバー
+  sidebar: {
+    badges_achievements: string;
+    development_quality: string;
+    tools_utilities: string;
+    other_features: string;
+    admin_menu: string;
   };
 
   // ナビゲーション
@@ -348,6 +360,16 @@ const jaTranslations: TranslationDictionary = {
     running: '実行中',
     paused_status: '一時停止中',
     completed_status: '完了！',
+    weekly_xp_gained: '今週獲得XP',
+    target_30_days: '目標30日',
+    new_this_month: '今月新規',
+  },
+  sidebar: {
+    badges_achievements: 'バッジ・実績',
+    development_quality: '開発・品質管理',
+    tools_utilities: 'ツール・ユーティリティ',
+    other_features: 'その他の機能',
+    admin_menu: '管理者メニュー',
   },
   navigation: {
     dashboard: 'ダッシュボード',
@@ -523,6 +545,16 @@ const enTranslations: TranslationDictionary = {
     running: 'Running',
     paused_status: 'Paused',
     completed_status: 'Completed!',
+    weekly_xp_gained: 'Weekly XP Gained',
+    target_30_days: 'Target 30 Days',
+    new_this_month: 'New This Month',
+  },
+  sidebar: {
+    badges_achievements: 'Badges & Achievements',
+    development_quality: 'Development & Quality',
+    tools_utilities: 'Tools & Utilities',
+    other_features: 'Other Features',
+    admin_menu: 'Admin Menu',
   },
   navigation: {
     dashboard: 'Dashboard',
@@ -697,6 +729,16 @@ const zhTranslations: TranslationDictionary = {
     running: '运行中',
     paused_status: '已暂停',
     completed_status: '已完成！',
+    weekly_xp_gained: '本周获得经验',
+    target_30_days: '目标30天',
+    new_this_month: '本月新增',
+  },
+  sidebar: {
+    badges_achievements: '徽章与成就',
+    development_quality: '开发与质量',
+    tools_utilities: '工具与实用程序',
+    other_features: '其他功能',
+    admin_menu: '管理员菜单',
   },
   navigation: {
     dashboard: '仪表板',
@@ -871,6 +913,16 @@ const koTranslations: TranslationDictionary = {
     running: '실행 중',
     paused_status: '일시정지됨',
     completed_status: '완료됨!',
+    weekly_xp_gained: '주간 경험치 획득',
+    target_30_days: '목표 30일',
+    new_this_month: '이번 달 신규',
+  },
+  sidebar: {
+    badges_achievements: '배지 및 성취',
+    development_quality: '개발 및 품질',
+    tools_utilities: '도구 및 유틸리티',
+    other_features: '기타 기능',
+    admin_menu: '관리자 메뉴',
   },
   navigation: {
     dashboard: '대시보드',
