@@ -60,208 +60,47 @@ class HardcodedDataAnalyzer {
     }
 
     console.log('🔍 固定データ分析を開始...');
+    console.log('📡 サーバーサイドAPIを呼び出し中...');
 
     try {
-      const issues: HardcodedIssue[] = [];
-      console.log('📁 ソースファイルを検索中...');
-      const files = await this.getAllSourceFiles();
-      console.log(`📄 ${files.length}個のファイルを検出しました`);
+      // サーバーサイドAPIエンドポイントを呼び出し
+      const response = await fetch('/api/analysis/hardcoded-data', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      if (files.length === 0) {
-        console.warn('⚠️ 分析対象ファイルが見つかりませんでした - サンプルデータを表示');
-        // ファイルが見つからない場合はサンプルデータを返す
-        return this.createSampleAnalysisResult();
+      if (!response.ok) {
+        throw new Error(`API呼び出しエラー: ${response.status} ${response.statusText}`);
       }
 
-      console.log('🔍 各ファイルを分析中...');
-      let totalFileIssues = 0;
-
-      // ファイル数が多い場合は最初の50件に制限
-      const filesToAnalyze = files.slice(0, 50);
-      console.log(`📊 分析対象: ${filesToAnalyze.length}/${files.length} ファイル`);
-
-      for (const file of filesToAnalyze) {
-        try {
-          const displayPath = file.includes('\\')
-            ? file.split('\\').slice(-3).join('/')
-            : file.split('/').slice(-3).join('/');
-          console.log(`📄 分析中: ${displayPath}`);
-          const fileIssues = await this.analyzeFile(file);
-          issues.push(...fileIssues);
-          totalFileIssues += fileIssues.length;
-          console.log(`  → ${fileIssues.length}件の問題を検出`);
-        } catch (fileError) {
-          console.warn(`⚠️ ファイル分析スキップ: ${file}`, fileError);
-        }
-      }
-
-      console.log(`📊 分析結果をコンパイル中... (${issues.length}件の問題)`);
-
-      // 実際の問題が少ない場合はサンプルデータと組み合わせる
-      if (issues.length < 3) {
-        console.log('📊 実際の問題が少ないため、サンプルデータと組み合わせます');
-        const sampleResult = this.createSampleAnalysisResult();
-        const combinedIssues = [
-          ...issues,
-          ...(sampleResult.fileAnalysis['src/components/Chart.tsx'] || []),
-        ];
-        const result = this.compileAnalysisResult(combinedIssues);
-
-        // キャッシュに保存
-        this.analysisCache = result;
-        this.lastAnalysisTime = now;
-
-        console.log(`✅ 固定データ分析完了: ${result.totalIssues}件の問題を検出（サンプル含む）`);
-        return result;
-      }
-
-      const result = this.compileAnalysisResult(issues);
+      const result: AnalysisResult = await response.json();
+      console.log(`✅ APIから分析結果を取得: ${result.totalIssues}件の問題を検出`);
 
       // キャッシュに保存
       this.analysisCache = result;
       this.lastAnalysisTime = now;
 
-      console.log(`✅ 固定データ分析完了: ${result.totalIssues}件の問題を検出`);
       return result;
     } catch (error) {
-      console.error('❌ 固定データ分析エラー:', error);
+      console.error('❌ API呼び出しエラー:', error);
       console.log('🔄 エラーのためサンプルデータを表示');
-      // エラーが発生した場合はサンプルデータを返す
-      return this.createSampleAnalysisResult();
+
+      // APIエラーの場合はサンプルデータを返す
+      const sampleResult = this.createSampleAnalysisResult();
+      this.analysisCache = sampleResult;
+      this.lastAnalysisTime = now;
+
+      return sampleResult;
     }
   }
 
+  // ブラウザ環境では使用しない（サーバーサイドで実行）
+
+  // ブラウザ環境では使用しない（サーバーサイドで実行）
   /**
-   * 単一ファイルの固定データ分析
-   */
-  private async analyzeFile(filePath: string): Promise<HardcodedIssue[]> {
-    try {
-      const fs = await import('fs/promises');
-      const content = await fs.readFile(filePath, 'utf-8');
-      const lines = content.split('\n');
-      const issues: HardcodedIssue[] = [];
-
-      lines.forEach((line, index) => {
-        const lineNumber = index + 1;
-
-        // Math.random()の使用を検出
-        if (line.includes('Math.random()')) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-random`,
-            file: filePath,
-            line: lineNumber,
-            type: 'random',
-            severity: 'high',
-            category: 'logic',
-            description: 'Math.random()を使用した固定的なランダム値生成',
-            codeSnippet: line.trim(),
-            suggestion: '実際のAPIやデータベースから値を取得',
-            estimatedEffort: 'medium',
-            impact: 'high',
-            isFixed: false,
-          });
-        }
-
-        // 固定配列の検出
-        if (this.isHardcodedArray(line)) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-array`,
-            file: filePath,
-            line: lineNumber,
-            type: 'fixed-array',
-            severity: this.getArraySeverity(line),
-            category: 'data',
-            description: '固定配列・リストの使用',
-            codeSnippet: line.trim(),
-            suggestion: 'APIから動的にデータを取得',
-            estimatedEffort: 'small',
-            impact: 'medium',
-            isFixed: false,
-          });
-        }
-
-        // モックデータの検出
-        if (this.isMockData(line)) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-mock`,
-            file: filePath,
-            line: lineNumber,
-            type: 'mock-data',
-            severity: 'critical',
-            category: 'api',
-            description: 'モックデータまたは仮データの使用',
-            codeSnippet: line.trim(),
-            suggestion: '実際のAPIエンドポイントに接続',
-            estimatedEffort: 'large',
-            impact: 'high',
-            isFixed: false,
-          });
-        }
-
-        // 固定文字列の検出
-        if (this.isHardcodedString(line)) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-string`,
-            file: filePath,
-            line: lineNumber,
-            type: 'hardcoded-string',
-            severity: 'medium',
-            category: 'config',
-            description: '設定値や定数のハードコーディング',
-            codeSnippet: line.trim(),
-            suggestion: '設定ファイルや環境変数に移動',
-            estimatedEffort: 'small',
-            impact: 'low',
-            isFixed: false,
-          });
-        }
-
-        // 固定数値の検出
-        if (this.isHardcodedNumber(line)) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-number`,
-            file: filePath,
-            line: lineNumber,
-            type: 'hardcoded-number',
-            severity: 'medium',
-            category: 'config',
-            description: 'マジックナンバーの使用',
-            codeSnippet: line.trim(),
-            suggestion: '定数として定義または設定可能にする',
-            estimatedEffort: 'small',
-            impact: 'low',
-            isFixed: false,
-          });
-        }
-
-        // API モックの検出
-        if (this.isApiMock(line)) {
-          issues.push({
-            id: `${filePath}-${lineNumber}-api-mock`,
-            file: filePath,
-            line: lineNumber,
-            type: 'api-mock',
-            severity: 'critical',
-            category: 'api',
-            description: 'API レスポンスのモック化',
-            codeSnippet: line.trim(),
-            suggestion: '実際のAPIエンドポイントを実装',
-            estimatedEffort: 'large',
-            impact: 'high',
-            isFixed: false,
-          });
-        }
-      });
-
-      return issues;
-    } catch (error) {
-      console.warn(`⚠️ ファイル分析エラー: ${filePath}`, error);
-      return [];
-    }
-  }
-
-  /**
-   * 分析結果をコンパイル
+   * 分析結果をコンパイル（互換性のためのみ残している）
    */
   private compileAnalysisResult(issues: HardcodedIssue[]): AnalysisResult {
     const criticalIssues = issues.filter((i) => i.severity === 'critical').length;
@@ -469,145 +308,10 @@ class HardcodedDataAnalyzer {
     return result;
   }
 
-  // === 検出ルール ===
-
-  private isHardcodedArray(line: string): boolean {
-    // 明らかに固定的な配列を検出
-    const patterns = [/\[.+,.+\]/, /return\s*\[['"][^'"]+['"][,\]]/, /=\s*\[['"][^'"]+['"],/];
-
-    return (
-      patterns.some((pattern) => pattern.test(line)) &&
-      !line.includes('useState') &&
-      !line.includes('const patterns') &&
-      !line.includes('// ignore hardcode')
-    );
-  }
-
-  private isMockData(line: string): boolean {
-    const mockKeywords = ['mock', 'fake', 'dummy', 'sample', 'test-data', '仮データ'];
-    const lowerLine = line.toLowerCase();
-
-    return (
-      mockKeywords.some((keyword) => lowerLine.includes(keyword)) ||
-      line.includes('TODO:') ||
-      line.includes('FIXME:') ||
-      line.includes('模擬') ||
-      line.includes('サンプル')
-    );
-  }
-
-  private isHardcodedString(line: string): boolean {
-    // 設定値らしき文字列を検出
-    const patterns = [
-      /['"]https?:\/\/[^'"]+['"]/,
-      /['"]api['"]/,
-      /['"]config['"]/,
-      /port\s*=\s*\d+/,
-    ];
-
-    return (
-      patterns.some((pattern) => pattern.test(line)) &&
-      !line.includes('example') &&
-      !line.includes('// ignore hardcode')
-    );
-  }
-
-  private isHardcodedNumber(line: string): boolean {
-    // マジックナンバーを検出（0, 1, -1は除外）
-    const magicNumberPattern = /(?<![\w.])\d{2,}(?![\w.])/;
-
-    return (
-      magicNumberPattern.test(line) &&
-      !line.includes('Date') &&
-      !line.includes('setTimeout') &&
-      !line.includes('// ignore hardcode')
-    );
-  }
-
-  private isApiMock(line: string): boolean {
-    return (
-      line.includes('await new Promise') ||
-      (line.includes('setTimeout') && line.includes('resolve')) ||
-      (line.includes('return {') && line.includes('mock')) ||
-      line.includes('// 模擬') ||
-      line.includes('模擬的な')
-    );
-  }
-
-  private getArraySeverity(line: string): 'critical' | 'high' | 'medium' | 'low' {
-    if (line.includes('features') || line.includes('options')) return 'high';
-    if (line.includes('labels') || line.includes('categories')) return 'medium';
-    return 'low';
-  }
-
-  /**
-   * 全ソースファイルを取得
-   */
-  private async getAllSourceFiles(): Promise<string[]> {
-    try {
-      const fs = await import('fs/promises');
-      const path = await import('path');
-
-      const files: string[] = [];
-      const srcPath = path.resolve('./src');
-
-      console.log(`📁 srcディレクトリパス: ${srcPath}`);
-
-      // srcディレクトリの存在確認
-      try {
-        await fs.access(srcPath);
-        console.log('✅ srcディレクトリが見つかりました');
-      } catch (accessError) {
-        console.warn('❌ srcディレクトリにアクセスできません:', accessError);
-        return [];
-      }
-
-      const scanDirectory = async (dir: string): Promise<void> => {
-        try {
-          console.log(`🔍 スキャン中: ${dir}`);
-          const entries = await fs.readdir(dir, { withFileTypes: true });
-          console.log(`📂 ${entries.length}個のエントリを発見: ${dir}`);
-
-          for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-
-            if (entry.isDirectory()) {
-              // node_modules, dist, coverage などを除外
-              if (
-                !['node_modules', 'dist', 'coverage', '.git', '.next', '__tests__'].includes(
-                  entry.name
-                )
-              ) {
-                await scanDirectory(fullPath);
-              }
-            } else if (entry.name.match(/\.(ts|tsx|js|jsx)$/)) {
-              files.push(fullPath);
-              console.log(`📄 ファイル追加: ${fullPath}`);
-            }
-          }
-        } catch (error) {
-          console.warn(`⚠️ ディレクトリスキャンエラー: ${dir}`, error);
-        }
-      };
-
-      await scanDirectory(srcPath);
-      console.log(`📊 合計 ${files.length} 個のファイルを検出しました`);
-
-      // デバッグ用：最初の5個のファイルを表示
-      if (files.length > 0) {
-        console.log('📄 検出されたファイル例:');
-        files.slice(0, 5).forEach((file, index) => {
-          console.log(`  ${index + 1}. ${file}`);
-        });
-      }
-
-      return files;
-    } catch (error) {
-      console.error('❌ ファイル検索で予期しないエラー:', error);
-      console.log('⚠️ エラーのため空の配列を返します');
-      return [];
-    }
-  }
+  // ================================================================
+  // 注意: 以下のメソッドはサーバーサイドAPIで実行されます
+  // ブラウザ環境では `/api/analysis/hardcoded-data` を呼び出してください
+  // ================================================================
 
   /**
    * 問題を修正済みとしてマーク
