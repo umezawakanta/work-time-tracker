@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -256,7 +256,61 @@
 <a name='L191'></a><a href='#L191'>191</a>
 <a name='L192'></a><a href='#L192'>192</a>
 <a name='L193'></a><a href='#L193'>193</a>
-<a name='L194'></a><a href='#L194'>194</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -456,30 +510,57 @@
  * 環境変数からの読み込みと、デフォルト値の設定
  */
 &nbsp;
+// 環境変数を安全に取得するユーティリティ関数
+const getEnvVar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey: string): string | undefined =&gt; {</span>
+  // Jest環境ではprocess.envを優先
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof process !== 'undefined' &amp;&amp; process.env &amp;&amp; process.env[key]) {</span>
+<span class="cstat-no" title="statement not covered" >    return process.env[key];</span>
+  }
+&nbsp;
+  // Vite環境でのimport.meta.env（安全にアクセス）
+<span class="cstat-no" title="statement not covered" >  try {</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof globalThis !== 'undefined' &amp;&amp; (globalThis as any).import?.meta?.env) {</span>
+<span class="cstat-no" title="statement not covered" >      return (globalThis as any).import.meta.env[key];</span>
+    }
+  } catch (e) {
+    // import.metaが利用できない場合は無視
+  }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return undefined;</span>
+};
+&nbsp;
+const isDev = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    getEnvVar('NODE_ENV') === 'development' ||
+    getEnvVar('DEV') === 'true' ||
+    getEnvVar('MODE') === 'development'
+  );
+};
+&nbsp;
 // デバッグ用の設定確認
-<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (import.meta.env.DEV) {</span>
+<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (isDev()) {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('🔧 Firebase Config Check:', {</span>
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Missing',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ? 'Set' : 'Missing',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 'Set' : 'Missing',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ? 'Set' : 'Missing',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ? 'Set' : 'Missing',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID ? 'Set' : 'Missing',
+    apiKey: getEnvVar('VITE_FIREBASE_API_KEY') ? 'Set' : 'Missing',
+    authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN') ? 'Set' : 'Missing',
+    projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID') ? 'Set' : 'Missing',
+    storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET') ? 'Set' : 'Missing',
+    messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID') ? 'Set' : 'Missing',
+    appId: getEnvVar('VITE_FIREBASE_APP_ID') ? 'Set' : 'Missing',
   });
 }
 &nbsp;
 // Firebase設定をデバッグ情報と共にエクスポート
 const firebaseEnvVars = <span class="cstat-no" title="statement not covered" >{</span>
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: getEnvVar('VITE_FIREBASE_API_KEY'),
+  authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN'),
+  projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID'),
+  storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: getEnvVar('VITE_FIREBASE_APP_ID'),
 };
 &nbsp;
 // 開発環境でのデバッグ情報
-<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (import.meta.env.DEV) {</span>
+<span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>if (isDev()) {</span>
   const configStatus = <span class="cstat-no" title="statement not covered" >Object.entries(firebaseEnvVars).reduce(</span>
 <span class="fstat-no" title="function not covered" >    (a</span>cc, [key, value]) =&gt; {
 <span class="cstat-no" title="statement not covered" >      acc[key] = value ? 'Set' : 'Missing';</span>
@@ -510,24 +591,24 @@ export const <span class="cstat-no" title="statement not covered" >firebaseConfi
 &nbsp;
 // アプリケーション情報
 export const <span class="cstat-no" title="statement not covered" >appInfo = {</span>
-  name: import.meta.env.VITE_APP_NAME || '資産/負債管理アプリ',
-  version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+  name: getEnvVar('VITE_APP_NAME') || '資産/負債管理アプリ',
+  version: getEnvVar('VITE_APP_VERSION') || '1.0.0',
   description:
-    import.meta.env.VITE_APP_DESCRIPTION || 'あなたの財務状況を分析・管理するためのダッシュボード',
+    getEnvVar('VITE_APP_DESCRIPTION') || 'あなたの財務状況を分析・管理するためのダッシュボード',
 };
 &nbsp;
 // サブスクリプションプラン設定
 export const <span class="cstat-no" title="statement not covered" >subscriptionPlans = {</span>
   premium: {
     monthly: {
-      id: import.meta.env.VITE_PREMIUM_MONTHLY_PLAN_ID,
+      id: getEnvVar('VITE_PREMIUM_MONTHLY_PLAN_ID'),
       price: 980,
       currency: 'JPY',
       interval: 'month',
       name: 'プレミアム（月額）',
     },
     annual: {
-      id: import.meta.env.VITE_PREMIUM_ANNUAL_PLAN_ID,
+      id: getEnvVar('VITE_PREMIUM_ANNUAL_PLAN_ID'),
       price: 9800,
       currency: 'JPY',
       interval: 'year',
@@ -535,7 +616,7 @@ export const <span class="cstat-no" title="statement not covered" >subscriptionP
     },
   },
   business: {
-    id: import.meta.env.VITE_BUSINESS_PLAN_ID,
+    id: getEnvVar('VITE_BUSINESS_PLAN_ID'),
     price: 2980,
     currency: 'JPY',
     interval: 'month',
@@ -579,7 +660,7 @@ export const <span class="cstat-no" title="statement not covered" >premiumFeatur
 &nbsp;
 // API設定
 export const <span class="cstat-no" title="statement not covered" >apiConfig = {</span>
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+  baseURL: getEnvVar('VITE_API_BASE_URL') || 'http://localhost:3001/api',
   timeout: 10000,
 };
 &nbsp;
@@ -593,9 +674,9 @@ export const <span class="cstat-no" title="statement not covered" >feedbackTypes
 &nbsp;
 // 設定
 export const <span class="cstat-no" title="statement not covered" >appConfig = {</span>
-  debug: import.meta.env.VITE_DEBUG_MODE === 'true',
-  enableAnalytics: import.meta.env.VITE_ENABLE_ANALYTICS !== 'false',
-  defaultLocale: import.meta.env.VITE_DEFAULT_LOCALE || 'ja',
+  debug: getEnvVar('VITE_DEBUG_MODE') === 'true',
+  enableAnalytics: getEnvVar('VITE_ENABLE_ANALYTICS') !== 'false',
+  defaultLocale: getEnvVar('VITE_DEFAULT_LOCALE') || 'ja',
   supportedLocales: ['ja', 'en'],
   defaultCurrency: 'JPY',
   supportedCurrencies: ['JPY', 'USD', 'EUR'],
@@ -649,7 +730,7 @@ export const <span class="cstat-no" title="statement not covered" >debtCategorie
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:39:41.092Z
+                at 2025-06-29T17:25:22.963Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
