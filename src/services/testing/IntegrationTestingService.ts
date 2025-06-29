@@ -583,7 +583,9 @@ class IntegrationTestingService {
     };
   } | null {
     const execution = this.testExecutions.get(executionId);
-    if (!execution) return null;
+    if (!execution) {
+      return null;
+    }
 
     const recommendations: string[] = [];
 
