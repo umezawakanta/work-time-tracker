@@ -38,6 +38,27 @@ interface ChatMessage {
   }>;
 }
 
+interface DeveloperStatus {
+  siteCompletion: number;
+  priorityTasksCount: number;
+  criticalIssuesCount: number;
+  testCoverage: number;
+  deploymentReady: boolean;
+  lastCommitDays: number;
+  badgeProgress?: {
+    enabled: boolean;
+    overallBadgeProgress: number;
+    totalBadges: number;
+    completedBadges: number;
+    relatedBadges: Array<{
+      badgeId: string;
+      badgeName: string;
+      progress: number;
+      category: string;
+    }>;
+  };
+}
+
 interface DragonQuestChatbotProps {
   currentLevel: number;
   totalAssets: number;
@@ -197,6 +218,31 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
 
   const getDeveloperStatus = () => {
     const dashboardData = developmentTaskService.getDeveloperDashboardData();
+    const badgeData = dashboardData.badgeProgress;
+
+    // バッジデータを適切な型に変換
+    let badgeProgress: DeveloperStatus['badgeProgress'] = undefined;
+    if (
+      badgeData &&
+      badgeData.enabled &&
+      'totalBadges' in badgeData &&
+      typeof badgeData.totalBadges === 'number' &&
+      typeof badgeData.completedBadges === 'number'
+    ) {
+      badgeProgress = {
+        enabled: badgeData.enabled,
+        overallBadgeProgress: badgeData.overallBadgeProgress,
+        totalBadges: badgeData.totalBadges,
+        completedBadges: badgeData.completedBadges,
+        relatedBadges: badgeData.relatedBadges.map((badge) => ({
+          badgeId: badge.badgeId,
+          badgeName: badge.badgeName,
+          progress: badge.progress,
+          category: badge.category,
+        })),
+      };
+    }
+
     return {
       siteCompletion: dashboardData.metrics.overallCompletion,
       priorityTasksCount: dashboardData.priorityTasks.length,
@@ -204,6 +250,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
       testCoverage: dashboardData.metrics.categoryBreakdown.testing || 45,
       deploymentReady: dashboardData.metrics.categoryBreakdown.deployment >= 80,
       lastCommitDays: Math.floor(Math.random() * 5), // サンプルデータ
+      badgeProgress,
     };
   };
 
@@ -489,43 +536,72 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
               </div>
 
               {showDevActions && (
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    onClick={() => handleQuickAction('dev-status')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
-                  >
-                    <PieChart className="w-4 h-4 mr-1" />
-                    開発状況
-                  </Button>
-                  <Button
-                    onClick={() => handleQuickAction('dev-tasks')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-white border-2 border-indigo-300 hover:bg-indigo-50 text-indigo-800"
-                  >
-                    <Bug className="w-4 h-4 mr-1" />
-                    タスク確認
-                  </Button>
-                  <Button
-                    onClick={() => handleQuickAction('dev-tips')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-white border-2 border-cyan-300 hover:bg-cyan-50 text-cyan-800"
-                  >
-                    <Lightbulb className="w-4 h-4 mr-1" />
-                    開発のコツ
-                  </Button>
-                  <Button
-                    onClick={() => handleQuickAction('site-completion')}
-                    variant="outline"
-                    size="sm"
-                    className="bg-white border-2 border-teal-300 hover:bg-teal-50 text-teal-800"
-                  >
-                    <Wrench className="w-4 h-4 mr-1" />
-                    完成度確認
-                  </Button>
+                <div className="space-y-2">
+                  {/* 第1行: 開発関連 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      onClick={() => handleQuickAction('dev-status')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
+                    >
+                      <PieChart className="w-4 h-4 mr-1" />
+                      開発状況
+                    </Button>
+                    <Button
+                      onClick={() => handleQuickAction('dev-tasks')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-indigo-300 hover:bg-indigo-50 text-indigo-800"
+                    >
+                      <Bug className="w-4 h-4 mr-1" />
+                      タスク確認
+                    </Button>
+                  </div>
+
+                  {/* 第2行: バッジ関連 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      onClick={() => handleQuickAction('badge-status')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-yellow-300 hover:bg-yellow-50 text-yellow-800"
+                    >
+                      <Crown className="w-4 h-4 mr-1" />
+                      バッジ状況
+                    </Button>
+                    <Button
+                      onClick={() => handleQuickAction('badge-recommendations')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-orange-300 hover:bg-orange-50 text-orange-800"
+                    >
+                      <Target className="w-4 h-4 mr-1" />
+                      推奨バッジ
+                    </Button>
+                  </div>
+
+                  {/* 第3行: その他 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      onClick={() => handleQuickAction('dev-tips')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-cyan-300 hover:bg-cyan-50 text-cyan-800"
+                    >
+                      <Lightbulb className="w-4 h-4 mr-1" />
+                      開発のコツ
+                    </Button>
+                    <Button
+                      onClick={() => handleQuickAction('site-completion')}
+                      variant="outline"
+                      size="sm"
+                      className="bg-white border-2 border-teal-300 hover:bg-teal-50 text-teal-800"
+                    >
+                      <Wrench className="w-4 h-4 mr-1" />
+                      完成度確認
+                    </Button>
+                  </div>
                 </div>
               )}
 

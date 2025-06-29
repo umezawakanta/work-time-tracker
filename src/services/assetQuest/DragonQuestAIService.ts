@@ -13,6 +13,18 @@ interface DeveloperStatus {
   testCoverage: number;
   deploymentReady: boolean;
   lastCommitDays: number;
+  badgeProgress?: {
+    enabled: boolean;
+    overallBadgeProgress: number;
+    totalBadges: number;
+    completedBadges: number;
+    relatedBadges: Array<{
+      badgeId: string;
+      badgeName: string;
+      progress: number;
+      category: string;
+    }>;
+  };
 }
 
 interface ChatMessage {
@@ -80,6 +92,10 @@ class DragonQuestAIService {
         return this.generateDevTipsMessage();
       case 'site-completion':
         return developerStatus ? this.generateSiteCompletionMessage(developerStatus) : null;
+      case 'badge-status':
+        return developerStatus ? this.generateBadgeStatusMessage(developerStatus) : null;
+      case 'badge-recommendations':
+        return developerStatus ? this.generateBadgeRecommendationsMessage(developerStatus) : null;
       default:
         return null;
     }
@@ -381,6 +397,14 @@ class DragonQuestAIService {
       return this.generateCriticalIssueWarning(developerStatus);
     }
 
+    // バッジ関連のアドバイス（新機能）
+    if (
+      developerStatus.badgeProgress?.enabled &&
+      developerStatus.badgeProgress.overallBadgeProgress < 30
+    ) {
+      return this.generateBadgeProgressAdvice(developerStatus);
+    }
+
     if (developerStatus.siteCompletion < 70) {
       return this.generateCompletionMotivation(developerStatus);
     }
@@ -391,6 +415,12 @@ class DragonQuestAIService {
 
     if (developerStatus.priorityTasksCount > 3) {
       return this.generateTaskPriorityAdvice(developerStatus);
+    }
+
+    // バッジ完成間近のアドバイス
+    if (developerStatus.badgeProgress?.enabled) {
+      const nearCompletionAdvice = this.generateNearCompletionBadgeAdvice(developerStatus);
+      if (nearCompletionAdvice) return nearCompletionAdvice;
     }
 
     if (developerStatus.lastCommitDays > 2) {
@@ -643,6 +673,89 @@ class DragonQuestAIService {
   }
 
   /**
+   * 🏆 バッジ進捗アドバイス
+   */
+  private generateBadgeProgressAdvice(developerStatus: DeveloperStatus): ChatMessage {
+    const badgeProgress = developerStatus.badgeProgress!;
+    const messages = [
+      `バッジの獲得が進んでいないようじゃな... 現在${badgeProgress.overallBadgeProgress}%の進捗じゃ。`,
+      `開発タスクを完了することで、関連するバッジが自動的に進捗するぞ！`,
+      `スキルを証明するバッジを獲得して、成長を可視化しよう！`,
+    ];
+
+    const topBadges = badgeProgress.relatedBadges
+      .filter((badge) => badge.progress > 0 && badge.progress < 100)
+      .sort((a, b) => b.progress - a.progress)
+      .slice(0, 2);
+
+    let badgeInfo = '';
+    if (topBadges.length > 0) {
+      badgeInfo = `\n\n進捗中のバッジ:\n${topBadges
+        .map((badge) => `• ${badge.badgeName}: ${badge.progress.toFixed(1)}%`)
+        .join('\n')}`;
+    }
+
+    return {
+      id: this.generateId(),
+      character: 'sage',
+      message: this.getRandomMessage(messages) + badgeInfo,
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: 'バッジ一覧を見る',
+          action: () => console.log('View badges'),
+        },
+        {
+          label: '関連タスクを確認',
+          action: () => console.log('Check related tasks'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 🎯 完成間近バッジのアドバイス
+   */
+  private generateNearCompletionBadgeAdvice(developerStatus: DeveloperStatus): ChatMessage | null {
+    const badgeProgress = developerStatus.badgeProgress!;
+    const nearCompletionBadges = badgeProgress.relatedBadges
+      .filter((badge) => badge.progress >= 80 && badge.progress < 100)
+      .sort((a, b) => b.progress - a.progress);
+
+    if (nearCompletionBadges.length === 0) return null;
+
+    const topBadge = nearCompletionBadges[0];
+    const remainingProgress = 100 - topBadge.progress;
+
+    const messages = [
+      `素晴らしい！「${topBadge.badgeName}」バッジがもうすぐ完成じゃ！`,
+      `あと${remainingProgress.toFixed(1)}%で「${topBadge.badgeName}」が獲得できるぞ！`,
+      `最後の仕上げじゃ！「${topBadge.badgeName}」完成まであと少し！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'king',
+      message:
+        this.getRandomMessage(messages) +
+        `\n\nカテゴリ: ${topBadge.category}\n進捗: ${topBadge.progress.toFixed(1)}%`,
+      timestamp: new Date(),
+      type: 'celebration',
+      actions: [
+        {
+          label: '完成を目指す',
+          action: () => console.log('Focus on badge completion'),
+        },
+        {
+          label: '他の近いバッジも見る',
+          action: () => console.log('View other near completion badges'),
+        },
+      ],
+    };
+  }
+
+  /**
    * サイト完成度メッセージ
    */
   private generateSiteCompletionMessage(developerStatus: DeveloperStatus): ChatMessage {
@@ -677,6 +790,143 @@ class DragonQuestAIService {
         {
           label: '進捗を共有',
           action: () => console.log('Share progress'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 🏆 バッジステータスメッセージ
+   */
+  private generateBadgeStatusMessage(developerStatus: DeveloperStatus): ChatMessage {
+    const badgeProgress = developerStatus.badgeProgress;
+
+    if (!badgeProgress?.enabled) {
+      return {
+        id: this.generateId(),
+        character: 'sage',
+        message:
+          'バッジシステムが無効になっているようじゃな。\n\n設定で有効にすれば、スキルの成長を可視化できるぞ！',
+        timestamp: new Date(),
+        type: 'development',
+        actions: [
+          {
+            label: 'バッジを有効にする',
+            action: () => console.log('Enable badges'),
+          },
+        ],
+      };
+    }
+
+    const { overallBadgeProgress, totalBadges, completedBadges, relatedBadges } = badgeProgress;
+    const completionRate = totalBadges > 0 ? (completedBadges / totalBadges) * 100 : 0;
+
+    const inProgressBadges = relatedBadges.filter(
+      (badge) => badge.progress > 0 && badge.progress < 100
+    );
+    const topCategories = Array.from(new Set(relatedBadges.map((b) => b.category)))
+      .map((category) => ({
+        category,
+        count: relatedBadges.filter((b) => b.category === category).length,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
+
+    const message =
+      `バッジステータス報告じゃ！\n\n` +
+      `🏆 獲得済み: ${completedBadges}/${totalBadges}個 (${completionRate.toFixed(1)}%)\n` +
+      `📈 全体進捗: ${overallBadgeProgress}%\n` +
+      `⚡ 進行中: ${inProgressBadges.length}個\n\n` +
+      `主なカテゴリ:\n${topCategories.map((c) => `• ${c.category}: ${c.count}個`).join('\n')}\n\n` +
+      `${overallBadgeProgress >= 70 ? '素晴らしい成長ぶりじゃ！' : 'コツコツと成長を続けよう！'}`;
+
+    return {
+      id: this.generateId(),
+      character: 'architect',
+      message,
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: '詳細を見る',
+          action: () => console.log('View badge details'),
+        },
+        {
+          label: '進捗を更新',
+          action: () => console.log('Update progress'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 💡 バッジ推奨メッセージ
+   */
+  private generateBadgeRecommendationsMessage(developerStatus: DeveloperStatus): ChatMessage {
+    const badgeProgress = developerStatus.badgeProgress;
+
+    if (!badgeProgress?.enabled || badgeProgress.relatedBadges.length === 0) {
+      return {
+        id: this.generateId(),
+        character: 'sage',
+        message:
+          'まずは開発タスクを進めて、バッジ獲得の基盤を作ろう！\n\nタスクを完了することで関連バッジが自動的に進捗するぞ！',
+        timestamp: new Date(),
+        type: 'development',
+        actions: [
+          {
+            label: 'タスクを確認',
+            action: () => console.log('Check tasks'),
+          },
+        ],
+      };
+    }
+
+    const { relatedBadges } = badgeProgress;
+
+    // 推奨バッジの選択ロジック
+    const recommendedBadges = relatedBadges
+      .filter((badge) => badge.progress >= 10 && badge.progress < 80) // 10-80%の範囲
+      .sort((a, b) => b.progress - a.progress) // 進捗率が高い順
+      .slice(0, 3);
+
+    // 新しくチャレンジできるバッジ
+    const newBadges = relatedBadges.filter((badge) => badge.progress === 0).slice(0, 2);
+
+    let message = '今週のバッジ推奨プランを教えよう！\n\n';
+
+    if (recommendedBadges.length > 0) {
+      message += `🎯 継続推奨バッジ:\n`;
+      recommendedBadges.forEach((badge) => {
+        message += `• ${badge.badgeName} (${badge.progress.toFixed(1)}%) - あと少しじゃ！\n`;
+      });
+      message += '\n';
+    }
+
+    if (newBadges.length > 0) {
+      message += `🆕 新チャレンジ:\n`;
+      newBadges.forEach((badge) => {
+        message += `• ${badge.badgeName} (${badge.category}) - 新しいスキルに挑戦！\n`;
+      });
+      message += '\n';
+    }
+
+    message += 'バランス良くスキルを伸ばしていこう！';
+
+    return {
+      id: this.generateId(),
+      character: 'king',
+      message,
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: '計画を立てる',
+          action: () => console.log('Make plan'),
+        },
+        {
+          label: '今すぐ始める',
+          action: () => console.log('Start now'),
         },
       ],
     };

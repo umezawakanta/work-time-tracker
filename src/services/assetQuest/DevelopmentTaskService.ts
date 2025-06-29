@@ -1,4 +1,6 @@
 // 開発タスク管理サービス - サイト完成に向けたタスクとアドバイス管理
+import { comprehensiveBadgeService } from '@/services/development/ComprehensiveBadgeService';
+import { DevelopmentBadge, BadgeCategory } from '@/types/development-badges';
 
 interface DevelopmentTask {
   id: string;
@@ -22,6 +24,8 @@ interface DevelopmentTask {
   dueDate?: string;
   createdAt: string;
   updatedAt: string;
+  linkedBadges?: string[]; // 関連するバッジID
+  badgeCategory?: BadgeCategory; // 対応するバッジカテゴリ
 }
 
 interface SiteCompletionMetrics {
@@ -60,6 +64,7 @@ interface DevelopmentAdvice {
 class DevelopmentTaskService {
   private tasks: DevelopmentTask[] = [];
   private completedFeatures: string[] = [];
+  private badgeIntegrationEnabled: boolean = true;
 
   constructor() {
     this.initializeTasks();
@@ -84,6 +89,8 @@ class DevelopmentTaskService {
         completionPercentage: 70,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-15',
+        badgeCategory: 'mobile',
+        linkedBadges: ['responsive-design-master', 'mobile-first-developer'],
       },
       {
         id: 'fe-002',
@@ -97,6 +104,8 @@ class DevelopmentTaskService {
         completionPercentage: 30,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-10',
+        badgeCategory: 'accessibility',
+        linkedBadges: ['accessibility-champion', 'inclusive-design-advocate'],
       },
       {
         id: 'fe-003',
@@ -110,6 +119,8 @@ class DevelopmentTaskService {
         completionPercentage: 40,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-12',
+        badgeCategory: 'pwa',
+        linkedBadges: ['pwa-architect', 'offline-first-developer'],
       },
 
       // バックエンド
@@ -125,6 +136,8 @@ class DevelopmentTaskService {
         completionPercentage: 60,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-14',
+        badgeCategory: 'cybersecurity',
+        linkedBadges: ['security-architect', 'authentication-expert'],
       },
       {
         id: 'be-002',
@@ -138,6 +151,8 @@ class DevelopmentTaskService {
         completionPercentage: 0,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-01',
+        badgeCategory: 'architecture',
+        linkedBadges: ['real-time-architect', 'websocket-specialist'],
       },
 
       // テスト
@@ -153,6 +168,8 @@ class DevelopmentTaskService {
         completionPercentage: 45,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-13',
+        badgeCategory: 'testing',
+        linkedBadges: ['quality-assurance-champion', 'test-automation-expert'],
       },
 
       // 最適化
@@ -168,6 +185,8 @@ class DevelopmentTaskService {
         completionPercentage: 20,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-08',
+        badgeCategory: 'performance',
+        linkedBadges: ['performance-optimizer', 'web-speed-specialist'],
       },
 
       // デプロイメント
@@ -183,6 +202,8 @@ class DevelopmentTaskService {
         completionPercentage: 80,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-16',
+        badgeCategory: 'cicd',
+        linkedBadges: ['devops-engineer', 'automation-architect'],
       },
 
       // ドキュメント
@@ -198,6 +219,8 @@ class DevelopmentTaskService {
         completionPercentage: 25,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-05',
+        badgeCategory: 'documentation',
+        linkedBadges: ['documentation-master', 'api-designer'],
       },
 
       // デザイン
@@ -213,6 +236,8 @@ class DevelopmentTaskService {
         completionPercentage: 10,
         createdAt: '2024-01-01',
         updatedAt: '2024-01-03',
+        badgeCategory: 'design',
+        linkedBadges: ['ui-ux-designer', 'design-system-architect'],
       },
     ];
   }
@@ -379,7 +404,7 @@ class DevelopmentTaskService {
   }
 
   /**
-   * 📝 タスク更新
+   * 📝 タスク更新（バッジ連携対応）
    */
   updateTaskProgress(
     taskId: string,
@@ -388,10 +413,17 @@ class DevelopmentTaskService {
   ): void {
     const task = this.tasks.find((t) => t.id === taskId);
     if (task) {
+      const oldProgress = task.completionPercentage;
       task.completionPercentage = Math.max(0, Math.min(100, completionPercentage));
       if (status) task.status = status;
       if (completionPercentage === 100) task.status = 'completed';
       task.updatedAt = new Date().toISOString();
+
+      // バッジシステムとの連携
+      if (this.badgeIntegrationEnabled) {
+        this.syncTaskProgressWithBadges(task, oldProgress);
+      }
+
       this.saveProgress();
     }
   }
@@ -460,17 +492,236 @@ class DevelopmentTaskService {
     const priorityTasks = this.getPriorityTasks();
     const advice = this.generateDevelopmentAdvice();
     const upcomingDeadlines = this.getUpcomingDeadlines();
+    const badgeProgress = this.getBadgeIntegrationStatus();
 
     return {
       metrics,
       priorityTasks,
       advice,
       upcomingDeadlines,
+      badgeProgress,
       recentlyCompleted: this.tasks
         .filter((task) => task.status === 'completed')
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
         .slice(0, 5),
     };
+  }
+
+  // 🏆 バッジシステム統合メソッド
+
+  /**
+   * 🔗 タスク進捗とバッジシステムの同期
+   */
+  private async syncTaskProgressWithBadges(
+    task: DevelopmentTask,
+    oldProgress: number
+  ): Promise<void> {
+    if (!task.badgeCategory || !task.linkedBadges) return;
+
+    try {
+      // タスクの進捗増加分を計算
+      const progressDelta = task.completionPercentage - oldProgress;
+
+      // 完了時の特別処理
+      if (task.status === 'completed' && oldProgress < 100) {
+        // タスク完了をバッジシステムに記録
+        await comprehensiveBadgeService.recordActivity(
+          `タスク完了: ${task.title}`,
+          task.badgeCategory,
+          2.0, // 完了時は高い影響度
+          {
+            taskId: task.id,
+            category: task.category,
+            estimatedHours: task.estimatedHours,
+            tags: task.tags,
+            completionType: 'full',
+          }
+        );
+
+        console.log(`🏆 バッジ進捗更新: ${task.title} 完了 (${task.badgeCategory})`);
+      } else if (progressDelta > 0) {
+        // 進捗更新をバッジシステムに記録
+        const impactFactor = progressDelta / 100; // 進捗率に応じた影響度
+        await comprehensiveBadgeService.recordActivity(
+          `タスク進捗: ${task.title} (${progressDelta.toFixed(1)}%増加)`,
+          task.badgeCategory,
+          impactFactor,
+          {
+            taskId: task.id,
+            progressDelta,
+            currentProgress: task.completionPercentage,
+            completionType: 'partial',
+          }
+        );
+      }
+
+      // 関連バッジの進捗確認
+      this.checkBadgeCompletions(task);
+    } catch (error) {
+      console.error('バッジシステム連携エラー:', error);
+    }
+  }
+
+  /**
+   * 🎯 バッジ完成確認
+   */
+  private checkBadgeCompletions(task: DevelopmentTask): void {
+    if (!task.linkedBadges) return;
+
+    task.linkedBadges.forEach((badgeId) => {
+      const badge = comprehensiveBadgeService.getBadge(badgeId);
+      if (badge && !badge.isCompleted) {
+        const progress = comprehensiveBadgeService.getBadgeProgress(badgeId);
+        if (progress && progress.progressPercentage >= 100) {
+          console.log(`🎉 バッジ完成: ${badge.name}`);
+          // 完成通知やサウンドなどの処理をここに追加可能
+        }
+      }
+    });
+  }
+
+  /**
+   * 📈 バッジ統合状況取得
+   */
+  getBadgeIntegrationStatus() {
+    if (!this.badgeIntegrationEnabled) {
+      return {
+        enabled: false,
+        relatedBadges: [],
+        overallBadgeProgress: 0,
+      };
+    }
+
+    try {
+      const allLinkedBadges = new Set<string>();
+      let totalBadgeProgress = 0;
+      let badgeCount = 0;
+
+      // 全タスクから関連バッジを収集
+      this.tasks.forEach((task) => {
+        if (task.linkedBadges) {
+          task.linkedBadges.forEach((badgeId) => allLinkedBadges.add(badgeId));
+        }
+      });
+
+      // バッジ進捗を集計
+      const badgeProgressData: Array<{
+        badgeId: string;
+        badgeName: string;
+        progress: number;
+        category: string;
+        relatedTasks: string[];
+      }> = [];
+
+      allLinkedBadges.forEach((badgeId) => {
+        const badge = comprehensiveBadgeService.getBadge(badgeId);
+        const progress = comprehensiveBadgeService.getBadgeProgress(badgeId);
+
+        if (badge && progress) {
+          const relatedTasks = this.tasks
+            .filter((task) => task.linkedBadges?.includes(badgeId))
+            .map((task) => task.title);
+
+          badgeProgressData.push({
+            badgeId,
+            badgeName: badge.name,
+            progress: progress.progressPercentage,
+            category: badge.category,
+            relatedTasks,
+          });
+
+          totalBadgeProgress += progress.progressPercentage;
+          badgeCount++;
+        }
+      });
+
+      const overallBadgeProgress = badgeCount > 0 ? totalBadgeProgress / badgeCount : 0;
+
+      return {
+        enabled: true,
+        relatedBadges: badgeProgressData,
+        overallBadgeProgress: Math.round(overallBadgeProgress),
+        totalBadges: badgeCount,
+        completedBadges: badgeProgressData.filter((b) => b.progress >= 100).length,
+      };
+    } catch (error) {
+      console.error('バッジ統合状況取得エラー:', error);
+      return {
+        enabled: false,
+        error: 'バッジシステムとの通信に失敗しました',
+        relatedBadges: [],
+        overallBadgeProgress: 0,
+      };
+    }
+  }
+
+  /**
+   * ⚙️ バッジ統合有効/無効切り替え
+   */
+  toggleBadgeIntegration(): boolean {
+    this.badgeIntegrationEnabled = !this.badgeIntegrationEnabled;
+    this.saveProgress();
+    console.log(`🏆 バッジ統合: ${this.badgeIntegrationEnabled ? '有効' : '無効'}`);
+    return this.badgeIntegrationEnabled;
+  }
+
+  /**
+   * 🔍 バッジ関連タスク検索
+   */
+  getTasksByBadge(badgeId: string): DevelopmentTask[] {
+    return this.tasks.filter((task) => task.linkedBadges?.includes(badgeId));
+  }
+
+  /**
+   * 📊 カテゴリ別バッジ進捗
+   */
+  getBadgeProgressByCategory(): Record<
+    string,
+    {
+      totalBadges: number;
+      completedBadges: number;
+      averageProgress: number;
+      relatedTasks: number;
+    }
+  > {
+    const categoryStats: Record<string, any> = {};
+
+    this.tasks.forEach((task) => {
+      if (task.badgeCategory && task.linkedBadges) {
+        const category = task.badgeCategory;
+        if (!categoryStats[category]) {
+          categoryStats[category] = {
+            totalBadges: 0,
+            completedBadges: 0,
+            totalProgress: 0,
+            relatedTasks: 0,
+          };
+        }
+
+        categoryStats[category].relatedTasks++;
+
+        task.linkedBadges.forEach((badgeId) => {
+          const progress = comprehensiveBadgeService.getBadgeProgress(badgeId);
+          if (progress) {
+            categoryStats[category].totalBadges++;
+            categoryStats[category].totalProgress += progress.progressPercentage;
+            if (progress.progressPercentage >= 100) {
+              categoryStats[category].completedBadges++;
+            }
+          }
+        });
+      }
+    });
+
+    // 平均進捗率を計算
+    Object.keys(categoryStats).forEach((category) => {
+      const stats = categoryStats[category];
+      stats.averageProgress =
+        stats.totalBadges > 0 ? Math.round(stats.totalProgress / stats.totalBadges) : 0;
+      delete stats.totalProgress; // 内部計算用フィールドを削除
+    });
+
+    return categoryStats;
   }
 }
 
