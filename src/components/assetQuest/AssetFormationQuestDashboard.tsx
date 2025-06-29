@@ -67,7 +67,9 @@ export const AssetFormationQuestDashboard: React.FC = () => {
   };
 
   const handleExpenseUpdate = async (expenses: number) => {
-    if (!questData) return;
+    if (!questData) {
+      return;
+    }
 
     const newSavings = questData.currentMonth.income - expenses;
     const newData = {

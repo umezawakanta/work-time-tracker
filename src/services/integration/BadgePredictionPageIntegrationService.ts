@@ -412,7 +412,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
    */
   private recalculatePrediction(badgeId: string): BadgePredictionData {
     const currentPrediction = this.badgePredictions.get(badgeId);
-    if (!currentPrediction) throw new Error(`Badge prediction not found: ${badgeId}`);
+    if (!currentPrediction) {
+      throw new Error(`Badge prediction not found: ${badgeId}`);
+    }
 
     // 関連ページアクティビティの分析
     const relatedActivities = this.getRelatedActivities(badgeId);
