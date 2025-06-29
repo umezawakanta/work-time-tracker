@@ -476,7 +476,7 @@ ${fixes.filter((fix) => fix.testRequired).length > 0 ? '✅ 自動テストが�
     const maintainabilityScore =
       autoFixableIssues.length > 0 ? (fixedIssues / autoFixableIssues.length) * 100 : 100;
 
-    const recommendations = this.generateRecommendations(
+    const recommendations = this.generateQualityRecommendations(
       remainingIssues,
       criticalIssues.length - fixedCritical.length
     );
@@ -493,9 +493,12 @@ ${fixes.filter((fix) => fix.testRequired).length > 0 ? '✅ 自動テストが�
   }
 
   /**
-   * 💡 改善推奨事項生成
+   * 💡 品質レポート推奨事項生成
    */
-  private generateRecommendations(remainingIssues: number, criticalRemaining: number): string[] {
+  private generateQualityRecommendations(
+    remainingIssues: number,
+    criticalRemaining: number
+  ): string[] {
     const recommendations: string[] = [];
 
     if (criticalRemaining > 0) {
