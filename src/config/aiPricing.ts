@@ -99,7 +99,7 @@ export function calculateConfidence(
   tokenCount: number,
   taskComplexity: 'simple' | 'medium' | 'complex' = 'medium'
 ): number {
-  const baseConfidence = {
+  const baseConfidence: Record<string, number> = {
     openai: 88,
     anthropic: 92,
     google: 85,
@@ -139,7 +139,7 @@ export function estimateProcessingTime(
   inputSize: number,
   taskType: string
 ): number {
-  const baseTime = {
+  const baseTime: Record<string, number> = {
     openai: 1200,
     anthropic: 1800,
     google: 800,
@@ -151,7 +151,7 @@ export function estimateProcessingTime(
     aiStudio: 1500,
   };
 
-  const taskMultiplier = {
+  const taskMultiplier: Record<string, number> = {
     code: 1.2,
     analysis: 1.5,
     creative: 1.1,
