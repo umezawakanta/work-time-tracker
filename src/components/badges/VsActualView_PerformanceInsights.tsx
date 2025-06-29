@@ -1,3 +1,62 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Lightbulb,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+} from 'lucide-react';
+
+interface PlannedVsActualData {
+  period: string;
+  periodType: 'weekly' | 'monthly' | 'quarterly';
+  planned: {
+    badges: number;
+    hours: number;
+    categories: Record<string, number>;
+    milestones: string[];
+  };
+  actual: {
+    badges: number;
+    hours: number;
+    categories: Record<string, number>;
+    completedMilestones: string[];
+  };
+  variance: {
+    badgeVariance: number;
+    hourVariance: number;
+    badgeVariancePercentage: number;
+    hourVariancePercentage: number;
+  };
+  performance: {
+    achievementRate: number;
+    efficiency: number;
+    qualityScore: number;
+    riskLevel: 'low' | 'medium' | 'high';
+  };
+}
+
+interface CategoryComparison {
+  categoryName: string;
+  performance: {
+    status: 'ahead' | 'on_track' | 'behind' | 'critical';
+  };
+}
+
+interface PerformanceInsight {
+  type: 'success' | 'warning' | 'critical' | 'info';
+  title: string;
+  description: string;
+  impact: 'high' | 'medium' | 'low';
+  actionItems: string[];
+  metrics?: { value: number; unit: string; trend: 'up' | 'down' | 'stable' };
+}
+
 // パフォーマンス洞察表示コンポーネント
 const generatePerformanceInsights = (
   data: PlannedVsActualData,
@@ -182,3 +241,5 @@ const renderPerformanceInsights = (insights: PerformanceInsight[]) => (
     </CardContent>
   </Card>
 );
+
+export { generatePerformanceInsights, renderPerformanceInsights };

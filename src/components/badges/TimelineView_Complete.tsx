@@ -1,5 +1,13 @@
+import React, { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Settings, Calendar, Activity, BarChart3 } from 'lucide-react';
+
 // 完全なバッジタイムラインビューレンダリング関数
-const renderTimelineView = () => {
+export const TimelineViewComplete: React.FC = () => {
   // インターフェース定義（再定義）
   interface TimelineBadge {
     id: string;

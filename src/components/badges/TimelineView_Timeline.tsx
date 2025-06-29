@@ -1,5 +1,64 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Calendar } from 'lucide-react';
+
+interface TimelineBadge {
+  id: string;
+  name: string;
+  emoji: string;
+  category: string;
+  status: string;
+  priority: string;
+  difficulty: string;
+  description: string;
+  plannedStartDate: string;
+  plannedEndDate: string;
+  actualStartDate?: string;
+  actualEndDate?: string;
+  progress: number;
+  confidence: number;
+  estimatedHours: number;
+  actualHours?: number;
+  dependencies: string[];
+  dependents: string[];
+  milestones: Array<{
+    id: string;
+    name: string;
+    targetDate: string;
+    isCompleted: boolean;
+    completedDate?: string;
+  }>;
+  risks: Array<{
+    type: string;
+    level: string;
+    description: string;
+    mitigation?: string;
+  }>;
+  tags: string[];
+}
+
+interface TimelineEvent {
+  // Add properties as needed
+}
+
+interface TimelineFilter {
+  categories: string[];
+  statuses: string[];
+  priorities: string[];
+  showDependencies: boolean;
+  showMilestones: boolean;
+  showRisks: boolean;
+}
+
+interface TimelineViewSettings {
+  viewMode: string;
+  groupBy: string;
+}
+
 // タイムライン表示コンポーネント
-const renderTimelineView = (
+export const renderTimelineView = (
   badges: TimelineBadge[],
   events: TimelineEvent[],
   filter: TimelineFilter,

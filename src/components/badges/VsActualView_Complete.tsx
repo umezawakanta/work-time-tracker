@@ -1,3 +1,16 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  TrendingUp,
+  Target,
+  Lightbulb,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+} from 'lucide-react';
+
 // 完全な予定vs実績ビューレンダリング関数
 const renderVsActualView = () => {
   // インターフェース定義（再定義）
