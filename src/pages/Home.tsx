@@ -288,7 +288,7 @@ const Home: React.FC = () => {
         change: { value: gamificationStats.weeklyXP, period: '今週獲得XP' },
       },
       {
-        title: 'ゲームタスク',
+        title: t('home.game_tasks'),
         value: `${gamificationStats.todayTasksCompleted}/${gamificationStats.todayTasksTotal}`,
         icon: <Gamepad2 className="h-6 w-6" />,
         color: 'text-emerald-600',
@@ -296,11 +296,14 @@ const Home: React.FC = () => {
         progress: Math.round(
           (gamificationStats.todayTasksCompleted / gamificationStats.todayTasksTotal) * 100
         ),
-        change: { value: gamificationStats.todayTasksCompleted >= 5 ? 15 : -5, period: '昨日比' },
+        change: {
+          value: gamificationStats.todayTasksCompleted >= 5 ? 15 : -5,
+          period: t('home.yesterday'),
+        },
       },
       {
-        title: 'ストリーク',
-        value: `${gamificationStats.streakDays}日`,
+        title: t('home.streak'),
+        value: `${gamificationStats.streakDays}${t('home.days')}`,
         icon: <Flame className="h-6 w-6" />,
         color: 'text-orange-600',
         bgColor: 'bg-orange-50',
@@ -308,7 +311,7 @@ const Home: React.FC = () => {
         change: { value: gamificationStats.streakDays >= 3 ? 10 : 0, period: '目標30日' },
       },
       {
-        title: 'バッジ獲得',
+        title: t('home.badges'),
         value: `${gamificationStats.unlockedBadges}/${gamificationStats.totalBadges}`,
         icon: <Crown className="h-6 w-6" />,
         color: 'text-purple-600',
@@ -593,7 +596,7 @@ const Home: React.FC = () => {
                 <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500">
                   <Trophy className="h-6 w-6 text-white" />
                 </div>
-                統合タスクダッシュボード
+                {t('home.integrated_task_dashboard')}
                 <Badge variant="outline" className="ml-2 bg-white/50">
                   レベル {gamificationStats.level}
                 </Badge>
@@ -606,7 +609,7 @@ const Home: React.FC = () => {
                   className="flex items-center gap-2 bg-white/70 hover:bg-white/90"
                 >
                   <Gamepad2 className="h-4 w-4" />
-                  ゲーム詳細
+                  {t('home.game')}
                 </Button>
                 <Button
                   variant="outline"
@@ -615,7 +618,7 @@ const Home: React.FC = () => {
                   className="flex items-center gap-2 bg-white/70 hover:bg-white/90"
                 >
                   <CheckSquare className="h-4 w-4" />
-                  ToDo管理
+                  {t('home.todo_management')}
                 </Button>
               </div>
             </div>
@@ -638,9 +641,10 @@ const Home: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Flame className="h-5 w-5 text-orange-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">ストリーク</p>
+                  <p className="text-sm font-medium text-slate-700">{t('home.streak')}</p>
                   <p className="text-lg font-bold text-orange-600">
-                    {gamificationStats.streakDays}日
+                    {gamificationStats.streakDays}
+                    {t('home.days')}
                   </p>
                 </div>
               </div>
@@ -648,7 +652,7 @@ const Home: React.FC = () => {
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">今日のタスク</p>
+                  <p className="text-sm font-medium text-slate-700">{t('home.today_tasks')}</p>
                   <p className="text-lg font-bold text-green-600">
                     {gamificationStats.todayTasksCompleted}/{gamificationStats.todayTasksTotal}
                   </p>
@@ -658,7 +662,7 @@ const Home: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Crown className="h-5 w-5 text-purple-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">バッジ獲得</p>
+                  <p className="text-sm font-medium text-slate-700">{t('home.badges')}</p>
                   <p className="text-lg font-bold text-purple-600">
                     {gamificationStats.unlockedBadges}/{gamificationStats.totalBadges}
                   </p>
@@ -757,7 +761,9 @@ const Home: React.FC = () => {
                         {gamificationStats.streakDays}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600">日ストリーク</p>
+                    <p className="text-xs text-gray-600">
+                      {t('home.days')} {t('home.streak')}
+                    </p>
                   </div>
 
                   <div className="text-center">
@@ -767,7 +773,7 @@ const Home: React.FC = () => {
                         {gamificationStats.unlockedBadges}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600">バッジ獲得</p>
+                    <p className="text-xs text-gray-600">{t('home.badges')}</p>
                   </div>
                 </div>
               </div>
@@ -783,9 +789,9 @@ const Home: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-blue-500" />
-              最近のアクティビティ
+              {t('home.recent_activity')}
               <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-600">
-                統合ビュー
+                {t('home.integrated_view')}
               </Badge>
             </CardTitle>
           </CardHeader>

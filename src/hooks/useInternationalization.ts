@@ -125,6 +125,25 @@ export interface TranslationDictionary {
     yesterday: string;
     monthly_average: string;
     quick_add: string;
+    game_tasks: string;
+    today_tasks: string;
+    work_time: string;
+    session: string;
+    standby: string;
+    work_content_optional: string;
+    start: string;
+    stop: string;
+    end: string;
+    asset_formation_quest: string;
+    asset_quest_description: string;
+    household_management: string;
+    dr_quest_bot: string;
+    asset_visualization: string;
+    integrated_task_dashboard: string;
+    game: string;
+    todo_management: string;
+    recent_activity: string;
+    integrated_view: string;
   };
 
   // ナビゲーション
@@ -278,6 +297,25 @@ const jaTranslations: TranslationDictionary = {
     yesterday: '昨日比',
     monthly_average: '今月平均',
     quick_add: 'クイック追加',
+    game_tasks: 'ゲームタスク',
+    today_tasks: '今日のタスク',
+    work_time: '作業時間',
+    session: 'セッション',
+    standby: '待機中',
+    work_content_optional: '作業内容 (任意)',
+    start: '開始',
+    stop: '停止',
+    end: '終了',
+    asset_formation_quest: '資産形成クエスト',
+    asset_quest_description: '毎月の収支管理で経験値を獲得し、資産形成の勇者になろう！',
+    household_management: '家計管理',
+    dr_quest_bot: 'Drクエットボット付き',
+    asset_visualization: '資産状況可視化',
+    integrated_task_dashboard: '統合タスクダッシュボード',
+    game: 'ゲーム',
+    todo_management: 'ToDo管理',
+    recent_activity: '最近のアクティビティ',
+    integrated_view: '統合ビュー',
   },
   navigation: {
     dashboard: 'ダッシュボード',
@@ -417,6 +455,26 @@ const enTranslations: TranslationDictionary = {
     yesterday: 'vs Yesterday',
     monthly_average: 'Monthly Avg',
     quick_add: 'Quick Add',
+    game_tasks: 'Game Tasks',
+    today_tasks: "Today's Tasks",
+    work_time: 'Work Time',
+    session: 'Session',
+    standby: 'Standby',
+    work_content_optional: 'Work Content (Optional)',
+    start: 'Start',
+    stop: 'Stop',
+    end: 'End',
+    asset_formation_quest: 'Asset Formation Quest',
+    asset_quest_description:
+      'Monthly income/expense management to gain XP and become an asset formation hero!',
+    household_management: 'Household Management',
+    dr_quest_bot: 'With Dr Quest Bot',
+    asset_visualization: 'Asset Status Visualization',
+    integrated_task_dashboard: 'Integrated Task Dashboard',
+    game: 'Game',
+    todo_management: 'ToDo Management',
+    recent_activity: 'Recent Activity',
+    integrated_view: 'Integrated View',
   },
   navigation: {
     dashboard: 'Dashboard',
@@ -556,6 +614,25 @@ const zhTranslations: TranslationDictionary = {
     yesterday: '与昨天相比',
     monthly_average: '月平均',
     quick_add: '快速添加',
+    game_tasks: '游戏任务',
+    today_tasks: '今日任务',
+    work_time: '工作时间',
+    session: '会话',
+    standby: '待机',
+    work_content_optional: '工作内容（可选）',
+    start: '开始',
+    stop: '停止',
+    end: '结束',
+    asset_formation_quest: '资产形成任务',
+    asset_quest_description: '通过月度收支管理获得经验值，成为资产形成英雄！',
+    household_management: '家庭管理',
+    dr_quest_bot: '带有博士任务机器人',
+    asset_visualization: '资产状态可视化',
+    integrated_task_dashboard: '集成任务仪表板',
+    game: '游戏',
+    todo_management: '待办事项管理',
+    recent_activity: '最近活动',
+    integrated_view: '集成视图',
   },
   navigation: {
     dashboard: '仪表板',
@@ -695,6 +772,25 @@ const koTranslations: TranslationDictionary = {
     yesterday: '어제 대비',
     monthly_average: '월 평균',
     quick_add: '빠른 추가',
+    game_tasks: '게임 작업',
+    today_tasks: '오늘의 작업',
+    work_time: '근무 시간',
+    session: '세션',
+    standby: '대기 중',
+    work_content_optional: '작업 내용 (선택사항)',
+    start: '시작',
+    stop: '중지',
+    end: '종료',
+    asset_formation_quest: '자산 형성 퀘스트',
+    asset_quest_description: '월별 수입/지출 관리로 경험치를 획득하고 자산 형성 영웅이 되어보세요!',
+    household_management: '가계 관리',
+    dr_quest_bot: '닥터 퀘스트 봇 포함',
+    asset_visualization: '자산 상태 시각화',
+    integrated_task_dashboard: '통합 작업 대시보드',
+    game: '게임',
+    todo_management: '할일 관리',
+    recent_activity: '최근 활동',
+    integrated_view: '통합 보기',
   },
   navigation: {
     dashboard: '대시보드',
