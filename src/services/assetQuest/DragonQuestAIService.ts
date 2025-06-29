@@ -75,29 +75,76 @@ class DragonQuestAIService {
     status: UserStatus,
     developerStatus?: DeveloperStatus
   ): Promise<ChatMessage | null> {
-    switch (actionType) {
-      case 'advice':
-        return this.generateAdviceMessage(status);
-      case 'status':
-        return this.generateStatusMessage(status);
-      case 'mission':
-        return this.generateMissionMessage(status);
-      case 'reward':
-        return this.generateRewardMessage(status);
-      case 'dev-status':
-        return developerStatus ? this.generateDevStatusMessage(developerStatus) : null;
-      case 'dev-tasks':
-        return developerStatus ? this.generateDevTasksMessage(developerStatus) : null;
-      case 'dev-tips':
-        return this.generateDevTipsMessage();
-      case 'site-completion':
-        return developerStatus ? this.generateSiteCompletionMessage(developerStatus) : null;
-      case 'badge-status':
-        return developerStatus ? this.generateBadgeStatusMessage(developerStatus) : null;
-      case 'badge-recommendations':
-        return developerStatus ? this.generateBadgeRecommendationsMessage(developerStatus) : null;
-      default:
-        return null;
+    console.log(`🤖 AIサービス: ${actionType} アクション処理開始`);
+    console.log('📋 開発者ステータス受信:', developerStatus);
+
+    try {
+      switch (actionType) {
+        case 'advice':
+          console.log('💡 アドバイスメッセージ生成中...');
+          return this.generateAdviceMessage(status);
+        case 'status':
+          console.log('📊 ステータスメッセージ生成中...');
+          return this.generateStatusMessage(status);
+        case 'mission':
+          console.log('🎯 ミッションメッセージ生成中...');
+          return this.generateMissionMessage(status);
+        case 'reward':
+          console.log('🎁 報酬メッセージ生成中...');
+          return this.generateRewardMessage(status);
+        case 'dev-status':
+          console.log('🔧 開発ステータスメッセージ生成中...');
+          if (!developerStatus) {
+            console.error('❌ 開発者ステータスが未定義です');
+            return {
+              id: this.generateId(),
+              character: 'sage',
+              message:
+                '申し訳ない！開発者ステータスの取得に失敗したようじゃ。\n\n開発者モードが正しく有効になっているか確認してくれ。',
+              timestamp: new Date(),
+              type: 'warning',
+            };
+          }
+          console.log('✅ 開発者ステータス確認OK、メッセージ生成開始');
+          return this.generateDevStatusMessage(developerStatus);
+        case 'dev-tasks':
+          console.log('📝 開発タスクメッセージ生成中...');
+          if (!developerStatus) {
+            console.error('❌ 開発者ステータスが未定義です (dev-tasks)');
+            return null;
+          }
+          return this.generateDevTasksMessage(developerStatus);
+        case 'dev-tips':
+          console.log('💡 開発のコツメッセージ生成中...');
+          return this.generateDevTipsMessage();
+        case 'site-completion':
+          console.log('🚀 サイト完成度メッセージ生成中...');
+          return developerStatus ? this.generateSiteCompletionMessage(developerStatus) : null;
+        case 'badge-status':
+          console.log('🏆 バッジステータスメッセージ生成中...');
+          return developerStatus ? this.generateBadgeStatusMessage(developerStatus) : null;
+        case 'badge-recommendations':
+          console.log('💎 バッジ推奨メッセージ生成中...');
+          return developerStatus ? this.generateBadgeRecommendationsMessage(developerStatus) : null;
+        default:
+          console.warn(`⚠️ 未知のアクションタイプ: ${actionType}`);
+          return null;
+      }
+    } catch (error) {
+      console.error(`❌ ${actionType} メッセージ生成エラー:`, error);
+      return {
+        id: this.generateId(),
+        character: 'sage',
+        message: `申し訳ない！「${actionType}」の処理中にエラーが発生したようじゃ。\n\nエラー詳細: ${error instanceof Error ? error.message : 'Unknown error'}\n\n開発者コンソールで詳細を確認できるぞ。`,
+        timestamp: new Date(),
+        type: 'warning',
+        actions: [
+          {
+            label: '再試行',
+            action: () => console.log('Retry requested'),
+          },
+        ],
+      };
     }
   }
 
@@ -575,22 +622,70 @@ class DragonQuestAIService {
    * 開発ステータスメッセージ
    */
   private generateDevStatusMessage(developerStatus: DeveloperStatus): ChatMessage {
-    const message =
-      `開発状況を報告するぞ！\n\n` +
-      `サイト完成度: ${developerStatus.siteCompletion}%\n` +
-      `優先タスク: ${developerStatus.priorityTasksCount}個\n` +
-      `テストカバレッジ: ${developerStatus.testCoverage}%\n` +
-      `デプロイ準備: ${developerStatus.deploymentReady ? '完了' : '未完了'}\n` +
-      `最終コミット: ${developerStatus.lastCommitDays}日前\n\n` +
-      `${developerStatus.siteCompletion >= 80 ? '素晴らしい進捗じゃ！' : 'もう少しで完成じゃな！'}`;
+    try {
+      console.log('🏗️ 開発ステータスメッセージ生成開始...');
+      console.log('📊 受信した開発者ステータス:', {
+        siteCompletion: developerStatus.siteCompletion,
+        priorityTasksCount: developerStatus.priorityTasksCount,
+        testCoverage: developerStatus.testCoverage,
+        deploymentReady: developerStatus.deploymentReady,
+        lastCommitDays: developerStatus.lastCommitDays,
+        badgeProgress: developerStatus.badgeProgress ? 'あり' : 'なし',
+      });
 
-    return {
-      id: this.generateId(),
-      character: 'architect',
-      message,
-      timestamp: new Date(),
-      type: 'development',
-    };
+      let message =
+        `開発状況を報告するぞ！\n\n` +
+        `サイト完成度: ${developerStatus.siteCompletion}%\n` +
+        `優先タスク: ${developerStatus.priorityTasksCount}個\n` +
+        `テストカバレッジ: ${developerStatus.testCoverage}%\n` +
+        `デプロイ準備: ${developerStatus.deploymentReady ? '完了' : '未完了'}\n` +
+        `最終コミット: ${developerStatus.lastCommitDays}日前\n\n` +
+        `${developerStatus.siteCompletion >= 80 ? '素晴らしい進捗じゃ！' : 'もう少しで完成じゃな！'}`;
+
+      // バッジ情報がある場合は追加
+      if (developerStatus.badgeProgress?.enabled) {
+        const badgeInfo = `\n🏆 バッジ進捗: ${developerStatus.badgeProgress.completedBadges}/${developerStatus.badgeProgress.totalBadges}個 (${developerStatus.badgeProgress.overallBadgeProgress}%)`;
+        message = message + badgeInfo;
+      }
+
+      const result = {
+        id: this.generateId(),
+        character: 'architect' as const,
+        message,
+        timestamp: new Date(),
+        type: 'development' as const,
+        actions: [
+          {
+            label: '詳細を確認',
+            action: () => console.log('開発詳細確認'),
+          },
+          {
+            label: 'タスクを見る',
+            action: () => console.log('タスク一覧確認'),
+          },
+        ],
+      };
+
+      console.log('✅ 開発ステータスメッセージ生成完了:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ 開発ステータスメッセージ生成エラー:', error);
+
+      // エラー時のフォールバックメッセージ
+      return {
+        id: this.generateId(),
+        character: 'sage',
+        message: `申し訳ない！開発状況の取得中にエラーが発生したようじゃ。\n\nエラー: ${error instanceof Error ? error.message : 'Unknown error'}\n\n少し時間をおいて再試行してくれ。`,
+        timestamp: new Date(),
+        type: 'warning',
+        actions: [
+          {
+            label: '再試行',
+            action: () => console.log('開発ステータス再試行'),
+          },
+        ],
+      };
+    }
   }
 
   /**

@@ -219,6 +219,23 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const getDeveloperStatus = () => {
     try {
       console.log('🔍 開発者ステータス取得開始...');
+
+      // 緊急回避：バッジ統合が原因の場合はスキップ
+      const emergencyMode = localStorage.getItem('dev-emergency-mode') === 'true';
+      if (emergencyMode) {
+        console.log('🚨 緊急モード: バッジ統合なしで動作');
+        return {
+          siteCompletion: 75,
+          priorityTasksCount: 3,
+          criticalIssuesCount: 1,
+          testCoverage: 60,
+          deploymentReady: false,
+          lastCommitDays: 2,
+          badgeProgress: undefined,
+        };
+      }
+
+      console.log('📊 DevelopmentTaskService呼び出し中...');
       const dashboardData = developmentTaskService.getDeveloperDashboardData();
       console.log('📊 ダッシュボードデータ:', dashboardData);
 
@@ -328,9 +345,36 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         const debugMessage: ChatMessage = {
           id: Date.now().toString(),
           character: 'sage',
-          message: `デバッグ: ${actionType} アクションが実行されましたが、AIからの応答がありませんでした。\n\n開発者コンソールを確認してください。`,
+          message: `デバッグ: ${actionType} アクションが実行されましたが、AIからの応答がありませんでした。\n\n開発者コンソールを確認してください。\n\n問題が続く場合は、以下をコンソールで実行してください：\nlocalStorage.setItem('dev-disable-badges', 'true'); location.reload();`,
           timestamp: new Date(),
           type: 'warning',
+          actions: [
+            {
+              label: '緊急モード有効化',
+              action: () => {
+                localStorage.setItem('dev-emergency-mode', 'true');
+                console.log('🚨 緊急モードを有効化しました。ページをリロードします...');
+                window.location.reload();
+              },
+            },
+            {
+              label: 'バッジ統合を無効化',
+              action: () => {
+                localStorage.setItem('dev-disable-badges', 'true');
+                window.location.reload();
+              },
+            },
+            {
+              label: 'コンソールログを表示',
+              action: () => {
+                console.log('=== 現在のデバッグ状況 ===');
+                console.log('開発者モード:', isDeveloperMode);
+                console.log('バッジ統合状態:', localStorage.getItem('dev-disable-badges'));
+                console.log('緊急モード状態:', localStorage.getItem('dev-emergency-mode'));
+                console.log('現在時刻:', new Date().toISOString());
+              },
+            },
+          ],
         };
         addMessage(debugMessage);
       }
