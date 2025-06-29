@@ -14,16 +14,23 @@ import {
   VolumeX,
   Music,
   Headphones,
+  Code,
+  Settings,
+  Bug,
+  Lightbulb,
+  PieChart,
+  Wrench,
 } from 'lucide-react';
 import { dragonQuestAIService } from '@/services/assetQuest/DragonQuestAIService';
+import { developmentTaskService } from '@/services/assetQuest/DevelopmentTaskService';
 import { soundManager } from '@/utils/soundManager';
 
 interface ChatMessage {
   id: string;
-  character: 'king' | 'sage' | 'merchant' | 'guard';
+  character: 'king' | 'sage' | 'merchant' | 'guard' | 'architect' | 'tester';
   message: string;
   timestamp: Date;
-  type: 'advice' | 'mission' | 'celebration' | 'warning';
+  type: 'advice' | 'mission' | 'celebration' | 'warning' | 'development' | 'technical';
   actions?: Array<{
     label: string;
     action: () => void;
@@ -53,6 +60,8 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const [textIndex, setTextIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(soundManager.isSoundMuted());
   const [isBgmMuted, setIsBgmMuted] = useState(soundManager.isBgmSoundMuted());
+  const [isDeveloperMode, setIsDeveloperMode] = useState(false);
+  const [showDevActions, setShowDevActions] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastSoundTime = useRef<number>(0);
 
@@ -60,7 +69,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     initializeBot();
     // サウンドマネージャーを初期化
     soundManager.initialize();
-  }, [currentLevel, questCompleted, streakDays]);
+  }, [currentLevel, questCompleted, streakDays, isDeveloperMode]);
 
   useEffect(() => {
     if (currentMessage && isTyping) {
@@ -93,13 +102,19 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   };
 
   const initializeBot = async () => {
-    const advice = await dragonQuestAIService.getNextAdvice({
+    // 開発者モードを設定
+    dragonQuestAIService.setDeveloperMode(isDeveloperMode);
+
+    const userStatus = {
       level: currentLevel,
       totalAssets,
       savingsRate,
       questCompleted,
       streakDays,
-    });
+    };
+
+    const developerStatus = isDeveloperMode ? getDeveloperStatus() : undefined;
+    const advice = await dragonQuestAIService.getNextAdvice(userStatus, developerStatus);
 
     if (advice) {
       addMessage(advice);
@@ -133,6 +148,10 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         return '👨‍💼';
       case 'guard':
         return '🛡️';
+      case 'architect':
+        return '🏗️';
+      case 'tester':
+        return '🧪';
       default:
         return '👑';
     }
@@ -148,6 +167,10 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         return '商人';
       case 'guard':
         return '衛兵';
+      case 'architect':
+        return 'アーキテクト';
+      case 'tester':
+        return 'テスター';
       default:
         return '王様';
     }
@@ -163,25 +186,73 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         return 'from-yellow-500 to-yellow-700';
       case 'warning':
         return 'from-red-500 to-red-700';
+      case 'development':
+        return 'from-purple-500 to-purple-700';
+      case 'technical':
+        return 'from-indigo-500 to-indigo-700';
       default:
         return 'from-blue-500 to-blue-700';
     }
+  };
+
+  const getDeveloperStatus = () => {
+    const dashboardData = developmentTaskService.getDeveloperDashboardData();
+    return {
+      siteCompletion: dashboardData.metrics.overallCompletion,
+      priorityTasksCount: dashboardData.priorityTasks.length,
+      criticalIssuesCount: dashboardData.metrics.criticalTasksRemaining,
+      testCoverage: dashboardData.metrics.categoryBreakdown.testing || 45,
+      deploymentReady: dashboardData.metrics.categoryBreakdown.deployment >= 80,
+      lastCommitDays: Math.floor(Math.random() * 5), // サンプルデータ
+    };
   };
 
   const handleQuickAction = async (actionType: string) => {
     // ボタンクリック音を再生
     soundManager.playButtonSound();
 
-    const response = await dragonQuestAIService.handleQuickAction(actionType, {
+    const userStatus = {
       level: currentLevel,
       totalAssets,
       savingsRate,
       questCompleted,
       streakDays,
-    });
+    };
+
+    const developerStatus = isDeveloperMode ? getDeveloperStatus() : undefined;
+    const response = await dragonQuestAIService.handleQuickAction(
+      actionType,
+      userStatus,
+      developerStatus
+    );
 
     if (response) {
       addMessage(response);
+    }
+  };
+
+  const toggleDeveloperMode = () => {
+    setIsDeveloperMode(!isDeveloperMode);
+    dragonQuestAIService.setDeveloperMode(!isDeveloperMode);
+    soundManager.playButtonSound();
+
+    // 開発者モード切り替え時のメッセージ
+    if (!isDeveloperMode) {
+      const welcomeMessage: ChatMessage = {
+        id: Date.now().toString(),
+        character: 'architect',
+        message:
+          '開発者モードが有効になりました！\n\nサイト完成に向けたタスクやアドバイスをお手伝いします。\n\n開発の進捗を一緒に管理していきましょう！',
+        timestamp: new Date(),
+        type: 'development',
+        actions: [
+          {
+            label: '開発状況を確認',
+            action: () => handleQuickAction('dev-status'),
+          },
+        ],
+      };
+      setTimeout(() => addMessage(welcomeMessage), 500);
     }
   };
 
@@ -225,6 +296,12 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-bounce">
           <span className="text-white text-xs font-bold">!</span>
         </div>
+        {/* 開発者モードインジケーター */}
+        {isDeveloperMode && (
+          <div className="absolute -top-2 -left-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center animate-pulse">
+            <Code className="w-3 h-3 text-white" />
+          </div>
+        )}
         {/* BGM状態インジケーター */}
         <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center border-2 border-blue-600">
           {isBgmMuted ? (
@@ -256,6 +333,16 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
               <h3 className="font-bold text-lg">🏰 王国の案内</h3>
             </div>
             <div className="flex items-center gap-1">
+              {/* 開発者モード切り替えボタン */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleDeveloperMode}
+                className={`text-white hover:bg-blue-600 p-1 ${isDeveloperMode ? 'bg-purple-600' : ''}`}
+                title={isDeveloperMode ? '開発者モードを無効にする' : '開発者モードを有効にする'}
+              >
+                <Code className="w-4 h-4" />
+              </Button>
               {/* BGM切り替えボタン */}
               <Button
                 variant="ghost"
@@ -343,44 +430,144 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
 
         {/* クイックアクション */}
         <div className="p-4 bg-gradient-to-r from-blue-100 to-indigo-100 border-t-4 border-blue-800">
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              onClick={() => handleQuickAction('advice')}
-              variant="outline"
-              size="sm"
-              className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"
-            >
-              <Sparkles className="w-4 h-4 mr-1" />
-              助言を求む
-            </Button>
-            <Button
-              onClick={() => handleQuickAction('status')}
-              variant="outline"
-              size="sm"
-              className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
-            >
-              <TrendingUp className="w-4 h-4 mr-1" />
-              現状確認
-            </Button>
-            <Button
-              onClick={() => handleQuickAction('mission')}
-              variant="outline"
-              size="sm"
-              className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
-            >
-              <Target className="w-4 h-4 mr-1" />
-              新たな使命
-            </Button>
-            <Button
-              onClick={() => handleQuickAction('reward')}
-              variant="outline"
-              size="sm"
-              className="bg-white border-2 border-yellow-300 hover:bg-yellow-50 text-yellow-800"
-            >
-              <Coins className="w-4 h-4 mr-1" />
-              報酬確認
-            </Button>
-          </div>
+          {!isDeveloperMode ? (
+            // 通常モードのアクション
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                onClick={() => handleQuickAction('advice')}
+                variant="outline"
+                size="sm"
+                className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                助言を求む
+              </Button>
+              <Button
+                onClick={() => handleQuickAction('status')}
+                variant="outline"
+                size="sm"
+                className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
+              >
+                <TrendingUp className="w-4 h-4 mr-1" />
+                現状確認
+              </Button>
+              <Button
+                onClick={() => handleQuickAction('mission')}
+                variant="outline"
+                size="sm"
+                className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
+              >
+                <Target className="w-4 h-4 mr-1" />
+                新たな使命
+              </Button>
+              <Button
+                onClick={() => handleQuickAction('reward')}
+                variant="outline"
+                size="sm"
+                className="bg-white border-2 border-yellow-300 hover:bg-yellow-50 text-yellow-800"
+              >
+                <Coins className="w-4 h-4 mr-1" />
+                報酬確認
+              </Button>
+            </div>
+          ) : (
+            // 開発者モードのアクション
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 mb-2">
+                <Code className="w-4 h-4 text-purple-600" />
+                <span className="text-sm font-medium text-purple-800">開発者コマンド</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDevActions(!showDevActions)}
+                  className="ml-auto p-1"
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${showDevActions ? 'rotate-180' : ''}`}
+                  />
+                </Button>
+              </div>
+
+              {showDevActions && (
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => handleQuickAction('dev-status')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
+                  >
+                    <PieChart className="w-4 h-4 mr-1" />
+                    開発状況
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('dev-tasks')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-indigo-300 hover:bg-indigo-50 text-indigo-800"
+                  >
+                    <Bug className="w-4 h-4 mr-1" />
+                    タスク確認
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('dev-tips')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-cyan-300 hover:bg-cyan-50 text-cyan-800"
+                  >
+                    <Lightbulb className="w-4 h-4 mr-1" />
+                    開発のコツ
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('site-completion')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-teal-300 hover:bg-teal-50 text-teal-800"
+                  >
+                    <Wrench className="w-4 h-4 mr-1" />
+                    完成度確認
+                  </Button>
+                </div>
+              )}
+
+              {/* 通常アクションも表示（縮小版） */}
+              <div className="border-t pt-2 mt-2">
+                <div className="grid grid-cols-4 gap-1">
+                  <Button
+                    onClick={() => handleQuickAction('advice')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs p-1"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('status')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs p-1"
+                  >
+                    <TrendingUp className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('mission')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs p-1"
+                  >
+                    <Target className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('reward')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs p-1"
+                  >
+                    <Coins className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     </div>

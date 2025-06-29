@@ -6,12 +6,21 @@ interface UserStatus {
   streakDays: number;
 }
 
+interface DeveloperStatus {
+  siteCompletion: number;
+  priorityTasksCount: number;
+  criticalIssuesCount: number;
+  testCoverage: number;
+  deploymentReady: boolean;
+  lastCommitDays: number;
+}
+
 interface ChatMessage {
   id: string;
-  character: 'king' | 'sage' | 'merchant' | 'guard';
+  character: 'king' | 'sage' | 'merchant' | 'guard' | 'architect' | 'tester';
   message: string;
   timestamp: Date;
-  type: 'advice' | 'mission' | 'celebration' | 'warning';
+  type: 'advice' | 'mission' | 'celebration' | 'warning' | 'development' | 'technical';
   actions?: Array<{
     label: string;
     action: () => void;
@@ -21,8 +30,26 @@ interface ChatMessage {
 
 class DragonQuestAIService {
   private messageHistory: ChatMessage[] = [];
+  private isDeveloperMode: boolean = false;
 
-  async getNextAdvice(status: UserStatus): Promise<ChatMessage | null> {
+  // 開発者モードの切り替え
+  setDeveloperMode(enabled: boolean): void {
+    this.isDeveloperMode = enabled;
+  }
+
+  async getNextAdvice(
+    status: UserStatus,
+    developerStatus?: DeveloperStatus
+  ): Promise<ChatMessage | null> {
+    // 開発者モードの場合は開発タスクのアドバイスも考慮
+    if (this.isDeveloperMode && developerStatus) {
+      const devAdvice = this.generateDeveloperAdvice(developerStatus);
+      if (devAdvice) {
+        this.messageHistory.push(devAdvice);
+        return devAdvice;
+      }
+    }
+
     const advice = this.generateContextualAdvice(status);
     if (advice) {
       this.messageHistory.push(advice);
@@ -31,7 +58,11 @@ class DragonQuestAIService {
     return null;
   }
 
-  async handleQuickAction(actionType: string, status: UserStatus): Promise<ChatMessage | null> {
+  async handleQuickAction(
+    actionType: string,
+    status: UserStatus,
+    developerStatus?: DeveloperStatus
+  ): Promise<ChatMessage | null> {
     switch (actionType) {
       case 'advice':
         return this.generateAdviceMessage(status);
@@ -41,6 +72,14 @@ class DragonQuestAIService {
         return this.generateMissionMessage(status);
       case 'reward':
         return this.generateRewardMessage(status);
+      case 'dev-status':
+        return developerStatus ? this.generateDevStatusMessage(developerStatus) : null;
+      case 'dev-tasks':
+        return developerStatus ? this.generateDevTasksMessage(developerStatus) : null;
+      case 'dev-tips':
+        return this.generateDevTipsMessage();
+      case 'site-completion':
+        return developerStatus ? this.generateSiteCompletionMessage(developerStatus) : null;
       default:
         return null;
     }
@@ -329,6 +368,318 @@ class DragonQuestAIService {
 
   private generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  // 🔧 開発者向けメソッド
+
+  /**
+   * 開発者向けのアドバイス生成
+   */
+  private generateDeveloperAdvice(developerStatus: DeveloperStatus): ChatMessage | null {
+    // 緊急度の高い順にチェック
+    if (developerStatus.criticalIssuesCount > 0) {
+      return this.generateCriticalIssueWarning(developerStatus);
+    }
+
+    if (developerStatus.siteCompletion < 70) {
+      return this.generateCompletionMotivation(developerStatus);
+    }
+
+    if (developerStatus.testCoverage < 60) {
+      return this.generateTestingAdvice(developerStatus);
+    }
+
+    if (developerStatus.priorityTasksCount > 3) {
+      return this.generateTaskPriorityAdvice(developerStatus);
+    }
+
+    if (developerStatus.lastCommitDays > 2) {
+      return this.generateCommitReminder(developerStatus);
+    }
+
+    return null;
+  }
+
+  /**
+   * 致命的な問題の警告
+   */
+  private generateCriticalIssueWarning(developerStatus: DeveloperStatus): ChatMessage {
+    const messages = [
+      `勇者よ！緊急事態じゃ！${developerStatus.criticalIssuesCount}個の致命的な問題が発生しているぞ！`,
+      `すぐに対処しないと、サイト全体に影響が出てしまうかもしれん！`,
+      `まずは最重要な問題から解決するのじゃ！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'architect',
+      message: this.getRandomMessage(messages),
+      timestamp: new Date(),
+      type: 'warning',
+      actions: [
+        {
+          label: '問題を確認',
+          action: () => console.log('Check critical issues'),
+        },
+        {
+          label: '修正を開始',
+          action: () => console.log('Start fixing'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 完成度向上の励まし
+   */
+  private generateCompletionMotivation(developerStatus: DeveloperStatus): ChatMessage {
+    const messages = [
+      `現在のサイト完成度は${developerStatus.siteCompletion}%じゃな！`,
+      `着実に進歩しているが、まだやるべきことがあるぞ！`,
+      `優先度の高いタスクから取り組んで、完成度を上げていこう！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'king',
+      message: this.getRandomMessage(messages),
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: '優先タスクを確認',
+          action: () => console.log('Check priority tasks'),
+        },
+        {
+          label: '進捗を更新',
+          action: () => console.log('Update progress'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * テストカバレッジ向上のアドバイス
+   */
+  private generateTestingAdvice(developerStatus: DeveloperStatus): ChatMessage {
+    const messages = [
+      `テストカバレッジが${developerStatus.testCoverage}%じゃな...`,
+      `品質向上のため、もう少しテストを充実させた方が良いぞ！`,
+      `バグのない安定したサイトにするため、テストは欠かせんのじゃ！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'tester',
+      message: this.getRandomMessage(messages),
+      timestamp: new Date(),
+      type: 'technical',
+      actions: [
+        {
+          label: 'テスト作成',
+          action: () => console.log('Create tests'),
+        },
+        {
+          label: 'カバレッジ確認',
+          action: () => console.log('Check coverage'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * タスク優先度のアドバイス
+   */
+  private generateTaskPriorityAdvice(developerStatus: DeveloperStatus): ChatMessage {
+    const messages = [
+      `${developerStatus.priorityTasksCount}個の優先タスクが溜まっているぞ！`,
+      `一つずつ着実に片付けていこう！`,
+      `重要なものから順番に取り組むのが賢明じゃ！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'sage',
+      message: this.getRandomMessage(messages),
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: 'タスク一覧を見る',
+          action: () => console.log('View task list'),
+        },
+        {
+          label: '今日やることを決める',
+          action: () => console.log('Plan today'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * コミット促進メッセージ
+   */
+  private generateCommitReminder(developerStatus: DeveloperStatus): ChatMessage {
+    const messages = [
+      `最後のコミットから${developerStatus.lastCommitDays}日経っているぞ！`,
+      `進捗をこまめに保存することが大切じゃ！`,
+      `小さな変更でも定期的にコミットするのじゃ！`,
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'guard',
+      message: this.getRandomMessage(messages),
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: '変更をコミット',
+          action: () => console.log('Commit changes'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 開発ステータスメッセージ
+   */
+  private generateDevStatusMessage(developerStatus: DeveloperStatus): ChatMessage {
+    const message =
+      `開発状況を報告するぞ！\n\n` +
+      `サイト完成度: ${developerStatus.siteCompletion}%\n` +
+      `優先タスク: ${developerStatus.priorityTasksCount}個\n` +
+      `テストカバレッジ: ${developerStatus.testCoverage}%\n` +
+      `デプロイ準備: ${developerStatus.deploymentReady ? '完了' : '未完了'}\n` +
+      `最終コミット: ${developerStatus.lastCommitDays}日前\n\n` +
+      `${developerStatus.siteCompletion >= 80 ? '素晴らしい進捗じゃ！' : 'もう少しで完成じゃな！'}`;
+
+    return {
+      id: this.generateId(),
+      character: 'architect',
+      message,
+      timestamp: new Date(),
+      type: 'development',
+    };
+  }
+
+  /**
+   * 開発タスクメッセージ
+   */
+  private generateDevTasksMessage(developerStatus: DeveloperStatus): ChatMessage {
+    const taskAdvice = [
+      '今日取り組むべきタスクを教えよう！',
+      'まずは優先度の高いものから片付けるのじゃ！',
+      '小さなタスクから始めて、勢いをつけていこう！',
+    ];
+
+    const recommendations = [];
+    if (developerStatus.criticalIssuesCount > 0) {
+      recommendations.push(`🚨 緊急: ${developerStatus.criticalIssuesCount}個の致命的問題`);
+    }
+    if (developerStatus.testCoverage < 70) {
+      recommendations.push('🧪 テストカバレッジの向上');
+    }
+    if (!developerStatus.deploymentReady) {
+      recommendations.push('🚀 デプロイメント準備');
+    }
+
+    const message =
+      `${this.getRandomMessage(taskAdvice)}\n\n` +
+      `今日の推奨タスク:\n${recommendations.map((r) => `• ${r}`).join('\n')}\n\n` +
+      '一つずつ確実にクリアしていこう！';
+
+    return {
+      id: this.generateId(),
+      character: 'sage',
+      message,
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: 'タスクを開始',
+          action: () => console.log('Start task'),
+        },
+        {
+          label: '進捗を記録',
+          action: () => console.log('Record progress'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * 開発のコツメッセージ
+   */
+  private generateDevTipsMessage(): ChatMessage {
+    const tips = [
+      '💡 小さなタスクに分割して、達成感を積み重ねよう！',
+      '🔄 定期的なリファクタリングで技術的負債を減らそう！',
+      '📝 コメントとドキュメントを忘れずに書こう！',
+      '🧪 テストファーストで品質の高いコードにしよう！',
+      '⚡ パフォーマンスを意識した実装を心がけよう！',
+      '🔒 セキュリティの観点も忘れずにチェックしよう！',
+      '📱 レスポンシブデザインでどのデバイスでも快適に！',
+      '♿ アクセシビリティに配慮して、誰でも使えるサイトに！',
+    ];
+
+    return {
+      id: this.generateId(),
+      character: 'architect',
+      message: `開発のコツを教えよう！\n\n${this.getRandomMessage(tips)}\n\n継続的な改善が成功の鍵じゃ！`,
+      timestamp: new Date(),
+      type: 'technical',
+      actions: [
+        {
+          label: '他のコツも見る',
+          action: () => console.log('More tips'),
+        },
+        {
+          label: '実践してみる',
+          action: () => console.log('Try it'),
+        },
+      ],
+    };
+  }
+
+  /**
+   * サイト完成度メッセージ
+   */
+  private generateSiteCompletionMessage(developerStatus: DeveloperStatus): ChatMessage {
+    let message = '';
+    let character: ChatMessage['character'] = 'king';
+
+    if (developerStatus.siteCompletion >= 90) {
+      message = `素晴らしい！サイト完成度${developerStatus.siteCompletion}%とは、もうほぼ完成じゃ！\n\n最後の仕上げを頑張るのじゃ！リリースまであと少しぞ！`;
+      character = 'king';
+    } else if (developerStatus.siteCompletion >= 70) {
+      message = `良いペースじゃ！完成度${developerStatus.siteCompletion}%まで来たな！\n\n残りの機能も着実に実装していこう！`;
+      character = 'sage';
+    } else if (developerStatus.siteCompletion >= 50) {
+      message = `順調に進んでいるな！完成度${developerStatus.siteCompletion}%まで到達した！\n\nこの調子で開発を続けるのじゃ！`;
+      character = 'merchant';
+    } else {
+      message = `開発はまだ始まったばかりじゃが、${developerStatus.siteCompletion}%の進捗は立派じゃ！\n\n一歩ずつ着実に進めていこう！`;
+      character = 'guard';
+    }
+
+    return {
+      id: this.generateId(),
+      character,
+      message,
+      timestamp: new Date(),
+      type: 'development',
+      actions: [
+        {
+          label: '次の目標を設定',
+          action: () => console.log('Set next goal'),
+        },
+        {
+          label: '進捗を共有',
+          action: () => console.log('Share progress'),
+        },
+      ],
+    };
   }
 }
 
