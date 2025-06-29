@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/78</span>
+                <span class='fraction'>0/91</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/69</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
@@ -351,19 +351,19 @@
 <a name='L286'></a><a href='#L286'>286</a>
 <a name='L287'></a><a href='#L287'>287</a>
 <a name='L288'></a><a href='#L288'>288</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -636,21 +636,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">﻿// src/components/features/wbs/WBSManager.tsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, FileDown, ChevronRight, Calendar, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import WBSService from '@/services/wbs/WBSService';
+<span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, useCallback } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';</span>
+<span class="cstat-no" title="statement not covered" >import { Plus, FileDown, ChevronRight, Calendar, AlertCircle } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { useAuth } from '@/hooks/useAuth';</span>
+<span class="cstat-no" title="statement not covered" >import WBSService from '@/services/wbs/WBSService';</span>
 import { WBSNode, WBSProject } from '@/types/wbs';
-import WBSGanttChart from './WBSGanttChart';
-import WBSTreeView from './WBSTreeView';
-import WBSNodeDialog from './WBSNodeDialog';
-import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+<span class="cstat-no" title="statement not covered" >import WBSGanttChart from './WBSGanttChart';</span>
+<span class="cstat-no" title="statement not covered" >import WBSTreeView from './WBSTreeView';</span>
+<span class="cstat-no" title="statement not covered" >import WBSNodeDialog from './WBSNodeDialog';</span>
+<span class="cstat-no" title="statement not covered" >import { format } from 'date-fns';</span>
+<span class="cstat-no" title="statement not covered" >import { ja } from 'date-fns/locale';</span>
 &nbsp;
 const WBSManager: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
   const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
@@ -923,7 +923,7 @@ const WBSManager: React.FC = <span class="cstat-no" title="statement not covered
   );
 };
 &nbsp;
-export default WBSManager;
+<span class="cstat-no" title="statement not covered" >export default WBSManager;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -931,7 +931,7 @@ export default WBSManager;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

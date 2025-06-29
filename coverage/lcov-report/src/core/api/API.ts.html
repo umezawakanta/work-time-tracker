@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/109</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/89</span>
+                <span class='fraction'>0/102</span>
             </div>
         
             
@@ -417,19 +417,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -749,7 +749,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -759,7 +759,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -767,19 +767,19 @@
  * API
  * シンプルなAPI使用のためのファサード
  */
-import ApiClient from './client/ApiClient';
-import ApiClientHttpMethods from './client/ApiClientHttpMethods';
+<span class="cstat-no" title="statement not covered" >import ApiClient from './client/ApiClient';</span>
+<span class="cstat-no" title="statement not covered" >import ApiClientHttpMethods from './client/ApiClientHttpMethods';</span>
 import { ApiResponse, RequestConfig } from './client/ApiTypes';
 import { ApiClientConfig } from './client/ApiClientConfig';
-import NetworkMonitor from './network/NetworkMonitor';
-import SubscriptionService from './subscription/SubscriptionService';
-import { EventSourceManager } from './network/EventSourceManager';
-import { OfflineRequestManager } from './network/OfflineRequestManager';
-import { ApiLogger } from './tracking/ApiLogger';
-import { PerformanceTracker } from './tracking/PerformanceTracker';
-import { AIFeatureManager } from '../ai/AIFeatureManager';
-import { AnalyticsManager } from './tracking/AnalyticsManager';
-import { SecurityManager } from './security/SecurityManager';
+<span class="cstat-no" title="statement not covered" >import NetworkMonitor from './network/NetworkMonitor';</span>
+<span class="cstat-no" title="statement not covered" >import SubscriptionService from './subscription/SubscriptionService';</span>
+<span class="cstat-no" title="statement not covered" >import { EventSourceManager } from './network/EventSourceManager';</span>
+<span class="cstat-no" title="statement not covered" >import { OfflineRequestManager } from './network/OfflineRequestManager';</span>
+<span class="cstat-no" title="statement not covered" >import { ApiLogger } from './tracking/ApiLogger';</span>
+<span class="cstat-no" title="statement not covered" >import { PerformanceTracker } from './tracking/PerformanceTracker';</span>
+<span class="cstat-no" title="statement not covered" >import { AIFeatureManager } from '../ai/AIFeatureManager';</span>
+<span class="cstat-no" title="statement not covered" >import { AnalyticsManager } from './tracking/AnalyticsManager';</span>
+<span class="cstat-no" title="statement not covered" >import { SecurityManager } from './security/SecurityManager';</span>
 &nbsp;
 // 型定義のインポート
 import type { BatchRequestItem } from './batch/BatchTypes';
@@ -1099,7 +1099,7 @@ class API {
 }
 &nbsp;
 // サブコンポーネントのメソッドをインポート
-import { applyExtensionMethods } from './extensions/ApiExtensions';
+<span class="cstat-no" title="statement not covered" >import { applyExtensionMethods } from './extensions/ApiExtensions';</span>
 &nbsp;
 // 拡張メソッドを適用
 <span class="cstat-no" title="statement not covered" >applyExtensionMethods(API);</span>
@@ -1109,7 +1109,7 @@ import { applyExtensionMethods } from './extensions/ApiExtensions';
 <span class="cstat-no" title="statement not covered" >  API.initialize();</span>
 }
 &nbsp;
-export default API;
+<span class="cstat-no" title="statement not covered" >export default API;</span>
 &nbsp;
 // 型定義のエクスポート
 export type { BatchRequestItem, SubscriptionInfo, SubscriptionPlan, AIFeatureOptions };
@@ -1120,7 +1120,7 @@ export type { BatchRequestItem, SubscriptionInfo, SubscriptionPlan, AIFeatureOpt
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

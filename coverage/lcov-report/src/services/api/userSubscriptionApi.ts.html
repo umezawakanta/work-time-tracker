@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/114</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/96</span>
+                <span class='fraction'>0/98</span>
             </div>
         
             
@@ -316,7 +316,7 @@
 <a name='L251'></a><a href='#L251'>251</a>
 <a name='L252'></a><a href='#L252'>252</a>
 <a name='L253'></a><a href='#L253'>253</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -566,15 +566,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CustomPaymentMethodData, UserSubscription } from '@/types';
-import { api } from './apiConfig';
+<span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 &nbsp;
 // ユーザーサブスクリプション取得関連API
 // -----------------------------------------------------
 &nbsp;
 // 特定ユーザーのサブスクリプション情報を取得
-export const getUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userId: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.get(`/userSubscription/user/${userId}`);</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -585,7 +585,7 @@ export const getUserSubscription = <span class="cstat-no" title="statement not c
 };
 &nbsp;
 // すべてのユーザーサブスクリプションを取得
-export const fetchUserSubscriptions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;UserSubscription[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserSubscriptions = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;UserSubscription[]&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.get(`/userSubscription`);</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -596,7 +596,7 @@ export const fetchUserSubscriptions = <span class="cstat-no" title="statement no
 };
 &nbsp;
 // 特定の月のユーザーサブスクリプションを取得
-export const fetchUserSubscriptionsByMonth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserSubscriptionsByMonth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   yearMonth: string
 ): Promise&lt;UserSubscription[]&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -609,7 +609,7 @@ export const fetchUserSubscriptionsByMonth = <span class="cstat-no" title="state
 };
 &nbsp;
 // 特定の種別のユーザーサブスクリプションを取得
-export const fetchUserSubscriptionsByType = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(type: string): Promise&lt;UserSubscription[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserSubscriptionsByType = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(type: string): Promise&lt;UserSubscription[]&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.get(`/userSubscription/type/${type}`);</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -620,7 +620,7 @@ export const fetchUserSubscriptionsByType = <span class="cstat-no" title="statem
 };
 &nbsp;
 // 支払い方法でユーザーサブスクリプションをフィルタリング
-export const fetchUserSubscriptionsByPaymentMethod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserSubscriptionsByPaymentMethod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   paymentMethod: string
 ): Promise&lt;UserSubscription[]&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -636,7 +636,7 @@ export const fetchUserSubscriptionsByPaymentMethod = <span class="cstat-no" titl
 // -----------------------------------------------------
 &nbsp;
 // ユーザーサブスクリプションを新規追加
-export const addUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >addUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   subscription: Omit&lt;UserSubscription, '_id'&gt;
 ): Promise&lt;UserSubscription&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -649,7 +649,7 @@ export const addUserSubscription = <span class="cstat-no" title="statement not c
 };
 &nbsp;
 // ユーザーサブスクリプションを更新
-export const updateUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   id: string,
   subscription: Partial&lt;Omit&lt;UserSubscription, '_id'&gt;&gt;
 ): Promise&lt;UserSubscription&gt; =&gt; {
@@ -663,7 +663,7 @@ export const updateUserSubscription = <span class="cstat-no" title="statement no
 };
 &nbsp;
 // ユーザーサブスクリプションを削除
-export const deleteUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >deleteUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(id: string): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    await api.delete(`/userSubscription/${id}`);</span>
   } catch (error) {
@@ -673,7 +673,7 @@ export const deleteUserSubscription = <span class="cstat-no" title="statement no
 };
 &nbsp;
 // ユーザーサブスクリプションの確認ステータスを更新
-export const updateUserSubscriptionCheckStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserSubscriptionCheckStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   id: string,
   month: string,
   checked: boolean
@@ -694,7 +694,7 @@ export const updateUserSubscriptionCheckStatus = <span class="cstat-no" title="s
 // -----------------------------------------------------
 &nbsp;
 // ユーザーサブスクリプションの新規作成
-export const createUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(subscriptionData: {</span>
+export const <span class="cstat-no" title="statement not covered" >createUserSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(subscriptionData: {</span>
   userId: string;
   planId: string;
   status: 'active' | 'canceled' | 'expired';
@@ -711,7 +711,7 @@ export const createUserSubscription = <span class="cstat-no" title="statement no
 };
 &nbsp;
 // 自動更新の設定変更
-export const updateAutoRenewal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string, cancelAtPeriodEnd: boolean) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateAutoRenewal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(id: string, cancelAtPeriodEnd: boolean) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.patch(`/userSubscription/${id}/cancel`, {</span>
       cancelAtPeriodEnd,
@@ -724,7 +724,7 @@ export const updateAutoRenewal = <span class="cstat-no" title="statement not cov
 };
 &nbsp;
 // 支払い情報の更新
-export const updatePaymentMethod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updatePaymentMethod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string,
   paymentMethodData: CustomPaymentMethodData
 ) =&gt; {
@@ -741,7 +741,7 @@ export const updatePaymentMethod = <span class="cstat-no" title="statement not c
 };
 &nbsp;
 // 請求履歴の取得
-export const getInvoiceHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userId: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getInvoiceHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.get(`/userSubscription/invoices/${userId}`);</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -752,7 +752,7 @@ export const getInvoiceHistory = <span class="cstat-no" title="statement not cov
 };
 &nbsp;
 // プランの変更を予約
-export const scheduleSubscriptionChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >scheduleSubscriptionChange = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   id: string,
   newPlanId: string,
   changeDate: Date
@@ -770,7 +770,7 @@ export const scheduleSubscriptionChange = <span class="cstat-no" title="statemen
 };
 &nbsp;
 // サブスクリプション解約
-export const cancelSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string, reason?: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >cancelSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(id: string, reason?: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post(`/userSubscription/${id}/cancel-immediately`, {</span>
       reason,
@@ -783,7 +783,7 @@ export const cancelSubscription = <span class="cstat-no" title="statement not co
 };
 &nbsp;
 // 解約後の復活
-export const reactivateSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(id: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >reactivateSubscription = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(id: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post(`/userSubscription/${id}/reactivate`);</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -818,7 +818,7 @@ const userSubscriptionApi = <span class="cstat-no" title="statement not covered"
   reactivateSubscription,
 };
 &nbsp;
-export default userSubscriptionApi;
+<span class="cstat-no" title="statement not covered" >export default userSubscriptionApi;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -826,7 +826,7 @@ export default userSubscriptionApi;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

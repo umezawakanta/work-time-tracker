@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/48</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/47</span>
+                <span class='fraction'>0/60</span>
             </div>
         
             
@@ -354,25 +354,25 @@
 <a name='L289'></a><a href='#L289'>289</a>
 <a name='L290'></a><a href='#L290'>290</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -643,25 +643,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// 簡易データ入力コンポーネント - 資産/負債の素早い記録機能
 &nbsp;
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addAssetEntry } from '@/store/assetSlice';
-import { addDebtEntry } from '@/store/debtSlice';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
+<span class="cstat-no" title="statement not covered" >import React, { useState } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { useDispatch } from 'react-redux';</span>
+<span class="cstat-no" title="statement not covered" >import { addAssetEntry } from '@/store/assetSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { addDebtEntry } from '@/store/debtSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Input } from '@/components/ui/input';</span>
+<span class="cstat-no" title="statement not covered" >import { Label } from '@/components/ui/label';</span>
+<span class="cstat-no" title="statement not covered" >import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { PlusCircle, Clock, Calendar } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+<span class="cstat-no" title="statement not covered" >import { Switch } from '@/components/ui/switch';</span>
+<span class="cstat-no" title="statement not covered" >import { PlusCircle, Clock, Calendar } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
 import { AppDispatch } from '@/store'; // AppDispatchをインポート
 &nbsp;
 // 繰り返し頻度の選択肢
@@ -698,7 +698,7 @@ interface QuickInputProps {
   updateLastBalanceDate: () =&gt; void;
 }
 &nbsp;
-export const QuickInput: React.FC&lt;QuickInputProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> onClose, updateLastBalanceDate }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >QuickInput: React.FC&lt;QuickInputProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> onClose, updateLastBalanceDate }) =&gt; {</span>
   // 型付きディスパッチを使用
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const [entryType, setEntryType] = <span class="cstat-no" title="statement not covered" >useState&lt;'asset' | 'debt'&gt;('asset');</span>
@@ -937,7 +937,7 @@ export const QuickInput: React.FC&lt;QuickInputProps&gt; = <span class="cstat-no
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

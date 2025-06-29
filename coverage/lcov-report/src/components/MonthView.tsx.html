@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/141</span>
+                <span class='fraction'>0/154</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>0/144</span>
             </div>
         
             
@@ -521,19 +521,19 @@
 <a name='L456'></a><a href='#L456'>456</a>
 <a name='L457'></a><a href='#L457'>457</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -609,7 +609,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -977,19 +977,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { EventModal } from '@/components/EventModal';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Plus, Filter, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+<span class="cstat-no" title="statement not covered" >import { useState, useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { useSelector, useDispatch } from 'react-redux';</span>
+<span class="cstat-no" title="statement not covered" >import { ScrollArea } from '@/components/ui/scroll-area';</span>
+<span class="cstat-no" title="statement not covered" >import { cn } from '@/lib/utils';</span>
+<span class="cstat-no" title="statement not covered" >import { EventModal } from '@/components/EventModal';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Calendar, Plus, Filter, CheckCircle2, Clock, AlertCircle } from 'lucide-react';</span>
 import { RootState, AppDispatch } from '@/store';
-import { fetchTodoItems, updateTodoItem } from '@/store/todoSlice';
-import { toast } from 'react-hot-toast';
-import '@/styles/event.css';
+<span class="cstat-no" title="statement not covered" >import { fetchTodoItems, updateTodoItem } from '@/store/todoSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
+<span class="cstat-no" title="statement not covered" >import '@/styles/event.css';</span>
 &nbsp;
 interface Event {
   id: string;
@@ -1065,7 +1065,7 @@ const TaskDisplay: React.FC&lt;TaskDisplayProps&gt; = <span class="cstat-no" tit
   );
 };
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >MonthView(</span>) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >M</span>onthView(</span>) {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const [currentDate, setCurrentDate] = <span class="cstat-no" title="statement not covered" >useState(new Date());</span>
   const [events, setEvents] = <span class="cstat-no" title="statement not covered" >useState&lt;Event[]&gt;([]);</span>
@@ -1438,7 +1438,7 @@ export function <span class="fstat-no" title="function not covered" >MonthView(<
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

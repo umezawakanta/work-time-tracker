@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/19</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
@@ -275,7 +275,7 @@ export interface UserAccount {
   updatedAt: Date;
 }
 &nbsp;
-export const _getUserAccount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string): Promise&lt;UserAccount | null&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_getUserAccount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string): Promise&lt;UserAccount | null&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Firebase縺ｮ螳溯｣・ｒ繝｢繝・け
 <span class="cstat-no" title="statement not covered" >    return {</span>
@@ -291,34 +291,34 @@ export const _getUserAccount = <span class="cstat-no" title="statement not cover
   }
 };
 &nbsp;
-export const _createUserAccount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string, email: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_createUserAccount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string, email: string): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Creating user account:', uid, email);</span>
 };
 &nbsp;
-export const _updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string, data: Partial&lt;Profile&gt;): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string, data: Partial&lt;Profile&gt;): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Updating user profile:', uid, data);</span>
 };
 &nbsp;
-export const _inviteUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(email: string, referralCode: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_inviteUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(email: string, referralCode: string): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Inviting user:', email, 'with code:', referralCode);</span>
 };
 &nbsp;
-export const _checkPremiumFeatures = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string): Promise&lt;any&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_checkPremiumFeatures = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string): Promise&lt;any&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
     hasAccess: true,
     features: [],
   };
 };
 &nbsp;
-export const _upgradeToPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string, plan: PremiumPlanType): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_upgradeToPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string, plan: PremiumPlanType): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Upgrading to premium:', uid, plan);</span>
 };
 &nbsp;
-export const _extendTrialPeriod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string, days: number): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_extendTrialPeriod = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string, days: number): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  console.log('Extending trial period:', uid, days);</span>
 };
 &nbsp;
-export const _fetchUsageStatistics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(uid: string): Promise&lt;any&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >_fetchUsageStatistics = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(uid: string): Promise&lt;any&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
     usage: {},
     limits: {},
@@ -331,7 +331,7 @@ export const _fetchUsageStatistics = <span class="cstat-no" title="statement not
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

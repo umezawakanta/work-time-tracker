@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/37</span>
+                <span class='fraction'>0/43</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/32</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -158,8 +158,8 @@
 <a name='L93'></a><a href='#L93'>93</a>
 <a name='L94'></a><a href='#L94'>94</a>
 <a name='L95'></a><a href='#L95'>95</a>
-<a name='L96'></a><a href='#L96'>96</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L96'></a><a href='#L96'>96</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -252,9 +252,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { sleepTrackerApi } from '@/services/api/sleepTrackerApi';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';</span>
+<span class="cstat-no" title="statement not covered" >import { sleepTrackerApi } from '@/services/api/sleepTrackerApi';</span>
 import { RootState } from './index';
 &nbsp;
 export interface SleepRecord {
@@ -278,12 +278,12 @@ const initialState: SleepTrackerState = <span class="cstat-no" title="statement 
   error: null,
 };
 &nbsp;
-export const fetchSleepRecords = <span class="cstat-no" title="statement not covered" >createAsyncThunk('sleepTracker/fetchSleepRecords', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchSleepRecords = createAsyncThunk('sleepTracker/fetchSleepRecords', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await sleepTrackerApi.getAll();</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 });
 &nbsp;
-export const addSleepRecord = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >addSleepRecord = createAsyncThunk(</span>
   'sleepTracker/addSleepRecord',
 <span class="fstat-no" title="function not covered" >  async </span>(record: Omit&lt;SleepRecord, '_id'&gt;) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await sleepTrackerApi.create(record);</span>
@@ -291,7 +291,7 @@ export const addSleepRecord = <span class="cstat-no" title="statement not covere
   }
 );
 &nbsp;
-export const updateSleepRecord = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >updateSleepRecord = createAsyncThunk(</span>
   'sleepTracker/updateSleepRecord',
 <span class="fstat-no" title="function not covered" >  async </span>({ _id, updates }: { _id: string; updates: Partial&lt;SleepRecord&gt; }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await sleepTrackerApi.update(_id, updates);</span>
@@ -299,7 +299,7 @@ export const updateSleepRecord = <span class="cstat-no" title="statement not cov
   }
 );
 &nbsp;
-export const deleteSleepRecord = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteSleepRecord = createAsyncThunk(</span>
   'sleepTracker/deleteSleepRecord',
 <span class="fstat-no" title="function not covered" >  async </span>(_id: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >    await sleepTrackerApi.delete(_id);</span>
@@ -343,11 +343,11 @@ const sleepTrackerSlice = <span class="cstat-no" title="statement not covered" >
   },
 });
 &nbsp;
-export const selectSleepRecords = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.records;</span></span>
-export const selectSleepTrackerStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.status;</span></span>
-export const selectSleepTrackerError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.error;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectSleepRecords = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.records;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectSleepTrackerStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.status;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectSleepTrackerError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.sleepTracker.error;</span></span>
 &nbsp;
-export default sleepTrackerSlice.reducer;
+<span class="cstat-no" title="statement not covered" >export default sleepTrackerSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -355,7 +355,7 @@ export default sleepTrackerSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

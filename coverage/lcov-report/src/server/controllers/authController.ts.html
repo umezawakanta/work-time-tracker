@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/195</span>
+                <span class='fraction'>0/207</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/195</span>
+                <span class='fraction'>0/198</span>
             </div>
         
             
@@ -514,9 +514,9 @@
 <a name='L449'></a><a href='#L449'>449</a>
 <a name='L450'></a><a href='#L450'>450</a>
 <a name='L451'></a><a href='#L451'>451</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -964,9 +964,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { User, IUser } from '../models/User.js';
-import dotenv from 'dotenv';
+<span class="cstat-no" title="statement not covered" >import jwt from 'jsonwebtoken';</span>
+<span class="cstat-no" title="statement not covered" >import { User, IUser } from '../models/User.js';</span>
+<span class="cstat-no" title="statement not covered" >import dotenv from 'dotenv';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >dotenv.config();</span>
 &nbsp;
@@ -1017,7 +1017,7 @@ const generateToken = <span class="cstat-no" title="statement not covered" ><spa
 <span class="cstat-no" title="statement not covered" >  return jwt.sign({ id: userId }, secret, { expiresIn: '1h' }); </span>// Changed from 1d to 1h
 };
 &nbsp;
-export const login = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >login = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    console.log('🔄 Login attempt started:', req.body);</span>
     const { email, password, rememberMe } = <span class="cstat-no" title="statement not covered" >req.body;</span>
@@ -1098,7 +1098,7 @@ export const login = <span class="cstat-no" title="statement not covered" ><span
   }
 };
 &nbsp;
-export const register = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >register = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    console.log('=== Registration attempt started ===');</span>
 <span class="cstat-no" title="statement not covered" >    console.log('Request body:', JSON.stringify(req.body, null, 2));</span>
@@ -1216,7 +1216,7 @@ export const register = <span class="cstat-no" title="statement not covered" ><s
   }
 };
 &nbsp;
-export const checkAuth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >checkAuth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
   // 戻り値の型を追加
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!req.user) {</span>
@@ -1244,7 +1244,7 @@ export const checkAuth = <span class="cstat-no" title="statement not covered" ><
   }
 };
 &nbsp;
-export const updateProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
   // 戻り値の型を追加
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
@@ -1272,7 +1272,7 @@ export const updateProfile = <span class="cstat-no" title="statement not covered
   }
 };
 &nbsp;
-export const getUserData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getUserData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!userId) {</span>
@@ -1302,12 +1302,12 @@ export const getUserData = <span class="cstat-no" title="statement not covered" 
   }
 };
 &nbsp;
-export const updateUserToAdmin = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userId: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserToAdmin = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return await User.findByIdAndUpdate(userId, { isAdmin: true }, { new: true }).select('-password');</span>
 };
 &nbsp;
 // リフレッシュトークン機能を修正
-export const refreshToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >refreshToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { refreshToken } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
@@ -1368,7 +1368,7 @@ export const refreshToken = <span class="cstat-no" title="statement not covered"
 };
 &nbsp;
 // パスワードリセット機能も追加
-export const requestPasswordReset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >requestPasswordReset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { email } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
@@ -1396,7 +1396,7 @@ export const requestPasswordReset = <span class="cstat-no" title="statement not 
   }
 };
 &nbsp;
-export const resetPassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >resetPassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const { token, newPassword } = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
@@ -1420,7 +1420,7 @@ export const resetPassword = <span class="cstat-no" title="statement not covered
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

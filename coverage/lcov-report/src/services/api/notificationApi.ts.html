@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/49</span>
+                <span class='fraction'>0/59</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/49</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
@@ -255,7 +255,7 @@
 <a name='L190'></a><a href='#L190'>190</a>
 <a name='L191'></a><a href='#L191'>191</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -442,10 +442,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/api/notificationApi.ts
 import { AxiosResponse } from 'axios';
-import { api } from './apiConfig';
+<span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 import { UserNotification } from '@/types';
 &nbsp;
 // レスポンスの型定義
@@ -480,7 +480,7 @@ interface NotificationSettings {
  * @param userId ユーザーID
  * @returns 通知一覧
  */
-export const getUserNotifications = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >getUserNotifications = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string
 ): Promise&lt;AxiosResponse&lt;UserNotification[]&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -497,7 +497,7 @@ export const getUserNotifications = <span class="cstat-no" title="statement not 
  * @param userId ユーザーID
  * @returns 未読通知数
  */
-export const getUnreadNotificationsCount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >getUnreadNotificationsCount = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string
 ): Promise&lt;AxiosResponse&lt;{ count: number }&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -514,7 +514,7 @@ export const getUnreadNotificationsCount = <span class="cstat-no" title="stateme
  * @param notificationId 通知ID
  * @returns 更新された通知
  */
-export const markNotificationAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >markNotificationAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   notificationId: number
 ): Promise&lt;AxiosResponse&lt;NotificationApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -533,7 +533,7 @@ export const markNotificationAsRead = <span class="cstat-no" title="statement no
  * @param userId ユーザーID
  * @returns 操作結果
  */
-export const markAllNotificationsAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >markAllNotificationsAsRead = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string
 ): Promise&lt;AxiosResponse&lt;NotificationsApiResponse&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -552,7 +552,7 @@ export const markAllNotificationsAsRead = <span class="cstat-no" title="statemen
  * @param notificationId 通知ID
  * @returns 操作結果
  */
-export const deleteNotification = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteNotification = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   notificationId: number
 ): Promise&lt;AxiosResponse&lt;{ message: string }&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -569,7 +569,7 @@ export const deleteNotification = <span class="cstat-no" title="statement not co
  * @param userId ユーザーID
  * @returns 操作結果
  */
-export const deleteAllNotifications = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteAllNotifications = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string
 ): Promise&lt;AxiosResponse&lt;{ message: string }&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -586,7 +586,7 @@ export const deleteAllNotifications = <span class="cstat-no" title="statement no
  * @param userId ユーザーID
  * @returns 通知設定
  */
-export const getNotificationSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >getNotificationSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string
 ): Promise&lt;AxiosResponse&lt;NotificationSettings&gt;&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
@@ -604,7 +604,7 @@ export const getNotificationSettings = <span class="cstat-no" title="statement n
  * @param settings 更新する設定
  * @returns 更新された設定
  */
-export const updateNotificationSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateNotificationSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string,
   settings: Partial&lt;NotificationSettings&gt;
 ): Promise&lt;AxiosResponse&lt;NotificationSettings&gt;&gt; =&gt; {
@@ -632,7 +632,7 @@ const notificationApi = <span class="cstat-no" title="statement not covered" >{<
   updateNotificationSettings,
 };
 &nbsp;
-export default notificationApi;
+<span class="cstat-no" title="statement not covered" >export default notificationApi;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -640,7 +640,7 @@ export default notificationApi;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

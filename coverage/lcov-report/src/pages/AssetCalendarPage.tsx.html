@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>0/100</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/67</span>
+                <span class='fraction'>0/80</span>
             </div>
         
             
@@ -346,24 +346,24 @@
 <a name='L281'></a><a href='#L281'>281</a>
 <a name='L282'></a><a href='#L282'>282</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -475,7 +475,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -627,24 +627,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { useEffect, useState, useCallback } from 'react'; // useCallbackをインポート
-import { useSelector, useDispatch } from 'react-redux';
+<span class="cstat-no" title="statement not covered" >import { useEffect, useState, useCallback } from 'react'; </span>// useCallbackをインポート
+<span class="cstat-no" title="statement not covered" >import { useSelector, useDispatch } from 'react-redux';</span>
 import { RootState, AppDispatch } from '@/store';
-import { AssetCalendar } from '@/components/calendar/AssetCalendar';
-import { fetchAssetEntries } from '@/store/assetSlice';
-import { fetchDebtEntries } from '@/store/debtSlice';
-import {
+<span class="cstat-no" title="statement not covered" >import { AssetCalendar } from '@/components/calendar/AssetCalendar';</span>
+<span class="cstat-no" title="statement not covered" >import { fetchAssetEntries } from '@/store/assetSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { fetchDebtEntries } from '@/store/debtSlice';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   fetchWithdrawalEntries,
   addWithdrawalEntry,
   deleteWithdrawalEntry,
   WithdrawalEntry,
 } from '@/store/withdrawalSlice';
-import { fetchSubscriptions } from '@/store/subscriptionSlice';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowUpCircle, BarChart2 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+<span class="cstat-no" title="statement not covered" >import { fetchSubscriptions } from '@/store/subscriptionSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Skeleton } from '@/components/ui/skeleton';</span>
+<span class="cstat-no" title="statement not covered" >import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';</span>
+<span class="cstat-no" title="statement not covered" >import { AlertCircle, ArrowUpCircle, BarChart2 } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { Progress } from '@/components/ui/progress';</span>
 &nbsp;
 interface DataPoint {
   date: Date;
@@ -756,7 +756,7 @@ const ExpenseAnalysisCard: React.FC&lt;ExpenseAnalysisCardProps&gt; = <span clas
   );
 };
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >AssetCalendarPage(</span>) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >A</span>ssetCalendarPage(</span>) {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const assetEntries = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.asset.entries)</span>;</span>
   const debtEntries = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.debt.entries)</span>;</span>
@@ -913,7 +913,7 @@ export function <span class="fstat-no" title="function not covered" >AssetCalend
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

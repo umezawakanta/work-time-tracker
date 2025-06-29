@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/144</span>
+                <span class='fraction'>0/154</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/117</span>
+                <span class='fraction'>0/120</span>
             </div>
         
             
@@ -419,9 +419,9 @@
 <a name='L354'></a><a href='#L354'>354</a>
 <a name='L355'></a><a href='#L355'>355</a>
 <a name='L356'></a><a href='#L356'>356</a>
-<a name='L357'></a><a href='#L357'>357</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L357'></a><a href='#L357'>357</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -774,10 +774,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';</span>
 import { RootState } from './index';
-import { todoApi } from '@/services/api/todoApi';
+<span class="cstat-no" title="statement not covered" >import { todoApi } from '@/services/api/todoApi';</span>
 import { TodoItem } from '@/types';
 &nbsp;
 // 分析サマリーの型定義
@@ -797,7 +797,7 @@ interface AnalysisSummary {
 }
 &nbsp;
 // DeadlineUtilsの追加
-export const DeadlineUtils = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >DeadlineUtils = {</span>
   // Previous methods remain unchanged
   formatDate: <span class="fstat-no" title="function not covered" >(d</span>ateString: string | null) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!dateString) <span class="cstat-no" title="statement not covered" >return null;</span></span>
@@ -873,12 +873,12 @@ const initialState: TodoState = <span class="cstat-no" title="statement not cove
   analysisSummary: null, // 初期値はnull
 };
 &nbsp;
-export const fetchTodoItems = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/fetchTodoItems', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchTodoItems = createAsyncThunk('todo/fetchTodoItems', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await todoApi.getAll();</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 });
 &nbsp;
-export const addTodoItem = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >addTodoItem = createAsyncThunk(</span>
   'todo/addTodoItem',
 <span class="fstat-no" title="function not covered" >  async </span>(todo: {
     task: string;
@@ -901,7 +901,7 @@ export const addTodoItem = <span class="cstat-no" title="statement not covered" 
   }
 );
 &nbsp;
-export const updateTodoItem = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >updateTodoItem = createAsyncThunk(</span>
   'todo/updateTodoItem',
 <span class="fstat-no" title="function not covered" >  async </span>({ _id, updates }: { _id: string; updates: Partial&lt;TodoItem&gt; }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await todoApi.update(_id, updates);</span>
@@ -909,29 +909,29 @@ export const updateTodoItem = <span class="cstat-no" title="statement not covere
   }
 );
 &nbsp;
-export const deleteTodoItem = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/deleteTodoItem', <span class="fstat-no" title="function not covered" >async </span>(id: string) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >deleteTodoItem = createAsyncThunk('todo/deleteTodoItem', <span class="fstat-no" title="function not covered" >async </span>(id: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  await todoApi.delete(id);</span>
 <span class="cstat-no" title="statement not covered" >  return id;</span>
 });
 &nbsp;
-export const resetTodoList = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/resetTodoList', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >resetTodoList = createAsyncThunk('todo/resetTodoList', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await todoApi.reset();</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 });
 &nbsp;
 // 履歴データ取得のためのアクションを追加
-export const fetchTodoHistory = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/fetchTodoHistory', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchTodoHistory = createAsyncThunk('todo/fetchTodoHistory', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await todoApi.getHistory();</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 });
 &nbsp;
 // 日別の履歴データを取得するアクションを追加
-export const fetchDailyTodoHistory = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/fetchDailyTodoHistory', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchDailyTodoHistory = createAsyncThunk('todo/fetchDailyTodoHistory', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await todoApi.getDailyHistory();</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 });
 &nbsp;
-export const reorderTodoItems = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >reorderTodoItems = createAsyncThunk(</span>
   'todo/reorderTodoItems',
 <span class="fstat-no" title="function not covered" >  async </span>(items: TodoItem[]) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await todoApi.reorder(items);</span>
@@ -939,7 +939,7 @@ export const reorderTodoItems = <span class="cstat-no" title="statement not cove
   }
 );
 &nbsp;
-export const toggleTodoPriority = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >toggleTodoPriority = createAsyncThunk(</span>
   'todo/toggleTodoPriority',
 <span class="fstat-no" title="function not covered" >  async </span>(id: string) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await todoApi.togglePriority(id);</span>
@@ -948,7 +948,7 @@ export const toggleTodoPriority = <span class="cstat-no" title="statement not co
 );
 &nbsp;
 // プレミアム状態をチェックするアクションを追加
-export const checkPremiumStatus = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/checkPremiumStatus', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >checkPremiumStatus = createAsyncThunk('todo/checkPremiumStatus', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
   // 実際には適切なAPIエンドポイントを使用する必要があります
   // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
@@ -956,7 +956,7 @@ export const checkPremiumStatus = <span class="cstat-no" title="statement not co
 });
 &nbsp;
 // タスク分析サマリーを取得するアクションを追加
-export const fetchAnalysisSummary = <span class="cstat-no" title="statement not covered" >createAsyncThunk('todo/fetchAnalysisSummary', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchAnalysisSummary = createAsyncThunk('todo/fetchAnalysisSummary', <span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
   // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
   // 実際には適切なAPIエンドポイントを使用する必要があります
   // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
@@ -1119,18 +1119,18 @@ const todoSlice = <span class="cstat-no" title="statement not covered" >createSl
   },
 });
 &nbsp;
-export const { updateTodoHistory, adjustDeadlinePriorities } = <span class="cstat-no" title="statement not covered" >todoSlice.actions;</span>
+export const <span class="cstat-no" title="statement not covered" >{ updateTodoHistory, adjustDeadlinePriorities } = t</span>odoSlice.actions;
 &nbsp;
-export const selectTodos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items;</span></span>
-export const selectTodoStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.status;</span></span>
-export const selectTodoError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.error;</span></span>
-export const selectTodoHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.todoHistory;</span></span>
-export const selectDailyHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.dailyHistory;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectTodos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.status;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.error;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.todoHistory;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectDailyHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.dailyHistory;</span></span>
 // 新しく追加したセレクター
-export const selectIsPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.isPremium;</span></span>
-export const selectAnalysisSummary = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.analysisSummary;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectIsPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.isPremium;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectAnalysisSummary = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.analysisSummary;</span></span>
 &nbsp;
-export default todoSlice.reducer;
+<span class="cstat-no" title="statement not covered" >export default todoSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1138,7 +1138,7 @@ export default todoSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

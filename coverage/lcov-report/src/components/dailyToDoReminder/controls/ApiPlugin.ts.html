@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/72</span>
+                <span class='fraction'>0/75</span>
             </div>
         
             
@@ -402,7 +402,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -428,11 +428,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -440,10 +440,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -456,11 +452,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -638,7 +638,7 @@ export interface ApiResponseInfo&lt;T&gt; {
 /**
  * プラグインのフック種類
  */
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export </span>enum PluginHook {</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export enum P</span>luginHook {</span>
 <span class="cstat-no" title="statement not covered" >  PRE_REQUEST = 'preRequest',</span>
 <span class="cstat-no" title="statement not covered" >  POST_REQUEST = 'postRequest',</span>
 <span class="cstat-no" title="statement not covered" >  REQUEST_ERROR = 'requestError',</span>
@@ -674,7 +674,7 @@ export interface ApiPlugin {
 /**
  * 基本的なAPIプラグイン実装
  */
-export abstract class BaseApiPlugin implements ApiPlugin {
+<span class="cstat-no" title="statement not covered" >export abstract class B</span>aseApiPlugin implements ApiPlugin {
   abstract id: string;
   abstract name: string;
   abstract version: string;
@@ -700,7 +700,7 @@ export abstract class BaseApiPlugin implements ApiPlugin {
  * ロギングプラグイン
  * APIリクエストをログに記録する
  */
-export class LoggingPlugin extends BaseApiPlugin {
+<span class="cstat-no" title="statement not covered" >export class L</span>oggingPlugin extends BaseApiPlugin {
 <span class="cstat-no" title="statement not covered" >  id = 'logging-plugin';</span>
 <span class="cstat-no" title="statement not covered" >  name = 'Logging Plugin';</span>
 <span class="cstat-no" title="statement not covered" >  version = '1.0.0';</span>
@@ -732,7 +732,7 @@ export class LoggingPlugin extends BaseApiPlugin {
  * キャッシュプラグイン
  * API応答をローカルストレージにキャッシュする
  */
-export class CachePlugin extends BaseApiPlugin {
+<span class="cstat-no" title="statement not covered" >export class C</span>achePlugin extends BaseApiPlugin {
 <span class="cstat-no" title="statement not covered" >  id = 'cache-plugin';</span>
 <span class="cstat-no" title="statement not covered" >  name = 'Cache Plugin';</span>
 <span class="cstat-no" title="statement not covered" >  version = '1.0.0';</span>
@@ -886,7 +886,7 @@ export class CachePlugin extends BaseApiPlugin {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

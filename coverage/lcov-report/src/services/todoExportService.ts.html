@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/90</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/82</span>
             </div>
         
             
@@ -314,7 +314,7 @@
 <a name='L249'></a><a href='#L249'>249</a>
 <a name='L250'></a><a href='#L250'>250</a>
 <a name='L251'></a><a href='#L251'>251</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -564,7 +564,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Todo } from '@/types/todo';
-import { api } from '@/services/api';
+<span class="cstat-no" title="statement not covered" >import { api } from '@/services/api';</span>
 &nbsp;
 /**
  * タスクのエクスポート処理に関するサービス
@@ -595,7 +595,7 @@ const defaultExportOptions: ExportOptions = <span class="cstat-no" title="statem
  * @param options エクスポートオプション
  * @returns ダウンロード用のBlobデータ
  */
-export const exportTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >exportTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   format: ExportFormat = <span class="branch-0 cbranch-no" title="branch not covered" >'csv',</span>
   options: Partial&lt;ExportOptions&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{}</span>
 ): Promise&lt;Blob&gt; =&gt; {
@@ -627,7 +627,7 @@ export const exportTasks = <span class="cstat-no" title="statement not covered" 
  * @param blob Blobデータ
  * @param filename ファイル名
  */
-export const downloadBlob = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(b</span>lob: Blob, filename: string): void =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >downloadBlob = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>b</span>lob: Blob, filename: string): void =&gt; {</span>
   const url = <span class="cstat-no" title="statement not covered" >URL.createObjectURL(blob);</span>
   const a = <span class="cstat-no" title="statement not covered" >document.createElement('a');</span>
 <span class="cstat-no" title="statement not covered" >  a.href = url;</span>
@@ -648,7 +648,7 @@ export const downloadBlob = <span class="cstat-no" title="statement not covered"
  * @param options エクスポートオプション
  * @returns 成功したかどうか
  */
-export const exportAndDownload = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >exportAndDownload = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   format: ExportFormat = <span class="branch-0 cbranch-no" title="branch not covered" >'csv',</span>
   options: Partial&lt;ExportOptions&gt; = <span class="branch-0 cbranch-no" title="branch not covered" >{}</span>
 ): Promise&lt;boolean&gt; =&gt; {
@@ -677,7 +677,7 @@ export const exportAndDownload = <span class="cstat-no" title="statement not cov
  * @param csv CSVデータ
  * @returns タスクの配列
  */
-export const parseCsvToTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>sv: string): Partial&lt;Todo&gt;[] =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >parseCsvToTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>sv: string): Partial&lt;Todo&gt;[] =&gt; {</span>
   // ヘッダーと行に分割
   const lines = <span class="cstat-no" title="statement not covered" >csv.trim().split('\n');</span>
   const headers = <span class="cstat-no" title="statement not covered" >lines[0].split(',');</span>
@@ -725,7 +725,7 @@ export const parseCsvToTasks = <span class="cstat-no" title="statement not cover
  * @param json JSONデータ
  * @returns タスクの配列
  */
-export const parseJsonToTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(j</span>son: string): Partial&lt;Todo&gt;[] =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >parseJsonToTasks = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>j</span>son: string): Partial&lt;Todo&gt;[] =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    return JSON.parse(json);</span>
   } catch (error) {
@@ -740,7 +740,7 @@ export const parseJsonToTasks = <span class="cstat-no" title="statement not cove
  * @param format ファイル形式
  * @returns タスクの配列
  */
-export const importTasksFromFile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >importTasksFromFile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   file: File,
   format: string = <span class="branch-0 cbranch-no" title="branch not covered" >'auto'</span>
 ): Promise&lt;Partial&lt;Todo&gt;[]&gt; =&gt; {
@@ -779,7 +779,7 @@ export const importTasksFromFile = <span class="cstat-no" title="statement not c
  * @param tasks タスクの配列
  * @returns 成功したかどうか
  */
-export const sendTasksToApi = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(tasks: Partial&lt;Todo&gt;[]): Promise&lt;boolean&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >sendTasksToApi = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(tasks: Partial&lt;Todo&gt;[]): Promise&lt;boolean&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // APIリクエスト
 <span class="cstat-no" title="statement not covered" >    await api.post('/api/todos/import', { tasks });</span>
@@ -796,7 +796,7 @@ export const sendTasksToApi = <span class="cstat-no" title="statement not covere
  * @param format ファイル形式
  * @returns 成功したかどうか
  */
-export const importTasksAndSend = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(file: File, format: string = <span class="branch-0 cbranch-no" title="branch not covered" >'auto')</span>: Promise&lt;boolean&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >importTasksAndSend = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(file: File, format: string = <span class="branch-0 cbranch-no" title="branch not covered" >'auto')</span>: Promise&lt;boolean&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // ファイルからタスクを読み込み
     const tasks = <span class="cstat-no" title="statement not covered" >await importTasksFromFile(file, format);</span>
@@ -820,7 +820,7 @@ export const importTasksAndSend = <span class="cstat-no" title="statement not co
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

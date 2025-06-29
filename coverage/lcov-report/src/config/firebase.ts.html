@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/51</span>
+                <span class='fraction'>0/62</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/50</span>
+                <span class='fraction'>0/58</span>
             </div>
         
             
@@ -169,6 +169,16 @@
 <a name='L104'></a><a href='#L104'>104</a>
 <a name='L105'></a><a href='#L105'>105</a>
 <a name='L106'></a><a href='#L106'>106</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -181,16 +191,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -268,18 +268,18 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/config/firebase.ts
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getAnalytics, isSupported } from 'firebase/analytics';
-import { firebaseConfig } from './index';
+<span class="cstat-no" title="statement not covered" >import { initializeApp } from 'firebase/app';</span>
+<span class="cstat-no" title="statement not covered" >import { getAuth } from 'firebase/auth';</span>
+<span class="cstat-no" title="statement not covered" >import { getFirestore } from 'firebase/firestore';</span>
+<span class="cstat-no" title="statement not covered" >import { getStorage } from 'firebase/storage';</span>
+<span class="cstat-no" title="statement not covered" >import { getAnalytics, isSupported } from 'firebase/analytics';</span>
+<span class="cstat-no" title="statement not covered" >import { firebaseConfig } from './index';</span>
 &nbsp;
 // Firebase設定の検証
 const validateFirebaseConfig = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): boolean =</span>&gt; {</span>
@@ -373,11 +373,11 @@ let analytics: any = <span class="cstat-no" title="statement not covered" >null;
 <span class="cstat-no" title="statement not covered" >  analytics = Promise.resolve(null);</span>
 }
 &nbsp;
-export { auth, db, storage, analytics };
-export default app;
+export { <span class="cstat-no" title="statement not covered" >auth,</span> <span class="cstat-no" title="statement not covered" >db,</span> <span class="cstat-no" title="statement not covered" >storage,</span> <span class="cstat-no" title="statement not covered" >analytics </span>};
+<span class="cstat-no" title="statement not covered" >export default app;</span>
 &nbsp;
 // Firebase設定状態をエクスポート
-export const isFirebaseEnabled = <span class="cstat-no" title="statement not covered" >isFirebaseConfigValid;</span>
+export const <span class="cstat-no" title="statement not covered" >isFirebaseEnabled = isFirebaseConfigValid;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -385,7 +385,7 @@ export const isFirebaseEnabled = <span class="cstat-no" title="statement not cov
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

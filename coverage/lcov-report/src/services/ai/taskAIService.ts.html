@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/241</span>
+                <span class='fraction'>0/248</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/223</span>
+                <span class='fraction'>0/228</span>
             </div>
         
             
@@ -931,7 +931,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -943,11 +943,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -958,6 +956,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -966,6 +965,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1704,7 +1704,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { TodoItem } from '@/types';
 &nbsp;
 // Rate limiting interface
@@ -1752,7 +1752,7 @@ class RateLimiter {
 }
 &nbsp;
 // Error types
-export class AIServiceError extends Error {
+<span class="cstat-no" title="statement not covered" >export class A</span>IServiceError extends Error {
 <span class="fstat-no" title="function not covered" >  constructor(</span>
     message: string,
 <span class="cstat-no" title="statement not covered" >    public code: string,</span>
@@ -1764,7 +1764,7 @@ export class AIServiceError extends Error {
   }
 }
 &nbsp;
-export class RateLimitError extends AIServiceError {
+<span class="cstat-no" title="statement not covered" >export class R</span>ateLimitError extends AIServiceError {
 <span class="fstat-no" title="function not covered" >  constructor(r</span>etryAfter: number) {
 <span class="cstat-no" title="statement not covered" >    super(</span>
       `Rate limit exceeded. Try again in ${Math.ceil(retryAfter / 1000)} seconds.`,
@@ -1775,7 +1775,7 @@ export class RateLimitError extends AIServiceError {
   }
 }
 &nbsp;
-export class QuotaExceededError extends AIServiceError {
+<span class="cstat-no" title="statement not covered" >export class Q</span>uotaExceededError extends AIServiceError {
 <span class="fstat-no" title="function not covered" >  constructor() {</span>
 <span class="cstat-no" title="statement not covered" >    super(</span>
       'AI service quota exceeded. Please try again later.',
@@ -1786,7 +1786,7 @@ export class QuotaExceededError extends AIServiceError {
   }
 }
 &nbsp;
-export class NetworkError extends AIServiceError {
+<span class="cstat-no" title="statement not covered" >export class N</span>etworkError extends AIServiceError {
 <span class="fstat-no" title="function not covered" >  constructor(o</span>riginalError: Error) {
 <span class="cstat-no" title="statement not covered" >    super(</span>
       `Network error: ${originalError.message}`,
@@ -2304,7 +2304,7 @@ class TaskAIService {
 }
 &nbsp;
 // Enhanced smart task breakdown with error handling
-export const smartTaskBreakdown = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(task: TodoItem): Promise&lt;TaskBreakdown&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >smartTaskBreakdown = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(task: TodoItem): Promise&lt;TaskBreakdown&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const complexity = <span class="cstat-no" title="statement not covered" >evaluateTaskComplexity(task);</span>
 &nbsp;
@@ -2332,7 +2332,7 @@ export const smartTaskBreakdown = <span class="cstat-no" title="statement not co
 };
 &nbsp;
 // Rest of the existing code remains the same...
-export const evaluateTaskComplexity = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ask: TodoItem) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >evaluateTaskComplexity = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>t</span>ask: TodoItem) =&gt; {</span>
   let score = <span class="cstat-no" title="statement not covered" >0;</span>
   const factors: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -2525,7 +2525,7 @@ const calculateBreakdownConfidence = <span class="cstat-no" title="statement not
 <span class="cstat-no" title="statement not covered" >  return Math.min(confidence, 0.95);</span>
 };
 &nbsp;
-export default new TaskAIService();
+<span class="cstat-no" title="statement not covered" >export default new TaskAIService();</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -2533,7 +2533,7 @@ export default new TaskAIService();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

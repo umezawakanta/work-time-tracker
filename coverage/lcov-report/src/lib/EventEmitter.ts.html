@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/32</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">30% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/10</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">45.16% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/31</span>
+                <span class='fraction'>0/31</span>
             </div>
         
             
@@ -159,18 +159,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">41x</span>
-<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">41x</span>
-<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -189,17 +189,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
-<span class="cline-any cline-yes">39x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -248,18 +248,18 @@
 &nbsp;
 export type EventListener = (...args: any[]) =&gt; void;
 &nbsp;
-export class EventEmitter {
-  private events: Map&lt;string, EventListener[]&gt; = new Map();
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class E</span></span>ventEmitter {
+  private <span class="cstat-no" title="statement not covered" >events: Map&lt;string, EventListener[]&gt; = new Map();</span>
 &nbsp;
   /**
    * イベントリスナーを追加
    */
-  on(event: string, listener: EventListener): this {
-    if (!this.events.has(event)) {
-      this.events.set(event, []);
+<span class="fstat-no" title="function not covered" >  on(</span>event: string, listener: EventListener): this {
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.events.has(event)) {</span>
+<span class="cstat-no" title="statement not covered" >      this.events.set(event, []);</span>
     }
-    this.events.get(event)!.push(listener);
-    return this;
+<span class="cstat-no" title="statement not covered" >    this.events.get(event)!.push(listener);</span>
+<span class="cstat-no" title="statement not covered" >    return this;</span>
   }
 &nbsp;
   /**
@@ -277,18 +277,18 @@ export class EventEmitter {
   /**
    * イベントリスナーを削除
    */
-  off(event: string, listener: EventListener): this {
-    const listeners = this.events.get(event);
-    if (listeners) {
-      const index = listeners.indexOf(listener);
-      if (index &gt; -1) {
-        listeners.splice(index, 1);
+<span class="fstat-no" title="function not covered" >  off(</span>event: string, listener: EventListener): this {
+    const listeners = <span class="cstat-no" title="statement not covered" >this.events.get(event);</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (listeners) {</span>
+      const index = <span class="cstat-no" title="statement not covered" >listeners.indexOf(listener);</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (index &gt; -1) {</span>
+<span class="cstat-no" title="statement not covered" >        listeners.splice(index, 1);</span>
       }
-      if (listeners.length === 0) {
-        this.events.delete(event);
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (listeners.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >        this.events.delete(event);</span>
       }
     }
-    return this;
+<span class="cstat-no" title="statement not covered" >    return this;</span>
   }
 &nbsp;
   /**
@@ -337,7 +337,7 @@ export class EventEmitter {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

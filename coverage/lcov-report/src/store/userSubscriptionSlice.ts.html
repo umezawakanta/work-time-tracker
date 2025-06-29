@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/97</span>
+                <span class='fraction'>0/100</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/94</span>
+                <span class='fraction'>0/97</span>
             </div>
         
             
@@ -360,8 +360,8 @@
 <a name='L295'></a><a href='#L295'>295</a>
 <a name='L296'></a><a href='#L296'>296</a>
 <a name='L297'></a><a href='#L297'>297</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -654,10 +654,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// ユーザーサブスクリプション（サイト内プラン管理）用のReduxスライス
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import userSubscriptionApi from '@/services/api/userSubscriptionApi';
+<span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';</span>
+<span class="cstat-no" title="statement not covered" >import userSubscriptionApi from '@/services/api/userSubscriptionApi';</span>
 import { UserSubscription } from '@/types';
 &nbsp;
 // 初期状態の型定義
@@ -675,7 +675,7 @@ const initialState: UserSubscriptionState = <span class="cstat-no" title="statem
 };
 &nbsp;
 // ユーザーサブスクリプション一覧を取得する非同期アクション
-export const fetchUserSubscriptions = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserSubscriptions = createAsyncThunk(</span>
   'userSubscription/fetchUserSubscriptions',
 <span class="fstat-no" title="function not covered" >  async </span>() =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.fetchUserSubscriptions();</span>
@@ -684,7 +684,7 @@ export const fetchUserSubscriptions = <span class="cstat-no" title="statement no
 );
 &nbsp;
 // 新しいユーザーサブスクリプションを追加する非同期アクション
-export const addUserSubscription = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >addUserSubscription = createAsyncThunk(</span>
   'userSubscription/addUserSubscription',
 <span class="fstat-no" title="function not covered" >  async </span>(subscription: Omit&lt;UserSubscription, '_id'&gt;) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.addUserSubscription(subscription);</span>
@@ -693,7 +693,7 @@ export const addUserSubscription = <span class="cstat-no" title="statement not c
 );
 &nbsp;
 // ユーザーサブスクリプションを更新する非同期アクション
-export const updateUserSubscription = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserSubscription = createAsyncThunk(</span>
   'userSubscription/updateUserSubscription',
 <span class="fstat-no" title="function not covered" >  async </span>({
     _id,
@@ -708,7 +708,7 @@ export const updateUserSubscription = <span class="cstat-no" title="statement no
 );
 &nbsp;
 // ユーザーサブスクリプションを削除する非同期アクション
-export const deleteUserSubscription = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteUserSubscription = createAsyncThunk(</span>
   'userSubscription/deleteUserSubscription',
 <span class="fstat-no" title="function not covered" >  async </span>(id: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >    await userSubscriptionApi.deleteUserSubscription(id);</span>
@@ -717,7 +717,7 @@ export const deleteUserSubscription = <span class="cstat-no" title="statement no
 );
 &nbsp;
 // ユーザーサブスクリプションの確認ステータスを更新する非同期アクション
-export const updateUserSubscriptionCheckStatus = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserSubscriptionCheckStatus = createAsyncThunk(</span>
   'userSubscription/updateUserSubscriptionCheckStatus',
 <span class="fstat-no" title="function not covered" >  async </span>({ id, month, checked }: { id: string; month: string; checked: boolean }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.updateUserSubscriptionCheckStatus(</span>
@@ -730,7 +730,7 @@ export const updateUserSubscriptionCheckStatus = <span class="cstat-no" title="s
 );
 &nbsp;
 // 自動更新設定を更新する非同期アクション
-export const updateAutoRenewal = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >updateAutoRenewal = createAsyncThunk(</span>
   'userSubscription/updateAutoRenewal',
 <span class="fstat-no" title="function not covered" >  async </span>({ id, cancelAtPeriodEnd }: { id: string; cancelAtPeriodEnd: boolean }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.updateAutoRenewal(id, cancelAtPeriodEnd);</span>
@@ -739,7 +739,7 @@ export const updateAutoRenewal = <span class="cstat-no" title="statement not cov
 );
 &nbsp;
 // プラン変更を予約する非同期アクション
-export const scheduleSubscriptionChange = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >scheduleSubscriptionChange = createAsyncThunk(</span>
   'userSubscription/scheduleSubscriptionChange',
 <span class="fstat-no" title="function not covered" >  async </span>({ id, newPlanId, changeDate }: { id: string; newPlanId: string; changeDate: Date }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.scheduleSubscriptionChange(</span>
@@ -752,7 +752,7 @@ export const scheduleSubscriptionChange = <span class="cstat-no" title="statemen
 );
 &nbsp;
 // サブスクリプションを即時解約する非同期アクション
-export const cancelSubscription = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >cancelSubscription = createAsyncThunk(</span>
   'userSubscription/cancelSubscription',
 <span class="fstat-no" title="function not covered" >  async </span>({ id, reason }: { id: string; reason?: string }) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.cancelSubscription(id, reason);</span>
@@ -761,7 +761,7 @@ export const cancelSubscription = <span class="cstat-no" title="statement not co
 );
 &nbsp;
 // 解約後のサブスクリプションを復活する非同期アクション
-export const reactivateSubscription = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >reactivateSubscription = createAsyncThunk(</span>
   'userSubscription/reactivateSubscription',
 <span class="fstat-no" title="function not covered" >  async </span>(id: string) =&gt; {
     const response = <span class="cstat-no" title="statement not covered" >await userSubscriptionApi.reactivateSubscription(id);</span>
@@ -949,8 +949,8 @@ const userSubscriptionSlice = <span class="cstat-no" title="statement not covere
 });
 &nbsp;
 // アクションとリデューサーのエクスポート
-export const { resetStatus } = <span class="cstat-no" title="statement not covered" >userSubscriptionSlice.actions;</span>
-export default userSubscriptionSlice.reducer;
+export const { <span class="cstat-no" title="statement not covered" >resetStatus } = userSubscriptionSlice.actions;</span>
+<span class="cstat-no" title="statement not covered" >export default userSubscriptionSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -958,7 +958,7 @@ export default userSubscriptionSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

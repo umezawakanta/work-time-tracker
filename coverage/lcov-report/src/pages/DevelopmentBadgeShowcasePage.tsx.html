@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
@@ -614,16 +614,13 @@
 <a name='L549'></a><a href='#L549'>549</a>
 <a name='L550'></a><a href='#L550'>550</a>
 <a name='L551'></a><a href='#L551'>551</a>
-<a name='L552'></a><a href='#L552'>552</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L552'></a><a href='#L552'>552</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -644,6 +641,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1165,13 +1165,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Progress } from '@/components/ui/progress';</span>
+<span class="cstat-no" title="statement not covered" >import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Trophy,
   Target,
   Zap,
@@ -1192,9 +1192,9 @@ import {
   Clock,
 } from 'lucide-react';
 import { DevelopmentBadge, DEVELOPMENT_BADGES } from '@/types/development-badges';
-import { useAuth } from '@/hooks/useAuth';
-import { UserOnboardingModal } from '@/components/engagement/UserOnboardingModal';
-import { unifiedBadgeManagementService } from '@/services/badges/UnifiedBadgeManagementService';
+<span class="cstat-no" title="statement not covered" >import { useAuth } from '@/hooks/useAuth';</span>
+<span class="cstat-no" title="statement not covered" >import { UserOnboardingModal } from '@/components/engagement/UserOnboardingModal';</span>
+<span class="cstat-no" title="statement not covered" >import { unifiedBadgeManagementService } from '@/services/badges/UnifiedBadgeManagementService';</span>
 &nbsp;
 const difficultyColors = <span class="cstat-no" title="statement not covered" >{</span>
   bronze: 'bg-amber-100 text-amber-800 border-amber-200',
@@ -1238,7 +1238,7 @@ const categoryLabels = <span class="cstat-no" title="statement not covered" >{</
   growth: '成長',
 };
 &nbsp;
-export const DevelopmentBadgeShowcasePage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >DevelopmentBadgeShowcasePage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
   const [selectedCategory, setSelectedCategory] = <span class="cstat-no" title="statement not covered" >useState&lt;'all' | string&gt;('all');</span>
   const [showOnboarding, setShowOnboarding] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
@@ -1723,7 +1723,7 @@ export const DevelopmentBadgeShowcasePage: React.FC = <span class="cstat-no" tit
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

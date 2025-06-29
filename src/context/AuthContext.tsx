@@ -38,6 +38,35 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+// 環境変数の取得をより互換性のある方法で行う
+const getEnvVar = (key: string): string | undefined => {
+  // Jest環境ではprocess.envを優先
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  // Vite環境でのimport.meta.env（安全にアクセス）
+  try {
+    if (typeof window !== 'undefined' && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env[key];
+    }
+  } catch (e) {
+    // import.metaが利用できない場合は無視
+  }
+  return undefined;
+};
+
+const isDev = () => {
+  return (
+    getEnvVar('NODE_ENV') === 'development' ||
+    getEnvVar('DEV') === 'true' ||
+    getEnvVar('MODE') === 'development'
+  );
+};
+
+const isSkipAuth = () => {
+  return getEnvVar('VITE_SKIP_AUTH') === 'true';
+};
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -308,7 +337,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // 開発環境でのサーバー起動ガイダンス（初回のみ）
         if (
-          import.meta.env.DEV &&
+          isDev() &&
           window.location.hostname === 'localhost' &&
           !sessionStorage.getItem('auth-init-shown')
         ) {
@@ -323,7 +352,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // ログアウト状態をチェック
         const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
-        if (import.meta.env.DEV && window.location.hostname === 'localhost' && !isLoggedOut) {
+        if (isDev() && window.location.hostname === 'localhost' && !isLoggedOut) {
           console.log('🚀 Development fast auth mode enabled');
           if (isMounted) {
             setUser({
@@ -351,8 +380,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           // 開発環境での認証スキップオプション
           const isExplicitMockMode = window.__VITE_USE_MOCK_DATA__ === 'true';
-          const isDevelopmentSkip =
-            import.meta.env.DEV && import.meta.env.VITE_SKIP_AUTH === 'true';
+          const isDevelopmentSkip = isDev() && isSkipAuth();
 
           if (isExplicitMockMode || isDevelopmentSkip) {
             console.log('🎭 モックモード/開発モード有効 - 認証をスキップします');
@@ -434,7 +462,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
           // 開発環境でトークンがない場合のフォールバック（ログアウトしていない場合のみ）
-          if (import.meta.env.DEV && window.location.hostname === 'localhost' && !isLoggedOut) {
+          if (isDev() && window.location.hostname === 'localhost' && !isLoggedOut) {
             console.log('🔧 Development mode: Setting demo auth for no token case');
             setUser({
               id: 'demo-user',
@@ -471,7 +499,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setLoading(false);
 
           // 開発環境でのデバッグ情報
-          if (import.meta.env.DEV) {
+          if (isDev()) {
             console.log('🐛 Final Auth State:', {
               isAuthenticated,
               user: user?.email || 'no user',
@@ -488,7 +516,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, []); // �� 依存配列を空にして無限ループを防ぐ
+  }, []); // 依存配列を空にして無限ループを防ぐ
 
   // 定期的な認証チェック（一時的に無効化してデバッグ）
   useEffect(() => {

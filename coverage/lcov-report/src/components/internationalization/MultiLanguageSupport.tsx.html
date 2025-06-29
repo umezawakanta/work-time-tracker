@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>0/78</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>0/75</span>
             </div>
         
             
@@ -933,20 +933,20 @@
 <a name='L868'></a><a href='#L868'>868</a>
 <a name='L869'></a><a href='#L869'>869</a>
 <a name='L870'></a><a href='#L870'>870</a>
-<a name='L871'></a><a href='#L871'>871</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L871'></a><a href='#L871'>871</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1802,21 +1802,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import {
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useEffect, createContext, useContext } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { Progress } from '@/components/ui/progress';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
+<span class="cstat-no" title="statement not covered" >import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Globe,
   Languages,
   MapPin,
@@ -1898,7 +1898,7 @@ const MultiLanguageContext = <span class="cstat-no" title="statement not covered
   languages: [],
 });
 &nbsp;
-export const useTranslation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useTranslation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const context = <span class="cstat-no" title="statement not covered" >useContext(MultiLanguageContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useTranslation must be used within MultiLanguageProvider');</span>
@@ -1906,7 +1906,7 @@ export const useTranslation = <span class="cstat-no" title="statement not covere
 <span class="cstat-no" title="statement not covered" >  return context;</span>
 };
 &nbsp;
-export const MultiLanguageSupport: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >MultiLanguageSupport: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const [currentLanguage, setCurrentLanguage] = <span class="cstat-no" title="statement not covered" >useState('ja');</span>
   const [languages, setLanguages] = <span class="cstat-no" title="statement not covered" >useState&lt;Language[]&gt;([]);</span>
   const [translations, setTranslations] = <span class="cstat-no" title="statement not covered" >useState&lt;Translation[]&gt;([]);</span>
@@ -2609,7 +2609,7 @@ export const MultiLanguageSupport: React.FC = <span class="cstat-no" title="stat
   );
 };
 &nbsp;
-export const MultiLanguageProvider: React.FC&lt;{ children: React.ReactNode }&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> children }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >MultiLanguageProvider: React.FC&lt;{ children: React.ReactNode }&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> children }) =&gt; {</span>
   const [currentLanguage, setCurrentLanguage] = <span class="cstat-no" title="statement not covered" >useState('ja');</span>
   const [languages] = <span class="cstat-no" title="statement not covered" >useState&lt;Language[]&gt;([</span>
     {
@@ -2672,7 +2672,7 @@ export const MultiLanguageProvider: React.FC&lt;{ children: React.ReactNode }&gt
   );
 };
 &nbsp;
-export default MultiLanguageSupport;
+<span class="cstat-no" title="statement not covered" >export default MultiLanguageSupport;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -2680,7 +2680,7 @@ export default MultiLanguageSupport;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

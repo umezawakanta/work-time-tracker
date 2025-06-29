@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/44</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/35</span>
             </div>
         
             
@@ -218,7 +218,7 @@
 <a name='L153'></a><a href='#L153'>153</a>
 <a name='L154'></a><a href='#L154'>154</a>
 <a name='L155'></a><a href='#L155'>155</a>
-<a name='L156'></a><a href='#L156'>156</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L156'></a><a href='#L156'>156</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,7 +373,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { api } from './apiConfig';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
 import { User, UserNotification } from '@/types';
 &nbsp;
 export interface AdminUser extends User {
@@ -420,7 +420,7 @@ export interface UserManagementFilters {
 }
 &nbsp;
 // ユーザー一覧取得
-export const getUsers = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >getUsers = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   filters?: UserManagementFilters
 ): Promise&lt;{
   users: AdminUser[];
@@ -443,13 +443,13 @@ export const getUsers = <span class="cstat-no" title="statement not covered" ><s
 };
 &nbsp;
 // ユーザー詳細取得
-export const getUserDetails = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userId: string): Promise&lt;AdminUser&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getUserDetails = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userId: string): Promise&lt;AdminUser&gt; =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await api.get(`/admin/users/${userId}`);</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 };
 &nbsp;
 // ユーザー状態更新
-export const updateUserStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   userId: string,
   updates: {
     isActive?: boolean;
@@ -462,18 +462,18 @@ export const updateUserStatus = <span class="cstat-no" title="statement not cove
 };
 &nbsp;
 // ユーザー削除
-export const deleteUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userId: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >deleteUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userId: string): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  await api.delete(`/admin/users/${userId}`);</span>
 };
 &nbsp;
 // システム統計取得
-export const getSystemStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;SystemStats&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getSystemStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;SystemStats&gt; =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await api.get('/admin/stats');</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 };
 &nbsp;
 // アクティビティログ取得
-export const getActivityLogs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(filters?: {</span>
+export const <span class="cstat-no" title="statement not covered" >getActivityLogs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(filters?: {</span>
   userId?: string;
   action?: string;
   startDate?: string;
@@ -501,7 +501,7 @@ export const getActivityLogs = <span class="cstat-no" title="statement not cover
 };
 &nbsp;
 // 一括通知送信
-export const sendBulkNotification = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(notification: {</span>
+export const <span class="cstat-no" title="statement not covered" >sendBulkNotification = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(notification: {</span>
   title: string;
   message: string;
   type: string;
@@ -512,13 +512,13 @@ export const sendBulkNotification = <span class="cstat-no" title="statement not 
 };
 &nbsp;
 // バックアップ作成
-export const createBackup = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;{ backupId: string; downloadUrl: string }&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >createBackup = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;{ backupId: string; downloadUrl: string }&gt; =&gt; {</span>
   const response = <span class="cstat-no" title="statement not covered" >await api.post('/admin/backup');</span>
 <span class="cstat-no" title="statement not covered" >  return response.data;</span>
 };
 &nbsp;
 // システム設定更新
-export const updateSystemSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(settings: {</span>
+export const <span class="cstat-no" title="statement not covered" >updateSystemSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(settings: {</span>
   maintenanceMode?: boolean;
   registrationEnabled?: boolean;
   maxUsersPerPlan?: number;
@@ -535,7 +535,7 @@ export const updateSystemSettings = <span class="cstat-no" title="statement not 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

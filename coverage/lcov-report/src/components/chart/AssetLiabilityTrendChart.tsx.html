@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/88</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/76</span>
+                <span class='fraction'>0/84</span>
             </div>
         
             
@@ -473,14 +473,8 @@
 <a name='L408'></a><a href='#L408'>408</a>
 <a name='L409'></a><a href='#L409'>409</a>
 <a name='L410'></a><a href='#L410'>410</a>
-<a name='L411'></a><a href='#L411'>411</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L411'></a><a href='#L411'>411</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -494,8 +488,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -518,6 +517,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -883,8 +883,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useRef, useEffect, useMemo } from 'react';
-import {
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useRef, useEffect, useMemo } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -898,11 +898,11 @@ import {
   ChartOptions,
   ChartData,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { ja } from 'date-fns/locale';
-import { format } from 'date-fns';
-import 'chartjs-adapter-date-fns';
-import './AssetLiabilityTrendChart.css';
+<span class="cstat-no" title="statement not covered" >import { Line } from 'react-chartjs-2';</span>
+<span class="cstat-no" title="statement not covered" >import { ja } from 'date-fns/locale';</span>
+<span class="cstat-no" title="statement not covered" >import { format } from 'date-fns';</span>
+<span class="cstat-no" title="statement not covered" >import 'chartjs-adapter-date-fns';</span>
+<span class="cstat-no" title="statement not covered" >import './AssetLiabilityTrendChart.css';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >ChartJS.register(</span>
   CategoryScale,
@@ -927,7 +927,7 @@ interface AssetLiabilityTrendChartProps {
   data: DataPoint[];
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >AssetLiabilityTrendChart(</span>{ data }: AssetLiabilityTrendChartProps) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >A</span>ssetLiabilityTrendChart(</span>{ data }: AssetLiabilityTrendChartProps) {
   const chartRef = <span class="cstat-no" title="statement not covered" >useRef&lt;ChartJS&lt;'line'&gt; | null&gt;(null);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
@@ -1300,7 +1300,7 @@ export function <span class="fstat-no" title="function not covered" >AssetLiabil
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

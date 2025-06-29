@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>0/83</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/68</span>
+                <span class='fraction'>0/79</span>
             </div>
         
             
@@ -403,18 +403,18 @@
 <a name='L338'></a><a href='#L338'>338</a>
 <a name='L339'></a><a href='#L339'>339</a>
 <a name='L340'></a><a href='#L340'>340</a>
-<a name='L341'></a><a href='#L341'>341</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L341'></a><a href='#L341'>341</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -742,19 +742,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useCallback, useMemo } from 'react';
-import { Calendar, momentLocalizer, Event, View } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { useSelector, useDispatch } from 'react-redux';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useCallback, useMemo } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Calendar, momentLocalizer, Event, View } from 'react-big-calendar';</span>
+<span class="cstat-no" title="statement not covered" >import moment from 'moment';</span>
+<span class="cstat-no" title="statement not covered" >import 'react-big-calendar/lib/css/react-big-calendar.css';</span>
+<span class="cstat-no" title="statement not covered" >import { useSelector, useDispatch } from 'react-redux';</span>
 import { RootState, AppDispatch } from '@/store';
-import { updateTodoItem } from '@/store/todoSlice';
+<span class="cstat-no" title="statement not covered" >import { updateTodoItem } from '@/store/todoSlice';</span>
 import { TodoItem } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, Clock, AlertCircle } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Calendar as CalendarIcon, Clock, AlertCircle } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
 &nbsp;
 const localizer = <span class="cstat-no" title="statement not covered" >momentLocalizer(moment);</span>
 &nbsp;
@@ -767,7 +767,7 @@ interface TaskCalendarProps {
   onDateSelect?: (date: Date) =&gt; void;
 }
 &nbsp;
-export const TaskCalendar: React.FC&lt;TaskCalendarProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> onTaskSelect, onDateSelect }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >TaskCalendar: React.FC&lt;TaskCalendarProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> onTaskSelect, onDateSelect }) =&gt; {</span>
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch&lt;AppDispatch&gt;();</span>
   const todos = <span class="cstat-no" title="statement not covered" >useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.todo.items)</span>;</span>
   const [currentView, setCurrentView] = <span class="cstat-no" title="statement not covered" >useState&lt;View&gt;('month');</span>
@@ -1082,7 +1082,7 @@ export const TaskCalendar: React.FC&lt;TaskCalendarProps&gt; = <span class="csta
   );
 };
 &nbsp;
-export default TaskCalendar;
+<span class="cstat-no" title="statement not covered" >export default TaskCalendar;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1090,7 +1090,7 @@ export default TaskCalendar;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

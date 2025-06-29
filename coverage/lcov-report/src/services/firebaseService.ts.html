@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/209</span>
+                <span class='fraction'>0/228</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/209</span>
+                <span class='fraction'>0/212</span>
             </div>
         
             
@@ -663,6 +663,8 @@
 <a name='L598'></a><a href='#L598'>598</a>
 <a name='L599'></a><a href='#L599'>599</a>
 <a name='L600'></a><a href='#L600'>600</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -677,9 +679,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1262,8 +1262,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/firebaseService.ts
-import { initializeApp } from 'firebase/app';
-import {
+<span class="cstat-no" title="statement not covered" >import { initializeApp } from 'firebase/app';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   getFirestore,
   collection,
   doc,
@@ -1278,7 +1278,7 @@ import {
   Timestamp,
   onSnapshot,
 } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+<span class="cstat-no" title="statement not covered" >import { getAuth, onAuthStateChanged, User } from 'firebase/auth';</span>
 import { AssetEntry, DebtEntry, FinancialGoal, LongTermDataPoint } from '@/types';
 &nbsp;
 // Firebaseの設定（本番環境では環境変数から取得することを推奨）
@@ -1299,7 +1299,7 @@ const auth = <span class="cstat-no" title="statement not covered" >getAuth(app);
 /**
  * 現在のログインユーザーを取得
  */
-export const getCurrentUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): Promise&lt;User | null&gt; =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getCurrentUser = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): Promise&lt;User | null&gt; =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve) =&gt; {</span>
     const unsubscribe = <span class="cstat-no" title="statement not covered" >onAuthStateChanged(auth, <span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      unsubscribe();</span>
@@ -1311,7 +1311,7 @@ export const getCurrentUser = <span class="cstat-no" title="statement not covere
 /**
  * ユーザーの資産データを取得
  */
-export const fetchAssets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;AssetEntry[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchAssets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;AssetEntry[]&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    return [];</span>
@@ -1347,7 +1347,7 @@ export const fetchAssets = <span class="cstat-no" title="statement not covered" 
 /**
  * ユーザーの負債データを取得
  */
-export const fetchDebts = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;DebtEntry[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchDebts = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;DebtEntry[]&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    return [];</span>
@@ -1384,7 +1384,7 @@ export const fetchDebts = <span class="cstat-no" title="statement not covered" >
 /**
  * 資産データを追加または更新
  */
-export const saveAsset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(asset: AssetEntry): Promise&lt;string&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveAsset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(asset: AssetEntry): Promise&lt;string&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1430,7 +1430,7 @@ export const saveAsset = <span class="cstat-no" title="statement not covered" ><
 /**
  * 負債データを追加または更新
  */
-export const saveDebt = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(debt: DebtEntry): Promise&lt;string&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveDebt = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(debt: DebtEntry): Promise&lt;string&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1476,7 +1476,7 @@ export const saveDebt = <span class="cstat-no" title="statement not covered" ><s
 /**
  * 資産データを削除
  */
-export const deleteAsset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(assetId: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >deleteAsset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(assetId: string): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1494,7 +1494,7 @@ export const deleteAsset = <span class="cstat-no" title="statement not covered" 
 /**
  * 負債データを削除
  */
-export const deleteDebt = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(debtId: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >deleteDebt = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(debtId: string): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1512,7 +1512,7 @@ export const deleteDebt = <span class="cstat-no" title="statement not covered" >
 /**
  * ユーザーの目標データを取得
  */
-export const fetchGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;FinancialGoal[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;FinancialGoal[]&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    return [];</span>
@@ -1550,7 +1550,7 @@ export const fetchGoals = <span class="cstat-no" title="statement not covered" >
 /**
  * 目標データを保存
  */
-export const saveGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(goal: FinancialGoal): Promise&lt;string&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveGoal = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(goal: FinancialGoal): Promise&lt;string&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1601,7 +1601,7 @@ export const saveGoal = <span class="cstat-no" title="statement not covered" ><s
 /**
  * 最終更新日を保存
  */
-export const saveLastBalanceUpdateDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(date: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveLastBalanceUpdateDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(date: string): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
     // 非ログイン時はローカルストレージに保存
@@ -1628,7 +1628,7 @@ export const saveLastBalanceUpdateDate = <span class="cstat-no" title="statement
 /**
  * 最終更新日を取得
  */
-export const getLastBalanceUpdateDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;string | null&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getLastBalanceUpdateDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;string | null&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    return localStorage.getItem('lastBalanceUpdateDate');</span>
@@ -1653,7 +1653,7 @@ export const getLastBalanceUpdateDate = <span class="cstat-no" title="statement 
 /**
  * ユーザー設定を取得
  */
-export const getUserSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;{</span>
+export const <span class="cstat-no" title="statement not covered" >getUserSettings = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;{</span>
   isPremium: boolean;
   premiumExpiresAt: Date | null;
   currency: string;
@@ -1709,7 +1709,7 @@ export const getUserSettings = <span class="cstat-no" title="statement not cover
 /**
  * リアルタイムでデータ変更を監視（資産）
  */
-export const subscribeToAssets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>allback: (assets: AssetEntry[]) =&gt; void): (() =&gt; void) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >subscribeToAssets = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>allback: (assets: AssetEntry[]) =&gt; void): (() =&gt; void) =&gt; {</span>
   const unsubscribe = <span class="cstat-no" title="statement not covered" >onAuthStateChanged(auth, <span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >      callback([]);</span>
@@ -1746,7 +1746,7 @@ export const subscribeToAssets = <span class="cstat-no" title="statement not cov
 /**
  * リアルタイムでデータ変更を監視（負債）
  */
-export const subscribeToDebts = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>allback: (debts: DebtEntry[]) =&gt; void): (() =&gt; void) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >subscribeToDebts = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>c</span>allback: (debts: DebtEntry[]) =&gt; void): (() =&gt; void) =&gt; {</span>
   const unsubscribe = <span class="cstat-no" title="statement not covered" >onAuthStateChanged(auth, <span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >      callback([]);</span>
@@ -1784,7 +1784,7 @@ export const subscribeToDebts = <span class="cstat-no" title="statement not cove
 /**
  * 長期トレンドデータを取得
  */
-export const fetchLongTermData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;LongTermDataPoint[]&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchLongTermData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;LongTermDataPoint[]&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    return [];</span>
@@ -1818,7 +1818,7 @@ export const fetchLongTermData = <span class="cstat-no" title="statement not cov
 /**
  * 長期トレンドデータを保存
  */
-export const saveLongTermDataPoint = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(dataPoint: LongTermDataPoint): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveLongTermDataPoint = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(dataPoint: LongTermDataPoint): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('認証が必要です');</span>
@@ -1867,7 +1867,7 @@ export const saveLongTermDataPoint = <span class="cstat-no" title="statement not
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

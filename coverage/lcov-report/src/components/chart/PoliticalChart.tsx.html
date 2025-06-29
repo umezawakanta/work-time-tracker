@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/156</span>
+                <span class='fraction'>0/173</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/145</span>
+                <span class='fraction'>0/162</span>
             </div>
         
             
@@ -528,22 +528,22 @@
 <a name='L463'></a><a href='#L463'>463</a>
 <a name='L464'></a><a href='#L464'>464</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -988,25 +988,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useSurveyData } from './hooks/useSurveyData';
-import MissingDataAlert from '@/components/MissingDataAlert';
-import ChartControls from '@/components/ChartControls';
-import PoliticalLineChart from '@/components/chart/PoliticalLineChart';
-import ChartLegend from '@/components/chart/ChartLegend';
-import TimeRangeSelector from '@/components/chart/TimeRangeSelector';
-import ChartToolbar from '@/components/chart/ChartToolbar';
-import CompareOverlay from '@/components/chart/CompareOverlay';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
-import './PoliticalChart.css'; // CSSファイルをインポート
+<span class="cstat-no" title="statement not covered" >import { useEffect, useState, useCallback, useRef } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Tabs, TabsContent } from '@/components/ui/tabs';</span>
+<span class="cstat-no" title="statement not covered" >import { Skeleton } from '@/components/ui/skeleton';</span>
+<span class="cstat-no" title="statement not covered" >import { useSurveyData } from './hooks/useSurveyData';</span>
+<span class="cstat-no" title="statement not covered" >import MissingDataAlert from '@/components/MissingDataAlert';</span>
+<span class="cstat-no" title="statement not covered" >import ChartControls from '@/components/ChartControls';</span>
+<span class="cstat-no" title="statement not covered" >import PoliticalLineChart from '@/components/chart/PoliticalLineChart';</span>
+<span class="cstat-no" title="statement not covered" >import ChartLegend from '@/components/chart/ChartLegend';</span>
+<span class="cstat-no" title="statement not covered" >import TimeRangeSelector from '@/components/chart/TimeRangeSelector';</span>
+<span class="cstat-no" title="statement not covered" >import ChartToolbar from '@/components/chart/ChartToolbar';</span>
+<span class="cstat-no" title="statement not covered" >import CompareOverlay from '@/components/chart/CompareOverlay';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { saveAs } from 'file-saver';</span>
+<span class="cstat-no" title="statement not covered" >import html2canvas from 'html2canvas';</span>
+<span class="cstat-no" title="statement not covered" >import './PoliticalChart.css'; </span>// CSSファイルをインポート
 &nbsp;
 // 日付範囲の型
 type DateRange = '1M' | '3M' | '6M' | '1Y' | 'MAX';
@@ -1451,7 +1451,7 @@ const PoliticalChart = <span class="cstat-no" title="statement not covered" ><sp
   );
 };
 &nbsp;
-export default PoliticalChart;
+<span class="cstat-no" title="statement not covered" >export default PoliticalChart;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1459,7 +1459,7 @@ export default PoliticalChart;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

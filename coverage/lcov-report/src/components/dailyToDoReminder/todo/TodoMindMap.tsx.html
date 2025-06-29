@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/39</span>
+                <span class='fraction'>0/51</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/45</span>
             </div>
         
             
@@ -267,7 +267,8 @@
 <a name='L202'></a><a href='#L202'>202</a>
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
-<a name='L205'></a><a href='#L205'>205</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L205'></a><a href='#L205'>205</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -278,24 +279,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -471,8 +471,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useCallback, useMemo } from 'react';
-import ReactFlow, {
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useCallback, useMemo } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import ReactFlow, {</span>
   Node,
   Edge,
   Controls,
@@ -483,23 +483,23 @@ import ReactFlow, {
   BackgroundVariant,
   Panel,
 } from 'reactflow';
-import 'reactflow/dist/style.css';
+<span class="cstat-no" title="statement not covered" >import 'reactflow/dist/style.css';</span>
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { X, Network, Layers, Download, Maximize2 } from 'lucide-react';
+<span class="cstat-no" title="statement not covered" >import { X, Network, Layers, Download, Maximize2 } from 'lucide-react';</span>
 import { Todo } from '../types';
-import { convertTodosToMindMap, convertTodosByStatus } from './mindMapUtils';
-import { toast } from 'react-hot-toast';
-import html2canvas from 'html2canvas';
-import { CustomMindMapNode } from './CustomMindMapNode';
+<span class="cstat-no" title="statement not covered" >import { convertTodosToMindMap, convertTodosByStatus } from './mindMapUtils';</span>
+<span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
+<span class="cstat-no" title="statement not covered" >import html2canvas from 'html2canvas';</span>
+<span class="cstat-no" title="statement not covered" >import { CustomMindMapNode } from './CustomMindMapNode';</span>
 &nbsp;
 interface TodoMindMapProps {
   todos: readonly Todo[];
@@ -512,7 +512,7 @@ const nodeTypes = <span class="cstat-no" title="statement not covered" >{</span>
   custom: CustomMindMapNode,
 };
 &nbsp;
-export const TodoMindMap: React.FC&lt;TodoMindMapProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> todos, onClose }) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >TodoMindMap: React.FC&lt;TodoMindMapProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span> todos, onClose }) =&gt; {</span>
   const [viewMode, setViewMode] = <span class="cstat-no" title="statement not covered" >useState&lt;ViewMode&gt;('category');</span>
   const [selectedNode, setSelectedNode] = <span class="cstat-no" title="statement not covered" >useState&lt;Node | null&gt;(null);</span>
 &nbsp;
@@ -682,7 +682,7 @@ export const TodoMindMap: React.FC&lt;TodoMindMapProps&gt; = <span class="cstat-
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

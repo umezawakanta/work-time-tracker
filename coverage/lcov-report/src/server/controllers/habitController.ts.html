@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/87</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/79</span>
+                <span class='fraction'>0/81</span>
             </div>
         
             
@@ -259,8 +259,8 @@
 <a name='L194'></a><a href='#L194'>194</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -452,8 +452,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/controllers/habitController.js
 &nbsp;
 import { Request, Response } from 'express';
-import { Habit } from '../models/Habit.js';
-import mongoose from 'mongoose';
+<span class="cstat-no" title="statement not covered" >import { Habit } from '../models/Habit.js';</span>
+<span class="cstat-no" title="statement not covered" >import mongoose from 'mongoose';</span>
 &nbsp;
 interface AuthRequest extends Request {
   user?: { id: string };
@@ -471,7 +471,7 @@ interface HabitDocument extends mongoose.Document {
   save(): Promise&lt;this&gt;;
 }
 &nbsp;
-export const getHabits = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getHabits = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!userId) {</span>
@@ -490,7 +490,7 @@ export const getHabits = <span class="cstat-no" title="statement not covered" ><
   }
 };
 &nbsp;
-export const createHabit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >createHabit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
     const { name } = <span class="cstat-no" title="statement not covered" >req.body;</span>
@@ -517,7 +517,7 @@ export const createHabit = <span class="cstat-no" title="statement not covered" 
   }
 };
 &nbsp;
-export const initializeHabits = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >initializeHabits = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!userId) {</span>
@@ -552,7 +552,7 @@ export const initializeHabits = <span class="cstat-no" title="statement not cove
   }
 };
 &nbsp;
-export const updateHabit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateHabit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(req: AuthRequest, res: Response): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user?.id;</span>
     const { habitId } = <span class="cstat-no" title="statement not covered" >req.params;</span>
@@ -649,7 +649,7 @@ export const updateHabit = <span class="cstat-no" title="statement not covered" 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/92</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -569,17 +569,10 @@
 <a name='L504'></a><a href='#L504'>504</a>
 <a name='L505'></a><a href='#L505'>505</a>
 <a name='L506'></a><a href='#L506'>506</a>
-<a name='L507'></a><a href='#L507'>507</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L507'></a><a href='#L507'>507</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -591,10 +584,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1075,10 +1075,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useCallback, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useCallback, useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   Lock,
   Sparkles,
   Calendar,
@@ -1090,17 +1090,17 @@ import {
   Shield,
   Loader2,
 } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Progress } from '@/components/ui/progress';
+<span class="cstat-no" title="statement not covered" >import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';</span>
+<span class="cstat-no" title="statement not covered" >import { Progress } from '@/components/ui/progress';</span>
 &nbsp;
 // 切り出したコンポーネントのインポート
-import { PremiumPlanSelector, PremiumPlanInfo } from './PremiumPlanSelector';
-import { ReferralDialog } from './ReferralDialog';
+<span class="cstat-no" title="statement not covered" >import { PremiumPlanSelector, PremiumPlanInfo } from './PremiumPlanSelector';</span>
+<span class="cstat-no" title="statement not covered" >import { ReferralDialog } from './ReferralDialog';</span>
 &nbsp;
 // サブスクリプション関連のサービス
-import { _extendTrialPeriod as extendTrialPeriod } from '@/services/userAccountService';
-import { _fetchUsageStatistics as fetchUsageStatistics } from '@/services/userAccountService';
-import { useAuth } from '@/hooks/useAuth';
+<span class="cstat-no" title="statement not covered" >import { _extendTrialPeriod as extendTrialPeriod } from '@/services/userAccountService';</span>
+<span class="cstat-no" title="statement not covered" >import { _fetchUsageStatistics as fetchUsageStatistics } from '@/services/userAccountService';</span>
+<span class="cstat-no" title="statement not covered" >import { useAuth } from '@/hooks/useAuth';</span>
 &nbsp;
 // プレミアム機能の型定義
 interface PremiumFeature {
@@ -1133,7 +1133,7 @@ interface PremiumFeatureBannerProps {
  * プレミアム機能のバナーコンポーネント
  * 無料ユーザーにはアップグレード促進、プレミアムユーザーには利用期限を表示
  */
-export const PremiumFeatureBanner: React.FC&lt;PremiumFeatureBannerProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span></span>
+export const <span class="cstat-no" title="statement not covered" >PremiumFeatureBanner: React.FC&lt;PremiumFeatureBannerProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
   isPremium,
   expiresAt,
   onUpgrade,
@@ -1588,7 +1588,7 @@ export const PremiumFeatureBanner: React.FC&lt;PremiumFeatureBannerProps&gt; = <
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

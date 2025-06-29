@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>0/28</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -309,7 +309,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -322,12 +322,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -339,6 +333,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -368,7 +368,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -418,7 +418,7 @@ export interface PricingConfig {
 }
 &nbsp;
 // 2024年12月現在の実際のAPI価格（USD）
-export const AI_PRICING_CONFIG: PricingConfig = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >AI_PRICING_CONFIG: PricingConfig = {</span>
   openai: {
     inputTokenPrice: 0.0005, // GPT-4: $0.03/1K input tokens
     outputTokenPrice: 0.0015, // GPT-4: $0.06/1K output tokens
@@ -478,7 +478,7 @@ export const AI_PRICING_CONFIG: PricingConfig = <span class="cstat-no" title="st
 /**
  * トークン数とプロバイダーに基づいてコストを計算
  */
-export function <span class="fstat-no" title="function not covered" >calculateAICost(</span>
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >c</span>alculateAICost(</span>
   provider: string,
   inputTokens: number = <span class="branch-0 cbranch-no" title="branch not covered" >0,</span>
   outputTokens: number = <span class="branch-0 cbranch-no" title="branch not covered" >0</span>
@@ -496,7 +496,7 @@ export function <span class="fstat-no" title="function not covered" >calculateAI
 /**
  * 処理時間に基づく動的confidence計算
  */
-export function <span class="fstat-no" title="function not covered" >calculateConfidence(</span>
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >c</span>alculateConfidence(</span>
   provider: string,
   processingTime: number,
   tokenCount: number,
@@ -537,7 +537,7 @@ export function <span class="fstat-no" title="function not covered" >calculateCo
 /**
  * 処理時間を予測（プロバイダーと入力サイズによる）
  */
-export function <span class="fstat-no" title="function not covered" >estimateProcessingTime(</span>
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >e</span>stimateProcessingTime(</span>
   provider: string,
   inputSize: number,
   taskType: string
@@ -577,7 +577,7 @@ export function <span class="fstat-no" title="function not covered" >estimatePro
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

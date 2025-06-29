@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/61</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
@@ -220,33 +220,18 @@
 <a name='L155'></a><a href='#L155'>155</a>
 <a name='L156'></a><a href='#L156'>156</a>
 <a name='L157'></a><a href='#L157'>157</a>
-<a name='L158'></a><a href='#L158'>158</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L158'></a><a href='#L158'>158</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -255,6 +240,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,6 +261,20 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -376,9 +376,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { candidateApi } from '../services/api';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';</span>
+<span class="cstat-no" title="statement not covered" >import { candidateApi } from '../services/api';</span>
 import { Candidate, CandidateState } from '@/types';
 &nbsp;
 const initialState: CandidateState = <span class="cstat-no" title="statement not covered" >{</span>
@@ -388,7 +388,7 @@ const initialState: CandidateState = <span class="cstat-no" title="statement not
   lastUpdated: null, // lastUpdatedプロパティを追加
 };
 &nbsp;
-export const fetchCandidates = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;Candidate[], void, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >fetchCandidates = createAsyncThunk&lt;Candidate[], void, { rejectValue: string }&gt;(</span>
   'candidates/fetchCandidates',
 <span class="fstat-no" title="function not covered" >  async </span>(_, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -401,7 +401,7 @@ export const fetchCandidates = <span class="cstat-no" title="statement not cover
   }
 );
 &nbsp;
-export const addCandidate = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >addCandidate = createAsyncThunk&lt;</span>
   Candidate,
   Omit&lt;Candidate, '_id'&gt;,
   { rejectValue: string }
@@ -415,7 +415,7 @@ export const addCandidate = <span class="cstat-no" title="statement not covered"
   }
 });
 &nbsp;
-export const updateCandidate = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >updateCandidate = createAsyncThunk&lt;</span>
   Candidate,
   { id: string; candidate: Partial&lt;Candidate&gt; },
   { rejectValue: string }
@@ -429,7 +429,7 @@ export const updateCandidate = <span class="cstat-no" title="statement not cover
   }
 });
 &nbsp;
-export const deleteCandidate = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteCandidate = createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
   'candidates/deleteCandidate',
 <span class="fstat-no" title="function not covered" >  async </span>(id, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -446,7 +446,7 @@ export const deleteCandidate = <span class="cstat-no" title="statement not cover
 let updateInterval: ReturnType&lt;typeof setInterval&gt; | null = <span class="cstat-no" title="statement not covered" >null;</span>
 &nbsp;
 // リアルタイム更新を購読する関数
-export const subscribeToUpdates = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >subscribeToUpdates = createAsyncThunk(</span>
   'candidates/subscribeToUpdates',
 <span class="fstat-no" title="function not covered" >  async </span>(_, { dispatch }) =&gt; {
     // 既存のインターバルがあれば解除
@@ -464,7 +464,7 @@ export const subscribeToUpdates = <span class="cstat-no" title="statement not co
 );
 &nbsp;
 // リアルタイム更新の購読を解除する関数
-export const unsubscribeFromUpdates = <span class="cstat-no" title="statement not covered" >createAsyncThunk(</span>
+export const <span class="cstat-no" title="statement not covered" >unsubscribeFromUpdates = createAsyncThunk(</span>
   'candidates/unsubscribeFromUpdates',
 <span class="fstat-no" title="function not covered" >  async </span>() =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (updateInterval) {</span>
@@ -533,7 +533,7 @@ const candidateSlice = <span class="cstat-no" title="statement not covered" >cre
   },
 });
 &nbsp;
-export default candidateSlice.reducer;
+<span class="cstat-no" title="statement not covered" >export default candidateSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -541,7 +541,7 @@ export default candidateSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

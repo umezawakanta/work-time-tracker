@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/43</span>
+                <span class='fraction'>0/50</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/38</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -180,10 +180,10 @@
 <a name='L115'></a><a href='#L115'>115</a>
 <a name='L116'></a><a href='#L116'>116</a>
 <a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -297,10 +297,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSelector } from '@reduxjs/toolkit';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSelector } from '@reduxjs/toolkit';</span>
 import { RootState } from '@/store';
 import { TodoItem as GlobalTodoItem } from '@/types';
-import { TodoItem, Todo, todoItemsToTodos } from '../../types';
+<span class="cstat-no" title="statement not covered" >import { TodoItem, Todo, todoItemsToTodos } from '../../types';</span>
 &nbsp;
 // Extended TodoState interface to include additional properties
 interface ExtendedTodoState {
@@ -340,7 +340,7 @@ const selectRawTodoItems = <span class="cstat-no" title="statement not covered" 
 <span class="cstat-no" title="statement not covered" >  return items;</span>
 };
 &nbsp;
-export const selectTodoItems = <span class="cstat-no" title="statement not covered" >createSelector(</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoItems = createSelector(</span>
   [selectRawTodoItems],
 <span class="fstat-no" title="function not covered" >  (i</span>tems: readonly GlobalTodoItem[]): readonly TodoItem[] =&gt; {
     // Map global TodoItems to local TodoItems
@@ -348,35 +348,35 @@ export const selectTodoItems = <span class="cstat-no" title="statement not cover
   }
 );
 &nbsp;
-export const selectTodoStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState): string =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoStatus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState): string =&gt; {</span>
   const todoState = <span class="cstat-no" title="statement not covered" >state.todo as unknown as ExtendedTodoState;</span>
 <span class="cstat-no" title="statement not covered" >  return todoState?.status || 'idle';</span>
 };
 &nbsp;
-export const selectTodoError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState): string | null =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoError = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState): string | null =&gt; {</span>
   const todoState = <span class="cstat-no" title="statement not covered" >state.todo as unknown as ExtendedTodoState;</span>
 <span class="cstat-no" title="statement not covered" >  return todoState?.error || null;</span>
 };
 &nbsp;
-export const selectTodoHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState): Record&lt;string, number&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState): Record&lt;string, number&gt; =&gt; {</span>
   const todoState = <span class="cstat-no" title="statement not covered" >state.todo as unknown as ExtendedTodoState;</span>
 <span class="cstat-no" title="statement not covered" >  return todoState?.history || {};</span>
 };
 &nbsp;
-export const selectDailyHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectDailyHistory = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   state: RootState
 ): readonly { date: string; count: number }[] =&gt; {
   const todoState = <span class="cstat-no" title="statement not covered" >state.todo as unknown as ExtendedTodoState;</span>
 <span class="cstat-no" title="statement not covered" >  return todoState?.dailyHistory || [];</span>
 };
 &nbsp;
-export const selectIsPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState): boolean =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >selectIsPremium = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState): boolean =&gt; {</span>
   const todoState = <span class="cstat-no" title="statement not covered" >state.todo as unknown as ExtendedTodoState;</span>
 <span class="cstat-no" title="statement not covered" >  return todoState?.isPremium || false;</span>
 };
 &nbsp;
 // Memoized selector for converting TodoItems to Todos
-export const selectTodos = <span class="cstat-no" title="statement not covered" >createSelector(</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodos = createSelector(</span>
   [selectTodoItems],
 <span class="fstat-no" title="function not covered" >  (t</span>odoItems: readonly TodoItem[]): readonly Todo[] =&gt; {
 <span class="cstat-no" title="statement not covered" >    return todoItemsToTodos(todoItems);</span>
@@ -384,21 +384,21 @@ export const selectTodos = <span class="cstat-no" title="statement not covered" 
 );
 &nbsp;
 // Additional computed selectors
-export const selectActiveTodos = <span class="cstat-no" title="statement not covered" >createSelector(</span>
+export const <span class="cstat-no" title="statement not covered" >selectActiveTodos = createSelector(</span>
   [selectTodos],
 <span class="fstat-no" title="function not covered" >  (t</span>odos: readonly Todo[]): readonly Todo[] =&gt; {
 <span class="cstat-no" title="statement not covered" >    return todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo: Todo) =&gt; <span class="cstat-no" title="statement not covered" >!todo.completed)</span>;</span>
   }
 );
 &nbsp;
-export const selectCompletedTodos = <span class="cstat-no" title="statement not covered" >createSelector(</span>
+export const <span class="cstat-no" title="statement not covered" >selectCompletedTodos = createSelector(</span>
   [selectTodos],
 <span class="fstat-no" title="function not covered" >  (t</span>odos: readonly Todo[]): readonly Todo[] =&gt; {
 <span class="cstat-no" title="statement not covered" >    return todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo: Todo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed)</span>;</span>
   }
 );
 &nbsp;
-export const selectTodoStats = <span class="cstat-no" title="statement not covered" >createSelector([selectTodos], <span class="fstat-no" title="function not covered" >(t</span>odos: readonly Todo[]) =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >selectTodoStats = createSelector([selectTodos], <span class="fstat-no" title="function not covered" >(t</span>odos: readonly Todo[]) =&gt; {</span>
   const total = <span class="cstat-no" title="statement not covered" >todos.length;</span>
   const completed = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo: Todo) =&gt; <span class="cstat-no" title="statement not covered" >todo.completed)</span>.length;</span>
   const active = <span class="cstat-no" title="statement not covered" >total - completed;</span>
@@ -421,7 +421,7 @@ export const selectTodoStats = <span class="cstat-no" title="statement not cover
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

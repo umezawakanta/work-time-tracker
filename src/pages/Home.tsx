@@ -1031,6 +1031,13 @@ const Home: React.FC = () => {
             path: '/hardcoded-data',
             gradient: 'from-red-500 to-pink-600',
           },
+          {
+            icon: <BarChart3 className="h-6 w-6" />,
+            title: '📊 カバレッジレポート',
+            description: 'テストカバレッジの詳細分析',
+            path: '/coverage-report',
+            gradient: 'from-indigo-500 to-purple-600',
+          },
         ].map((action, index) => (
           <EnhancedCard
             key={index}

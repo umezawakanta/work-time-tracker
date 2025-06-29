@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/330</span>
+                <span class='fraction'>0/333</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/44</span>
+                <span class='fraction'>0/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/313</span>
+                <span class='fraction'>0/316</span>
             </div>
         
             
@@ -1060,9 +1060,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2052,9 +2052,9 @@
  * Cursor ⇒ Claude ⇒ GitHub ⇒ Vercel ⇒ Cursor のサイクルを管理
  */
 &nbsp;
-import { lifeSupportChatService } from './LifeSupportChatService';
-import { multiAIIntegrationService } from './MultiAIIntegrationService';
-import { dataGenerator } from '../../utils/idGenerator';
+<span class="cstat-no" title="statement not covered" >import { lifeSupportChatService } from './LifeSupportChatService';</span>
+<span class="cstat-no" title="statement not covered" >import { multiAIIntegrationService } from './MultiAIIntegrationService';</span>
+<span class="cstat-no" title="statement not covered" >import { dataGenerator } from '../../utils/idGenerator';</span>
 import { calculateAICost, estimateProcessingTime } from '../../config/aiPricing';
 &nbsp;
 export interface SiteAnalysis {
@@ -2578,8 +2578,8 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getLintErrors(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // 実際のESLintを実行してエラー数を取得
-      const { exec } = <span class="cstat-no" title="statement not covered" >await import('child_process');</span>
-      const { promisify } = <span class="cstat-no" title="statement not covered" >await import('util');</span>
+      const { exec } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>child_process');</span>
+      const { promisify } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>util');</span>
       const execAsync = <span class="cstat-no" title="statement not covered" >promisify(exec);</span>
 &nbsp;
       const { stdout } = <span class="cstat-no" title="statement not covered" >await execAsync('npx eslint src --format json --max-warnings 0', {</span>
@@ -2601,8 +2601,8 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getTestCoverage(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // coverage-final.jsonから実際のカバレッジを取得
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
-      const path = <span class="cstat-no" title="statement not covered" >await import('path');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
+      const path = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>path');</span>
 &nbsp;
       const coveragePath = <span class="cstat-no" title="statement not covered" >path.join(process.cwd(), 'coverage', 'coverage-final.json');</span>
       const coverageData = <span class="cstat-no" title="statement not covered" >await fs.readFile(coveragePath, 'utf-8');</span>
@@ -2631,8 +2631,8 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getDuplicateCodePercentage(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // jscpdを使用して重複コードを検出
-      const { exec } = <span class="cstat-no" title="statement not covered" >await import('child_process');</span>
-      const { promisify } = <span class="cstat-no" title="statement not covered" >await import('util');</span>
+      const { exec } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>child_process');</span>
+      const { promisify } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>util');</span>
       const execAsync = <span class="cstat-no" title="statement not covered" >promisify(exec);</span>
 &nbsp;
       const { stdout } = <span class="cstat-no" title="statement not covered" >await execAsync('npx jscpd src --reporters json --silent', {</span>
@@ -2651,8 +2651,8 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getCodeComplexity(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // TypeScriptファイルの複雑度を分析
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
-      const path = <span class="cstat-no" title="statement not covered" >await import('path');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
+      const path = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>path');</span>
 &nbsp;
       const srcPath = <span class="cstat-no" title="statement not covered" >path.join(process.cwd(), 'src');</span>
       const files = <span class="cstat-no" title="statement not covered" >await this.getAllTsFiles(srcPath);</span>
@@ -2694,8 +2694,8 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getBundleSize(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // distフォルダのサイズを計算
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
-      const path = <span class="cstat-no" title="statement not covered" >await import('path');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
+      const path = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>path');</span>
 &nbsp;
       const distPath = <span class="cstat-no" title="statement not covered" >path.join(process.cwd(), 'dist');</span>
       const size = <span class="cstat-no" title="statement not covered" >await this.getDirectorySize(distPath);</span>
@@ -2710,7 +2710,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getPerformanceScore(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // Vercel統合サービスからパフォーマンススコアを取得
-      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" >await import('../integrations/VercelIntegrationService');</span>
+      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>../integrations/VercelIntegrationService');</span>
       const metrics = <span class="cstat-no" title="statement not covered" >await vercelIntegrationService.getPerformanceMetrics(7);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return metrics?.score || 75;</span>
@@ -2788,7 +2788,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getFeatureCompletion(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // プロジェクトファイル数から完成度を推定
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
       const srcFiles = <span class="cstat-no" title="statement not covered" >await this.getAllTsFiles('./src');</span>
 &nbsp;
       // ファイル数から完成度を推定（200ファイル以上で90%、100ファイルで75%など）
@@ -2804,7 +2804,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getBugCount(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // TODOコメントやFIXMEコメントからバグ推定
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
       const srcFiles = <span class="cstat-no" title="statement not covered" >await this.getAllTsFiles('./src');</span>
 &nbsp;
       let bugCount = <span class="cstat-no" title="statement not covered" >0;</span>
@@ -2860,7 +2860,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getBuildStatus(): Promise&lt;'success' | 'failed' | 'pending'&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // package.jsonの存在とlintエラー数からビルド状況を推定
-      const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
+      const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
 <span class="cstat-no" title="statement not covered" >      await fs.access('./package.json');</span>
 &nbsp;
       const lintErrors = <span class="cstat-no" title="statement not covered" >await this.getLintErrors();</span>
@@ -2879,7 +2879,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getDeploymentTime(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // Vercel APIからデプロイメント時間を取得
-      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" >await import('../integrations/VercelIntegrationService');</span>
+      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>../integrations/VercelIntegrationService');</span>
       const stats = <span class="cstat-no" title="statement not covered" >await vercelIntegrationService.getDeploymentStats(7);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return stats?.averageBuildTime ? Math.round(stats.averageBuildTime / 1000) : 0;</span>
@@ -2893,7 +2893,7 @@ class SelfImprovementEngine {
   private <span class="fstat-no" title="function not covered" >async </span>getUptime(): Promise&lt;number&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // Vercel APIから稼働率を取得
-      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" >await import('../integrations/VercelIntegrationService');</span>
+      const { vercelIntegrationService } = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>../integrations/VercelIntegrationService');</span>
       const status = <span class="cstat-no" title="statement not covered" >await vercelIntegrationService.monitorUptime();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return status?.uptime || 0;</span>
@@ -2961,8 +2961,8 @@ class SelfImprovementEngine {
   // === ヘルパーメソッド ===
 &nbsp;
   private <span class="fstat-no" title="function not covered" >async </span>getAllTsFiles(dir: string): Promise&lt;string[]&gt; {
-    const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
-    const path = <span class="cstat-no" title="statement not covered" >await import('path');</span>
+    const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
+    const path = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>path');</span>
 &nbsp;
     const files: string[] = <span class="cstat-no" title="statement not covered" >[];</span>
 &nbsp;
@@ -3013,8 +3013,8 @@ class SelfImprovementEngine {
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" >async </span>getDirectorySize(dirPath: string): Promise&lt;number&gt; {
-    const fs = <span class="cstat-no" title="statement not covered" >await import('fs/promises');</span>
-    const path = <span class="cstat-no" title="statement not covered" >await import('path');</span>
+    const fs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>fs/promises');</span>
+    const path = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >await import('</span>path');</span>
 &nbsp;
     let size = <span class="cstat-no" title="statement not covered" >0;</span>
 &nbsp;
@@ -3038,7 +3038,7 @@ class SelfImprovementEngine {
   }
 }
 &nbsp;
-export const selfImprovementEngine = <span class="cstat-no" title="statement not covered" >SelfImprovementEngine.getInstance();</span>
+export const <span class="cstat-no" title="statement not covered" >selfImprovementEngine = SelfImprovementEngine.getInstance();</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -3046,7 +3046,7 @@ export const selfImprovementEngine = <span class="cstat-no" title="statement not
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/77</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/74</span>
+                <span class='fraction'>0/77</span>
             </div>
         
             
@@ -354,8 +354,8 @@
 <a name='L289'></a><a href='#L289'>289</a>
 <a name='L290'></a><a href='#L290'>290</a>
 <a name='L291'></a><a href='#L291'>291</a>
-<a name='L292'></a><a href='#L292'>292</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L292'></a><a href='#L292'>292</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -644,9 +644,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useState, useEffect, useCallback } from 'react';
-import ComprehensiveBadgeSyncService, {
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { useState, useEffect, useCallback } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import ComprehensiveBadgeSyncService, {</span>
   PageSpecificBadgeData,
   CrossPageBadgeMetrics,
 } from '@/services/integration/ComprehensiveBadgeSyncService';
@@ -669,7 +669,7 @@ export interface UseComprehensiveBadgeSyncResult {
  * 🔄 包括的バッジ同期フック
  * 各ページでバッジシステムとの同期機能を提供
  */
-export const useComprehensiveBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ageName: string): UseComprehensiveBadgeSyncResult =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useComprehensiveBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>ageName: string): UseComprehensiveBadgeSyncResult =&gt; {</span>
   const [pageData, setPageData] = <span class="cstat-no" title="statement not covered" >useState&lt;PageSpecificBadgeData | null&gt;(null);</span>
   const [globalMetrics, setGlobalMetrics] = <span class="cstat-no" title="statement not covered" >useState&lt;CrossPageBadgeMetrics | null&gt;(null);</span>
   const [isLoading, setIsLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
@@ -796,7 +796,7 @@ export const useComprehensiveBadgeSync = <span class="cstat-no" title="statement
 /**
  * 🏠 ホームページ専用フック
  */
-export const useHomeBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useHomeBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const result = <span class="cstat-no" title="statement not covered" >useComprehensiveBadgeSync('home');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
@@ -813,7 +813,7 @@ export const useHomeBadgeSync = <span class="cstat-no" title="statement not cove
 /**
  * 📊 ダッシュボード専用フック
  */
-export const useDashboardBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useDashboardBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const result = <span class="cstat-no" title="statement not covered" >useComprehensiveBadgeSync('integrated-dashboard');</span>
 &nbsp;
   const recordMetricView = <span class="cstat-no" title="statement not covered" >useCallback(</span>
@@ -848,7 +848,7 @@ export const useDashboardBadgeSync = <span class="cstat-no" title="statement not
 /**
  * ✅ TODO管理専用フック
  */
-export const useTodoBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useTodoBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const result = <span class="cstat-no" title="statement not covered" >useComprehensiveBadgeSync('todos');</span>
 &nbsp;
   const recordTaskCompletion = <span class="cstat-no" title="statement not covered" >useCallback(</span>
@@ -884,7 +884,7 @@ export const useTodoBadgeSync = <span class="cstat-no" title="statement not cove
 /**
  * 🏆 バッジ関連ページ専用フック
  */
-export const useBadgePageSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(p</span>ageType: 'dashboard' | 'showcase' | 'prediction') =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useBadgePageSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>p</span>ageType: 'dashboard' | 'showcase' | 'prediction') =&gt; {</span>
   const pageNameMap = <span class="cstat-no" title="statement not covered" >{</span>
     dashboard: 'development-badge-dashboard',
     showcase: 'badge-showcase',
@@ -914,7 +914,7 @@ export const useBadgePageSync = <span class="cstat-no" title="statement not cove
 /**
  * 🎮 ゲーミフィケーション専用フック
  */
-export const useGamificationBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >useGamificationBadgeSync = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
   const result = <span class="cstat-no" title="statement not covered" >useComprehensiveBadgeSync('gamification');</span>
 &nbsp;
   const recordGamificationAction = <span class="cstat-no" title="statement not covered" >useCallback(</span>
@@ -935,7 +935,7 @@ export const useGamificationBadgeSync = <span class="cstat-no" title="statement 
   };
 };
 &nbsp;
-export default useComprehensiveBadgeSync;
+<span class="cstat-no" title="statement not covered" >export default useComprehensiveBadgeSync;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -943,7 +943,7 @@ export default useComprehensiveBadgeSync;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

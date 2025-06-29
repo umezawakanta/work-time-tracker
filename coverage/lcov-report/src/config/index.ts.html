@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -438,7 +438,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -506,10 +506,10 @@ ${missingConfigs.map(<span class="fstat-no" title="function not covered" >(k</sp
   }
 }
 &nbsp;
-export const firebaseConfig = <span class="cstat-no" title="statement not covered" >firebaseEnvVars;</span>
+export const <span class="cstat-no" title="statement not covered" >firebaseConfig = firebaseEnvVars;</span>
 &nbsp;
 // アプリケーション情報
-export const appInfo = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >appInfo = {</span>
   name: import.meta.env.VITE_APP_NAME || '資産/負債管理アプリ',
   version: import.meta.env.VITE_APP_VERSION || '1.0.0',
   description:
@@ -517,7 +517,7 @@ export const appInfo = <span class="cstat-no" title="statement not covered" >{</
 };
 &nbsp;
 // サブスクリプションプラン設定
-export const subscriptionPlans = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >subscriptionPlans = {</span>
   premium: {
     monthly: {
       id: import.meta.env.VITE_PREMIUM_MONTHLY_PLAN_ID,
@@ -544,7 +544,7 @@ export const subscriptionPlans = <span class="cstat-no" title="statement not cov
 };
 &nbsp;
 // プレミアム機能リスト
-export const premiumFeatures = <span class="cstat-no" title="statement not covered" >[</span>
+export const <span class="cstat-no" title="statement not covered" >premiumFeatures = [</span>
   {
     id: 'category-analysis',
     name: '資産カテゴリ分析',
@@ -578,13 +578,13 @@ export const premiumFeatures = <span class="cstat-no" title="statement not cover
 ];
 &nbsp;
 // API設定
-export const apiConfig = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >apiConfig = {</span>
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
   timeout: 10000,
 };
 &nbsp;
 // フィードバックタイプ
-export const feedbackTypes = <span class="cstat-no" title="statement not covered" >[</span>
+export const <span class="cstat-no" title="statement not covered" >feedbackTypes = [</span>
   { id: 'bug', label: 'バグ報告' },
   { id: 'feature', label: '機能リクエスト' },
   { id: 'improvement', label: '改善提案' },
@@ -592,7 +592,7 @@ export const feedbackTypes = <span class="cstat-no" title="statement not covered
 ];
 &nbsp;
 // 設定
-export const appConfig = <span class="cstat-no" title="statement not covered" >{</span>
+export const <span class="cstat-no" title="statement not covered" >appConfig = {</span>
   debug: import.meta.env.VITE_DEBUG_MODE === 'true',
   enableAnalytics: import.meta.env.VITE_ENABLE_ANALYTICS !== 'false',
   defaultLocale: import.meta.env.VITE_DEFAULT_LOCALE || 'ja',
@@ -614,7 +614,7 @@ export const appConfig = <span class="cstat-no" title="statement not covered" >{
 };
 &nbsp;
 // 資産カテゴリ
-export const assetCategories = <span class="cstat-no" title="statement not covered" >[</span>
+export const <span class="cstat-no" title="statement not covered" >assetCategories = [</span>
   { id: 'cash-savings', label: '現金・預金', icon: 'Wallet' },
   { id: 'investment', label: '投資', icon: 'TrendingUp' },
   { id: 'real-estate', label: '不動産', icon: 'Home' },
@@ -623,7 +623,7 @@ export const assetCategories = <span class="cstat-no" title="statement not cover
 ];
 &nbsp;
 // 負債カテゴリ
-export const debtCategories = <span class="cstat-no" title="statement not covered" >[</span>
+export const <span class="cstat-no" title="statement not covered" >debtCategories = [</span>
   { id: 'mortgage', label: '住宅ローン', icon: 'Home' },
   { id: 'car-loan', label: '自動車ローン', icon: 'Car' },
   { id: 'education-loan', label: '教育ローン', icon: 'BookOpen' },
@@ -631,7 +631,7 @@ export const debtCategories = <span class="cstat-no" title="statement not covere
   { id: 'other', label: 'その他', icon: 'FileText' },
 ];
 &nbsp;
-export default {
+<span class="cstat-no" title="statement not covered" >export default {</span>
   firebaseConfig,
   appInfo,
   subscriptionPlans,
@@ -649,7 +649,7 @@ export default {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

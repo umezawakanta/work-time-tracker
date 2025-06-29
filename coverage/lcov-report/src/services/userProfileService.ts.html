@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/91</span>
+                <span class='fraction'>0/103</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/83</span>
+                <span class='fraction'>0/87</span>
             </div>
         
             
@@ -398,6 +398,7 @@
 <a name='L333'></a><a href='#L333'>333</a>
 <a name='L334'></a><a href='#L334'>334</a>
 <a name='L335'></a><a href='#L335'>335</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -406,10 +407,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -732,7 +732,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/userProfileService.ts
-import {
+<span class="cstat-no" title="statement not covered" >import {</span>
   getFirestore,
   doc,
   getDoc,
@@ -741,9 +741,9 @@ import {
   DocumentData,
   serverTimestamp,
 } from 'firebase/firestore';
-import { updateProfile, User } from 'firebase/auth';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { getCurrentUser } from './firebaseService';
+<span class="cstat-no" title="statement not covered" >import { updateProfile, User } from 'firebase/auth';</span>
+<span class="cstat-no" title="statement not covered" >import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';</span>
+<span class="cstat-no" title="statement not covered" >import { getCurrentUser } from './firebaseService';</span>
 &nbsp;
 // ユーザープロファイル情報の型定義
 export interface UserProfile {
@@ -780,7 +780,7 @@ export interface UserProfile {
  * 新規ユーザープロファイルを作成
  * @param user Firebase認証ユーザー
  */
-export const createUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(user: User): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >createUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(user: User): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user.uid) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
   const db = <span class="cstat-no" title="statement not covered" >getFirestore();</span>
@@ -832,7 +832,7 @@ export const createUserProfile = <span class="cstat-no" title="statement not cov
 /**
  * ユーザープロファイルを取得
  */
-export const getUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;UserProfile | null&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;UserProfile | null&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 &nbsp;
@@ -880,7 +880,7 @@ export const getUserProfile = <span class="cstat-no" title="statement not covere
  * ユーザープロファイルを更新
  * @param profileData 更新するプロファイルデータ
  */
-export const updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(profileData: Partial&lt;UserProfile&gt;): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(profileData: Partial&lt;UserProfile&gt;): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error('認証が必要です');</span></span>
 &nbsp;
@@ -909,7 +909,7 @@ export const updateUserProfile = <span class="cstat-no" title="statement not cov
  * プロファイル画像をアップロード
  * @param file 画像ファイル
  */
-export const uploadProfileImage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(file: File): Promise&lt;string&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >uploadProfileImage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(file: File): Promise&lt;string&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error('認証が必要です');</span></span>
 &nbsp;
@@ -959,7 +959,7 @@ export const uploadProfileImage = <span class="cstat-no" title="statement not co
  * 財務目標を更新
  * @param goals 財務目標設定
  */
-export const updateFinancialGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateFinancialGoals = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   goals: Partial&lt;UserProfile['financialGoals']&gt;
 ): Promise&lt;void&gt; =&gt; {
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
@@ -991,7 +991,7 @@ export const updateFinancialGoals = <span class="cstat-no" title="statement not 
  * ユーザー設定を更新
  * @param preferences ユーザー設定
  */
-export const updateUserPreferences = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserPreferences = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   preferences: Partial&lt;UserProfile['preferences']&gt;
 ): Promise&lt;void&gt; =&gt; {
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
@@ -1023,7 +1023,7 @@ export const updateUserPreferences = <span class="cstat-no" title="statement not
  * ユーザーのフィードバックを保存
  * @param feedback フィードバック内容
  */
-export const saveFeedback = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(feedback: {</span>
+export const <span class="cstat-no" title="statement not covered" >saveFeedback = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(feedback: {</span>
   type: 'bug' | 'feature' | 'improvement' | 'other';
   content: string;
   rating?: number;
@@ -1052,7 +1052,7 @@ export const saveFeedback = <span class="cstat-no" title="statement not covered"
  * メールアドレスを変更した際のプロファイル更新
  * @param newEmail 新しいメールアドレス
  */
-export const updateEmailInProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(newEmail: string): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >updateEmailInProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(newEmail: string): Promise&lt;void&gt; =&gt; {</span>
   const user = <span class="cstat-no" title="statement not covered" >await getCurrentUser();</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error('認証が必要です');</span></span>
 &nbsp;
@@ -1072,7 +1072,7 @@ export const updateEmailInProfile = <span class="cstat-no" title="statement not 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -174,6 +174,9 @@ const MultiAIDashboard = lazy(() => import('./pages/MultiAIDashboard'));
 // 🔍 Hardcoded Data Dashboard
 const HardcodedDataDashboard = lazy(() => import('./pages/HardcodedDataDashboard'));
 
+// 📊 Coverage Report Dashboard
+const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -801,6 +804,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <HardcodedDataDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/coverage-report"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <CoverageReportPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

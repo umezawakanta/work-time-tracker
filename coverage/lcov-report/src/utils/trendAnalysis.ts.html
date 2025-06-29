@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/138</span>
+                <span class='fraction'>0/146</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/128</span>
+                <span class='fraction'>0/129</span>
             </div>
         
             
@@ -406,7 +406,7 @@
 <a name='L341'></a><a href='#L341'>341</a>
 <a name='L342'></a><a href='#L342'>342</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -747,7 +747,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/utils/trendAnalysis.ts
 import { LongTermDataPoint } from '@/types';
-import { parseISO, addMonths, format } from 'date-fns';
+<span class="cstat-no" title="statement not covered" >import { parseISO, addMonths, format } from 'date-fns';</span>
 &nbsp;
 /**
  * 移動平均を計算
@@ -755,7 +755,7 @@ import { parseISO, addMonths, format } from 'date-fns';
  * @param period 期間（データポイント数）
  * @param key 計算対象のキー
  */
-export const calculateMovingAverage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateMovingAverage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[],
   period: number,
   key: 'assets' | 'debts' | 'netWorth'
@@ -782,7 +782,7 @@ export const calculateMovingAverage = <span class="cstat-no" title="statement no
  * @param data データの配列
  * @param key 計算対象のキー
  */
-export const calculateLinearRegression = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateLinearRegression = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[],
   key: 'assets' | 'debts' | 'netWorth'
 ): { slope: number; intercept: number; r2: number } =&gt; {
@@ -831,7 +831,7 @@ export const calculateLinearRegression = <span class="cstat-no" title="statement
  * @param data データの配列
  * @param key 計算対象のキー
  */
-export const calculateAnnualizedRate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateAnnualizedRate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[],
   key: 'assets' | 'debts' | 'netWorth'
 ): number =&gt; {
@@ -865,7 +865,7 @@ export const calculateAnnualizedRate = <span class="cstat-no" title="statement n
  * トレンド分析を行う
  * @param data データの配列
  */
-export const calculateTrends = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateTrends = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[]
 ): {
   assetsTrend: { slope: number; intercept: number; r2: number };
@@ -916,7 +916,7 @@ export const calculateTrends = <span class="cstat-no" title="statement not cover
  * @param data 過去のデータ
  * @param months 予測する月数
  */
-export const calculateProjections = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateProjections = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[],
   months: number
 ): LongTermDataPoint[] =&gt; {
@@ -990,7 +990,7 @@ export const calculateProjections = <span class="cstat-no" title="statement not 
  * @param targetValue 目標値
  * @param key 計算対象のキー
  */
-export const calculateTargetDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >calculateTargetDate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   data: LongTermDataPoint[],
   targetValue: number,
   key: 'assets' | 'debts' | 'netWorth'
@@ -1040,7 +1040,7 @@ export const calculateTargetDate = <span class="cstat-no" title="statement not c
  * @param monthlyContribution 月額追加投資額
  * @param years 計算期間（年）
  */
-export const simulateAssetGrowth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span>
+export const <span class="cstat-no" title="statement not covered" >simulateAssetGrowth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span></span></span>
   initialValue: number,
   annualRate: number,
   monthlyContribution: number,
@@ -1093,7 +1093,7 @@ export const simulateAssetGrowth = <span class="cstat-no" title="statement not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

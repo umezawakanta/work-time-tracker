@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/65</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/60</span>
+                <span class='fraction'>0/63</span>
             </div>
         
             
@@ -216,8 +216,8 @@
 <a name='L151'></a><a href='#L151'>151</a>
 <a name='L152'></a><a href='#L152'>152</a>
 <a name='L153'></a><a href='#L153'>153</a>
-<a name='L154'></a><a href='#L154'>154</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L154'></a><a href='#L154'>154</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -368,9 +368,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { bookApi } from '@/services/api/bookApi';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';</span>
+<span class="cstat-no" title="statement not covered" >import { bookApi } from '@/services/api/bookApi';</span>
 &nbsp;
 export interface Book {
   _id: string;
@@ -400,7 +400,7 @@ const initialState: BookState = <span class="cstat-no" title="statement not cove
   error: null,
 };
 &nbsp;
-export const fetchBooks = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;Book[], void, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >fetchBooks = createAsyncThunk&lt;Book[], void, { rejectValue: string }&gt;(</span>
   'book/fetchBooks',
 <span class="fstat-no" title="function not covered" >  async </span>(_, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -432,7 +432,7 @@ export const fetchBooks = <span class="cstat-no" title="statement not covered" >
   }
 );
 &nbsp;
-export const addBook = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >addBook = createAsyncThunk&lt;</span>
   Book,
   Omit&lt;Book, '_id' | 'createdAt'&gt;,
   { rejectValue: string }
@@ -446,7 +446,7 @@ export const addBook = <span class="cstat-no" title="statement not covered" >cre
   }
 });
 &nbsp;
-export const updateBook = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;Book, Book, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >updateBook = createAsyncThunk&lt;Book, Book, { rejectValue: string }&gt;(</span>
   'book/updateBook',
 <span class="fstat-no" title="function not covered" >  async </span>(book, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -461,7 +461,7 @@ export const updateBook = <span class="cstat-no" title="statement not covered" >
   }
 );
 &nbsp;
-export const removeBook = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >removeBook = createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
   'book/removeBook',
 <span class="fstat-no" title="function not covered" >  async </span>(id, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -521,7 +521,7 @@ const bookSlice = <span class="cstat-no" title="statement not covered" >createSl
   },
 });
 &nbsp;
-export default bookSlice.reducer;
+<span class="cstat-no" title="statement not covered" >export default bookSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -529,7 +529,7 @@ export default bookSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

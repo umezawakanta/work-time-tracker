@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/30</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
@@ -195,23 +195,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,7 +205,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -276,7 +276,7 @@ function <span class="fstat-no" title="function not covered" >generateUUIDv4(</s
 /**
  * タイムスタンプベースのユニークIDを生成
  */
-export function <span class="fstat-no" title="function not covered" >generateUniqueId(</span>): string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>enerateUniqueId(</span>): string {
   const timestamp = <span class="cstat-no" title="statement not covered" >Date.now().toString(36);</span>
   const randomPart = <span class="cstat-no" title="statement not covered" >randomString(8);</span>
 <span class="cstat-no" title="statement not covered" >  return `${timestamp}-${randomPart}`;</span>
@@ -285,14 +285,14 @@ export function <span class="fstat-no" title="function not covered" >generateUni
 /**
  * 短いIDを生成（URLや参照用）
  */
-export function <span class="fstat-no" title="function not covered" >generateShortId(</span>): string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>enerateShortId(</span>): string {
 <span class="cstat-no" title="statement not covered" >  return randomString(8);</span>
 }
 &nbsp;
 /**
  * セキュアなUUIDを生成
  */
-export function <span class="fstat-no" title="function not covered" >generateSecureId(</span>): string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>enerateSecureId(</span>): string {
 <span class="cstat-no" title="statement not covered" >  return generateUUIDv4();</span>
 }
 &nbsp;
@@ -300,7 +300,7 @@ export function <span class="fstat-no" title="function not covered" >generateSec
  * シーケンシャルIDを生成（人間が読みやすい）
  */
 let sequentialCounter = <span class="cstat-no" title="statement not covered" >0;</span>
-export function <span class="fstat-no" title="function not covered" >generateSequentialId(</span>prefix = <span class="branch-0 cbranch-no" title="branch not covered" >'REQ')</span>: string {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >g</span>enerateSequentialId(</span>prefix = <span class="branch-0 cbranch-no" title="branch not covered" >'REQ')</span>: string {
   const timestamp = <span class="cstat-no" title="statement not covered" >new Date().toISOString().replace(/[-:.TZ]/g, '');</span>
 <span class="cstat-no" title="statement not covered" >  sequentialCounter = (sequentialCounter + 1) % 10000;</span>
   const counter = <span class="cstat-no" title="statement not covered" >sequentialCounter.toString().padStart(4, '0');</span>
@@ -313,7 +313,7 @@ export function <span class="fstat-no" title="function not covered" >generateSeq
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

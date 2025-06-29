@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/148</span>
+                <span class='fraction'>0/156</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/146</span>
+                <span class='fraction'>0/153</span>
             </div>
         
             
@@ -368,15 +368,15 @@
 <a name='L303'></a><a href='#L303'>303</a>
 <a name='L304'></a><a href='#L304'>304</a>
 <a name='L305'></a><a href='#L305'>305</a>
-<a name='L306'></a><a href='#L306'>306</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L306'></a><a href='#L306'>306</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -673,15 +673,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { memo } from 'react';
-import { usePomodoroContext } from '@/context/PomodoroContext';
-import { PomodoroFloatingButton } from './PomodoroFloatingButton';
-import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';
-import { CompletionModal } from './CompletionModal';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { memo } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { usePomodoroContext } from '@/context/PomodoroContext';</span>
+<span class="cstat-no" title="statement not covered" >import { PomodoroFloatingButton } from './PomodoroFloatingButton';</span>
+<span class="cstat-no" title="statement not covered" >import { FloatingPomodoroTimer } from './FloatingPomodoroTimer';</span>
+<span class="cstat-no" title="statement not covered" >import { CompletionModal } from './CompletionModal';</span>
 import { PomodoroMode } from '@/types/pomodoro';
 import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrationService';
-import { store } from '@/store';
-import { fetchWorkTimeEntries } from '@/store/workTimeSlice';
+<span class="cstat-no" title="statement not covered" >import { store } from '@/store';</span>
+<span class="cstat-no" title="statement not covered" >import { fetchWorkTimeEntries } from '@/store/workTimeSlice';</span>
 &nbsp;
 const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
   const { pomodoro } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span>
@@ -727,7 +727,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).getPomodoroStats) {</span>
       (<span class="cstat-no" title="statement not covered" >window as any).getPomodoroStats = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
         // Import and use the service to get stats
-<span class="cstat-no" title="statement not covered" >        import('@/services/PomodoroWorkTimeIntegrationService').then(<span class="fstat-no" title="function not covered" >(m</span>odule) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >        import('</span>@/services/PomodoroWorkTimeIntegrationService').t</span>hen(<span class="fstat-no" title="function not covered" >(m</span>odule) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >          module.PomodoroWorkTimeIntegrationService.getInstance()</span>
             .getTodayPomodoroStats()
             .then(<span class="fstat-no" title="function not covered" >(s</span>tats) =&gt; {
@@ -977,7 +977,7 @@ const PomodoroManagerComponent: React.FC = <span class="cstat-no" title="stateme
   );
 };
 &nbsp;
-export const PomodoroManager = <span class="cstat-no" title="statement not covered" >memo(PomodoroManagerComponent);</span>
+export const <span class="cstat-no" title="statement not covered" >PomodoroManager = memo(PomodoroManagerComponent);</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -985,7 +985,7 @@ export const PomodoroManager = <span class="cstat-no" title="statement not cover
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

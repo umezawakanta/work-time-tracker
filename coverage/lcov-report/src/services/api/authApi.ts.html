@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/197</span>
+                <span class='fraction'>0/220</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/196</span>
+                <span class='fraction'>0/200</span>
             </div>
         
             
@@ -547,11 +547,11 @@
 <a name='L482'></a><a href='#L482'>482</a>
 <a name='L483'></a><a href='#L483'>483</a>
 <a name='L484'></a><a href='#L484'>484</a>
-<a name='L485'></a><a href='#L485'>485</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L485'></a><a href='#L485'>485</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1031,11 +1031,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { api } from './apiConfig';
-import { USE_MOCK_DATA } from './apiConfig';
-import { tokenManager } from '@/services/auth/TokenManager';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { api } from './apiConfig';</span>
+<span class="cstat-no" title="statement not covered" >import { USE_MOCK_DATA } from './apiConfig';</span>
+<span class="cstat-no" title="statement not covered" >import { tokenManager } from '@/services/auth/TokenManager';</span>
 import { User } from '@/types';
-import { AxiosError } from 'axios';
+<span class="cstat-no" title="statement not covered" >import { AxiosError } from 'axios';</span>
 &nbsp;
 // Extend Window interface for custom properties
 declare global {
@@ -1065,7 +1065,7 @@ export interface AuthResponse {
   refreshExpiresIn?: number;
 }
 &nbsp;
-export const register = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userData: RegisterData): Promise&lt;AuthResponse&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >register = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userData: RegisterData): Promise&lt;AuthResponse&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;AuthResponse&gt;('/auth/register', userData);</span>
 &nbsp;
@@ -1091,7 +1091,7 @@ export const register = <span class="cstat-no" title="statement not covered" ><s
   }
 };
 &nbsp;
-export const login = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >login = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   email: string,
   password: string,
   rememberMe: boolean = <span class="branch-0 cbranch-no" title="branch not covered" >false</span>
@@ -1194,7 +1194,7 @@ export const login = <span class="cstat-no" title="statement not covered" ><span
   }
 };
 &nbsp;
-export const logout = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >logout = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;void&gt; =&gt; {</span>
   // TokenManagerを使用してクリーンアップ
 <span class="cstat-no" title="statement not covered" >  tokenManager.clearTokens();</span>
 &nbsp;
@@ -1215,7 +1215,7 @@ export const logout = <span class="cstat-no" title="statement not covered" ><spa
 <span class="cstat-no" title="statement not covered" >  console.log('🚪 Logout completed - auto auth disabled');</span>
 };
 &nbsp;
-export const checkAuth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;boolean&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >checkAuth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;boolean&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // モックモードの場合は常に認証成功
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {</span>
@@ -1284,7 +1284,7 @@ export const checkAuth = <span class="cstat-no" title="statement not covered" ><
   }
 };
 &nbsp;
-export const getUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;User&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;User&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.get&lt;{ user: User }&gt;('/auth/profile');</span>
 <span class="cstat-no" title="statement not covered" >    return response.data.user;</span>
@@ -1294,7 +1294,7 @@ export const getUserProfile = <span class="cstat-no" title="statement not covere
   }
 };
 &nbsp;
-export const updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(userData: {</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserProfile = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(userData: {</span>
   name: string;
   email: string;
 }): Promise&lt;User&gt; =&gt; {
@@ -1312,7 +1312,7 @@ export const updateUserProfile = <span class="cstat-no" title="statement not cov
   }
 };
 &nbsp;
-export const fetchUserData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;User&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >fetchUserData = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;User&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // モックモードの場合はダミーユーザーデータを返す
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {</span>
@@ -1372,7 +1372,7 @@ export const fetchUserData = <span class="cstat-no" title="statement not covered
 };
 &nbsp;
 // パスワードリセット関連の機能
-export const requestPasswordReset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(email: string): Promise&lt;{ message: string }&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >requestPasswordReset = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(email: string): Promise&lt;{ message: string }&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;{ message: string }&gt;('/auth/password-reset', { email });</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -1382,7 +1382,7 @@ export const requestPasswordReset = <span class="cstat-no" title="statement not 
   }
 };
 &nbsp;
-export const verifyResetToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(token: string): Promise&lt;{ valid: boolean }&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >verifyResetToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(token: string): Promise&lt;{ valid: boolean }&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;{ valid: boolean }&gt;('/auth/password-reset/verify', { token });</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -1392,7 +1392,7 @@ export const verifyResetToken = <span class="cstat-no" title="statement not cove
   }
 };
 &nbsp;
-export const resetPassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >resetPassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   token: string,
   newPassword: string
 ): Promise&lt;{ message: string }&gt; =&gt; {
@@ -1409,7 +1409,7 @@ export const resetPassword = <span class="cstat-no" title="statement not covered
 };
 &nbsp;
 // トークンリフレッシュ機能
-export const refreshToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(refreshToken: string): Promise&lt;AuthResponse&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >refreshToken = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(refreshToken: string): Promise&lt;AuthResponse&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;AuthResponse&gt;('/auth/refresh', {</span>
       refreshToken,
@@ -1433,7 +1433,7 @@ export const refreshToken = <span class="cstat-no" title="statement not covered"
 };
 &nbsp;
 // パスワード変更機能
-export const changePassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(</span>
+export const <span class="cstat-no" title="statement not covered" >changePassword = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(</span>
   currentPassword: string,
   newPassword: string
 ): Promise&lt;{ message: string }&gt; =&gt; {
@@ -1456,7 +1456,7 @@ export const changePassword = <span class="cstat-no" title="statement not covere
 };
 &nbsp;
 // メール認証関連
-export const resendVerificationEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;{ message: string }&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >resendVerificationEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;{ message: string }&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;{ message: string }&gt;('/auth/resend-verification');</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -1466,7 +1466,7 @@ export const resendVerificationEmail = <span class="cstat-no" title="statement n
   }
 };
 &nbsp;
-export const verifyEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(token: string): Promise&lt;{ message: string }&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >verifyEmail = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(token: string): Promise&lt;{ message: string }&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;{ message: string }&gt;('/auth/verify-email', { token });</span>
 <span class="cstat-no" title="statement not covered" >    return response.data;</span>
@@ -1477,7 +1477,7 @@ export const verifyEmail = <span class="cstat-no" title="statement not covered" 
 };
 &nbsp;
 // 自分自身を管理者にする（初回セットアップ用）
-export const promoteToAdmin = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(): Promise&lt;User&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >promoteToAdmin = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(): Promise&lt;User&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const response = <span class="cstat-no" title="statement not covered" >await api.post&lt;{ user: User; message: string }&gt;('/auth/promote-admin');</span>
 <span class="cstat-no" title="statement not covered" >    console.log('Promote to admin response:', response.data);</span>
@@ -1489,17 +1489,17 @@ export const promoteToAdmin = <span class="cstat-no" title="statement not covere
 };
 &nbsp;
 // セッション情報の取得
-export const getSessionInfo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getSessionInfo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return tokenManager.getSessionInfo();</span>
 };
 &nbsp;
 // デバッグ用
-export const getAuthDebugInfo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >getAuthDebugInfo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  return tokenManager.getDebugInfo();</span>
 };
 &nbsp;
 // 例: lastActivityを保存
-export const saveLastActivity = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(timestamp: number): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveLastActivity = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(timestamp: number): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    await api.post('/user/activity', { lastActivity: timestamp });</span>
   } catch (error) {
@@ -1508,7 +1508,7 @@ export const saveLastActivity = <span class="cstat-no" title="statement not cove
 };
 &nbsp;
 // 例: sessionPersistentを保存
-export const saveSessionPersistent = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(persistent: boolean): Promise&lt;void&gt; =&gt; {</span>
+export const <span class="cstat-no" title="statement not covered" >saveSessionPersistent = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync </span>(persistent: boolean): Promise&lt;void&gt; =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    await api.post('/user/session', { persistent });</span>
   } catch (error) {
@@ -1522,7 +1522,7 @@ export const saveSessionPersistent = <span class="cstat-no" title="statement not
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

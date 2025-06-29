@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/116</span>
+                <span class='fraction'>0/149</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/115</span>
+                <span class='fraction'>0/148</span>
             </div>
         
             
@@ -383,41 +383,41 @@
 <a name='L318'></a><a href='#L318'>318</a>
 <a name='L319'></a><a href='#L319'>319</a>
 <a name='L320'></a><a href='#L320'>320</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -700,43 +700,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// ESM用のCommonJSモジュールのインポート
-import { createRequire } from 'module';
+<span class="cstat-no" title="statement not covered" >import { createRequire } from 'module';</span>
 const require = <span class="cstat-no" title="statement not covered" >createRequire(import.meta.url);</span>
 const express = <span class="cstat-no" title="statement not covered" >require('express');</span>
 import { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import http from 'http'; // HTTPサーバーを使用
-import { connectDB } from './config/database.js';
-import workTimeRoutes from './routes/workTimeRoutes.js';
-import assetRoutes from './routes/assetRoutes.js';
-import debtRoutes from './routes/debtRoutes.js';
-import todoRoutes from './routes/todoRoutes.js';
-import candidateRoutes from './routes/candidateRoutes.js';
-import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
-import withdrawalRoutes from './routes/withdrawalRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import bookRoutes from './routes/bookRoutes.js';
-import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
-import tweetRoutes from './routes/tweetRoutes.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-import surveyRoutes from './routes/surveyRoutes.js';
-import partyRoutes from './routes/partyRoutes.js';
-import habitRoutes from './routes/habitRoutes.js';
-import subscriptionRoutes from './routes/subscriptionRoutes.js';
-import projectRoutes from './routes/projectRoutes.js';
-import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルートをインポート
-import { setupWebSocketServer } from './services/webSocketService.js'; // WebSocketサービスをインポート
-import wbsRoutes from './routes/wbsRoutes.js';
-import implementationRoutes from './routes/implementationRoutes.js';
-import teamRoutes from './routes/teamRoutes.js';
-import resourceRoutes from './routes/resourceRoutes.js';
-import abstinenceRoutes from './routes/abstinenceRoutes.js';
+<span class="cstat-no" title="statement not covered" >import cors from 'cors';</span>
+<span class="cstat-no" title="statement not covered" >import morgan from 'morgan';</span>
+<span class="cstat-no" title="statement not covered" >import http from 'http'; </span>// HTTPサーバーを使用
+<span class="cstat-no" title="statement not covered" >import { connectDB } from './config/database.js';</span>
+<span class="cstat-no" title="statement not covered" >import workTimeRoutes from './routes/workTimeRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import assetRoutes from './routes/assetRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import debtRoutes from './routes/debtRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import todoRoutes from './routes/todoRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import candidateRoutes from './routes/candidateRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import withdrawalRoutes from './routes/withdrawalRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import authRoutes from './routes/authRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import bookRoutes from './routes/bookRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import blogRoutes from './routes/blogRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import tweetRoutes from './routes/tweetRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import path from 'path';</span>
+<span class="cstat-no" title="statement not covered" >import { fileURLToPath } from 'url';</span>
+<span class="cstat-no" title="statement not covered" >import fs from 'fs';</span>
+<span class="cstat-no" title="statement not covered" >import surveyRoutes from './routes/surveyRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import partyRoutes from './routes/partyRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import habitRoutes from './routes/habitRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import subscriptionRoutes from './routes/subscriptionRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import projectRoutes from './routes/projectRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import notificationRoutes from './routes/notificationRoutes.js'; </span>// 通知ルートをインポート
+<span class="cstat-no" title="statement not covered" >import { setupWebSocketServer } from './services/webSocketService.js'; </span>// WebSocketサービスをインポート
+<span class="cstat-no" title="statement not covered" >import wbsRoutes from './routes/wbsRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import implementationRoutes from './routes/implementationRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import teamRoutes from './routes/teamRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import resourceRoutes from './routes/resourceRoutes.js';</span>
+<span class="cstat-no" title="statement not covered" >import abstinenceRoutes from './routes/abstinenceRoutes.js';</span>
 &nbsp;
 const __filename = <span class="cstat-no" title="statement not covered" >fileURLToPath(import.meta.url);</span>
 const __dirname = <span class="cstat-no" title="statement not covered" >path.dirname(__filename);</span>
@@ -1019,7 +1019,7 @@ const PORT = <span class="cstat-no" title="statement not covered" >process.env.P
   });
 }
 &nbsp;
-export default app;
+<span class="cstat-no" title="statement not covered" >export default app;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1027,7 +1027,7 @@ export default app;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

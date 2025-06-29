@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/110</span>
+                <span class='fraction'>0/120</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/109</span>
+                <span class='fraction'>0/119</span>
             </div>
         
             
@@ -487,15 +487,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -505,6 +503,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -521,6 +520,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -902,18 +902,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * AI機能マネージャー
  * APIクライアントのAI機能を中央管理するコアクラス
  */
-import { ApiLogger } from './logger/ApiLogger';
-import { AIModelRegistry } from './models/AIModelRegistry';
-import { AIUsageTracker } from './tracking/AIUsageTracker';
-import { AIProcessorFactory } from './processors/AIProcessorFactory';
-import { AICacheManager } from './cache/AICacheManager';
-import { AISecurityManager } from './security/AISecurityManager';
-import { AIConfigLoader } from './config/AIConfigLoader';
+<span class="cstat-no" title="statement not covered" >import { ApiLogger } from './logger/ApiLogger';</span>
+<span class="cstat-no" title="statement not covered" >import { AIModelRegistry } from './models/AIModelRegistry';</span>
+<span class="cstat-no" title="statement not covered" >import { AIUsageTracker } from './tracking/AIUsageTracker';</span>
+<span class="cstat-no" title="statement not covered" >import { AIProcessorFactory } from './processors/AIProcessorFactory';</span>
+<span class="cstat-no" title="statement not covered" >import { AICacheManager } from './cache/AICacheManager';</span>
+<span class="cstat-no" title="statement not covered" >import { AISecurityManager } from './security/AISecurityManager';</span>
+<span class="cstat-no" title="statement not covered" >import { AIConfigLoader } from './config/AIConfigLoader';</span>
 import {
   AIEnhancementType,
   AIFeatureOptions,
@@ -923,13 +923,13 @@ import {
   AIModel,
   AIFeatureStatus,
 } from './types/AITypes';
-import { generateUniqueId } from './utils/IdGenerator';
+<span class="cstat-no" title="statement not covered" >import { generateUniqueId } from './utils/IdGenerator';</span>
 &nbsp;
 /**
  * AI機能マネージャークラス
  * シングルトンパターンでAI機能全体を統括
  */
-export class AIFeatureManager {
+<span class="cstat-no" title="statement not covered" >export class A</span>IFeatureManager {
   private static <span class="cstat-no" title="statement not covered" >instance: AIFeatureManager | null = n</span>ull;
   private <span class="cstat-no" title="statement not covered" >logger = ApiLogger.getInstance();</span>
   private <span class="cstat-no" title="statement not covered" >initialized = false;</span>
@@ -1322,7 +1322,7 @@ export class AIFeatureManager {
 &nbsp;
 // エクスポート
 export type { AIFeatureOptions, AIEnhancementType, AIEnhancementResult };
-export default AIFeatureManager.getInstance();
+<span class="cstat-no" title="statement not covered" >export default AIFeatureManager.getInstance();</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1330,7 +1330,7 @@ export default AIFeatureManager.getInstance();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

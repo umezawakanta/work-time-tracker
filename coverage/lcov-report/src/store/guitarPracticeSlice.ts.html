@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/80</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/75</span>
+                <span class='fraction'>0/78</span>
             </div>
         
             
@@ -376,9 +376,9 @@
 <a name='L311'></a><a href='#L311'>311</a>
 <a name='L312'></a><a href='#L312'>312</a>
 <a name='L313'></a><a href='#L313'>313</a>
-<a name='L314'></a><a href='#L314'>314</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L314'></a><a href='#L314'>314</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -688,10 +688,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';</span>
 import { RootState } from '@/store';
-import axios from 'axios';
+<span class="cstat-no" title="statement not covered" >import axios from 'axios';</span>
 &nbsp;
 // ギター練習のタイプ定義
 export interface GuitarPractice {
@@ -726,7 +726,7 @@ const initialState: GuitarPracticeState = <span class="cstat-no" title="statemen
 };
 &nbsp;
 // ギター練習データを取得する非同期アクション
-export const fetchGuitarPractices = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >fetchGuitarPractices = createAsyncThunk&lt;</span>
   GuitarPractice[],
   void,
   { rejectValue: string }
@@ -760,7 +760,7 @@ export const fetchGuitarPractices = <span class="cstat-no" title="statement not 
 });
 &nbsp;
 // ギター練習を追加する非同期アクション
-export const addGuitarPractice = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >addGuitarPractice = createAsyncThunk&lt;</span>
   GuitarPractice,
   NewGuitarPractice,
   { rejectValue: string }
@@ -775,7 +775,7 @@ export const addGuitarPractice = <span class="cstat-no" title="statement not cov
 });
 &nbsp;
 // ギター練習を更新する非同期アクション
-export const updateGuitarPractice = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >updateGuitarPractice = createAsyncThunk&lt;</span>
   GuitarPractice,
   GuitarPractice,
   { rejectValue: string }
@@ -790,7 +790,7 @@ export const updateGuitarPractice = <span class="cstat-no" title="statement not 
 });
 &nbsp;
 // ギター練習を削除する非同期アクション
-export const deleteGuitarPractice = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
+export const <span class="cstat-no" title="statement not covered" >deleteGuitarPractice = createAsyncThunk&lt;string, string, { rejectValue: string }&gt;(</span>
   'guitarPractice/delete',
 <span class="fstat-no" title="function not covered" >  async </span>(id, { rejectWithValue }) =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
@@ -804,7 +804,7 @@ export const deleteGuitarPractice = <span class="cstat-no" title="statement not 
 );
 &nbsp;
 // モック用テストデータを追加するアクション（開発用）
-export const addMockGuitarPractices = <span class="cstat-no" title="statement not covered" >createAsyncThunk&lt;</span>
+export const <span class="cstat-no" title="statement not covered" >addMockGuitarPractices = createAsyncThunk&lt;</span>
   GuitarPractice[],
   void,
   { rejectValue: string }
@@ -995,13 +995,13 @@ const guitarPracticeSlice = <span class="cstat-no" title="statement not covered"
 });
 &nbsp;
 // セレクター
-export const selectAllGuitarPractices = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.guitarPractice.practices;</span></span>
-export const selectGuitarPracticeById = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState, id: string) =&gt;</span>
+export const <span class="cstat-no" title="statement not covered" >selectAllGuitarPractices = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.guitarPractice.practices;</span></span>
+export const <span class="cstat-no" title="statement not covered" >selectGuitarPracticeById = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState, id: string) =&gt;</span>
 <span class="cstat-no" title="statement not covered" >  state.guitarPractice.practices.find(<span class="fstat-no" title="function not covered" >(p</span>ractice) =&gt; <span class="cstat-no" title="statement not covered" >practice._id === id)</span>;</span>
-export const selectMilestonePractices = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt;</span>
+export const <span class="cstat-no" title="statement not covered" >selectMilestonePractices = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>s</span>tate: RootState) =&gt;</span>
 <span class="cstat-no" title="statement not covered" >  state.guitarPractice.practices.filter(<span class="fstat-no" title="function not covered" >(p</span>ractice) =&gt; <span class="cstat-no" title="statement not covered" >practice.isMilestone)</span>;</span>
 &nbsp;
-export default guitarPracticeSlice.reducer;
+<span class="cstat-no" title="statement not covered" >export default guitarPracticeSlice.reducer;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1009,7 +1009,7 @@ export default guitarPracticeSlice.reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-29T16:15:58.519Z
+                at 2025-06-29T16:39:41.092Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

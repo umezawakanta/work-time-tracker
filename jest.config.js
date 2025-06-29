@@ -1,6 +1,5 @@
 module.exports = {
-  preset: 'ts-jest/presets/default-esm',
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -8,8 +7,23 @@ module.exports = {
   },
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.test.json',
-      useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+        target: 'es2020',
+        lib: ['es2020', 'dom', 'dom.iterable'],
+        allowJs: true,
+        skipLibCheck: true,
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+        strict: true,
+        forceConsistentCasingInFileNames: true,
+        module: 'esnext',
+        moduleResolution: 'node',
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+      },
+      useESM: false,
     }],
   },
   setupFiles: ['<rootDir>/jest.setup.js'],
@@ -27,30 +41,16 @@ module.exports = {
   ],
   moduleDirectories: ['node_modules', 'src'],
   passWithNoTests: true,
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-    // Mock import.meta for all tests
-    'import.meta': {
-      env: {
-        DEV: false,
-        PROD: true,
-        MODE: 'test',
-        VITE_API_URL: 'http://localhost:3000',
-        VITE_FIREBASE_API_KEY: 'test-api-key',
-        VITE_FIREBASE_AUTH_DOMAIN: 'test.firebaseapp.com',
-        VITE_FIREBASE_PROJECT_ID: 'test-project',
-        VITE_FIREBASE_STORAGE_BUCKET: 'test.appspot.com',
-        VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
-        VITE_FIREBASE_APP_ID: 'test-app-id',
-      }
-    }
-  },
+  globals: {},
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/test/**',
+    '!src/setupTests.ts',
     '!src/main.tsx',
     '!src/vite-env.d.ts',
   ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  testTimeout: 10000,
 };
