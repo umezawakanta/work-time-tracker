@@ -10,6 +10,7 @@ import { AssetGrowthChart } from './AssetGrowthChart';
 import { ExperienceSystem } from './ExperienceSystem';
 import { DragonQuestChatbot } from './DragonQuestChatbot';
 import { assetQuestService } from '@/services/assetQuest/AssetQuestService';
+import { IntegratedAssetManager } from './IntegratedAssetManager';
 
 interface AssetQuestData {
   hero: {
@@ -48,7 +49,7 @@ export const AssetFormationQuestDashboard: React.FC = () => {
   const [questData, setQuestData] = useState<AssetQuestData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<
-    'dashboard' | 'budget' | 'progress' | 'achievements'
+    'dashboard' | 'budget' | 'progress' | 'achievements' | 'integration'
   >('dashboard');
 
   useEffect(() => {
@@ -131,6 +132,7 @@ export const AssetFormationQuestDashboard: React.FC = () => {
                 { id: 'budget', label: '予算管理', icon: Coins },
                 { id: 'progress', label: '成長記録', icon: TrendingUp },
                 { id: 'achievements', label: '実績', icon: Award },
+                { id: 'integration', label: '統合管理', icon: Target },
               ].map((tab) => (
                 <Button
                   key={tab.id}
@@ -284,6 +286,8 @@ export const AssetFormationQuestDashboard: React.FC = () => {
             ))}
           </div>
         )}
+
+        {selectedTab === 'integration' && <IntegratedAssetManager />}
 
         {/* ドラゴンクエスト風AIチャットボット */}
         <DragonQuestChatbot

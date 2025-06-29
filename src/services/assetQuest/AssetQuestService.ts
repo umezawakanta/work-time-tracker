@@ -1,3 +1,8 @@
+import {
+  assetQuestIntegrationService,
+  AssetQuestIntegratedData,
+} from './AssetQuestIntegrationService';
+
 interface AssetQuestData {
   hero: {
     level: number;
@@ -33,30 +38,65 @@ interface AssetQuestData {
 
 class AssetQuestService {
   private questData: AssetQuestData | null = null;
+  private useIntegratedData: boolean = true;
 
   async getQuestData(): Promise<AssetQuestData> {
-    // 実際の実装では、データベースからデータを取得
-    if (!this.questData) {
-      this.questData = this.generateSampleData();
+    try {
+      // 統合サービスからリアルデータを取得
+      if (this.useIntegratedData) {
+        const integratedData = await assetQuestIntegrationService.getIntegratedQuestData();
+        return this.convertIntegratedData(integratedData);
+      }
+
+      // フォールバック: サンプルデータ
+      if (!this.questData) {
+        this.questData = this.generateSampleData();
+      }
+      return this.questData;
+    } catch (error) {
+      console.warn('統合データ取得エラー、サンプルデータを使用:', error);
+      if (!this.questData) {
+        this.questData = this.generateSampleData();
+      }
+      return this.questData;
     }
-    return this.questData;
   }
 
   async updateMonthlyProgress(expenses: number): Promise<void> {
-    if (!this.questData) return;
+    try {
+      if (this.useIntegratedData) {
+        // 統合サービス経由で支出データを更新
+        await assetQuestIntegrationService.addDebt({
+          date: new Date().toISOString().split('T')[0],
+          value: expenses,
+          account: '月次支出',
+          description: `${new Date().getMonth() + 1}月の支出記録`,
+          category: 'monthly_expense',
+        });
 
-    const income = this.questData.currentMonth.income;
-    const savings = income - expenses;
-    const savingsRate = (savings / income) * 100;
+        // データを再取得
+        this.questData = await this.getQuestData();
+        return;
+      }
 
-    this.questData.currentMonth.expenses = expenses;
-    this.questData.currentMonth.savings = savings;
-    this.questData.currentMonth.savingsRate = savingsRate;
+      // フォールバック処理
+      if (!this.questData) return;
 
-    // 目標達成チェック
-    if (savings >= this.questData.currentMonth.target) {
-      this.questData.questProgress.monthlyQuestCompleted = true;
-      this.addExperience(this.questData.questProgress.currentReward);
+      const income = this.questData.currentMonth.income;
+      const savings = income - expenses;
+      const savingsRate = (savings / income) * 100;
+
+      this.questData.currentMonth.expenses = expenses;
+      this.questData.currentMonth.savings = savings;
+      this.questData.currentMonth.savingsRate = savingsRate;
+
+      // 目標達成チェック
+      if (savings >= this.questData.currentMonth.target) {
+        this.questData.questProgress.monthlyQuestCompleted = true;
+        this.addExperience(this.questData.questProgress.currentReward);
+      }
+    } catch (error) {
+      console.error('支出更新エラー:', error);
     }
   }
 
@@ -85,6 +125,59 @@ class AssetQuestService {
     if (level >= 20) return '節約の戦士';
     if (level >= 10) return '家計管理の騎士';
     return '資産形成の見習い';
+  }
+
+  /**
+   * 統合データをAssetQuestData形式に変換
+   */
+  private convertIntegratedData(integratedData: AssetQuestIntegratedData): AssetQuestData {
+    return {
+      hero: {
+        level: integratedData.hero.level,
+        experience: integratedData.hero.experience,
+        experienceToNext: integratedData.hero.experienceToNext,
+        title: integratedData.hero.title,
+        avatar: integratedData.hero.avatar,
+        totalAssets: integratedData.hero.totalAssets,
+      },
+      currentMonth: {
+        income: integratedData.currentMonth.income,
+        expenses: integratedData.currentMonth.expenses,
+        savings: integratedData.currentMonth.savings,
+        savingsRate: integratedData.currentMonth.savingsRate,
+        target: integratedData.currentMonth.target,
+        daysRemaining: integratedData.currentMonth.daysRemaining,
+      },
+      questProgress: {
+        monthlyQuestCompleted: integratedData.questProgress.monthlyQuestCompleted,
+        streakDays: integratedData.questProgress.streakDays,
+        totalQuestsCompleted: integratedData.questProgress.totalQuestsCompleted,
+        currentReward: integratedData.questProgress.currentReward,
+      },
+      achievements: integratedData.achievements.map((achievement) => ({
+        id: achievement.id,
+        name: achievement.name,
+        description: achievement.description,
+        icon: achievement.icon,
+        unlocked: achievement.unlocked,
+        progress: achievement.progress,
+      })),
+    };
+  }
+
+  /**
+   * 統合モードの切り替え
+   */
+  public setIntegratedMode(enabled: boolean): void {
+    this.useIntegratedData = enabled;
+    console.log(`🔗 統合モード: ${enabled ? 'ON' : 'OFF'}`);
+  }
+
+  /**
+   * 統合サービスへの直接アクセス（高度な操作用）
+   */
+  public getIntegrationService() {
+    return assetQuestIntegrationService;
   }
 
   private generateSampleData(): AssetQuestData {
