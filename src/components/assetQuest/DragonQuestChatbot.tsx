@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Volume2,
   VolumeX,
+  Music,
+  Headphones,
 } from 'lucide-react';
 import { dragonQuestAIService } from '@/services/assetQuest/DragonQuestAIService';
 import { soundManager } from '@/utils/soundManager';
@@ -50,6 +52,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [textIndex, setTextIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(soundManager.isSoundMuted());
+  const [isBgmMuted, setIsBgmMuted] = useState(soundManager.isBgmSoundMuted());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastSoundTime = useRef<number>(0);
 
@@ -192,6 +195,20 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     }
   };
 
+  const toggleBgm = () => {
+    const newBgmMuteState = soundManager.toggleBgmMute();
+    setIsBgmMuted(newBgmMuteState);
+
+    if (!newBgmMuteState) {
+      // BGMを再開
+      soundManager.startQuestPageBgm();
+      soundManager.playButtonSound();
+    } else {
+      // BGMを停止
+      soundManager.stopQuestPageBgm();
+    }
+  };
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-6 right-32 z-50">
@@ -208,8 +225,16 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-bounce">
           <span className="text-white text-xs font-bold">!</span>
         </div>
-        {/* サウンド状態インジケーター */}
+        {/* BGM状態インジケーター */}
         <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center border-2 border-blue-600">
+          {isBgmMuted ? (
+            <VolumeX className="w-3 h-3 text-gray-400" />
+          ) : (
+            <Music className="w-3 h-3 text-blue-500" />
+          )}
+        </div>
+        {/* サウンド状態インジケーター */}
+        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center border-2 border-green-600">
           {isMuted ? (
             <VolumeX className="w-3 h-3 text-gray-400" />
           ) : (
@@ -231,6 +256,16 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
               <h3 className="font-bold text-lg">🏰 王国の案内</h3>
             </div>
             <div className="flex items-center gap-1">
+              {/* BGM切り替えボタン */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleBgm}
+                className="text-white hover:bg-blue-600 p-1"
+                title={isBgmMuted ? 'BGMを有効にする' : 'BGMを無効にする'}
+              >
+                {isBgmMuted ? <VolumeX className="w-4 h-4" /> : <Music className="w-4 h-4" />}
+              </Button>
               {/* サウンド切り替えボタン */}
               <Button
                 variant="ghost"

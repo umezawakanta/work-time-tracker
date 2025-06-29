@@ -11,6 +11,7 @@ import { ExperienceSystem } from './ExperienceSystem';
 import { DragonQuestChatbot } from './DragonQuestChatbot';
 import { assetQuestService } from '@/services/assetQuest/AssetQuestService';
 import { IntegratedAssetManager } from './IntegratedAssetManager';
+import { soundManager } from '@/utils/soundManager';
 
 interface AssetQuestData {
   hero: {
@@ -54,6 +55,14 @@ export const AssetFormationQuestDashboard: React.FC = () => {
 
   useEffect(() => {
     loadQuestData();
+
+    // クエストページBGM開始
+    soundManager.startQuestPageBgm();
+
+    // ページを離れる時にBGMを停止
+    return () => {
+      soundManager.stopQuestPageBgm();
+    };
   }, []);
 
   const loadQuestData = async () => {

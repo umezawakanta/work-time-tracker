@@ -22,6 +22,8 @@ import {
   Database,
   CheckCircle,
   AlertTriangle,
+  Music,
+  Volume2,
 } from 'lucide-react';
 import { assetQuestIntegrationService } from '@/services/assetQuest/AssetQuestIntegrationService';
 import { soundManager } from '@/utils/soundManager';
@@ -413,6 +415,39 @@ export const IntegratedAssetManager: React.FC = () => {
                   )}
                   今すぐ同期
                 </Button>
+              </div>
+
+              {/* BGM設定 */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">クエストBGM</h3>
+                  <p className="text-sm text-gray-600">ドラゴンクエスト風BGMの設定</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={soundManager.isBgmSoundMuted() ? 'secondary' : 'default'}>
+                    {soundManager.isBgmSoundMuted() ? 'OFF' : 'ON'}
+                  </Badge>
+                  <Button
+                    onClick={() => {
+                      const isMuted = soundManager.toggleBgmMute();
+                      if (!isMuted) {
+                        soundManager.startQuestPageBgm();
+                      } else {
+                        soundManager.stopQuestPageBgm();
+                      }
+                      soundManager.playButtonSound();
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {soundManager.isBgmSoundMuted() ? (
+                      <Volume2 className="w-4 h-4" />
+                    ) : (
+                      <Music className="w-4 h-4" />
+                    )}
+                    切り替え
+                  </Button>
+                </div>
               </div>
 
               {/* 同期ステータス */}
