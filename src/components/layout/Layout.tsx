@@ -82,6 +82,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -898,7 +899,11 @@ export default function Layout({ children }: LayoutProps) {
                     )}
                   </Button>
 
-                  {/* ... 他のボタンも同様に強化 ... */}
+                  {/* Language Switcher */}
+                  <LanguageSwitcher
+                    variant="compact"
+                    className="h-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
+                  />
 
                   {/* User Menu - Enhanced */}
                   <DropdownMenu>
