@@ -10,8 +10,11 @@ import {
   Target,
   Coins,
   ChevronDown,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { dragonQuestAIService } from '@/services/assetQuest/DragonQuestAIService';
+import { soundManager } from '@/utils/soundManager';
 
 interface ChatMessage {
   id: string;
@@ -46,10 +49,14 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const [currentMessage, setCurrentMessage] = useState<ChatMessage | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [textIndex, setTextIndex] = useState(0);
+  const [isMuted, setIsMuted] = useState(soundManager.isSoundMuted());
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastSoundTime = useRef<number>(0);
 
   useEffect(() => {
     initializeBot();
+    // サウンドマネージャーを初期化
+    soundManager.initialize();
   }, [currentLevel, questCompleted, streakDays]);
 
   useEffect(() => {
@@ -57,8 +64,17 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
       const timer = setTimeout(() => {
         if (textIndex < currentMessage.message.length) {
           setTextIndex(textIndex + 1);
+
+          // DQ風テキスト表示音を再生（3文字に1回）
+          const now = Date.now();
+          if (textIndex % 3 === 0 && now - lastSoundTime.current > 100) {
+            soundManager.playTextSound();
+            lastSoundTime.current = now;
+          }
         } else {
           setIsTyping(false);
+          // メッセージ完了音を再生
+          soundManager.playMessageCompleteSound();
         }
       }, 50); // タイピング速度
       return () => clearTimeout(timer);
@@ -92,6 +108,16 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     setCurrentMessage(message);
     setTextIndex(0);
     setIsTyping(true);
+
+    // メッセージタイプに応じて特別なサウンドを再生
+    if (message.type === 'celebration') {
+      // 少し遅れてレベルアップ音を再生
+      setTimeout(() => {
+        soundManager.playLevelUpSound();
+      }, 500);
+    } else if (message.type === 'warning') {
+      soundManager.playWarningSound();
+    }
   };
 
   const getCharacterEmoji = (character: ChatMessage['character']): string => {
@@ -140,6 +166,9 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   };
 
   const handleQuickAction = async (actionType: string) => {
+    // ボタンクリック音を再生
+    soundManager.playButtonSound();
+
     const response = await dragonQuestAIService.handleQuickAction(actionType, {
       level: currentLevel,
       totalAssets,
@@ -153,11 +182,24 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     }
   };
 
+  const toggleSound = () => {
+    const newMuteState = soundManager.toggleMute();
+    setIsMuted(newMuteState);
+
+    // サウンドテスト
+    if (!newMuteState) {
+      soundManager.playButtonSound();
+    }
+  };
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-6 right-32 z-50">
         <Button
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            soundManager.playButtonSound();
+            setIsOpen(true);
+          }}
           className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
         >
           <MessageCircle className="w-8 h-8 text-white" />
@@ -165,6 +207,14 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         {/* 新しいメッセージがある場合の通知 */}
         <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-bounce">
           <span className="text-white text-xs font-bold">!</span>
+        </div>
+        {/* サウンド状態インジケーター */}
+        <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-white rounded-full flex items-center justify-center border-2 border-blue-600">
+          {isMuted ? (
+            <VolumeX className="w-3 h-3 text-gray-400" />
+          ) : (
+            <Volume2 className="w-3 h-3 text-green-500" />
+          )}
         </div>
       </div>
     );
@@ -180,14 +230,29 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
               <Crown className="w-6 h-6 text-yellow-400" />
               <h3 className="font-bold text-lg">🏰 王国の案内</h3>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-blue-600 p-1"
-            >
-              <X className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              {/* サウンド切り替えボタン */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSound}
+                className="text-white hover:bg-blue-600 p-1"
+                title={isMuted ? 'サウンドを有効にする' : 'サウンドを無効にする'}
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  soundManager.playButtonSound();
+                  setIsOpen(false);
+                }}
+                className="text-white hover:bg-blue-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -221,7 +286,10 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                   {msg.actions.map((action, index) => (
                     <Button
                       key={index}
-                      onClick={action.action}
+                      onClick={() => {
+                        soundManager.playButtonSound();
+                        action.action();
+                      }}
                       variant="outline"
                       size="sm"
                       className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800 font-medium"
