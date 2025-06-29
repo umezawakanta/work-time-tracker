@@ -1,3 +1,21 @@
+import React from 'react';
+import { Target, AlertCircle } from 'lucide-react';
+
+interface WeeklySchedule {
+  weekNumber: number;
+  totalPlannedHours: number;
+  plannedBadges: any[];
+  onTrackScore: number;
+  theme: string;
+  startDate: string;
+  endDate: string;
+  riskLevel: string;
+  efficiency: number;
+  completionRate: number;
+  keyMilestones: string[];
+  notes: string;
+}
+
 // 週次ビューのマイルストーンと注意事項部分
 const renderWeeklyMilestonesAndNotes = (week: WeeklySchedule) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

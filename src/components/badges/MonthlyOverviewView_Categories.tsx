@@ -1,3 +1,21 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Target } from 'lucide-react';
+
+interface MonthlyBadgeCategory {
+  name: string;
+  progress: number;
+  count: number;
+  completedCount: number;
+  icon: string;
+  estimatedHours: number;
+  actualHours: number;
+  efficiency: number;
+  topBadges: string[];
+}
+
 // カテゴリ別進捗表示コンポーネント
 const renderCategoryProgress = (categories: MonthlyBadgeCategory[]) => (
   <Card>

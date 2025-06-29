@@ -1,3 +1,19 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Trophy, Calendar, Clock } from 'lucide-react';
+
+interface MonthlyAchievement {
+  badgeId: string;
+  badgeName: string;
+  badgeEmoji: string;
+  category: string;
+  completedDate: string;
+  hoursSpent: number;
+  difficulty: 'bronze' | 'silver' | 'gold' | 'platinum' | 'legendary';
+  impact: 'low' | 'medium' | 'high';
+}
+
 // 達成バッジ表示コンポーネント
 const renderMonthlyAchievements = (achievements: MonthlyAchievement[]) => (
   <Card>

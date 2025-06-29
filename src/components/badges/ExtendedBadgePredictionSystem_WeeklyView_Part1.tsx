@@ -1,3 +1,7 @@
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+
 // 週次ビューの詳細展開部分の続き
 const renderWeeklyViewDetailedContent = (
   week: WeeklySchedule,

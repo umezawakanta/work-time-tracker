@@ -1,3 +1,11 @@
+import React from 'react';
+import { renderMonthlyMetrics } from './MonthlyOverviewView_Metrics';
+import { renderCategoryProgress } from './MonthlyOverviewView_Categories';
+import { renderTrendAnalysis } from './MonthlyOverviewView_Trends';
+import { renderMonthlyAchievements } from './MonthlyOverviewView_Achievements';
+import { renderWeeklyBreakdown } from './MonthlyOverviewView_WeeklyBreakdown';
+import { renderNextMonthPredictions } from './MonthlyOverviewView_Predictions';
+
 // 完全な月次概要ビューレンダリング関数
 const renderMonthlyView = () => {
   const monthlyData = generateMonthlyOverviewData();
@@ -27,4 +35,16 @@ const renderMonthlyView = () => {
       </div>
     </div>
   );
+};
+
+const generateMonthlyOverviewData = () => {
+  // Add your data generation logic here
+  return {
+    metrics: {},
+    categories: [],
+    trends: [],
+    achievements: [],
+    weeklyBreakdown: [],
+    predictions: {},
+  };
 };
