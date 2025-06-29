@@ -600,43 +600,110 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
         <div className="p-4 bg-gradient-to-r from-blue-100 to-indigo-100 border-t-4 border-blue-800">
           {!isDeveloperMode ? (
             // 通常モードのアクション
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                onClick={() => handleQuickAction('advice')}
-                variant="outline"
-                size="sm"
-                className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"
-              >
-                <Sparkles className="w-4 h-4 mr-1" />
-                助言を求む
-              </Button>
-              <Button
-                onClick={() => handleQuickAction('status')}
-                variant="outline"
-                size="sm"
-                className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
-              >
-                <TrendingUp className="w-4 h-4 mr-1" />
-                現状確認
-              </Button>
-              <Button
-                onClick={() => handleQuickAction('mission')}
-                variant="outline"
-                size="sm"
-                className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
-              >
-                <Target className="w-4 h-4 mr-1" />
-                新たな使命
-              </Button>
-              <Button
-                onClick={() => handleQuickAction('reward')}
-                variant="outline"
-                size="sm"
-                className="bg-white border-2 border-yellow-300 hover:bg-yellow-50 text-yellow-800"
-              >
-                <Coins className="w-4 h-4 mr-1" />
-                報酬確認
-              </Button>
+            <div className="space-y-3">
+              {/* ライフサポート機能 */}
+              <div className="bg-gradient-to-r from-pink-100 to-yellow-100 p-3 rounded-lg border-2 border-pink-300">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🤗</span>
+                  <span className="text-sm font-bold text-pink-800">人生サポート</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => handleQuickAction('life-support')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-pink-300 hover:bg-pink-50 text-pink-800"
+                  >
+                    🤗 何をすべき？
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('daily-plan')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-orange-300 hover:bg-orange-50 text-orange-800"
+                  >
+                    🌅 今日の計画
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('emergency-help')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-red-300 hover:bg-red-50 text-red-800"
+                  >
+                    🚨 緊急時対応
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('basic-needs')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
+                  >
+                    🏠 基本確認
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('mental-health')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
+                  >
+                    🧠 心のケア
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('skill-building')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"
+                  >
+                    🎯 スキル習得
+                  </Button>
+                </div>
+              </div>
+
+              {/* 資産形成機能 */}
+              <div className="bg-gradient-to-r from-blue-100 to-indigo-100 p-3 rounded-lg border-2 border-blue-300">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">👑</span>
+                  <span className="text-sm font-bold text-blue-800">資産形成クエスト</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => handleQuickAction('advice')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"
+                  >
+                    <Sparkles className="w-4 h-4 mr-1" />
+                    助言を求む
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('status')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
+                  >
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    現状確認
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('mission')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
+                  >
+                    <Target className="w-4 h-4 mr-1" />
+                    新たな使命
+                  </Button>
+                  <Button
+                    onClick={() => handleQuickAction('reward')}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white border-2 border-yellow-300 hover:bg-yellow-50 text-yellow-800"
+                  >
+                    <Coins className="w-4 h-4 mr-1" />
+                    報酬確認
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
             // 開発者モードのアクション

@@ -487,6 +487,71 @@ const Home: React.FC = () => {
       }}
       headerGradient
     >
+      {/* 🤗 ライフサポート - クイックアクセス */}
+      <div className="mb-6">
+        <Card className="border-0 shadow-lg bg-gradient-to-r from-pink-50 via-yellow-50 to-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-full bg-gradient-to-r from-pink-500 to-yellow-500 shadow-lg">
+                  <span className="text-2xl">🤗</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    今、何をすべきか迷っていませんか？
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    誰でも幸せな人生を送れるようAIがサポートします
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // チャットボットを開く（実装は後でDragonQuestChatbotで）
+                    const event = new CustomEvent('openLifeSupportBot', {
+                      detail: { action: 'life-support' },
+                    });
+                    window.dispatchEvent(event);
+                  }}
+                  className="bg-white border-pink-300 hover:bg-pink-50 text-pink-800"
+                >
+                  🤗 相談する
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const event = new CustomEvent('openLifeSupportBot', {
+                      detail: { action: 'daily-plan' },
+                    });
+                    window.dispatchEvent(event);
+                  }}
+                  className="bg-white border-orange-300 hover:bg-orange-50 text-orange-800"
+                >
+                  🌅 今日の計画
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const event = new CustomEvent('openLifeSupportBot', {
+                      detail: { action: 'emergency-help' },
+                    });
+                    window.dispatchEvent(event);
+                  }}
+                  className="bg-white border-red-300 hover:bg-red-50 text-red-800"
+                >
+                  🚨 緊急時
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* 🌍 Language Test Links - Quick Access */}
       <div className="mb-4 flex gap-2">
         <Button
