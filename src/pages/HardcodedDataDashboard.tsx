@@ -61,8 +61,13 @@ export default function HardcodedDataDashboard() {
 
   const loadAnalysis = async () => {
     setLoading(true);
+    console.log('🔄 固定データ分析を開始...');
+
     try {
       const result = await hardcodedDataAnalyzer.analyzeProject();
+      console.log('📊 分析結果を受信:', result);
+      console.log('📊 問題数:', result.totalIssues);
+      console.log('📊 ファイル数:', Object.keys(result.fileAnalysis).length);
       setAnalysisResult(result);
     } catch (error) {
       console.error('❌ 分析エラー:', error);
