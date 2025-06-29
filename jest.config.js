@@ -28,17 +28,29 @@ module.exports = {
   moduleDirectories: ['node_modules', 'src'],
   passWithNoTests: true,
   globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+    // Mock import.meta for all tests
     'import.meta': {
       env: {
-        VITE_API_BASE_URL: 'http://localhost:3001/api',
-        VITE_USE_MOCK_DATA: 'true',
+        DEV: false,
+        PROD: true,
         MODE: 'test',
-        DEV: true,
-        PROD: false,
-        SSR: false,
-        VITE_ADMIN_EMAILS: 'admin@test.com',
-        VITE_SKIP_AUTH: 'true',
-      },
-    },
+        VITE_API_URL: 'http://localhost:3000',
+        VITE_FIREBASE_API_KEY: 'test-api-key',
+        VITE_FIREBASE_AUTH_DOMAIN: 'test.firebaseapp.com',
+        VITE_FIREBASE_PROJECT_ID: 'test-project',
+        VITE_FIREBASE_STORAGE_BUCKET: 'test.appspot.com',
+        VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
+        VITE_FIREBASE_APP_ID: 'test-app-id',
+      }
+    }
   },
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/main.tsx',
+    '!src/vite-env.d.ts',
+  ],
 };
