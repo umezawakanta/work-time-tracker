@@ -197,8 +197,10 @@ class MultiAIIntegrationService {
   private async executeChatGPT(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🚀 ChatGPT でタスク処理中...');
 
-    // 実際の実装では OpenAI API を呼び出し
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // TODO: 実際のOpenAI API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 1200; // ChatGPTの平均応答時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `ChatGPT応答: ${request.prompt}について詳細で実用的な回答を提供します。コード生成や分析に特に優れています。`,
@@ -217,7 +219,10 @@ class MultiAIIntegrationService {
   private async executeClaude(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🧠 Claude でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // TODO: 実際のAnthropic API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 1500; // Claudeの平均応答時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `Claude応答: ${request.prompt}に対して論理的で包括的な分析を行います。特に複雑な推論や長文の処理が得意です。`,
@@ -236,7 +241,10 @@ class MultiAIIntegrationService {
   private async executeGemini(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('✨ Gemini でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // TODO: 実際のGoogle AI API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 900; // Geminiの平均応答時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `Gemini応答: ${request.prompt}について創造的で革新的な視点から回答します。マルチモーダル処理が強みです。`,
@@ -255,7 +263,10 @@ class MultiAIIntegrationService {
   private async executeNotion(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('📝 Notion AI でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // TODO: 実際のNotion API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 1100; // NotionAIの平均応答時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `Notion AI応答: ${request.prompt}をもとに構造化されたコンテンツを作成しました。ドキュメント作成に最適化されています。`,
@@ -276,7 +287,10 @@ class MultiAIIntegrationService {
   private async executeManus(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('✍️ Manus で手書き認識処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // TODO: 実際のManus API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 1800; // 手書き認識の平均処理時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `Manus認識結果: 手書きテキスト「${request.prompt}」を高精度で認識・デジタル化しました。`,
@@ -298,7 +312,10 @@ class MultiAIIntegrationService {
   private async executeSuperWhisper(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎤 SuperWhisper で音声認識中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // TODO: 実際のSuperWhisper API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 600; // 高速音声認識の平均処理時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `SuperWhisper認識結果: 音声「${request.prompt}」をリアルタイムで正確に文字起こししました。`,
@@ -321,7 +338,10 @@ class MultiAIIntegrationService {
   private async executeSora(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎬 Sora で動画生成中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 8000));
+    // TODO: 実際のSora API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 12000; // 動画生成の平均処理時間（12秒）
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `Sora動画生成完了: 「${request.prompt}」をテーマにした高品質な動画を生成しました。`,
@@ -345,7 +365,10 @@ class MultiAIIntegrationService {
   private async executeNotebookLM(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('📚 NotebookLM で文書分析中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // TODO: 実際のNotebookLM API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 2500; // 文書分析の平均処理時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `NotebookLM分析: ${request.prompt}に関する詳細な文書分析と洞察を提供します。複数の文書から関連情報を抽出・統合しました。`,
@@ -368,7 +391,10 @@ class MultiAIIntegrationService {
   private async executeAIStudio(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎨 AI Studio でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // TODO: 実際のAI Studio API実装に置き換え予定
+    // 決定論的な処理時間（モック）
+    const mockProcessingTime = 1700; // 実験的AI機能の平均処理時間
+    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
 
     return {
       content: `AI Studio応答: ${request.prompt}について実験的で先進的なAI機能を活用した回答を提供します。`,

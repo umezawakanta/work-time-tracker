@@ -229,8 +229,28 @@ const MonthlyRegistrationStatus = ({ subscriptions }: { subscriptions: Subscript
   // 現在の年を取得
   const currentYear = new Date().getFullYear();
 
-  // 過去2年分のデータを表示
-  const years = [currentYear, currentYear - 1, currentYear - 2];
+  // 動的な年数生成（過去のサブスクリプションデータに基づく）
+  const generateYears = () => {
+    const baseYears = [currentYear, currentYear - 1, currentYear - 2];
+
+    // サブスクリプションデータから実際に使用されている年を抽出
+    const usedYears = new Set<number>();
+    subscriptions.forEach((sub: Subscription) => {
+      if (sub.billingDate) {
+        const [yearStr] = String(sub.billingDate).split('/');
+        const year = parseInt(yearStr, 10);
+        if (!isNaN(year) && year >= 2020 && year <= currentYear + 1) {
+          usedYears.add(year);
+        }
+      }
+    });
+
+    // ベース年とデータ年を統合
+    const allYears = new Set([...baseYears, ...usedYears]);
+    return Array.from(allYears).sort((a, b) => b - a); // 降順
+  };
+
+  const years = generateYears();
 
   // 月ごとのサブスクリプション登録状況を計算
   const getMonthlyStatus = () => {
@@ -397,8 +417,32 @@ export default function SubscriptionManagementPage() {
     });
   };
 
-  // 未確認月のモックデータ
-  const unregisteredMonths = ['2024/01', '2023/11', '2023/10', '2023/06', '2023/05'];
+  // 未確認月の動的生成（過去6ヶ月で登録のない月を特定）
+  const generateUnregisteredMonths = () => {
+    const currentDate = new Date();
+    const registeredMonths = new Set(
+      safeSubscriptions
+        .filter((sub) => sub.billingDate)
+        .map((sub) => {
+          const [year, month] = String(sub.billingDate).split('/');
+          return `${year}/${month.padStart(2, '0')}`;
+        })
+    );
+
+    const unregistered: string[] = [];
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthStr = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      if (!registeredMonths.has(monthStr)) {
+        unregistered.push(monthStr);
+      }
+    }
+
+    return unregistered;
+  };
+
+  const unregisteredMonths = generateUnregisteredMonths();
 
   const [editingSubscription, setEditingSubscription] = useState<SubscriptionService | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');

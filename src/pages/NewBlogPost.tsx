@@ -38,6 +38,12 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import Refresh from '@mui/icons-material/Refresh';
 import ContentCopy from '@mui/icons-material/ContentCopy';
+import {
+  STOP_WORDS,
+  SENTIMENT_WORDS,
+  CATEGORY_KEYWORDS,
+  SEO_KEYWORDS,
+} from '../constants/blogAnalysisWords';
 
 interface AISuggestion {
   title: string;
@@ -167,12 +173,11 @@ const NewBlogPost: React.FC = () => {
     const sentences = content.split(/[.!?]+/).filter((s) => s.trim()).length;
     const readingTime = Math.ceil(words / 200); // 平均読書速度: 200単語/分
 
-    // キーワード抽出（簡易版）
-    const commonWords = ['の', 'は', 'を', 'が', 'に', 'と', 'で', 'て', 'た', 'し'];
+    // キーワード抽出（設定ファイルのストップワードを使用）
     const wordFreq: { [key: string]: number } = {};
     content.split(/\s+/).forEach((word) => {
       const cleanWord = word.toLowerCase().replace(/[.,!?;:]/g, '');
-      if (cleanWord.length > 2 && !commonWords.includes(cleanWord)) {
+      if (cleanWord.length > 2 && !STOP_WORDS.includes(cleanWord as any)) {
         wordFreq[cleanWord] = (wordFreq[cleanWord] || 0) + 1;
       }
     });
@@ -181,11 +186,9 @@ const NewBlogPost: React.FC = () => {
       .slice(0, 5)
       .map(([word]) => word);
 
-    // 感情分析（簡易版）
-    const positiveWords = ['素晴らしい', '良い', '便利', '効果的', '成功', '改善'];
-    const negativeWords = ['問題', '困難', '失敗', '欠点', '悪い', '難しい'];
-    const positiveCount = positiveWords.filter((word) => content.includes(word)).length;
-    const negativeCount = negativeWords.filter((word) => content.includes(word)).length;
+    // 感情分析（設定ファイルの感情単語を使用）
+    const positiveCount = SENTIMENT_WORDS.positive.filter((word) => content.includes(word)).length;
+    const negativeCount = SENTIMENT_WORDS.negative.filter((word) => content.includes(word)).length;
     const sentiment =
       positiveCount > negativeCount
         ? 'positive'
@@ -193,18 +196,12 @@ const NewBlogPost: React.FC = () => {
           ? 'negative'
           : 'neutral';
 
-    // カテゴリ推定（簡易版）
-    const categoryKeywords = {
-      テクノロジー: ['AI', 'プログラミング', 'ソフトウェア', 'アプリ', 'デジタル'],
-      ビジネス: ['経営', 'マーケティング', '戦略', '収益', 'ビジネス'],
-      ライフスタイル: ['生活', '健康', '趣味', '旅行', '料理'],
-      教育: ['学習', '教育', 'スキル', '知識', '勉強'],
-    };
+    // カテゴリ推定（設定ファイルのカテゴリキーワードを使用）
 
     let suggestedCategory = 'その他';
     let maxMatches = 0;
-    for (const [category, words] of Object.entries(categoryKeywords)) {
-      const matches = words.filter((word) => content.includes(word)).length;
+    for (const [category, words] of Object.entries(CATEGORY_KEYWORDS)) {
+      const matches = words.filter((word: string) => content.includes(word)).length;
       if (matches > maxMatches) {
         maxMatches = matches;
         suggestedCategory = category;

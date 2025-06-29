@@ -697,7 +697,9 @@ const GuitarPracticePage: React.FC = () => {
     '技術的な練習と曲の練習をバランスよく組み合わせると、モチベーションを保ちやすくなります。',
   ];
 
-  const randomTip = motivationTips[Math.floor(Math.random() * motivationTips.length)];
+  // 決定論的なヒント選択（日付ベース）
+  const tipIndex = new Date().getDate() % motivationTips.length;
+  const dailyTip = motivationTips[tipIndex];
 
   useEffect(() => {
     if (status === 'idle') {
@@ -774,7 +776,7 @@ const GuitarPracticePage: React.FC = () => {
             </div>
             <div>
               <h3 className="font-medium text-blue-800 mb-1">今日の練習モチベーション</h3>
-              <p className="text-blue-700">{randomTip}</p>
+              <p className="text-blue-700">{dailyTip}</p>
             </div>
           </div>
         </div>

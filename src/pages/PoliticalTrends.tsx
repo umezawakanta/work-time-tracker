@@ -102,15 +102,54 @@ export default function PoliticalTrends() {
     fetchSurveyData();
   }, []);
 
-  // 政党が読み込まれたら主要政党を自動選択
+  // 政党が読み込まれたら主要政党を自動選択（動的判定）
   useEffect(() => {
     if (parties && parties.length > 0) {
-      const majorParties = ['自民', '立民', '維新', '公明', '共産'];
-      setSelectedParties(
-        parties.filter((p) => majorParties.includes(p.shortName)).map((p) => p.shortName)
-      );
+      // 支持率データに基づいて主要政党を動的に判定
+      const getMajorPartiesByData = () => {
+        if (!chartData || !chartData[selectedMedia]) {
+          // データがない場合は議席数や知名度が高い政党を選択
+          const fallbackMajorParties = ['自民', '立民', '維新', '公明', '共産'];
+          return parties
+            .filter((p) => fallbackMajorParties.includes(p.shortName))
+            .map((p) => p.shortName);
+        }
+
+        // 実際のデータから平均支持率を計算して上位政党を選択
+        const partySupport = new Map<string, number[]>();
+
+        chartData[selectedMedia].forEach((dataPoint) => {
+          parties.forEach((party) => {
+            const supportRate = dataPoint[party.shortName];
+            if (typeof supportRate === 'number' && !isNaN(supportRate)) {
+              if (!partySupport.has(party.shortName)) {
+                partySupport.set(party.shortName, []);
+              }
+              partySupport.get(party.shortName)!.push(supportRate);
+            }
+          });
+        });
+
+        // 平均支持率を計算して上位5政党を選択
+        const averageSupport = Array.from(partySupport.entries())
+          .map(([partyName, rates]) => ({
+            partyName,
+            averageRate: rates.reduce((sum, rate) => sum + rate, 0) / rates.length,
+            dataPoints: rates.length,
+          }))
+          .filter((item) => item.dataPoints > 0) // データがある政党のみ
+          .sort((a, b) => b.averageRate - a.averageRate)
+          .slice(0, 5) // 上位5政党
+          .map((item) => item.partyName);
+
+        return averageSupport.length > 0
+          ? averageSupport
+          : parties.slice(0, 5).map((p) => p.shortName); // フォールバック
+      };
+
+      setSelectedParties(getMajorPartiesByData());
     }
-  }, [parties]);
+  }, [parties, chartData, selectedMedia]);
 
   // 選択されたメディアのデータを取得
   const filteredData = useMemo(() => {
