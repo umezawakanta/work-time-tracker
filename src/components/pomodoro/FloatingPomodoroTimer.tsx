@@ -203,10 +203,10 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
 
             {/* ステータス */}
             <div className="text-sm text-gray-600 mb-4">
-              {pomodoro.status === 'running' && '実行中'}
-              {pomodoro.status === 'paused' && '一時停止中'}
-              {pomodoro.status === 'idle' && '待機中'}
-              {pomodoro.status === 'completed' && '完了！'}
+              {pomodoro.status === 'running' && t('home.running')}
+              {pomodoro.status === 'paused' && t('home.paused_status')}
+              {pomodoro.status === 'idle' && t('home.standby')}
+              {pomodoro.status === 'completed' && t('home.completed_status')}
             </div>
 
             {/* タスク名入力（アイドル状態のみ表示） */}

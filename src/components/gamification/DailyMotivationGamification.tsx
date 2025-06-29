@@ -330,7 +330,7 @@ export const DailyMotivationGamification: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex gap-2">
                 <Input
-                  placeholder="新しいタスクを追加..."
+                  placeholder={t('home.add_new_task')}
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && addNewTask()}

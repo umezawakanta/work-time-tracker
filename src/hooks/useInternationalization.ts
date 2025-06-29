@@ -156,6 +156,10 @@ export interface TranslationDictionary {
     total_completed: string;
     statistics: string;
     level_progress: string;
+    add_new_task: string;
+    running: string;
+    paused_status: string;
+    completed_status: string;
   };
 
   // ナビゲーション
@@ -340,6 +344,10 @@ const jaTranslations: TranslationDictionary = {
     total_completed: '総完了数',
     statistics: '統計',
     level_progress: 'レベル進捗',
+    add_new_task: '新しいタスクを追加...',
+    running: '実行中',
+    paused_status: '一時停止中',
+    completed_status: '完了！',
   },
   navigation: {
     dashboard: 'ダッシュボード',
@@ -511,6 +519,10 @@ const enTranslations: TranslationDictionary = {
     total_completed: 'Total Completed',
     statistics: 'Statistics',
     level_progress: 'Level Progress',
+    add_new_task: 'Add new task...',
+    running: 'Running',
+    paused_status: 'Paused',
+    completed_status: 'Completed!',
   },
   navigation: {
     dashboard: 'Dashboard',
@@ -681,6 +693,10 @@ const zhTranslations: TranslationDictionary = {
     total_completed: '总完成数',
     statistics: '统计',
     level_progress: '等级进度',
+    add_new_task: '添加新任务...',
+    running: '运行中',
+    paused_status: '已暂停',
+    completed_status: '已完成！',
   },
   navigation: {
     dashboard: '仪表板',
@@ -851,6 +867,10 @@ const koTranslations: TranslationDictionary = {
     total_completed: '총 완료수',
     statistics: '통계',
     level_progress: '레벨 진행',
+    add_new_task: '새 작업 추가...',
+    running: '실행 중',
+    paused_status: '일시정지됨',
+    completed_status: '완료됨!',
   },
   navigation: {
     dashboard: '대시보드',
