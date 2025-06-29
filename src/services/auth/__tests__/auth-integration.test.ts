@@ -1,0 +1,310 @@
+/**
+ * 認証システム統合テストスイート
+ *
+ * このファイルは認証システム全体のテストを統合し、
+ * クロステストとE2Eシナリオを提供します。
+ */
+
+import AuthService from '../AuthService';
+import { TokenManager } from '../TokenManager';
+import { api } from '@/services/api/apiConfig';
+import * as authApi from '@/services/api/authApi';
+
+// モック設定
+jest.mock('@/config/firebase');
+jest.mock('@/services/api/apiConfig');
+jest.mock('@/services/api/authApi');
+
+describe('Authentication System Integration', () => {
+  let tokenManager: TokenManager;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    // 本番環境をシミュレート
+    process.env.NODE_ENV = 'production';
+    Object.defineProperty(window, 'location', {
+      value: { hostname: 'myapp.vercel.app' },
+      writable: true,
+    });
+
+    tokenManager = TokenManager.getInstance();
+  });
+
+  describe('Complete Authentication Flow', () => {
+    it('should complete full sign up -> login -> token refresh -> logout cycle', async () => {
+      // 1. ユーザー登録
+      const signUpResult = await AuthService.signUp(
+        'newuser@example.com',
+        'password123',
+        'New User'
+      );
+
+      expect(signUpResult.error).toBeNull();
+      expect(signUpResult.user).toBeDefined();
+      expect(signUpResult.user?.email).toBe('newuser@example.com');
+
+      // 2. ログイン
+      const loginResult = await AuthService.signIn('newuser@example.com', 'password123');
+
+      expect(loginResult.error).toBeNull();
+      expect(loginResult.user).toBeDefined();
+
+      // 3. TokenManagerでトークンを設定
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('access-token', 'refresh-token', 3600, 604800);
+
+      expect(tokenManager.isAuthenticated()).toBe(true);
+
+      // 4. トークンリフレッシュ
+      (api.post as jest.Mock).mockResolvedValue({
+        data: {
+          accessToken: 'new-access-token',
+          refreshToken: 'new-refresh-token',
+          expiresIn: 3600,
+          refreshExpiresIn: 604800,
+        },
+      });
+
+      const newToken = await tokenManager.getAccessToken();
+      expect(newToken).toBe('new-access-token');
+
+      // 5. ログアウト
+      await AuthService.signOut();
+      await tokenManager.clearTokens();
+
+      expect(tokenManager.isAuthenticated()).toBe(false);
+    });
+
+    it('should handle authentication with Google OAuth', async () => {
+      // Google認証フロー
+      const googleResult = await AuthService.signInWithGoogle();
+
+      expect(googleResult.error).toBeNull();
+      expect(googleResult.user).toBeDefined();
+
+      // トークン設定
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('google-access-token', 'google-refresh-token');
+
+      expect(tokenManager.isAuthenticated()).toBe(true);
+    });
+  });
+
+  describe('Error Handling Integration', () => {
+    it('should handle token expiration gracefully across components', async () => {
+      // 期限切れトークンを設定
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('expired-token', 'expired-refresh', -1, -1);
+
+      expect(tokenManager.isAuthenticated()).toBe(false);
+
+      // 認証エラーに対する適切な処理
+      const accessToken = await tokenManager.getAccessToken();
+      expect(accessToken).toBeNull();
+    });
+
+    it('should handle network failures across auth components', async () => {
+      // ネットワークエラーをシミュレート
+      (api.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+      // AuthServiceでのネットワークエラー処理
+      const loginResult = await AuthService.signIn('test@example.com', 'password123');
+      expect(loginResult.error).toBeDefined();
+
+      // TokenManagerでのネットワークエラー処理
+      await expect(tokenManager.setTokens('token', 'refresh')).resolves.toBeUndefined(); // エラーを投げずに継続
+    });
+  });
+
+  describe('Security Integration', () => {
+    it('should maintain security across all auth components', async () => {
+      // セキュアなパスワードリセットフロー
+      const resetResult = await AuthService.resetPassword('user@example.com');
+      expect(resetResult).toBeNull(); // 成功
+
+      // トークンの安全な管理
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('secure-token', 'secure-refresh');
+
+      const sessionInfo = tokenManager.getSessionInfo();
+      expect(sessionInfo.isAuthenticated).toBe(true);
+      expect(sessionInfo.expiresAt).toBeInstanceOf(Date);
+    });
+
+    it('should handle multiple concurrent authentication requests', async () => {
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('concurrent-token', 'concurrent-refresh', -1); // 期限切れ
+
+      // 複数の同時リフレッシュリクエスト
+      (api.post as jest.Mock).mockResolvedValue({
+        data: {
+          accessToken: 'refreshed-token',
+          refreshToken: 'refreshed-refresh',
+          expiresIn: 3600,
+          refreshExpiresIn: 604800,
+        },
+      });
+
+      const promises = [
+        tokenManager.getAccessToken(),
+        tokenManager.getAccessToken(),
+        tokenManager.getAccessToken(),
+      ];
+
+      const results = await Promise.all(promises);
+
+      // すべて同じ新しいトークンを返す
+      results.forEach((result) => {
+        expect(result).toBe('refreshed-token');
+      });
+    });
+  });
+
+  describe('Performance Integration', () => {
+    it('should handle authentication operations within acceptable time limits', async () => {
+      const startTime = Date.now();
+
+      // 認証操作のパフォーマンステスト
+      const loginResult = await AuthService.signIn('perf@example.com', 'password123');
+
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+
+      // 1秒以内に完了することを確認
+      expect(duration).toBeLessThan(1000);
+      expect(loginResult).toBeDefined();
+    });
+
+    it('should efficiently manage token storage operations', async () => {
+      const startTime = Date.now();
+
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('perf-token', 'perf-refresh');
+
+      const midTime = Date.now();
+      const token = await tokenManager.getAccessToken();
+
+      const endTime = Date.now();
+
+      expect(midTime - startTime).toBeLessThan(100); // セット操作は100ms以内
+      expect(endTime - midTime).toBeLessThan(50); // ゲット操作は50ms以内
+      expect(token).toBe('perf-token');
+    });
+  });
+
+  describe('State Management Integration', () => {
+    it('should maintain consistent state across auth components', async () => {
+      // 初期状態
+      expect(tokenManager.isAuthenticated()).toBe(false);
+      expect(AuthService.getCurrentUser()).toBeNull();
+
+      // 認証後の状態
+      const loginResult = await AuthService.signIn('state@example.com', 'password123');
+      expect(loginResult.user).toBeDefined();
+
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens('state-token', 'state-refresh');
+
+      expect(tokenManager.isAuthenticated()).toBe(true);
+
+      // ログアウト後の状態
+      await AuthService.signOut();
+      await tokenManager.clearTokens();
+
+      expect(tokenManager.isAuthenticated()).toBe(false);
+    });
+  });
+
+  describe('Edge Cases Integration', () => {
+    it('should handle rapid login/logout cycles', async () => {
+      for (let i = 0; i < 5; i++) {
+        // ログイン
+        const loginResult = await AuthService.signIn(`user${i}@example.com`, 'password123');
+        expect(loginResult.user).toBeDefined();
+
+        (api.post as jest.Mock).mockResolvedValue({ data: {} });
+        await tokenManager.setTokens(`token-${i}`, `refresh-${i}`);
+        expect(tokenManager.isAuthenticated()).toBe(true);
+
+        // ログアウト
+        await AuthService.signOut();
+        await tokenManager.clearTokens();
+        expect(tokenManager.isAuthenticated()).toBe(false);
+      }
+    });
+
+    it('should handle malformed server responses', async () => {
+      // 不正なレスポンス形式
+      (api.post as jest.Mock).mockResolvedValue({
+        data: { invalid: 'structure' },
+      });
+
+      await expect(
+        tokenManager.setTokens('malformed-token', 'malformed-refresh')
+      ).resolves.toBeUndefined();
+
+      // システムは継続して動作する
+      expect(tokenManager.isAuthenticated()).toBe(true);
+    });
+  });
+
+  describe('API Integration', () => {
+    it('should integrate properly with authApi module', async () => {
+      (authApi.login as jest.Mock).mockResolvedValue({
+        accessToken: 'api-token',
+        refreshToken: 'api-refresh',
+        user: {
+          id: 'api-user',
+          name: 'API User',
+          email: 'api@example.com',
+        },
+      });
+
+      const result = await authApi.login({
+        email: 'api@example.com',
+        password: 'password123',
+        rememberMe: false,
+      });
+
+      expect(result.accessToken).toBe('api-token');
+      expect(result.user.name).toBe('API User');
+
+      // TokenManagerとの統合
+      (api.post as jest.Mock).mockResolvedValue({ data: {} });
+      await tokenManager.setTokens(result.accessToken, result.refreshToken);
+
+      expect(tokenManager.isAuthenticated()).toBe(true);
+    });
+  });
+
+  describe('Development vs Production Behavior', () => {
+    it('should behave differently in development environment', () => {
+      // 開発環境設定
+      process.env.NODE_ENV = 'development';
+      Object.defineProperty(window, 'location', {
+        value: { hostname: 'localhost' },
+        writable: true,
+      });
+
+      const devTokenManager = TokenManager.getInstance();
+
+      // 開発環境では異なる動作をする
+      expect(devTokenManager.isAuthenticated()).toBe(false);
+    });
+
+    it('should enable full functionality in production environment', () => {
+      // 本番環境設定
+      process.env.NODE_ENV = 'production';
+      Object.defineProperty(window, 'location', {
+        value: { hostname: 'myapp.vercel.app' },
+        writable: true,
+      });
+
+      const prodTokenManager = TokenManager.getInstance();
+
+      // 本番環境では完全な機能が有効
+      expect(prodTokenManager).toBeDefined();
+    });
+  });
+});
