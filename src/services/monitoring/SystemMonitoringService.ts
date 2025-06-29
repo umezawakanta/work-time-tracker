@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator, generateOperationId } from '../../utils/idGenerator';
 
 export interface SystemMetrics {
   timestamp: string;
@@ -230,23 +231,28 @@ class SystemMonitoringService {
    */
   private getCPUUsage(): number {
     // 実際の実装では system APIs を使用
-    const baseUsage = 15;
-    const variation = Math.sin(Date.now() / 60000) * 20 + Math.random() * 10;
-    return Math.max(0, Math.min(100, baseUsage + variation));
+    const performanceMetrics = dataGenerator.generatePerformanceMetrics();
+    const timeVariation = Math.sin(Date.now() / 60000) * 15; // 時間による自然な変動
+    return Math.max(0, Math.min(100, performanceMetrics.cpu + timeVariation));
   }
 
   /**
    * 🌡️ CPU温度取得
    */
   private getCPUTemperature(): number {
-    return 45 + Math.random() * 15; // 45-60°C
+    // CPU使用率に基づいた現実的な温度計算
+    const cpuUsage = this.getCPUUsage();
+    const baseTemp = 40;
+    const usageTemp = (cpuUsage / 100) * 30; // 使用率に応じて最大30度上昇
+    return baseTemp + usageTemp + dataGenerator.randomFloat(-2, 2); // ±2度の変動
   }
 
   /**
    * 📱 プロセス数取得
    */
   private getProcessCount(): number {
-    return 150 + Math.floor(Math.random() * 50);
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return Math.floor(120 + (systemHealth.uptime / 99.0) * 80); // 稼働率に応じて120-200プロセス
   }
 
   /**
@@ -257,7 +263,8 @@ class SystemMonitoringService {
       const { usedJSHeapSize } = (performance as any).memory;
       return usedJSHeapSize / (1024 * 1024); // MB
     }
-    return 1024 + Math.random() * 512; // 1-1.5GB
+    const performanceMetrics = dataGenerator.generatePerformanceMetrics();
+    return 512 + (performanceMetrics.memory / 100) * 1536; // 0.5-2GB の現実的な範囲
   }
 
   /**
@@ -307,7 +314,8 @@ class SystemMonitoringService {
     if (navEntries.length > 0) {
       return navEntries[0].responseStart - navEntries[0].requestStart;
     }
-    return 50 + Math.random() * 100; // 50-150ms
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return systemHealth.responseTime; // 現実的な応答時間
   }
 
   /**
@@ -315,7 +323,8 @@ class SystemMonitoringService {
    */
   private getStorageUsed(): number {
     // 実際の実装では Storage Quota API を使用
-    return 25 + Math.random() * 10; // 25-35GB
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return 15 + (systemHealth.throughput / 2000) * 40; // 15-55GB の現実的な範囲
   }
 
   /**
@@ -329,7 +338,8 @@ class SystemMonitoringService {
    * 📈 ストレージIOPS取得
    */
   private getStorageIOPS(): number {
-    return 100 + Math.floor(Math.random() * 200); // 100-300 IOPS
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return Math.floor(100 + (systemHealth.throughput / 2000) * 300); // 100-400 IOPS
   }
 
   /**
@@ -338,28 +348,38 @@ class SystemMonitoringService {
   private getApplicationResponseTime(): number {
     const paintEntries = performance.getEntriesByType('paint');
     const fcp = paintEntries.find((entry) => entry.name === 'first-contentful-paint');
-    return fcp ? fcp.startTime : 1000 + Math.random() * 500;
+    if (fcp) return fcp.startTime;
+
+    const performanceMetrics = dataGenerator.generatePerformanceMetrics();
+    return performanceMetrics.loadTime;
   }
 
   /**
    * 🚀 アプリケーションスループット取得
    */
   private getApplicationThroughput(): number {
-    return 10 + Math.random() * 20; // 10-30 requests/second
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return systemHealth.throughput / 60; // 分単位から秒単位に変換
   }
 
   /**
    * 🚨 アプリケーションエラー率取得
    */
   private getApplicationErrorRate(): number {
-    return Math.random() * 2; // 0-2%
+    const systemHealth = dataGenerator.generateSystemHealth();
+    return systemHealth.errorRate; // 0-0.5% の現実的なエラー率
   }
 
   /**
    * 👥 アクティブユーザー数取得
    */
   private getActiveUsers(): number {
-    return Math.floor(1 + Math.random() * 9); // 1-10 users
+    const hour = new Date().getHours();
+    const businessHours = hour >= 9 && hour <= 17;
+    const baseUsers = businessHours ? 8 : 3;
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const variation = Math.floor((systemHealth.uptime / 99.0) * 5);
+    return Math.max(1, baseUsers + variation);
   }
 
   /**
@@ -453,7 +473,7 @@ class SystemMonitoringService {
     }
 
     const alert: Alert = {
-      id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: generateOperationId('alert'),
       timestamp: new Date().toISOString(),
       acknowledged: false,
       resolved: false,

@@ -3,6 +3,12 @@
  * ChatGPT、Claude、Gemini、Manus、NotebookLM、Notion、AI Studio、SuperWhisper、Soraを統合
  */
 
+import {
+  calculateAICost,
+  calculateConfidence,
+  estimateProcessingTime,
+} from '../../config/aiPricing';
+
 export interface AIProviderConfig {
   enabled: boolean;
   apiKey?: string;
@@ -197,17 +203,26 @@ class MultiAIIntegrationService {
   private async executeChatGPT(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🚀 ChatGPT でタスク処理中...');
 
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4); // 推定入力トークン数
+    const estimatedTime = estimateProcessingTime('openai', inputTokens, request.taskType);
+
     // 実際の実装では OpenAI API を呼び出し
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(150 + Math.random() * 50); // 推定出力トークン数
+    const cost = calculateAICost('openai', inputTokens, outputTokens);
+    const confidence = calculateConfidence('openai', processingTime, inputTokens + outputTokens);
 
     return {
       content: `ChatGPT応答: ${request.prompt}について詳細で実用的な回答を提供します。コード生成や分析に特に優れています。`,
       provider: 'ChatGPT',
       model: 'gpt-4',
-      confidence: 90,
-      tokens: 150,
-      cost: 0.003,
-      processingTime: 0,
+      confidence,
+      tokens: inputTokens + outputTokens,
+      cost,
+      processingTime,
     };
   }
 
@@ -217,16 +232,25 @@ class MultiAIIntegrationService {
   private async executeClaude(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🧠 Claude でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const estimatedTime = estimateProcessingTime('anthropic', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(180 + Math.random() * 60); // Claudeは長い回答傾向
+    const cost = calculateAICost('anthropic', inputTokens, outputTokens);
+    const confidence = calculateConfidence('anthropic', processingTime, inputTokens + outputTokens);
 
     return {
       content: `Claude応答: ${request.prompt}に対して論理的で包括的な分析を行います。特に複雑な推論や長文の処理が得意です。`,
       provider: 'Claude',
       model: 'claude-3-sonnet',
-      confidence: 95,
-      tokens: 180,
-      cost: 0.0025,
-      processingTime: 0,
+      confidence,
+      tokens: inputTokens + outputTokens,
+      cost,
+      processingTime,
     };
   }
 
@@ -236,16 +260,25 @@ class MultiAIIntegrationService {
   private async executeGemini(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('✨ Gemini でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const estimatedTime = estimateProcessingTime('google', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(120 + Math.random() * 40); // Geminiは簡潔な回答傾向
+    const cost = calculateAICost('google', inputTokens, outputTokens);
+    const confidence = calculateConfidence('google', processingTime, inputTokens + outputTokens);
 
     return {
       content: `Gemini応答: ${request.prompt}について創造的で革新的な視点から回答します。マルチモーダル処理が強みです。`,
       provider: 'Gemini',
       model: 'gemini-pro',
-      confidence: 85,
-      tokens: 120,
-      cost: 0.001,
-      processingTime: 0,
+      confidence,
+      tokens: inputTokens + outputTokens,
+      cost,
+      processingTime,
     };
   }
 
@@ -255,14 +288,24 @@ class MultiAIIntegrationService {
   private async executeNotion(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('📝 Notion AI でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const estimatedTime = estimateProcessingTime('notion', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(100 + Math.random() * 30); // Notionは中程度の長さ
+    const cost = calculateAICost('notion', inputTokens, outputTokens);
+    const confidence = calculateConfidence('notion', processingTime, inputTokens + outputTokens);
 
     return {
       content: `Notion AI応答: ${request.prompt}をもとに構造化されたコンテンツを作成しました。ドキュメント作成に最適化されています。`,
       provider: 'Notion',
       model: 'notion-ai',
-      confidence: 82,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
         pageId: `notion-${Date.now()}`,
         createdAt: new Date().toISOString(),
@@ -321,18 +364,27 @@ class MultiAIIntegrationService {
   private async executeSora(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎬 Sora で動画生成中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 8000));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const estimatedTime = estimateProcessingTime('sora', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const videoDuration = 15 + Math.random() * 30; // 15-45秒の動画
+    const cost = calculateAICost('sora', Math.ceil(videoDuration), 0); // 秒数ベースの計算
+    const confidence = calculateConfidence('sora', processingTime, inputTokens, 'complex');
 
     return {
       content: `Sora動画生成完了: 「${request.prompt}」をテーマにした高品質な動画を生成しました。`,
       provider: 'Sora',
       model: 'sora-v1',
-      confidence: 90,
-      cost: 0.5,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
         videoUrl: `https://videos.example.com/sora-${Date.now()}.mp4`,
-        duration: 30,
+        duration: Math.round(videoDuration),
         resolution: '1080p',
         format: 'mp4',
       },
