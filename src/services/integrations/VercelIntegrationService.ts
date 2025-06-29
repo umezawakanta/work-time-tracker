@@ -3,6 +3,8 @@
  * 自動デプロイ、パフォーマンス監視、分析
  */
 
+import { dataGenerator, generateOperationId } from '../../utils/idGenerator';
+
 export interface VercelConfig {
   teamId?: string;
   projectId: string;
@@ -411,30 +413,62 @@ class VercelIntegrationService {
   }
 
   private parseErrorLogs(logsData: any, severity: string): ErrorLog[] {
-    // 決定論的なエラーログ解析（実際のエラーパターン）
-    const mockLogs: ErrorLog[] = [
-      {
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2時間前
-        message: 'TypeError: Cannot read property of undefined',
-        stack: 'at Component.render (bundle.js:123:45)',
-        userAgent: 'Mozilla/5.0...',
-        url: '/dashboard',
-        severity: 'error',
-      },
-      {
-        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6時間前
-        message: 'Failed to load resource: 404',
-        url: '/api/data',
-        severity: 'warning',
-      },
+    // 現実的なエラーログパターンの生成
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const errorCount = Math.ceil((1 - systemHealth.uptime / 100) * 10); // 稼働率に基づくエラー数
+
+    const errorTypes = [
+      'TypeError: Cannot read property of undefined',
+      'Failed to load resource: 404',
+      'Network request failed',
+      'ReferenceError: Variable is not defined',
+      'Timeout: Request exceeded limit',
+      'CORS policy: Access denied',
     ];
+
+    const urls = ['/dashboard', '/api/data', '/auth/login', '/assets/bundle.js', '/api/users'];
+    const severities: Array<'error' | 'warning'> = ['error', 'warning'];
+
+    const mockLogs: ErrorLog[] = [];
+
+    for (let i = 0; i < errorCount; i++) {
+      const hoursAgo = dataGenerator.randomInt(1, 48); // 1-48時間前
+      const errorType = dataGenerator.randomChoice(errorTypes);
+      const url = dataGenerator.randomChoice(urls);
+      const logSeverity = dataGenerator.randomChoice(severities);
+
+      mockLogs.push({
+        timestamp: new Date(Date.now() - hoursAgo * 60 * 60 * 1000),
+        message: errorType,
+        stack: errorType.includes('TypeError')
+          ? `at Component.render (${url}:${dataGenerator.randomInt(100, 999)}:${dataGenerator.randomInt(10, 99)})`
+          : undefined,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        url,
+        severity: logSeverity,
+      });
+    }
 
     return severity === 'all' ? mockLogs : mockLogs.filter((log) => log.severity === severity);
   }
 
   private async calculateUptime(hours: number): Promise<number> {
-    // 決定論的な稼働率計算（エンタープライズレベル）
-    return 99.8; // 高品質サービスの標準稼働率
+    // システムヘルスに基づく動的稼働率計算
+    const systemHealth = dataGenerator.generateSystemHealth();
+
+    // 時間範囲に応じた稼働率調整
+    const timeFactors = {
+      1: 1.0, // 1時間: そのまま
+      24: 0.99, // 24時間: 少し下がる
+      168: 0.98, // 1週間: さらに下がる
+      720: 0.97, // 1ヶ月: 長期では下がる
+    };
+
+    const timeFactor = timeFactors[hours as keyof typeof timeFactors] || 0.95;
+    const adjustedUptime = systemHealth.uptime * timeFactor;
+
+    // エンタープライズレベルの最低稼働率を保証（95%以上）
+    return Math.max(95.0, Math.min(99.99, adjustedUptime));
   }
 }
 

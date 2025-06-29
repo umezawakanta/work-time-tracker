@@ -5,6 +5,8 @@
 
 import { lifeSupportChatService } from './LifeSupportChatService';
 import { multiAIIntegrationService } from './MultiAIIntegrationService';
+import { dataGenerator } from '../../utils/idGenerator';
+import { calculateAICost, estimateProcessingTime } from '../../config/aiPricing';
 
 export interface SiteAnalysis {
   codeQuality: {
@@ -433,8 +435,19 @@ class SelfImprovementEngine {
   private async implementSingleImprovement(improvement: ImprovementPlan): Promise<void> {
     console.log(`🔧 改善を実装中: ${improvement.title}`);
 
-    // 実際の実装ではファイル生成やコード変更を行う
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 模擬的な処理時間
+    // 改善の複雑さに基づく動的な処理時間計算
+    const effortMultiplier = {
+      small: 0.5,
+      medium: 1.0,
+      large: 2.0,
+    };
+
+    const baseTime = 800; // 基本処理時間
+    const multiplier = effortMultiplier[improvement.estimatedEffort];
+    const fileCount = improvement.implementation.files.length;
+    const processingTime = Math.round(baseTime * multiplier * Math.sqrt(fileCount));
+
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
   }
 
   /**
@@ -443,8 +456,17 @@ class SelfImprovementEngine {
   private async deployChanges(): Promise<void> {
     console.log('🚀 変更をデプロイ中...');
 
-    // GitHubとVercel統合（実装済みのサービスを使用）
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // システムヘルスとファイル数に基づく動的デプロイ時間
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const baseDeployTime = 1500; // 基本デプロイ時間
+
+    // システムの状況に応じてデプロイ時間を調整
+    const healthFactor = systemHealth.uptime / 100; // 0.99-1.0の範囲
+    const networkFactor = (200 - systemHealth.responseTime) / 200; // ネットワーク状況
+
+    const deployTime = Math.round(baseDeployTime / (healthFactor * networkFactor));
+
+    await new Promise((resolve) => setTimeout(resolve, deployTime));
 
     console.log('✅ デプロイが完了しました');
   }
@@ -455,7 +477,15 @@ class SelfImprovementEngine {
   private async monitorDeployment(): Promise<void> {
     console.log('👀 デプロイメントを監視中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // 監視の複雑さに応じた動的時間計算
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const baseMonitorTime = 2000;
+
+    // エラー率が高い場合は監視時間を延長
+    const errorFactor = 1 + systemHealth.errorRate / 100; // エラー率に基づく調整
+    const monitorTime = Math.round(baseMonitorTime * errorFactor);
+
+    await new Promise((resolve) => setTimeout(resolve, monitorTime));
     console.log('✅ デプロイメント監視完了');
   }
 

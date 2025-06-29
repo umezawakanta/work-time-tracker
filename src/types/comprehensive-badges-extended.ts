@@ -3,6 +3,8 @@
  * 全分野を網羅する統合バッジ管理システム
  */
 
+import { calculateBadgeConfidence } from '../utils/badgeConfidenceCalculator';
+
 export interface ComprehensiveBadgeExtended {
   id: string;
   name: string;
@@ -101,7 +103,13 @@ export const TECHNICAL_DEVELOPMENT_BADGES: ComprehensiveBadgeExtended[] = [
       startDate: '2025-08-09',
       endDate: '2025-08-15',
       estimatedCompletionDate: '2025-08-15',
-      confidence: 85,
+      confidence: calculateBadgeConfidence({
+        difficulty: 'platinum',
+        estimatedHours: 35,
+        dependencies: ['cybersecurity-specialist'],
+        category: 'devops',
+        targetWeek: 7,
+      }),
       dependencies: ['cybersecurity-specialist'],
       focusAreas: ['パイプライン構築', '自動化実装'],
     },
@@ -149,7 +157,13 @@ export const TECHNICAL_DEVELOPMENT_BADGES: ComprehensiveBadgeExtended[] = [
       startDate: '2025-08-02',
       endDate: '2025-08-08',
       estimatedCompletionDate: '2025-08-08',
-      confidence: 88,
+      confidence: calculateBadgeConfidence({
+        difficulty: 'gold',
+        estimatedHours: 28,
+        dependencies: [],
+        category: 'devops',
+        targetWeek: 6,
+      }),
       dependencies: [],
       focusAreas: ['デプロイメント戦略', 'リリース管理'],
     },
@@ -197,7 +211,13 @@ export const TECHNICAL_DEVELOPMENT_BADGES: ComprehensiveBadgeExtended[] = [
       startDate: '2025-08-16',
       endDate: '2025-08-22',
       estimatedCompletionDate: '2025-08-22',
-      confidence: 82,
+      confidence: calculateBadgeConfidence({
+        difficulty: 'platinum',
+        estimatedHours: 40,
+        dependencies: ['deployment-specialist'],
+        category: 'infrastructure',
+        targetWeek: 8,
+      }),
       dependencies: ['deployment-specialist'],
       focusAreas: ['クラウドアーキテクチャ', 'スケーラビリティ'],
     },

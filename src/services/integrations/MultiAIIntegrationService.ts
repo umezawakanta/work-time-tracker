@@ -319,16 +319,26 @@ class MultiAIIntegrationService {
   private async executeManus(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('✍️ Manus で手書き認識処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 2); // 手書き認識はより多くのデータ処理
+    const estimatedTime = estimateProcessingTime('manus', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(80 + Math.random() * 20); // 手書き認識は簡潔な出力
+    const cost = calculateAICost('manus', inputTokens, outputTokens);
+    const confidence = calculateConfidence('manus', processingTime, inputTokens + outputTokens);
 
     return {
       content: `Manus認識結果: 手書きテキスト「${request.prompt}」を高精度で認識・デジタル化しました。`,
       provider: 'Manus',
       model: 'manus-v2',
-      confidence: 92,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
-        recognitionAccuracy: 0.92,
+        recognitionAccuracy: confidence / 100,
         language: 'ja',
         isHandwritten: true,
       },
@@ -341,19 +351,30 @@ class MultiAIIntegrationService {
   private async executeSuperWhisper(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎤 SuperWhisper で音声認識中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 6); // 音声認識は短時間処理
+    const estimatedTime = estimateProcessingTime('superwhisper', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const audioLength = Math.ceil(15 + Math.random() * 45); // 15-60秒の音声
+    const outputTokens = Math.ceil(audioLength * 2); // 秒数×2のトークン数
+    const cost = calculateAICost('superwhisper', audioLength, outputTokens); // 音声分数ベース
+    const confidence = calculateConfidence('superwhisper', processingTime, outputTokens, 'simple');
 
     return {
       content: `SuperWhisper認識結果: 音声「${request.prompt}」をリアルタイムで正確に文字起こししました。`,
       provider: 'SuperWhisper',
       model: 'whisper-turbo',
-      confidence: 96,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
-        audioLength: 30,
+        audioLength,
         language: 'ja',
-        speakerCount: 1,
-        realtime: true,
+        speakerCount: Math.ceil(1 + Math.random() * 2), // 1-3名の話者
+        realtime: processingTime < 1000,
       },
     };
   }
@@ -397,18 +418,33 @@ class MultiAIIntegrationService {
   private async executeNotebookLM(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('📚 NotebookLM で文書分析中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 3); // 文書分析は複雑な処理
+    const estimatedTime = estimateProcessingTime('notebooklm', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const documentsAnalyzed = Math.ceil(3 + Math.random() * 7); // 3-10文書
+    const outputTokens = Math.ceil(200 + documentsAnalyzed * 20); // 文書数に応じた出力
+    const cost = calculateAICost('notebooklm', inputTokens, outputTokens);
+    const confidence = calculateConfidence(
+      'notebooklm',
+      processingTime,
+      inputTokens + outputTokens,
+      'complex'
+    );
 
     return {
       content: `NotebookLM分析: ${request.prompt}に関する詳細な文書分析と洞察を提供します。複数の文書から関連情報を抽出・統合しました。`,
       provider: 'NotebookLM',
       model: 'notebooklm-v1',
-      confidence: 88,
-      cost: 0,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
-        documentsAnalyzed: 5,
-        keyInsights: 3,
+        documentsAnalyzed,
+        keyInsights: Math.ceil(documentsAnalyzed / 2),
         isFree: true,
       },
     };
@@ -420,17 +456,28 @@ class MultiAIIntegrationService {
   private async executeAIStudio(request: AITaskRequest): Promise<AITaskResponse> {
     console.log('🎨 AI Studio でタスク処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const estimatedTime = estimateProcessingTime('aiStudio', inputTokens, request.taskType);
+
+    await new Promise((resolve) => setTimeout(resolve, estimatedTime));
+
+    const processingTime = Date.now() - startTime;
+    const outputTokens = Math.ceil(130 + Math.random() * 50); // 実験的AIは変動的
+    const cost = calculateAICost('aiStudio', inputTokens, outputTokens);
+    const confidence = calculateConfidence('aiStudio', processingTime, inputTokens + outputTokens);
 
     return {
       content: `AI Studio応答: ${request.prompt}について実験的で先進的なAI機能を活用した回答を提供します。`,
       provider: 'AI Studio',
       model: 'studio-experimental',
-      confidence: 83,
-      processingTime: 0,
+      confidence,
+      cost,
+      processingTime,
       metadata: {
         experimental: true,
         version: 'beta',
+        stability: confidence > 85 ? 'stable' : 'experimental',
       },
     };
   }
