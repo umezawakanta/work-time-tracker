@@ -67,3 +67,5 @@ const renderCategoryProgress = (categories: MonthlyBadgeCategory[]) => (
     </CardContent>
   </Card>
 );
+
+export { renderCategoryProgress };

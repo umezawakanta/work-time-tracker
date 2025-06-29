@@ -150,3 +150,5 @@ const renderMonthlyAchievements = (achievements: MonthlyAchievement[]) => (
     </CardContent>
   </Card>
 );
+
+export { renderMonthlyAchievements };
