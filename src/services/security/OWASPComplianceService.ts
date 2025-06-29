@@ -374,7 +374,9 @@ class OWASPComplianceService {
    * 📊 リスクスコア計算
    */
   private calculateRiskScore(vulnerabilities: OWASPVulnerability[]): number {
-    if (vulnerabilities.length === 0) return 0;
+    if (vulnerabilities.length === 0) {
+      return 0;
+    }
 
     const severityWeights = {
       low: 1,
