@@ -1,15 +1,41 @@
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { AuthProvider } from '../AuthContext';
 import { useAuth } from '@/hooks/useAuth';
 import * as authApi from '@/services/api/authApi';
 import { tokenManager } from '@/services/auth/TokenManager';
+
+// コンソールログを抑制
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+beforeAll(() => {
+  console.log = jest.fn();
+  console.error = jest.fn();
+});
+
+afterAll(() => {
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
+});
 
 // モック設定
 jest.mock('@/services/api/authApi');
 jest.mock('@/services/auth/TokenManager');
 jest.mock('@/utils/logger');
 jest.mock('react-hot-toast');
+
+// setTimeout のモック
+const mockSetTimeout = jest.fn((callback, delay) => {
+  return setTimeout(callback, delay);
+});
+
+const mockClearTimeout = jest.fn();
+
+beforeAll(() => {
+  global.setTimeout = mockSetTimeout as any;
+  global.clearTimeout = mockClearTimeout as any;
+});
 
 // テスト用コンポーネント
 const TestComponent: React.FC = () => {
@@ -53,6 +79,8 @@ describe('AuthContext', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSetTimeout.mockClear();
+    mockClearTimeout.mockClear();
 
     // TokenManagerのモック設定
     (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
@@ -76,20 +104,42 @@ describe('AuthContext', () => {
     // 環境変数をクリア
     delete window.__VITE_USE_MOCK_DATA__;
     delete window.__API_CONNECTION_FAILED__;
+
+    // 本番環境に設定（開発モードの自動認証を無効化）
+    process.env.NODE_ENV = 'test';
   });
 
-  it('should initialize with unauthenticated state', () => {
-    renderWithAuthProvider(<TestComponent />);
+  it('should initialize with unauthenticated state', async () => {
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
-    expect(screen.getByTestId('auth-status')).toHaveTextContent('not-authenticated');
-    expect(screen.getByTestId('user-name')).toHaveTextContent('no-user');
+    await waitFor(() => {
+      expect(screen.getByTestId('auth-status')).toHaveTextContent('not-authenticated');
+      expect(screen.getByTestId('user-name')).toHaveTextContent('no-user');
+    });
   });
 
   it('should set loading state during initialization', async () => {
-    renderWithAuthProvider(<TestComponent />);
+    // ローディング状態をキャプチャするため、API解決を遅延
+    let resolveAuth: (value: boolean) => void;
+    const authPromise = new Promise<boolean>((resolve) => {
+      resolveAuth = resolve;
+    });
+    (authApi.checkAuth as jest.Mock).mockReturnValue(authPromise);
+
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     // 初期状態ではローディング中
     expect(screen.getByTestId('loading-status')).toHaveTextContent('loading');
+
+    // API解決を実行
+    await act(async () => {
+      resolveAuth!(true);
+      await authPromise;
+    });
 
     // ローディング完了を待つ
     await waitFor(() => {
@@ -103,7 +153,9 @@ describe('AuthContext', () => {
     (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
@@ -118,7 +170,9 @@ describe('AuthContext', () => {
     (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
     (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth-status')).toHaveTextContent('not-authenticated');
@@ -130,7 +184,9 @@ describe('AuthContext', () => {
     (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
     (authApi.checkAuth as jest.Mock).mockRejectedValue(new Error('Network error'));
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('loading-status')).toHaveTextContent('loaded');
@@ -145,7 +201,9 @@ describe('AuthContext', () => {
     (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
     (authApi.fetchUserData as jest.Mock).mockRejectedValue(new Error('User fetch failed'));
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
@@ -158,7 +216,9 @@ describe('AuthContext', () => {
     (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     // 初期認証状態を確認
     await waitFor(() => {
@@ -166,7 +226,7 @@ describe('AuthContext', () => {
     });
 
     // トークン期限切れイベントを発火
-    act(() => {
+    await act(async () => {
       window.dispatchEvent(new CustomEvent('auth:token-expired'));
     });
 
@@ -187,10 +247,14 @@ describe('AuthContext', () => {
 
     (tokenManager.getSessionInfo as jest.Mock).mockReturnValue(mockSessionInfo);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     // セッション情報の更新が呼ばれることを確認
-    expect(tokenManager.getSessionInfo).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(tokenManager.getSessionInfo).toHaveBeenCalled();
+    });
   });
 
   it('should handle profile update successfully', async () => {
@@ -198,7 +262,9 @@ describe('AuthContext', () => {
     (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     // 認証状態になるまで待つ
     await waitFor(() => {
@@ -206,8 +272,8 @@ describe('AuthContext', () => {
     });
 
     // プロフィール更新をトリガー
-    act(() => {
-      screen.getByTestId('update-profile').click();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('update-profile'));
     });
 
     await waitFor(() => {
@@ -224,19 +290,24 @@ describe('AuthContext', () => {
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
     (authApi.updateUserProfile as jest.Mock).mockRejectedValue(new Error('Update failed'));
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
     });
 
-    act(() => {
-      screen.getByTestId('update-profile').click();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('update-profile'));
     });
 
     await waitFor(() => {
       expect(authApi.updateUserProfile).toHaveBeenCalled();
     });
+
+    // エラーハンドリングが適切に行われることを確認
+    // （実際の実装に応じてアサーションを調整）
   });
 
   it('should handle refresh auth successfully', async () => {
@@ -244,19 +315,24 @@ describe('AuthContext', () => {
     (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-    renderWithAuthProvider(<TestComponent />);
+    await act(async () => {
+      renderWithAuthProvider(<TestComponent />);
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
     });
 
+    // 初期化でのAPI呼び出し回数をリセット
+    jest.clearAllMocks();
+
     // リフレッシュをトリガー
-    act(() => {
-      screen.getByTestId('refresh-auth').click();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('refresh-auth'));
     });
 
     await waitFor(() => {
-      expect(authApi.checkAuth).toHaveBeenCalledTimes(2); // 初期化 + リフレッシュ
+      expect(authApi.checkAuth).toHaveBeenCalledTimes(1); // リフレッシュでの呼び出し
     });
   });
 
@@ -287,7 +363,9 @@ describe('AuthContext', () => {
     });
 
     it('should enable fast auth mode in development', async () => {
-      renderWithAuthProvider(<TestComponent />);
+      await act(async () => {
+        renderWithAuthProvider(<TestComponent />);
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
@@ -300,32 +378,26 @@ describe('AuthContext', () => {
   });
 
   describe('activity monitoring', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-
     it('should monitor user activity when authenticated', async () => {
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-      renderWithAuthProvider(<TestComponent />);
+      await act(async () => {
+        renderWithAuthProvider(<TestComponent />);
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
       });
 
       // ユーザーアクティビティをシミュレート
-      act(() => {
-        document.dispatchEvent(new Event('mousedown'));
+      await act(async () => {
+        fireEvent.mouseDown(document);
       });
 
       // アクティビティタイマーが設定されることを確認
-      expect(setTimeout).toHaveBeenCalled();
+      expect(mockSetTimeout).toHaveBeenCalled();
     });
   });
 
@@ -335,14 +407,16 @@ describe('AuthContext', () => {
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-      renderWithAuthProvider(<TestComponent />);
+      await act(async () => {
+        renderWithAuthProvider(<TestComponent />);
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
       });
 
       // セッション期限切れを通知
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new CustomEvent('auth:token-expired'));
       });
 

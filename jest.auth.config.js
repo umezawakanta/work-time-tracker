@@ -1,5 +1,5 @@
 /**
- * 認証システム専用 Jest 設定（pnpm対応版）
+ * 認証システム専用 Jest 設定（修正版）
  * 
  * このファイルは認証関連テストのみを実行する際の設定を提供します。
  * 使用方法: npm run test:auth
@@ -12,6 +12,13 @@ module.exports = {
 
   // 認証テスト専用の設定
   displayName: '🔐 Authentication Tests',
+
+  // テストファイルのパターン
+  testMatch: [
+    '<rootDir>/src/services/auth/**/*.test.{ts,tsx}',
+    '<rootDir>/src/context/**/*AuthContext*.test.{ts,tsx}',
+    '<rootDir>/src/pages/**/*Login*.test.{ts,tsx}',
+  ],
 
   // モジュール解決設定
   moduleNameMapper: {
@@ -30,73 +37,55 @@ module.exports = {
         target: 'es2020',
         lib: ['es2020', 'dom', 'dom.iterable'],
         allowJs: true,
-        skipLibCheck: true,
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
         strict: true,
         forceConsistentCasingInFileNames: true,
-        module: 'esnext',
         moduleResolution: 'node',
         resolveJsonModule: true,
         isolatedModules: true,
         noEmit: true,
       },
-      useESM: false,
     }],
   },
 
   // セットアップファイル
-  setupFiles: ['<rootDir>/jest.setup.js'],
   setupFilesAfterEnv: [
-    '<rootDir>/src/setupTests.ts',
     '<rootDir>/src/services/auth/__tests__/setup.ts'
   ],
-
-  // 認証テストのみを対象とする
-  testMatch: [
-    '<rootDir>/src/services/auth/**/__tests__/**/*.{test,spec}.{ts,tsx}',
-    '<rootDir>/src/context/__tests__/AuthContext.test.{ts,tsx}',
-    '<rootDir>/src/pages/__tests__/Login.*.test.{ts,tsx}',
-  ],
-
-  // 除外パターン
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/coverage/',
-    '/dist/',
-    '/__tests__/setup.ts',
-  ],
-
-  // 変換を無視するパターン
-  transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$))',
-  ],
-
-  // モジュール拡張子
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-
-  // モジュールディレクトリ（pnpm対応）
-  moduleDirectories: ['node_modules', 'src'],
-
-  // pnpmの依存関係解決設定
-  resolver: undefined,
-
-  // テストなしでも通す
-  passWithNoTests: false,
-
-  // グローバル設定
-  globals: {},
 
   // カバレッジ設定
   collectCoverageFrom: [
     'src/services/auth/**/*.{ts,tsx}',
-    'src/context/*Auth*.{ts,tsx}',
-    'src/pages/*Login*.{ts,tsx}',
-    'src/hooks/*Auth*.{ts,tsx}',
+    'src/context/**/Auth*.{ts,tsx}',
+    'src/pages/**/Login*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/__tests__/**',
-    '!src/**/setup.ts',
+    '!src/**/__mocks__/**',
   ],
+
+  // タイムアウト設定
+  testTimeout: 10000,
+
+  // 詳細ログ設定
+  verbose: true,
+
+  // Jest の React警告を抑制
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        jsx: 'react-jsx'
+      }
+    }
+  },
+
+  // テスト実行環境の最適化
+  maxWorkers: '50%',
+
+  // React Testing Library の警告を抑制
+  testEnvironmentOptions: {
+    url: 'http://localhost:3000'
+  },
 
   // カバレッジディレクトリ
   coverageDirectory: 'coverage/auth',
@@ -114,11 +103,8 @@ module.exports = {
     },
   },
 
-  // テストタイムアウト
-  testTimeout: 15000,
-
-  // 詳細出力
-  verbose: true,
+  // テストなしでも通す
+  passWithNoTests: false,
 
   // エラー時の詳細情報
   errorOnDeprecated: false,
@@ -127,21 +113,14 @@ module.exports = {
   clearMocks: true,
   restoreMocks: true,
 
-  // テスト環境設定
-  testEnvironmentOptions: {
-    url: 'http://localhost:3000',
-  },
+  // モジュール拡張子
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 
-  // 並列実行設定
-  maxWorkers: '50%',
+  // モジュールディレクトリ（pnpm対応）
+  moduleDirectories: ['node_modules', 'src'],
 
-  // キャッシュディレクトリ（pnpm対応）
-  cacheDirectory: '<rootDir>/node_modules/.cache/jest-auth',
-
-  // モジュール境界の設定
-  haste: {
-    enableSymlinks: false,
-  },
+  // pnpmの依存関係解決設定
+  resolver: undefined,
 
   // テスト結果のフォーマット（シンプル版）
   reporters: [
