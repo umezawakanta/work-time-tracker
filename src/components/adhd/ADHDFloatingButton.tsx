@@ -42,7 +42,7 @@ export const ADHDFloatingButton: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-44 z-50">
       {isExpanded && (
         <Card className="mb-4 shadow-lg border-2 border-purple-200">
           <CardContent className="p-3">

@@ -155,7 +155,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-32 z-50">
         <Button
           onClick={() => setIsOpen(true)}
           className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
@@ -171,7 +171,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-96 max-w-sm">
+    <div className="fixed bottom-6 right-32 z-50 w-96 max-w-sm">
       <Card className="bg-gradient-to-b from-blue-50 to-indigo-100 border-4 border-blue-800 shadow-2xl">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 rounded-t-lg">
