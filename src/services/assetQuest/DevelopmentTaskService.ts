@@ -488,23 +488,74 @@ class DevelopmentTaskService {
    * 📊 開発者ダッシュボードデータ取得
    */
   getDeveloperDashboardData() {
-    const metrics = this.getSiteCompletionMetrics();
-    const priorityTasks = this.getPriorityTasks();
-    const advice = this.generateDevelopmentAdvice();
-    const upcomingDeadlines = this.getUpcomingDeadlines();
-    const badgeProgress = this.getBadgeIntegrationStatus();
+    try {
+      console.log('📊 開発者ダッシュボードデータ取得開始...');
 
-    return {
-      metrics,
-      priorityTasks,
-      advice,
-      upcomingDeadlines,
-      badgeProgress,
-      recentlyCompleted: this.tasks
+      const metrics = this.getSiteCompletionMetrics();
+      console.log('📈 メトリクス:', metrics);
+
+      const priorityTasks = this.getPriorityTasks();
+      console.log('🎯 優先タスク:', priorityTasks);
+
+      const advice = this.generateDevelopmentAdvice();
+      console.log('💡 アドバイス:', advice);
+
+      const upcomingDeadlines = this.getUpcomingDeadlines();
+      console.log('⏰ 期限情報:', upcomingDeadlines);
+
+      console.log('🏆 バッジ統合状況取得中...');
+      const badgeProgress = this.getBadgeIntegrationStatus();
+      console.log('🏆 バッジ進捗:', badgeProgress);
+
+      const recentlyCompleted = this.tasks
         .filter((task) => task.status === 'completed')
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-        .slice(0, 5),
-    };
+        .slice(0, 5);
+      console.log('✅ 最近完了したタスク:', recentlyCompleted);
+
+      const result = {
+        metrics,
+        priorityTasks,
+        advice,
+        upcomingDeadlines,
+        badgeProgress,
+        recentlyCompleted,
+      };
+
+      console.log('✅ 開発者ダッシュボードデータ取得完了:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ 開発者ダッシュボードデータ取得エラー:', error);
+
+      // エラー時は基本的なデータを返す
+      return {
+        metrics: {
+          overallCompletion: 50,
+          categoryBreakdown: {},
+          totalTasks: this.tasks.length,
+          completedTasks: 0,
+          inProgressTasks: 0,
+          blockedTasks: 0,
+          criticalTasksRemaining: 0,
+          estimatedHoursRemaining: 100,
+          nextMilestone: {
+            name: 'ベータ版リリース',
+            progress: 50,
+            deadline: '2024-02-28',
+          },
+        },
+        priorityTasks: [],
+        advice: [],
+        upcomingDeadlines: [],
+        badgeProgress: {
+          enabled: false,
+          relatedBadges: [],
+          overallBadgeProgress: 0,
+          error: 'データ取得エラーが発生しました',
+        },
+        recentlyCompleted: [],
+      };
+    }
   }
 
   // 🏆 バッジシステム統合メソッド
@@ -584,25 +635,63 @@ class DevelopmentTaskService {
    * 📈 バッジ統合状況取得
    */
   getBadgeIntegrationStatus() {
-    if (!this.badgeIntegrationEnabled) {
+    console.log('🏆 バッジ統合状況取得開始...');
+    console.log('⚙️ バッジ統合有効:', this.badgeIntegrationEnabled);
+
+    // 一時的にバッジ統合を無効にしてテスト（デバッグ目的）
+    const forceDisableBadges = localStorage.getItem('dev-disable-badges') === 'true';
+    if (forceDisableBadges) {
+      console.log('🔧 バッジ統合を強制無効化（デバッグモード）');
       return {
         enabled: false,
         relatedBadges: [],
         overallBadgeProgress: 0,
+        totalBadges: 0,
+        completedBadges: 0,
+        debugMode: true,
+        message: 'バッジ統合がデバッグのため無効化されています',
+      };
+    }
+
+    if (!this.badgeIntegrationEnabled) {
+      console.log('❌ バッジ統合が無効です');
+      return {
+        enabled: false,
+        relatedBadges: [],
+        overallBadgeProgress: 0,
+        totalBadges: 0,
+        completedBadges: 0,
       };
     }
 
     try {
+      console.log('🔗 バッジサービス接続テスト...');
+
+      // バッジサービスの基本的な可用性テスト
+      try {
+        const testResult = comprehensiveBadgeService.getAllBadges();
+        console.log('✅ バッジサービス接続成功, 利用可能バッジ数:', testResult.length);
+      } catch (serviceError) {
+        console.error('❌ バッジサービス接続失敗:', serviceError);
+        throw new Error(
+          `Badge service unavailable: ${serviceError instanceof Error ? serviceError.message : String(serviceError)}`
+        );
+      }
+
       const allLinkedBadges = new Set<string>();
       let totalBadgeProgress = 0;
       let badgeCount = 0;
 
       // 全タスクから関連バッジを収集
+      console.log('📋 タスク数:', this.tasks.length);
       this.tasks.forEach((task) => {
         if (task.linkedBadges) {
+          console.log(`🔗 タスク "${task.title}" の関連バッジ:`, task.linkedBadges);
           task.linkedBadges.forEach((badgeId) => allLinkedBadges.add(badgeId));
         }
       });
+
+      console.log('🏷️ 発見された関連バッジ:', Array.from(allLinkedBadges));
 
       // バッジ進捗を集計
       const badgeProgressData: Array<{
@@ -614,43 +703,72 @@ class DevelopmentTaskService {
       }> = [];
 
       allLinkedBadges.forEach((badgeId) => {
-        const badge = comprehensiveBadgeService.getBadge(badgeId);
-        const progress = comprehensiveBadgeService.getBadgeProgress(badgeId);
+        console.log(`🔍 バッジ取得中: ${badgeId}`);
+        try {
+          const badge = comprehensiveBadgeService.getBadge(badgeId);
+          const progress = comprehensiveBadgeService.getBadgeProgress(badgeId);
 
-        if (badge && progress) {
-          const relatedTasks = this.tasks
-            .filter((task) => task.linkedBadges?.includes(badgeId))
-            .map((task) => task.title);
+          console.log(`📊 バッジ "${badgeId}":`, { badge: !!badge, progress: !!progress });
 
-          badgeProgressData.push({
-            badgeId,
-            badgeName: badge.name,
-            progress: progress.progressPercentage,
-            category: badge.category,
-            relatedTasks,
-          });
+          if (badge && progress) {
+            const relatedTasks = this.tasks
+              .filter((task) => task.linkedBadges?.includes(badgeId))
+              .map((task) => task.title);
 
-          totalBadgeProgress += progress.progressPercentage;
-          badgeCount++;
+            badgeProgressData.push({
+              badgeId,
+              badgeName: badge.name,
+              progress: progress.progressPercentage,
+              category: badge.category,
+              relatedTasks,
+            });
+
+            totalBadgeProgress += progress.progressPercentage;
+            badgeCount++;
+            console.log(`✅ バッジ "${badge.name}" 進捗: ${progress.progressPercentage}%`);
+          } else {
+            console.warn(`⚠️ バッジまたは進捗が見つかりません: ${badgeId}`, {
+              badge: badge ? 'found' : 'not found',
+              progress: progress ? 'found' : 'not found',
+            });
+          }
+        } catch (badgeError) {
+          console.error(`❌ 個別バッジ取得エラー (${badgeId}):`, badgeError);
         }
       });
 
       const overallBadgeProgress = badgeCount > 0 ? totalBadgeProgress / badgeCount : 0;
 
-      return {
+      const result = {
         enabled: true,
         relatedBadges: badgeProgressData,
         overallBadgeProgress: Math.round(overallBadgeProgress),
         totalBadges: badgeCount,
         completedBadges: badgeProgressData.filter((b) => b.progress >= 100).length,
       };
+
+      console.log('✅ バッジ統合状況取得成功:', {
+        totalBadges: result.totalBadges,
+        completedBadges: result.completedBadges,
+        overallProgress: result.overallBadgeProgress,
+      });
+
+      return result;
     } catch (error) {
-      console.error('バッジ統合状況取得エラー:', error);
+      console.error('❌ バッジ統合状況取得エラー:', error);
+      console.error('エラー詳細:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+
       return {
         enabled: false,
-        error: 'バッジシステムとの通信に失敗しました',
+        error: `バッジシステムとの通信に失敗しました: ${error instanceof Error ? error.message : 'Unknown error'}`,
         relatedBadges: [],
         overallBadgeProgress: 0,
+        totalBadges: 0,
+        completedBadges: 0,
       };
     }
   }

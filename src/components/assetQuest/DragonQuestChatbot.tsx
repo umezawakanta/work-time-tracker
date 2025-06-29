@@ -217,64 +217,141 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   };
 
   const getDeveloperStatus = () => {
-    const dashboardData = developmentTaskService.getDeveloperDashboardData();
-    const badgeData = dashboardData.badgeProgress;
+    try {
+      console.log('🔍 開発者ステータス取得開始...');
+      const dashboardData = developmentTaskService.getDeveloperDashboardData();
+      console.log('📊 ダッシュボードデータ:', dashboardData);
 
-    // バッジデータを適切な型に変換
-    let badgeProgress: DeveloperStatus['badgeProgress'] = undefined;
-    if (
-      badgeData &&
-      badgeData.enabled &&
-      'totalBadges' in badgeData &&
-      typeof badgeData.totalBadges === 'number' &&
-      typeof badgeData.completedBadges === 'number'
-    ) {
-      badgeProgress = {
-        enabled: badgeData.enabled,
-        overallBadgeProgress: badgeData.overallBadgeProgress,
-        totalBadges: badgeData.totalBadges,
-        completedBadges: badgeData.completedBadges,
-        relatedBadges: badgeData.relatedBadges.map((badge) => ({
-          badgeId: badge.badgeId,
-          badgeName: badge.badgeName,
-          progress: badge.progress,
-          category: badge.category,
-        })),
+      const badgeData = dashboardData.badgeProgress;
+      console.log('🏆 バッジデータ:', badgeData);
+
+      // バッジデータを適切な型に変換
+      let badgeProgress: DeveloperStatus['badgeProgress'] = undefined;
+      if (
+        badgeData &&
+        badgeData.enabled &&
+        'totalBadges' in badgeData &&
+        'completedBadges' in badgeData &&
+        typeof (badgeData as any).totalBadges === 'number' &&
+        typeof (badgeData as any).completedBadges === 'number'
+      ) {
+        const typedBadgeData = badgeData as any;
+        badgeProgress = {
+          enabled: badgeData.enabled,
+          overallBadgeProgress: badgeData.overallBadgeProgress,
+          totalBadges: typedBadgeData.totalBadges,
+          completedBadges: typedBadgeData.completedBadges,
+          relatedBadges: (badgeData.relatedBadges || []).map((badge: any) => ({
+            badgeId: badge.badgeId,
+            badgeName: badge.badgeName,
+            progress: badge.progress,
+            category: badge.category,
+          })),
+        };
+        console.log('✅ バッジ進捗データ変換成功:', badgeProgress);
+      } else {
+        console.log('⚠️ バッジデータが無効または不完全:', {
+          badgeData,
+          enabled: badgeData?.enabled,
+          hasTotalBadges: 'totalBadges' in (badgeData || {}),
+          totalBadgesType: typeof (badgeData as any)?.totalBadges,
+          completedBadgesType: typeof (badgeData as any)?.completedBadges,
+        });
+      }
+
+      const result = {
+        siteCompletion: dashboardData.metrics.overallCompletion,
+        priorityTasksCount: dashboardData.priorityTasks.length,
+        criticalIssuesCount: dashboardData.metrics.criticalTasksRemaining,
+        testCoverage:
+          (dashboardData.metrics.categoryBreakdown as Record<string, number>)?.testing || 45,
+        deploymentReady:
+          ((dashboardData.metrics.categoryBreakdown as Record<string, number>)?.deployment || 0) >=
+          80,
+        lastCommitDays: Math.floor(Math.random() * 5), // サンプルデータ
+        badgeProgress,
+      };
+
+      console.log('✅ 開発者ステータス生成完了:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ 開発者ステータス取得エラー:', error);
+      // エラー時はデフォルト値を返す
+      return {
+        siteCompletion: 50,
+        priorityTasksCount: 0,
+        criticalIssuesCount: 0,
+        testCoverage: 45,
+        deploymentReady: false,
+        lastCommitDays: 1,
+        badgeProgress: undefined,
       };
     }
-
-    return {
-      siteCompletion: dashboardData.metrics.overallCompletion,
-      priorityTasksCount: dashboardData.priorityTasks.length,
-      criticalIssuesCount: dashboardData.metrics.criticalTasksRemaining,
-      testCoverage: dashboardData.metrics.categoryBreakdown.testing || 45,
-      deploymentReady: dashboardData.metrics.categoryBreakdown.deployment >= 80,
-      lastCommitDays: Math.floor(Math.random() * 5), // サンプルデータ
-      badgeProgress,
-    };
   };
 
   const handleQuickAction = async (actionType: string) => {
-    // ボタンクリック音を再生
-    soundManager.playButtonSound();
+    try {
+      console.log(`🎮 クイックアクション実行: ${actionType}`);
 
-    const userStatus = {
-      level: currentLevel,
-      totalAssets,
-      savingsRate,
-      questCompleted,
-      streakDays,
-    };
+      // ボタンクリック音を再生
+      soundManager.playButtonSound();
 
-    const developerStatus = isDeveloperMode ? getDeveloperStatus() : undefined;
-    const response = await dragonQuestAIService.handleQuickAction(
-      actionType,
-      userStatus,
-      developerStatus
-    );
+      const userStatus = {
+        level: currentLevel,
+        totalAssets,
+        savingsRate,
+        questCompleted,
+        streakDays,
+      };
+      console.log('👤 ユーザーステータス:', userStatus);
 
-    if (response) {
-      addMessage(response);
+      const developerStatus = isDeveloperMode ? getDeveloperStatus() : undefined;
+      console.log('🔧 開発者ステータス:', developerStatus);
+      console.log('🎯 開発者モード:', isDeveloperMode);
+
+      console.log('📞 AIサービスを呼び出し中...');
+      const response = await dragonQuestAIService.handleQuickAction(
+        actionType,
+        userStatus,
+        developerStatus
+      );
+
+      console.log('💬 AIレスポンス:', response);
+
+      if (response) {
+        addMessage(response);
+        console.log('✅ メッセージ追加完了');
+      } else {
+        console.warn('⚠️ AIサービスからレスポンスがありません');
+
+        // デバッグ用の緊急メッセージを表示
+        const debugMessage: ChatMessage = {
+          id: Date.now().toString(),
+          character: 'sage',
+          message: `デバッグ: ${actionType} アクションが実行されましたが、AIからの応答がありませんでした。\n\n開発者コンソールを確認してください。`,
+          timestamp: new Date(),
+          type: 'warning',
+        };
+        addMessage(debugMessage);
+      }
+    } catch (error) {
+      console.error('❌ クイックアクション実行エラー:', error);
+
+      // エラーメッセージを表示
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        character: 'sage',
+        message: `申し訳ない！「${actionType}」の実行中にエラーが発生したようじゃ。\n\nエラー: ${error instanceof Error ? error.message : 'Unknown error'}\n\n開発者コンソールで詳細を確認できるぞ。`,
+        timestamp: new Date(),
+        type: 'warning',
+        actions: [
+          {
+            label: '再試行',
+            action: () => handleQuickAction(actionType),
+          },
+        ],
+      };
+      addMessage(errorMessage);
     }
   };
 
@@ -540,7 +617,14 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                   {/* 第1行: 開発関連 */}
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      onClick={() => handleQuickAction('dev-status')}
+                      onClick={async () => {
+                        console.log('🔧 開発状況ボタンがクリックされました');
+                        try {
+                          await handleQuickAction('dev-status');
+                        } catch (error) {
+                          console.error('🚨 開発状況ボタンクリックエラー:', error);
+                        }
+                      }}
                       variant="outline"
                       size="sm"
                       className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
@@ -549,7 +633,14 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                       開発状況
                     </Button>
                     <Button
-                      onClick={() => handleQuickAction('dev-tasks')}
+                      onClick={async () => {
+                        console.log('🔧 タスク確認ボタンがクリックされました');
+                        try {
+                          await handleQuickAction('dev-tasks');
+                        } catch (error) {
+                          console.error('🚨 タスク確認ボタンクリックエラー:', error);
+                        }
+                      }}
                       variant="outline"
                       size="sm"
                       className="bg-white border-2 border-indigo-300 hover:bg-indigo-50 text-indigo-800"
