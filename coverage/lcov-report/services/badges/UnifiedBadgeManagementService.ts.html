@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for components/development/DevelopmentBadgeDashboard.tsx</title>
+    <title>Code coverage report for services/badges/UnifiedBadgeManagementService.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">components/development</a> DevelopmentBadgeDashboard.tsx</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">services/badges</a> UnifiedBadgeManagementService.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.92% </span>
+                <span class="strong">33.57% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>66/112</span>
+                <span class='fraction'>47/140</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.16% </span>
+                <span class="strong">8.69% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>22/43</span>
+                <span class='fraction'>4/46</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.83% </span>
+                <span class="strong">27.27% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>17/31</span>
+                <span class='fraction'>12/44</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.55% </span>
+                <span class="strong">35.38% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>65/111</span>
+                <span class='fraction'>46/130</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -603,464 +603,85 @@
 <a name='L538'></a><a href='#L538'>538</a>
 <a name='L539'></a><a href='#L539'>539</a>
 <a name='L540'></a><a href='#L540'>540</a>
-<a name='L541'></a><a href='#L541'>541</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L541'></a><a href='#L541'>541</a>
+<a name='L542'></a><a href='#L542'>542</a>
+<a name='L543'></a><a href='#L543'>543</a>
+<a name='L544'></a><a href='#L544'>544</a>
+<a name='L545'></a><a href='#L545'>545</a>
+<a name='L546'></a><a href='#L546'>546</a>
+<a name='L547'></a><a href='#L547'>547</a>
+<a name='L548'></a><a href='#L548'>548</a>
+<a name='L549'></a><a href='#L549'>549</a>
+<a name='L550'></a><a href='#L550'>550</a>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a>
+<a name='L553'></a><a href='#L553'>553</a>
+<a name='L554'></a><a href='#L554'>554</a>
+<a name='L555'></a><a href='#L555'>555</a>
+<a name='L556'></a><a href='#L556'>556</a>
+<a name='L557'></a><a href='#L557'>557</a>
+<a name='L558'></a><a href='#L558'>558</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-yes">1001x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1001x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1001x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1001x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1001x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1071,13 +692,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1001x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1085,10 +716,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1098,6 +733,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1110,15 +747,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1300x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1300x</span>
-<span class="cline-any cline-yes">52x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1248x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1127,10 +762,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1138,551 +775,965 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Target, Zap, Code, Palette, CheckCircle } from 'lucide-react';
-import { DevelopmentBadge, BadgeCategory, DEVELOPMENT_BADGES } from '@/types/development-badges';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">39x</span>
+<span class="cline-any cline-yes">39x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">962x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">962x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * 🏆 統一バッジ管理サービス
+ * 開発バッジシステム、バッジ完了予測システム、開発バッジ実績の3つのページ間のデータ同期を管理
+ */
+&nbsp;
+import { EventEmitter } from '@/lib/EventEmitter';
+import { DevelopmentBadge, DEVELOPMENT_BADGES } from '@/types/development-badges';
 import {
-  unifiedBadgeManagementService,
-  BadgeSyncData,
-} from '@/services/badges/UnifiedBadgeManagementService';
+  CYBERSECURITY_SPECIALIST_BADGE,
+  SECURITY_BADGES_COLLECTION,
+  SecurityBadge,
+} from '@/types/cybersecurity-badges';
+import {
+  COMPREHENSIVE_BADGE_CATEGORIES,
+  ComprehensiveBadge,
+} from '@/types/comprehensive-badge-categories';
+import { ALL_COMPREHENSIVE_BADGES_EXTENDED } from '@/types/comprehensive-badges-extended';
+import { weeklyWorkPlanningService } from '@/services/planning/WeeklyWorkPlanningService';
+import { comprehensivePageSyncSystem } from '@/services/integration/ComprehensivePageSyncSystem';
 &nbsp;
-const difficultyColors = {
-  bronze: 'bg-amber-100 text-amber-800 border-amber-200',
-  silver: 'bg-gray-100 text-gray-800 border-gray-200',
-  gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  platinum: 'bg-purple-100 text-purple-800 border-purple-200',
-  legendary: 'bg-gradient-to-r from-orange-400 to-pink-400 text-white border-none',
-};
-&nbsp;
-interface RepositoryProgress {
-  commitCount: number;
-  featuresCompleted: string[];
-  testCoverage: number;
-  performanceScore: number;
+// 統一バッジインターフェース（全てのバッジタイプに対応）
+export interface UnifiedBadge {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  difficulty: 'bronze' | 'silver' | 'gold' | 'platinum' | 'legendary';
+  icon: string;
+  isUnlocked: boolean;
+  progress: number;
+  points?: number;
+  rewards?: string[];
+  nextMilestone?: string;
+  prerequisites?: string[];
+  unlockedAt?: string;
+  completedAt?: string;
+  estimatedHours?: number;
+  requirements?: any[]; // バッジタイプによって要件が異なるためany[]
+  type: 'development' | 'security' | 'comprehensive';
 }
 &nbsp;
-export const DevelopmentBadgeDashboard: React.FC = () =&gt; {
-  const [badges, setBadges] = useState&lt;DevelopmentBadge[]&gt;(DEVELOPMENT_BADGES);
-  const [selectedCategory, setSelectedCategory] = useState&lt;'all' | BadgeCategory&gt;('all');
-  const [syncData, setSyncData] = useState&lt;BadgeSyncData | null&gt;(null);
-  const [lastSyncTime, setLastSyncTime] = useState&lt;Date&gt;(new Date());
+export interface BadgeProgress {
+  badgeId: string;
+  progress: number;
+  isUnlocked: boolean;
+  lastUpdated: Date;
+  source: 'development' | 'prediction' | 'showcase';
+}
 &nbsp;
-  const updateBadgeProgress = useCallback(<span class="fstat-no" title="function not covered" >(p</span>rogress: RepositoryProgress) =&gt; {
-<span class="cstat-no" title="statement not covered" >    setBadges(<span class="fstat-no" title="function not covered" >(c</span>urrentBadges) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >      currentBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {</span>
-        const updatedBadge = <span class="cstat-no" title="statement not covered" >{ ...badge };</span>
+export interface BadgeSyncData {
+  developmentDashboard: {
+    totalBadges: number;
+    completedBadges: number;
+    inProgress: number;
+    lastSync: Date;
+  };
+  predictionSystem: {
+    weeklyProgress: number;
+    estimatedCompletions: number;
+    accuracyRate: number;
+    lastSync: Date;
+  };
+  showcaseView: {
+    recentAchievements: number;
+    totalProgress: number;
+    displayedBadges: number;
+    lastSync: Date;
+  };
+}
 &nbsp;
-        // バッジごとの進捗計算ロジック
-<span class="cstat-no" title="statement not covered" >        badge.requirements.forEach(<span class="fstat-no" title="function not covered" >(r</span>eq) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          switch (req.type) {</span>
-            case 'commit_count':
-<span class="cstat-no" title="statement not covered" >              req.current = progress.commitCount;</span>
-<span class="cstat-no" title="statement not covered" >              break;</span>
-            case 'feature_complete':
-<span class="cstat-no" title="statement not covered" >              req.current = progress.featuresCompleted.includes(String(req.target))</span>
-                ? 'completed'
-                : 'pending';
-<span class="cstat-no" title="statement not covered" >              break;</span>
-            case 'performance_score':
-<span class="cstat-no" title="statement not covered" >              req.current = progress.performanceScore;</span>
-<span class="cstat-no" title="statement not covered" >              break;</span>
-          }
-        });
+class UnifiedBadgeManagementService extends EventEmitter {
+  private static instance: UnifiedBadgeManagementService | null = null;
+  private badgeData: Map&lt;string, UnifiedBadge&gt; = new Map();
+  private progressCache: Map&lt;string, BadgeProgress&gt; = new Map();
+  private syncInterval: number | null = null;
+  private lastSyncTimestamp: Date = new Date();
 &nbsp;
-        // 進捗率計算
-        const completedRequirements = <span class="cstat-no" title="statement not covered" >badge.requirements.filter(<span class="fstat-no" title="function not covered" >(r</span>eq) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (req.type === 'commit_count' || req.type === 'performance_score') {</span>
-<span class="cstat-no" title="statement not covered" >            return Number(req.current) &gt;= Number(req.target);</span>
-          }
-<span class="cstat-no" title="statement not covered" >          return req.current === 'completed';</span>
-        }).length;
+  private constructor() {
+    super();
+    this.initializeBadgeData();
+    this.setupEventListeners();
+    this.startSyncProcess();
+  }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        updatedBadge.progress = Math.round(</span>
-          (completedRequirements / badge.requirements.length) * 100
+  public static getInstance(): UnifiedBadgeManagementService {
+    if (!UnifiedBadgeManagementService.instance) {
+      UnifiedBadgeManagementService.instance = new UnifiedBadgeManagementService();
+    }
+    return UnifiedBadgeManagementService.instance;
+  }
+&nbsp;
+  /**
+   * 🚀 バッジデータ初期化
+   */
+  private initializeBadgeData(): void {
+    // 開発バッジデータを統一フォーマットに変換
+    DEVELOPMENT_BADGES.forEach((badge) =&gt; {
+      const unifiedBadge: UnifiedBadge = {
+        ...badge,
+        category: badge.category as string,
+        type: 'development',
+      };
+      this.badgeData.set(badge.id, unifiedBadge);
+      this.progressCache.set(badge.id, {
+        badgeId: badge.id,
+        progress: badge.progress,
+        isUnlocked: badge.isUnlocked,
+        lastUpdated: new Date(),
+        source: 'development',
+      });
+    });
+&nbsp;
+    // サイバーセキュリティバッジの追加
+    SECURITY_BADGES_COLLECTION.forEach((badge) =&gt; {
+      const unifiedBadge: UnifiedBadge = {
+        id: badge.id,
+        name: badge.name,
+        description: badge.description,
+        category: badge.category,
+        difficulty: badge.difficulty,
+        icon: badge.icon,
+        isUnlocked: badge.isUnlocked,
+        progress: badge.progress,
+        points: badge.points,
+        rewards: badge.rewards,
+        nextMilestone: badge.nextMilestone,
+        prerequisites: badge.prerequisites,
+        estimatedHours: badge.estimatedHours,
+        requirements: badge.requirements,
+        type: 'security',
+      };
+      this.badgeData.set(badge.id, unifiedBadge);
+      this.progressCache.set(badge.id, {
+        badgeId: badge.id,
+        progress: badge.progress,
+        isUnlocked: badge.isUnlocked,
+        lastUpdated: new Date(),
+        source: 'development',
+      });
+    });
+&nbsp;
+    // 包括的バッジの追加（ComprehensiveBadgeCategoryからUnifiedBadgeへのマッピング）
+    COMPREHENSIVE_BADGE_CATEGORIES.forEach((badgeCategory) =&gt; {
+      // difficultyのマッピング
+      const difficultyMapping: Record&lt;
+        string,
+        'bronze' | 'silver' | 'gold' | 'platinum' | 'legendary'
+      &gt; = {
+        beginner: 'bronze',
+        intermediate: 'silver',
+        advanced: 'gold',
+        expert: 'platinum',
+        master: 'legendary',
+      };
+&nbsp;
+      const unifiedBadge: UnifiedBadge = {
+        id: badgeCategory.id,
+        name: badgeCategory.name,
+        description: badgeCategory.description,
+        category: badgeCategory.id, // categoryとして使用
+        difficulty: difficultyMapping[badgeCategory.difficulty] || <span class="branch-1 cbranch-no" title="branch not covered" >'bronze',</span>
+        icon: badgeCategory.icon,
+        isUnlocked: false, // デフォルト値
+        progress: 0, // デフォルト値
+        points: Math.round(badgeCategory.estimatedHours * 2), // 時間ベースでポイント計算
+        rewards: badgeCategory.requiredSkills, // スキルを報酬として使用
+        nextMilestone: `${badgeCategory.estimatedHours}時間の学習完了`,
+        prerequisites: badgeCategory.prerequisites,
+        estimatedHours: badgeCategory.estimatedHours,
+        requirements: [
+          {
+            type: 'time_spent' as any,
+            target: badgeCategory.estimatedHours,
+            current: 0,
+            description: `${badgeCategory.estimatedHours}時間の学習完了`,
+            progress: 0,
+            isCompleted: false,
+          },
+        ],
+        type: 'comprehensive',
+      };
+      this.badgeData.set(badgeCategory.id, unifiedBadge);
+      this.progressCache.set(badgeCategory.id, {
+        badgeId: badgeCategory.id,
+        progress: 0,
+        isUnlocked: false,
+        lastUpdated: new Date(),
+        source: 'development',
+      });
+    });
+&nbsp;
+    // 拡張バッジシステムの追加
+    ALL_COMPREHENSIVE_BADGES_EXTENDED.forEach((badge) =&gt; {
+      const unifiedBadge: UnifiedBadge = {
+        id: badge.id,
+        name: badge.name,
+        description: badge.description,
+        category: badge.category,
+        difficulty: badge.difficulty,
+        icon: badge.icon,
+        isUnlocked: badge.isUnlocked,
+        progress: badge.progress,
+        points: badge.points,
+        rewards: badge.rewards,
+        nextMilestone: badge.nextMilestone,
+        prerequisites: badge.prerequisites,
+        estimatedHours: badge.estimatedHours,
+        requirements: badge.requirements,
+        type: 'comprehensive',
+      };
+      this.badgeData.set(badge.id, unifiedBadge);
+      this.progressCache.set(badge.id, {
+        badgeId: badge.id,
+        progress: badge.progress,
+        isUnlocked: badge.isUnlocked,
+        lastUpdated: new Date(),
+        source: 'development',
+      });
+    });
+&nbsp;
+    console.log('🏆 統一バッジ管理サービス初期化完了:', this.badgeData.size, 'バッジ');
+  }
+&nbsp;
+  /**
+   * 🔗 イベントリスナー設定
+   */
+  private setupEventListeners(): void {
+    // 週次計画サービスからの進捗更新
+    weeklyWorkPlanningService.on('progress-updated', <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {
+<span class="cstat-no" title="statement not covered" >      this.handleWeeklyProgressUpdate(data);</span>
+    });
+&nbsp;
+    // ページ同期システムからの更新
+    comprehensivePageSyncSystem.on('badge-progress-updated', <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {
+<span class="cstat-no" title="statement not covered" >      this.handlePageSyncUpdate(data);</span>
+    });
+&nbsp;
+    // ブラウザ可視性変更時の同期
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!document.hidden) {</span>
+<span class="cstat-no" title="statement not covered" >          this.forceSyncAll();</span>
+        }
+      });
+    }
+  }
+&nbsp;
+  /**
+   * 🔄 同期プロセス開始
+   */
+  private startSyncProcess(): void {
+    this.syncInterval = setInterval(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="cstat-no" title="statement not covered" >      this.performPeriodicSync();</span>
+    }, 10000) as unknown as number; // 10秒ごと
+&nbsp;
+    console.log('🔄 統一バッジ同期プロセス開始');
+  }
+&nbsp;
+  /**
+   * 📊 週次進捗更新処理
+   */
+  private <span class="fstat-no" title="function not covered" >handleWeeklyProgressUpdate(</span>data: any): void {
+    const { weekId, progress, badgeIds } = <span class="cstat-no" title="statement not covered" >data;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    badgeIds?.forEach(<span class="fstat-no" title="function not covered" >(b</span>adgeId: string) =&gt; {</span>
+      const badge = <span class="cstat-no" title="statement not covered" >this.badgeData.get(badgeId);</span>
+      const cachedProgress = <span class="cstat-no" title="statement not covered" >this.progressCache.get(badgeId);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (badge &amp;&amp; cachedProgress) {</span>
+        const newProgress = <span class="cstat-no" title="statement not covered" >Math.min(100, cachedProgress.progress + (progress || 0));</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.updateBadgeProgress(badgeId, newProgress, 'prediction');</span>
+      }
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.emit('weekly-progress-synced', {</span>
+      weekId,
+      updatedBadges: badgeIds?.length || 0,
+      timestamp: new Date(),
+    });
+  }
+&nbsp;
+  /**
+   * 🔗 ページ同期更新処理
+   */
+  private <span class="fstat-no" title="function not covered" >handlePageSyncUpdate(</span>data: any): void {
+    const { badgeId, progress, unlocked } = <span class="cstat-no" title="statement not covered" >data;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.updateBadgeProgress(badgeId, progress, 'development');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (unlocked) {</span>
+<span class="cstat-no" title="statement not covered" >      this.unlockBadge(badgeId);</span>
+    }
+  }
+&nbsp;
+  /**
+   * 📈 バッジ進捗更新
+   */
+  public <span class="fstat-no" title="function not covered" >updateBadgeProgress(</span>
+    badgeId: string,
+    newProgress: number,
+    source: 'development' | 'prediction' | 'showcase'
+  ): void {
+    const badge = <span class="cstat-no" title="statement not covered" >this.badgeData.get(badgeId);</span>
+    const cachedProgress = <span class="cstat-no" title="statement not covered" >this.progressCache.get(badgeId);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!badge || !cachedProgress) <span class="cstat-no" title="statement not covered" >return;</span></span>
+&nbsp;
+    // 進捗値の検証と更新
+    const validatedProgress = <span class="cstat-no" title="statement not covered" >Math.max(0, Math.min(100, newProgress));</span>
+    const hasChanged = <span class="cstat-no" title="statement not covered" >Math.abs(cachedProgress.progress - validatedProgress) &gt;= 1;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (hasChanged) {</span>
+      // バッジデータ更新
+<span class="cstat-no" title="statement not covered" >      badge.progress = validatedProgress;</span>
+&nbsp;
+      // キャッシュ更新
+<span class="cstat-no" title="statement not covered" >      cachedProgress.progress = validatedProgress;</span>
+<span class="cstat-no" title="statement not covered" >      cachedProgress.lastUpdated = new Date();</span>
+<span class="cstat-no" title="statement not covered" >      cachedProgress.source = source;</span>
+&nbsp;
+      // 100%達成時は自動アンロック
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (validatedProgress &gt;= 100 &amp;&amp; !badge.isUnlocked) {</span>
+<span class="cstat-no" title="statement not covered" >        this.unlockBadge(badgeId);</span>
+      }
+&nbsp;
+      // 全ページに同期通知
+<span class="cstat-no" title="statement not covered" >      this.emit('badge-progress-updated', {</span>
+        badgeId,
+        progress: validatedProgress,
+        source,
+        timestamp: new Date(),
+      });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      console.log(`🏆 バッジ進捗更新: ${badge.name} -&gt; ${validatedProgress}% (${source})`);</span>
+    }
+  }
+&nbsp;
+  /**
+   * 🔓 バッジアンロック
+   */
+  public <span class="fstat-no" title="function not covered" >unlockBadge(</span>badgeId: string): void {
+    const badge = <span class="cstat-no" title="statement not covered" >this.badgeData.get(badgeId);</span>
+    const cachedProgress = <span class="cstat-no" title="statement not covered" >this.progressCache.get(badgeId);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!badge || !cachedProgress) <span class="cstat-no" title="statement not covered" >return;</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!badge.isUnlocked) {</span>
+<span class="cstat-no" title="statement not covered" >      badge.isUnlocked = true;</span>
+<span class="cstat-no" title="statement not covered" >      badge.progress = 100;</span>
+<span class="cstat-no" title="statement not covered" >      badge.unlockedAt = new Date().toISOString();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      cachedProgress.isUnlocked = true;</span>
+<span class="cstat-no" title="statement not covered" >      cachedProgress.progress = 100;</span>
+<span class="cstat-no" title="statement not covered" >      cachedProgress.lastUpdated = new Date();</span>
+&nbsp;
+      // 全ページに通知
+<span class="cstat-no" title="statement not covered" >      this.emit('badge-unlocked', {</span>
+        badgeId,
+        badge,
+        timestamp: new Date(),
+      });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >      console.log(`🎉 バッジアンロック: ${badge.name}`);</span>
+    }
+  }
+&nbsp;
+  /**
+   * 🔄 定期同期処理
+   */
+  private <span class="fstat-no" title="function not covered" >performPeriodicSync(</span>): void {
+<span class="cstat-no" title="statement not covered" >    this.lastSyncTimestamp = new Date();</span>
+&nbsp;
+    // 同期データ生成
+    const syncData = <span class="cstat-no" title="statement not covered" >this.generateSyncData();</span>
+&nbsp;
+    // 全ページに同期データ送信
+<span class="cstat-no" title="statement not covered" >    this.emit('sync-data-updated', syncData);</span>
+&nbsp;
+    // 予測システムとの同期
+<span class="cstat-no" title="statement not covered" >    this.syncWithPredictionSystem();</span>
+  }
+&nbsp;
+  /**
+   * 🔮 予測システムとの同期
+   */
+  private <span class="fstat-no" title="function not covered" >syncWithPredictionSystem(</span>): void {
+    const currentWeekPlan = <span class="cstat-no" title="statement not covered" >weeklyWorkPlanningService.getCurrentWeekPlan();</span>
+    const weeklyProgress = <span class="cstat-no" title="statement not covered" >weeklyWorkPlanningService.getWeeklyProgress(1);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (weeklyProgress &amp;&amp; currentWeekPlan) {</span>
+      // サイバーセキュリティバッジの同期
+      const cyberBadge = <span class="cstat-no" title="statement not covered" >this.badgeData.get('cybersecurity-specialist');</span>
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (cyberBadge) {</span>
+<span class="cstat-no" title="statement not covered" >        this.updateBadgeProgress(</span>
+          'cybersecurity-specialist',
+          weeklyProgress.progressPercentage,
+          'prediction'
         );
-<span class="cstat-no" title="statement not covered" >        updatedBadge.isUnlocked = updatedBadge.progress === 100;</span>
+      }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        return updatedBadge;</span>
-      })
-    );
-  }, []);
-&nbsp;
-  const fetchDevelopmentProgress = useCallback(async () =&gt; {
-    // GitHub API経由で実際の開発進捗を取得
-    // コミット数、PR数、機能完成度などを分析
-    try {
-      const progress = await analyzeRepositoryProgress();
-<span class="cstat-no" title="statement not covered" >      updateBadgeProgress(progress);</span>
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >      console.error('Failed to fetch development progress:', error);</span>
-    }
-  }, [updateBadgeProgress]);
-&nbsp;
-  // 統一バッジ管理サービスとの同期
-  useEffect(() =&gt; {
-    // 統一サービスからバッジデータを取得
-    const unifiedBadges = unifiedBadgeManagementService.getBadgeData();
-    setBadges(unifiedBadges);
-&nbsp;
-    // 同期イベントリスナーの設定
-    const handleBadgeProgressUpdate = <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {
-      const updatedBadges = <span class="cstat-no" title="statement not covered" >unifiedBadgeManagementService.getBadgeData();</span>
-<span class="cstat-no" title="statement not covered" >      setBadges(updatedBadges);</span>
-<span class="cstat-no" title="statement not covered" >      setLastSyncTime(new Date());</span>
-    };
-&nbsp;
-    const handleSyncDataUpdate = <span class="fstat-no" title="function not covered" >(d</span>ata: BadgeSyncData) =&gt; {
-<span class="cstat-no" title="statement not covered" >      setSyncData(data);</span>
-<span class="cstat-no" title="statement not covered" >      setLastSyncTime(new Date());</span>
-    };
-&nbsp;
-    const handleBadgeUnlocked = <span class="fstat-no" title="function not covered" >(d</span>ata: any) =&gt; {
-      const updatedBadges = <span class="cstat-no" title="statement not covered" >unifiedBadgeManagementService.getBadgeData();</span>
-<span class="cstat-no" title="statement not covered" >      setBadges(updatedBadges);</span>
-<span class="cstat-no" title="statement not covered" >      console.log('🎉 バッジアンロック通知:', data.badge.name);</span>
-    };
-&nbsp;
-    // イベントリスナー登録
-    unifiedBadgeManagementService.on('badge-progress-updated', handleBadgeProgressUpdate);
-    unifiedBadgeManagementService.on('sync-data-updated', handleSyncDataUpdate);
-    unifiedBadgeManagementService.on('badge-unlocked', handleBadgeUnlocked);
-&nbsp;
-    // GitHub進捗取得
-    fetchDevelopmentProgress();
-&nbsp;
-    // クリーンアップ
-    return () =&gt; {
-      unifiedBadgeManagementService.off('badge-progress-updated', handleBadgeProgressUpdate);
-      unifiedBadgeManagementService.off('sync-data-updated', handleSyncDataUpdate);
-      unifiedBadgeManagementService.off('badge-unlocked', handleBadgeUnlocked);
-    };
-  }, [fetchDevelopmentProgress]);
-&nbsp;
-  // 🐛 エラーエリミネーター: コンソールエラーチェック
-  const checkConsoleErrors = async (): Promise&lt;number&gt; =&gt; {
-    // 実際のコンソールエラーをカウント
-    // 開発環境では一時的にエラーログを収集
-    return 0; // 主要エラーは解決済み
-  };
-&nbsp;
-  // 🐛 エラーエリミネーター: API エラーチェック
-  const checkApiErrors = async (): Promise&lt;boolean&gt; =&gt; {
-    try {
-      const response = await fetch('/api/health');
-<span class="cstat-no" title="statement not covered" >      return response.ok;</span>
-    } catch {
-<span class="cstat-no" title="statement not covered" >      return false; </span>// API接続エラー
-    }
-  };
-&nbsp;
-  // 🐛 エラーエリミネーター: エラー統計の監視
-  useEffect(() =&gt; {
-    const handleErrorStatsUpdate = <span class="fstat-no" title="function not covered" >(e</span>vent: CustomEvent) =&gt; {
-      const errorStats = <span class="cstat-no" title="statement not covered" >event.detail;</span>
-<span class="cstat-no" title="statement not covered" >      console.log('🐛 Error stats updated:', errorStats);</span>
-&nbsp;
-      // エラー統計に基づいてバッジ進捗を更新
-<span class="cstat-no" title="statement not covered" >      setBadges(<span class="fstat-no" title="function not covered" >(c</span>urrentBadges) =&gt;</span>
-<span class="cstat-no" title="statement not covered" >        currentBadges.map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (badge.id === 'error-eliminator') {</span>
-            const updatedBadge = <span class="cstat-no" title="statement not covered" >{ ...badge };</span>
-&nbsp;
-            // エラー数に基づく進捗計算
-            const errorProgress = <span class="cstat-no" title="statement not covered" >errorStats.isUnderLimit ? 100 : errorStats.progress;</span>
-            const apiHealthy = <span class="cstat-no" title="statement not covered" >true;</span> // API健全性チェックは別途実装
-&nbsp;
-<span class="cstat-no" title="statement not covered" >            updatedBadge.progress = Math.min(100, (errorProgress + (apiHealthy ? 50 : 0)) / 2);</span>
-<span class="cstat-no" title="statement not covered" >            updatedBadge.isUnlocked = updatedBadge.progress &gt;= 100;</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >            return updatedBadge;</span>
-          }
-<span class="cstat-no" title="statement not covered" >          return badge;</span>
-        })
+      // その他進行中バッジの同期
+      const inProgressBadges = <span class="cstat-no" title="statement not covered" >Array.from(this.badgeData.values()).filter(</span>
+<span class="fstat-no" title="function not covered" >        (b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.progress &gt; 0 &amp;&amp; badge.progress &lt; 100</span>
       );
-    };
 &nbsp;
-    window.addEventListener('errorStatsUpdated', handleErrorStatsUpdate as EventListener);
+<span class="cstat-no" title="statement not covered" >      inProgressBadges.forEach(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {</span>
+        const estimatedProgress = <span class="cstat-no" title="statement not covered" >Math.min(</span>
+          100,
+          badge.progress + weeklyProgress.progressPercentage / 20 // 改訂された計算式
+        );
+<span class="cstat-no" title="statement not covered" >        this.updateBadgeProgress(badge.id, estimatedProgress, 'prediction');</span>
+      });
+    }
+  }
 &nbsp;
-    return () =&gt; {
-      window.removeEventListener('errorStatsUpdated', handleErrorStatsUpdate as EventListener);
-    };
-  }, []);
+  /**
+   * 📊 同期データ生成
+   */
+  private <span class="fstat-no" title="function not covered" >generateSyncData(</span>): BadgeSyncData {
+    const badges = <span class="cstat-no" title="statement not covered" >Array.from(this.badgeData.values());</span>
+    const completedBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.isUnlocked)</span>;</span>
+    const inProgressBadges = <span class="cstat-no" title="statement not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.progress &gt; 0 &amp;&amp; !b.isUnlocked)</span>;</span>
 &nbsp;
-  const analyzeRepositoryProgress = async (): Promise&lt;RepositoryProgress&gt; =&gt; {
-    // 🐛 エラーエリミネーター進捗チェック
-    const consoleErrors = await checkConsoleErrors();
-    const apiErrors = await checkApiErrors();
-&nbsp;
-    // 実際のプロジェクト分析結果を返す
-    // 🎨 デザイン完璧主義者バッジ獲得により更新された進捗を反映
 <span class="cstat-no" title="statement not covered" >    return {</span>
-      commitCount: 200, // 豊富な機能実装により200コミット
-      featuresCompleted: [
-        'todo_crud',
-        'responsive_design',
-        'auth',
-        'dashboard',
-        'calendar',
-        'wbs',
-        'reporting',
-        'assets',
-        'blog',
-        'habits',
-        'systematization',
-        'all_core_features',
-        'error_handling', // ✅ 既存: エラーバウンダリー実装
-        'data_validation', // ✅ 既存: データ検証強化
-        'ui_component_testing', // ✅ 既存: UIコンポーネントテスト
-        'performance_optimization', // ✅ 既存: パフォーマンス最適化完了
-        'code_splitting', // ✅ 既存: Dynamic Import実装
-        'bundle_optimization', // ✅ 既存: バンドル67%削減
-        'accessibility_provider', // 🎨 ✅ 完了: アクセシビリティプロバイダー実装
-        'skip_links', // 🎨 ✅ 完了: スキップリンク実装
-        'aria_attributes', // 🎨 ✅ 完了: ARIA属性の包括的追加
-        'semantic_html', // 🎨 ✅ 完了: セマンティックHTML改善
-        'keyboard_navigation', // 🎨 ✅ 完了: キーボードナビゲーション対応
-        'screen_reader_support', // 🎨 ✅ 完了: スクリーンリーダー対応
-        'high_contrast_mode', // 🎨 ✅ 完了: 高コントラストモード実装
-        'focus_management', // 🎨 ✅ 完了: フォーカス管理システム
-        'accessibility_shortcuts', // 🎨 ✅ 完了: アクセシビリティショートカット
-        'wcag_compliance', // 🎨 ✅ 完了: WCAG 2.1 AA準拠
-        'accessibility', // 🎨 ✅ 完了: アクセシビリティ全般完成！
-        'todo_filters', // ✅ ✅ 完了: TODOフィルタ機能
-        'todo_analytics', // ✅ ✅ 完了: TODO分析ダッシュボード実装完了！
-        'responsive_design', // 🎨 ✅ 完了: レスポンシブデザイン対応完了
-        'automation_rules', // ⚙️ ✅ 完了: 自動化ルール詳細設定完成！
-        'workflow_engine', // ⚙️ ✅ 完了: ワークフローエンジン完成
-        // 🐛 エラーエリミネーター進捗
-        ...(consoleErrors === 0 ? ['zero_console_errors'] : []),
-        ...(apiErrors ? ['api_errors_fixed'] : []),
-      ],
-      testCoverage: 86.11, // 🎉 維持: 86.11%達成！品質の守護者バッジ獲得済み！
-      performanceScore: 92, // 🚀 維持: 85 → 92 (Speed Demon達成済み！)
+      developmentDashboard: {
+        totalBadges: badges.length,
+        completedBadges: completedBadges.length,
+        inProgress: inProgressBadges.length,
+        lastSync: new Date(),
+      },
+      predictionSystem: {
+        weeklyProgress: weeklyWorkPlanningService.getWeeklyProgress(1)?.progressPercentage || 0,
+        estimatedCompletions: this.calculateEstimatedCompletions(),
+        accuracyRate: 85, // 固定値（実装時は実際の精度を計算）
+        lastSync: new Date(),
+      },
+      showcaseView: {
+        recentAchievements: this.getRecentAchievements().length,
+        totalProgress: this.calculateOverallProgress(),
+        displayedBadges: badges.filter(<span class="fstat-no" title="function not covered" >(b</span>) =&gt; <span class="cstat-no" title="statement not covered" >b.isUnlocked || b.progress &gt; 0)</span>.length,
+        lastSync: new Date(),
+      },
     };
-  };
+  }
 &nbsp;
-  const _categoryIcons = {
-    foundation: &lt;Code className="h-5 w-5" /&gt;,
-    features: &lt;Target className="h-5 w-5" /&gt;,
-    ui_ux: &lt;Palette className="h-5 w-5" /&gt;,
-    performance: &lt;Zap className="h-5 w-5" /&gt;,
-    testing: &lt;CheckCircle className="h-5 w-5" /&gt;,
-    automation: &lt;Zap className="h-5 w-5" /&gt;,
-    community: &lt;Trophy className="h-5 w-5" /&gt;,
-    systematization: &lt;Target className="h-5 w-5" /&gt;,
-    completion: &lt;Trophy className="h-5 w-5" /&gt;,
-  };
+  /**
+   * 🎯 完了予測計算
+   */
+  private <span class="fstat-no" title="function not covered" >calculateEstimatedCompletions(</span>): number {
+    const inProgressBadges = <span class="cstat-no" title="statement not covered" >Array.from(this.badgeData.values()).filter(</span>
+<span class="fstat-no" title="function not covered" >      (b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.progress &gt; 0 &amp;&amp; badge.progress &lt; 100</span>
+    );
 &nbsp;
-  const filteredBadges =
-    selectedCategory === 'all'
-      ? badges
-      : <span class="branch-1 cbranch-no" title="branch not covered" >badges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.category === selectedCategory)</span>;</span>
+<span class="cstat-no" title="statement not covered" >    return inProgressBadges.filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >badge.progress &gt; 70)</span>.length;</span>
+  }
 &nbsp;
-  const overallProgress = Math.round(
-    (badges.filter((b) =&gt; b.isUnlocked).length / badges.length) * 100
-  );
+  /**
+   * 📈 全体進捗計算
+   */
+  private <span class="fstat-no" title="function not covered" >calculateOverallProgress(</span>): number {
+    const badges = <span class="cstat-no" title="statement not covered" >Array.from(this.badgeData.values());</span>
+    const totalProgress = <span class="cstat-no" title="statement not covered" >badges.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, badge) =&gt; <span class="cstat-no" title="statement not covered" >sum + badge.progress,</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >    return Math.round(totalProgress / badges.length);</span>
+  }
 &nbsp;
-  // 🎉 最新のバッジ獲得状況
-  const completedBadges = [
-    // 既存の完了バッジ
-    'foundation-architect',
-    'feature-complete-master',
-    'ui-ux-master',
-    'performance-optimizer',
-    'test-automation-expert',
-    'ci-cd-pipeline-master',
-    'devops-culture-evangelist',
-    'digital-workflow-optimizer',
-    'ai-integration-master',
-    'security-fortress-builder',
-    'quality-assurance-champion',
-    'diversity-inclusion-advocate',
+  /**
+   * 🆕 最近の達成バッジ取得
+   */
+  private <span class="fstat-no" title="function not covered" >getRecentAchievements(</span>): DevelopmentBadge[] {
+    const thirtyDaysAgo = <span class="cstat-no" title="statement not covered" >new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);</span>
 &nbsp;
-    // 🆕 新規獲得バッジ
-    'environmental-champion', // 🌱 環境チャンピオン
-    'scaling-strategist', // 📈 スケーリング戦略家
-    'site-reliability-engineer', // ⚡ サイト信頼性エンジニア
-  ];
+<span class="cstat-no" title="statement not covered" >    return Array.from(this.badgeData.values())</span>
+      .filter(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; {
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!badge.isUnlocked || !badge.unlockedAt) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >        return new Date(badge.unlockedAt) &gt; thirtyDaysAgo;</span>
+      })
+      .map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; <span class="cstat-no" title="statement not covered" >this.convertToDevBadge(badge))</span>;
+  }
 &nbsp;
-  // 📈 進行中の注目バッジ
-  const progressBadges = [
-    { id: 'product-visionary', name: '🔮 プロダクトビジョナリー', progress: 80 },
-    { id: 'digital-artist', name: '🎨 デジタルアーティスト', progress: 75 },
-    { id: 'polyglot-developer', name: '🗣️ ポリグロット開発者', progress: 95 },
-    { id: 'operational-excellence', name: '⚙️ オペレーショナルエクセレンス', progress: 70 },
-    { id: 'revenue-architect', name: '💰 収益アーキテクト', progress: 60 },
-  ];
+  /**
+   * 🔄 強制同期
+   */
+  public <span class="fstat-no" title="function not covered" >forceSyncAll(</span>): void {
+<span class="cstat-no" title="statement not covered" >    console.log('🔄 強制同期実行中...');</span>
+<span class="cstat-no" title="statement not covered" >    this.performPeriodicSync();</span>
+<span class="cstat-no" title="statement not covered" >    this.emit('force-sync-completed', { timestamp: new Date() });</span>
+  }
 &nbsp;
-  // 🎯 統計情報
-  const badgeStats = {
-    totalBadges: 85, // 大幅拡張
-    completedBadges: 27, // 3つ新規獲得
-    totalCategories: 55, // 包括的カテゴリ
-    completionRate: 32, // 32%達成率
-    newCategories: [
-      'monetization',
-      'planning',
-      'sales',
-      'management',
-      'information_dissemination',
-      'economics',
-      'art',
-      'linguistics',
-      'literature',
-      'publishing',
-      'editing',
-      'philosophy',
-      'history',
-      'culture',
-    ],
-  };
+  /**
+   * 📊 バッジデータ取得（読み取り専用）
+   * UnifiedBadgeからDevelopmentBadgeに変換して返す
+   */
+  public getBadgeData(): DevelopmentBadge[] {
+    return Array.from(this.badgeData.values()).map((badge) =&gt; this.convertToDevBadge(badge));
+  }
 &nbsp;
-  const achievementHighlights = [
-    {
-      title: '🌱 環境チャンピオン獲得！',
-      description: 'カーボンフットプリント削減で持続可能な開発を実現',
-      icon: '🌱',
-      category: 'social_contribution',
-      impact: 'CO2削減率55%達成、持続可能性スコア95%',
-    },
-    {
-      title: '📈 スケーリング戦略家獲得！',
-      description: '成長戦略策定で事業拡大の基盤を構築',
-      icon: '📈',
-      category: 'entrepreneurship',
-      impact: 'ユーザー成長率25%、収益成長率35%達成',
-    },
-    {
-      title: '⚡ サイト信頼性エンジニア獲得！',
-      description: 'レイテンシ最適化でシステム信頼性を向上',
-      icon: '⚡',
-      category: 'reliability',
-      impact: '平均レスポンス85ms、可用性99.9%達成',
-    },
-    {
-      title: '🆕 包括的バッジシステム拡張',
-      description: '55カテゴリ・85バッジの総合成長プラットフォーム',
-      icon: '🚀',
-      category: 'systematization',
-      impact: 'マネタイズ・芸術・語学・文学・哲学など全分野対応',
-    },
-  ];
+  /**
+   * 🎯 特定バッジ取得
+   * UnifiedBadgeからDevelopmentBadgeに変換して返す
+   */
+  public <span class="fstat-no" title="function not covered" >getBadge(</span>badgeId: string): DevelopmentBadge | null {
+    const badge = <span class="cstat-no" title="statement not covered" >this.badgeData.get(badgeId);</span>
+<span class="cstat-no" title="statement not covered" >    return badge ? this.convertToDevBadge(badge) : null;</span>
+  }
 &nbsp;
-  return (
-    &lt;div className="max-w-7xl mx-auto p-6"&gt;
-      &lt;div className="mb-8"&gt;
-        &lt;div className="flex items-center justify-between mb-4"&gt;
-          &lt;div&gt;
-            &lt;h1 className="text-3xl font-bold"&gt;🏆 開発バッジシステム&lt;/h1&gt;
-            &lt;p className="text-gray-600 mt-2"&gt;
-              サイト開発の進捗をバッジで可視化・ゲーミフィケーション
-            &lt;/p&gt;
-          &lt;/div&gt;
-          &lt;div className="flex gap-2"&gt;
-            &lt;Button onClick={fetchDevelopmentProgress} variant="outline"&gt;
-              進捗を更新
-            &lt;/Button&gt;
-            &lt;Button
-              onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >unifiedBadgeManagementService.forceSyncAll()}</span>
-              variant="outline"
-              size="sm"
-            &gt;
-              🔄 同期テスト
-            &lt;/Button&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
+  /**
+   * 🔄 統一バッジから開発バッジへの変換
+   */
+  private convertToDevBadge(unifiedBadge: UnifiedBadge): DevelopmentBadge {
+    return {
+      id: unifiedBadge.id,
+      name: unifiedBadge.name,
+      description: unifiedBadge.description,
+      category: unifiedBadge.category as any, // 型変換
+      difficulty: unifiedBadge.difficulty,
+      icon: unifiedBadge.icon,
+      requirements: unifiedBadge.requirements || <span class="branch-1 cbranch-no" title="branch not covered" >[],</span>
+      isUnlocked: unifiedBadge.isUnlocked,
+      unlockedAt: unifiedBadge.unlockedAt,
+      progress: unifiedBadge.progress,
+      nextMilestone: unifiedBadge.nextMilestone,
+      prerequisites: unifiedBadge.prerequisites,
+      isCompleted: unifiedBadge.progress &gt;= 100,
+      completedAt: unifiedBadge.completedAt,
+      points: unifiedBadge.points,
+      rewards: unifiedBadge.rewards,
+    };
+  }
 &nbsp;
-        {/* 同期ステータス */}
-        {syncData &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >          &lt;Card className="mb-4 border border-green-200 bg-green-50"&gt;</span>
-            &lt;CardContent className="pt-4"&gt;
-              &lt;div className="flex items-center justify-between"&gt;
-                &lt;div className="flex items-center gap-2"&gt;
-                  &lt;div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"&gt;&lt;/div&gt;
-                  &lt;span className="text-sm font-medium text-green-700"&gt;3つのページが同期中&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;div className="text-xs text-green-600"&gt;
-                  最終同期: {lastSyncTime.toLocaleTimeString('ja-JP')}
-                &lt;/div&gt;
-              &lt;/div&gt;
-              &lt;div className="grid grid-cols-3 gap-4 mt-2 text-xs"&gt;
-                &lt;div&gt;
-                  &lt;span className="font-medium"&gt;開発ダッシュボード:&lt;/span&gt;{' '}
-                  {syncData.developmentDashboard.completedBadges}個完了
-                &lt;/div&gt;
-                &lt;div&gt;
-                  &lt;span className="font-medium"&gt;予測システム:&lt;/span&gt;{' '}
-                  {syncData.predictionSystem.accuracyRate}% 精度
-                &lt;/div&gt;
-                &lt;div&gt;
-                  &lt;span className="font-medium"&gt;実績ページ:&lt;/span&gt;{' '}
-                  {syncData.showcaseView.recentAchievements}個 最近の達成
-                &lt;/div&gt;
-              &lt;/div&gt;
-            &lt;/CardContent&gt;
-          &lt;/Card&gt;
-        )}
+  /**
+   * 🏆 統一バッジデータ取得（統一フォーマット）
+   */
+  public <span class="fstat-no" title="function not covered" >getUnifiedBadgeData(</span>): UnifiedBadge[] {
+<span class="cstat-no" title="statement not covered" >    return Array.from(this.badgeData.values()).map(<span class="fstat-no" title="function not covered" >(b</span>adge) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...badge })</span>);</span>
+  }
 &nbsp;
-        {/* 全体進捗 */}
-        &lt;Card className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50"&gt;
-          &lt;CardHeader&gt;
-            &lt;CardTitle className="flex items-center gap-2"&gt;
-              &lt;Trophy className="h-6 w-6 text-yellow-500" /&gt;
-              開発完成度
-            &lt;/CardTitle&gt;
-          &lt;/CardHeader&gt;
-          &lt;CardContent&gt;
-            &lt;div className="space-y-4"&gt;
-              &lt;div&gt;
-                &lt;div className="flex justify-between mb-2"&gt;
-                  &lt;span className="text-sm font-medium"&gt;全体進捗&lt;/span&gt;
-                  &lt;span className="text-sm font-medium"&gt;{overallProgress}%&lt;/span&gt;
-                &lt;/div&gt;
-                &lt;Progress value={overallProgress} className="h-3" /&gt;
-              &lt;/div&gt;
-              &lt;div className="grid grid-cols-2 md:grid-cols-4 gap-4"&gt;
-                &lt;div className="text-center"&gt;
-                  &lt;div className="text-2xl font-bold text-green-600"&gt;
-                    {badges.filter((b) =&gt; b.isUnlocked).length}
-                  &lt;/div&gt;
-                  &lt;div className="text-sm text-gray-600"&gt;獲得済み&lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div className="text-center"&gt;
-                  &lt;div className="text-2xl font-bold text-blue-600"&gt;
-                    {badges.filter((b) =&gt; b.progress &gt; 0 &amp;&amp; !b.isUnlocked).length}
-                  &lt;/div&gt;
-                  &lt;div className="text-sm text-gray-600"&gt;進行中&lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div className="text-center"&gt;
-                  &lt;div className="text-2xl font-bold text-gray-600"&gt;
-                    {badges.filter((b) =&gt; b.progress === 0).length}
-                  &lt;/div&gt;
-                  &lt;div className="text-sm text-gray-600"&gt;未着手&lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div className="text-center"&gt;
-                  &lt;div className="text-2xl font-bold text-purple-600"&gt;{badges.length}&lt;/div&gt;
-                  &lt;div className="text-sm text-gray-600"&gt;総バッジ数&lt;/div&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
-            &lt;/div&gt;
-          &lt;/CardContent&gt;
-        &lt;/Card&gt;
-      &lt;/div&gt;
+  /**
+   * 📈 進捗状況取得
+   */
+  public <span class="fstat-no" title="function not covered" >getProgressData(</span>): BadgeProgress[] {
+<span class="cstat-no" title="statement not covered" >    return Array.from(this.progressCache.values()).map(<span class="fstat-no" title="function not covered" >(p</span>rogress) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...progress })</span>);</span>
+  }
 &nbsp;
-      {/* カテゴリフィルター */}
-      &lt;Tabs
-        value={selectedCategory}
-        onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedCategory(value as 'all' | BadgeCategory)}</span>
-      &gt;
-        &lt;TabsList className="grid grid-cols-5 lg:grid-cols-10 mb-6"&gt;
-          &lt;TabsTrigger value="all"&gt;全て&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="foundation"&gt;基盤&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="features"&gt;機能&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="ui_ux"&gt;UI/UX&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="performance"&gt;性能&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="testing"&gt;テスト&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="automation"&gt;自動化&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="community"&gt;コミュニティ&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="systematization"&gt;仕組み化&lt;/TabsTrigger&gt;
-          &lt;TabsTrigger value="completion"&gt;完成&lt;/TabsTrigger&gt;
-        &lt;/TabsList&gt;
+  /**
+   * 🧹 リソース解放
+   */
+  public <span class="fstat-no" title="function not covered" >destroy(</span>): void {
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.syncInterval) {</span>
+<span class="cstat-no" title="statement not covered" >      clearInterval(this.syncInterval);</span>
+    }
+<span class="cstat-no" title="statement not covered" >    this.removeAllListeners();</span>
+  }
+}
 &nbsp;
-        &lt;TabsContent value={selectedCategory}&gt;
-          &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-            {filteredBadges.map((badge) =&gt; (
-              &lt;BadgeCard key={badge.id} badge={badge} /&gt;
-            ))}
-          &lt;/div&gt;
-        &lt;/TabsContent&gt;
-      &lt;/Tabs&gt;
-    &lt;/div&gt;
-  );
-};
-&nbsp;
-// 個別バッジカード
-const BadgeCard: React.FC&lt;{ badge: DevelopmentBadge }&gt; = ({ badge }) =&gt; {
-  return (
-    &lt;Card
-      className={`relative overflow-hidden transition-all hover:shadow-lg ${
-        badge.isUnlocked ? 'border-green-200 bg-green-50' : 'border-gray-200'
-      }`}
-    &gt;
-      {badge.isUnlocked &amp;&amp; (
-        &lt;div className="absolute top-2 right-2"&gt;
-          &lt;CheckCircle className="h-6 w-6 text-green-600" /&gt;
-        &lt;/div&gt;
-      )}
-&nbsp;
-      &lt;CardHeader className="pb-2"&gt;
-        &lt;div className="flex items-center justify-between"&gt;
-          &lt;div className="text-4xl"&gt;{badge.icon}&lt;/div&gt;
-          &lt;Badge className={difficultyColors[badge.difficulty]}&gt;{badge.difficulty}&lt;/Badge&gt;
-        &lt;/div&gt;
-        &lt;CardTitle className="text-lg"&gt;{badge.name}&lt;/CardTitle&gt;
-        &lt;p className="text-sm text-gray-600"&gt;{badge.description}&lt;/p&gt;
-      &lt;/CardHeader&gt;
-&nbsp;
-      &lt;CardContent&gt;
-        &lt;div className="space-y-3"&gt;
-          {/* 進捗バー */}
-          &lt;div&gt;
-            &lt;div className="flex justify-between mb-1"&gt;
-              &lt;span className="text-sm font-medium"&gt;進捗&lt;/span&gt;
-              &lt;span className="text-sm"&gt;{badge.progress}%&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;Progress
-              value={badge.progress}
-              className={`h-2 ${badge.isUnlocked ? 'bg-green-100' : ''}`}
-            /&gt;
-          &lt;/div&gt;
-&nbsp;
-          {/* 要件リスト */}
-          &lt;div className="space-y-2"&gt;
-            &lt;h4 className="text-sm font-medium"&gt;要件:&lt;/h4&gt;
-            {badge.requirements.map((req, index) =&gt; (
-              &lt;div key={index} className="flex items-center gap-2 text-xs"&gt;
-                &lt;div
-                  className={`w-2 h-2 rounded-full ${(() =&gt; {
-                    if (req.type === 'commit_count' || req.type === 'performance_score') {
-                      return Number(req.current) &gt;= Number(req.target)
-                        ? 'bg-green-500'
-                        : 'bg-gray-300';
-                    }
-                    return req.current === 'completed' ? <span class="branch-0 cbranch-no" title="branch not covered" >'bg-green-500' </span>: 'bg-gray-300';
-                  })()}`}
-                /&gt;
-                &lt;span className="text-gray-600"&gt;{req.description}&lt;/span&gt;
-                &lt;span className="text-gray-400 ml-auto"&gt;
-                  {req.type === 'feature_complete'
-                    ? req.current === 'completed'
-                      ? <span class="branch-0 cbranch-no" title="branch not covered" >'✓'</span>
-                      : '○'
-                    : `${req.current}/${req.target}`}
-                &lt;/span&gt;
-              &lt;/div&gt;
-            ))}
-          &lt;/div&gt;
-&nbsp;
-          {badge.nextMilestone &amp;&amp; !badge.isUnlocked &amp;&amp; (
-            &lt;div className="mt-3 p-2 bg-blue-50 rounded text-xs"&gt;
-              &lt;strong&gt;次のマイルストーン:&lt;/strong&gt; {badge.nextMilestone}
-            &lt;/div&gt;
-          )}
-        &lt;/div&gt;
-      &lt;/CardContent&gt;
-    &lt;/Card&gt;
-  );
-};
+// シングルトンインスタンス
+export const unifiedBadgeManagementService = UnifiedBadgeManagementService.getInstance();
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
