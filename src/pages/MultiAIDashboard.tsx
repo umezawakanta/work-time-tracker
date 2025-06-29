@@ -6,9 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   multiAIIntegrationService,
-  type AIProvider,
-  type MultiAIRequest,
-  type MultiAIResponse,
+  type AITaskRequest,
+  type AITaskResponse,
 } from '../services/ai/MultiAIIntegrationService';
 
 // アイコンマッピング
@@ -35,19 +34,19 @@ const taskTypeIcons: Record<string, string> = {
 };
 
 export default function MultiAIDashboard() {
-  const [providers, setProviders] = useState<Record<string, AIProvider>>({});
+  const [providers, setProviders] = useState<Record<string, any>>({});
   const [usageStats, setUsageStats] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [testResult, setTestResult] = useState<MultiAIResponse | null>(null);
+  const [testResult, setTestResult] = useState<AITaskResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   // テストリクエスト設定
-  const [testRequest, setTestRequest] = useState<MultiAIRequest>({
+  const [testRequest, setTestRequest] = useState<AITaskRequest>({
     prompt: 'Work Time Trackerアプリケーションの自己改善機能について説明してください',
     taskType: 'analysis',
     priority: 'normal',
-    useConsensus: false,
+    useMultiple: false,
   });
 
   // APIキー設定
@@ -59,8 +58,21 @@ export default function MultiAIDashboard() {
   }, []);
 
   const loadProviderInfo = () => {
-    const providerInfo = multiAIIntegrationService.getProviderInfo();
-    setProviders(providerInfo);
+    const capabilities = multiAIIntegrationService.getCapabilityMatrix();
+    const mockProviders = Object.entries(capabilities).reduce(
+      (acc, [name, caps]) => {
+        acc[name.toLowerCase()] = {
+          name,
+          capabilities: caps,
+          speed: 'fast',
+          pricing: name === 'NotebookLM' ? 'free' : 'paid',
+          reliability: 95,
+        };
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+    setProviders(mockProviders);
   };
 
   const loadUsageStats = () => {
@@ -70,7 +82,7 @@ export default function MultiAIDashboard() {
 
   const handleSetApiKey = (provider: string, apiKey: string) => {
     if (apiKey.trim()) {
-      multiAIIntegrationService.setApiKey(provider, apiKey);
+      // Note: MultiAIIntegrationService doesn't have setApiKey method
       setApiKeys((prev) => ({ ...prev, [provider]: apiKey }));
     }
   };
@@ -81,7 +93,7 @@ export default function MultiAIDashboard() {
     setTestResult(null);
 
     try {
-      const response = await multiAIIntegrationService.processRequest(testRequest);
+      const response = await multiAIIntegrationService.processTask(testRequest);
       setTestResult(response);
       loadUsageStats(); // 統計を更新
     } catch (err) {
@@ -163,7 +175,7 @@ export default function MultiAIDashboard() {
                         />
                       </div>
                       <div className="flex flex-wrap gap-1 mb-2">
-                        {provider.capabilities.map((cap) => (
+                        {provider.capabilities.map((cap: string) => (
                           <span
                             key={cap}
                             className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700"
@@ -316,9 +328,9 @@ export default function MultiAIDashboard() {
                     <input
                       type="checkbox"
                       id="use-consensus"
-                      checked={testRequest.useConsensus}
+                      checked={testRequest.useMultiple}
                       onChange={(e) =>
-                        setTestRequest((prev) => ({ ...prev, useConsensus: e.target.checked }))
+                        setTestRequest((prev) => ({ ...prev, useMultiple: e.target.checked }))
                       }
                       className="mr-2"
                     />

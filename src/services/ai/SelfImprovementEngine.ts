@@ -258,11 +258,11 @@ class SelfImprovementEngine {
 各改善について、優先度、カテゴリ、実装方法、予想効果を具体的に記載してください。`;
 
       // マルチAI統合サービスを使用して改善計画を生成
-      const aiResponse = await multiAIIntegrationService.processRequest({
+      const aiResponse = await multiAIIntegrationService.processTask({
         prompt,
         taskType: 'planning',
         priority: 'high',
-        useConsensus: true, // 複数AIでより信頼性の高い計画を生成
+        useMultiple: true, // 複数AIでより信頼性の高い計画を生成
       });
 
       console.log(
