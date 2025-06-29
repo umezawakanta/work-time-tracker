@@ -275,7 +275,14 @@ class VercelIntegrationService {
       implementationGuide: string[];
     }>
   > {
-    const suggestions = [];
+    const suggestions: Array<{
+      type: 'bundle' | 'image' | 'cache' | 'cdn' | 'code';
+      priority: 'high' | 'medium' | 'low';
+      title: string;
+      description: string;
+      expectedImprovement: string;
+      implementationGuide: string[];
+    }> = [];
 
     try {
       const metrics = await this.getPerformanceMetrics(7);
