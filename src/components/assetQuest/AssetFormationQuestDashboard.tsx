@@ -8,6 +8,7 @@ import { HeroCharacter } from './HeroCharacter';
 import { MonthlyBudgetManager } from './MonthlyBudgetManager';
 import { AssetGrowthChart } from './AssetGrowthChart';
 import { ExperienceSystem } from './ExperienceSystem';
+import { DragonQuestChatbot } from './DragonQuestChatbot';
 import { assetQuestService } from '@/services/assetQuest/AssetQuestService';
 
 interface AssetQuestData {
@@ -283,6 +284,15 @@ export const AssetFormationQuestDashboard: React.FC = () => {
             ))}
           </div>
         )}
+
+        {/* ドラゴンクエスト風AIチャットボット */}
+        <DragonQuestChatbot
+          currentLevel={questData.hero.level}
+          totalAssets={questData.hero.totalAssets}
+          savingsRate={questData.currentMonth.savingsRate}
+          questCompleted={questData.questProgress.monthlyQuestCompleted}
+          streakDays={questData.questProgress.streakDays}
+        />
       </div>
     </div>
   );
