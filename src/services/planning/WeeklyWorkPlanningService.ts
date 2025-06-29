@@ -10,6 +10,7 @@ import {
   WeeklySecurityProgress,
   SecurityBadgePrediction,
 } from '@/types/cybersecurity-badges';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface WeeklyWorkPlan {
   weekNumber: number;
@@ -359,19 +360,21 @@ class WeeklyWorkPlanningService extends EventEmitter {
   private updateWeeklyProgress(): void {
     const currentProgress = this.weeklyProgress.get(this.currentWeek);
     if (currentProgress) {
-      // シミュレーション用の進捗更新
+      // プログレス更新のシミュレーション
       currentProgress.progressPercentage = Math.min(
         100,
-        currentProgress.progressPercentage + Math.random() * 5
+        currentProgress.progressPercentage + dataGenerator.randomFloat(0, 5)
       );
-      currentProgress.hoursCompleted += Math.random() * 2;
+      currentProgress.hoursCompleted += dataGenerator.randomFloat(0, 2);
       currentProgress.hoursRemaining = Math.max(
         0,
         TWELVE_WEEK_SECURITY_PLAN[this.currentWeek - 1].targetHours - currentProgress.hoursCompleted
       );
+
+      // 信頼性の微調整
       currentProgress.confidenceLevel = Math.min(
         100,
-        currentProgress.confidenceLevel + Math.random() * 3
+        currentProgress.confidenceLevel + dataGenerator.randomFloat(0, 3)
       );
 
       this.weeklyProgress.set(this.currentWeek, currentProgress);

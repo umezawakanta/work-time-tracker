@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { generateOperationId } from '../../utils/idGenerator';
 
 export interface OWASPVulnerability {
   id: string;
@@ -231,7 +232,7 @@ class OWASPComplianceService {
    */
   public async performComprehensiveSecurityScan(): Promise<SecurityScanResult> {
     const scanResult: SecurityScanResult = {
-      id: `scan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: generateOperationId('scan'),
       timestamp: new Date().toISOString(),
       type: 'owasp_top10',
       vulnerabilities: [],

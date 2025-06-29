@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { generateOperationId } from '../../utils/idGenerator';
 
 export interface NotificationTemplate {
   id: string;
@@ -535,7 +536,7 @@ class EnhancedPushNotificationService {
       throw new Error(`テンプレートが見つかりません: ${templateId}`);
     }
 
-    const notificationId = `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const notificationId = generateOperationId('notif');
     const userIds = Array.isArray(targetUsers) ? targetUsers : [targetUsers];
 
     // スケジュール通知として登録
@@ -581,7 +582,7 @@ class EnhancedPushNotificationService {
       description?: string;
     }
   ): Promise<string> {
-    const campaignId = `campaign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const campaignId = generateOperationId('campaign');
 
     const campaign: NotificationCampaign = {
       id: campaignId,

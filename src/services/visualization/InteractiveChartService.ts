@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface ChartConfig {
   id: string;
@@ -381,7 +382,7 @@ class InteractiveChartService {
             {
               id: 'productivity',
               label: '生産性スコア',
-              data: this.generateSampleData('line', 30),
+              data: this.generateRandomChartData(),
               color: '#3B82F6',
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
               borderColor: '#3B82F6',
@@ -466,7 +467,7 @@ class InteractiveChartService {
             {
               id: 'tasks',
               label: 'タスク数',
-              data: this.generateSampleData('pie', 6),
+              data: this.generateRandomChartData(),
               color: '#10B981',
               visible: true,
               interactive: true,
@@ -549,7 +550,7 @@ class InteractiveChartService {
             {
               id: 'performance',
               label: 'パフォーマンス',
-              data: this.generateSampleData('heatmap', 168), // 24h x 7days
+              data: this.generateRandomChartData(),
               color: '#F59E0B',
               visible: true,
               interactive: true,
@@ -634,66 +635,48 @@ class InteractiveChartService {
   /**
    * 📊 サンプルデータ生成
    */
-  private generateSampleData(type: ChartType, count: number): DataPoint[] {
-    const data: DataPoint[] = [];
+  private generateRandomChartData(): any[] {
+    const data: any[] = [];
 
-    switch (type) {
-      case 'line':
-      case 'area':
-        for (let i = 0; i < count; i++) {
-          data.push({
-            x: i,
-            y: Math.floor(Math.random() * 100) + 20,
-            label: `Day ${i + 1}`,
-            tooltip: `生産性: ${Math.floor(Math.random() * 100) + 20}%`,
-            clickable: true,
-          });
-        }
-        break;
+    for (let i = 0; i < 12; i++) {
+      data.push({
+        x: i,
+        y: Math.floor(dataGenerator.randomFloat(20, 120)),
+        label: `Month ${i + 1}`,
+        tooltip: `生産性: ${Math.floor(dataGenerator.randomFloat(20, 120))}%`,
+      });
+    }
 
-      case 'pie':
-      case 'donut': {
-        const categories = ['開発', 'テスト', 'デザイン', 'ドキュメント', '会議', 'その他'];
-        for (let i = 0; i < count; i++) {
-          data.push({
-            x: categories[i] || `Category ${i + 1}`,
-            y: Math.floor(Math.random() * 50) + 10,
-            label: categories[i] || `Category ${i + 1}`,
-            category: categories[i] || `Category ${i + 1}`,
-            tooltip: `${categories[i] || `Category ${i + 1}`}: ${Math.floor(Math.random() * 50) + 10}時間`,
-            clickable: true,
-          });
-        }
-        break;
+    const categories = ['開発', 'デザイン', 'ミーティング', 'テスト', 'ドキュメント'];
+
+    for (let i = 0; i < categories.length; i++) {
+      data.push({
+        x: i,
+        y: Math.floor(dataGenerator.randomFloat(10, 60)),
+        category: categories[i],
+        tooltip: `${categories[i] || `Category ${i + 1}`}: ${Math.floor(dataGenerator.randomFloat(10, 60))}時間`,
+      });
+    }
+
+    for (let day = 0; day < 7; day++) {
+      for (let hour = 0; hour < 24; hour++) {
+        data.push({
+          x: hour,
+          y: day,
+          z: Math.floor(dataGenerator.randomFloat(0, 100)),
+          day,
+          tooltip: `${['日', '月', '火', '水', '木', '金', '土'][day]} ${hour}:00 - パフォーマンス: ${Math.floor(dataGenerator.randomFloat(0, 100))}%`,
+        });
       }
+    }
 
-      case 'heatmap': {
-        const hours = 24;
-        const days = 7;
-        for (let day = 0; day < days; day++) {
-          for (let hour = 0; hour < hours; hour++) {
-            data.push({
-              x: hour,
-              y: day,
-              z: Math.floor(Math.random() * 100),
-              label: `${['日', '月', '火', '水', '木', '金', '土'][day]} ${hour}:00`,
-              tooltip: `${['日', '月', '火', '水', '木', '金', '土'][day]} ${hour}:00 - パフォーマンス: ${Math.floor(Math.random() * 100)}%`,
-              clickable: true,
-            });
-          }
-        }
-        break;
-      }
-
-      default:
-        for (let i = 0; i < count; i++) {
-          data.push({
-            x: i,
-            y: Math.floor(Math.random() * 100),
-            label: `Point ${i + 1}`,
-            clickable: true,
-          });
-        }
+    for (let i = 0; i < 50; i++) {
+      data.push({
+        x: i,
+        y: Math.floor(dataGenerator.randomFloat(20, 120)),
+        timestamp: Date.now() + i * 1000,
+        tooltip: `リアルタイム値: ${Math.floor(dataGenerator.randomFloat(20, 120))}`,
+      });
     }
 
     return data;
@@ -758,7 +741,7 @@ class InteractiveChartService {
 
       // FPS計算（リアルタイムチャートのみ）
       if (chart?.realTime) {
-        metrics.fps = Math.floor(Math.random() * 10) + 55; // 55-65 FPS
+        metrics.fps = dataGenerator.randomInt(55, 65); // 55-65 FPS
       }
     });
   }
@@ -975,9 +958,9 @@ class InteractiveChartService {
       // リアルタイムデータ生成（実際の実装ではAPIから取得）
       const newDataPoint: DataPoint = {
         x: Date.now(),
-        y: Math.floor(Math.random() * 100) + 20,
+        y: Math.floor(dataGenerator.randomFloat(20, 120)),
         label: new Date().toLocaleTimeString(),
-        tooltip: `リアルタイム値: ${Math.floor(Math.random() * 100) + 20}`,
+        tooltip: `リアルタイム値: ${Math.floor(dataGenerator.randomFloat(20, 120))}`,
         clickable: true,
       };
 

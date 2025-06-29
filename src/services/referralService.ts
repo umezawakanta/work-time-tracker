@@ -1,3 +1,4 @@
+import { dataGenerator } from '../utils/idGenerator';
 
 /**
  * リファラル（紹介）プログラム関連の情報
@@ -39,8 +40,8 @@ export const fetchReferralSummary = async (): Promise<ReferralInfo> => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
 
     if (!response.ok) {
@@ -59,7 +60,7 @@ export const fetchReferralSummary = async (): Promise<ReferralInfo> => {
       pendingInvites: 0,
       earnedMonths: 0,
       inviteds: [],
-      personalUrl: ''
+      personalUrl: '',
     };
   }
 };
@@ -67,15 +68,17 @@ export const fetchReferralSummary = async (): Promise<ReferralInfo> => {
 /**
  * ユーザーのリファラルコードを生成または取得
  */
-export const generateReferralCode = async (options: GenerateReferralCodeOptions): Promise<string> => {
+export const generateReferralCode = async (
+  options: GenerateReferralCodeOptions
+): Promise<string> => {
   try {
     const response = await fetch('/api/user/referrals/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
       },
-      body: JSON.stringify(options)
+      body: JSON.stringify(options),
     });
 
     if (!response.ok) {
@@ -86,7 +89,7 @@ export const generateReferralCode = async (options: GenerateReferralCodeOptions)
     return data.referralCode;
   } catch (error) {
     console.error('リファラルコード生成エラー:', error);
-    
+
     // エラー時はローカルで一時的なコードを生成（APIが利用できない場合のフォールバック）
     const fallbackCode = generateFallbackReferralCode(options);
     return fallbackCode;
@@ -103,7 +106,7 @@ const generateFallbackReferralCode = (options: GenerateReferralCodeOptions): str
     length = 8,
     prefix = 'REF',
     includeNumbers = true,
-    includeUppercase = true
+    includeUppercase = true,
   } = options;
 
   // 文字セットの準備
@@ -115,20 +118,23 @@ const generateFallbackReferralCode = (options: GenerateReferralCodeOptions): str
   const userIdPart = userId.substring(0, 4);
 
   // ランダム部分の生成
-  let randomPart = '';
+  let result = '';
   for (let i = 0; i < length - prefix.length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    randomPart += charset[randomIndex];
+    const randomIndex = dataGenerator.randomInt(0, charset.length - 1);
+    result += charset[randomIndex];
   }
 
   // プレフィックス + ユーザーID部分 + ランダム部分
-  return `${prefix}${userIdPart}${randomPart}`.substring(0, length);
+  return `${prefix}${userIdPart}${result}`.substring(0, length);
 };
 
 /**
  * ユーザーを紹介する（招待メールを送信）
  */
-export const invite= async (emails: string[], message?: string): Promise<{
+export const invite = async (
+  emails: string[],
+  message?: string
+): Promise<{
   success: boolean;
   sentCount: number;
   failedEmails?: string[];
@@ -139,9 +145,9 @@ export const invite= async (emails: string[], message?: string): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
       },
-      body: JSON.stringify({ emails, message })
+      body: JSON.stringify({ emails, message }),
     });
 
     if (!response.ok) {
@@ -155,7 +161,7 @@ export const invite= async (emails: string[], message?: string): Promise<{
     return {
       success: false,
       sentCount: 0,
-      error: error instanceof Error ? error.message : '不明なエラーが発生しました'
+      error: error instanceof Error ? error.message : '不明なエラーが発生しました',
     };
   }
 };
@@ -174,8 +180,8 @@ export const claimReferralReward = async (): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
 
     if (!response.ok) {
@@ -189,7 +195,7 @@ export const claimReferralReward = async (): Promise<{
     return {
       success: false,
       monthsAdded: 0,
-      error: error instanceof Error ? error.message : '不明なエラーが発生しました'
+      error: error instanceof Error ? error.message : '不明なエラーが発生しました',
     };
   }
 };
@@ -203,8 +209,8 @@ export const extendTrialPeriod = async (): Promise<boolean> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
 
     if (!response.ok) {
@@ -242,8 +248,8 @@ export const fetchSubscriptionStatus = async (): Promise<{
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
 
     if (!response.ok) {
@@ -262,8 +268,8 @@ export const fetchSubscriptionStatus = async (): Promise<{
         tasksCreated: 0,
         tasksCompleted: 0,
         storageUsed: 0,
-        storageLimit: 1024 // 1MB
-      }
+        storageLimit: 1024, // 1MB
+      },
     };
   }
 };

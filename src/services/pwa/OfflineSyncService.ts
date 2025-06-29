@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { generateOperationId } from '../../utils/idGenerator';
 
 export interface SyncOperation {
   id: string;
@@ -347,7 +348,7 @@ class OfflineSyncService {
       serverId?: string;
     }
   ): Promise<string> {
-    const operationId = `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const operationId = generateOperationId('op');
 
     const operation: SyncOperation = {
       id: operationId,

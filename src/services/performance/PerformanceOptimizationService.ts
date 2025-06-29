@@ -1,4 +1,6 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
+import { estimateProcessingTime } from '../../config/aiPricing';
 
 export interface MemoryMetrics {
   usedJSHeapSize: number;
@@ -510,7 +512,7 @@ class PerformanceOptimizationService {
    */
   private measureScriptTime(): number {
     // スクリプト実行時間のシミュレート
-    return Math.random() * 10 + 5;
+    return dataGenerator.randomFloat(5, 15);
   }
 
   /**
@@ -578,7 +580,8 @@ class PerformanceOptimizationService {
       if (optimization.status === 'inactive') {
         optimization.status = 'active';
         console.log(`✅ ${optimization.description} を有効化しました`);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        const optimizationTime = estimateProcessingTime('general', 100, 'performance');
+        await new Promise((resolve) => setTimeout(resolve, optimizationTime));
       }
     }
   }

@@ -1,3 +1,5 @@
+import { dataGenerator } from '../../utils/idGenerator';
+
 export interface TestCoverageReport {
   overall: {
     statements: number;
@@ -213,10 +215,10 @@ class QualityAnalysisService {
 
       trends.push({
         date: date.toISOString().split('T')[0],
-        testCoverage: Math.round(84 + Math.random() * 4), // 84-88%の範囲（実際の86.11%周辺）
-        eslintScore: Math.round(95 + Math.random() * 5), // 95-100%の範囲（高品質維持）
-        performanceScore: Math.round(90 + Math.random() * 5), // 90-95%の範囲（実際の92点周辺）
-        overallScore: Math.round(88 + Math.random() * 7), // 88-95%の範囲（高品質維持）
+        testCoverage: dataGenerator.randomInt(84, 88),
+        eslintScore: dataGenerator.randomInt(95, 100),
+        performanceScore: dataGenerator.randomInt(90, 95),
+        overallScore: dataGenerator.randomInt(88, 95),
       });
     }
 

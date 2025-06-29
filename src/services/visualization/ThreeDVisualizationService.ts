@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface ThreeDVisualizationConfig {
   id: string;
@@ -888,16 +889,16 @@ class ThreeDVisualizationService {
           dataSet.points.push({
             id: `point_${i}`,
             position: {
-              x: (Math.random() - 0.5) * 100,
-              y: (Math.random() - 0.5) * 100,
-              z: (Math.random() - 0.5) * 100,
+              x: (dataGenerator.randomFloat(0, 1) - 0.5) * 100,
+              y: (dataGenerator.randomFloat(0, 1) - 0.5) * 100,
+              z: (dataGenerator.randomFloat(0, 1) - 0.5) * 100,
             },
-            value: Math.random() * 100,
-            size: Math.random() * 3 + 1,
-            color: this.getColorByValue(Math.random() * 100),
+            value: dataGenerator.randomFloat(0, 100),
+            size: dataGenerator.randomFloat(1, 4),
+            color: this.getColorByValue(dataGenerator.randomFloat(0, 100)),
             opacity: 0.8,
             label: `データポイント ${i + 1}`,
-            category: Math.random() > 0.5 ? '高生産性' : '低生産性',
+            category: dataGenerator.randomFloat(0, 1) > 0.5 ? '高生産性' : '低生産性',
             interactive: true,
             animated: true,
             shape: 'sphere',
@@ -1005,7 +1006,7 @@ class ThreeDVisualizationService {
         metrics.drawCalls = Math.ceil(viz.data.points.length / 1000);
         metrics.memoryUsage = viz.data.points.length * 100; // 推定バイト
         metrics.gpuMemory = metrics.memoryUsage * 2; // GPU推定使用量
-        metrics.fps = Math.floor(Math.random() * 10) + 55; // 55-65 FPS
+        metrics.fps = dataGenerator.randomInt(55, 65); // Math.floor(Math.random() * 10) + 55 replaced
         metrics.frameTime = 1000 / metrics.fps;
       }
     });

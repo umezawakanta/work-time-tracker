@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { generateOperationId } from '../../utils/idGenerator';
 
 export interface CacheStrategy {
   name: string;
@@ -353,7 +354,7 @@ class AdvancedServiceWorkerService {
       maxRetries?: number;
     }
   ): Promise<string> {
-    const taskId = `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const taskId = generateOperationId('sync');
 
     const syncTask: SyncTask = {
       id: taskId,
@@ -504,7 +505,7 @@ class AdvancedServiceWorkerService {
       maxRetries?: number;
     }
   ): string {
-    const actionId = `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const actionId = generateOperationId('action');
 
     const action: OfflineAction = {
       id: actionId,
