@@ -8,6 +8,7 @@ import {
   calculateConfidence,
   estimateProcessingTime,
 } from '../../config/aiPricing';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface AIProviderConfig {
   enabled: boolean;
@@ -211,7 +212,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(150 + Math.random() * 50); // 推定出力トークン数
+    const outputTokens = Math.ceil(150 + dataGenerator.randomFloat(0, 50)); // 推定出力トークン数
     const cost = calculateAICost('openai', inputTokens, outputTokens);
     const confidence = calculateConfidence('openai', processingTime, inputTokens + outputTokens);
 
@@ -239,7 +240,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(180 + Math.random() * 60); // Claudeは長い回答傾向
+    const outputTokens = Math.ceil(180 + dataGenerator.randomFloat(0, 60)); // Claudeは長い回答傾向
     const cost = calculateAICost('anthropic', inputTokens, outputTokens);
     const confidence = calculateConfidence('anthropic', processingTime, inputTokens + outputTokens);
 
@@ -267,7 +268,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(120 + Math.random() * 40); // Geminiは簡潔な回答傾向
+    const outputTokens = Math.ceil(120 + dataGenerator.randomFloat(0, 40)); // Geminiは簡潔な回答傾向
     const cost = calculateAICost('google', inputTokens, outputTokens);
     const confidence = calculateConfidence('google', processingTime, inputTokens + outputTokens);
 
@@ -295,7 +296,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(100 + Math.random() * 30); // Notionは中程度の長さ
+    const outputTokens = Math.ceil(100 + dataGenerator.randomFloat(0, 30)); // Notionは中程度の長さ
     const cost = calculateAICost('notion', inputTokens, outputTokens);
     const confidence = calculateConfidence('notion', processingTime, inputTokens + outputTokens);
 
@@ -326,7 +327,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(80 + Math.random() * 20); // 手書き認識は簡潔な出力
+    const outputTokens = Math.ceil(80 + dataGenerator.randomFloat(0, 20)); // 手書き認識は簡潔な出力
     const cost = calculateAICost('manus', inputTokens, outputTokens);
     const confidence = calculateConfidence('manus', processingTime, inputTokens + outputTokens);
 
@@ -358,7 +359,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const audioLength = Math.ceil(15 + Math.random() * 45); // 15-60秒の音声
+    const audioLength = Math.ceil(15 + dataGenerator.randomFloat(0, 45)); // 15-60秒の音声
     const outputTokens = Math.ceil(audioLength * 2); // 秒数×2のトークン数
     const cost = calculateAICost('superwhisper', audioLength, outputTokens); // 音声分数ベース
     const confidence = calculateConfidence('superwhisper', processingTime, outputTokens, 'simple');
@@ -373,7 +374,7 @@ class MultiAIIntegrationService {
       metadata: {
         audioLength,
         language: 'ja',
-        speakerCount: Math.ceil(1 + Math.random() * 2), // 1-3名の話者
+        speakerCount: Math.ceil(1 + dataGenerator.randomFloat(0, 2)), // 1-3名の話者
         realtime: processingTime < 1000,
       },
     };
@@ -392,7 +393,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const videoDuration = 15 + Math.random() * 30; // 15-45秒の動画
+    const videoDuration = 15 + dataGenerator.randomFloat(0, 30); // 15-45秒の動画
     const cost = calculateAICost('sora', Math.ceil(videoDuration), 0); // 秒数ベースの計算
     const confidence = calculateConfidence('sora', processingTime, inputTokens, 'complex');
 
@@ -425,7 +426,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const documentsAnalyzed = Math.ceil(3 + Math.random() * 7); // 3-10文書
+    const documentsAnalyzed = Math.ceil(3 + dataGenerator.randomFloat(0, 7)); // 3-10文書
     const outputTokens = Math.ceil(200 + documentsAnalyzed * 20); // 文書数に応じた出力
     const cost = calculateAICost('notebooklm', inputTokens, outputTokens);
     const confidence = calculateConfidence(
@@ -463,7 +464,7 @@ class MultiAIIntegrationService {
     await new Promise((resolve) => setTimeout(resolve, estimatedTime));
 
     const processingTime = Date.now() - startTime;
-    const outputTokens = Math.ceil(130 + Math.random() * 50); // 実験的AIは変動的
+    const outputTokens = Math.ceil(130 + dataGenerator.randomFloat(0, 50)); // 実験的AIは変動的
     const cost = calculateAICost('aiStudio', inputTokens, outputTokens);
     const confidence = calculateConfidence('aiStudio', processingTime, inputTokens + outputTokens);
 

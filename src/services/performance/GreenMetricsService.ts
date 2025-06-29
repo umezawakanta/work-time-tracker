@@ -1,6 +1,7 @@
 import { toast } from '@/components/ui/use-toast';
 import { carbonAwareComputingService } from './CarbonAwareComputingService';
 import { energyEfficiencyService } from './EnergyEfficiencyService';
+import { generateOperationId } from '../../utils/idGenerator';
 
 export interface EnvironmentalImpact {
   carbonFootprint: number; // gCO2
@@ -526,7 +527,7 @@ class GreenMetricsService {
   addGoal(goal: Omit<SustainabilityGoal, 'id' | 'progress'>): void {
     const newGoal: SustainabilityGoal = {
       ...goal,
-      id: `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: generateOperationId('goal'),
       progress: 0,
     };
     this.goals.push(newGoal);
@@ -538,7 +539,7 @@ class GreenMetricsService {
   addInsight(insight: Omit<EcoInsight, 'id'>): void {
     const newInsight: EcoInsight = {
       ...insight,
-      id: `insight_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: generateOperationId('insight'),
     };
     this.insights.push(newInsight);
   }

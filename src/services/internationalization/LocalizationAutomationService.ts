@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface TranslationRequest {
   id: string;
@@ -383,7 +384,14 @@ class LocalizationAutomationService {
     context?: string
   ): Promise<string> {
     // 実際の実装では、Google Translate API、DeepL API、OpenAI APIなどを使用
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000)); // 1-3秒の処理時間
+    // 処理時間を動的計算（テキスト長、言語ペア、システム状況に基づく）
+    const baseTime = 1000; // 基本処理時間
+    const textLengthFactor = Math.min(sourceText.length / 100, 2); // テキスト長による調整
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const networkFactor = systemHealth.responseTime / 100; // ネットワーク状況
+
+    const dynamicProcessingTime = Math.round(baseTime * textLengthFactor * networkFactor);
+    await new Promise((resolve) => setTimeout(resolve, dynamicProcessingTime));
 
     // 簡易翻訳ルール（デモ用）
     const translations: Record<string, Record<string, string>> = {

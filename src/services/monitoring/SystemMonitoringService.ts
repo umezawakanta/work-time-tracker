@@ -596,9 +596,16 @@ class SystemMonitoringService {
   private performHealthCheck(healthCheck: HealthCheck): void {
     const startTime = Date.now();
 
-    // 実際の実装では fetch API を使用
-    const isHealthy = Math.random() > 0.05; // 95% の成功率をシミュレート
-    const responseTime = 100 + Math.random() * 200; // 100-300ms
+    // 実際の実装では fetch API を使用（システム状況に基づく動的評価）
+    const systemHealth = dataGenerator.generateSystemHealth();
+    const baseSuccessRate = 0.95; // 基本95%の成功率
+    const healthFactor = systemHealth.uptime / 100; // システム安定性による調整
+    const isHealthy = dataGenerator.randomFloat(0, 1) < baseSuccessRate * healthFactor;
+
+    // レスポンス時間もシステム状況に基づいて動的計算
+    const baseResponseTime = 100;
+    const networkImpact = systemHealth.responseTime / 10; // ネットワーク状況の影響
+    const responseTime = baseResponseTime + networkImpact + dataGenerator.randomFloat(0, 50);
 
     const endTime = Date.now();
 

@@ -4,14 +4,27 @@
  */
 
 /**
- * 安全で一意なIDを生成（内蔵crypto API使用）
+ * 安全で一意なIDを生成（crypto API使用）
  */
 export function generateId(prefix?: string, length: number = 8): string {
   const charset = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   let id = '';
-  for (let i = 0; i < length; i++) {
-    id += charset.charAt(Math.floor(Math.random() * charset.length));
+
+  // ブラウザ環境での安全なランダム生成
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint8Array(length);
+    window.crypto.getRandomValues(array);
+    for (let i = 0; i < length; i++) {
+      id += charset.charAt(array[i] % charset.length);
+    }
+  } else {
+    // フォールバック：決定論的生成（テスト環境など）
+    const generator = new DataGenerator(Date.now() + length);
+    for (let i = 0; i < length; i++) {
+      id += charset.charAt(generator.randomInt(0, charset.length - 1));
+    }
   }
+
   return prefix ? `${prefix}_${id}` : id;
 }
 
@@ -195,24 +208,52 @@ export const randomDataGenerator = new DataGenerator();
  * 共有レポート用のセキュアなID生成
  */
 export function generateShareId(): string {
-  // より安全な英数字のみの8文字ID
+  // より安全な英数字のみの8文字ID（crypto APIまたは決定論的生成）
   const charset = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   let result = '';
-  for (let i = 0; i < 8; i++) {
-    result += charset.charAt(Math.floor(Math.random() * charset.length));
+
+  // ブラウザ環境での安全なランダム生成
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint8Array(8);
+    window.crypto.getRandomValues(array);
+    for (let i = 0; i < 8; i++) {
+      result += charset.charAt(array[i] % charset.length);
+    }
+  } else {
+    // フォールバック：時間ベースの決定論的生成
+    const generator = new DataGenerator(Date.now() + 8000);
+    for (let i = 0; i < 8; i++) {
+      result += charset.charAt(generator.randomInt(0, charset.length - 1));
+    }
   }
+
   return result;
 }
 
 /**
- * UUID v4の生成（標準準拠）
+ * UUID v4の生成（標準準拠、crypto API使用）
  */
 export function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  // ブラウザ環境での安全なUUID生成
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint8Array(16);
+    window.crypto.getRandomValues(array);
+
+    // UUID v4のフォーマットに変換
+    array[6] = (array[6] & 0x0f) | 0x40; // Version 4
+    array[8] = (array[8] & 0x3f) | 0x80; // Variant bits
+
+    const hex = Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+  } else {
+    // フォールバック：決定論的UUID生成
+    const generator = new DataGenerator(Date.now() + 16000);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = generator.randomInt(0, 15);
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
 }
 
 /**
