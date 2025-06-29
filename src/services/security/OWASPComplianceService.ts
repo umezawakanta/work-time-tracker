@@ -305,7 +305,9 @@ class OWASPComplianceService {
 
     // HTTPSチェック
     const httpsVuln = this.checkHTTPSEnforcement();
-    if (httpsVuln) vulnerabilities.push(httpsVuln);
+    if (httpsVuln) {
+      vulnerabilities.push(httpsVuln);
+    }
 
     // 現在は脆弱性は検出されないことが期待される（適切に設定済み）
     return vulnerabilities;
