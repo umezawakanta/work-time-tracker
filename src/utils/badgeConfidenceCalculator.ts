@@ -167,7 +167,9 @@ export function getStandardConfidenceByCategory(category: string): number {
  * 複数バッジの依存関係を考慮した信頼性計算
  */
 export function calculateGroupConfidence(badges: BadgeCalculationParams[]): number {
-  if (badges.length === 0) return 75;
+  if (badges.length === 0) {
+    return 75;
+  }
 
   const individualConfidences = badges.map((badge) => calculateBadgeConfidence(badge));
 
