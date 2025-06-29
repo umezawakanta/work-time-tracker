@@ -390,7 +390,7 @@ class MultiAIIntegrationService {
     if (!this.config) return false;
 
     const providerConfig = (this.config as any)[provider] as AIProviderConfig;
-    return providerConfig?.enabled && (providerConfig?.apiKey || this.isFreeProvider(provider));
+    return providerConfig?.enabled && (!!providerConfig?.apiKey || this.isFreeProvider(provider));
   }
 
   /**
