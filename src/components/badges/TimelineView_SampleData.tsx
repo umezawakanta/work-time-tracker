@@ -1,3 +1,16 @@
+import React, { useState } from 'react';
+
+interface TimelineFilter {
+  categories: string[];
+  difficulties: string[];
+  statuses: string[];
+  priorities: string[];
+  dateRange: { start: string; end: string };
+  showDependencies: boolean;
+  showMilestones: boolean;
+  showRisks: boolean;
+}
+
 // バッジタイムラインビューのサンプルデータ生成
 const generateTimelineSampleData = () => {
   const timelineBadges: TimelineBadge[] = [
@@ -322,10 +335,19 @@ const generateTimelineSampleData = () => {
 
 export const TimelineViewComplete: React.FC = () => {
   const [filter, setFilter] = useState<TimelineFilter>({
-    // ...
+    categories: [],
+    difficulties: [],
+    statuses: ['in_progress', 'completed'],
+    priorities: [],
+    dateRange: { start: '2025-06-01', end: '2025-12-31' },
+    showDependencies: true,
+    showMilestones: true,
+    showRisks: true,
   });
 
   return (
-    // ... existing JSX
+    <div>
+      <p>Timeline view component placeholder</p>
+    </div>
   );
 };

@@ -16,7 +16,14 @@ interface TimelineEvent {
 }
 
 interface TimelineFilter {
-  // Add filter properties as needed
+  categories: string[];
+  difficulties: string[];
+  statuses: string[];
+  priorities: string[];
+  dateRange: { start: string; end: string };
+  showDependencies: boolean;
+  showMilestones: boolean;
+  showRisks: boolean;
 }
 
 // タイムラインイベント表示コンポーネント

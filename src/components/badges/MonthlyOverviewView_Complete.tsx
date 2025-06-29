@@ -38,13 +38,29 @@ const renderMonthlyView = () => {
 };
 
 const generateMonthlyOverviewData = () => {
-  // Add your data generation logic here
   return {
-    metrics: {},
+    metrics: {
+      month: 'July',
+      year: 2025,
+      totalBadges: 15,
+      completedBadges: 8,
+      inProgressBadges: 5,
+      plannedHours: 120,
+      actualHours: 95,
+      efficiency: 85,
+      completionRate: 53,
+      averageConfidence: 78,
+      streakDays: 12,
+      topPerformingCategory: 'セキュリティ',
+    },
     categories: [],
     trends: [],
     achievements: [],
     weeklyBreakdown: [],
-    predictions: {},
+    predictions: {
+      nextMonthBadges: 12,
+      nextMonthHours: 150,
+      recommendedFocus: ['AI・機械学習', 'プロジェクト管理', 'デザイン・UX'],
+    },
   };
 };

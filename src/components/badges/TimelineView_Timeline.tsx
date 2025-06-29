@@ -40,7 +40,15 @@ interface TimelineBadge {
 }
 
 interface TimelineEvent {
-  // Add properties as needed
+  id: string;
+  type: 'badge_start' | 'badge_complete' | 'milestone' | 'dependency' | 'risk' | 'review';
+  date: string;
+  title: string;
+  description: string;
+  importance: 'low' | 'medium' | 'high' | 'critical';
+  status: 'planned' | 'actual' | 'overdue' | 'cancelled';
+  badgeId?: string;
+  relatedBadges?: string[];
 }
 
 interface TimelineFilter {
