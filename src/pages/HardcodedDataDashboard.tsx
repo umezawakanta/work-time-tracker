@@ -102,9 +102,10 @@ export default function HardcodedDataDashboard() {
       })
       .sort((a, b) => {
         switch (sortBy) {
-          case 'severity':
+          case 'severity': {
             const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
             return severityOrder[a.severity] - severityOrder[b.severity];
+          }
           case 'type':
             return a.type.localeCompare(b.type);
           case 'file':
@@ -310,6 +311,7 @@ export default function HardcodedDataDashboard() {
                         setFilters((prev) => ({ ...prev, severity: e.target.value }))
                       }
                       className="border rounded-lg px-3 py-2"
+                      aria-label="重要度でフィルタ"
                     >
                       <option value="all">全ての重要度</option>
                       <option value="critical">🚨 緊急</option>
@@ -322,6 +324,7 @@ export default function HardcodedDataDashboard() {
                       value={filters.type}
                       onChange={(e) => setFilters((prev) => ({ ...prev, type: e.target.value }))}
                       className="border rounded-lg px-3 py-2"
+                      aria-label="タイプでフィルタ"
                     >
                       <option value="all">全てのタイプ</option>
                       <option value="random">🎲 ランダム値</option>
@@ -338,6 +341,7 @@ export default function HardcodedDataDashboard() {
                         setFilters((prev) => ({ ...prev, category: e.target.value }))
                       }
                       className="border rounded-lg px-3 py-2"
+                      aria-label="カテゴリでフィルタ"
                     >
                       <option value="all">全てのカテゴリ</option>
                       <option value="performance">⚡ パフォーマンス</option>
@@ -352,6 +356,7 @@ export default function HardcodedDataDashboard() {
                       value={filters.fixed}
                       onChange={(e) => setFilters((prev) => ({ ...prev, fixed: e.target.value }))}
                       className="border rounded-lg px-3 py-2"
+                      aria-label="修正状態でフィルタ"
                     >
                       <option value="all">全ての状態</option>
                       <option value="unfixed">未修正</option>
@@ -362,6 +367,7 @@ export default function HardcodedDataDashboard() {
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as any)}
                       className="border rounded-lg px-3 py-2"
+                      aria-label="ソート順序"
                     >
                       <option value="severity">重要度順</option>
                       <option value="type">タイプ順</option>
