@@ -104,6 +104,27 @@ export interface TranslationDictionary {
     profile: string;
     logout: string;
     login: string;
+    user: string;
+    current: string;
+  };
+
+  // ホームページ
+  home: {
+    greeting: string;
+    subtitle: string;
+    premium: string;
+    free: string;
+    level: string;
+    xp: string;
+    streak: string;
+    days: string;
+    badges: string;
+    productivity_score: string;
+    completed_tasks: string;
+    this_week: string;
+    yesterday: string;
+    monthly_average: string;
+    quick_add: string;
   };
 
   // ナビゲーション
@@ -238,6 +259,25 @@ const jaTranslations: TranslationDictionary = {
     profile: 'プロフィール',
     logout: 'ログアウト',
     login: 'ログイン',
+    user: 'ユーザー',
+    current: '現在',
+  },
+  home: {
+    greeting: 'おはようございます',
+    subtitle: '今日も生産的な一日にしましょう 🚀',
+    premium: 'プレミアム',
+    free: 'フリー',
+    level: 'レベル',
+    xp: 'XP',
+    streak: 'ストリーク',
+    days: '日',
+    badges: 'バッジ獲得',
+    productivity_score: '生産性スコア',
+    completed_tasks: 'Todo完了',
+    this_week: '今週獲得XP',
+    yesterday: '昨日比',
+    monthly_average: '今月平均',
+    quick_add: 'クイック追加',
   },
   navigation: {
     dashboard: 'ダッシュボード',
@@ -358,6 +398,25 @@ const enTranslations: TranslationDictionary = {
     profile: 'Profile',
     logout: 'Logout',
     login: 'Login',
+    user: 'User',
+    current: 'Current',
+  },
+  home: {
+    greeting: 'Good morning',
+    subtitle: "Let's make today productive 🚀",
+    premium: 'Premium',
+    free: 'Free',
+    level: 'Level',
+    xp: 'XP',
+    streak: 'Streak',
+    days: 'days',
+    badges: 'Badges Earned',
+    productivity_score: 'Productivity Score',
+    completed_tasks: 'Tasks Completed',
+    this_week: 'Weekly XP',
+    yesterday: 'vs Yesterday',
+    monthly_average: 'Monthly Avg',
+    quick_add: 'Quick Add',
   },
   navigation: {
     dashboard: 'Dashboard',
@@ -478,6 +537,25 @@ const zhTranslations: TranslationDictionary = {
     profile: '个人资料',
     logout: '注销',
     login: '登录',
+    user: '用户',
+    current: '当前',
+  },
+  home: {
+    greeting: '早上好',
+    subtitle: '今天也要高效工作 🚀',
+    premium: '高级版',
+    free: '免费版',
+    level: '等级',
+    xp: 'XP',
+    streak: '连续',
+    days: '天',
+    badges: '徽章获得',
+    productivity_score: '生产力评分',
+    completed_tasks: '完成任务',
+    this_week: '本周XP',
+    yesterday: '与昨天相比',
+    monthly_average: '月平均',
+    quick_add: '快速添加',
   },
   navigation: {
     dashboard: '仪表板',
@@ -598,6 +676,25 @@ const koTranslations: TranslationDictionary = {
     profile: '프로필',
     logout: '로그아웃',
     login: '로그인',
+    user: '사용자',
+    current: '현재',
+  },
+  home: {
+    greeting: '안녕하세요',
+    subtitle: '오늘도 생산적인 하루를 만들어봅시다 🚀',
+    premium: '프리미엄',
+    free: '무료',
+    level: '레벨',
+    xp: 'XP',
+    streak: '연속',
+    days: '일',
+    badges: '배지 획득',
+    productivity_score: '생산성 점수',
+    completed_tasks: '완료된 작업',
+    this_week: '주간 XP',
+    yesterday: '어제 대비',
+    monthly_average: '월 평균',
+    quick_add: '빠른 추가',
   },
   navigation: {
     dashboard: '대시보드',

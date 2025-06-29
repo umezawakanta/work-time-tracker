@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems } from '@/store/todoSlice';
 import { useAuth } from '@/hooks/useAuth';
+import { useInternationalization } from '@/hooks/useInternationalization';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';
@@ -61,6 +62,7 @@ const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { t } = useInternationalization();
 
   const todos = useSelector((state: RootState) => state.todo.items) || [];
   const isUserLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -471,10 +473,10 @@ const Home: React.FC = () => {
 
   return (
     <PageLayout
-      title={`おはようございます、${user?.name || 'ユーザー'}さん！`}
-      subtitle="今日も生産的な一日にしましょう 🚀"
+      title={`${t('home.greeting')}, ${user?.name || t('common.user')}!`}
+      subtitle={t('home.subtitle')}
       badge={{
-        text: hasActiveSubscription ? 'プレミアム' : 'フリー',
+        text: hasActiveSubscription ? t('home.premium') : t('home.free'),
         variant: hasActiveSubscription ? 'default' : 'secondary',
       }}
       headerGradient

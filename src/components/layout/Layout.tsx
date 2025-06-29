@@ -770,7 +770,7 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       <div className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
-                        <span className="text-sm font-medium">クイック追加</span>
+                        <span className="text-sm font-medium">{t('home.quick_add')}</span>
                       </div>
                     </Button>
                   </div>
