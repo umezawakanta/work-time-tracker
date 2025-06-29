@@ -26,6 +26,8 @@ import {
   ChevronRight,
   Star,
   ArrowRight,
+  AlertTriangle,
+  Trophy,
 } from 'lucide-react';
 
 // 日次タスク関連のインターフェース
@@ -133,6 +135,83 @@ interface WeeklySchedule {
   riskLevel: 'low' | 'medium' | 'high';
   keyMilestones: string[];
   notes: string;
+}
+
+// 分析ダッシュボード関連のインターフェースを追加（既存の後に）
+interface AnalyticsDashboardData {
+  performanceMetrics: {
+    overallEfficiency: number;
+    learningVelocity: number;
+    qualityScore: number;
+    consistencyIndex: number;
+    predictionAccuracy: number;
+    adaptabilityScore: number;
+  };
+  categoryAnalysis: Array<{
+    category: string;
+    icon: string;
+    totalBadges: number;
+    completedBadges: number;
+    averageTime: number;
+    efficiencyScore: number;
+    difficultyRating: number;
+    completionRate: number;
+    trend: 'improving' | 'stable' | 'declining';
+    recommendations: string[];
+  }>;
+  timeAnalysis: {
+    peakPerformanceHours: string[];
+    lowPerformanceHours: string[];
+    averageSessionLength: number;
+    totalLearningHours: number;
+    weeklyDistribution: Array<{
+      day: string;
+      hours: number;
+      efficiency: number;
+    }>;
+  };
+  predictionAnalysis: {
+    accuracyTrend: Array<{
+      date: string;
+      predicted: number;
+      actual: number;
+      accuracy: number;
+    }>;
+    confidenceDistribution: Array<{
+      range: string;
+      count: number;
+      actualSuccess: number;
+    }>;
+    errorPatterns: Array<{
+      pattern: string;
+      frequency: number;
+      impact: 'high' | 'medium' | 'low';
+    }>;
+  };
+  goalTracking: {
+    shortTermGoals: Array<{
+      goal: string;
+      targetDate: string;
+      progress: number;
+      onTrack: boolean;
+    }>;
+    longTermGoals: Array<{
+      goal: string;
+      targetDate: string;
+      progress: number;
+      milestones: Array<{
+        name: string;
+        completed: boolean;
+        date: string;
+      }>;
+    }>;
+  };
+  recommendations: {
+    immediate: string[];
+    shortTerm: string[];
+    longTerm: string[];
+    strategic: string[];
+  };
 }
 
 export const ExtendedBadgePredictionSystem: React.FC = () => {
@@ -642,6 +721,625 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
     setPredictionAccuracy(Math.random() * 10 + 80);
   };
 
+  // 分析ダッシュボードデータ生成関数を追加
+  const generateAnalyticsDashboardData = (): AnalyticsDashboardData => {
+    return {
+      performanceMetrics: {
+        overallEfficiency: 78.9,
+        learningVelocity: 2.3, // バッジ/週
+        qualityScore: 85.2,
+        consistencyIndex: 72.1,
+        predictionAccuracy: 85.0,
+        adaptabilityScore: 68.5,
+      },
+      categoryAnalysis: [
+        {
+          category: 'セキュリティ',
+          icon: '🔐',
+          totalBadges: 8,
+          completedBadges: 3,
+          averageTime: 22.5,
+          efficiencyScore: 86.7,
+          difficultyRating: 4.2,
+          completionRate: 37.5,
+          trend: 'improving',
+          recommendations: [
+            '実践的な演習を増やして理解を深める',
+            'ハンズオン環境での実験を推奨',
+            '最新のセキュリティトレンドを追跡',
+          ],
+        },
+        {
+          category: 'AI・機械学習',
+          icon: '🤖',
+          totalBadges: 6,
+          completedBadges: 0,
+          averageTime: 0,
+          efficiencyScore: 45.2,
+          difficultyRating: 4.8,
+          completionRate: 0,
+          trend: 'declining',
+          recommendations: [
+            '数学基礎の体系的学習が必要',
+            'Python基礎から段階的にアプローチ',
+            'オンラインコースとの併用を検討',
+            '学習時間の大幅な増加が必要',
+          ],
+        },
+        {
+          category: 'デザイン・UX',
+          icon: '🎨',
+          totalBadges: 5,
+          completedBadges: 2,
+          averageTime: 18.5,
+          efficiencyScore: 75.3,
+          difficultyRating: 3.2,
+          completionRate: 40.0,
+          trend: 'stable',
+          recommendations: [
+            '実際のプロジェクトでの適用機会を増やす',
+            'ユーザビリティテストの実践経験を積む',
+            'デザインツールの習熟度向上',
+          ],
+        },
+        {
+          category: 'プロジェクト管理',
+          icon: '📊',
+          totalBadges: 7,
+          completedBadges: 2,
+          averageTime: 25.2,
+          efficiencyScore: 91.4,
+          difficultyRating: 3.5,
+          completionRate: 28.6,
+          trend: 'improving',
+          recommendations: [
+            '現在の高効率を維持',
+            'アジャイル手法の実践機会を増やす',
+            'チーム管理経験の蓄積',
+          ],
+        },
+      ],
+      timeAnalysis: {
+        peakPerformanceHours: ['09:00-11:00', '14:00-16:00'],
+        lowPerformanceHours: ['13:00-14:00', '17:00-19:00'],
+        averageSessionLength: 95, // 分
+        totalLearningHours: 247,
+        weeklyDistribution: [
+          { day: '月', hours: 4.2, efficiency: 82 },
+          { day: '火', hours: 3.8, efficiency: 78 },
+          { day: '水', hours: 5.1, efficiency: 85 },
+          { day: '木', hours: 4.5, efficiency: 80 },
+          { day: '金', hours: 3.2, efficiency: 75 },
+          { day: '土', hours: 2.8, efficiency: 70 },
+          { day: '日', hours: 2.1, efficiency: 65 },
+        ],
+      },
+      predictionAnalysis: {
+        accuracyTrend: [
+          { date: '2025-06', predicted: 12, actual: 8, accuracy: 67 },
+          { date: '2025-07', predicted: 15, actual: 4, accuracy: 27 },
+          { date: '2025-08', predicted: 18, actual: 0, accuracy: 0 },
+        ],
+        confidenceDistribution: [
+          { range: '90-100%', count: 12, actualSuccess: 11 },
+          { range: '80-89%', count: 18, actualSuccess: 14 },
+          { range: '70-79%', count: 25, actualSuccess: 17 },
+          { range: '60-69%', count: 15, actualSuccess: 8 },
+        ],
+        errorPatterns: [
+          { pattern: '時間見積もりの過小評価', frequency: 68, impact: 'high' },
+          { pattern: '依存関係の見落とし', frequency: 45, impact: 'medium' },
+          { pattern: '学習難易度の過小評価', frequency: 52, impact: 'high' },
+        ],
+      },
+      goalTracking: {
+        shortTermGoals: [
+          {
+            goal: 'セキュリティ分野完全習得',
+            targetDate: '2025-07-31',
+            progress: 75,
+            onTrack: true,
+          },
+          { goal: 'AI基礎バッジ獲得', targetDate: '2025-08-15', progress: 25, onTrack: false },
+          { goal: '月間20時間学習', targetDate: '2025-07-31', progress: 88, onTrack: true },
+        ],
+        longTermGoals: [
+          {
+            goal: '全分野エキスパートレベル達成',
+            targetDate: '2025-12-31',
+            progress: 35,
+            milestones: [
+              { name: 'セキュリティエキスパート', completed: false, date: '2025-08-31' },
+              { name: 'AI・機械学習エキスパート', completed: false, date: '2025-10-31' },
+              { name: 'プロジェクト管理エキスパート', completed: false, date: '2025-11-30' },
+            ],
+          },
+        ],
+      },
+      recommendations: {
+        immediate: [
+          'AI・機械学習の学習時間を週10時間に増加',
+          '数学基礎の並行学習を開始',
+          '朝の集中時間（9-11時）を最大活用',
+        ],
+        shortTerm: [
+          'セキュリティ実践環境の構築',
+          'プロジェクト管理の実務経験積み上げ',
+          '学習スケジュールの最適化',
+        ],
+        longTerm: [
+          '専門分野の資格取得を目標に設定',
+          '実際のプロジェクトでのスキル実践',
+          'メンターシップ・コミュニティ参加',
+        ],
+        strategic: [
+          'キャリアロードマップと学習計画の連携',
+          '業界トレンドに応じた学習優先度調整',
+          '継続学習のための仕組み構築',
+        ],
+      },
+    };
+  };
+
+  // 分析ダッシュボードレンダリング関数を追加
+  const renderAnalysisView = () => {
+    const analyticsData = generateAnalyticsDashboardData();
+
+    return (
+      <div className="space-y-6">
+        {/* パフォーマンスメトリクス */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              📊 パフォーマンスメトリクス
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  {analyticsData.performanceMetrics.overallEfficiency.toFixed(1)}%
+                </div>
+                <div className="text-xs text-muted-foreground">総合効率</div>
+              </div>
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">
+                  {analyticsData.performanceMetrics.learningVelocity.toFixed(1)}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  学習速度
+                  <br />
+                  (バッジ/週)
+                </div>
+              </div>
+              <div className="text-center p-3 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">
+                  {analyticsData.performanceMetrics.qualityScore.toFixed(1)}
+                </div>
+                <div className="text-xs text-muted-foreground">品質スコア</div>
+              </div>
+              <div className="text-center p-3 bg-orange-50 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600">
+                  {analyticsData.performanceMetrics.consistencyIndex.toFixed(1)}%
+                </div>
+                <div className="text-xs text-muted-foreground">一貫性指数</div>
+              </div>
+              <div className="text-center p-3 bg-red-50 rounded-lg">
+                <div className="text-2xl font-bold text-red-600">
+                  {analyticsData.performanceMetrics.predictionAccuracy.toFixed(1)}%
+                </div>
+                <div className="text-xs text-muted-foreground">予測精度</div>
+              </div>
+              <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {analyticsData.performanceMetrics.adaptabilityScore.toFixed(1)}
+                </div>
+                <div className="text-xs text-muted-foreground">適応性スコア</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* カテゴリ分析 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                🎯 カテゴリ別詳細分析
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {analyticsData.categoryAnalysis.map((category, index) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">{category.icon}</span>
+                      <div className="flex-1">
+                        <h4 className="font-medium">{category.category}</h4>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            {category.completedBadges}/{category.totalBadges} 完了
+                          </Badge>
+                          <Badge
+                            variant={
+                              category.trend === 'improving'
+                                ? 'default'
+                                : category.trend === 'stable'
+                                  ? 'secondary'
+                                  : 'destructive'
+                            }
+                            className="text-xs"
+                          >
+                            {category.trend === 'improving'
+                              ? '📈 改善中'
+                              : category.trend === 'stable'
+                                ? '➡️ 安定'
+                                : '📉 低下中'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-sm">
+                      <div className="text-center">
+                        <div className="font-bold text-blue-600">
+                          {category.efficiencyScore.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">効率</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-green-600">
+                          {category.averageTime.toFixed(1)}h
+                        </div>
+                        <div className="text-xs text-muted-foreground">平均時間</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-purple-600">
+                          {category.difficultyRating.toFixed(1)}/5
+                        </div>
+                        <div className="text-xs text-muted-foreground">難易度</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-bold text-orange-600">
+                          {category.completionRate.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">完了率</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm font-medium mb-2">💡 推奨アクション</div>
+                      <div className="space-y-1">
+                        {category.recommendations.map((rec, recIndex) => (
+                          <div
+                            key={recIndex}
+                            className="text-xs text-muted-foreground flex items-start gap-1"
+                          >
+                            <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-blue-500" />
+                            <span>{rec}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 時間分析 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5" />⏰ 時間・パフォーマンス分析
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* パフォーマンス時間帯 */}
+                <div>
+                  <h4 className="font-medium mb-2">🌟 最適学習時間帯</h4>
+                  <div className="space-y-2">
+                    <div>
+                      <div className="text-sm font-medium text-green-600">高パフォーマンス時間</div>
+                      <div className="flex flex-wrap gap-2">
+                        {analyticsData.timeAnalysis.peakPerformanceHours.map((hour, index) => (
+                          <Badge key={index} variant="default" className="text-xs">
+                            🔥 {hour}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-red-600">低パフォーマンス時間</div>
+                      <div className="flex flex-wrap gap-2">
+                        {analyticsData.timeAnalysis.lowPerformanceHours.map((hour, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            😴 {hour}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 週間分布 */}
+                <div>
+                  <h4 className="font-medium mb-2">📅 週間学習分布</h4>
+                  <div className="space-y-2">
+                    {analyticsData.timeAnalysis.weeklyDistribution.map((day, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <div className="w-8 text-sm font-medium">{day.day}</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>{day.hours.toFixed(1)}h</span>
+                            <span>{day.efficiency}%</span>
+                          </div>
+                          <Progress value={(day.hours / 6) * 100} className="h-2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 統計情報 */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-lg font-bold text-blue-600">
+                      {analyticsData.timeAnalysis.averageSessionLength}分
+                    </div>
+                    <div className="text-xs text-muted-foreground">平均セッション</div>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg font-bold text-green-600">
+                      {analyticsData.timeAnalysis.totalLearningHours}h
+                    </div>
+                    <div className="text-xs text-muted-foreground">総学習時間</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* 予測精度分析 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5" />
+              🔮 予測精度・エラー分析
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-medium mb-3">📈 精度トレンド</h4>
+                <div className="space-y-3">
+                  {analyticsData.predictionAnalysis.accuracyTrend.map((trend, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                    >
+                      <div>
+                        <div className="font-medium">{trend.date}</div>
+                        <div className="text-sm text-muted-foreground">
+                          予測: {trend.predicted} / 実績: {trend.actual}
+                        </div>
+                      </div>
+                      <div
+                        className={`text-lg font-bold ${
+                          trend.accuracy >= 80
+                            ? 'text-green-600'
+                            : trend.accuracy >= 60
+                              ? 'text-yellow-600'
+                              : 'text-red-600'
+                        }`}
+                      >
+                        {trend.accuracy}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3">⚠️ エラーパターン分析</h4>
+                <div className="space-y-3">
+                  {analyticsData.predictionAnalysis.errorPatterns.map((pattern, index) => (
+                    <div key={index} className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium">{pattern.pattern}</span>
+                        <Badge variant={pattern.impact === 'high' ? 'destructive' : 'default'}>
+                          {pattern.impact === 'high'
+                            ? '高影響'
+                            : pattern.impact === 'medium'
+                              ? '中影響'
+                              : '低影響'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Progress value={pattern.frequency} className="flex-1 h-2" />
+                        <span className="text-sm text-muted-foreground">{pattern.frequency}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 目標追跡 */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="w-5 h-5" />
+              🏆 目標追跡・進捗管理
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-medium mb-3">🎯 短期目標（1-3ヶ月）</h4>
+                <div className="space-y-3">
+                  {analyticsData.goalTracking.shortTermGoals.map((goal, index) => (
+                    <div key={index} className="border rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium">{goal.goal}</span>
+                        <Badge variant={goal.onTrack ? 'default' : 'destructive'}>
+                          {goal.onTrack ? '順調' : '要注意'}
+                        </Badge>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>進捗: {goal.progress}%</span>
+                          <span>期限: {new Date(goal.targetDate).toLocaleDateString('ja-JP')}</span>
+                        </div>
+                        <Progress value={goal.progress} className="h-2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3">🌟 長期目標（6-12ヶ月）</h4>
+                <div className="space-y-3">
+                  {analyticsData.goalTracking.longTermGoals.map((goal, index) => (
+                    <div key={index} className="border rounded-lg p-3">
+                      <div className="mb-3">
+                        <div className="font-medium">{goal.goal}</div>
+                        <div className="text-sm text-muted-foreground">
+                          期限: {new Date(goal.targetDate).toLocaleDateString('ja-JP')}
+                        </div>
+                      </div>
+
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>全体進捗</span>
+                          <span>{goal.progress}%</span>
+                        </div>
+                        <Progress value={goal.progress} className="h-2" />
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-medium mb-2">マイルストーン</div>
+                        <div className="space-y-1">
+                          {goal.milestones.map((milestone, mIndex) => (
+                            <div key={mIndex} className="flex items-center gap-2 text-sm">
+                              <span
+                                className={milestone.completed ? 'text-green-500' : 'text-gray-400'}
+                              >
+                                {milestone.completed ? '✅' : '⚪'}
+                              </span>
+                              <span
+                                className={
+                                  milestone.completed ? 'line-through text-muted-foreground' : ''
+                                }
+                              >
+                                {milestone.name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({new Date(milestone.date).toLocaleDateString('ja-JP')})
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 推奨アクション */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="w-5 h-5" />
+              💡 AI推奨アクション・改善提案
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <h4 className="font-medium mb-3 text-red-600">🚨 即座に実行</h4>
+                <div className="space-y-2">
+                  {analyticsData.recommendations.immediate.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="p-2 bg-red-50 border border-red-200 rounded text-sm"
+                    >
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                        <span>{rec}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3 text-orange-600">⚡ 短期(1-4週間)</h4>
+                <div className="space-y-2">
+                  {analyticsData.recommendations.shortTerm.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="p-2 bg-orange-50 border border-orange-200 rounded text-sm"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Clock className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                        <span>{rec}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3 text-blue-600">📈 長期(1-3ヶ月)</h4>
+                <div className="space-y-2">
+                  {analyticsData.recommendations.longTerm.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="p-2 bg-blue-50 border border-blue-200 rounded text-sm"
+                    >
+                      <div className="flex items-start gap-2">
+                        <TrendingUp className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span>{rec}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3 text-purple-600">🎯 戦略的(3-12ヶ月)</h4>
+                <div className="space-y-2">
+                  {analyticsData.recommendations.strategic.map((rec, index) => (
+                    <div
+                      key={index}
+                      className="p-2 bg-purple-50 border border-purple-200 rounded text-sm"
+                    >
+                      <div className="flex items-start gap-2">
+                        <Target className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        <span>{rec}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   // 日次計画ビューのレンダリング
   const renderDailyView = () => (
     <div className="space-y-6">
@@ -1089,17 +1787,7 @@ export const ExtendedBadgePredictionSystem: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="analysis" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>🔍 分析ダッシュボード</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <BarChart3 className="w-12 h-12 mx-auto mb-4" />
-                <p>高度な分析機能を実装中...</p>
-              </div>
-            </CardContent>
-          </Card>
+          {renderAnalysisView()}
         </TabsContent>
       </Tabs>
 
