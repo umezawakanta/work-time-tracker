@@ -158,6 +158,13 @@ const LanguageTestPage = lazy(() =>
   }))
 );
 
+// 🚀 Quick Language Test page
+const QuickLanguageTestPage = lazy(() =>
+  import('./components/QuickLanguageTest').then((module) => ({
+    default: module.QuickLanguageTest,
+  }))
+);
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -373,6 +380,14 @@ export default function App() {
                 element={
                   <LazyWrapper>
                     <LanguageTestPage />
+                  </LazyWrapper>
+                }
+              />
+              <Route
+                path="/quick-language-test"
+                element={
+                  <LazyWrapper>
+                    <QuickLanguageTestPage />
                   </LazyWrapper>
                 }
               />

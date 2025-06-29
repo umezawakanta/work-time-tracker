@@ -717,10 +717,9 @@ export const InternationalizationContext = createContext<InternationalizationCon
 );
 
 /**
- * 🌍 国際化マスター: 多言語対応フック
- * アプリケーション全体の国際化機能を提供
+ * 🌍 国際化プロバイダー内部ロジック
  */
-export const useInternationalization = () => {
+const useInternationalizationLogic = () => {
   const [locale, setLocaleState] = useState<SupportedLocale>(() => {
     // ローカルストレージから復元
     const saved = localStorage.getItem('app-locale');
@@ -733,7 +732,7 @@ export const useInternationalization = () => {
     return Object.keys(SUPPORTED_LOCALES).includes(browserLang) ? browserLang : 'ja';
   });
 
-  // ロケール変更
+  // ロケール変更（コンテキスト更新により自動再レンダリング）
   const setLocale = (newLocale: SupportedLocale) => {
     setLocaleState(newLocale);
     localStorage.setItem('app-locale', newLocale);
@@ -830,11 +829,23 @@ interface InternationalizationProviderProps {
 export const InternationalizationProvider: React.FC<InternationalizationProviderProps> = ({
   children,
 }) => {
-  const internationalization = useInternationalization();
+  const internationalization = useInternationalizationLogic();
 
   return React.createElement(
     InternationalizationContext.Provider,
     { value: internationalization },
     children
   );
+};
+
+/**
+ * 🌍 国際化フック（コンテキストから取得）
+ * コンポーネントで使用する国際化機能
+ */
+export const useInternationalization = () => {
+  const context = useContext(InternationalizationContext);
+  if (!context) {
+    throw new Error('useInternationalization must be used within InternationalizationProvider');
+  }
+  return context;
 };

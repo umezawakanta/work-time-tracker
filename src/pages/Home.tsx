@@ -479,15 +479,23 @@ const Home: React.FC = () => {
       }}
       headerGradient
     >
-      {/* 🌍 Language Test Link - Quick Access */}
-      <div className="mb-4">
+      {/* 🌍 Language Test Links - Quick Access */}
+      <div className="mb-4 flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/quick-language-test')}
+          className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200 hover:from-green-100 hover:to-blue-100"
+        >
+          🚀 Quick Language Test
+        </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate('/language-test')}
           className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:from-blue-100 hover:to-purple-100"
         >
-          🌍 Language Test
+          🌍 Advanced Language Test
         </Button>
       </div>
 

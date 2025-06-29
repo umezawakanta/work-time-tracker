@@ -51,6 +51,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     if (liveRegion) {
       liveRegion.textContent = announcement;
     }
+
+    // 強制的に再レンダリング（念のため）
+    setTimeout(() => {
+      window.dispatchEvent(new Event('localeChanged'));
+    }, 50);
   };
 
   // コンパクト表示
@@ -69,8 +74,11 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
             <ChevronDown className="h-3 w-3" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[200px]">
-          <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+        <DropdownMenuContent
+          align="end"
+          className="min-w-[200px] bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-lg backdrop-blur-none"
+        >
+          <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-gray-50 dark:bg-slate-700">
             {t('settings.language')}
           </div>
           <DropdownMenuSeparator />
@@ -78,12 +86,16 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
             <DropdownMenuItem
               key={localeConfig.code}
               onClick={() => handleLocaleChange(localeConfig.code)}
-              className="flex items-center justify-between gap-2 cursor-pointer"
+              className="flex items-center justify-between gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 bg-white dark:bg-slate-800"
             >
               <div className="flex items-center gap-2">
                 <span className="text-base">{localeConfig.flag}</span>
-                <span className="font-medium">{localeConfig.nativeName}</span>
-                <span className="text-sm text-muted-foreground">({localeConfig.name})</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {localeConfig.nativeName}
+                </span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  ({localeConfig.name})
+                </span>
               </div>
               {locale === localeConfig.code && <Check className="h-4 w-4 text-green-600" />}
             </DropdownMenuItem>
@@ -138,10 +150,15 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="min-w-[250px]" align="start">
-          <div className="px-3 py-2 border-b">
-            <h4 className="font-semibold text-sm">{t('settings.language')}</h4>
-            <p className="text-xs text-muted-foreground mt-1">
+        <DropdownMenuContent
+          className="min-w-[250px] bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-xl backdrop-blur-none"
+          align="start"
+        >
+          <div className="px-3 py-2 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-700">
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+              {t('settings.language')}
+            </h4>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
               {t('settings.language')}を選択してください
             </p>
           </div>
@@ -150,20 +167,27 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
             <DropdownMenuItem
               key={localeConfig.code}
               onClick={() => handleLocaleChange(localeConfig.code)}
-              className="flex items-center justify-between gap-3 p-3 cursor-pointer"
+              className="flex items-center justify-between gap-3 p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 bg-white dark:bg-slate-800"
             >
               <div className="flex items-center gap-3">
                 <span className="text-xl">{localeConfig.flag}</span>
                 <div className="flex flex-col">
-                  <span className="font-medium">{localeConfig.nativeName}</span>
-                  <span className="text-xs text-muted-foreground">{localeConfig.name}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {localeConfig.nativeName}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {localeConfig.name}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 {locale === localeConfig.code && (
                   <>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    >
                       {t('common.current')}
                     </Badge>
                     <Check className="h-4 w-4 text-green-600" />
@@ -175,10 +199,13 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 
           <DropdownMenuSeparator />
 
-          <div className="px-3 py-2 text-xs text-muted-foreground">
+          <div className="px-3 py-2 text-xs bg-gray-50 dark:bg-slate-700">
             <div className="flex items-center justify-between">
-              <span>対応言語数</span>
-              <Badge variant="outline" className="text-xs">
+              <span className="text-gray-600 dark:text-gray-400">対応言語数</span>
+              <Badge
+                variant="outline"
+                className="text-xs border-gray-300 text-gray-700 dark:border-slate-600 dark:text-gray-300"
+              >
                 {Object.keys(SUPPORTED_LOCALES).length}言語
               </Badge>
             </div>
