@@ -361,7 +361,9 @@ class BadgePredictionPageIntegrationService extends EventEmitter {
    * 🎯 学習セッション終了
    */
   private endLearningSession(data: any): void {
-    if (!this.learningSessionActive || !this.sessionStartTime) return;
+    if (!this.learningSessionActive || !this.sessionStartTime) {
+      return;
+    }
 
     const sessionDuration = Date.now() - this.sessionStartTime.getTime();
     this.learningSessionActive = false;
