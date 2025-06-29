@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 
 export type SupportedLocale = 'ja' | 'en' | 'zh' | 'ko';
 
@@ -114,6 +114,9 @@ export interface TranslationDictionary {
     analytics: string;
     reports: string;
     admin: string;
+    integrated_dashboard: string;
+    automation: string;
+    work_time: string;
   };
 
   // タスク管理
@@ -243,6 +246,9 @@ const jaTranslations: TranslationDictionary = {
     analytics: '分析',
     reports: 'レポート',
     admin: '管理',
+    integrated_dashboard: '統合ダッシュボード',
+    automation: '自動化ルール',
+    work_time: '勤怠管理',
   },
   tasks: {
     title: 'タスク管理',
@@ -360,6 +366,9 @@ const enTranslations: TranslationDictionary = {
     analytics: 'Analytics',
     reports: 'Reports',
     admin: 'Admin',
+    integrated_dashboard: 'Integrated Dashboard',
+    automation: 'Automation Rules',
+    work_time: 'Work Time',
   },
   tasks: {
     title: 'Task Management',
@@ -477,6 +486,9 @@ const zhTranslations: TranslationDictionary = {
     analytics: '分析',
     reports: '报告',
     admin: '管理',
+    integrated_dashboard: '集成仪表板',
+    automation: '自动化规则',
+    work_time: '工作时间',
   },
   tasks: {
     title: '任务管理',
@@ -594,6 +606,9 @@ const koTranslations: TranslationDictionary = {
     analytics: '분석',
     reports: '보고서',
     admin: '관리',
+    integrated_dashboard: '통합 대시보드',
+    automation: '자동화 규칙',
+    work_time: '근무 시간',
   },
   tasks: {
     title: '작업 관리',
@@ -802,4 +817,24 @@ export const useInternationalization = () => {
     supportedLocales: SUPPORTED_LOCALES,
     translations: TRANSLATIONS[locale],
   };
+};
+
+/**
+ * 🌍 国際化プロバイダー
+ * アプリケーション全体に国際化機能を提供するコンテキストプロバイダー
+ */
+interface InternationalizationProviderProps {
+  children: React.ReactNode;
+}
+
+export const InternationalizationProvider: React.FC<InternationalizationProviderProps> = ({
+  children,
+}) => {
+  const internationalization = useInternationalization();
+
+  return React.createElement(
+    InternationalizationContext.Provider,
+    { value: internationalization },
+    children
+  );
 };

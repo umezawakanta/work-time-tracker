@@ -3,10 +3,11 @@ import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '
 import { Toaster } from 'react-hot-toast';
 import { lazy, Suspense, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import { LocaleProvider } from './context/LocaleContext';
+
 import { AuthProvider } from './context/AuthContext';
 import { PomodoroProvider } from './context/PomodoroContext';
 import PrivateRoute from './components/PrivateRoute';
+import { InternationalizationProvider } from '@/hooks/useInternationalization';
 import AdminRoute from './components/admin/AdminRoute';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
@@ -150,6 +151,13 @@ const AssetFormationQuestPage = lazy(() =>
   }))
 );
 
+// 🌍 Language Test page
+const LanguageTestPage = lazy(() =>
+  import('./components/LanguageTest').then((module) => ({
+    default: module.LanguageTest,
+  }))
+);
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -235,7 +243,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <LocaleProvider>
+      <InternationalizationProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -360,6 +368,14 @@ export default function App() {
                 }
               />
               <Route path="/404" element={<NotFound />} />
+              <Route
+                path="/language-test"
+                element={
+                  <LazyWrapper>
+                    <LanguageTestPage />
+                  </LazyWrapper>
+                }
+              />
               <Route
                 path="/update-history"
                 element={
@@ -945,7 +961,7 @@ export default function App() {
             </Routes>
           </div>
         </ThemeProvider>
-      </LocaleProvider>
+      </InternationalizationProvider>
     </AuthProvider>
   );
 }

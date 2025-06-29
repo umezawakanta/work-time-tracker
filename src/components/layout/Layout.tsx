@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useLocale } from '@/hooks/useLocale';
+import { useInternationalization } from '@/hooks/useInternationalization';
 import { AccessibilityProvider, SkipLinks } from '@/components/accessibility';
 import {
   Home,
@@ -99,55 +99,55 @@ interface MenuItem {
   accentColor?: string;
 }
 
-// コアメニューアイテム
-const coreMenuItems: MenuItem[] = [
+// コアメニューアイテム - 翻訳対応
+const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Home className="h-5 w-5" />,
-    label: 'ホーム',
+    label: t('navigation.dashboard'),
     path: '/',
-    description: 'ダッシュボードホーム',
+    description: t('navigation.dashboard'),
     gradient: 'from-blue-500 via-blue-600 to-cyan-500',
     accentColor: 'blue',
   },
   {
     icon: <Target className="h-5 w-5" />,
-    label: '統合ダッシュボード',
+    label: t('navigation.integrated_dashboard'),
     path: '/integrated-dashboard',
-    description: 'プロジェクト統合管理',
+    description: t('navigation.integrated_dashboard'),
     gradient: 'from-purple-500 via-violet-500 to-purple-600',
     accentColor: 'purple',
   },
   {
     icon: <CheckSquare className="h-5 w-5" />,
-    label: 'ToDo管理',
+    label: t('navigation.tasks'),
     path: '/todos',
-    description: 'タスクとToDoの管理',
+    description: t('navigation.tasks'),
     badge: 'NEW',
     gradient: 'from-emerald-500 via-green-500 to-teal-500',
     accentColor: 'emerald',
   },
   {
     icon: <Settings className="h-5 w-5" />,
-    label: '自動化ルール',
+    label: t('navigation.automation'),
     path: '/automation-rules',
-    description: 'ワークフロー自動化設定',
+    description: t('navigation.automation'),
     badge: 'AUTO',
     gradient: 'from-purple-500 via-violet-500 to-indigo-500',
     accentColor: 'purple',
   },
   {
     icon: <Clock className="h-5 w-5" />,
-    label: '勤怠管理',
+    label: t('navigation.work_time'),
     path: '/work-time',
-    description: '時間の記録と管理',
+    description: t('navigation.work_time'),
     gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     accentColor: 'orange',
   },
   {
     icon: <BarChart2 className="h-5 w-5" />,
-    label: 'レポート',
+    label: t('navigation.reports'),
     path: '/work-time-reports',
-    description: '分析とインサイト',
+    description: t('navigation.reports'),
     gradient: 'from-indigo-500 via-blue-500 to-purple-500',
     accentColor: 'indigo',
   },
@@ -268,120 +268,10 @@ const toolsMenuItems: MenuItem[] = [
   },
 ];
 
-const menuItems: MenuItem[] = [
-  ...coreMenuItems,
-  // 個人管理ツール
-  {
-    icon: <Edit3 className="h-5 w-5" />,
-    label: '日記',
-    path: '/diary',
-    description: '日々の記録と振り返り',
-    gradient: 'from-pink-500 via-rose-500 to-red-500',
-    accentColor: 'pink',
-  },
-  {
-    icon: <Brain className="h-5 w-5" />,
-    label: '衝動トラッカー',
-    path: '/impulse-tracker',
-    description: '衝動の記録と分析',
-    gradient: 'from-cyan-500 via-teal-500 to-blue-500',
-    accentColor: 'cyan',
-  },
-  {
-    icon: <Shield className="h-5 w-5" />,
-    label: '禁欲管理',
-    path: '/abstinence',
-    description: '禁欲チャレンジの管理',
-    gradient: 'from-red-500 via-rose-500 to-pink-500',
-    accentColor: 'red',
-  },
-  {
-    icon: <Brain className="h-5 w-5" />,
-    label: 'ADHD集中サポート',
-    path: '/adhd-support',
-    description: '妄想防止と集中力向上',
-    badge: 'NEW',
-    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-    accentColor: 'indigo',
-  },
-  // コンテンツ管理
-  {
-    icon: <FileText className="h-5 w-5" />,
-    label: 'ブログ',
-    path: '/blog',
-    description: 'ブログ記事の閲覧と管理',
-    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
-    accentColor: 'teal',
-  },
-  {
-    icon: <BookOpen className="h-5 w-5" />,
-    label: '本棚',
-    path: '/bookshelf',
-    description: '読書管理と記録',
-    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
-    accentColor: 'violet',
-  },
-  // 資産・金融管理
-  {
-    icon: <Calendar className="h-5 w-5" />,
-    label: '資産カレンダー',
-    path: '/asset-calendar',
-    description: '資産の増減をカレンダーで管理',
-    gradient: 'from-amber-500 via-orange-500 to-yellow-500',
-    accentColor: 'amber',
-  },
-  {
-    icon: <PieChart className="h-5 w-5" />,
-    label: '資産負債レポート',
-    path: '/asset-liability-report',
-    description: '資産と負債の詳細分析',
-    gradient: 'from-emerald-500 via-green-500 to-lime-500',
-    accentColor: 'emerald',
-  },
-  {
-    icon: <CreditCard className="h-5 w-5" />,
-    label: 'サブスクリプション',
-    path: '/subscription-management',
-    description: 'サブスクリプション管理',
-    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Wallet className="h-5 w-5" />,
-    label: '課金履歴',
-    path: '/billing-history',
-    description: '課金と支払い履歴',
-    gradient: 'from-yellow-500 via-amber-500 to-orange-500',
-    accentColor: 'yellow',
-  },
-];
-
-// 管理者専用メニューアイテム
-const adminMenuItems: MenuItem[] = [
-  {
-    icon: <Crown className="h-5 w-5" />,
-    label: '管理者ダッシュボード',
-    path: '/admin',
-    description: '管理者専用ダッシュボード',
-    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-    accentColor: 'amber',
-    isPremium: true,
-  },
-  {
-    icon: <TestTube className="h-5 w-5" />,
-    label: 'APIテスト',
-    path: '/api-test',
-    description: 'API機能のテスト',
-    gradient: 'from-slate-500 via-gray-500 to-zinc-500',
-    accentColor: 'slate',
-    isPremium: true,
-  },
-];
-
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale, t } = useInternationalization();
   const { isAuthenticated, user, setIsAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -421,11 +311,11 @@ export default function Layout({ children }: LayoutProps) {
       logout();
       setIsAuthenticated(false);
       navigate('/login');
-      toast.success('ログアウトしました');
+      toast.success(t('success.saved'));
       setShowLogoutDialog(false);
     } catch (error) {
       console.error('Logout error:', error);
-      toast.error('ログアウトに失敗しました');
+      toast.error(t('errors.generic'));
     }
   };
 
@@ -612,7 +502,7 @@ export default function Layout({ children }: LayoutProps) {
             aria-label="アプリケーションメニュー"
           >
             {/* コアメニュー */}
-            {menuItems.map((item) => (
+            {getCoreMenuItems(t).map((item) => (
               <div key={item.path}>{renderMenuItem(item)}</div>
             ))}
 
@@ -785,7 +675,7 @@ export default function Layout({ children }: LayoutProps) {
                     管理者メニュー
                   </h3>
                 </div>
-                {adminMenuItems.map((item) => (
+                {getCoreMenuItems(t).map((item) => (
                   <div key={item.path}>{renderMenuItem(item)}</div>
                 ))}
               </>
@@ -851,7 +741,7 @@ export default function Layout({ children }: LayoutProps) {
                   <div className="hidden lg:flex relative group">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200" />
                     <Input
-                      placeholder="検索..."
+                      placeholder={t('common.search')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium"
