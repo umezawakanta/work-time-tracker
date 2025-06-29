@@ -556,19 +556,19 @@ const Home: React.FC = () => {
                   <Crown className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-1">🏰 資産形成クエスト</h3>
-                  <p className="text-slate-600">
-                    毎月の収支管理で経験値を獲得し、資産形成の勇者になろう！
-                  </p>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-1">
+                    🏰 {t('home.asset_formation_quest')}
+                  </h3>
+                  <p className="text-slate-600">{t('home.asset_quest_description')}</p>
                   <div className="flex items-center gap-4 mt-2">
                     <Badge variant="outline" className="bg-green-100 text-green-700">
-                      💰 家計管理
+                      💰 {t('home.household_management')}
                     </Badge>
                     <Badge variant="outline" className="bg-blue-100 text-blue-700">
-                      🐉 DQチャットボット付き
+                      🐉 {t('home.dr_quest_bot')}
                     </Badge>
                     <Badge variant="outline" className="bg-purple-100 text-purple-700">
-                      📈 資産成長可視化
+                      📈 {t('home.asset_visualization')}
                     </Badge>
                   </div>
                 </div>
@@ -578,9 +578,9 @@ const Home: React.FC = () => {
                   size="lg"
                   className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  クエスト開始！
+                  {t('home.quest_start')}
                 </Button>
-                <p className="text-xs text-slate-500 mt-2">ドラクエ風チャットボットがサポート</p>
+                <p className="text-xs text-slate-500 mt-2">{t('home.dr_quest_support')}</p>
               </div>
             </div>
           </CardContent>
@@ -733,13 +733,13 @@ const Home: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-purple-500" />
-                今日の進捗サマリー
+                {t('home.today_progress')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">レベル進捗</span>
+                  <span className="text-sm text-gray-600">{t('home.level_progress')}</span>
                   <span className="font-semibold">Lv.{gamificationStats.level}</span>
                 </div>
                 <Progress

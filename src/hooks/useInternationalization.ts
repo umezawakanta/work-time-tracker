@@ -144,6 +144,18 @@ export interface TranslationDictionary {
     todo_management: string;
     recent_activity: string;
     integrated_view: string;
+    work_time_session: string;
+    work_content_placeholder: string;
+    continue: string;
+    stop_work: string;
+    pause: string;
+    current_work: string;
+    quest_start: string;
+    dr_quest_support: string;
+    today_progress: string;
+    total_completed: string;
+    statistics: string;
+    level_progress: string;
   };
 
   // ナビゲーション
@@ -316,6 +328,18 @@ const jaTranslations: TranslationDictionary = {
     todo_management: 'ToDo管理',
     recent_activity: '最近のアクティビティ',
     integrated_view: '統合ビュー',
+    work_time_session: '作業時間 - セッション',
+    work_content_placeholder: 'メールの返信、資料作成など',
+    continue: '続行',
+    stop_work: '作業停止',
+    pause: '一時停止',
+    current_work: '現在の作業',
+    quest_start: 'クエスト開始！',
+    dr_quest_support: 'ドラクエ風チャットボットがサポート',
+    today_progress: '今日の進捗',
+    total_completed: '総完了数',
+    statistics: '統計',
+    level_progress: 'レベル進捗',
   },
   navigation: {
     dashboard: 'ダッシュボード',
@@ -475,6 +499,18 @@ const enTranslations: TranslationDictionary = {
     todo_management: 'ToDo Management',
     recent_activity: 'Recent Activity',
     integrated_view: 'Integrated View',
+    work_time_session: 'Work Time - Session',
+    work_content_placeholder: 'Email responses, document creation, etc.',
+    continue: 'Continue',
+    stop_work: 'Stop Work',
+    pause: 'Pause',
+    current_work: 'Current Work',
+    quest_start: 'Start Quest!',
+    dr_quest_support: 'Dragon Quest style chatbot support',
+    today_progress: "Today's Progress",
+    total_completed: 'Total Completed',
+    statistics: 'Statistics',
+    level_progress: 'Level Progress',
   },
   navigation: {
     dashboard: 'Dashboard',
@@ -633,6 +669,18 @@ const zhTranslations: TranslationDictionary = {
     todo_management: '待办事项管理',
     recent_activity: '最近活动',
     integrated_view: '集成视图',
+    work_time_session: '工作时间 - 会话',
+    work_content_placeholder: '邮件回复，文档创建等',
+    continue: '继续',
+    stop_work: '停止工作',
+    pause: '暂停',
+    current_work: '当前工作',
+    quest_start: '开始任务！',
+    dr_quest_support: '勇者斗恶龙风格聊天机器人支持',
+    today_progress: '今日进度',
+    total_completed: '总完成数',
+    statistics: '统计',
+    level_progress: '等级进度',
   },
   navigation: {
     dashboard: '仪表板',
@@ -791,6 +839,18 @@ const koTranslations: TranslationDictionary = {
     todo_management: '할일 관리',
     recent_activity: '최근 활동',
     integrated_view: '통합 보기',
+    work_time_session: '근무 시간 - 세션',
+    work_content_placeholder: '이메일 답변, 문서 작성 등',
+    continue: '계속',
+    stop_work: '작업 중지',
+    pause: '일시정지',
+    current_work: '현재 작업',
+    quest_start: '퀘스트 시작!',
+    dr_quest_support: '드래곤 퀘스트 스타일 챗봇 지원',
+    today_progress: '오늘의 진행',
+    total_completed: '총 완료수',
+    statistics: '통계',
+    level_progress: '레벨 진행',
   },
   navigation: {
     dashboard: '대시보드',

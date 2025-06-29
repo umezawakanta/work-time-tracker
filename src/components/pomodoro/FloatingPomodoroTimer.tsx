@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { Play, Pause, RotateCcw, SkipForward, Settings, Minimize2, X, Timer } from 'lucide-react';
 import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroMode } from '@/types/pomodoro';
+import { useInternationalization } from '@/hooks/useInternationalization';
 
 interface FloatingPomodoroTimerProps {
   onClose?: () => void;
@@ -9,6 +10,7 @@ interface FloatingPomodoroTimerProps {
 
 const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ onClose }) => {
   const { pomodoro } = usePomodoroContext();
+  const { t } = useInternationalization();
   const [isDragging, setIsDragging] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [applyImmediately, setApplyImmediately] = useState(false);
@@ -75,16 +77,19 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
     }
   }, []);
 
-  const getModeLabel = useCallback((mode: PomodoroMode) => {
-    switch (mode) {
-      case 'work':
-        return '作業時間';
-      case 'shortBreak':
-        return '短休憩';
-      case 'longBreak':
-        return '長休憩';
-    }
-  }, []);
+  const getModeLabel = useCallback(
+    (mode: PomodoroMode) => {
+      switch (mode) {
+        case 'work':
+          return t('home.work_time');
+        case 'shortBreak':
+          return '短休憩';
+        case 'longBreak':
+          return '長休憩';
+      }
+    },
+    [t]
+  );
 
   // ハンドラーをメモ化
   const handleStartTimer = useCallback(() => {
@@ -143,7 +148,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
             <div className="flex items-center space-x-2">
               <Timer size={16} />
               <span className="font-medium text-sm">
-                {getModeLabel(pomodoro.currentMode)} - セッション {pomodoro.currentSession}
+                {getModeLabel(pomodoro.currentMode)} - {t('home.session')} {pomodoro.currentSession}
               </span>
             </div>
             <div className="flex items-center space-x-1">
@@ -208,14 +213,14 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
             {pomodoro.status === 'idle' && (
               <div className="mb-4">
                 <label htmlFor="task-input" className="block text-xs text-gray-600 mb-1">
-                  作業内容（任意）
+                  {t('home.work_content_optional')}
                 </label>
                 <input
                   id="task-input"
                   type="text"
                   value={taskInputValue}
                   onChange={(e) => setTaskInputValue(e.target.value)}
-                  placeholder="例: メールの返信、資料作成など"
+                  placeholder={t('home.work_content_placeholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -225,7 +230,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
             {(pomodoro.status === 'running' || pomodoro.status === 'paused') &&
               pomodoro.currentTaskName && (
                 <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                  <div className="text-xs text-gray-600 mb-1">現在の作業</div>
+                  <div className="text-xs text-gray-600 mb-1">{t('home.current_work')}</div>
                   <div className="text-sm font-medium text-gray-800">
                     {pomodoro.currentTaskName}
                   </div>
@@ -240,7 +245,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   className="flex items-center space-x-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                 >
                   <Pause size={16} />
-                  <span>一時停止</span>
+                  <span>{t('home.pause')}</span>
                 </button>
               ) : (
                 <button
@@ -248,7 +253,7 @@ const FloatingPomodoroTimerComponent: React.FC<FloatingPomodoroTimerProps> = ({ 
                   className="flex items-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                 >
                   <Play size={16} />
-                  <span>開始</span>
+                  <span>{t('home.start')}</span>
                 </button>
               )}
 

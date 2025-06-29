@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { addTodoItem, updateTodoItem } from '@/store/todoSlice';
+import { useInternationalization } from '@/hooks/useInternationalization';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +52,7 @@ interface PlayerStats {
 export const DailyMotivationGamification: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const todos = useSelector((state: RootState) => state.todo.items) || [];
+  const { t } = useInternationalization();
 
   const [playerStats, setPlayerStats] = useState<PlayerStats>({
     level: 1,
@@ -256,7 +258,7 @@ export const DailyMotivationGamification: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">レベル</p>
+                <p className="text-sm text-gray-600">{t('home.level')}</p>
                 <p className="text-2xl font-bold text-yellow-600">{playerStats.level}</p>
               </div>
               <Crown className="h-8 w-8 text-yellow-600" />
@@ -286,7 +288,7 @@ export const DailyMotivationGamification: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">今日の進捗</p>
+                <p className="text-sm text-gray-600">{t('home.today_progress')}</p>
                 <p className="text-2xl font-bold text-green-600">{completionRate}%</p>
               </div>
               <CheckCircle2 className="h-8 w-8 text-green-600" />
@@ -298,7 +300,7 @@ export const DailyMotivationGamification: React.FC = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">総完了数</p>
+                <p className="text-sm text-gray-600">{t('home.total_completed')}</p>
                 <p className="text-2xl font-bold text-purple-600">
                   {playerStats.totalTasksCompleted}
                 </p>
@@ -314,11 +316,11 @@ export const DailyMotivationGamification: React.FC = () => {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="tasks" className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
-            今日のタスク
+            {t('home.today_tasks')}
           </TabsTrigger>
           <TabsTrigger value="stats" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
-            統計
+            {t('home.statistics')}
           </TabsTrigger>
         </TabsList>
 
@@ -399,7 +401,7 @@ export const DailyMotivationGamification: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
-                  レベル進捗
+                  {t('home.level_progress')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
