@@ -3,6 +3,12 @@
  * ChatGPT、Claude、Gemini、Manus、NotebookLM、Notion、AI Studio、SuperWhisper、Soraを統合
  */
 
+import {
+  calculateAICost,
+  calculateConfidence,
+  estimateProcessingTime,
+} from '../../config/aiPricing';
+
 export interface AIProvider {
   name: string;
   capabilities: string[];
@@ -240,17 +246,24 @@ class UnifiedAIService {
 
     console.log('🚀 ChatGPT でリクエスト処理中...');
 
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const outputTokens = 150;
+    const processingTime = estimateProcessingTime('openai', inputTokens, request.taskType);
+    const cost = calculateAICost('openai', inputTokens, outputTokens);
+    const confidence = calculateConfidence('openai', processingTime, inputTokens + outputTokens);
+
     // 実際の実装では OpenAI API を呼び出し
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     return {
       content: `ChatGPT応答: ${request.prompt}について詳細で実用的な回答を提供します。`,
       provider: 'ChatGPT',
       model: 'gpt-4',
-      confidence: 90,
-      processingTime: 0,
-      tokens: 150,
-      cost: 0.003,
+      confidence,
+      processingTime: Date.now() - startTime,
+      tokens: inputTokens + outputTokens,
+      cost,
     };
   }
 
@@ -265,16 +278,23 @@ class UnifiedAIService {
 
     console.log('🧠 Claude でリクエスト処理中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    const startTime = Date.now();
+    const inputTokens = Math.ceil(request.prompt.length / 4);
+    const outputTokens = 180;
+    const processingTime = estimateProcessingTime('anthropic', inputTokens, request.taskType);
+    const cost = calculateAICost('anthropic', inputTokens, outputTokens);
+    const confidence = calculateConfidence('anthropic', processingTime, inputTokens + outputTokens);
+
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     return {
       content: `Claude応答: ${request.prompt}に対して論理的で包括的な分析結果をお伝えします。`,
       provider: 'Claude',
       model: 'claude-3-sonnet',
-      confidence: 95,
-      processingTime: 0,
-      tokens: 180,
-      cost: 0.0025,
+      confidence,
+      processingTime: Date.now() - startTime,
+      tokens: inputTokens + outputTokens,
+      cost,
     };
   }
 
@@ -390,20 +410,28 @@ class UnifiedAIService {
   private async callSora(request: UnifiedAIRequest): Promise<UnifiedAIResponse> {
     console.log('🎬 Sora で動画生成中...');
 
-    await new Promise((resolve) => setTimeout(resolve, 8000)); // 動画生成は時間がかかる
+    const startTime = Date.now();
+    const videoDuration = 30; // 30秒動画
+    const inputComplexity = Math.ceil(request.prompt.length / 10); // プロンプト複雑度
+    const processingTime = estimateProcessingTime('sora', inputComplexity, request.taskType);
+    const cost = calculateAICost('sora', videoDuration, 0); // 動画長ベースのコスト
+    const confidence = calculateConfidence('sora', processingTime, inputComplexity, 'complex');
+
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     return {
       content: `動画生成完了: 「${request.prompt}」をテーマにした30秒の動画を作成しました。`,
       provider: 'Sora',
       model: 'sora-v1',
-      confidence: 90,
-      processingTime: 0,
-      cost: 0.5, // 高コスト
+      confidence,
+      processingTime: Date.now() - startTime,
+      cost,
       metadata: {
         videoUrl: 'https://generated-videos.example.com/video-' + Date.now(),
-        duration: 30,
+        duration: videoDuration,
         resolution: '1080p',
         format: 'mp4',
+        complexityScore: inputComplexity,
       },
     };
   }
