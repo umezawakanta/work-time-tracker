@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   LineChart,
   Line,
@@ -11,8 +11,8 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
-} from "recharts";
-import { Card, CardContent } from "@/components/ui/card";
+} from 'recharts';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface AssetGrowthForecastChartProps {
   currentAssets: number;
@@ -36,19 +36,19 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
   // Calculate forecast data for multiple growth rates
   const generateForecastData = (): DataPoint[] => {
     const data: DataPoint[] = [];
-    
+
     // Calculate conservative growth (lower rate)
     const conservativeGrowthRate = Math.max(growthRate - 2, 1); // At least 1%
-    
+
     // Calculate optimistic growth (higher rate)
     const optimisticGrowthRate = growthRate + 2;
-    
+
     // Generate data points for each year
     for (let year = 0; year <= years; year++) {
       const conservativeAssets = currentAssets * Math.pow(1 + conservativeGrowthRate / 100, year);
       const expectedAssets = currentAssets * Math.pow(1 + growthRate / 100, year);
       const optimisticAssets = currentAssets * Math.pow(1 + optimisticGrowthRate / 100, year);
-      
+
       data.push({
         year: `${year}年後`,
         conservative: Math.round(conservativeAssets),
@@ -56,7 +56,7 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
         optimistic: Math.round(optimisticAssets),
       });
     }
-    
+
     return data;
   };
 
@@ -115,14 +115,14 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
         <XAxis
           dataKey="year"
           tick={{ fontSize: 12 }}
-          tickLine={{ stroke: "#e5e7eb" }}
-          axisLine={{ stroke: "#e5e7eb" }}
+          tickLine={{ stroke: '#e5e7eb' }}
+          axisLine={{ stroke: '#e5e7eb' }}
         />
         <YAxis
           tickFormatter={(value) => `¥${(value / 1000000).toFixed(0)}M`}
           tick={{ fontSize: 12 }}
-          tickLine={{ stroke: "#e5e7eb" }}
-          axisLine={{ stroke: "#e5e7eb" }}
+          tickLine={{ stroke: '#e5e7eb' }}
+          axisLine={{ stroke: '#e5e7eb' }}
           domain={['auto', 'auto']}
         />
         <Tooltip content={<CustomTooltip />} />
@@ -130,9 +130,9 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
           verticalAlign="top"
           height={36}
           formatter={(value) => {
-            if (value === "conservative") return "保守的予測";
-            if (value === "expected") return "予測資産";
-            if (value === "optimistic") return "楽観的予測";
+            if (value === 'conservative') return '保守的予測';
+            if (value === 'expected') return '予測資産';
+            if (value === 'optimistic') return '楽観的予測';
             return value;
           }}
         />
@@ -141,9 +141,9 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
           stroke="#9CA3AF"
           strokeDasharray="3 3"
           label={{
-            value: "現在の資産",
-            position: "insideBottomLeft",
-            fill: "#6B7280",
+            value: '現在の資産',
+            position: 'insideBottomLeft',
+            fill: '#6B7280',
             fontSize: 11,
           }}
         />
@@ -153,7 +153,7 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
           name="conservative"
           stroke="#93C5FD"
           strokeWidth={2}
-          dot={{ fill: "#93C5FD", r: 4 }}
+          dot={{ fill: '#93C5FD', r: 4 }}
           activeDot={{ r: 6 }}
         />
         <Line
@@ -162,7 +162,7 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
           name="expected"
           stroke="#2563EB"
           strokeWidth={3}
-          dot={{ fill: "#2563EB", r: 4 }}
+          dot={{ fill: '#2563EB', r: 4 }}
           activeDot={{ r: 6 }}
         />
         <Line
@@ -171,7 +171,7 @@ export const AssetGrowthForecastChart: React.FC<AssetGrowthForecastChartProps> =
           name="optimistic"
           stroke="#059669"
           strokeWidth={2}
-          dot={{ fill: "#059669", r: 4 }}
+          dot={{ fill: '#059669', r: 4 }}
           activeDot={{ r: 6 }}
         />
       </LineChart>

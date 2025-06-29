@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Book } from "../store/bookSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react';
+import { Book } from '../store/bookSlice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface ReadingChallengeProps {
   books: Book[];
@@ -11,9 +11,7 @@ interface ReadingChallengeProps {
 
 const ReadingChallenge: React.FC<ReadingChallengeProps> = ({ books }) => {
   const [challengeGoal, setChallengeGoal] = useState(12);
-  const completedBooks = books.filter(
-    (book) => book.readPages === book.totalPages
-  ).length;
+  const completedBooks = books.filter((book) => book.readPages === book.totalPages).length;
 
   const handleGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
@@ -27,19 +25,11 @@ const ReadingChallenge: React.FC<ReadingChallengeProps> = ({ books }) => {
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-2 mb-4">
-          <Input
-            type="number"
-            value={challengeGoal}
-            onChange={handleGoalChange}
-            className="w-20"
-          />
+          <Input type="number" value={challengeGoal} onChange={handleGoalChange} className="w-20" />
           <span>冊 / 年</span>
           <Button onClick={() => setChallengeGoal(12)}>リセット</Button>
         </div>
-        <Progress
-          value={(completedBooks / challengeGoal) * 100}
-          className="mb-2"
-        />
+        <Progress value={(completedBooks / challengeGoal) * 100} className="mb-2" />
         <p>
           {completedBooks} / {challengeGoal} 冊完了
         </p>
@@ -49,4 +39,3 @@ const ReadingChallenge: React.FC<ReadingChallengeProps> = ({ books }) => {
 };
 
 export default ReadingChallenge;
-

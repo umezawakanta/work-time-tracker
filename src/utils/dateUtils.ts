@@ -10,7 +10,7 @@ export function formatDateAndTime(
   locale: string,
   options: Intl.DateTimeFormatOptions = {}
 ): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
   return new Intl.DateTimeFormat(locale, options).format(dateObj);
 }
 
@@ -22,8 +22,8 @@ export function formatDateAndTime(
  */
 export function formatTime(date: Date, locale: string): string {
   return formatDateAndTime(date, locale, {
-    hour: "2-digit",
-    minute: "2-digit",
+    hour: '2-digit',
+    minute: '2-digit',
     hour12: false,
   });
 }
@@ -60,8 +60,8 @@ export function minutesToHoursAndMinutes(minutes: number): {
  * @returns Date型のオブジェクト
  */
 export function parseDateTime(dateString: string, timeString: string): Date {
-  const [year, month, day] = dateString.split("-").map(Number);
-  const [hours, minutes] = timeString.split(":").map(Number);
+  const [year, month, day] = dateString.split('-').map(Number);
+  const [hours, minutes] = timeString.split(':').map(Number);
   return new Date(year, month - 1, day, hours, minutes);
 }
 
@@ -73,9 +73,9 @@ export function parseDateTime(dateString: string, timeString: string): Date {
  */
 export function formatDate(date: Date, locale: string): string {
   return formatDateAndTime(date, locale, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
@@ -87,9 +87,7 @@ export function formatDate(date: Date, locale: string): string {
  */
 export function calculateDaysBetween(start: Date, end: Date): number {
   const oneDay = 24 * 60 * 60 * 1000; // 1日のミリ秒数
-  const diffDays = Math.round(
-    Math.abs((start.getTime() - end.getTime()) / oneDay)
-  );
+  const diffDays = Math.round(Math.abs((start.getTime() - end.getTime()) / oneDay));
   return diffDays;
 }
 
@@ -118,10 +116,9 @@ export function formatDuration(seconds: number): string {
   const parts: string[] = []; // 型を明示的に宣言
   if (hours > 0) parts.push(`${hours}時間`);
   if (minutes > 0) parts.push(`${minutes}分`);
-  if (remainingSeconds > 0 || parts.length === 0)
-    parts.push(`${remainingSeconds}秒`);
+  if (remainingSeconds > 0 || parts.length === 0) parts.push(`${remainingSeconds}秒`);
 
-  return parts.join(" ");
+  return parts.join(' ');
 }
 
 /**
@@ -151,11 +148,11 @@ export const getYearMonth = (date: number): string => {
  * 数値型や文字列型の日付を "YYYY/MM/DD" 形式に変換します
  */
 export const formatBillingDate = (date: number | string | null | undefined): string => {
-  if (date == null) return "";
-  
+  if (date == null) return '';
+
   // 数値または文字列を文字列に変換
   const dateStr = String(date);
-  
+
   // 日付形式の判定
   if (dateStr.length === 8 && !dateStr.includes('/')) {
     // YYYYMMDDフォーマットの場合 (例: 20240115)
@@ -194,7 +191,7 @@ export const isValidBillingDate = (date: string | number): boolean => {
     // 数値型の場合、8桁であればOK
     return String(date).length === 8;
   }
-  
+
   // 文字列の場合、YYYY/MM/DD形式かチェック
   return isValidDateFormat(date);
 };
@@ -207,17 +204,17 @@ export const formatDisplayDate = (dateStr: string): string => {
   if (isValidDateFormat(dateStr)) {
     return dateStr;
   }
-  
+
   // 数値文字列の場合（例：20240115）
   if (/^\d{8}$/.test(dateStr)) {
     return `${dateStr.slice(0, 4)}/${dateStr.slice(4, 6)}/${dateStr.slice(6, 8)}`;
   }
-  
+
   // 他の形式（例：2024-01-15）
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     return dateStr.replace(/-/g, '/');
   }
-  
+
   // その他の場合はそのまま返す
   return dateStr;
 };

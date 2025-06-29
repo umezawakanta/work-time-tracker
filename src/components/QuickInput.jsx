@@ -1,26 +1,21 @@
 // QuickInput.jsx
 // 資産・負債のクイック追加コンポーネント
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { 
   ArrowUpCircle,
   ArrowDownCircle,
   Plus,
@@ -34,47 +29,47 @@ import {
   Briefcase,
   RefreshCw,
   Loader2,
-} from "lucide-react";
-import { toast } from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { addAsset } from "@/store/assetSlice";
-import { addDebt } from "@/store/debtSlice";
+} from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { addAsset } from '@/store/assetSlice';
+import { addDebt } from '@/store/debtSlice';
 
 // クイック入力用のテンプレート
 const assetTemplates = [
-  { name: "当座預金", icon: <Wallet className="h-4 w-4" />, category: "cash" },
-  { name: "普通預金", icon: <Wallet className="h-4 w-4" />, category: "cash" },
-  { name: "定期預金", icon: <DollarSign className="h-4 w-4" />, category: "savings" },
-  { name: "株式投資", icon: <Briefcase className="h-4 w-4" />, category: "investment" },
-  { name: "投資信託", icon: <Briefcase className="h-4 w-4" />, category: "investment" },
-  { name: "不動産", icon: <Building className="h-4 w-4" />, category: "property" },
-  { name: "自動車", icon: <Car className="h-4 w-4" />, category: "property" },
-  { name: "その他資産", icon: <Plus className="h-4 w-4" />, category: "other" },
+  { name: '当座預金', icon: <Wallet className="h-4 w-4" />, category: 'cash' },
+  { name: '普通預金', icon: <Wallet className="h-4 w-4" />, category: 'cash' },
+  { name: '定期預金', icon: <DollarSign className="h-4 w-4" />, category: 'savings' },
+  { name: '株式投資', icon: <Briefcase className="h-4 w-4" />, category: 'investment' },
+  { name: '投資信託', icon: <Briefcase className="h-4 w-4" />, category: 'investment' },
+  { name: '不動産', icon: <Building className="h-4 w-4" />, category: 'property' },
+  { name: '自動車', icon: <Car className="h-4 w-4" />, category: 'property' },
+  { name: 'その他資産', icon: <Plus className="h-4 w-4" />, category: 'other' },
 ];
 
 const debtTemplates = [
-  { name: "住宅ローン", icon: <Home className="h-4 w-4" />, category: "mortgage" },
-  { name: "カーローン", icon: <Car className="h-4 w-4" />, category: "loan" },
-  { name: "クレジットカード", icon: <CreditCard className="h-4 w-4" />, category: "credit" },
-  { name: "学生ローン", icon: <Briefcase className="h-4 w-4" />, category: "loan" },
-  { name: "その他負債", icon: <Plus className="h-4 w-4" />, category: "other" },
+  { name: '住宅ローン', icon: <Home className="h-4 w-4" />, category: 'mortgage' },
+  { name: 'カーローン', icon: <Car className="h-4 w-4" />, category: 'loan' },
+  { name: 'クレジットカード', icon: <CreditCard className="h-4 w-4" />, category: 'credit' },
+  { name: '学生ローン', icon: <Briefcase className="h-4 w-4" />, category: 'loan' },
+  { name: 'その他負債', icon: <Plus className="h-4 w-4" />, category: 'other' },
 ];
 
 export function QuickInput({ onClose, updateLastBalanceDate }) {
-  const [activeTab, setActiveTab] = useState("asset");
+  const [activeTab, setActiveTab] = useState('asset');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [formData, setFormData] = useState({
-    account: "",
-    value: "",
-    category: "",
-    institution: "",
-    interestRate: "",
-    notes: "",
+    account: '',
+    value: '',
+    category: '',
+    institution: '',
+    interestRate: '',
+    notes: '',
   });
   const [recents, setRecents] = useState([
-    { type: "asset", account: "三菱UFJ銀行", value: 850000 },
-    { type: "debt", account: "住宅ローン", value: 15000000 },
+    { type: 'asset', account: '三菱UFJ銀行', value: 850000 },
+    { type: 'debt', account: '住宅ローン', value: 15000000 },
   ]);
 
   const dispatch = useDispatch();
@@ -114,71 +109,71 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
 
   const clearForm = () => {
     setFormData({
-      account: "",
-      value: "",
-      category: "",
-      institution: "",
-      interestRate: "",
-      notes: "",
+      account: '',
+      value: '',
+      category: '',
+      institution: '',
+      interestRate: '',
+      notes: '',
     });
     setSelectedTemplate(null);
   };
 
   const validateForm = () => {
     if (!formData.account.trim()) {
-      toast.error("アカウント名を入力してください");
+      toast.error('アカウント名を入力してください');
       return false;
     }
-    
+
     if (!formData.value || isNaN(parseFloat(formData.value)) || parseFloat(formData.value) <= 0) {
-      toast.error("有効な金額を入力してください");
+      toast.error('有効な金額を入力してください');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = () => {
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
-    
+
     // 追加データの準備
     const newEntry = {
       account: formData.account,
       value: parseFloat(formData.value),
-      date: new Date().toISOString().split("T")[0],
-      category: formData.category || (activeTab === "asset" ? "other" : "loan"),
-      institution: formData.institution || "",
+      date: new Date().toISOString().split('T')[0],
+      category: formData.category || (activeTab === 'asset' ? 'other' : 'loan'),
+      institution: formData.institution || '',
       interestRate: formData.interestRate ? parseFloat(formData.interestRate) : 0,
-      notes: formData.notes || "",
+      notes: formData.notes || '',
     };
-    
+
     // Reduxアクションのディスパッチ
     setTimeout(() => {
       try {
-        if (activeTab === "asset") {
+        if (activeTab === 'asset') {
           dispatch(addAsset(newEntry));
         } else {
           dispatch(addDebt(newEntry));
         }
-        
+
         // 最終更新日を更新
         updateLastBalanceDate && updateLastBalanceDate();
-        
+
         // 最近追加したリストに追加
         setRecents([
           { type: activeTab, account: newEntry.account, value: newEntry.value },
           ...recents.slice(0, 4), // 最大5件まで保持
         ]);
-        
-        toast.success(`${activeTab === "asset" ? "資産" : "負債"}を追加しました！`);
-        
+
+        toast.success(`${activeTab === 'asset' ? '資産' : '負債'}を追加しました！`);
+
         // フォームをクリア
         clearForm();
       } catch (error) {
-        console.error("Error adding entry:", error);
-        toast.error("追加中にエラーが発生しました");
+        console.error('Error adding entry:', error);
+        toast.error('追加中にエラーが発生しました');
       } finally {
         setIsSubmitting(false);
       }
@@ -213,9 +208,9 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
                 {assetTemplates.map((template) => (
                   <Button
                     key={template.name}
-                    variant={selectedTemplate === template ? "default" : "outline"}
+                    variant={selectedTemplate === template ? 'default' : 'outline'}
                     className={`h-auto py-2 px-3 justify-start ${
-                      selectedTemplate === template ? "bg-primary text-primary-foreground" : ""
+                      selectedTemplate === template ? 'bg-primary text-primary-foreground' : ''
                     }`}
                     onClick={() => handleTemplateSelect(template)}
                   >
@@ -238,9 +233,9 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
                 {debtTemplates.map((template) => (
                   <Button
                     key={template.name}
-                    variant={selectedTemplate === template ? "default" : "outline"}
+                    variant={selectedTemplate === template ? 'default' : 'outline'}
                     className={`h-auto py-2 px-3 justify-start ${
-                      selectedTemplate === template ? "bg-primary text-primary-foreground" : ""
+                      selectedTemplate === template ? 'bg-primary text-primary-foreground' : ''
                     }`}
                     onClick={() => handleTemplateSelect(template)}
                   >
@@ -268,7 +263,7 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
                 className="cursor-pointer hover:bg-muted"
                 onClick={() => handleRecentSelect(recent)}
               >
-                {recent.type === "asset" ? (
+                {recent.type === 'asset' ? (
                   <ArrowUpCircle className="h-3 w-3 mr-1 text-green-500" />
                 ) : (
                   <ArrowDownCircle className="h-3 w-3 mr-1 text-red-500" />
@@ -292,7 +287,7 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
             <Input
               id="account"
               name="account"
-              placeholder={activeTab === "asset" ? "銀行口座名など" : "ローン名など"}
+              placeholder={activeTab === 'asset' ? '銀行口座名など' : 'ローン名など'}
               value={formData.account}
               onChange={handleInputChange}
             />
@@ -320,9 +315,9 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
               id="institution"
               name="institution"
               placeholder={
-                activeTab === "asset" 
-                  ? "銀行名、証券会社名など" 
-                  : "クレジットカード会社、銀行名など"
+                activeTab === 'asset'
+                  ? '銀行名、証券会社名など'
+                  : 'クレジットカード会社、銀行名など'
               }
               value={formData.institution}
               onChange={handleInputChange}
@@ -330,9 +325,7 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="interestRate">
-              {activeTab === "asset" ? "金利" : "金利"}（%）
-            </Label>
+            <Label htmlFor="interestRate">{activeTab === 'asset' ? '金利' : '金利'}（%）</Label>
             <Input
               id="interestRate"
               name="interestRate"
@@ -359,20 +352,10 @@ export function QuickInput({ onClose, updateLastBalanceDate }) {
 
       {/* ボタン */}
       <div className="flex justify-end gap-2 pt-2">
-        <Button
-          type="button"
-          variant="outline"
-          disabled={isSubmitting}
-          onClick={onClose}
-        >
+        <Button type="button" variant="outline" disabled={isSubmitting} onClick={onClose}>
           キャンセル
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          disabled={isSubmitting}
-          onClick={clearForm}
-        >
+        <Button type="button" variant="ghost" disabled={isSubmitting} onClick={clearForm}>
           <RefreshCw className="h-4 w-4 mr-2" />
           クリア
         </Button>

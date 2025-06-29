@@ -1,6 +1,6 @@
-import React from "react";
-import { TrendingUp, Target, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { TrendingUp, Target, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TodoHeaderMetricsProps {
   completedToday: number;
@@ -16,15 +16,15 @@ interface TodoHeaderMetricsProps {
 export const TodoHeaderMetrics: React.FC<TodoHeaderMetricsProps> = React.memo(
   ({ completedToday, totalToday, productivityScore, completionRate }) => {
     const getScoreColor = (score: number): string => {
-      if (score >= 80) return "text-green-600";
-      if (score >= 60) return "text-yellow-600";
-      return "text-red-600";
+      if (score >= 80) return 'text-green-600';
+      if (score >= 60) return 'text-yellow-600';
+      return 'text-red-600';
     };
 
     const getCompletionColor = (rate: number): string => {
-      if (rate >= 80) return "text-green-600";
-      if (rate >= 50) return "text-yellow-600";
-      return "text-gray-600";
+      if (rate >= 80) return 'text-green-600';
+      if (rate >= 50) return 'text-yellow-600';
+      return 'text-gray-600';
     };
 
     return (
@@ -34,12 +34,7 @@ export const TodoHeaderMetrics: React.FC<TodoHeaderMetricsProps> = React.memo(
           <Target className="h-3.5 w-3.5 text-gray-500" />
           <span className="text-xs text-gray-600">
             完了:
-            <span
-              className={cn(
-                "font-semibold ml-1",
-                getCompletionColor(completionRate)
-              )}
-            >
+            <span className={cn('font-semibold ml-1', getCompletionColor(completionRate))}>
               {completedToday}/{totalToday}
             </span>
           </span>
@@ -51,12 +46,7 @@ export const TodoHeaderMetrics: React.FC<TodoHeaderMetricsProps> = React.memo(
             <Zap className="h-3.5 w-3.5 text-gray-500" />
             <span className="text-xs text-gray-600">
               スコア:
-              <span
-                className={cn(
-                  "font-semibold ml-1",
-                  getScoreColor(productivityScore)
-                )}
-              >
+              <span className={cn('font-semibold ml-1', getScoreColor(productivityScore))}>
                 {productivityScore}%
               </span>
             </span>
@@ -75,4 +65,4 @@ export const TodoHeaderMetrics: React.FC<TodoHeaderMetricsProps> = React.memo(
   }
 );
 
-TodoHeaderMetrics.displayName = "TodoHeaderMetrics";
+TodoHeaderMetrics.displayName = 'TodoHeaderMetrics';

@@ -1,15 +1,15 @@
-import React from 'react'  // Reactをインポートして、JSX名前空間を使用できるようにする
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { ChevronDown, Flame, Star } from "lucide-react"
+import React from 'react'; // Reactをインポートして、JSX名前空間を使用できるようにする
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { ChevronDown, Flame, Star } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -17,8 +17,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import HabitHeatmap from "./HabitHeatmap"
+} from '@/components/ui/table';
+import HabitHeatmap from './HabitHeatmap';
 
 // 表示モードの型定義
 type ViewMode = 'active' | 'all' | 'archived';
@@ -52,15 +52,15 @@ interface HabitListProps {
  */
 const getAchievementBadge = (percentage: number): React.ReactElement => {
   if (percentage >= 90) {
-    return <Badge className="bg-green-500">優秀</Badge>
+    return <Badge className="bg-green-500">優秀</Badge>;
   } else if (percentage >= 70) {
-    return <Badge className="bg-blue-500">良好</Badge>
+    return <Badge className="bg-blue-500">良好</Badge>;
   } else if (percentage >= 50) {
-    return <Badge className="bg-yellow-500">普通</Badge>
+    return <Badge className="bg-yellow-500">普通</Badge>;
   } else {
-    return <Badge className="bg-red-500">要改善</Badge>
+    return <Badge className="bg-red-500">要改善</Badge>;
   }
-}
+};
 
 /**
  * 習慣一覧表示コンポーネント
@@ -93,9 +93,9 @@ const HabitList = ({
             const habitStats = stats[habit] || {
               currentStreak: 0,
               longestStreak: 0,
-              monthlyProgress: 0
-            }
-            
+              monthlyProgress: 0,
+            };
+
             return (
               <TableRow key={index} className="h-[60px]">
                 <TableCell className="font-medium">
@@ -139,14 +139,9 @@ const HabitList = ({
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <Progress
-                      value={habitStats.monthlyProgress}
-                      className="h-2 w-full"
-                    />
+                    <Progress value={habitStats.monthlyProgress} className="h-2 w-full" />
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        {habitStats.monthlyProgress}%
-                      </span>
+                      <span className="text-xs text-gray-500">{habitStats.monthlyProgress}%</span>
                       {getAchievementBadge(habitStats.monthlyProgress)}
                     </div>
                   </div>
@@ -169,22 +164,19 @@ const HabitList = ({
                           アーカイブから戻す
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem 
-                        className="text-red-600"
-                        onClick={() => deleteHabit(habit)}
-                      >
+                      <DropdownMenuItem className="text-red-600" onClick={() => deleteHabit(habit)}>
                         削除する
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-            )
+            );
           })}
         </TableBody>
       </Table>
     </div>
-  )
-}
+  );
+};
 
-export default HabitList
+export default HabitList;

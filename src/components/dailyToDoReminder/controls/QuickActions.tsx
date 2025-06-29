@@ -1,16 +1,9 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  CheckCircle,
-  Circle,
-  ArrowUpDown,
-  LayoutGrid,
-  List,
-  Columns,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { FilterStatus, ViewMode } from "./TodoViewControls";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { CheckCircle, Circle, ArrowUpDown, LayoutGrid, List, Columns } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { FilterStatus, ViewMode } from './TodoViewControls';
 
 interface QuickActionsProps {
   filterStatus: FilterStatus;
@@ -25,46 +18,40 @@ interface QuickActionsProps {
  * 素早いアクセスのためのクイックアクションボタン
  */
 export const QuickActions: React.FC<QuickActionsProps> = React.memo(
-  ({
-    filterStatus,
-    onFilterStatusChange,
-    viewMode = "list",
-    onViewModeChange,
-    isPremium,
-  }) => {
+  ({ filterStatus, onFilterStatusChange, viewMode = 'list', onViewModeChange, isPremium }) => {
     const statusButtons = [
       {
-        value: "all" as FilterStatus,
+        value: 'all' as FilterStatus,
         icon: <ArrowUpDown className="h-3 w-3" />,
-        label: "すべて",
+        label: 'すべて',
       },
       {
-        value: "active" as FilterStatus,
+        value: 'active' as FilterStatus,
         icon: <Circle className="h-3 w-3" />,
-        label: "未完了",
+        label: '未完了',
       },
       {
-        value: "completed" as FilterStatus,
+        value: 'completed' as FilterStatus,
         icon: <CheckCircle className="h-3 w-3" />,
-        label: "完了済み",
+        label: '完了済み',
       },
     ];
 
     const viewModeButtons = [
       {
-        value: "list" as ViewMode,
+        value: 'list' as ViewMode,
         icon: <List className="h-3 w-3" />,
-        label: "リスト",
+        label: 'リスト',
       },
       {
-        value: "grid" as ViewMode,
+        value: 'grid' as ViewMode,
         icon: <LayoutGrid className="h-3 w-3" />,
-        label: "グリッド",
+        label: 'グリッド',
       },
       {
-        value: "kanban" as ViewMode,
+        value: 'kanban' as ViewMode,
         icon: <Columns className="h-3 w-3" />,
-        label: "カンバン",
+        label: 'カンバン',
       },
     ];
 
@@ -75,20 +62,18 @@ export const QuickActions: React.FC<QuickActionsProps> = React.memo(
           {statusButtons.map((button, index) => (
             <React.Fragment key={button.value}>
               <Button
-                variant={filterStatus === button.value ? "default" : "ghost"}
+                variant={filterStatus === button.value ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => onFilterStatusChange(button.value)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3",
-                  filterStatus === button.value && "shadow-sm"
+                  'flex items-center gap-1.5 px-3',
+                  filterStatus === button.value && 'shadow-sm'
                 )}
               >
                 {button.icon}
                 <span>{button.label}</span>
               </Button>
-              {index < statusButtons.length - 1 && (
-                <div className="h-4 w-px bg-border mx-1" />
-              )}
+              {index < statusButtons.length - 1 && <div className="h-4 w-px bg-border mx-1" />}
             </React.Fragment>
           ))}
         </div>
@@ -122,4 +107,4 @@ export const QuickActions: React.FC<QuickActionsProps> = React.memo(
   }
 );
 
-QuickActions.displayName = "QuickActions";
+QuickActions.displayName = 'QuickActions';

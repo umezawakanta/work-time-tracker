@@ -9,7 +9,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { PlusCircle, Clock, Calendar } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -73,7 +79,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
   // データ登録処理
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!accountName || !value) {
       toast.error('名前と金額を入力してください');
       return;
@@ -83,39 +89,45 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
 
     const numericValue = parseFloat(value);
     const currentDate = new Date().toISOString();
-    
+
     try {
       // 目標設定があれば追加データを含める
-      const targetSettings = enableAutoUpdate ? {
-        autoUpdate: true,
-        updateFrequency,
-        targetValue: targetValue ? parseFloat(targetValue) : numericValue,
-        targetDate,
-      } : undefined;
+      const targetSettings = enableAutoUpdate
+        ? {
+            autoUpdate: true,
+            updateFrequency,
+            targetValue: targetValue ? parseFloat(targetValue) : numericValue,
+            targetDate,
+          }
+        : undefined;
 
       // 資産または負債エントリを追加
       if (entryType === 'asset') {
-        dispatch(addAssetEntry({
-          account: accountName,
-          value: numericValue,
-          date: currentDate,
-          category,
-          targetSettings,
-        }));
+        dispatch(
+          addAssetEntry({
+            account: accountName,
+            value: numericValue,
+            date: currentDate,
+            category,
+            targetSettings,
+          })
+        );
       } else {
-        dispatch(addDebtEntry({
-          account: accountName,
-          value: numericValue,
-          date: currentDate,
-          category,
-          targetSettings,
-          description: ''
-        }));
+        dispatch(
+          addDebtEntry({
+            account: accountName,
+            value: numericValue,
+            date: currentDate,
+            category,
+            targetSettings,
+            description: '',
+          })
+        );
       }
 
       updateLastBalanceDate();
       toast.success(`${entryType === 'asset' ? '資産' : '負債'}を追加しました！`);
-      
+
       // フォームをリセット
       setAccountName('');
       setValue('');
@@ -148,7 +160,7 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                   <Label htmlFor="account-name">名前</Label>
                   <Input
                     id="account-name"
-                    placeholder={entryType === 'asset' ? "三菱UFJ銀行" : "住宅ローン"}
+                    placeholder={entryType === 'asset' ? '三菱UFJ銀行' : '住宅ローン'}
                     value={accountName}
                     onChange={(e) => setAccountName(e.target.value)}
                   />
@@ -218,11 +230,13 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                     <div>
                       <Label htmlFor="target-value">目標額</Label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2">¥</span>
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                          ¥
+                        </span>
                         <Input
                           id="target-value"
                           type="number"
-                          placeholder={entryType === 'asset' ? "2,000,000" : "0"}
+                          placeholder={entryType === 'asset' ? '2,000,000' : '0'}
                           className="pl-8"
                           value={targetValue}
                           onChange={(e) => setTargetValue(e.target.value)}
@@ -247,8 +261,8 @@ export const QuickInput: React.FC<QuickInputProps> = ({ onClose, updateLastBalan
                   <div className="text-xs text-muted-foreground">
                     <p className="flex items-center">
                       <Clock className="h-3 w-3 mr-1" />
-                      {entryType === 'asset' 
-                        ? '目標額に向けて資産の成長を追跡します' 
+                      {entryType === 'asset'
+                        ? '目標額に向けて資産の成長を追跡します'
                         : '負債の返済進捗を追跡します'}
                     </p>
                   </div>

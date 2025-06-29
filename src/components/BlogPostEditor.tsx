@@ -47,9 +47,7 @@ const BlogPostEditor: React.FC = () => {
       />
       {!id && (
         <Box mt={2}>
-          <Typography variant="body2">
-            Your changes are automatically saved as a draft.
-          </Typography>
+          <Typography variant="body2">Your changes are automatically saved as a draft.</Typography>
         </Box>
       )}
     </Container>

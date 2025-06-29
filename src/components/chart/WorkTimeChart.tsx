@@ -1,13 +1,13 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import React, { useState, useMemo, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,35 +16,25 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-import { WorkTimeEntry } from "@/types/workTimeEntry";
-import { formatDateAndTime } from "@/utils/dateUtils";
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { WorkTimeEntry } from '@/types/workTimeEntry';
+import { formatDateAndTime } from '@/utils/dateUtils';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface WorkTimeChartProps {
   workTimeEntries: WorkTimeEntry[];
   locale: string;
 }
 
-export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
-  workTimeEntries,
-  locale,
-}) => {
-  const [timeRange, setTimeRange] = useState<"week" | "month" | "all">("week");
+export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({ workTimeEntries, locale }) => {
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('week');
 
   const formatDate = useCallback(
     (dateString: string | undefined) => {
-      if (!dateString) return "未設定";
-      return formatDateAndTime(dateString, locale, { dateStyle: "short" });
+      if (!dateString) return '未設定';
+      return formatDateAndTime(dateString, locale, { dateStyle: 'short' });
     },
     [locale]
   );
@@ -58,8 +48,8 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
       return entries.filter((entry) => {
         const entryDate = entry.date ? new Date(entry.date) : null;
         if (!entryDate) return false;
-        if (timeRange === "week") return entryDate >= oneWeekAgo;
-        if (timeRange === "month") return entryDate >= oneMonthAgo;
+        if (timeRange === 'week') return entryDate >= oneWeekAgo;
+        if (timeRange === 'month') return entryDate >= oneMonthAgo;
         return true;
       });
     },
@@ -69,17 +59,15 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
   const chartData = useMemo(() => {
     const filteredData = filterEntriesByTimeRange(workTimeEntries);
     const labels = filteredData.map((entry) => formatDate(entry.date));
-    const durations = filteredData.map((entry) =>
-      entry.duration ? entry.duration / 3600 : 0
-    );
+    const durations = filteredData.map((entry) => (entry.duration ? entry.duration / 3600 : 0));
 
     return {
       labels,
       datasets: [
         {
-          label: "作業時間 (時間)",
+          label: '作業時間 (時間)',
           data: durations,
-          backgroundColor: "#8884d8",
+          backgroundColor: '#8884d8',
         },
       ],
     };
@@ -89,11 +77,11 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
     responsive: true,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: 'top' as const,
       },
       title: {
         display: true,
-        text: "作業時間記録",
+        text: '作業時間記録',
       },
     },
     scales: {
@@ -101,7 +89,7 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
         beginAtZero: true,
         title: {
           display: true,
-          text: "時間",
+          text: '時間',
         },
       },
     },
@@ -117,9 +105,7 @@ export const WorkTimeChart: React.FC<WorkTimeChartProps> = ({
           <Label htmlFor="timeRange">期間</Label>
           <Select
             value={timeRange}
-            onValueChange={(value) =>
-              setTimeRange(value as "week" | "month" | "all")
-            }
+            onValueChange={(value) => setTimeRange(value as 'week' | 'month' | 'all')}
           >
             <SelectTrigger id="timeRange">
               <SelectValue placeholder="期間を選択" />

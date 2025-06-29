@@ -21,67 +21,64 @@ import { LocalAIProcessor } from './LocalAIProcessor';
  * AIプロセッサーファクトリークラス
  */
 export class AIProcessorFactory {
-    private logger = ApiLogger.getInstance();
-    private processors: Map<AIProvider, AIProcessor> = new Map();
+  private logger = ApiLogger.getInstance();
+  private processors: Map<AIProvider, AIProcessor> = new Map();
 
-    /**
-     * コンストラクタ
-     */
-    constructor() {
-        this.logger.setContext('AIProcessorFactory');
+  /**
+   * コンストラクタ
+   */
+  constructor() {
+    this.logger.setContext('AIProcessorFactory');
 
-        // 各プロバイダーのプロセッサーを登録
-        this.registerDefaultProcessors();
+    // 各プロバイダーのプロセッサーを登録
+    this.registerDefaultProcessors();
+  }
+
+  /**
+   * デフォルトプロセッサーを登録
+   */
+  private registerDefaultProcessors(): void {
+    this.registerProcessor('openai', new OpenAIProcessor());
+    this.registerProcessor('anthropic', new AnthropicProcessor());
+    this.registerProcessor('google', new GoogleAIProcessor());
+    this.registerProcessor('huggingface', new HuggingFaceProcessor());
+    this.registerProcessor('azure', new AzureAIProcessor());
+    this.registerProcessor('stability', new StabilityAIProcessor());
+    this.registerProcessor('cohere', new CohereProcessor());
+    this.registerProcessor('local', new LocalAIProcessor());
+  }
+
+  /**
+   * プロセッサーを登録
+   */
+  public registerProcessor(provider: AIProvider, processor: AIProcessor): void {
+    this.processors.set(provider, processor);
+    this.logger.debug(`${provider}プロバイダーのプロセッサーを登録しました`);
+  }
+
+  /**
+   * プロセッサーを取得
+   */
+  public getProcessor(provider: AIProvider): AIProcessor {
+    const processor = this.processors.get(provider);
+    if (!processor) {
+      throw new Error(`${provider}プロバイダーのプロセッサーが見つかりません`);
     }
 
-    /**
-     * デフォルトプロセッサーを登録
-     */
-    private registerDefaultProcessors(): void {
-        this.registerProcessor('openai', new OpenAIProcessor());
-        this.registerProcessor('anthropic', new AnthropicProcessor());
-        this.registerProcessor('google', new GoogleAIProcessor());
-        this.registerProcessor('huggingface', new HuggingFaceProcessor());
-        this.registerProcessor('azure', new AzureAIProcessor());
-        this.registerProcessor('stability', new StabilityAIProcessor());
-        this.registerProcessor('cohere', new CohereProcessor());
-        this.registerProcessor('local', new LocalAIProcessor());
-    }
+    return processor;
+  }
 
-    /**
-     * プロセッサーを登録
-     */
-    public registerProcessor(
-        provider: AIProvider,
-        processor: AIProcessor
-    ): void {
-        this.processors.set(provider, processor);
-        this.logger.debug(`${provider}プロバイダーのプロセッサーを登録しました`);
-    }
+  /**
+   * すべてのプロセッサーを取得
+   */
+  public getAllProcessors(): Map<AIProvider, AIProcessor> {
+    return new Map(this.processors);
+  }
 
-    /**
-     * プロセッサーを取得
-     */
-    public getProcessor(provider: AIProvider): AIProcessor {
-        const processor = this.processors.get(provider);
-        if (!processor) {
-            throw new Error(`${provider}プロバイダーのプロセッサーが見つかりません`);
-        }
-
-        return processor;
-    }
-
-    /**
-     * すべてのプロセッサーを取得
-     */
-    public getAllProcessors(): Map<AIProvider, AIProcessor> {
-        return new Map(this.processors);
-    }
-
-    /**
-     * プロセッサーの存在をチェック
-     */
-    public hasProcessor(provider: AIProvider): boolean {
-        return this.processors.has(provider);
-    }
+  /**
+   * プロセッサーの存在をチェック
+   */
+  public hasProcessor(provider: AIProvider): boolean {
+    return this.processors.has(provider);
+  }
 }

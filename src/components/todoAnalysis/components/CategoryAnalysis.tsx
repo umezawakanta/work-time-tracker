@@ -1,8 +1,8 @@
 // src/components/todoAnalysis/components/CategoryAnalysis.tsx
-import { FC } from "react";
-import { Progress } from "@/components/ui/progress";
-import { CategoryStats, CategoryDistribution } from "../types";
-import styles from "../TodoAnalysis.module.css";
+import { FC } from 'react';
+import { Progress } from '@/components/ui/progress';
+import { CategoryStats, CategoryDistribution } from '../types';
+import styles from '../TodoAnalysis.module.css';
 
 interface CategoryAnalysisProps {
   categoryStats: CategoryStats;

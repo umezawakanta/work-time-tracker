@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Tweet } from '@/types/Tweet';
 import { ExternalLink, Edit, Save } from 'lucide-react';
 
@@ -18,8 +18,8 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, onUpdateTweet }) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = content.split(urlRegex);
     const matches = Array.from(content.matchAll(urlRegex));
-    const urls = matches.map(match => match[0]);
-    
+    const urls = matches.map((match) => match[0]);
+
     return parts.map((part, index) => {
       if (urls.includes(part)) {
         return (
@@ -79,18 +79,18 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, onUpdateTweet }) => {
                 <p className="whitespace-pre-wrap break-words">
                   {tweet.content && renderContent(tweet.content)}
                 </p>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleEdit(tweet)}
-                  className="mt-2"
-                >
+                <Button variant="ghost" onClick={() => handleEdit(tweet)} className="mt-2">
                   <Edit size={16} className="mr-2" />
                   編集
                 </Button>
               </>
             )}
             {tweet.image && (
-              <img src={`/uploads/${tweet.image}`} alt="Tweet" className="mt-2 max-w-full h-auto rounded" />
+              <img
+                src={`/uploads/${tweet.image}`}
+                alt="Tweet"
+                className="mt-2 max-w-full h-auto rounded"
+              />
             )}
             <p className="text-sm text-gray-500 mt-2">
               {new Date(tweet.createdAt).toLocaleString()}

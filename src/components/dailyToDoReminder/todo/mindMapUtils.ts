@@ -26,7 +26,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const getNodeDimensions = (node: Node) => {
     const baseWidth = 200;
     const baseHeight = 60;
-    
+
     switch (node.data?.type) {
       case 'root':
         return { width: baseWidth + 50, height: baseHeight + 20 };
@@ -43,13 +43,13 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   };
 
   // グラフのレイアウト設定を改善
-  dagreGraph.setGraph({ 
-    rankdir: direction, 
-    ranksep: 150,      // ランク間の距離を増やす
-    nodesep: 80,       // ノード間の距離を増やす
-    edgesep: 50,       // エッジ間の距離
-    marginx: 40,       // 水平マージン
-    marginy: 40        // 垂直マージン
+  dagreGraph.setGraph({
+    rankdir: direction,
+    ranksep: 150, // ランク間の距離を増やす
+    nodesep: 80, // ノード間の距離を増やす
+    edgesep: 50, // エッジ間の距離
+    marginx: 40, // 水平マージン
+    marginy: 40, // 垂直マージン
   });
 
   nodes.forEach((node) => {
@@ -66,7 +66,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     const dimensions = getNodeDimensions(node);
-    
+
     node.targetPosition = 'top' as Position;
     node.sourcePosition = 'bottom' as Position;
 
@@ -213,12 +213,12 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
   // ルートノード
   const rootNode: MindMapNode = {
     id: 'root',
-    type: 'custom',  // 'input' から 'custom' に変更
-    data: { 
-      label: 'タスクステータス', 
-      type: 'root', 
+    type: 'custom', // 'input' から 'custom' に変更
+    data: {
+      label: 'タスクステータス',
+      type: 'root',
       count: todos.length,
-      icon: '📊'
+      icon: '📊',
     },
     position: { x: 0, y: 0 },
   };
@@ -244,12 +244,12 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
     // ステータスノード
     nodes.push({
       id: statusId,
-      type: 'custom',  // typeを追加
-      data: { 
-        label, 
-        type: 'status', 
+      type: 'custom', // typeを追加
+      data: {
+        label,
+        type: 'status',
         count: statusTodos.length,
-        icon
+        icon,
       },
       position: { x: 0, y: 0 },
       style: { backgroundColor: color, color: 'white' },
@@ -270,7 +270,7 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
 
       nodes.push({
         id: taskId,
-        type: 'custom',  // 'output' から 'custom' に変更
+        type: 'custom', // 'output' から 'custom' に変更
         data: {
           label: truncateText(todo.text, 30),
           todo,
@@ -284,7 +284,7 @@ export const convertTodosByStatus = (todos: readonly Todo[]) => {
         id: `${statusId}-${taskId}`,
         source: statusId,
         target: taskId,
-        style: { 
+        style: {
           stroke: color,
           strokeWidth: todo.completed ? 1 : 2,
         },

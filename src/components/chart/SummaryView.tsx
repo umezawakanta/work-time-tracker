@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -6,10 +6,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
-import "./SummaryView.css"; // CSSファイルをインポート
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
+import './SummaryView.css'; // CSSファイルをインポート
 
 interface SummaryViewProps {
   data: {
@@ -18,7 +18,7 @@ interface SummaryViewProps {
     currentSupport: number;
     previousSupport: number;
     change: number;
-    trend: "up" | "down" | "stable";
+    trend: 'up' | 'down' | 'stable';
     rank: number;
   }[];
 }
@@ -30,7 +30,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({ data }) => {
       <p className="text-sm text-muted-foreground mb-4">
         各政党の現在の支持率と前月比の変化を表示しています
       </p>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -64,47 +64,39 @@ const SummaryView: React.FC<SummaryViewProps> = ({ data }) => {
               <TableCell className="text-right">
                 <span
                   className={
-                    party.change > 0
-                      ? "text-green-600"
-                      : party.change < 0
-                      ? "text-red-600"
-                      : ""
+                    party.change > 0 ? 'text-green-600' : party.change < 0 ? 'text-red-600' : ''
                   }
                 >
-                  {party.change > 0 && "+"}
+                  {party.change > 0 && '+'}
                   {party.change.toFixed(1)}%
                 </span>
               </TableCell>
               <TableCell className="text-right">
                 <Badge
                   variant={
-                    party.trend === "up"
-                      ? "default"
-                      : party.trend === "down"
-                      ? "destructive"
-                      : "outline"
+                    party.trend === 'up'
+                      ? 'default'
+                      : party.trend === 'down'
+                        ? 'destructive'
+                        : 'outline'
                   }
-                  className={`ml-auto ${party.trend === "up" ? "trend-badge-up" : ""}`}
+                  className={`ml-auto ${party.trend === 'up' ? 'trend-badge-up' : ''}`}
                 >
-                  {party.trend === "up" ? (
+                  {party.trend === 'up' ? (
                     <ArrowUp className="h-3 w-3 mr-1" />
-                  ) : party.trend === "down" ? (
+                  ) : party.trend === 'down' ? (
                     <ArrowDown className="h-3 w-3 mr-1" />
                   ) : (
                     <Minus className="h-3 w-3 mr-1" />
                   )}
-                  {party.trend === "up"
-                    ? "上昇"
-                    : party.trend === "down"
-                    ? "下降"
-                    : "横ばい"}
+                  {party.trend === 'up' ? '上昇' : party.trend === 'down' ? '下降' : '横ばい'}
                 </Badge>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      
+
       <div className="mt-6 text-sm text-muted-foreground">
         <p>※ 「各社平均」の値を元に算出しています</p>
         <p>※ 前月比: 2025年2月と3月の比較</p>

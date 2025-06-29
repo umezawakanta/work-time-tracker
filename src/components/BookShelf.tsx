@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
-import {
-  Book,
-  fetchBooks,
-  addBook,
-  updateBook,
-  removeBook,
-} from "../store/bookSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { Book, fetchBooks, addBook, updateBook, removeBook } from '../store/bookSlice';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -18,58 +12,65 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import StatisticsDashboard from "./StatisticsDashboard";
-import ReadingChallenge from "./ReadingChallenge";
-import BookRecommendations from "./BookRecommendations";
-import { toast } from "@/components/ui/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import StatisticsDashboard from './StatisticsDashboard';
+import ReadingChallenge from './ReadingChallenge';
+import BookRecommendations from './BookRecommendations';
+import { toast } from '@/components/ui/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
 import '../styles/BookShelf.css';
 
-const initialBookState: Omit<Book, "_id" | "createdAt"> = {
-  title: "",
-  author: "",
-  isbn: "",
+const initialBookState: Omit<Book, '_id' | 'createdAt'> = {
+  title: '',
+  author: '',
+  isbn: '',
   publishedYear: new Date().getFullYear(),
   totalPages: 0,
   readPages: 0,
-  category: "",
+  category: '',
   rating: 0,
-  notes: "",
-  lentTo: "",
+  notes: '',
+  lentTo: '',
 };
 
-const categories = ["小説", "ノンフィクション", "技術書", "その他"];
+const categories = ['小説', 'ノンフィクション', '技術書', 'その他'];
 
 export default function BookShelf() {
   const dispatch = useDispatch<AppDispatch>();
   const { books, status, error } = useSelector((state: RootState) => state.book);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("title");
-  const [newBook, setNewBook] = useState<Omit<Book, "_id" | "createdAt">>(initialBookState);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('title');
+  const [newBook, setNewBook] = useState<Omit<Book, '_id' | 'createdAt'>>(initialBookState);
   const tags = useState<string[]>([])[0];
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [view, setView] = useState<"grid" | "list">("grid");
-  const [readingStatus, setReadingStatus] = useState<"all" | "reading" | "completed">("all");
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [readingStatus, setReadingStatus] = useState<'all' | 'reading' | 'completed'>('all');
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === 'idle') {
       dispatch(fetchBooks());
     }
   }, [status, dispatch]);
@@ -78,8 +79,8 @@ export default function BookShelf() {
     if (editingBook) {
       setNewBook({
         ...editingBook,
-        notes: editingBook.notes || "",
-        lentTo: editingBook.lentTo || "",
+        notes: editingBook.notes || '',
+        lentTo: editingBook.lentTo || '',
       });
     } else {
       setNewBook(initialBookState);
@@ -89,9 +90,9 @@ export default function BookShelf() {
   useEffect(() => {
     if (error) {
       toast({
-        title: "エラー",
+        title: 'エラー',
         description: error,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   }, [error]);
@@ -101,7 +102,7 @@ export default function BookShelf() {
       const { name, value } = e.target;
       setNewBook((prev) => ({
         ...prev,
-        [name]: ["publishedYear", "totalPages", "readPages", "rating"].includes(name)
+        [name]: ['publishedYear', 'totalPages', 'readPages', 'rating'].includes(name)
           ? Math.max(0, parseInt(value, 10) || 0)
           : value,
       }));
@@ -115,25 +116,25 @@ export default function BookShelf() {
       if (editingBook) {
         await dispatch(updateBook({ ...editingBook, ...newBook })).unwrap();
         toast({
-          title: "成功",
-          description: "本が正常に更新されました。",
+          title: '成功',
+          description: '本が正常に更新されました。',
         });
       } else {
         await dispatch(addBook(newBook)).unwrap();
         toast({
-          title: "成功",
-          description: "新しい本が正常に追加されました。",
+          title: '成功',
+          description: '新しい本が正常に追加されました。',
         });
       }
       setIsDialogOpen(false);
       setEditingBook(null);
       setNewBook(initialBookState);
     } catch (error) {
-      console.error("本の保存中にエラーが発生しました:", error);
+      console.error('本の保存中にエラーが発生しました:', error);
       toast({
-        title: "エラー",
-        description: "本の保存中にエラーが発生しました。",
-        variant: "destructive",
+        title: 'エラー',
+        description: '本の保存中にエラーが発生しました。',
+        variant: 'destructive',
       });
     }
   };
@@ -148,15 +149,15 @@ export default function BookShelf() {
       try {
         await dispatch(removeBook(id)).unwrap();
         toast({
-          title: "成功",
-          description: "本が正常に削除されました。",
+          title: '成功',
+          description: '本が正常に削除されました。',
         });
       } catch (error) {
-        console.error("本の削除中にエラーが発生しました:", error);
+        console.error('本の削除中にエラーが発生しました:', error);
         toast({
-          title: "エラー",
-          description: "本の削除中にエラーが発生しました。",
-          variant: "destructive",
+          title: 'エラー',
+          description: '本の削除中にエラーが発生しました。',
+          variant: 'destructive',
         });
       }
     },
@@ -165,9 +166,7 @@ export default function BookShelf() {
 
   const handleTagChange = (tag: string) => {
     setSelectedTags((prevTags) =>
-      prevTags.includes(tag)
-        ? prevTags.filter((t) => t !== tag)
-        : [...prevTags, tag]
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
     );
   };
 
@@ -177,24 +176,22 @@ export default function BookShelf() {
         (book) =>
           (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             book.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (selectedCategory === "all" || book.category === selectedCategory) &&
-          (selectedTags.length === 0 ||
-            selectedTags.every((tag) => book.tags?.includes(tag))) &&
-          (readingStatus === "all" ||
-            (readingStatus === "reading" && book.readPages < book.totalPages) ||
-            (readingStatus === "completed" && book.readPages === book.totalPages))
+          (selectedCategory === 'all' || book.category === selectedCategory) &&
+          (selectedTags.length === 0 || selectedTags.every((tag) => book.tags?.includes(tag))) &&
+          (readingStatus === 'all' ||
+            (readingStatus === 'reading' && book.readPages < book.totalPages) ||
+            (readingStatus === 'completed' && book.readPages === book.totalPages))
       )
       .sort((a, b) => {
-        if (sortBy === "title") return a.title.localeCompare(b.title);
-        if (sortBy === "author") return a.author.localeCompare(b.author);
-        if (sortBy === "rating") return b.rating - a.rating;
-        if (sortBy === "progress") return (b.readPages / b.totalPages) - (a.readPages / a.totalPages);
+        if (sortBy === 'title') return a.title.localeCompare(b.title);
+        if (sortBy === 'author') return a.author.localeCompare(b.author);
+        if (sortBy === 'rating') return b.rating - a.rating;
+        if (sortBy === 'progress') return b.readPages / b.totalPages - a.readPages / a.totalPages;
         return 0;
       });
   }, [books, searchTerm, selectedCategory, selectedTags, sortBy, readingStatus]);
 
-
-  if (status === "loading") {
+  if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
@@ -228,7 +225,10 @@ export default function BookShelf() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={readingStatus} onValueChange={(value: "all" | "reading" | "completed") => setReadingStatus(value)}>
+            <Select
+              value={readingStatus}
+              onValueChange={(value: 'all' | 'reading' | 'completed') => setReadingStatus(value)}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="読書状況" />
               </SelectTrigger>
@@ -249,8 +249,8 @@ export default function BookShelf() {
                 <SelectItem value="progress">進捗</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={() => setView(view === "grid" ? "list" : "grid")}>
-              {view === "grid" ? "リスト表示" : "グリッド表示"}
+            <Button onClick={() => setView(view === 'grid' ? 'list' : 'grid')}>
+              {view === 'grid' ? 'リスト表示' : 'グリッド表示'}
             </Button>
             <Button onClick={() => setIsDialogOpen(true)}>本を追加</Button>
           </div>
@@ -258,14 +258,14 @@ export default function BookShelf() {
             {tags.map((tag) => (
               <Button
                 key={tag}
-                variant={selectedTags.includes(tag) ? "default" : "outline"}
+                variant={selectedTags.includes(tag) ? 'default' : 'outline'}
                 onClick={() => handleTagChange(tag)}
               >
                 {tag}
               </Button>
             ))}
           </div>
-          {view === "grid" ? (
+          {view === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredAndSortedBooks.map((book) => (
                 <Card key={book._id} className="flex flex-col">
@@ -282,7 +282,9 @@ export default function BookShelf() {
                         />
                       </div>
                       <div>
-                        <p>ページ: {book.readPages} / {book.totalPages}</p>
+                        <p>
+                          ページ: {book.readPages} / {book.totalPages}
+                        </p>
                         <p>評価: {book.rating} / 5</p>
                       </div>
                     </div>
@@ -308,7 +310,10 @@ export default function BookShelf() {
           ) : (
             <div className="space-y-2">
               {filteredAndSortedBooks.map((book) => (
-                <div key={book._id} className="flex items-center justify-between p-2 border rounded">
+                <div
+                  key={book._id}
+                  className="flex items-center justify-between p-2 border rounded"
+                >
                   <div>
                     <h3 className="font-semibold">{book.title}</h3>
                     <p className="text-sm text-gray-500">{book.author}</p>
@@ -316,8 +321,12 @@ export default function BookShelf() {
                   <div className="flex items-center space-x-2">
                     <Badge>{book.category}</Badge>
                     <Progress value={(book.readPages / book.totalPages) * 100} className="w-24" />
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(book)}>編集</Button>
-                    <Button variant="destructive" size="sm" onClick={() => handleDelete(book._id)}>削除</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(book)}>
+                      編集
+                    </Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDelete(book._id)}>
+                      削除
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -337,13 +346,9 @@ export default function BookShelf() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingBook ? "本を編集" : "新しい本を追加"}
-            </DialogTitle>
+            <DialogTitle>{editingBook ? '本を編集' : '新しい本を追加'}</DialogTitle>
             <DialogDescription>
-              {editingBook
-                ? "本の情報を更新してください。"
-                : "新しい本の情報を入力してください。"}
+              {editingBook ? '本の情報を更新してください。' : '新しい本の情報を入力してください。'}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
@@ -394,9 +399,7 @@ export default function BookShelf() {
                 <Select
                   name="category"
                   value={newBook.category}
-                  onValueChange={(value) =>
-                    setNewBook((prev) => ({ ...prev, category: value }))
-                  }
+                  onValueChange={(value) => setNewBook((prev) => ({ ...prev, category: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="カテゴリーを選択" />
@@ -450,7 +453,7 @@ export default function BookShelf() {
                   <SelectContent>
                     {[0, 1, 2, 3, 4, 5].map((rating) => (
                       <SelectItem key={rating} value={rating.toString()}>
-                        {rating} {rating === 1 ? "星" : "星"}
+                        {rating} {rating === 1 ? '星' : '星'}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -476,7 +479,7 @@ export default function BookShelf() {
               </div>
             </div>
             <DialogFooter className="mt-4">
-              <Button type="submit">{editingBook ? "更新" : "追加"}</Button>
+              <Button type="submit">{editingBook ? '更新' : '追加'}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -484,4 +487,3 @@ export default function BookShelf() {
     </div>
   );
 }
-

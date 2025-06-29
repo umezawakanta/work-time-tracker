@@ -1,7 +1,7 @@
 // src/services/api/partyApi.ts
-import { AxiosResponse } from "axios";
-import { PoliticalParty } from "@/types/survey";
-import { api } from "./apiConfig";
+import { AxiosResponse } from 'axios';
+import { PoliticalParty } from '@/types/survey';
+import { api } from './apiConfig';
 
 interface PartyApiResponse {
   message: string;
@@ -10,11 +10,11 @@ interface PartyApiResponse {
 
 export const partyApi = {
   getAll: (): Promise<AxiosResponse<PoliticalParty[]>> => {
-    return api.get<PoliticalParty[]>("/parties");
+    return api.get<PoliticalParty[]>('/parties');
   },
 
-  create: (party: Omit<PoliticalParty, "_id">): Promise<AxiosResponse<PartyApiResponse>> => {
-    return api.post<PartyApiResponse>("/parties", party);
+  create: (party: Omit<PoliticalParty, '_id'>): Promise<AxiosResponse<PartyApiResponse>> => {
+    return api.post<PartyApiResponse>('/parties', party);
   },
 
   update: (

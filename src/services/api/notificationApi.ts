@@ -35,7 +35,9 @@ interface NotificationSettings {
  * @param userId ユーザーID
  * @returns 通知一覧
  */
-export const getUserNotifications = async (userId: string): Promise<AxiosResponse<UserNotification[]>> => {
+export const getUserNotifications = async (
+  userId: string
+): Promise<AxiosResponse<UserNotification[]>> => {
   try {
     const response = await api.get<UserNotification[]>(`/notifications/user/${userId}`);
     return response;
@@ -50,7 +52,9 @@ export const getUserNotifications = async (userId: string): Promise<AxiosRespons
  * @param userId ユーザーID
  * @returns 未読通知数
  */
-export const getUnreadNotificationsCount = async (userId: string): Promise<AxiosResponse<{ count: number }>> => {
+export const getUnreadNotificationsCount = async (
+  userId: string
+): Promise<AxiosResponse<{ count: number }>> => {
   try {
     const response = await api.get<{ count: number }>(`/notifications/user/${userId}/unread-count`);
     return response;
@@ -65,9 +69,13 @@ export const getUnreadNotificationsCount = async (userId: string): Promise<Axios
  * @param notificationId 通知ID
  * @returns 更新された通知
  */
-export const markNotificationAsRead = async (notificationId: number): Promise<AxiosResponse<NotificationApiResponse>> => {
+export const markNotificationAsRead = async (
+  notificationId: number
+): Promise<AxiosResponse<NotificationApiResponse>> => {
   try {
-    const response = await api.patch<NotificationApiResponse>(`/notifications/${notificationId}/read`);
+    const response = await api.patch<NotificationApiResponse>(
+      `/notifications/${notificationId}/read`
+    );
     return response;
   } catch (error) {
     console.error('通知既読エラー:', error);
@@ -80,9 +88,13 @@ export const markNotificationAsRead = async (notificationId: number): Promise<Ax
  * @param userId ユーザーID
  * @returns 操作結果
  */
-export const markAllNotificationsAsRead = async (userId: string): Promise<AxiosResponse<NotificationsApiResponse>> => {
+export const markAllNotificationsAsRead = async (
+  userId: string
+): Promise<AxiosResponse<NotificationsApiResponse>> => {
   try {
-    const response = await api.patch<NotificationsApiResponse>(`/notifications/user/${userId}/read-all`);
+    const response = await api.patch<NotificationsApiResponse>(
+      `/notifications/user/${userId}/read-all`
+    );
     return response;
   } catch (error) {
     console.error('全通知既読エラー:', error);
@@ -95,7 +107,9 @@ export const markAllNotificationsAsRead = async (userId: string): Promise<AxiosR
  * @param notificationId 通知ID
  * @returns 操作結果
  */
-export const deleteNotification = async (notificationId: number): Promise<AxiosResponse<{ message: string }>> => {
+export const deleteNotification = async (
+  notificationId: number
+): Promise<AxiosResponse<{ message: string }>> => {
   try {
     const response = await api.delete<{ message: string }>(`/notifications/${notificationId}`);
     return response;
@@ -110,7 +124,9 @@ export const deleteNotification = async (notificationId: number): Promise<AxiosR
  * @param userId ユーザーID
  * @returns 操作結果
  */
-export const deleteAllNotifications = async (userId: string): Promise<AxiosResponse<{ message: string }>> => {
+export const deleteAllNotifications = async (
+  userId: string
+): Promise<AxiosResponse<{ message: string }>> => {
   try {
     const response = await api.delete<{ message: string }>(`/notifications/user/${userId}`);
     return response;
@@ -125,7 +141,9 @@ export const deleteAllNotifications = async (userId: string): Promise<AxiosRespo
  * @param userId ユーザーID
  * @returns 通知設定
  */
-export const getNotificationSettings = async (userId: string): Promise<AxiosResponse<NotificationSettings>> => {
+export const getNotificationSettings = async (
+  userId: string
+): Promise<AxiosResponse<NotificationSettings>> => {
   try {
     const response = await api.get<NotificationSettings>(`/notifications/settings/${userId}`);
     return response;
@@ -141,9 +159,15 @@ export const getNotificationSettings = async (userId: string): Promise<AxiosResp
  * @param settings 更新する設定
  * @returns 更新された設定
  */
-export const updateNotificationSettings = async (userId: string, settings: Partial<NotificationSettings>): Promise<AxiosResponse<NotificationSettings>> => {
+export const updateNotificationSettings = async (
+  userId: string,
+  settings: Partial<NotificationSettings>
+): Promise<AxiosResponse<NotificationSettings>> => {
   try {
-    const response = await api.patch<NotificationSettings>(`/notifications/settings/${userId}`, settings);
+    const response = await api.patch<NotificationSettings>(
+      `/notifications/settings/${userId}`,
+      settings
+    );
     return response;
   } catch (error) {
     console.error('通知設定更新エラー:', error);
@@ -160,7 +184,7 @@ const notificationApi = {
   deleteNotification,
   deleteAllNotifications,
   getNotificationSettings,
-  updateNotificationSettings
+  updateNotificationSettings,
 };
 
 export default notificationApi;

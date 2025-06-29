@@ -23,7 +23,17 @@ export interface AIModelSummary {
   requiresSubscription?: boolean;
 }
 
-export type AIProvider = 'openai' | 'claude' | 'gemini' | 'grok' | 'azure' | 'google' | 'local' | 'cohere' | 'huggingface' | 'stabilityai';
+export type AIProvider =
+  | 'openai'
+  | 'claude'
+  | 'gemini'
+  | 'grok'
+  | 'azure'
+  | 'google'
+  | 'local'
+  | 'cohere'
+  | 'huggingface'
+  | 'stabilityai';
 
 export interface AIProviderConfig {
   apiKey: string;

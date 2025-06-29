@@ -3,8 +3,8 @@ import TweetForm from '@/components/forms/TweetForm';
 import TweetList from '@/components/list/TweetList';
 import { getTweets, updateTweet } from '@/services/api/tweetApi';
 import { Tweet } from '@/types/Tweet';
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 
 const TwitterPage: React.FC = () => {
@@ -25,7 +25,7 @@ const TwitterPage: React.FC = () => {
   };
 
   const addNewTweet = (newTweet: Tweet) => {
-    setTweets(prevTweets => [newTweet, ...prevTweets]);
+    setTweets((prevTweets) => [newTweet, ...prevTweets]);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -36,8 +36,8 @@ const TwitterPage: React.FC = () => {
   const handleUpdateTweet = async (id: string, content: string) => {
     try {
       const updatedTweet = await updateTweet(id, content);
-      setTweets(prevTweets =>
-        prevTweets.map(tweet =>
+      setTweets((prevTweets) =>
+        prevTweets.map((tweet) =>
           tweet._id.toString() === id ? { ...tweet, ...updatedTweet } : tweet
         )
       );

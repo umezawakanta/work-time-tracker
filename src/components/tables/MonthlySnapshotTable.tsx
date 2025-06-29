@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -8,10 +8,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { CombinedDataPoint } from "@/types";
+} from '@/components/ui/table';
+import { ArrowUpIcon, ArrowDownIcon, MinusIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CombinedDataPoint } from '@/types';
 
 interface DataPoint {
   date: string;
@@ -53,14 +53,11 @@ export const MonthlySnapshotTable: React.FC<MonthlySnapshotTableProps> = () => {
       const netWorth = baseAssets - baseDebts;
 
       // 前月比の成長率 (最初の月は値なし)
-      const assetGrowth =
-        i > 0 ? (baseAssets / snapshots[i - 1].assets - 1) * 100 : undefined;
+      const assetGrowth = i > 0 ? (baseAssets / snapshots[i - 1].assets - 1) * 100 : undefined;
 
-      const debtGrowth =
-        i > 0 ? (baseDebts / snapshots[i - 1].debts - 1) * 100 : undefined;
+      const debtGrowth = i > 0 ? (baseDebts / snapshots[i - 1].debts - 1) * 100 : undefined;
 
-      const netWorthGrowth =
-        i > 0 ? (netWorth / snapshots[i - 1].netWorth - 1) * 100 : undefined;
+      const netWorthGrowth = i > 0 ? (netWorth / snapshots[i - 1].netWorth - 1) * 100 : undefined;
 
       snapshots.push({
         date: `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月`,
@@ -81,8 +78,7 @@ export const MonthlySnapshotTable: React.FC<MonthlySnapshotTableProps> = () => {
 
   // 成長率表示用のアイコンとスタイル
   const renderGrowthIndicator = (growth: number | undefined) => {
-    if (growth === undefined)
-      return <MinusIcon className="h-3 w-3 text-gray-400" />;
+    if (growth === undefined) return <MinusIcon className="h-3 w-3 text-gray-400" />;
 
     if (growth > 0) {
       return (
@@ -127,15 +123,11 @@ export const MonthlySnapshotTable: React.FC<MonthlySnapshotTableProps> = () => {
           {snapshots.map((snapshot, index) => (
             <TableRow key={snapshot.date}>
               <TableCell className="font-medium">{snapshot.date}</TableCell>
-              <TableCell className="text-right">
-                ¥{snapshot.assets.toLocaleString()}
-              </TableCell>
+              <TableCell className="text-right">¥{snapshot.assets.toLocaleString()}</TableCell>
               <TableCell className="text-right">
                 {renderGrowthIndicator(snapshot.assetGrowth)}
               </TableCell>
-              <TableCell className="text-right">
-                ¥{snapshot.debts.toLocaleString()}
-              </TableCell>
+              <TableCell className="text-right">¥{snapshot.debts.toLocaleString()}</TableCell>
               <TableCell className="text-right">
                 {renderGrowthIndicator(snapshot.debtGrowth)}
               </TableCell>

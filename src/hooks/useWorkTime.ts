@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { calculateDuration } from "../utils/dateUtils";
-import { WorkTimeEntry } from "@/types/workTimeEntry";
+import { useState, useEffect } from 'react';
+import { calculateDuration } from '../utils/dateUtils';
+import { WorkTimeEntry } from '@/types/workTimeEntry';
 
 export function useWorkTime() {
   const [workTimeEntries, setWorkTimeEntries] = useState<WorkTimeEntry[]>([]);
 
   useEffect(() => {
     // LocalStorageから作業時間エントリーを読み込む
-    const storedEntries = localStorage.getItem("workTimeEntries");
+    const storedEntries = localStorage.getItem('workTimeEntries');
     if (storedEntries) {
       setWorkTimeEntries(JSON.parse(storedEntries));
     }
@@ -15,10 +15,10 @@ export function useWorkTime() {
 
   useEffect(() => {
     // 作業時間エントリーが更新されたらLocalStorageに保存
-    localStorage.setItem("workTimeEntries", JSON.stringify(workTimeEntries));
+    localStorage.setItem('workTimeEntries', JSON.stringify(workTimeEntries));
   }, [workTimeEntries]);
 
-  const addWorkTimeEntry = (entry: Omit<WorkTimeEntry, "_id" | "duration">) => {
+  const addWorkTimeEntry = (entry: Omit<WorkTimeEntry, '_id' | 'duration'>) => {
     const startDateTime = new Date(entry.startTime);
     const endDateTime = new Date(entry.endTime);
     const duration = calculateDuration(startDateTime, endDateTime);
@@ -27,7 +27,7 @@ export function useWorkTime() {
       ...entry,
       _id: Date.now().toString(),
       duration,
-      date: startDateTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
+      date: startDateTime.toISOString().split('T')[0], // YYYY-MM-DD形式の日付
       startTime: startDateTime.toISOString(),
       endTime: endDateTime.toISOString(),
     };
@@ -35,23 +35,13 @@ export function useWorkTime() {
     setWorkTimeEntries((prevEntries) => [...prevEntries, newEntry]);
   };
 
-  const updateWorkTimeEntry = (
-    id: string,
-    updatedEntry: Partial<WorkTimeEntry>
-  ) => {
+  const updateWorkTimeEntry = (id: string, updatedEntry: Partial<WorkTimeEntry>) => {
     setWorkTimeEntries((prevEntries) =>
       prevEntries.map((entry) => {
         if (entry._id === id) {
-          const updatedStartDateTime = new Date(
-            updatedEntry.startTime || entry.startTime
-          );
-          const updatedEndDateTime = new Date(
-            updatedEntry.endTime || entry.endTime
-          );
-          const updatedDuration = calculateDuration(
-            updatedStartDateTime,
-            updatedEndDateTime
-          );
+          const updatedStartDateTime = new Date(updatedEntry.startTime || entry.startTime);
+          const updatedEndDateTime = new Date(updatedEntry.endTime || entry.endTime);
+          const updatedDuration = calculateDuration(updatedStartDateTime, updatedEndDateTime);
 
           return {
             ...entry,
@@ -59,7 +49,7 @@ export function useWorkTime() {
             startTime: updatedStartDateTime.toISOString(),
             endTime: updatedEndDateTime.toISOString(),
             duration: updatedDuration,
-            date: updatedStartDateTime.toISOString().split("T")[0], // YYYY-MM-DD形式の日付
+            date: updatedStartDateTime.toISOString().split('T')[0], // YYYY-MM-DD形式の日付
           };
         }
         return entry;
@@ -68,9 +58,7 @@ export function useWorkTime() {
   };
 
   const deleteWorkTimeEntry = (id: string) => {
-    setWorkTimeEntries((prevEntries) =>
-      prevEntries.filter((entry) => entry._id !== id)
-    );
+    setWorkTimeEntries((prevEntries) => prevEntries.filter((entry) => entry._id !== id));
   };
 
   const getWorkTimeEntryById = (id: string) => {
@@ -78,10 +66,7 @@ export function useWorkTime() {
   };
 
   const getTotalWorkTime = () => {
-    return workTimeEntries.reduce(
-      (total, entry) => total + (entry.duration || 0),
-      0
-    );
+    return workTimeEntries.reduce((total, entry) => total + (entry.duration || 0), 0);
   };
 
   const getWorkTimeEntriesByDate = (date: string) => {

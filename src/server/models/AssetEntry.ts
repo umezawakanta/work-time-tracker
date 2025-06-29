@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface IAssetEntry extends mongoose.Document {
   date: Date;
@@ -17,7 +17,4 @@ const AssetEntrySchema = new mongoose.Schema<IAssetEntry>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const AssetEntry = mongoose.model<IAssetEntry>(
-  "AssetEntry",
-  AssetEntrySchema
-);
+export const AssetEntry = mongoose.model<IAssetEntry>('AssetEntry', AssetEntrySchema);

@@ -44,7 +44,7 @@ export const _getUserAccount = async (uid: string): Promise<UserAccount | null> 
       email: 'user@example.com',
       profile: {},
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error getting user account:', error);
@@ -56,10 +56,7 @@ export const _createUserAccount = async (uid: string, email: string): Promise<vo
   console.log('Creating user account:', uid, email);
 };
 
-export const _updateUserProfile = async (
-  uid: string,
-  data: Partial<Profile>
-): Promise<void> => {
+export const _updateUserProfile = async (uid: string, data: Partial<Profile>): Promise<void> => {
   console.log('Updating user profile:', uid, data);
 };
 
@@ -70,7 +67,7 @@ export const _inviteUser = async (email: string, referralCode: string): Promise<
 export const _checkPremiumFeatures = async (uid: string): Promise<any> => {
   return {
     hasAccess: true,
-    features: []
+    features: [],
   };
 };
 
@@ -85,6 +82,6 @@ export const _extendTrialPeriod = async (uid: string, days: number): Promise<voi
 export const _fetchUsageStatistics = async (uid: string): Promise<any> => {
   return {
     usage: {},
-    limits: {}
+    limits: {},
   };
 };

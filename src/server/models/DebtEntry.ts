@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface IDebtEntry extends mongoose.Document {
   date: Date;
@@ -16,7 +16,4 @@ const DebtEntrySchema = new mongoose.Schema<IDebtEntry>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const DebtEntry = mongoose.model<IDebtEntry>(
-  "DebtEntry",
-  DebtEntrySchema
-);
+export const DebtEntry = mongoose.model<IDebtEntry>('DebtEntry', DebtEntrySchema);

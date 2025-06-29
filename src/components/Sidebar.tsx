@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Plus } from 'lucide-react';
 
 export function Sidebar() {
-  const miniCalendarDays = Array.from({ length: 31 }, (_, i) => i + 1)
+  const miniCalendarDays = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
     <div className="w-64 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -26,11 +26,7 @@ export function Sidebar() {
           </div>
           <div className="mt-2 grid grid-cols-7 gap-1 text-center">
             {miniCalendarDays.map((day) => (
-              <Button
-                key={day}
-                variant="ghost"
-                className="h-8 w-8 p-0 hover:bg-muted"
-              >
+              <Button key={day} variant="ghost" className="h-8 w-8 p-0 hover:bg-muted">
                 {day}
               </Button>
             ))}
@@ -38,6 +34,5 @@ export function Sidebar() {
         </div>
       </ScrollArea>
     </div>
-  )
+  );
 }
-

@@ -1,8 +1,8 @@
-import React from "react";
-import { Book } from "../store/bookSlice";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Star, Edit2, Trash2, ExternalLink } from "lucide-react";
+import React from 'react';
+import { Book } from '../store/bookSlice';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Star, Edit2, Trash2, ExternalLink } from 'lucide-react';
 
 interface BookCardProps {
   book: Book;
@@ -62,9 +62,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onEdit, onDelete }) => {
                 <Star
                   key={star}
                   className={`h-4 w-4 ${
-                    star <= book.rating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
+                    star <= book.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                   }`}
                 />
               ))}

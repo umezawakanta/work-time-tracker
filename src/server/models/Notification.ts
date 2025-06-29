@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface INotification extends mongoose.Document {
   userId: string;
@@ -25,8 +25,8 @@ const NotificationSchema = new mongoose.Schema<INotification>(
     type: {
       type: String,
       required: true,
-      enum: ["reminder", "report", "alert", "success", "info"],
-      default: "info"
+      enum: ['reminder', 'report', 'alert', 'success', 'info'],
+      default: 'info',
     },
     read: { type: Boolean, default: false },
     timestamp: { type: Date, default: Date.now },
@@ -42,7 +42,4 @@ NotificationSchema.index({ userId: 1, read: 1 });
 NotificationSchema.index({ userId: 1, timestamp: -1 });
 NotificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTLインデックス - 期限切れの通知を自動削除
 
-export const Notification = mongoose.model<INotification>(
-  "Notification",
-  NotificationSchema
-);
+export const Notification = mongoose.model<INotification>('Notification', NotificationSchema);

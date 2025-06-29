@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { toast } from 'react-hot-toast'
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
 import { createTweet } from '@/services/api/tweetApi';
 import { X } from 'lucide-react';
 import { Tweet } from '@/types/Tweet';

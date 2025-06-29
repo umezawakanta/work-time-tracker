@@ -32,39 +32,29 @@ const getNotificationIcon = (type: string) => {
 const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   onMarkAsRead,
-  onDelete
+  onDelete,
 }) => {
   // 相対的な時間表示（例: 「3時間前」）
   const timeAgo = formatDistanceToNow(new Date(notification.timestamp), {
     addSuffix: true,
-    locale: ja
+    locale: ja,
   });
 
   return (
     <div
       className={cn(
-        "p-3 rounded-lg border transition-colors duration-200",
-        notification.read
-          ? "bg-white border-gray-200"
-          : "bg-blue-50 border-blue-200"
+        'p-3 rounded-lg border transition-colors duration-200',
+        notification.read ? 'bg-white border-gray-200' : 'bg-blue-50 border-blue-200'
       )}
     >
       <div className="flex items-start">
-        <div className="mt-1 mr-3">
-          {getNotificationIcon(notification.type)}
-        </div>
+        <div className="mt-1 mr-3">{getNotificationIcon(notification.type)}</div>
         <div className="flex-1">
           <div className="flex justify-between items-start">
-            <h4 className="font-medium text-sm">
-              {notification.title}
-            </h4>
-            <p className="text-xs text-gray-500 whitespace-nowrap ml-2">
-              {timeAgo}
-            </p>
+            <h4 className="font-medium text-sm">{notification.title}</h4>
+            <p className="text-xs text-gray-500 whitespace-nowrap ml-2">{timeAgo}</p>
           </div>
-          <p className="text-sm mt-1 text-gray-700">
-            {notification.message}
-          </p>
+          <p className="text-sm mt-1 text-gray-700">{notification.message}</p>
           <div className="flex mt-2 justify-end space-x-2">
             {!notification.read && (
               <Button

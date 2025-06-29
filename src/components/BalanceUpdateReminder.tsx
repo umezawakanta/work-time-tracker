@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, RefreshCw } from "lucide-react";
-import { formatDateAndTime } from "@/utils/dateUtils";
-import { useLocale } from "@/hooks/useLocale";
-import { useDispatch } from "react-redux";
-import { addAssetEntry } from "@/store/assetSlice";
-import { addDebtEntry } from "@/store/debtSlice";
-import { AppDispatch } from "@/store";
-import { AssetEntry, DebtEntry } from "@/types";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { formatDateAndTime } from '@/utils/dateUtils';
+import { useLocale } from '@/hooks/useLocale';
+import { useDispatch } from 'react-redux';
+import { addAssetEntry } from '@/store/assetSlice';
+import { addDebtEntry } from '@/store/debtSlice';
+import { AppDispatch } from '@/store';
+import { AssetEntry, DebtEntry } from '@/types';
 
 interface BalanceUpdateReminderProps {
   assetEntries: AssetEntry[];
@@ -23,11 +23,11 @@ interface BaseAccountStatus {
 }
 
 interface AssetAccountStatus extends BaseAccountStatus {
-  type: "asset";
+  type: 'asset';
 }
 
 interface DebtAccountStatus extends BaseAccountStatus {
-  type: "debt";
+  type: 'debt';
   description: string;
 }
 
@@ -40,37 +40,34 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
 }) => {
   const { locale } = useLocale();
   const dispatch = useDispatch<AppDispatch>();
-  const [updatingAccounts, setUpdatingAccounts] = useState<Set<string>>(
-    new Set()
-  );
-  const today = new Date().toISOString().split("T")[0];
+  const [updatingAccounts, setUpdatingAccounts] = useState<Set<string>>(new Set());
+  const today = new Date().toISOString().split('T')[0];
 
   const groupAndDeduplicate = (
     entries: AssetEntry[] | DebtEntry[],
-    type: "asset" | "debt"
+    type: 'asset' | 'debt'
   ): AccountStatus[] => {
     const accountMap = new Map<string, AccountStatus>();
 
     entries.forEach((entry) => {
-      const isUpdated =
-        new Date(entry.date).toISOString().split("T")[0] === today;
+      const isUpdated = new Date(entry.date).toISOString().split('T')[0] === today;
       const currentStatus = accountMap.get(entry.account);
 
       const newStatus: AccountStatus =
-        type === "asset"
+        type === 'asset'
           ? {
               account: entry.account,
               isUpdated: isUpdated,
               lastUpdateDate: entry.date,
               balance: entry.value,
-              type: "asset",
+              type: 'asset',
             }
           : {
               account: entry.account,
               isUpdated: isUpdated,
               lastUpdateDate: entry.date,
               balance: entry.value,
-              type: "debt",
+              type: 'debt',
               description: (entry as DebtEntry).description,
             };
 
@@ -86,8 +83,8 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
     return Array.from(accountMap.values());
   };
 
-  const assetStatuses = groupAndDeduplicate(assetEntries, "asset");
-  const debtStatuses = groupAndDeduplicate(debtEntries, "debt");
+  const assetStatuses = groupAndDeduplicate(assetEntries, 'asset');
+  const debtStatuses = groupAndDeduplicate(debtEntries, 'debt');
 
   const needsUpdate =
     assetStatuses.some((status) => !status.isUpdated) ||
@@ -103,17 +100,17 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
       account: status.account,
       value: status.balance,
       date: new Date().toISOString(),
-      ...(status.type === "debt" && { description: status.description }),
+      ...(status.type === 'debt' && { description: status.description }),
     };
 
     try {
-      if (status.type === "asset") {
+      if (status.type === 'asset') {
         await dispatch(addAssetEntry(newEntry));
       } else {
         await dispatch(addDebtEntry(newEntry as DebtEntry));
       }
     } catch (error) {
-      console.error("Failed to update balance:", error);
+      console.error('Failed to update balance:', error);
     } finally {
       setUpdatingAccounts((prev) => {
         const newSet = new Set(prev);
@@ -128,10 +125,7 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
       <h3 className="font-semibold">{type}</h3>
       <ul>
         {statuses.map((status) => (
-          <li
-            key={status.account}
-            className="flex items-center justify-between py-1"
-          >
+          <li key={status.account} className="flex items-center justify-between py-1">
             <div className="flex items-center">
               {status.isUpdated ? (
                 <CheckCircle className="text-green-500 mr-2" size={16} />
@@ -139,17 +133,15 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
                 <XCircle className="text-red-500 mr-2" size={16} />
               )}
               <span>
-                {status.account}: {status.isUpdated ? "更新済み" : "未更新"}
+                {status.account}: {status.isUpdated ? '更新済み' : '未更新'}
               </span>
             </div>
             <div className="flex items-center">
-              <span className="mr-4 font-medium">
-                {status.balance.toLocaleString()}円
-              </span>
+              <span className="mr-4 font-medium">{status.balance.toLocaleString()}円</span>
               <span className="text-sm text-gray-500 mr-2">
                 {formatDateAndTime(status.lastUpdateDate, locale, {
-                  dateStyle: "short",
-                  timeStyle: "medium",
+                  dateStyle: 'short',
+                  timeStyle: 'medium',
                 })}
               </span>
               {!status.isUpdated && (
@@ -162,7 +154,7 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
                   {updatingAccounts.has(status.account) ? (
                     <RefreshCw className="h-4 w-4 animate-spin" />
                   ) : (
-                    "クイック更新"
+                    'クイック更新'
                   )}
                 </Button>
               )}
@@ -182,9 +174,9 @@ const BalanceUpdateReminder: React.FC<BalanceUpdateReminderProps> = ({
         </h3>
         <p className="text-sm text-gray-600 mt-1">本日の資産・負債の残高を入力してください。</p>
       </div>
-      {renderAccountStatus(assetStatuses, "資産")}
-      {renderAccountStatus(debtStatuses, "負債")}
-      
+      {renderAccountStatus(assetStatuses, '資産')}
+      {renderAccountStatus(debtStatuses, '負債')}
+
       {onAddNew && (
         <div className="mt-4">
           <Button onClick={onAddNew} variant="outline">

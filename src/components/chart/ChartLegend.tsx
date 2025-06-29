@@ -1,8 +1,8 @@
-import React from "react";
-import { PoliticalParty } from "@/types/survey";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import React from 'react';
+import { PoliticalParty } from '@/types/survey';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ChartLegendProps {
   parties: PoliticalParty[];
@@ -21,22 +21,22 @@ const ChartLegend: React.FC<ChartLegendProps> = ({
   const sortedParties = [...parties].sort((a, b) => {
     // ここでの順序はとりあえず固定されたもの（実際のデータでは支持率に基づいてソートする）
     const partyOrder: Record<string, number> = {
-      "自民": 1,
-      "立民": 2,
-      "公明": 3,
-      "維新": 4,
-      "共産": 5,
-      "国民": 6,
-      "れいわ": 7,
-      "社民": 8,
-      "N党": 9,
+      自民: 1,
+      立民: 2,
+      公明: 3,
+      維新: 4,
+      共産: 5,
+      国民: 6,
+      れいわ: 7,
+      社民: 8,
+      N党: 9,
     };
-    
+
     return (partyOrder[a.shortName] || 100) - (partyOrder[b.shortName] || 100);
   });
 
   // 残りのコードは変更なし
-  
+
   return (
     <div className="flex flex-wrap gap-2">
       <TooltipProvider>
@@ -48,10 +48,10 @@ const ChartLegend: React.FC<ChartLegendProps> = ({
                 size="sm"
                 className={`px-3 py-1 h-8 border-l-4 transition-all ${
                   highlightedParties.includes(party.shortName)
-                    ? "bg-gray-100 dark:bg-gray-800 ring-2 ring-offset-2 ring-opacity-50"
+                    ? 'bg-gray-100 dark:bg-gray-800 ring-2 ring-offset-2 ring-opacity-50'
                     : highlightedParties.length > 0
-                    ? "opacity-50"
-                    : ""
+                      ? 'opacity-50'
+                      : ''
                 }`}
                 style={{
                   borderLeftColor: party.colorCode,
@@ -60,7 +60,9 @@ const ChartLegend: React.FC<ChartLegendProps> = ({
               >
                 <span className="font-medium">{party.name}</span>
                 {highlightedParties.includes(party.shortName) && (
-                  <Badge variant="default" className="ml-2 bg-primary">表示中</Badge>
+                  <Badge variant="default" className="ml-2 bg-primary">
+                    表示中
+                  </Badge>
                 )}
               </Button>
             </TooltipTrigger>
@@ -69,7 +71,7 @@ const ChartLegend: React.FC<ChartLegendProps> = ({
             </TooltipContent>
           </Tooltip>
         ))}
-        
+
         {highlightedParties.length > 0 && (
           <Tooltip>
             <TooltipTrigger asChild>

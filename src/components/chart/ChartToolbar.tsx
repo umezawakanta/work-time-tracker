@@ -1,25 +1,13 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
-} from "@/components/ui/tooltip";
-import { 
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { 
-  Download, 
-  Share2, 
-  Maximize2, 
-  BarChart3, 
-  LineChart, 
-  PieChart
-} from "lucide-react";
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Download, Share2, Maximize2, BarChart3, LineChart, PieChart } from 'lucide-react';
 
 interface ChartToolbarProps {
   onDownloadImage: () => void;
@@ -27,7 +15,7 @@ interface ChartToolbarProps {
   onShare: () => void;
   onToggleFullscreen: () => void;
   onChangeChartType: (type: string) => void;
-  chartType: "line" | "bar" | "pie";
+  chartType: 'line' | 'bar' | 'pie';
   isFullscreen: boolean; // フルスクリーン状態を視覚的に示すために使用
 }
 
@@ -38,7 +26,7 @@ const ChartToolbar: React.FC<ChartToolbarProps> = ({
   onToggleFullscreen,
   onChangeChartType,
   chartType,
-  isFullscreen
+  isFullscreen,
 }) => {
   return (
     <div className="flex items-center gap-2">
@@ -49,9 +37,9 @@ const ChartToolbar: React.FC<ChartToolbarProps> = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="h-8 w-8">
-                  {chartType === "line" ? (
+                  {chartType === 'line' ? (
                     <LineChart className="h-4 w-4" />
-                  ) : chartType === "bar" ? (
+                  ) : chartType === 'bar' ? (
                     <BarChart3 className="h-4 w-4" />
                   ) : (
                     <PieChart className="h-4 w-4" />
@@ -59,15 +47,15 @@ const ChartToolbar: React.FC<ChartToolbarProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onChangeChartType("line")}>
+                <DropdownMenuItem onClick={() => onChangeChartType('line')}>
                   <LineChart className="h-4 w-4 mr-2" />
                   折れ線グラフ
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onChangeChartType("bar")}>
+                <DropdownMenuItem onClick={() => onChangeChartType('bar')}>
                   <BarChart3 className="h-4 w-4 mr-2" />
                   棒グラフ
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onChangeChartType("pie")}>
+                <DropdownMenuItem onClick={() => onChangeChartType('pie')}>
                   <PieChart className="h-4 w-4 mr-2" />
                   円グラフ
                 </DropdownMenuItem>
@@ -92,9 +80,7 @@ const ChartToolbar: React.FC<ChartToolbarProps> = ({
                 <DropdownMenuItem onClick={onDownloadImage}>
                   画像としてダウンロード
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDownloadCSV}>
-                  CSVとしてダウンロード
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onDownloadCSV}>CSVとしてダウンロード</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TooltipTrigger>
@@ -118,10 +104,10 @@ const ChartToolbar: React.FC<ChartToolbarProps> = ({
         {/* フルスクリーンボタン */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className={`h-8 w-8 ${isFullscreen ? 'bg-accent' : ''}`} 
+            <Button
+              variant="outline"
+              size="icon"
+              className={`h-8 w-8 ${isFullscreen ? 'bg-accent' : ''}`}
               onClick={onToggleFullscreen}
             >
               <Maximize2 className="h-4 w-4" />

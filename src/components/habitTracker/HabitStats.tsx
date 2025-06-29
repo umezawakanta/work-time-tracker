@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { BarChart2, Flame } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { BarChart2, Flame } from 'lucide-react';
 
 // 習慣の統計情報の型定義
 interface HabitStat {
@@ -43,18 +43,14 @@ const HabitStats = ({ stats, getActiveHabits }: HabitStatsProps) => {
                 </div>
                 <Progress value={habitStats.monthlyProgress} className="h-2" />
               </div>
-            ))
-          }
-          
+            ))}
+
           {/* データがない場合のフォールバック */}
-          {Object.entries(stats).filter(([habit]) => getActiveHabits().includes(habit)).length === 0 && (
-            <div className="text-center py-4 text-gray-500">
-              表示するデータがありません
-            </div>
-          )}
+          {Object.entries(stats).filter(([habit]) => getActiveHabits().includes(habit)).length ===
+            0 && <div className="text-center py-4 text-gray-500">表示するデータがありません</div>}
         </CardContent>
       </Card>
-      
+
       {/* 最長継続記録 */}
       <Card>
         <CardHeader className="pb-2">
@@ -69,25 +65,24 @@ const HabitStats = ({ stats, getActiveHabits }: HabitStatsProps) => {
             .sort((a, b) => b[1].longestStreak - a[1].longestStreak)
             .slice(0, 5)
             .map(([habit, habitStats], index) => (
-              <div key={index} className="flex justify-between items-center mb-2 pb-2 border-b last:border-0">
+              <div
+                key={index}
+                className="flex justify-between items-center mb-2 pb-2 border-b last:border-0"
+              >
                 <span className="text-sm">{habit}</span>
                 <Badge className={habitStats.longestStreak >= 30 ? 'bg-yellow-500' : 'bg-blue-500'}>
                   {habitStats.longestStreak}日
                 </Badge>
               </div>
-            ))
-          }
-          
+            ))}
+
           {/* データがない場合のフォールバック */}
-          {Object.entries(stats).filter(([habit]) => getActiveHabits().includes(habit)).length === 0 && (
-            <div className="text-center py-4 text-gray-500">
-              表示するデータがありません
-            </div>
-          )}
+          {Object.entries(stats).filter(([habit]) => getActiveHabits().includes(habit)).length ===
+            0 && <div className="text-center py-4 text-gray-500">表示するデータがありません</div>}
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default HabitStats
+export default HabitStats;

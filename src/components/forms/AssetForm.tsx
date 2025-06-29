@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { addAssetEntry, updateAssetEntry } from "@/store/assetSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { addAssetEntry, updateAssetEntry } from '@/store/assetSlice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/components/ui/use-toast';
 
 interface AssetFormProps {
   editingAsset: string | null;
@@ -20,21 +20,21 @@ export const AssetForm: React.FC<AssetFormProps> = ({
   updateLastBalanceDate,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [currentAssetValue, setCurrentAssetValue] = useState<string>("");
-  const [currentAssetAccount, setCurrentAssetAccount] = useState<string>("");
+  const [currentAssetValue, setCurrentAssetValue] = useState<string>('');
+  const [currentAssetAccount, setCurrentAssetAccount] = useState<string>('');
 
   const handleAssetSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentAssetAccount) {
       toast({
-        title: "エラー",
-        description: "口座を選択してください。",
-        variant: "destructive",
+        title: 'エラー',
+        description: '口座を選択してください。',
+        variant: 'destructive',
       });
       return;
     }
     const newAssetEntry = {
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split('T')[0],
       value: parseFloat(currentAssetValue),
       account: currentAssetAccount,
     };
@@ -44,14 +44,12 @@ export const AssetForm: React.FC<AssetFormProps> = ({
     } else {
       dispatch(addAssetEntry(newAssetEntry));
     }
-    setCurrentAssetValue("");
-    setCurrentAssetAccount("");
+    setCurrentAssetValue('');
+    setCurrentAssetAccount('');
     updateLastBalanceDate();
     toast({
-      title: "成功",
-      description: editingAsset
-        ? "資産情報が更新されました。"
-        : "資産情報が記録されました。",
+      title: '成功',
+      description: editingAsset ? '資産情報が更新されました。' : '資産情報が記録されました。',
     });
   };
 
@@ -82,13 +80,9 @@ export const AssetForm: React.FC<AssetFormProps> = ({
               required
             />
           </div>
-          <Button type="submit">{editingAsset ? "更新" : "登録"}</Button>
+          <Button type="submit">{editingAsset ? '更新' : '登録'}</Button>
           {editingAsset && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setEditingAsset(null)}
-            >
+            <Button type="button" variant="outline" onClick={() => setEditingAsset(null)}>
               キャンセル
             </Button>
           )}

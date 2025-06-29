@@ -8,34 +8,37 @@ export interface IHabit extends mongoose.Document {
   updatedAt: Date;
 }
 
-const habitSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'User'
+const habitSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    data: {
+      type: Map,
+      of: [Boolean],
+      default: () => new Map(),
+    },
   },
-  name: {
-    type: String,
-    required: true
-  },
-  data: {
-    type: Map,
-    of: [Boolean],
-    default: () => new Map()
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (_doc, ret) => {
+        if (ret.data instanceof Map) {
+          ret.data = Object.fromEntries(ret.data);
+        }
+        return ret;
+      },
+    },
   }
-}, {
-  timestamps: true,
-  toJSON: { 
-    transform: (_doc, ret) => {
-      if (ret.data instanceof Map) {
-        ret.data = Object.fromEntries(ret.data);
-      }
-      return ret;
-    }
-  }
-});
+);
 
-habitSchema.pre('save', function(next) {
+habitSchema.pre('save', function (next) {
   if (!this.data) {
     this.data = new Map();
   }
@@ -48,16 +51,16 @@ habitSchema.pre('save', function(next) {
       return next(new Error('Invalid data format'));
     }
   }
-  
+
   for (const [key, value] of this.data.entries()) {
     if (!Array.isArray(value)) {
       return next(new Error(`Invalid data format for month ${key}`));
     }
-    if (!value.every(item => typeof item === 'boolean')) {
+    if (!value.every((item) => typeof item === 'boolean')) {
       return next(new Error(`Data for month ${key} contains non-boolean values`));
     }
   }
-  
+
   next();
 });
 

@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  BarChart4,
-  Calendar,
-  Clock,
-  TrendingUp,
-  ArrowUpRight,
-} from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { BarChart4, Calendar, Clock, TrendingUp, ArrowUpRight } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -14,19 +8,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { TodoStats } from "@/types/todo";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { TodoStats } from '@/types/todo';
 
 // 分析タブの種類
-type AnalyticsTab = "overview" | "productivity" | "trends" | "insights";
+type AnalyticsTab = 'overview' | 'productivity' | 'trends' | 'insights';
 
 interface TaskAnalyticsProps {
   stats: TodoStats;
-  dateRange: "day" | "week" | "month" | "year";
-  setDateRange: (range: "day" | "week" | "month" | "year") => void;
+  dateRange: 'day' | 'week' | 'month' | 'year';
+  setDateRange: (range: 'day' | 'week' | 'month' | 'year') => void;
   isPremium: boolean;
 }
 
@@ -40,7 +34,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
   setDateRange,
   isPremium,
 }) => {
-  const [activeTab, setActiveTab] = useState<AnalyticsTab>("overview");
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>('overview');
   const [productivityScore, setProductivityScore] = useState<number>(0);
   const [loadingInsights, setLoadingInsights] = useState<boolean>(false);
   const [productivityTips, setProductivityTips] = useState<string[]>([]);
@@ -58,10 +52,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
       const streakBonus = Math.min(stats.streakDays, 10) * 2;
 
       // 合計スコア（0-100点）
-      return Math.min(
-        Math.round(completionScore + deadlineScore + streakBonus),
-        100
-      );
+      return Math.min(Math.round(completionScore + deadlineScore + streakBonus), 100);
     };
 
     // アニメーション付きでスコアを表示
@@ -82,21 +73,21 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
 
   // 生産性向上のヒントを取得
   useEffect(() => {
-    if (activeTab === "insights" && isPremium) {
+    if (activeTab === 'insights' && isPremium) {
       setLoadingInsights(true);
 
       // 実際の実装ではAPIからデータを取得
       setTimeout(() => {
         const tips = [
-          "完了率が最も高い曜日は水曜日です。重要なタスクをこの日に設定してみましょう。",
+          '完了率が最も高い曜日は水曜日です。重要なタスクをこの日に設定してみましょう。',
           `平均タスク完了時間は${
             stats.averageCompletionTime < 60
               ? `${stats.averageCompletionTime}分`
               : `${(stats.averageCompletionTime / 60).toFixed(1)}時間`
           }です。時間見積もりを改善しましょう。`,
-          "期限切れになったタスクの80%は見積もり時間が過小評価されています。",
-          "短時間のフォーカスセッションを増やすことで完了率が15%向上する可能性があります。",
-          "タスクをより小さな単位に分割すると完了率が向上します。",
+          '期限切れになったタスクの80%は見積もり時間が過小評価されています。',
+          '短時間のフォーカスセッションを増やすことで完了率が15%向上する可能性があります。',
+          'タスクをより小さな単位に分割すると完了率が向上します。',
         ];
 
         setProductivityTips(tips);
@@ -107,18 +98,18 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
 
   // パフォーマンススコアの色を取得
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-blue-600";
-    if (score >= 40) return "text-amber-600";
-    return "text-gray-600";
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-blue-600';
+    if (score >= 40) return 'text-amber-600';
+    return 'text-gray-600';
   };
 
   // スコアのラベルを取得
   const getScoreLabel = (score: number) => {
-    if (score >= 80) return "優秀";
-    if (score >= 60) return "良好";
-    if (score >= 40) return "平均的";
-    return "改善の余地あり";
+    if (score >= 80) return '優秀';
+    if (score >= 60) return '良好';
+    if (score >= 40) return '平均的';
+    return '改善の余地あり';
   };
 
   return (
@@ -132,32 +123,32 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
             <TabsTrigger
               value="day"
               className="text-xs py-1 px-2"
-              onClick={() => setDateRange("day")}
-              data-active={dateRange === "day"}
+              onClick={() => setDateRange('day')}
+              data-active={dateRange === 'day'}
             >
               今日
             </TabsTrigger>
             <TabsTrigger
               value="week"
               className="text-xs py-1 px-2"
-              onClick={() => setDateRange("week")}
-              data-active={dateRange === "week"}
+              onClick={() => setDateRange('week')}
+              data-active={dateRange === 'week'}
             >
               今週
             </TabsTrigger>
             <TabsTrigger
               value="month"
               className="text-xs py-1 px-2"
-              onClick={() => setDateRange("month")}
-              data-active={dateRange === "month"}
+              onClick={() => setDateRange('month')}
+              data-active={dateRange === 'month'}
             >
               今月
             </TabsTrigger>
             <TabsTrigger
               value="year"
               className="text-xs py-1 px-2"
-              onClick={() => setDateRange("year")}
-              data-active={dateRange === "year"}
+              onClick={() => setDateRange('year')}
+              data-active={dateRange === 'year'}
             >
               今年
             </TabsTrigger>
@@ -166,10 +157,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
       </div>
 
       {/* 分析タブ */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as AnalyticsTab)}
-      >
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as AnalyticsTab)}>
         <TabsList className="grid grid-cols-4 mb-4">
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="productivity">生産性</TabsTrigger>
@@ -189,9 +177,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
                 <CardTitle className="text-sm font-medium">完了率</CardTitle>
               </CardHeader>
               <CardContent className="py-2">
-                <div className="text-2xl font-bold">
-                  {stats.completionRate}%
-                </div>
+                <div className="text-2xl font-bold">{stats.completionRate}%</div>
                 <Progress value={stats.completionRate} className="h-2 mt-2" />
                 <p className="text-xs text-muted-foreground mt-2">
                   全{stats.totalTasks}タスク中{stats.completedTasks}タスク完了
@@ -202,17 +188,13 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
             {/* 期限遵守率カード */}
             <Card>
               <CardHeader className="py-4">
-                <CardTitle className="text-sm font-medium">
-                  期限遵守率
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">期限遵守率</CardTitle>
               </CardHeader>
               <CardContent className="py-2">
-                <div className="text-2xl font-bold">
-                  {stats.deadlineMeetRate}%
-                </div>
+                <div className="text-2xl font-bold">{stats.deadlineMeetRate}%</div>
                 <Progress value={stats.deadlineMeetRate} className="h-2 mt-2" />
                 <p className="text-xs text-muted-foreground mt-2">
-                  期限内: {stats.tasksCompletedBeforeDeadline}タスク / 期限超過:{" "}
+                  期限内: {stats.tasksCompletedBeforeDeadline}タスク / 期限超過:{' '}
                   {stats.tasksCompletedAfterDeadline}タスク
                 </p>
               </CardContent>
@@ -221,16 +203,10 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
             {/* 生産性スコアカード */}
             <Card>
               <CardHeader className="py-4">
-                <CardTitle className="text-sm font-medium">
-                  生産性スコア
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">生産性スコア</CardTitle>
               </CardHeader>
               <CardContent className="py-2">
-                <div
-                  className={`text-2xl font-bold ${getScoreColor(
-                    productivityScore
-                  )}`}
-                >
+                <div className={`text-2xl font-bold ${getScoreColor(productivityScore)}`}>
                   {productivityScore}/100
                 </div>
                 <Progress value={productivityScore} className="h-2 mt-2" />
@@ -252,9 +228,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
                     <Calendar className="h-4 w-4 text-blue-600 mr-2" />
                     <span className="text-sm">現在の連続達成日数</span>
                   </div>
-                  <p className="text-2xl font-bold mt-1">
-                    {stats.streakDays}日
-                  </p>
+                  <p className="text-2xl font-bold mt-1">{stats.streakDays}日</p>
                 </div>
 
                 <Separator orientation="vertical" className="h-10 mx-4" />
@@ -264,9 +238,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
                     <TrendingUp className="h-4 w-4 text-green-600 mr-2" />
                     <span className="text-sm">最長連続記録</span>
                   </div>
-                  <p className="text-2xl font-bold mt-1">
-                    {stats.longestStreak}日
-                  </p>
+                  <p className="text-2xl font-bold mt-1">{stats.longestStreak}日</p>
                 </div>
 
                 <Separator orientation="vertical" className="h-10 mx-4" />
@@ -292,17 +264,13 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
           <Card>
             <CardHeader>
               <CardTitle>生産性分析</CardTitle>
-              <CardDescription>
-                タスク完了パターンと効率性の分析
-              </CardDescription>
+              <CardDescription>タスク完了パターンと効率性の分析</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm">
                 このセクションでは、あなたのタスク完了パターンと効率性を分析します。
               </p>
-              <p className="text-sm mt-2">
-                実装中の機能です。今後のアップデートをお待ちください。
-              </p>
+              <p className="text-sm mt-2">実装中の機能です。今後のアップデートをお待ちください。</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -312,17 +280,13 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
           <Card>
             <CardHeader>
               <CardTitle>タスク完了の傾向</CardTitle>
-              <CardDescription>
-                時間経過に伴うタスク完了の傾向を表示
-              </CardDescription>
+              <CardDescription>時間経過に伴うタスク完了の傾向を表示</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm">
                 このセクションでは、時間経過に伴うタスク完了の傾向を表示します。
               </p>
-              <p className="text-sm mt-2">
-                実装中の機能です。今後のアップデートをお待ちください。
-              </p>
+              <p className="text-sm mt-2">実装中の機能です。今後のアップデートをお待ちください。</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -333,9 +297,7 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
             <Card>
               <CardHeader>
                 <CardTitle>生産性向上のインサイト</CardTitle>
-                <CardDescription>
-                  あなたのタスク管理パターンから導かれた洞察
-                </CardDescription>
+                <CardDescription>あなたのタスク管理パターンから導かれた洞察</CardDescription>
               </CardHeader>
               <CardContent>
                 {loadingInsights ? (
@@ -365,17 +327,13 @@ export const TaskAnalytics: React.FC<TaskAnalyticsProps> = ({
             <Card>
               <CardHeader>
                 <CardTitle>プレミアム限定機能</CardTitle>
-                <CardDescription>
-                  タスク管理の効率を向上させるインサイト
-                </CardDescription>
+                <CardDescription>タスク管理の効率を向上させるインサイト</CardDescription>
               </CardHeader>
               <CardContent className="text-center py-6">
                 <div className="mx-auto bg-muted rounded-full p-3 w-12 h-12 flex items-center justify-center mb-4">
                   <BarChart4 className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium mb-2">
-                  AIパワードインサイト
-                </h3>
+                <h3 className="text-lg font-medium mb-2">AIパワードインサイト</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   プレミアムプランにアップグレードして、タスク管理パターンに基づいたパーソナライズされたインサイトを取得しましょう。
                 </p>

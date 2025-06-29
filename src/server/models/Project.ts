@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IProject extends Document {
   name: string;
@@ -13,13 +13,13 @@ const ProjectSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "プロジェクト名は必須です"],
+      required: [true, 'プロジェクト名は必須です'],
       trim: true,
     },
     color: {
       type: String,
-      required: [true, "カラーは必須です"],
-      default: "#4285F4", // デフォルトのカラー
+      required: [true, 'カラーは必須です'],
+      default: '#4285F4', // デフォルトのカラー
     },
     lastUsed: {
       type: Date,
@@ -27,7 +27,7 @@ const ProjectSchema: Schema = new Schema(
     },
     userId: {
       type: String,
-      required: [true, "ユーザーIDは必須です"],
+      required: [true, 'ユーザーIDは必須です'],
       index: true, // ユーザーIDでの検索を高速化
     },
   },
@@ -39,4 +39,4 @@ const ProjectSchema: Schema = new Schema(
 // 同じユーザーの同じ名前のプロジェクトが存在しないことを確認する
 ProjectSchema.index({ userId: 1, name: 1 }, { unique: true });
 
-export const Project = mongoose.model<IProject>("Project", ProjectSchema);
+export const Project = mongoose.model<IProject>('Project', ProjectSchema);

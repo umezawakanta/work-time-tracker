@@ -10,10 +10,10 @@ export type ExportFormat = 'csv' | 'json' | 'ical' | 'xlsx';
 
 // エクスポートオプション
 export interface ExportOptions {
-  includeCompleted: boolean;       // 完了済みタスクを含める
-  includeHistory: boolean;         // 履歴データを含める
+  includeCompleted: boolean; // 完了済みタスクを含める
+  includeHistory: boolean; // 履歴データを含める
   dateRange?: [Date, Date] | null; // 日付範囲
-  fields?: string[];               // エクスポートするフィールド
+  fields?: string[]; // エクスポートするフィールド
 }
 
 // デフォルトのエクスポートオプション
@@ -21,7 +21,7 @@ const defaultExportOptions: ExportOptions = {
   includeCompleted: true,
   includeHistory: false,
   dateRange: null,
-  fields: undefined
+  fields: undefined,
 };
 
 /**
@@ -44,10 +44,10 @@ export const exportTasks = async (
         format,
         ...mergedOptions,
         dateRange: mergedOptions.dateRange
-          ? mergedOptions.dateRange.map(d => d.toISOString())
+          ? mergedOptions.dateRange.map((d) => d.toISOString())
           : undefined,
       },
-      responseType: 'blob'
+      responseType: 'blob',
     });
 
     return response.data;
@@ -121,7 +121,7 @@ export const parseCsvToTasks = (csv: string): Partial<Todo>[] => {
   type TodoValueType = string | number | boolean | null | undefined;
 
   // タスクに変換
-  return lines.slice(1).map(line => {
+  return lines.slice(1).map((line) => {
     const values = line.split(',');
     const task: Record<string, TodoValueType> = {}; // any型を回避
 
@@ -193,9 +193,7 @@ export const importTasksFromFile = async (
         }
 
         // 形式に応じたパース
-        const tasks = format === 'json'
-          ? parseJsonToTasks(content)
-          : parseCsvToTasks(content);
+        const tasks = format === 'json' ? parseJsonToTasks(content) : parseCsvToTasks(content);
 
         resolve(tasks);
       } catch (error) {
@@ -233,10 +231,7 @@ export const sendTasksToApi = async (tasks: Partial<Todo>[]): Promise<boolean> =
  * @param format ファイル形式
  * @returns 成功したかどうか
  */
-export const importTasksAndSend = async (
-  file: File,
-  format: string = 'auto'
-): Promise<boolean> => {
+export const importTasksAndSend = async (file: File, format: string = 'auto'): Promise<boolean> => {
   try {
     // ファイルからタスクを読み込み
     const tasks = await importTasksFromFile(file, format);

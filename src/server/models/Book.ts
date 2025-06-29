@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface IBook extends mongoose.Document {
   _id: mongoose.Types.ObjectId;
@@ -25,4 +25,4 @@ const BookSchema = new mongoose.Schema<IBook>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Book = mongoose.model<IBook>("Book", BookSchema);
+export const Book = mongoose.model<IBook>('Book', BookSchema);

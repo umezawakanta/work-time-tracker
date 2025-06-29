@@ -11,35 +11,38 @@ export interface ITodoArchive {
   archivedAt: Date;
 }
 
-const todoArchiveSchema = new mongoose.Schema<ITodoArchive>({
-  originalId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
+const todoArchiveSchema = new mongoose.Schema<ITodoArchive>(
+  {
+    originalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    task: {
+      type: String,
+      required: true,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
+    completedDate: {
+      type: Date,
+      default: null,
+    },
+    priority: {
+      type: Number,
+      default: 0,
+    },
+    isPrioritized: {
+      type: Boolean,
+      default: false,
+    },
+    archivedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  task: {
-    type: String,
-    required: true
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  },
-  completedDate: {
-    type: Date,
-    default: null
-  },
-  priority: {
-    type: Number,
-    default: 0
-  },
-  isPrioritized: {
-    type: Boolean,
-    default: false
-  },
-  archivedAt: {
-    type: Date,
-    default: Date.now
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export const TodoArchive = mongoose.model<ITodoArchive>('TodoArchive', todoArchiveSchema);

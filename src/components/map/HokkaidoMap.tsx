@@ -26,10 +26,7 @@ export default function HokkaidoMap({
   const viewBoxHeight = rows * (cellHeight + padding) + padding;
 
   return (
-    <svg
-      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-      className="w-full h-auto"
-    >
+    <svg viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`} className="w-full h-auto">
       {districts.map((district) => {
         const col = (district.id - 1) % columns;
         const row = Math.floor((district.id - 1) / columns);
@@ -43,7 +40,7 @@ export default function HokkaidoMap({
               y={y}
               width={cellWidth}
               height={cellHeight}
-              fill={selectedDistrict === district.id ? "#ff0000" : "#cccccc"}
+              fill={selectedDistrict === district.id ? '#ff0000' : '#cccccc'}
               stroke="#ffffff"
               strokeWidth="2"
               onClick={() => onDistrictSelect(district.id)}

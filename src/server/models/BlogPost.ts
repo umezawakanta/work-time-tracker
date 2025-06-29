@@ -35,35 +35,40 @@ export interface IBlogPost extends Document {
   updatedAt: Date;
 }
 
-const blogPostSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
+const blogPostSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    likes: {
+      type: [String],
+      default: [],
+    },
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
+      },
+    ],
   },
-  content: {
-    type: String,
-    required: true,
-  },
-  author: {
-    type: String,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: [String],
-    default: [],
-  },
-  likes: {
-    type: [String],
-    default: [],
-  },
-  comments: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Comment'
-  }],
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export const BlogPost = mongoose.model<IBlogPost>('BlogPost', blogPostSchema);

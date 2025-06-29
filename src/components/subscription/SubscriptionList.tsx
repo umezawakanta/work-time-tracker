@@ -1,6 +1,6 @@
 // src/components/subscription/SubscriptionList.tsx
 
-import React from "react";
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash, Calendar } from "lucide-react";
-import { SubscriptionService } from "@/types";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Pencil, Trash, Calendar } from 'lucide-react';
+import { SubscriptionService } from '@/types';
 
 interface PaymentMethodTagProps {
   method: string;
@@ -20,26 +20,26 @@ interface PaymentMethodTagProps {
 
 // インラインでPaymentMethodTagコンポーネントを定義
 const PaymentMethodTag: React.FC<PaymentMethodTagProps> = ({ method }) => {
-  const methods: Record<string, { color: string, label: string }> = {
+  const methods: Record<string, { color: string; label: string }> = {
     credit: {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
-      label: "カード"
+      color: 'bg-blue-100 text-blue-800 border-blue-200',
+      label: 'カード',
     },
     bank: {
-      color: "bg-green-100 text-green-800 border-green-200",
-      label: "銀行振替"
+      color: 'bg-green-100 text-green-800 border-green-200',
+      label: '銀行振替',
     },
     paypal: {
-      color: "bg-indigo-100 text-indigo-800 border-indigo-200",
-      label: "PayPal"
+      color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+      label: 'PayPal',
     },
     apple: {
-      color: "bg-gray-100 text-gray-800 border-gray-200",
-      label: "Apple"
+      color: 'bg-gray-100 text-gray-800 border-gray-200',
+      label: 'Apple',
     },
     google: {
-      color: "bg-orange-100 text-orange-800 border-orange-200",
-      label: "Google"
+      color: 'bg-orange-100 text-orange-800 border-orange-200',
+      label: 'Google',
     },
   };
 
@@ -57,10 +57,10 @@ const PaymentMethodTag: React.FC<PaymentMethodTagProps> = ({ method }) => {
 
 // 型定義に onDelete を追加
 interface SubscriptionListProps {
-    subscriptions: SubscriptionService[];
-    onEdit: (subscription: SubscriptionService) => void;
-    onDelete?: (id: string) => void; // 削除ハンドラを追加
-  }
+  subscriptions: SubscriptionService[];
+  onEdit: (subscription: SubscriptionService) => void;
+  onDelete?: (id: string) => void; // 削除ハンドラを追加
+}
 
 const SubscriptionList: React.FC<SubscriptionListProps> = ({
   subscriptions,
@@ -73,7 +73,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
     if (onDelete) {
       onDelete(id);
     } else {
-      console.warn("onDelete handler not provided");
+      console.warn('onDelete handler not provided');
     }
   };
 
@@ -114,26 +114,19 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
                 <TableCell>
                   <PaymentMethodTag
                     method={
-                      typeof sub.paymentMethod === "object"
+                      typeof sub.paymentMethod === 'object'
                         ? sub.paymentMethod.type // オブジェクトの場合はtype属性を抽出
-                        : sub.paymentMethod || "credit"
+                        : sub.paymentMethod || 'credit'
                     }
                   />
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">{sub.type}</Badge>
                 </TableCell>
-                <TableCell>
-                  {sub.amount.toLocaleString()}円
-                </TableCell>
+                <TableCell>{sub.amount.toLocaleString()}円</TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(sub)}
-                      title="編集"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(sub)} title="編集">
                       <Pencil size={16} />
                     </Button>
                     <Button
@@ -150,10 +143,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={6}
-                className="text-center py-8 text-gray-500"
-              >
+              <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                 表示するサブスクリプションがありません
               </TableCell>
             </TableRow>

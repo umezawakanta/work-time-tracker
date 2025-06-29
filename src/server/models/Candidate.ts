@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface ICandidate extends mongoose.Document {
   name: string;
@@ -16,7 +16,4 @@ const CandidateSchema = new mongoose.Schema<ICandidate>({
   proportionalBlock: { type: String, required: false },
 });
 
-export const Candidate = mongoose.model<ICandidate>(
-  "Candidate",
-  CandidateSchema
-);
+export const Candidate = mongoose.model<ICandidate>('Candidate', CandidateSchema);

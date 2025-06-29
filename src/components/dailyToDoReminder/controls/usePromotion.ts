@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PlanType, PlanTerm } from './PremiumPromotion';
 import { PremiumPlanService } from './PremiumPlanService';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from '@/components/ui/use-toast';
 
 /**
  * プロモーション情報を取得・管理するフック
@@ -10,7 +10,7 @@ export const usePromotion = () => {
   const [promotionData, setPromotionData] = useState({
     hasPromotion: false,
     promoDiscount: 0,
-    promoCode: ''
+    promoCode: '',
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -20,7 +20,7 @@ export const usePromotion = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const promoCode = queryParams.get('promo');
-    
+
     if (promoCode) {
       validatePromoCode(promoCode);
     }
@@ -29,40 +29,40 @@ export const usePromotion = () => {
   // プロモーションコードの検証
   const validatePromoCode = async (code: string) => {
     if (!code) return;
-    
+
     setLoading(true);
     try {
       const result = await planService.validatePromoCode(code);
-      
+
       if (result.valid && result.discount) {
         setPromotionData({
           hasPromotion: true,
           promoDiscount: result.discount,
-          promoCode: code
+          promoCode: code,
         });
-        
+
         if (result.message) {
           toast({
-            title: "プロモーション適用",
+            title: 'プロモーション適用',
             description: result.message,
-            variant: "default"
+            variant: 'default',
           });
         }
       } else {
         if (result.message) {
           toast({
-            title: "プロモーションエラー",
+            title: 'プロモーションエラー',
             description: result.message,
-            variant: "destructive"
+            variant: 'destructive',
           });
         }
       }
     } catch (error) {
       console.error('プロモーション検証エラー:', error);
       toast({
-        title: "エラー",
-        description: "プロモーションコードの検証中にエラーが発生しました。",
-        variant: "destructive"
+        title: 'エラー',
+        description: 'プロモーションコードの検証中にエラーが発生しました。',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ export const usePromotion = () => {
   return {
     promotionData,
     loading,
-    validatePromoCode
+    validatePromoCode,
   };
 };
 
@@ -84,7 +84,7 @@ export const useReferralCode = (initialCode?: string) => {
     valid: false,
     discountRate: 0,
     referrerName: '',
-    referralCode: initialCode || ''
+    referralCode: initialCode || '',
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -98,7 +98,7 @@ export const useReferralCode = (initialCode?: string) => {
       // URLから紹介コードがあるか確認
       const queryParams = new URLSearchParams(window.location.search);
       const refCode = queryParams.get('ref');
-      
+
       if (refCode) {
         validateReferralCode(refCode);
       }
@@ -108,47 +108,47 @@ export const useReferralCode = (initialCode?: string) => {
   // 紹介コードの検証
   const validateReferralCode = async (code: string) => {
     if (!code) return;
-    
+
     setLoading(true);
     try {
       const result = await planService.validateReferralCode(code);
-      
+
       if (result.valid && result.discount) {
         setReferralData({
           valid: true,
           discountRate: result.discount,
           referrerName: result.referrerName || '',
-          referralCode: code
+          referralCode: code,
         });
-        
+
         if (result.message) {
           toast({
-            title: "紹介割引適用",
+            title: '紹介割引適用',
             description: result.message,
-            variant: "default"
+            variant: 'default',
           });
         }
       } else {
         setReferralData({
           ...referralData,
           valid: false,
-          referralCode: code
+          referralCode: code,
         });
-        
+
         if (result.message) {
           toast({
-            title: "紹介コードエラー",
+            title: '紹介コードエラー',
             description: result.message,
-            variant: "destructive"
+            variant: 'destructive',
           });
         }
       }
     } catch (error) {
       console.error('紹介コード検証エラー:', error);
       toast({
-        title: "エラー",
-        description: "紹介コードの検証中にエラーが発生しました。",
-        variant: "destructive"
+        title: 'エラー',
+        description: '紹介コードの検証中にエラーが発生しました。',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -158,7 +158,7 @@ export const useReferralCode = (initialCode?: string) => {
   return {
     referralData,
     loading,
-    validateReferralCode
+    validateReferralCode,
   };
 };
 
@@ -171,24 +171,20 @@ export const useUpgradePlan = () => {
   const planService = PremiumPlanService.getInstance();
 
   // プランアップグレード処理
-  const upgradeToPlan = async (
-    plan: PlanType, 
-    term: PlanTerm, 
-    referralCode?: string
-  ) => {
+  const upgradeToPlan = async (plan: PlanType, term: PlanTerm, referralCode?: string) => {
     if (plan === 'free') return;
-    
+
     setUpgrading(true);
     try {
       const result = await planService.upgradePlan(plan, term, referralCode);
-      
+
       if (result.success) {
         toast({
-          title: "アップグレード",
-          description: result.message || "アップグレード処理を開始します。",
-          variant: "default"
+          title: 'アップグレード',
+          description: result.message || 'アップグレード処理を開始します。',
+          variant: 'default',
         });
-        
+
         // エンタープライズプランまたは決済ページへリダイレクト
         if (result.redirectUrl) {
           setTimeout(() => {
@@ -197,17 +193,17 @@ export const useUpgradePlan = () => {
         }
       } else {
         toast({
-          title: "エラー",
-          description: result.message || "アップグレード処理中にエラーが発生しました。",
-          variant: "destructive"
+          title: 'エラー',
+          description: result.message || 'アップグレード処理中にエラーが発生しました。',
+          variant: 'destructive',
         });
       }
     } catch (error) {
       console.error('アップグレードエラー:', error);
       toast({
-        title: "エラー",
-        description: "予期せぬエラーが発生しました。後でもう一度お試しください。",
-        variant: "destructive"
+        title: 'エラー',
+        description: '予期せぬエラーが発生しました。後でもう一度お試しください。',
+        variant: 'destructive',
       });
     } finally {
       setUpgrading(false);
@@ -216,6 +212,6 @@ export const useUpgradePlan = () => {
 
   return {
     upgrading,
-    upgradeToPlan
+    upgradeToPlan,
   };
 };

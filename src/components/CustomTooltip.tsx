@@ -1,5 +1,5 @@
-import { TooltipProps } from "recharts";
-import "./CustomTooltip.css"; // CSSファイルのインポート
+import { TooltipProps } from 'recharts';
+import './CustomTooltip.css'; // CSSファイルのインポート
 
 interface CustomTooltipProps extends TooltipProps<number, string> {
   active?: boolean;
@@ -33,10 +33,10 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
                     }
                   }}
                 />
-                <span className="font-medium">{entry.name.split("(")[0]}</span>
+                <span className="font-medium">{entry.name.split('(')[0]}</span>
               </div>
               <span className="font-bold text-base text-white">
-                {entry.value ? `${entry.value.toFixed(1)}%` : "-"}
+                {entry.value ? `${entry.value.toFixed(1)}%` : '-'}
               </span>
             </div>
           ))}

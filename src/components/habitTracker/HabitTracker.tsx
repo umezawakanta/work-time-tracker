@@ -1,28 +1,35 @@
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { ChevronDown, ChevronUp, Trophy, Flame, Target, Info, Plus } from 'lucide-react'
-import { useHabitTracker } from '@/hooks/useHabitTracker'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { ChevronDown, ChevronUp, Trophy, Flame, Target, Info, Plus } from 'lucide-react';
+import { useHabitTracker } from '@/hooks/useHabitTracker';
 
 // 定数のインポート
-import { habitCategories } from '@/components/habitTracker/constants/habitCategories'
+import { habitCategories } from '@/components/habitTracker/constants/habitCategories';
 
 // サブコンポーネントのインポート
-import HabitTrackerTabs from './HabitTrackerTabs'
-import HabitTrackerFilters from './HabitTrackerFilters'
-import HabitTrackerEmptyState from './HabitTrackerEmptyState'
-import HabitList from './HabitList'
-import HabitStats from './HabitStats'
-import HabitCalendar from './HabitCalendar'
+import HabitTrackerTabs from './HabitTrackerTabs';
+import HabitTrackerFilters from './HabitTrackerFilters';
+import HabitTrackerEmptyState from './HabitTrackerEmptyState';
+import HabitList from './HabitList';
+import HabitStats from './HabitStats';
+import HabitCalendar from './HabitCalendar';
 
 // デフォルトの習慣リスト
 const defaultHabits = [
-  "酒", "たばこ", "ジャンクフード", "睡眠不足", "SNSの過剰利用",
-  "姿勢が悪い", "コンビニ弁当", "後回し癖", "ネガティブ思考"
-]
+  '酒',
+  'たばこ',
+  'ジャンクフード',
+  '睡眠不足',
+  'SNSの過剰利用',
+  '姿勢が悪い',
+  'コンビニ弁当',
+  '後回し癖',
+  'ネガティブ思考',
+];
 
 // 表示モードの型定義
 type ViewMode = 'active' | 'all' | 'archived';
@@ -30,13 +37,13 @@ type ViewMode = 'active' | 'all' | 'archived';
 type TabType = 'list' | 'stats' | 'calendar';
 
 const HabitTracker = () => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false)
-  const [viewMode, setViewMode] = useState<ViewMode>('active')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [currentTab, setCurrentTab] = useState<TabType>('list')
-  const [newHabit, setNewHabit] = useState<string>('')
-  const [showAddForm, setShowAddForm] = useState<boolean>(false)
-  
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('active');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [currentTab, setCurrentTab] = useState<TabType>('list');
+  const [newHabit, setNewHabit] = useState<string>('');
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+
   const {
     currentDate,
     stats,
@@ -53,13 +60,13 @@ const HabitTracker = () => {
     getActiveHabits,
     getArchivedHabits,
     getAllHabits,
-    getCategoryHabits
-  } = useHabitTracker(defaultHabits)
+    getCategoryHabits,
+  } = useHabitTracker(defaultHabits);
 
   // 表示する習慣のリストを取得
   const getVisibleHabits = (): string[] => {
     let habitsList: string[] = [];
-    
+
     // ビューモードによるフィルタリング
     if (viewMode === 'active') {
       habitsList = getActiveHabits();
@@ -68,16 +75,16 @@ const HabitTracker = () => {
     } else {
       habitsList = getAllHabits();
     }
-    
+
     // カテゴリによるフィルタリング
     if (selectedCategory !== 'all') {
-      habitsList = habitsList.filter(habit => 
+      habitsList = habitsList.filter((habit) =>
         getCategoryHabits(selectedCategory).includes(habit)
       );
     }
-    
+
     return habitsList;
-  }
+  };
 
   // 新しい習慣を追加
   const handleAddHabit = () => {
@@ -86,7 +93,7 @@ const HabitTracker = () => {
       setNewHabit('');
       setShowAddForm(false);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -103,7 +110,7 @@ const HabitTracker = () => {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (error) {
@@ -114,15 +121,15 @@ const HabitTracker = () => {
           {error}
         </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   const visibleHabits = getVisibleHabits();
 
   return (
     <Card className="w-full shadow-sm">
-      <CardHeader 
-        className="cursor-pointer hover:bg-gray-50 transition-colors flex flex-row items-center justify-between space-y-0 pb-2" 
+      <CardHeader
+        className="cursor-pointer hover:bg-gray-50 transition-colors flex flex-row items-center justify-between space-y-0 pb-2"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <CardTitle className="text-md font-semibold flex items-center gap-2">
@@ -137,22 +144,22 @@ const HabitTracker = () => {
             </Badge>
           )}
           <Button variant="ghost" size="sm" className="p-1 h-auto">
-            {isExpanded ? <ChevronUp size={18} aria-label="折りたたむ" /> : <ChevronDown size={18} aria-label="展開する" />}
+            {isExpanded ? (
+              <ChevronUp size={18} aria-label="折りたたむ" />
+            ) : (
+              <ChevronDown size={18} aria-label="展開する" />
+            )}
           </Button>
         </div>
       </CardHeader>
-      
+
       {isExpanded && (
         <>
           <CardContent className="pt-3">
-            <HabitTrackerTabs
-              currentTab={currentTab}
-              setCurrentTab={setCurrentTab}
-            />
-            
+            <HabitTrackerTabs currentTab={currentTab} setCurrentTab={setCurrentTab} />
+
             <div className="flex justify-between items-center mb-4">
               <div></div> {/* スペーサー */}
-              
               <div className="flex items-center gap-2">
                 <HabitTrackerFilters
                   viewMode={viewMode}
@@ -161,9 +168,9 @@ const HabitTracker = () => {
                   setSelectedCategory={setSelectedCategory}
                   habitCategories={habitCategories}
                 />
-                
-                <Button 
-                  size="sm" 
+
+                <Button
+                  size="sm"
                   variant="ghost"
                   className="h-8"
                   onClick={() => setShowAddForm(!showAddForm)}
@@ -172,7 +179,7 @@ const HabitTracker = () => {
                 </Button>
               </div>
             </div>
-            
+
             {showAddForm && (
               <div className="mb-4 flex items-center gap-2 bg-gray-50 p-3 rounded-md">
                 <Input
@@ -181,28 +188,17 @@ const HabitTracker = () => {
                   placeholder="新しい習慣を入力"
                   className="flex-1"
                 />
-                <Button 
-                  size="sm" 
-                  onClick={handleAddHabit}
-                  disabled={!newHabit.trim()}
-                >
+                <Button size="sm" onClick={handleAddHabit} disabled={!newHabit.trim()}>
                   追加
                 </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  onClick={() => setShowAddForm(false)}
-                >
+                <Button size="sm" variant="ghost" onClick={() => setShowAddForm(false)}>
                   キャンセル
                 </Button>
               </div>
             )}
-            
+
             {visibleHabits.length === 0 ? (
-              <HabitTrackerEmptyState 
-                viewMode={viewMode}
-                setShowAddForm={setShowAddForm}
-              />
+              <HabitTrackerEmptyState viewMode={viewMode} setShowAddForm={setShowAddForm} />
             ) : (
               <>
                 {currentTab === 'list' && (
@@ -218,14 +214,11 @@ const HabitTracker = () => {
                     viewMode={viewMode}
                   />
                 )}
-                
+
                 {currentTab === 'stats' && (
-                  <HabitStats
-                    stats={stats}
-                    getActiveHabits={getActiveHabits}
-                  />
+                  <HabitStats stats={stats} getActiveHabits={getActiveHabits} />
                 )}
-                
+
                 {currentTab === 'calendar' && (
                   <HabitCalendar
                     currentDate={currentDate}
@@ -239,18 +232,21 @@ const HabitTracker = () => {
               </>
             )}
           </CardContent>
-          
+
           <CardFooter className="pt-0 justify-between text-xs text-gray-500">
             <p>継続は力なり。日々の小さな変化が大きな変化を生み出します。</p>
             <div className="flex items-center gap-2">
               <Flame className="h-3 w-3 text-orange-500" />
-              <span>合計{Object.values(stats).reduce((sum, stat) => sum + stat.currentStreak, 0)}日継続中</span>
+              <span>
+                合計{Object.values(stats).reduce((sum, stat) => sum + stat.currentStreak, 0)}
+                日継続中
+              </span>
             </div>
           </CardFooter>
         </>
       )}
     </Card>
-  )
-}
+  );
+};
 
-export default HabitTracker
+export default HabitTracker;

@@ -40,7 +40,7 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
   // WebSocketサーバーの作成（パスを指定）
   const wss = new WebSocketServer({
     server,
-    path: '/notifications' // クライアント側のパスと一致させる
+    path: '/notifications', // クライアント側のパスと一致させる
   });
 
   console.log('WebSocketサーバーを初期化しました。パス: /notifications');
@@ -78,7 +78,9 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
 
             // ユーザーIDを確認
             if (userId !== data.userId) {
-              console.error(`認証エラー: トークンのユーザーID(${userId})と送信されたID(${data.userId})が一致しません`);
+              console.error(
+                `認証エラー: トークンのユーザーID(${userId})と送信されたID(${data.userId})が一致しません`
+              );
               ws.send(JSON.stringify({ type: 'error', message: '無効な認証情報です' }));
               return;
             }
@@ -130,7 +132,10 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
 
   return {
     // 特定のユーザーに通知を送信する関数
-    sendNotification: async (userId: string, notification: NotificationDocument): Promise<boolean> => {
+    sendNotification: async (
+      userId: string,
+      notification: NotificationDocument
+    ): Promise<boolean> => {
       try {
         // ユーザーの通知設定を確認
         const settings = await NotificationSettings.findOne({ userId });
@@ -145,9 +150,11 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
 
           // 通知タイプに基づいて設定を確認
           const notificationType = notification.type;
-          if ((notificationType === 'reminder' && !settings.reminders) ||
+          if (
+            (notificationType === 'reminder' && !settings.reminders) ||
             (notificationType === 'report' && !settings.reports) ||
-            (notificationType === 'alert' && !settings.alerts)) {
+            (notificationType === 'alert' && !settings.alerts)
+          ) {
             console.log(`ユーザー ${userId} の ${notificationType} 通知はオフです`);
             return false;
           }
@@ -164,14 +171,16 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
         if (client.readyState === WebSocket.OPEN) {
           const payload = JSON.stringify({
             type: 'notification',
-            notification
+            notification,
           });
 
           client.send(payload);
           console.log(`ユーザー ${userId} に通知を送信しました: ${notification.type}`);
           return true;
         } else {
-          console.log(`ユーザー ${userId} のWebSocket接続が開いていません。readyState: ${client.readyState}`);
+          console.log(
+            `ユーザー ${userId} のWebSocket接続が開いていません。readyState: ${client.readyState}`
+          );
           return false;
         }
       } catch (error) {
@@ -185,18 +194,21 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
       console.log(`全ユーザーへブロードキャスト通知: ${message}`);
       let sentCount = 0;
 
-      clients.forEach((client) => {  // ここからuserId引数を削除
+      clients.forEach((client) => {
+        // ここからuserId引数を削除
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({
-            type: 'broadcast',
-            message
-          }));
+          client.send(
+            JSON.stringify({
+              type: 'broadcast',
+              message,
+            })
+          );
           sentCount++;
         }
       });
 
       console.log(`ブロードキャスト通知を ${sentCount}/${clients.size} クライアントに送信しました`);
-    }
+    },
   };
 };
 
@@ -213,10 +225,12 @@ export const createAndSendNotification = async (
     // 設定に基づいて通知をスキップするかどうか判断
     if (settings) {
       const notificationType = notificationData.type;
-      if ((notificationType === 'reminder' && !settings.reminders) ||
+      if (
+        (notificationType === 'reminder' && !settings.reminders) ||
         (notificationType === 'report' && !settings.reports) ||
         (notificationType === 'alert' && !settings.alerts) ||
-        (!settings.inApp)) {
+        !settings.inApp
+      ) {
         console.log(`ユーザー ${userId} の通知設定により通知はスキップされました`);
         return null;
       }
@@ -226,7 +240,7 @@ export const createAndSendNotification = async (
     const notificationObj = {
       ...notificationData,
       timestamp: new Date(),
-      read: false
+      read: false,
     };
 
     // 新しい通知ドキュメントを作成
@@ -244,7 +258,9 @@ export const createAndSendNotification = async (
       const sent = await wsService.sendNotification(userId, notification);
       console.log(`WebSocketで通知送信: ${sent ? '成功' : '失敗'}`);
     } else {
-      console.log('WebSocketサービスが提供されていないため、通知はデータベースにのみ保存されました');
+      console.log(
+        'WebSocketサービスが提供されていないため、通知はデータベースにのみ保存されました'
+      );
     }
 
     return notification;

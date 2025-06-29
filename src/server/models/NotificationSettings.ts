@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface INotificationSettings extends mongoose.Document {
   userId: string;
@@ -29,14 +29,14 @@ const NotificationSettingsSchema = new mongoose.Schema<INotificationSettings>(
     marketing: { type: Boolean, default: false }, // マーケティング通知
     emailFrequency: {
       type: String,
-      enum: ["immediate", "daily", "weekly", "never"],
-      default: "immediate"
+      enum: ['immediate', 'daily', 'weekly', 'never'],
+      default: 'immediate',
     }, // メール通知の頻度
   },
   { timestamps: true } // createdAt, updatedAtフィールドを自動追加
 );
 
 export const NotificationSettings = mongoose.model<INotificationSettings>(
-  "NotificationSettings",
+  'NotificationSettings',
   NotificationSettingsSchema
 );

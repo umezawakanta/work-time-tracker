@@ -20,27 +20,23 @@ const ProgressSection: FC<ProgressSectionProps> = ({
   totalCount,
   progressPercentage,
   inputCount,
-  outputCount
+  outputCount,
 }) => {
   // インプット/アウトプットのバランス計算
   const { inputPercentage, outputPercentage } = useMemo(() => {
     const totalTypeCount = inputCount + outputCount;
-    const inputPerc = totalTypeCount > 0 
-      ? Math.round((inputCount / totalTypeCount) * 100) 
-      : 50;
-    const outputPerc = totalTypeCount > 0 
-      ? Math.round((outputCount / totalTypeCount) * 100) 
-      : 50;
-    
+    const inputPerc = totalTypeCount > 0 ? Math.round((inputCount / totalTypeCount) * 100) : 50;
+    const outputPerc = totalTypeCount > 0 ? Math.round((outputCount / totalTypeCount) * 100) : 50;
+
     return { inputPercentage: inputPerc, outputPercentage: outputPerc };
   }, [inputCount, outputCount]);
 
   // バランス評価
   const balanceStatus = useMemo(() => {
     if (totalCount === 0) return 'noTasks';
-    
+
     const ratio = inputCount / (outputCount || 1);
-    
+
     if (ratio > 3) return 'inputHeavy';
     if (ratio < 0.33) return 'outputHeavy';
     return 'balanced';
@@ -85,30 +81,20 @@ const ProgressSection: FC<ProgressSectionProps> = ({
           <span>インプット/アウトプット:</span>
           <div className={styles.balanceContainer}>
             <div className={styles.balanceGroup}>
-              <Download 
-                className={`${styles.progressIcon} ${styles.progressIconInput}`} 
-              />
+              <Download className={`${styles.progressIcon} ${styles.progressIconInput}`} />
               <span className={styles.progressTextInput}>{inputPercentage}%</span>
             </div>
             <span>:</span>
             <div className={styles.balanceGroup}>
-              <Upload 
-                className={`${styles.progressIcon} ${styles.progressIconOutput}`} 
-              />
+              <Upload className={`${styles.progressIcon} ${styles.progressIconOutput}`} />
               <span className={styles.progressTextOutput}>{outputPercentage}%</span>
             </div>
-            
+
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button 
-                    className={styles.infoIcon}
-                    aria-label="バランスに関するアドバイス"
-                  >
-                    <Info 
-                      size={12} 
-                      className={styles[balanceStatus]}
-                    />
+                  <button className={styles.infoIcon} aria-label="バランスに関するアドバイス">
+                    <Info size={12} className={styles[balanceStatus]} />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -118,7 +104,7 @@ const ProgressSection: FC<ProgressSectionProps> = ({
             </TooltipProvider>
           </div>
         </div>
-        
+
         <div className={styles.progressBar}>
           <Progress
             className={`${styles.progressBarInput} ${styles[inputWidthClass]}`}

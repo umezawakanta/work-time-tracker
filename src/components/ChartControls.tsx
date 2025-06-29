@@ -1,5 +1,5 @@
-import React from "react";
-import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from 'react';
+import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ChartControlsProps {
   mediaList: string[];

@@ -9,18 +9,18 @@
  * @returns ハッシュ値
  */
 export function stringHash(str: string): string {
-    // 64bit FNV-1a
-    const FNV_PRIME = 0x00000100000001B3n;
-    const OFFSET_BASIS = 0xCBF29CE484222325n;
+  // 64bit FNV-1a
+  const FNV_PRIME = 0x00000100000001b3n;
+  const OFFSET_BASIS = 0xcbf29ce484222325n;
 
-    let hash = OFFSET_BASIS;
+  let hash = OFFSET_BASIS;
 
-    for (let i = 0; i < str.length; i++) {
-        hash ^= BigInt(str.charCodeAt(i));
-        hash = (hash * FNV_PRIME) & 0xFFFFFFFFFFFFFFFFn;
-    }
+  for (let i = 0; i < str.length; i++) {
+    hash ^= BigInt(str.charCodeAt(i));
+    hash = (hash * FNV_PRIME) & 0xffffffffffffffffn;
+  }
 
-    return hash.toString(16);
+  return hash.toString(16);
 }
 
 /**
@@ -29,30 +29,32 @@ export function stringHash(str: string): string {
  * @returns ハッシュ値
  */
 export function objectHash(obj: unknown): string {
-    const sortAndSerialize = (value: unknown): string => {
-        if (value === null) return 'null';
-        if (value === undefined) return 'undefined';
+  const sortAndSerialize = (value: unknown): string => {
+    if (value === null) return 'null';
+    if (value === undefined) return 'undefined';
 
-        if (typeof value === 'function') {
-            return value.toString();
-        }
+    if (typeof value === 'function') {
+      return value.toString();
+    }
 
-        if (typeof value === 'object') {
-            if (Array.isArray(value)) {
-                return `[${value.map(sortAndSerialize).join(',')}]`;
-            }
+    if (typeof value === 'object') {
+      if (Array.isArray(value)) {
+        return `[${value.map(sortAndSerialize).join(',')}]`;
+      }
 
-            const keys = Object.keys(value).sort();
-            const pairs = keys.map(key => `${key}:${sortAndSerialize((value as Record<string, unknown>)[key])}`);
-            return `{${pairs.join(',')}}`;
-        }
+      const keys = Object.keys(value).sort();
+      const pairs = keys.map(
+        (key) => `${key}:${sortAndSerialize((value as Record<string, unknown>)[key])}`
+      );
+      return `{${pairs.join(',')}}`;
+    }
 
-        return JSON.stringify(value);
-    };
+    return JSON.stringify(value);
+  };
 
-    // オブジェクトを正規化してハッシュ化
-    const serialized = sortAndSerialize(obj);
-    return stringHash(serialized);
+  // オブジェクトを正規化してハッシュ化
+  const serialized = sortAndSerialize(obj);
+  return stringHash(serialized);
 }
 
 /**
@@ -61,15 +63,15 @@ export function objectHash(obj: unknown): string {
  * @returns Base64形式の文字列
  */
 export function base64Encode(str: string): string {
-    if (typeof btoa === 'function') {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
+  if (typeof btoa === 'function') {
+    return btoa(unescape(encodeURIComponent(str)));
+  }
 
-    if (typeof Buffer !== 'undefined') {
-        return Buffer.from(str).toString('base64');
-    }
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str).toString('base64');
+  }
 
-    throw new Error('Base64エンコードはサポートされていません');
+  throw new Error('Base64エンコードはサポートされていません');
 }
 
 /**
@@ -78,15 +80,15 @@ export function base64Encode(str: string): string {
  * @returns デコードされた文字列
  */
 export function base64Decode(base64: string): string {
-    if (typeof atob === 'function') {
-        return decodeURIComponent(escape(atob(base64)));
-    }
+  if (typeof atob === 'function') {
+    return decodeURIComponent(escape(atob(base64)));
+  }
 
-    if (typeof Buffer !== 'undefined') {
-        return Buffer.from(base64, 'base64').toString();
-    }
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(base64, 'base64').toString();
+  }
 
-    throw new Error('Base64デコードはサポートされていません');
+  throw new Error('Base64デコードはサポートされていません');
 }
 
 /**
@@ -97,17 +99,17 @@ export function base64Decode(base64: string): string {
  * @returns 暗号化されたテキスト
  */
 export function simpleEncrypt(text: string, key = 'default-key'): string {
-    const keyHash = stringHash(key).substring(0, 16);
-    let result = '';
+  const keyHash = stringHash(key).substring(0, 16);
+  let result = '';
 
-    for (let i = 0; i < text.length; i++) {
-        const charCode = text.charCodeAt(i);
-        const keyChar = keyHash[i % keyHash.length];
-        const keyCode = parseInt(keyChar, 16);
-        result += String.fromCharCode(charCode ^ keyCode);
-    }
+  for (let i = 0; i < text.length; i++) {
+    const charCode = text.charCodeAt(i);
+    const keyChar = keyHash[i % keyHash.length];
+    const keyCode = parseInt(keyChar, 16);
+    result += String.fromCharCode(charCode ^ keyCode);
+  }
 
-    return base64Encode(result);
+  return base64Encode(result);
 }
 
 /**
@@ -117,16 +119,16 @@ export function simpleEncrypt(text: string, key = 'default-key'): string {
  * @returns 復号化されたテキスト
  */
 export function simpleDecrypt(encrypted: string, key = 'default-key'): string {
-    const keyHash = stringHash(key).substring(0, 16);
-    const decoded = base64Decode(encrypted);
-    let result = '';
+  const keyHash = stringHash(key).substring(0, 16);
+  const decoded = base64Decode(encrypted);
+  let result = '';
 
-    for (let i = 0; i < decoded.length; i++) {
-        const charCode = decoded.charCodeAt(i);
-        const keyChar = keyHash[i % keyHash.length];
-        const keyCode = parseInt(keyChar, 16);
-        result += String.fromCharCode(charCode ^ keyCode);
-    }
+  for (let i = 0; i < decoded.length; i++) {
+    const charCode = decoded.charCodeAt(i);
+    const keyChar = keyHash[i % keyHash.length];
+    const keyCode = parseInt(keyChar, 16);
+    result += String.fromCharCode(charCode ^ keyCode);
+  }
 
-    return result;
+  return result;
 }

@@ -1,5 +1,5 @@
 // ユーザーサブスクリプション（サイト内プラン管理）のモデル定義
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
 // ユーザーサブスクリプションモデルのインターフェース
 export interface IUserSubscription extends Document {
@@ -33,10 +33,10 @@ const UserSubscriptionSchema = new Schema<IUserSubscription>(
   {
     userId: { type: String, required: true, unique: true },
     planId: { type: String, required: true },
-    status: { 
-      type: String, 
+    status: {
+      type: String,
       enum: ['active', 'canceled', 'expired'],
-      required: true 
+      required: true,
     },
     currentPeriodEnd: { type: Date, required: true },
     cancelAtPeriodEnd: { type: Boolean, default: false },
@@ -46,16 +46,16 @@ const UserSubscriptionSchema = new Schema<IUserSubscription>(
     paymentMethod: {
       type: {
         type: String,
-        enum: ['credit_card', 'bank_transfer', 'other']
+        enum: ['credit_card', 'bank_transfer', 'other'],
       },
       lastFour: String,
       expiryDate: String,
       cardholderName: String,
-      isDefault: { type: Boolean, default: true }
+      isDefault: { type: Boolean, default: true },
     },
     scheduledChanges: {
       newPlanId: String,
-      effectiveDate: Date
+      effectiveDate: Date,
     },
     resetAt: { type: Date },
     resetBy: { type: String },
@@ -71,4 +71,7 @@ UserSubscriptionSchema.index({ status: 1 });
 UserSubscriptionSchema.index({ currentPeriodEnd: 1 });
 
 // モデルの作成
-export const UserSubscription = mongoose.model<IUserSubscription>("UserSubscription", UserSubscriptionSchema);
+export const UserSubscription = mongoose.model<IUserSubscription>(
+  'UserSubscription',
+  UserSubscriptionSchema
+);

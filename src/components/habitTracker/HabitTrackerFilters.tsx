@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button"
-import { Filter } from "lucide-react"
+import { Button } from '@/components/ui/button';
+import { Filter } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 
 // 表示モードの型定義
 type ViewMode = 'active' | 'all' | 'archived';
@@ -44,18 +44,14 @@ const HabitTrackerFilters = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setViewMode('active')}>
-            進行中
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setViewMode('active')}>進行中</DropdownMenuItem>
           <DropdownMenuItem onClick={() => setViewMode('archived')}>
             アーカイブ済み
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setViewMode('all')}>
-            すべて表示
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setViewMode('all')}>すべて表示</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      
+
       {/* カテゴリフィルター */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -70,18 +66,15 @@ const HabitTrackerFilters = ({
           <DropdownMenuItem onClick={() => setSelectedCategory('all')}>
             すべてのカテゴリ
           </DropdownMenuItem>
-          {Object.keys(habitCategories).map(category => (
-            <DropdownMenuItem 
-              key={category} 
-              onClick={() => setSelectedCategory(category)}
-            >
+          {Object.keys(habitCategories).map((category) => (
+            <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category)}>
               {category}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
-  )
-}
+  );
+};
 
-export default HabitTrackerFilters
+export default HabitTrackerFilters;

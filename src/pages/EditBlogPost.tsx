@@ -3,7 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '@/store';
 import { updateBlogPost, selectBlogPostById } from '@/store/blogSlice';
-import { Container, Typography, TextField, Button, Box, Chip, Paper, CircularProgress } from '@mui/material';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Chip,
+  Paper,
+  CircularProgress,
+} from '@mui/material';
 
 const EditBlogPost: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +36,10 @@ const EditBlogPost: React.FC = () => {
 
   if (!post) {
     return (
-      <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Container
+        maxWidth="lg"
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -36,7 +48,9 @@ const EditBlogPost: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dispatch(updateBlogPost({ _id: post._id, updates: { title, content, category, tags } })).unwrap();
+      await dispatch(
+        updateBlogPost({ _id: post._id, updates: { title, content, category, tags } })
+      ).unwrap();
       navigate(`/blog/${post._id}`);
     } catch (error) {
       console.error('Failed to update blog post:', error);
@@ -112,22 +126,21 @@ const EditBlogPost: React.FC = () => {
             タグを追加
           </Button>
         </Box>
-        <Paper sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }}>
+        <Paper
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            listStyle: 'none',
+            p: 0.5,
+            m: 0,
+          }}
+        >
           {tags.map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              onDelete={() => handleDeleteTag(tag)}
-              sx={{ m: 0.5 }}
-            />
+            <Chip key={tag} label={tag} onDelete={() => handleDeleteTag(tag)} sx={{ m: 0.5 }} />
           ))}
         </Paper>
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
-        >
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
           更新する
         </Button>
       </Box>

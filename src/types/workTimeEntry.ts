@@ -7,5 +7,5 @@ export interface WorkTimeEntry {
   projectName: string;
   description?: string;
   createdAt?: Date;
-  userId: string;  // この行を追加
+  userId: string; // この行を追加
 }

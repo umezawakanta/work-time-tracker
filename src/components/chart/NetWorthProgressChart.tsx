@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
-} from "recharts";
+} from 'recharts';
 
 interface ChartDataPoint {
   date: string;
@@ -27,35 +27,33 @@ interface NetWorthProgressChartProps {
 const generateDemoData = (): ChartDataPoint[] => {
   const now = new Date();
   const data: ChartDataPoint[] = [];
-  
+
   let previousNetWorth = 0;
-  
+
   for (let i = 11; i >= 0; i--) {
     const date = new Date(now);
     date.setMonth(now.getMonth() - i);
-    
+
     // 基本の純資産値（徐々に上昇するパターン）
     let baseNetWorth = 7000000 + (11 - i) * 150000;
-    
+
     // 変動要素を加える
     const fluctuation = Math.random() * 400000 - 200000;
     baseNetWorth += fluctuation;
-    
+
     // 成長率の計算
-    const growth = i < 11 && previousNetWorth > 0
-      ? ((baseNetWorth / previousNetWorth) - 1) * 100
-      : 0;
-    
+    const growth = i < 11 && previousNetWorth > 0 ? (baseNetWorth / previousNetWorth - 1) * 100 : 0;
+
     // 現在のnetWorthを保存して次回のループで使用
     previousNetWorth = baseNetWorth;
-    
+
     data.push({
       date: `${date.getFullYear()}/${date.getMonth() + 1}`,
       netWorth: Math.round(baseNetWorth),
-      growth
+      growth,
     });
   }
-  
+
   return data;
 };
 
@@ -63,16 +61,15 @@ export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (prop
   const { isPremium } = props;
   // デモデータを生成（実際のアプリではpropsのデータを加工して使用）
   const chartData = generateDemoData();
-  
+
   // 現在の純資産と6ヶ月前の純資産を取得
   const currentNetWorth = chartData[chartData.length - 1]?.netWorth || 0;
   const sixMonthsAgoNetWorth = chartData[chartData.length - 7]?.netWorth || 0;
-  
+
   // 6ヶ月間の成長率を計算
-  const sixMonthGrowthRate = sixMonthsAgoNetWorth > 0 
-    ? ((currentNetWorth / sixMonthsAgoNetWorth) - 1) * 100 
-    : 0;
-  
+  const sixMonthGrowthRate =
+    sixMonthsAgoNetWorth > 0 ? (currentNetWorth / sixMonthsAgoNetWorth - 1) * 100 : 0;
+
   // カスタムツールチップの型定義
   interface CustomTooltipProps {
     active?: boolean;
@@ -83,18 +80,18 @@ export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (prop
     }>;
     label?: string;
   }
-  
+
   // カスタムツールチップ
   const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded shadow-sm">
           <p className="font-medium text-gray-900">{label}</p>
-          <p className="text-blue-600">
-            純資産: ¥{payload[0].value.toLocaleString()}
-          </p>
+          <p className="text-blue-600">純資産: ¥{payload[0].value.toLocaleString()}</p>
           {payload[0].payload.growth && (
-            <p className={`text-xs ${payload[0].payload.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <p
+              className={`text-xs ${payload[0].payload.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            >
               前月比: {payload[0].payload.growth >= 0 ? '+' : ''}
               {payload[0].payload.growth.toFixed(1)}%
             </p>
@@ -118,13 +115,13 @@ export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (prop
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="date" 
+          <XAxis
+            dataKey="date"
             tick={{ fontSize: 12 }}
             tickLine={{ stroke: '#e5e7eb' }}
             axisLine={{ stroke: '#e5e7eb' }}
           />
-          <YAxis 
+          <YAxis
             tickFormatter={(value) => `¥${(value / 10000).toFixed(0)}万`}
             tick={{ fontSize: 12 }}
             tickLine={{ stroke: '#e5e7eb' }}
@@ -133,8 +130,8 @@ export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (prop
           <Tooltip content={<CustomTooltip />} />
           <defs>
             <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
             </linearGradient>
           </defs>
           <ReferenceLine
@@ -158,19 +155,21 @@ export const NetWorthProgressChart: React.FC<NetWorthProgressChartProps> = (prop
           />
         </AreaChart>
       </ResponsiveContainer>
-      
+
       {/* プレミアムユーザー向けの追加情報表示 */}
       {isPremium && (
         <div className="flex justify-between items-center mt-2 text-xs text-gray-600">
           <div>
-            6ヶ月間の変化率: 
-            <span className={`font-medium ml-1 ${sixMonthGrowthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            6ヶ月間の変化率:
+            <span
+              className={`font-medium ml-1 ${sixMonthGrowthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            >
               {sixMonthGrowthRate >= 0 ? '+' : ''}
               {sixMonthGrowthRate.toFixed(1)}%
             </span>
           </div>
           <div>
-            平均月間増加額: 
+            平均月間増加額:
             <span className="font-medium ml-1 text-blue-600">
               ¥{Math.round((currentNetWorth - sixMonthsAgoNetWorth) / 6).toLocaleString()}/月
             </span>

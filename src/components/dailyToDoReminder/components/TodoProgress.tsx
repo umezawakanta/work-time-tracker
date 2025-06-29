@@ -1,9 +1,9 @@
-import React from "react";
-import { CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, TrendingUp, TrendingDown } from "lucide-react";
-import styles from "./TodoProgress.module.css";
+import React from 'react';
+import { CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, Target, TrendingUp, TrendingDown } from 'lucide-react';
+import styles from './TodoProgress.module.css';
 
 interface TodoProgressProps {
   readonly completedCount: number;
@@ -32,37 +32,37 @@ export const TodoProgress: React.FC<TodoProgressProps> = ({
   };
 
   const getProgressTextColor = (percentage: number): string => {
-    if (percentage >= 80) return "text-green-600";
-    if (percentage >= 60) return "text-blue-600";
-    if (percentage >= 40) return "text-yellow-600";
-    return "text-red-600";
+    if (percentage >= 80) return 'text-green-600';
+    if (percentage >= 60) return 'text-blue-600';
+    if (percentage >= 40) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   const getProgressMessage = (percentage: number): string => {
-    if (percentage === 100) return "🎉 完璧です！";
-    if (percentage >= 80) return "💪 素晴らしい進捗です！";
-    if (percentage >= 60) return "👍 順調に進んでいます";
-    if (percentage >= 40) return "📈 もう少しです";
-    if (percentage > 0) return "🚀 頑張りましょう";
-    return "📝 タスクを開始しましょう";
+    if (percentage === 100) return '🎉 完璧です！';
+    if (percentage >= 80) return '💪 素晴らしい進捗です！';
+    if (percentage >= 60) return '👍 順調に進んでいます';
+    if (percentage >= 40) return '📈 もう少しです';
+    if (percentage > 0) return '🚀 頑張りましょう';
+    return '📝 タスクを開始しましょう';
   };
 
   const getBalanceStatus = (): {
-    status: "balanced" | "input-heavy" | "output-heavy";
+    status: 'balanced' | 'input-heavy' | 'output-heavy';
     message: string;
   } => {
     if (inputCount === 0 && outputCount === 0) {
-      return { status: "balanced", message: "タスクを追加してバランスを確認" };
+      return { status: 'balanced', message: 'タスクを追加してバランスを確認' };
     }
 
     const ratio = inputCount / (inputCount + outputCount);
 
     if (ratio >= 0.4 && ratio <= 0.6) {
-      return { status: "balanced", message: "バランスが取れています" };
+      return { status: 'balanced', message: 'バランスが取れています' };
     } else if (ratio > 0.6) {
-      return { status: "input-heavy", message: "インプット重視" };
+      return { status: 'input-heavy', message: 'インプット重視' };
     } else {
-      return { status: "output-heavy", message: "アウトプット重視" };
+      return { status: 'output-heavy', message: 'アウトプット重視' };
     }
   };
 
@@ -91,10 +91,7 @@ export const TodoProgress: React.FC<TodoProgressProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <CheckCircle
-                className={`h-4 w-4 ${progressTextColorClass}`}
-                aria-hidden="true"
-              />
+              <CheckCircle className={`h-4 w-4 ${progressTextColorClass}`} aria-hidden="true" />
               <span className="text-sm font-medium">進捗状況</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -135,17 +132,11 @@ export const TodoProgress: React.FC<TodoProgressProps> = ({
           <div className={styles.balanceContainer}>
             <div className={styles.balanceItems}>
               <div className={styles.balanceItem}>
-                <TrendingDown
-                  className="h-3 w-3 text-blue-500"
-                  aria-hidden="true"
-                />
+                <TrendingDown className="h-3 w-3 text-blue-500" aria-hidden="true" />
                 <span>インプット: {inputCount}</span>
               </div>
               <div className={styles.balanceItem}>
-                <TrendingUp
-                  className="h-3 w-3 text-orange-500"
-                  aria-hidden="true"
-                />
+                <TrendingUp className="h-3 w-3 text-orange-500" aria-hidden="true" />
                 <span>アウトプット: {outputCount}</span>
               </div>
             </div>
@@ -153,17 +144,13 @@ export const TodoProgress: React.FC<TodoProgressProps> = ({
             <div className={styles.balanceItem}>
               <Target
                 className={`h-3 w-3 ${
-                  balanceStatus.status === "balanced"
-                    ? "text-green-500"
-                    : "text-yellow-500"
+                  balanceStatus.status === 'balanced' ? 'text-green-500' : 'text-yellow-500'
                 }`}
                 aria-hidden="true"
               />
               <span
                 className={
-                  balanceStatus.status === "balanced"
-                    ? "text-green-600"
-                    : "text-yellow-600"
+                  balanceStatus.status === 'balanced' ? 'text-green-600' : 'text-yellow-600'
                 }
               >
                 {balanceStatus.message}

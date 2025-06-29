@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface IWithdrawalEntry extends mongoose.Document {
   date: Date;
@@ -19,6 +19,6 @@ const WithdrawalEntrySchema = new mongoose.Schema<IWithdrawalEntry>({
 });
 
 export const WithdrawalEntry = mongoose.model<IWithdrawalEntry>(
-  "WithdrawalEntry",
+  'WithdrawalEntry',
   WithdrawalEntrySchema
 );

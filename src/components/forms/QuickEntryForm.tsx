@@ -6,7 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PoliticalParty } from '@/types/survey';
 import { DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { format } from 'date-fns';
 import './QuickEntryForm.css'; // CSSファイルをインポート
 
@@ -34,7 +40,7 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
   parties,
   mediaOutlet,
   onSubmit,
-  onCancel
+  onCancel,
 }) => {
   const [formData, setFormData] = useState({
     mediaOutlet: mediaOutlet || '',
@@ -42,20 +48,18 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
     sampleSize: '',
     supportRates: {} as Record<string, string>,
     cabinetSupport: '',
-    cabinetOppose: ''
+    cabinetOppose: '',
   });
 
-  const mediaOptions = [
-    'NHK', '読売新聞', '朝日新聞', '毎日新聞', '日経新聞', '共同通信'
-  ];
+  const mediaOptions = ['NHK', '読売新聞', '朝日新聞', '毎日新聞', '日経新聞', '共同通信'];
 
   const handleRateChange = (partyId: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       supportRates: {
         ...prev.supportRates,
-        [partyId]: value
-      }
+        [partyId]: value,
+      },
     }));
   };
 
@@ -65,15 +69,15 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
       alert('調査機関を選択してください');
       return;
     }
-    
+
     // 支持率を数値に変換
     const supportRates = Object.entries(formData.supportRates)
       .map(([partyId, rate]) => ({
         partyId,
-        supportRate: parseFloat(rate)
+        supportRate: parseFloat(rate),
       }))
-      .filter(item => !isNaN(item.supportRate));
-    
+      .filter((item) => !isNaN(item.supportRate));
+
     // 送信データを整形
     const submitData: SurveySubmitData = {
       mediaOutlet: formData.mediaOutlet,
@@ -81,9 +85,9 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
       sampleSize: formData.sampleSize ? parseInt(formData.sampleSize) : undefined,
       supportRates,
       cabinetSupport: formData.cabinetSupport ? parseFloat(formData.cabinetSupport) : undefined,
-      cabinetOppose: formData.cabinetOppose ? parseFloat(formData.cabinetOppose) : undefined
+      cabinetOppose: formData.cabinetOppose ? parseFloat(formData.cabinetOppose) : undefined,
     };
-    
+
     onSubmit(submitData);
   };
 
@@ -94,14 +98,14 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
           <Label htmlFor="media-outlet">調査機関</Label>
           <Select
             value={formData.mediaOutlet}
-            onValueChange={(value) => setFormData({...formData, mediaOutlet: value})}
+            onValueChange={(value) => setFormData({ ...formData, mediaOutlet: value })}
             disabled={!!mediaOutlet}
           >
             <SelectTrigger id="media-outlet">
               <SelectValue placeholder="調査機関を選択" />
             </SelectTrigger>
             <SelectContent>
-              {mediaOptions.map(media => (
+              {mediaOptions.map((media) => (
                 <SelectItem key={media} value={media}>
                   {media}
                 </SelectItem>
@@ -115,11 +119,11 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
             id="survey-date"
             type="date"
             value={formData.surveyDate}
-            onChange={(e) => setFormData({...formData, surveyDate: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, surveyDate: e.target.value })}
           />
         </div>
       </div>
-      
+
       <div>
         <Label htmlFor="sample-size">サンプルサイズ</Label>
         <Input
@@ -127,16 +131,16 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
           type="number"
           placeholder="例: 1000"
           value={formData.sampleSize}
-          onChange={(e) => setFormData({...formData, sampleSize: e.target.value})}
+          onChange={(e) => setFormData({ ...formData, sampleSize: e.target.value })}
         />
       </div>
-      
+
       <div>
         <Label>政党支持率 (%)</Label>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
-          {parties.map(party => (
+          {parties.map((party) => (
             <div key={party._id} className="flex items-center space-x-2">
-              <div 
+              <div
                 className="party-color-indicator"
                 ref={(el) => {
                   if (el) {
@@ -144,7 +148,9 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
                   }
                 }}
               ></div>
-              <Label htmlFor={`party-${party._id}`} className="w-full">{party.name}</Label>
+              <Label htmlFor={`party-${party._id}`} className="w-full">
+                {party.name}
+              </Label>
               <Input
                 id={`party-${party._id}`}
                 type="number"
@@ -157,7 +163,7 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
           ))}
         </div>
       </div>
-      
+
       <div>
         <Label>内閣支持率 (%)</Label>
         <div className="grid grid-cols-2 gap-4 mt-2">
@@ -168,7 +174,7 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
               type="number"
               placeholder="%"
               value={formData.cabinetSupport}
-              onChange={(e) => setFormData({...formData, cabinetSupport: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, cabinetSupport: e.target.value })}
             />
           </div>
           <div>
@@ -178,19 +184,17 @@ export const QuickEntryForm: React.FC<QuickEntryFormProps> = ({
               type="number"
               placeholder="%"
               value={formData.cabinetOppose}
-              onChange={(e) => setFormData({...formData, cabinetOppose: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, cabinetOppose: e.target.value })}
             />
           </div>
         </div>
       </div>
-      
+
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
           キャンセル
         </Button>
-        <Button onClick={handleSubmit}>
-          登録
-        </Button>
+        <Button onClick={handleSubmit}>登録</Button>
       </DialogFooter>
     </div>
   );

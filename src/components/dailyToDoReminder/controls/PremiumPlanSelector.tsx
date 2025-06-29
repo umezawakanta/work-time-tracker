@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CreditCard, Shield } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { CreditCard, Shield } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 // 料金プランの情報型
 export interface PremiumPlanInfo {
@@ -41,10 +41,12 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
   onClose,
   onSelectPlan,
   initialCycle = 'monthly',
-  plans
+  plans,
 }) => {
   // 選択されているプランサイクル
-  const [selectedCycle, setSelectedCycle] = useState<'monthly' | 'annual' | 'lifetime'>(initialCycle);
+  const [selectedCycle, setSelectedCycle] = useState<'monthly' | 'annual' | 'lifetime'>(
+    initialCycle
+  );
 
   // 価格表示とフォーマット
   const formatPrice = (price: number): string => {
@@ -70,7 +72,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
             あなたのニーズに合わせて最適なプランをお選びください
           </DialogDescription>
         </DialogHeader>
-        
+
         {/* プランサイクル選択 */}
         <div className="flex justify-center mb-4">
           <div className="bg-gray-100 p-1 rounded-full flex">
@@ -89,9 +91,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
               onClick={() => setSelectedCycle('annual')}
             >
               年間
-              <Badge className="ml-1 bg-green-100 text-green-800 border-0">
-                お得
-              </Badge>
+              <Badge className="ml-1 bg-green-100 text-green-800 border-0">お得</Badge>
             </Button>
             <Button
               variant={selectedCycle === 'lifetime' ? 'default' : 'ghost'}
@@ -103,30 +103,29 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
             </Button>
           </div>
         </div>
-        
+
         {/* プラン比較表示 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {plans.map((plan, index) => {
-            const currentPrice = selectedCycle === 'lifetime' && plan.price.lifetime
-              ? plan.price.lifetime
-              : selectedCycle === 'annual'
-                ? plan.price.annual
-                : plan.price.monthly;
-            
+            const currentPrice =
+              selectedCycle === 'lifetime' && plan.price.lifetime
+                ? plan.price.lifetime
+                : selectedCycle === 'annual'
+                  ? plan.price.annual
+                  : plan.price.monthly;
+
             const hasDiscount = selectedCycle === 'annual' && plan.discount;
-            const originalPrice = hasDiscount 
-              ? calculateOriginalPrice(plan.price.annual, plan.discount!) 
+            const originalPrice = hasDiscount
+              ? calculateOriginalPrice(plan.price.annual, plan.discount!)
               : undefined;
-            
+
             const isLifetimeAvailable = selectedCycle === 'lifetime' && plan.price.lifetime;
-            
+
             return (
               <div
                 key={index}
                 className={`border rounded-lg overflow-hidden ${
-                  plan.isPopular 
-                    ? 'border-blue-300 shadow-md relative' 
-                    : 'border-gray-200'
+                  plan.isPopular ? 'border-blue-300 shadow-md relative' : 'border-gray-200'
                 }`}
               >
                 {plan.isPopular && (
@@ -134,10 +133,10 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                     人気プラン
                   </div>
                 )}
-                
+
                 <div className="p-4">
                   <h3 className="font-medium">{plan.name}</h3>
-                  
+
                   <div className="mt-2 mb-4">
                     {selectedCycle === 'monthly' && (
                       <div className="flex items-end">
@@ -145,7 +144,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                         <span className="text-gray-500 text-xs ml-1">/ 月</span>
                       </div>
                     )}
-                    
+
                     {selectedCycle === 'annual' && (
                       <div>
                         <div className="flex items-end">
@@ -153,7 +152,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                             ¥{formatPrice(calculateMonthlyPrice(currentPrice))}
                           </span>
                           <span className="text-gray-500 text-xs ml-1">/ 月</span>
-                          
+
                           {hasDiscount && originalPrice && (
                             <span className="text-gray-400 text-xs ml-2 line-through">
                               ¥{formatPrice(originalPrice)}
@@ -165,7 +164,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                         </div>
                       </div>
                     )}
-                    
+
                     {selectedCycle === 'lifetime' && (
                       <div className="flex items-end">
                         {isLifetimeAvailable ? (
@@ -179,7 +178,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                       </div>
                     )}
                   </div>
-                  
+
                   <ul className="space-y-2 mb-4">
                     {plan.features.map((feature, fIndex) => (
                       <li key={fIndex} className="flex items-start text-sm">
@@ -188,7 +187,7 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
                       </li>
                     ))}
                   </ul>
-                  
+
                   <Button
                     className="w-full"
                     variant={plan.isPopular ? 'default' : 'outline'}
@@ -203,17 +202,13 @@ export const PremiumPlanSelector: React.FC<PremiumPlanSelectorProps> = ({
             );
           })}
         </div>
-        
+
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between items-center">
           <p className="text-xs text-gray-500 mb-2 sm:mb-0">
             <Shield className="h-3 w-3 inline mr-1" />
             安全な決済システムで処理されます。いつでもキャンセル可能です。
           </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-          >
+          <Button variant="ghost" size="sm" onClick={onClose}>
             キャンセル
           </Button>
         </DialogFooter>

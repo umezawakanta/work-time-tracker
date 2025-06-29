@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   format,
   parseISO,
@@ -11,18 +11,12 @@ import {
   startOfWeek,
   endOfWeek,
   isWithinInterval,
-} from "date-fns";
-import { ja } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
+} from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -31,15 +25,15 @@ import {
   DialogDescription, // この行を追加
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   fetchSleepRecords,
   addSleepRecord,
@@ -48,9 +42,9 @@ import {
   selectSleepRecords,
   selectSleepTrackerStatus,
   selectSleepTrackerError,
-} from "@/store/sleepTrackerSlice";
-import { AppDispatch } from "@/store";
-import { SleepRecord } from "@/store/sleepTrackerSlice";
+} from '@/store/sleepTrackerSlice';
+import { AppDispatch } from '@/store';
+import { SleepRecord } from '@/store/sleepTrackerSlice';
 import {
   Moon,
   Sun,
@@ -70,7 +64,7 @@ import {
   Meh,
   Sparkles,
   BedIcon,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   XAxis,
   YAxis,
@@ -80,13 +74,9 @@ import {
   BarChart,
   Bar,
   CartesianGrid,
-} from "recharts";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+} from 'recharts';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 export default function SleepTracker() {
   const dispatch = useDispatch<AppDispatch>();
@@ -96,38 +86,36 @@ export default function SleepTracker() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [editRecord, setEditRecord] = useState<SleepRecord | null>(null);
   const [newRecord, setNewRecord] = useState<Partial<SleepRecord>>({
-    date: format(new Date(), "yyyy-MM-dd"),
+    date: format(new Date(), 'yyyy-MM-dd'),
   });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [dateForCalendar, setDateForCalendar] = useState<Date>(new Date());
-  const [sleepQuality, setSleepQuality] = useState<string>("neutral");
-  const [sleepNotes, setSleepNotes] = useState<string>("");
-  const [selectedTimeRange, setSelectedTimeRange] = useState<string>("week");
+  const [sleepQuality, setSleepQuality] = useState<string>('neutral');
+  const [sleepNotes, setSleepNotes] = useState<string>('');
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string>('week');
   const [isQuickLogMode, setIsQuickLogMode] = useState<boolean>(true);
   const [showTrends, setShowTrends] = useState<boolean>(true);
   const [showInsights, setShowInsights] = useState<boolean>(true);
   const [sleepGoal, setSleepGoal] = useState<number>(8);
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === 'idle') {
       dispatch(fetchSleepRecords());
     }
   }, [status, dispatch]);
 
   // ユーザーが今日の記録をしたかをチェック
   const todayRecord = sleepRecords.find(
-    (record: SleepRecord) => record.date === format(new Date(), "yyyy-MM-dd")
+    (record: SleepRecord) => record.date === format(new Date(), 'yyyy-MM-dd')
   );
 
   // 簡易記録モード - ワンタップで記録
-  const logTime = (type: "wakeUp" | "bedtime") => {
+  const logTime = (type: 'wakeUp' | 'bedtime') => {
     const now = new Date();
-    const today = format(now, "yyyy-MM-dd");
+    const today = format(now, 'yyyy-MM-dd');
 
-    const existingRecord = sleepRecords.find(
-      (record: SleepRecord) => record.date === today
-    );
+    const existingRecord = sleepRecords.find((record: SleepRecord) => record.date === today);
 
     if (existingRecord) {
       dispatch(
@@ -136,14 +124,14 @@ export default function SleepTracker() {
           updates: {
             [type]: now.toISOString(),
             // 就寝時間を記録する場合は日付を前日に設定（23時以降の場合）
-            ...(type === "bedtime" && now.getHours() >= 23
-              ? { date: format(subDays(now, 1), "yyyy-MM-dd") }
+            ...(type === 'bedtime' && now.getHours() >= 23
+              ? { date: format(subDays(now, 1), 'yyyy-MM-dd') }
               : {}),
           },
         })
       );
 
-      if (type === "wakeUp") {
+      if (type === 'wakeUp') {
         // 起床時に質問ダイアログを表示
         setEditRecord(existingRecord);
         setIsEditDialogOpen(true);
@@ -152,23 +140,20 @@ export default function SleepTracker() {
       dispatch(
         addSleepRecord({
           date:
-            type === "bedtime" && now.getHours() >= 23
-              ? format(subDays(now, 1), "yyyy-MM-dd")
+            type === 'bedtime' && now.getHours() >= 23
+              ? format(subDays(now, 1), 'yyyy-MM-dd')
               : today,
-          wakeUp: type === "wakeUp" ? now.toISOString() : null,
-          bedtime: type === "bedtime" ? now.toISOString() : null,
-          quality: "neutral",
-          notes: "",
+          wakeUp: type === 'wakeUp' ? now.toISOString() : null,
+          bedtime: type === 'bedtime' ? now.toISOString() : null,
+          quality: 'neutral',
+          notes: '',
         })
       );
     }
   };
 
-  const formatTime = (
-    timeString: string | null,
-    isBedtime: boolean = false
-  ) => {
-    if (!timeString) return "--:--";
+  const formatTime = (timeString: string | null, isBedtime: boolean = false) => {
+    if (!timeString) return '--:--';
     const date = parseISO(timeString);
     let hours = date.getHours();
     const minutes = date.getMinutes();
@@ -178,15 +163,10 @@ export default function SleepTracker() {
       hours += 24;
     }
 
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   };
 
-  const calculateSleepDuration = (
-    wakeUp: string | null,
-    bedtime: string | null
-  ) => {
+  const calculateSleepDuration = (wakeUp: string | null, bedtime: string | null) => {
     if (!wakeUp || !bedtime) return null;
     let wakeUpTime = parseISO(wakeUp);
     let bedTime = parseISO(bedtime);
@@ -202,8 +182,7 @@ export default function SleepTracker() {
     }
 
     const durationHours = differenceInHours(wakeUpTime, bedTime);
-    const durationMinutes =
-      ((wakeUpTime.getTime() - bedTime.getTime()) / (1000 * 60)) % 60;
+    const durationMinutes = ((wakeUpTime.getTime() - bedTime.getTime()) / (1000 * 60)) % 60;
 
     return parseFloat((durationHours + durationMinutes / 60).toFixed(1));
   };
@@ -217,9 +196,9 @@ export default function SleepTracker() {
           notes: sleepNotes,
         } as SleepRecord)
       );
-      setNewRecord({ date: format(new Date(), "yyyy-MM-dd") });
-      setSleepQuality("neutral");
-      setSleepNotes("");
+      setNewRecord({ date: format(new Date(), 'yyyy-MM-dd') });
+      setSleepQuality('neutral');
+      setSleepNotes('');
       setIsAddDialogOpen(false);
     }
   };
@@ -237,41 +216,41 @@ export default function SleepTracker() {
         })
       );
       setEditRecord(null);
-      setSleepQuality("neutral");
-      setSleepNotes("");
+      setSleepQuality('neutral');
+      setSleepNotes('');
       setIsEditDialogOpen(false);
     }
   };
 
   const handleDeleteRecord = (id: string) => {
-    if (confirm("このレコードを削除してもよろしいですか？")) {
+    if (confirm('このレコードを削除してもよろしいですか？')) {
       dispatch(deleteSleepRecord(id));
     }
   };
 
   const openEditDialog = (record: SleepRecord) => {
     setEditRecord({ ...record });
-    setSleepQuality(record.quality || "neutral");
-    setSleepNotes(record.notes || "");
+    setSleepQuality(record.quality || 'neutral');
+    setSleepNotes(record.notes || '');
     setIsEditDialogOpen(true);
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setDateForCalendar(date);
-      setNewRecord({ ...newRecord, date: format(date, "yyyy-MM-dd") });
+      setNewRecord({ ...newRecord, date: format(date, 'yyyy-MM-dd') });
     }
   };
 
   // 睡眠の質に応じた色とアイコンを取得
   const getSleepQualityInfo = (quality: string | undefined) => {
     switch (quality) {
-      case "good":
-        return { color: "text-green-500", icon: <Smile className="h-6 w-6" /> };
-      case "bad":
-        return { color: "text-red-500", icon: <Frown className="h-6 w-6" /> };
+      case 'good':
+        return { color: 'text-green-500', icon: <Smile className="h-6 w-6" /> };
+      case 'bad':
+        return { color: 'text-red-500', icon: <Frown className="h-6 w-6" /> };
       default:
-        return { color: "text-yellow-500", icon: <Meh className="h-6 w-6" /> };
+        return { color: 'text-yellow-500', icon: <Meh className="h-6 w-6" /> };
     }
   };
 
@@ -297,11 +276,9 @@ export default function SleepTracker() {
     const secondHalf = recentRecords.slice(midPoint);
 
     const firstHalfAvg =
-      firstHalf.reduce((sum, record) => sum + record.duration, 0) /
-      firstHalf.length;
+      firstHalf.reduce((sum, record) => sum + record.duration, 0) / firstHalf.length;
     const secondHalfAvg =
-      secondHalf.reduce((sum, record) => sum + record.duration, 0) /
-      secondHalf.length;
+      secondHalf.reduce((sum, record) => sum + record.duration, 0) / secondHalf.length;
 
     const diff = secondHalfAvg - firstHalfAvg;
     const diffPercentage = (diff / firstHalfAvg) * 100;
@@ -309,13 +286,11 @@ export default function SleepTracker() {
     if (Math.abs(diffPercentage) < 5) return null; // 変化が少ない場合は表示しない
 
     return {
-      trend: diff > 0 ? "improving" : "declining",
+      trend: diff > 0 ? 'improving' : 'declining',
       percentage: Math.abs(diffPercentage).toFixed(1),
       message:
         diff > 0
-          ? `最近の睡眠時間が${Math.abs(diffPercentage).toFixed(
-              1
-            )}%増加しています。良い傾向です！`
+          ? `最近の睡眠時間が${Math.abs(diffPercentage).toFixed(1)}%増加しています。良い傾向です！`
           : `最近の睡眠時間が${Math.abs(diffPercentage).toFixed(
               1
             )}%減少しています。睡眠時間を確保しましょう。`,
@@ -327,7 +302,7 @@ export default function SleepTracker() {
   // 睡眠の質のカウント
   const qualityCounts = sleepRecords.reduce(
     (counts: Record<string, number>, record: SleepRecord) => {
-      const quality = record.quality || "neutral";
+      const quality = record.quality || 'neutral';
       counts[quality] = (counts[quality] || 0) + 1;
       return counts;
     },
@@ -338,16 +313,12 @@ export default function SleepTracker() {
   const getAverageSleepDuration = () => {
     const recordsWithDuration = sleepRecords
       .filter((record: SleepRecord) => record.wakeUp && record.bedtime)
-      .map(
-        (record: SleepRecord) =>
-          calculateSleepDuration(record.wakeUp, record.bedtime) || 0
-      );
+      .map((record: SleepRecord) => calculateSleepDuration(record.wakeUp, record.bedtime) || 0);
 
     if (recordsWithDuration.length === 0) return 0;
 
     return (
-      recordsWithDuration.reduce((sum, duration) => sum + duration, 0) /
-      recordsWithDuration.length
+      recordsWithDuration.reduce((sum, duration) => sum + duration, 0) / recordsWithDuration.length
     );
   };
 
@@ -360,7 +331,7 @@ export default function SleepTracker() {
     let filteredRecords = [...sleepRecords];
     const today = new Date();
 
-    if (selectedTimeRange === "week") {
+    if (selectedTimeRange === 'week') {
       // 今週のデータ
       const weekStart = startOfWeek(today, { locale: ja });
       const weekEnd = endOfWeek(today, { locale: ja });
@@ -368,7 +339,7 @@ export default function SleepTracker() {
         const recordDate = parseISO(record.date);
         return isWithinInterval(recordDate, { start: weekStart, end: weekEnd });
       });
-    } else if (selectedTimeRange === "month") {
+    } else if (selectedTimeRange === 'month') {
       // 今月のデータ
       filteredRecords = filteredRecords.filter((record: SleepRecord) => {
         const recordDate = parseISO(record.date);
@@ -384,20 +355,15 @@ export default function SleepTracker() {
         const wakeUpTime = record.wakeUp ? parseISO(record.wakeUp) : null;
         const bedTime = record.bedtime ? parseISO(record.bedtime) : null;
         return {
-          date: format(parseISO(record.date), "M/d"),
-          day: format(parseISO(record.date), "E", { locale: ja }),
-          sleepDuration:
-            calculateSleepDuration(record.wakeUp, record.bedtime) || 0,
-          wakeUpTime: wakeUpTime
-            ? wakeUpTime.getHours() + wakeUpTime.getMinutes() / 60
-            : null,
+          date: format(parseISO(record.date), 'M/d'),
+          day: format(parseISO(record.date), 'E', { locale: ja }),
+          sleepDuration: calculateSleepDuration(record.wakeUp, record.bedtime) || 0,
+          wakeUpTime: wakeUpTime ? wakeUpTime.getHours() + wakeUpTime.getMinutes() / 60 : null,
           bedTime: bedTime
-            ? (bedTime.getHours() < 10
-                ? bedTime.getHours() + 24
-                : bedTime.getHours()) +
+            ? (bedTime.getHours() < 10 ? bedTime.getHours() + 24 : bedTime.getHours()) +
               bedTime.getMinutes() / 60
             : null,
-          quality: record.quality || "neutral",
+          quality: record.quality || 'neutral',
         };
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -420,8 +386,7 @@ export default function SleepTracker() {
       let score = 0;
 
       // 睡眠時間によるスコア（0-40点）
-      const duration =
-        calculateSleepDuration(record.wakeUp, record.bedtime) || 0;
+      const duration = calculateSleepDuration(record.wakeUp, record.bedtime) || 0;
       if (duration >= 7 && duration <= 9) {
         score += 40; // 理想的な睡眠時間
       } else if (duration >= 6 && duration < 7) {
@@ -437,11 +402,11 @@ export default function SleepTracker() {
       }
 
       // 睡眠の質によるスコア（0-40点）
-      if (record.quality === "good") {
+      if (record.quality === 'good') {
         score += 40;
-      } else if (record.quality === "neutral") {
+      } else if (record.quality === 'neutral') {
         score += 25;
-      } else if (record.quality === "bad") {
+      } else if (record.quality === 'bad') {
         score += 10;
       }
 
@@ -451,10 +416,7 @@ export default function SleepTracker() {
         const bedHour = parseISO(record.bedtime).getHours();
         if ((bedHour >= 22 && bedHour <= 23) || bedHour === 0) {
           score += 20;
-        } else if (
-          (bedHour >= 21 && bedHour < 22) ||
-          (bedHour > 0 && bedHour <= 1)
-        ) {
+        } else if ((bedHour >= 21 && bedHour < 22) || (bedHour > 0 && bedHour <= 1)) {
           score += 15;
         } else {
           score += 5;
@@ -465,8 +427,7 @@ export default function SleepTracker() {
     });
 
     // 平均スコアを計算
-    const averageScore =
-      scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    const averageScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     return Math.round(averageScore);
   };
 
@@ -474,12 +435,12 @@ export default function SleepTracker() {
 
   // 睡眠スコアのグレード（A, B, C, D, F）
   const getSleepScoreGrade = (score: number) => {
-    if (score >= 90) return { grade: "A+", color: "text-green-600" };
-    if (score >= 80) return { grade: "A", color: "text-green-500" };
-    if (score >= 70) return { grade: "B", color: "text-blue-500" };
-    if (score >= 60) return { grade: "C", color: "text-yellow-500" };
-    if (score >= 50) return { grade: "D", color: "text-orange-500" };
-    return { grade: "F", color: "text-red-500" };
+    if (score >= 90) return { grade: 'A+', color: 'text-green-600' };
+    if (score >= 80) return { grade: 'A', color: 'text-green-500' };
+    if (score >= 70) return { grade: 'B', color: 'text-blue-500' };
+    if (score >= 60) return { grade: 'C', color: 'text-yellow-500' };
+    if (score >= 50) return { grade: 'D', color: 'text-orange-500' };
+    return { grade: 'F', color: 'text-red-500' };
   };
 
   const sleepScoreGrade = getSleepScoreGrade(sleepScore);
@@ -492,33 +453,25 @@ export default function SleepTracker() {
     const days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date(startOfWeek);
       date.setDate(startOfWeek.getDate() + i);
-      const dateString = format(date, "yyyy-MM-dd");
-      const record = sleepRecords.find(
-        (r: SleepRecord) => r.date === dateString
-      );
-      const duration = record
-        ? calculateSleepDuration(record.wakeUp, record.bedtime)
-        : null;
-      const quality = record?.quality || "neutral";
+      const dateString = format(date, 'yyyy-MM-dd');
+      const record = sleepRecords.find((r: SleepRecord) => r.date === dateString);
+      const duration = record ? calculateSleepDuration(record.wakeUp, record.bedtime) : null;
+      const quality = record?.quality || 'neutral';
       const qualityInfo = getSleepQualityInfo(quality);
 
       return (
         <div
           key={i}
-          className={`p-4 border-r ${
-            isToday(date) ? "bg-blue-50 dark:bg-blue-900/20" : ""
-          }`}
+          className={`p-4 border-r ${isToday(date) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
         >
-          <div className="font-bold mb-2">
-            {format(date, "M/d (E)", { locale: ja })}
-          </div>
+          <div className="font-bold mb-2">{format(date, 'M/d (E)', { locale: ja })}</div>
           <div className="flex items-center mb-1">
             <Sun className="w-4 h-4 mr-2 text-yellow-500" />
-            <span>{record ? formatTime(record.wakeUp) : "--:--"}</span>
+            <span>{record ? formatTime(record.wakeUp) : '--:--'}</span>
           </div>
           <div className="flex items-center mb-1">
             <BedIcon className="w-4 h-4 mr-2 text-indigo-500" />
-            <span>{record ? formatTime(record.bedtime, true) : "--:--"}</span>
+            <span>{record ? formatTime(record.bedtime, true) : '--:--'}</span>
           </div>
           {duration && (
             <div className="flex items-center mb-1">
@@ -527,9 +480,7 @@ export default function SleepTracker() {
             </div>
           )}
           {record && (
-            <div className={`flex items-center ${qualityInfo.color}`}>
-              {qualityInfo.icon}
-            </div>
+            <div className={`flex items-center ${qualityInfo.color}`}>{qualityInfo.icon}</div>
           )}
         </div>
       );
@@ -548,10 +499,7 @@ export default function SleepTracker() {
     return (
       <div className="space-y-2">
         {sortedRecords.map((record: SleepRecord) => {
-          const duration = calculateSleepDuration(
-            record.wakeUp,
-            record.bedtime
-          );
+          const duration = calculateSleepDuration(record.wakeUp, record.bedtime);
           const qualityInfo = getSleepQualityInfo(record.quality);
 
           return (
@@ -560,12 +508,10 @@ export default function SleepTracker() {
               className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               <div className="flex items-center">
-                <div className={`mr-3 ${qualityInfo.color}`}>
-                  {qualityInfo.icon}
-                </div>
+                <div className={`mr-3 ${qualityInfo.color}`}>{qualityInfo.icon}</div>
                 <div>
                   <span className="font-medium">
-                    {format(parseISO(record.date), "M/d (E)", { locale: ja })}
+                    {format(parseISO(record.date), 'M/d (E)', { locale: ja })}
                   </span>
                   {duration && (
                     <span className="ml-3 text-sm text-gray-600 dark:text-gray-300">
@@ -573,9 +519,7 @@ export default function SleepTracker() {
                     </span>
                   )}
                   {record.notes && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {record.notes}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{record.notes}</p>
                   )}
                 </div>
               </div>
@@ -583,27 +527,17 @@ export default function SleepTracker() {
                 <div className="flex flex-col items-end mr-4">
                   <span className="flex items-center text-sm">
                     <Sun className="w-3 h-3 mr-1 text-yellow-500" />
-                    <span>{record ? formatTime(record.wakeUp) : "--:--"}</span>
+                    <span>{record ? formatTime(record.wakeUp) : '--:--'}</span>
                   </span>
                   <span className="flex items-center text-sm">
                     <Moon className="w-3 h-3 mr-1 text-indigo-500" />
-                    <span>
-                      {record ? formatTime(record.bedtime, true) : "--:--"}
-                    </span>
+                    <span>{record ? formatTime(record.bedtime, true) : '--:--'}</span>
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => openEditDialog(record)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => openEditDialog(record)}>
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDeleteRecord(record._id)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteRecord(record._id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -619,9 +553,7 @@ export default function SleepTracker() {
     if (sleepRecords.length < 7) return null;
 
     // 平均起床時間と就寝時間を計算
-    const validRecords = sleepRecords.filter(
-      (record) => record.wakeUp && record.bedtime
-    );
+    const validRecords = sleepRecords.filter((record) => record.wakeUp && record.bedtime);
 
     if (validRecords.length < 5) return null;
 
@@ -640,10 +572,8 @@ export default function SleepTracker() {
       return hours + date.getMinutes() / 60;
     });
 
-    const avgWakeUpTime =
-      wakeUpTimes.reduce((sum, time) => sum + time, 0) / wakeUpTimes.length;
-    const avgBedTime =
-      bedTimes.reduce((sum, time) => sum + time, 0) / bedTimes.length;
+    const avgWakeUpTime = wakeUpTimes.reduce((sum, time) => sum + time, 0) / wakeUpTimes.length;
+    const avgBedTime = bedTimes.reduce((sum, time) => sum + time, 0) / bedTimes.length;
 
     // 平均起床時間を時間:分形式に変換
     const avgWakeUpHours = Math.floor(avgWakeUpTime);
@@ -654,23 +584,21 @@ export default function SleepTracker() {
     if (avgBedHours >= 24) {
       avgBedHours -= 24;
     }
-    const avgBedMinutes = Math.round(
-      (avgBedTime - Math.floor(avgBedTime)) * 60
-    );
+    const avgBedMinutes = Math.round((avgBedTime - Math.floor(avgBedTime)) * 60);
 
     return {
       avgWakeUpTime: `${avgWakeUpHours
         .toString()
-        .padStart(2, "0")}:${avgWakeUpMinutes.toString().padStart(2, "0")}`,
-      avgBedTime: `${avgBedHours.toString().padStart(2, "0")}:${avgBedMinutes
+        .padStart(2, '0')}:${avgWakeUpMinutes.toString().padStart(2, '0')}`,
+      avgBedTime: `${avgBedHours.toString().padStart(2, '0')}:${avgBedMinutes
         .toString()
-        .padStart(2, "0")}`,
+        .padStart(2, '0')}`,
     };
   };
 
   const sleepPatterns = analyzeSleepPatterns();
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -678,7 +606,7 @@ export default function SleepTracker() {
     );
   }
 
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <Alert variant="destructive" className="mt-6">
         <AlertTriangle className="h-4 w-4" />
@@ -696,11 +624,11 @@ export default function SleepTracker() {
       <div className="flex space-x-4">
         <button
           type="button"
-          onClick={() => setSleepQuality("good")}
+          onClick={() => setSleepQuality('good')}
           className={`flex flex-col items-center p-2 rounded-lg ${
-            sleepQuality === "good"
-              ? "bg-green-100 border-2 border-green-500"
-              : "bg-gray-50 border border-gray-200"
+            sleepQuality === 'good'
+              ? 'bg-green-100 border-2 border-green-500'
+              : 'bg-gray-50 border border-gray-200'
           }`}
         >
           <Smile className="h-8 w-8 text-green-500" />
@@ -708,11 +636,11 @@ export default function SleepTracker() {
         </button>
         <button
           type="button"
-          onClick={() => setSleepQuality("neutral")}
+          onClick={() => setSleepQuality('neutral')}
           className={`flex flex-col items-center p-2 rounded-lg ${
-            sleepQuality === "neutral"
-              ? "bg-yellow-100 border-2 border-yellow-500"
-              : "bg-gray-50 border border-gray-200"
+            sleepQuality === 'neutral'
+              ? 'bg-yellow-100 border-2 border-yellow-500'
+              : 'bg-gray-50 border border-gray-200'
           }`}
         >
           <Meh className="h-8 w-8 text-yellow-500" />
@@ -720,11 +648,11 @@ export default function SleepTracker() {
         </button>
         <button
           type="button"
-          onClick={() => setSleepQuality("bad")}
+          onClick={() => setSleepQuality('bad')}
           className={`flex flex-col items-center p-2 rounded-lg ${
-            sleepQuality === "bad"
-              ? "bg-red-100 border-2 border-red-500"
-              : "bg-gray-50 border border-gray-200"
+            sleepQuality === 'bad'
+              ? 'bg-red-100 border-2 border-red-500'
+              : 'bg-gray-50 border border-gray-200'
           }`}
         >
           <Frown className="h-8 w-8 text-red-500" />
@@ -742,14 +670,14 @@ export default function SleepTracker() {
           {isQuickLogMode ? (
             <>
               <Button
-                onClick={() => logTime("wakeUp")}
+                onClick={() => logTime('wakeUp')}
                 className="flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
               >
                 <Sun className="mr-2" />
                 起床
               </Button>
               <Button
-                onClick={() => logTime("bedtime")}
+                onClick={() => logTime('bedtime')}
                 className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
               >
                 <Moon className="mr-2" />
@@ -779,12 +707,9 @@ export default function SleepTracker() {
                     <div className="col-span-3">
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start"
-                          >
+                          <Button variant="outline" className="w-full justify-start">
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {format(dateForCalendar, "yyyy年MM月dd日")}
+                            {format(dateForCalendar, 'yyyy年MM月dd日')}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -805,11 +730,7 @@ export default function SleepTracker() {
                     <Input
                       id="new-wakeup"
                       type="time"
-                      value={
-                        newRecord.wakeUp
-                          ? format(parseISO(newRecord.wakeUp), "HH:mm")
-                          : ""
-                      }
+                      value={newRecord.wakeUp ? format(parseISO(newRecord.wakeUp), 'HH:mm') : ''}
                       onChange={(e) =>
                         setNewRecord({
                           ...newRecord,
@@ -826,11 +747,7 @@ export default function SleepTracker() {
                     <Input
                       id="new-bedtime"
                       type="time"
-                      value={
-                        newRecord.bedtime
-                          ? format(parseISO(newRecord.bedtime), "HH:mm")
-                          : ""
-                      }
+                      value={newRecord.bedtime ? format(parseISO(newRecord.bedtime), 'HH:mm') : ''}
                       onChange={(e) =>
                         setNewRecord({
                           ...newRecord,
@@ -865,9 +782,7 @@ export default function SleepTracker() {
               onClick={() => setIsQuickLogMode(!isQuickLogMode)}
               className="text-xs underline text-gray-500 hover:text-gray-700"
             >
-              {isQuickLogMode
-                ? "詳細入力に切り替え"
-                : "クイックモードに切り替え"}
+              {isQuickLogMode ? '詳細入力に切り替え' : 'クイックモードに切り替え'}
             </button>
           </div>
         </div>
@@ -883,20 +798,16 @@ export default function SleepTracker() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center">
-              <div className={`text-5xl font-bold ${sleepScoreGrade.color}`}>
-                {sleepScore}
-              </div>
-              <div
-                className={`text-xl font-semibold mt-2 ${sleepScoreGrade.color}`}
-              >
+              <div className={`text-5xl font-bold ${sleepScoreGrade.color}`}>{sleepScore}</div>
+              <div className={`text-xl font-semibold mt-2 ${sleepScoreGrade.color}`}>
                 {sleepScoreGrade.grade}
               </div>
               <div className="mt-4 text-sm text-center text-gray-500">
                 {sleepScore >= 80
-                  ? "素晴らしい睡眠習慣です！"
+                  ? '素晴らしい睡眠習慣です！'
                   : sleepScore >= 60
-                  ? "良好な睡眠習慣です。改善の余地があります。"
-                  : "睡眠の質を改善する必要があります。"}
+                    ? '良好な睡眠習慣です。改善の余地があります。'
+                    : '睡眠の質を改善する必要があります。'}
               </div>
             </div>
           </CardContent>
@@ -909,15 +820,13 @@ export default function SleepTracker() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center">
-              <div className="text-5xl font-bold">
-                {averageSleepDuration.toFixed(1)}
-              </div>
+              <div className="text-5xl font-bold">{averageSleepDuration.toFixed(1)}</div>
               <div className="text-lg mt-2">時間/日</div>
 
               {sleepGoalDifference !== 0 && (
                 <div
                   className={`flex items-center mt-4 ${
-                    sleepGoalDifference >= 0 ? "text-green-500" : "text-red-500"
+                    sleepGoalDifference >= 0 ? 'text-green-500' : 'text-red-500'
                   }`}
                 >
                   {sleepGoalDifference >= 0 ? (
@@ -927,7 +836,7 @@ export default function SleepTracker() {
                   )}
                   <span>
                     目標より{Math.abs(sleepGoalDifference).toFixed(1)}時間
-                    {sleepGoalDifference >= 0 ? "多い" : "少ない"}
+                    {sleepGoalDifference >= 0 ? '多い' : '少ない'}
                   </span>
                 </div>
               )}
@@ -945,9 +854,7 @@ export default function SleepTracker() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setSleepGoal((prev) => Math.max(4, prev - 0.5))
-                  }
+                  onClick={() => setSleepGoal((prev) => Math.max(4, prev - 0.5))}
                 >
                   -
                 </Button>
@@ -955,9 +862,7 @@ export default function SleepTracker() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setSleepGoal((prev) => Math.min(12, prev + 0.5))
-                  }
+                  onClick={() => setSleepGoal((prev) => Math.min(12, prev + 0.5))}
                 >
                   +
                 </Button>
@@ -1017,16 +922,12 @@ export default function SleepTracker() {
                 <div className="grid grid-cols-2 gap-4 w-full">
                   <div className="flex flex-col items-center border rounded-lg p-3">
                     <Moon className="h-6 w-6 text-indigo-500 mb-1" />
-                    <div className="text-lg font-semibold">
-                      {sleepPatterns.avgBedTime}
-                    </div>
+                    <div className="text-lg font-semibold">{sleepPatterns.avgBedTime}</div>
                     <div className="text-xs text-gray-500">平均就寝</div>
                   </div>
                   <div className="flex flex-col items-center border rounded-lg p-3">
                     <Sun className="h-6 w-6 text-yellow-500 mb-1" />
-                    <div className="text-lg font-semibold">
-                      {sleepPatterns.avgWakeUpTime}
-                    </div>
+                    <div className="text-lg font-semibold">{sleepPatterns.avgWakeUpTime}</div>
                     <div className="text-xs text-gray-500">平均起床</div>
                   </div>
                 </div>
@@ -1034,12 +935,10 @@ export default function SleepTracker() {
                 {sleepTrend && (
                   <div
                     className={`mt-4 text-sm ${
-                      sleepTrend.trend === "improving"
-                        ? "text-green-500"
-                        : "text-red-500"
+                      sleepTrend.trend === 'improving' ? 'text-green-500' : 'text-red-500'
                     }`}
                   >
-                    {sleepTrend.trend === "improving" ? (
+                    {sleepTrend.trend === 'improving' ? (
                       <div className="flex items-center">
                         <ArrowUp className="h-4 w-4 mr-1" />
                         <span>{sleepTrend.message}</span>
@@ -1054,9 +953,7 @@ export default function SleepTracker() {
                 )}
               </div>
             ) : (
-              <div className="text-center text-gray-500 p-4">
-                さらに記録が必要です
-              </div>
+              <div className="text-center text-gray-500 p-4">さらに記録が必要です</div>
             )}
           </CardContent>
         </Card>
@@ -1067,10 +964,7 @@ export default function SleepTracker() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-xl">睡眠チャート</CardTitle>
-            <Select
-              value={selectedTimeRange}
-              onValueChange={setSelectedTimeRange}
-            >
+            <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="期間" />
               </SelectTrigger>
@@ -1092,32 +986,18 @@ export default function SleepTracker() {
                 <Tooltip
                   formatter={(value: number, name: string) => {
                     switch (name) {
-                      case "睡眠時間":
+                      case '睡眠時間':
                         return [`${value}時間`, name];
-                      case "起床時間": {
+                      case '起床時間': {
                         const wakeHours = Math.floor(value);
-                        const wakeMinutes = Math.round(
-                          (value - wakeHours) * 60
-                        );
-                        return [
-                          `${wakeHours}:${wakeMinutes
-                            .toString()
-                            .padStart(2, "0")}`,
-                          name,
-                        ];
+                        const wakeMinutes = Math.round((value - wakeHours) * 60);
+                        return [`${wakeHours}:${wakeMinutes.toString().padStart(2, '0')}`, name];
                       }
-                      case "就寝時間": {
+                      case '就寝時間': {
                         let bedHours = Math.floor(value);
                         if (bedHours >= 24) bedHours -= 24;
-                        const bedMinutes = Math.round(
-                          (value - Math.floor(value)) * 60
-                        );
-                        return [
-                          `${bedHours}:${bedMinutes
-                            .toString()
-                            .padStart(2, "0")}`,
-                          name,
-                        ];
+                        const bedMinutes = Math.round((value - Math.floor(value)) * 60);
+                        return [`${bedHours}:${bedMinutes.toString().padStart(2, '0')}`, name];
                       }
                       default:
                         return [value, name];
@@ -1151,7 +1031,7 @@ export default function SleepTracker() {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="font-semibold">
-              {format(currentDate, "yyyy年M月", { locale: ja })}
+              {format(currentDate, 'yyyy年M月', { locale: ja })}
             </span>
             <Button
               variant="outline"
@@ -1197,18 +1077,17 @@ export default function SleepTracker() {
                 </div>
               )}
 
-              {sleepPatterns &&
-                parseInt(sleepPatterns.avgBedTime.split(":")[0]) > 0 && (
-                  <div className="flex items-start">
-                    <Clock className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                    <div>
-                      <p className="font-medium">夜更かし習慣があります</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        午後10時から深夜0時の間に就寝すると、より良質な睡眠が得られる傾向があります。
-                      </p>
-                    </div>
+              {sleepPatterns && parseInt(sleepPatterns.avgBedTime.split(':')[0]) > 0 && (
+                <div className="flex items-start">
+                  <Clock className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                  <div>
+                    <p className="font-medium">夜更かし習慣があります</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      午後10時から深夜0時の間に就寝すると、より良質な睡眠が得られる傾向があります。
+                    </p>
                   </div>
-                )}
+                </div>
+              )}
 
               {qualityCounts.bad > qualityCounts.good && (
                 <div className="flex items-start">
@@ -1268,10 +1147,8 @@ export default function SleepTracker() {
               <Input
                 id="edit-date"
                 type="date"
-                value={editRecord?.date || ""}
-                onChange={(e) =>
-                  setEditRecord({ ...editRecord!, date: e.target.value })
-                }
+                value={editRecord?.date || ''}
+                onChange={(e) => setEditRecord({ ...editRecord!, date: e.target.value })}
                 className="col-span-3"
               />
             </div>
@@ -1282,11 +1159,7 @@ export default function SleepTracker() {
               <Input
                 id="edit-wakeup"
                 type="time"
-                value={
-                  editRecord?.wakeUp
-                    ? format(parseISO(editRecord.wakeUp), "HH:mm")
-                    : ""
-                }
+                value={editRecord?.wakeUp ? format(parseISO(editRecord.wakeUp), 'HH:mm') : ''}
                 onChange={(e) =>
                   setEditRecord({
                     ...editRecord!,
@@ -1303,11 +1176,7 @@ export default function SleepTracker() {
               <Input
                 id="edit-bedtime"
                 type="time"
-                value={
-                  editRecord?.bedtime
-                    ? format(parseISO(editRecord.bedtime), "HH:mm")
-                    : ""
-                }
+                value={editRecord?.bedtime ? format(parseISO(editRecord.bedtime), 'HH:mm') : ''}
                 onChange={(e) =>
                   setEditRecord({
                     ...editRecord!,

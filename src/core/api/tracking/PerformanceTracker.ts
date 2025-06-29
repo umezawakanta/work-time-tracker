@@ -29,7 +29,7 @@ export class PerformanceTracker {
       this.metrics.set(trackingId, {
         duration,
         metadata,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       this.activeTracking.delete(trackingId);
     }

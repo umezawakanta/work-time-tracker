@@ -26,19 +26,19 @@ export interface TagInfo {
 
 // タスクの基本情報
 export interface Todo {
-  _id: string;           // ユニークID
-  task: string;          // タスク内容
-  type: TaskType;        // タスクタイプ
-  completed: boolean;    // 完了状態
-  priority: number;      // 優先度 (1-5、5が最高)
+  _id: string; // ユニークID
+  task: string; // タスク内容
+  type: TaskType; // タスクタイプ
+  completed: boolean; // 完了状態
+  priority: number; // 優先度 (1-5、5が最高)
   priorityLevel?: PriorityLevel; // 優先度レベル
   isPrioritized: boolean; // 優先タスクかどうか
-  createdAt: string;     // 作成日時 (ISO文字列)
-  updatedAt: string;     // 更新日時 (ISO文字列)
+  createdAt: string; // 作成日時 (ISO文字列)
+  updatedAt: string; // 更新日時 (ISO文字列)
   completedDate: string | null; // 完了日時 (ISO文字列)
-  deadline?: string;     // 期限 (ISO文字列)
-  note?: string;         // メモ
-  tags?: string[];       // タグ
+  deadline?: string; // 期限 (ISO文字列)
+  note?: string; // メモ
+  tags?: string[]; // タグ
   efficiency?: TodoEfficiency; // タスク効率分析（プレミアム機能）
   recurrence?: TodoRecurrence; // 繰り返し設定（プレミアム機能）
   reminders?: TodoReminder[]; // リマインダー（プレミアム機能）
@@ -70,39 +70,39 @@ export interface NewTodo {
 
 // タスク効率分析（プレミアム機能）
 export interface TodoEfficiency {
-  completionTime?: number;        // 完了までの時間（分）
-  beforeDeadline?: boolean;       // 期限内に完了したか
-  similarTasksAvgTime?: number;   // 同様のタスクの平均完了時間
-  productiveTimeOfDay?: string;   // 最も生産的な時間帯
-  recommendedPriority?: number;   // 推奨される優先度
-  efficiencyScore?: number;       // 効率スコア (0-100)
-  suggestion?: string;            // AI提案
+  completionTime?: number; // 完了までの時間（分）
+  beforeDeadline?: boolean; // 期限内に完了したか
+  similarTasksAvgTime?: number; // 同様のタスクの平均完了時間
+  productiveTimeOfDay?: string; // 最も生産的な時間帯
+  recommendedPriority?: number; // 推奨される優先度
+  efficiencyScore?: number; // 効率スコア (0-100)
+  suggestion?: string; // AI提案
 }
 
 // タスク履歴エントリ
 export interface TodoHistoryEntry {
-  date: string;           // 日付 (YYYY-MM-DD)
-  count: number;          // 完了タスク数
-  inputCount?: number;    // インプットタスク数
-  outputCount?: number;   // アウトプットタスク数
-  averageTime?: number;   // 平均完了時間（分）
-  totalTime?: number;     // 総作業時間（分）
+  date: string; // 日付 (YYYY-MM-DD)
+  count: number; // 完了タスク数
+  inputCount?: number; // インプットタスク数
+  outputCount?: number; // アウトプットタスク数
+  averageTime?: number; // 平均完了時間（分）
+  totalTime?: number; // 総作業時間（分）
 }
 
 // タスク分析サマリー（プレミアム機能）
 export interface TodoAnalysisSummary {
-  totalCompleted: number;         // 合計完了タスク数
-  averageCompletionTime: number;  // 平均完了時間（分）
-  inputOutputRatio: number;       // インプット/アウトプット比率
-  mostProductiveDay: string;      // 最も生産的な曜日
-  mostProductiveTime: string;     // 最も生産的な時間帯
-  completionRate: number;         // 完了率（%）
-  deadlineMeetRate: number;       // 期限内完了率（%）
-  streakDays: number;             // 連続達成日数
-  recommendations: string[];      // 改善提案
-  focusTime?: number;             // 集中時間（分）
-  distracted?: number;            // 気が散った回数
-  taskSwitches?: number;          // タスク切り替え回数
+  totalCompleted: number; // 合計完了タスク数
+  averageCompletionTime: number; // 平均完了時間（分）
+  inputOutputRatio: number; // インプット/アウトプット比率
+  mostProductiveDay: string; // 最も生産的な曜日
+  mostProductiveTime: string; // 最も生産的な時間帯
+  completionRate: number; // 完了率（%）
+  deadlineMeetRate: number; // 期限内完了率（%）
+  streakDays: number; // 連続達成日数
+  recommendations: string[]; // 改善提案
+  focusTime?: number; // 集中時間（分）
+  distracted?: number; // 気が散った回数
+  taskSwitches?: number; // タスク切り替え回数
 }
 
 // フィルタリング条件

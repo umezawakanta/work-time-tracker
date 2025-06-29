@@ -17,7 +17,7 @@ export class NetworkMonitor {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this.isOnline));
+    this.listeners.forEach((listener) => listener(this.isOnline));
   }
 
   onStatusChange(callback: (isOnline: boolean) => void): void {
@@ -26,11 +26,11 @@ export class NetworkMonitor {
 
   startMonitoring(): void {
     if (this.checkInterval) return;
-    
+
     this.checkInterval = window.setInterval(() => {
       const wasOnline = this.isOnline;
       this.isOnline = navigator.onLine;
-      
+
       if (wasOnline !== this.isOnline) {
         this.notifyListeners();
       }

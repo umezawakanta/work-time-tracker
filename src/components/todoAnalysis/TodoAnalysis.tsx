@@ -1,10 +1,10 @@
 // src/components/todoAnalysis/TodoAnalysis.tsx
-import { FC } from "react";
-import { useTodoAnalytics } from "./hooks/useTodoAnalytics";
-import { AnalysisSummary } from "./components/AnalysisSummary";
-import { CategoryAnalysis } from "./components/CategoryAnalysis";
-import { Recommendations } from "./components/Recommendations";
-import styles from "./TodoAnalysis.module.css";
+import { FC } from 'react';
+import { useTodoAnalytics } from './hooks/useTodoAnalytics';
+import { AnalysisSummary } from './components/AnalysisSummary';
+import { CategoryAnalysis } from './components/CategoryAnalysis';
+import { Recommendations } from './components/Recommendations';
+import styles from './TodoAnalysis.module.css';
 
 /**
  * タスク分析コンポーネント
@@ -20,9 +20,7 @@ const TodoAnalysis: FC = () => {
       {isLoading && (
         <div className={styles.loadingContainer}>
           <p className={styles.loadingText}>分析データを読み込み中...</p>
-          <p className={styles.loadingSubtext}>
-            初回の分析には時間がかかることがあります
-          </p>
+          <p className={styles.loadingSubtext}>初回の分析には時間がかかることがあります</p>
         </div>
       )}
 
@@ -45,7 +43,7 @@ const TodoAnalysis: FC = () => {
           <Recommendations recommendations={summary.recommendations} />
 
           <p className={styles.updatedText}>
-            最終更新: {summary.lastUpdated.toLocaleDateString()}{" "}
+            最終更新: {summary.lastUpdated.toLocaleDateString()}{' '}
             {summary.lastUpdated.toLocaleTimeString()}
           </p>
         </div>

@@ -1,25 +1,25 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom"; // Next.jsのLinkを React RouterのLinkに変更
-import { AppDispatch, RootState } from "../store";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom'; // Next.jsのLinkを React RouterのLinkに変更
+import { AppDispatch, RootState } from '../store';
 import {
   fetchCandidates,
   subscribeToUpdates,
   unsubscribeFromUpdates,
-} from "../store/candidateSlice";
-import DistrictCandidatesList from "@/components/list/DistrictCandidatesList";
-import CandidateCharts from "@/components/chart/CandidateCharts";
-import CandidateEditForm from "@/components/forms/CandidateEditForm";
-import CandidateDetailView from "@/components/detail/CandidateDetailView";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useAuthStatus } from "@/hooks/useAuthStatus";
-import { RefreshCcw, Download } from "lucide-react";
-import { exportCandidatesAsCSV } from "@/utils/export";
-import { useNavigate, useLocation } from "react-router-dom"; // Next.jsのuseRouterの代わりにReact Routerのフックを使用
-import { Candidate } from "@/types";
+} from '../store/candidateSlice';
+import DistrictCandidatesList from '@/components/list/DistrictCandidatesList';
+import CandidateCharts from '@/components/chart/CandidateCharts';
+import CandidateEditForm from '@/components/forms/CandidateEditForm';
+import CandidateDetailView from '@/components/detail/CandidateDetailView';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useAuthStatus } from '@/hooks/useAuthStatus';
+import { RefreshCcw, Download } from 'lucide-react';
+import { exportCandidatesAsCSV } from '@/utils/export';
+import { useNavigate, useLocation } from 'react-router-dom'; // Next.jsのuseRouterの代わりにReact Routerのフックを使用
+import { Candidate } from '@/types';
 
 export default function ElectionCandidatesPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,26 +27,16 @@ export default function ElectionCandidatesPage() {
   const location = useLocation(); // クエリパラメータ取得用
   const { user, isSubscribed, isLoading: authLoading } = useAuthStatus();
 
-  const candidates = useSelector(
-    (state: RootState) => state.candidate.candidates
-  );
+  const candidates = useSelector((state: RootState) => state.candidate.candidates);
   const status = useSelector((state: RootState) => state.candidate.status);
   const error = useSelector((state: RootState) => state.candidate.error);
-  const lastUpdated = useSelector(
-    (state: RootState) => state.candidate.lastUpdated
-  );
+  const lastUpdated = useSelector((state: RootState) => state.candidate.lastUpdated);
 
-  const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(
-    ""
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
-  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(
-    null
-  );
-  const [viewingCandidate, setViewingCandidate] = useState<Candidate | null>(
-    null
-  );
-  const [activeTab, setActiveTab] = useState("charts");
+  const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>('');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [editingCandidate, setEditingCandidate] = useState<Candidate | null>(null);
+  const [viewingCandidate, setViewingCandidate] = useState<Candidate | null>(null);
+  const [activeTab, setActiveTab] = useState('charts');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // 候補者データの初回ロード
@@ -73,12 +63,10 @@ export default function ElectionCandidatesPage() {
 
       // URLから指定があれば、その都道府県を選択
       const searchParams = new URLSearchParams(location.search);
-      const prefecture = searchParams.get("prefecture");
+      const prefecture = searchParams.get('prefecture');
 
       if (prefecture) {
-        const validPrefecture = candidates.some(
-          (c) => c.prefecture === prefecture
-        );
+        const validPrefecture = candidates.some((c) => c.prefecture === prefecture);
         if (validPrefecture) {
           setSelectedPrefecture(prefecture);
         }
@@ -88,7 +76,7 @@ export default function ElectionCandidatesPage() {
 
   const handleEditCandidate = (candidate: Candidate) => {
     if (!isSubscribed && !user?.isAdmin) {
-      navigate("/subscription"); // router.pushの代わりにnavigate
+      navigate('/subscription'); // router.pushの代わりにnavigate
       return;
     }
     setEditingCandidate(candidate);
@@ -121,7 +109,7 @@ export default function ElectionCandidatesPage() {
 
   const handleExportData = () => {
     if (!isSubscribed) {
-      navigate("/subscription"); // router.pushの代わりにnavigate
+      navigate('/subscription'); // router.pushの代わりにnavigate
       return;
     }
 
@@ -133,7 +121,7 @@ export default function ElectionCandidatesPage() {
   };
 
   // ローディング表示
-  if (status === "loading" || authLoading) {
+  if (status === 'loading' || authLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="space-y-4">
@@ -154,14 +142,13 @@ export default function ElectionCandidatesPage() {
   }
 
   // エラー表示
-  if (status === "failed") {
+  if (status === 'failed') {
     return (
       <div className="container mx-auto px-4 py-8">
         <Alert variant="destructive">
           <AlertTitle>エラーが発生しました</AlertTitle>
           <AlertDescription>
-            {error ||
-              "データの取得中に問題が発生しました。しばらく経ってから再度お試しください。"}
+            {error || 'データの取得中に問題が発生しました。しばらく経ってから再度お試しください。'}
             <Button variant="outline" onClick={refreshData} className="mt-4">
               再読み込み
             </Button>
@@ -173,13 +160,11 @@ export default function ElectionCandidatesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4 text-center">
-        衆議院選挙 候補者擁立状況
-      </h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">衆議院選挙 候補者擁立状況</h1>
 
       {lastUpdated && (
         <p className="text-sm text-gray-500 text-center mb-4">
-          最終更新: {new Date(lastUpdated).toLocaleString("ja-JP")}
+          最終更新: {new Date(lastUpdated).toLocaleString('ja-JP')}
         </p>
       )}
 
@@ -189,14 +174,8 @@ export default function ElectionCandidatesPage() {
             <Button>候補者登録</Button>
           </Link>
 
-          <Button
-            variant="outline"
-            onClick={refreshData}
-            disabled={isRefreshing}
-          >
-            <RefreshCcw
-              className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
-            />
+          <Button variant="outline" onClick={refreshData} disabled={isRefreshing}>
+            <RefreshCcw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
             更新
           </Button>
         </div>
@@ -205,9 +184,7 @@ export default function ElectionCandidatesPage() {
           <Button variant="outline" onClick={handleExportData}>
             <Download className="h-4 w-4 mr-2" />
             CSVエクスポート
-            {!isSubscribed && (
-              <span className="ml-1 text-xs">(サブスク限定)</span>
-            )}
+            {!isSubscribed && <span className="ml-1 text-xs">(サブスク限定)</span>}
           </Button>
 
           {!isSubscribed && !user?.isAdmin && (
@@ -232,19 +209,11 @@ export default function ElectionCandidatesPage() {
         </Alert>
       )}
 
-      <Tabs
-        defaultValue="charts"
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full"
-      >
+      <Tabs defaultValue="charts" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="charts">グラフ</TabsTrigger>
           <TabsTrigger value="list">候補者一覧</TabsTrigger>
-          <TabsTrigger
-            value="analysis"
-            disabled={!isSubscribed && !user?.isAdmin}
-          >
+          <TabsTrigger value="analysis" disabled={!isSubscribed && !user?.isAdmin}>
             詳細分析
             {!isSubscribed && !user?.isAdmin && (
               <span className="ml-1 text-xs">(サブスク限定)</span>
@@ -255,7 +224,7 @@ export default function ElectionCandidatesPage() {
         <TabsContent value="charts">
           <CandidateCharts
             candidates={candidates}
-            selectedPrefecture={selectedPrefecture || ""}
+            selectedPrefecture={selectedPrefecture || ''}
             onPrefectureChange={setSelectedPrefecture}
             isPremium={isSubscribed || !!user?.isAdmin}
           />
@@ -278,7 +247,7 @@ export default function ElectionCandidatesPage() {
           ) : (
             <DistrictCandidatesList
               candidates={candidates}
-              selectedPrefecture={selectedPrefecture || ""}
+              selectedPrefecture={selectedPrefecture || ''}
               selectedDistrict={selectedDistrict}
               onPrefectureChange={setSelectedPrefecture}
               onDistrictChange={setSelectedDistrict}
@@ -298,12 +267,8 @@ export default function ElectionCandidatesPage() {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <h3 className="text-xl font-semibold mb-4">
-                プレミアム会員限定機能
-              </h3>
-              <p className="mb-6">
-                詳細分析機能を利用するには、プレミアム会員にご登録ください。
-              </p>
+              <h3 className="text-xl font-semibold mb-4">プレミアム会員限定機能</h3>
+              <p className="mb-6">詳細分析機能を利用するには、プレミアム会員にご登録ください。</p>
               <Link to="/subscription">
                 <Button>プレミアム会員登録</Button>
               </Link>

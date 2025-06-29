@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { addDebtEntry, updateDebtEntry } from "@/store/debtSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store';
+import { addDebtEntry, updateDebtEntry } from '@/store/debtSlice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/use-toast';
 
 interface DebtFormProps {
   editingDebt: string | null;
@@ -21,24 +21,24 @@ export const DebtForm: React.FC<DebtFormProps> = ({
   updateLastBalanceDate,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [currentDebtValue, setCurrentDebtValue] = useState<string>("");
-  const [currentDebtDescription, setCurrentDebtDescription] = useState<string>("");
-  const [currentDebtAccount, setCurrentDebtAccount] = useState<string>("");
+  const [currentDebtValue, setCurrentDebtValue] = useState<string>('');
+  const [currentDebtDescription, setCurrentDebtDescription] = useState<string>('');
+  const [currentDebtAccount, setCurrentDebtAccount] = useState<string>('');
 
   const handleDebtSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentDebtAccount) {
       toast({
-        title: "エラー",
-        description: "口座を選択してください。",
-        variant: "destructive",
+        title: 'エラー',
+        description: '口座を選択してください。',
+        variant: 'destructive',
       });
       return;
     }
     const newDebtEntry = {
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split('T')[0],
       value: parseFloat(currentDebtValue),
-      description: currentDebtDescription.trim() || "日時残額更新",
+      description: currentDebtDescription.trim() || '日時残額更新',
       account: currentDebtAccount,
     };
     if (editingDebt) {
@@ -47,15 +47,13 @@ export const DebtForm: React.FC<DebtFormProps> = ({
     } else {
       dispatch(addDebtEntry(newDebtEntry));
     }
-    setCurrentDebtValue("");
-    setCurrentDebtDescription("");
-    setCurrentDebtAccount("");
+    setCurrentDebtValue('');
+    setCurrentDebtDescription('');
+    setCurrentDebtAccount('');
     updateLastBalanceDate();
     toast({
-      title: "成功",
-      description: editingDebt
-        ? "負債情報が更新されました。"
-        : "負債情報が記録されました。",
+      title: '成功',
+      description: editingDebt ? '負債情報が更新されました。' : '負債情報が記録されました。',
     });
   };
 
@@ -95,13 +93,9 @@ export const DebtForm: React.FC<DebtFormProps> = ({
               required
             />
           </div>
-          <Button type="submit">{editingDebt ? "更新" : "登録"}</Button>
+          <Button type="submit">{editingDebt ? '更新' : '登録'}</Button>
           {editingDebt && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setEditingDebt(null)}
-            >
+            <Button type="button" variant="outline" onClick={() => setEditingDebt(null)}>
               キャンセル
             </Button>
           )}

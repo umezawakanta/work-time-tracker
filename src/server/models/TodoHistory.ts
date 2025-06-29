@@ -12,21 +12,26 @@ export interface ITodoHistory {
   taskDetails: ITodoHistoryTask[];
 }
 
-const todoHistorySchema = new mongoose.Schema<ITodoHistory>({
-  date: {
-    type: String,
-    required: true,
-    index: true
+const todoHistorySchema = new mongoose.Schema<ITodoHistory>(
+  {
+    date: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    completedCount: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    taskDetails: [
+      {
+        task: String,
+        completedDate: Date,
+      },
+    ],
   },
-  completedCount: {
-    type: Number,
-    required: true,
-    default: 0
-  },
-  taskDetails: [{
-    task: String,
-    completedDate: Date
-  }]
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export const TodoHistory = mongoose.model<ITodoHistory>('TodoHistory', todoHistorySchema);

@@ -1,7 +1,7 @@
 // GoalCard.jsx
 // 個々の目標を表示するためのカードコンポーネント
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -9,25 +9,30 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { LineChart as ChartIcon, Edit, Trash2, MoreVertical, Target, Calendar, TrendingUp, ArrowUp, ArrowDown } from "lucide-react";
-import { differenceInDays, format, parseISO } from "date-fns";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Progress } from "@/components/ui/progress";
+  LineChart as ChartIcon,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Target,
+  Calendar,
+  TrendingUp,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
+import { differenceInDays, format, parseISO } from 'date-fns';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Progress } from '@/components/ui/progress';
 
 // 日本語ロケールの追加が必要な場合は別途対応
 
@@ -36,7 +41,7 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
 
   // 開始値と目標値の差分に対する現在値の進捗を計算
   const calculateProgress = () => {
-    if (goal.type === "debt") {
+    if (goal.type === 'debt') {
       // 負債の場合は逆（減らすのが目標）
       if (goal.startValue === 0) return 0;
       const reduction = goal.startValue - goal.currentValue;
@@ -63,7 +68,7 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
     const remainingDays = calculateRemainingDays();
     if (remainingDays === 0) return 0;
 
-    if (goal.type === "debt") {
+    if (goal.type === 'debt') {
       // 残りの返済金額 ÷ 残り日数
       const remainingAmount = goal.currentValue - goal.targetValue;
       return remainingAmount / remainingDays;
@@ -77,41 +82,41 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
   // 目標タイプに応じたアイコンとカラーを取得
   const getTypeConfig = () => {
     switch (goal.type) {
-      case "asset":
-        return { 
-          icon: <ArrowUp className="h-4 w-4" />, 
-          color: "bg-blue-500",
-          label: "資産構築"
+      case 'asset':
+        return {
+          icon: <ArrowUp className="h-4 w-4" />,
+          color: 'bg-blue-500',
+          label: '資産構築',
         };
-      case "debt":
-        return { 
-          icon: <ArrowDown className="h-4 w-4" />, 
-          color: "bg-red-500",
-          label: "負債削減"
+      case 'debt':
+        return {
+          icon: <ArrowDown className="h-4 w-4" />,
+          color: 'bg-red-500',
+          label: '負債削減',
         };
-      case "networth":
-        return { 
-          icon: <TrendingUp className="h-4 w-4" />, 
-          color: "bg-green-500",
-          label: "純資産目標"
+      case 'networth':
+        return {
+          icon: <TrendingUp className="h-4 w-4" />,
+          color: 'bg-green-500',
+          label: '純資産目標',
         };
-      case "savings":
-        return { 
-          icon: <ChartIcon className="h-4 w-4" />, 
-          color: "bg-purple-500",
-          label: "貯蓄目標"
+      case 'savings':
+        return {
+          icon: <ChartIcon className="h-4 w-4" />,
+          color: 'bg-purple-500',
+          label: '貯蓄目標',
         };
-      case "investment":
-        return { 
-          icon: <Target className="h-4 w-4" />, 
-          color: "bg-amber-500",
-          label: "投資目標"
+      case 'investment':
+        return {
+          icon: <Target className="h-4 w-4" />,
+          color: 'bg-amber-500',
+          label: '投資目標',
         };
       default:
-        return { 
-          icon: <Target className="h-4 w-4" />, 
-          color: "bg-gray-500",
-          label: "その他"
+        return {
+          icon: <Target className="h-4 w-4" />,
+          color: 'bg-gray-500',
+          label: 'その他',
         };
     }
   };
@@ -124,15 +129,15 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
   // 進捗状況に応じたラベルとカラーを取得
   const getProgressStatus = () => {
     if (progress >= 100) {
-      return { label: "達成済み", color: "bg-green-500" };
+      return { label: '達成済み', color: 'bg-green-500' };
     } else if (progress >= 75) {
-      return { label: "順調", color: "bg-blue-500" };
+      return { label: '順調', color: 'bg-blue-500' };
     } else if (progress >= 50) {
-      return { label: "進行中", color: "bg-blue-400" };
+      return { label: '進行中', color: 'bg-blue-400' };
     } else if (progress >= 25) {
-      return { label: "初期段階", color: "bg-yellow-500" };
+      return { label: '初期段階', color: 'bg-yellow-500' };
     } else {
-      return { label: "開始", color: "bg-orange-500" };
+      return { label: '開始', color: 'bg-orange-500' };
     }
   };
 
@@ -144,8 +149,8 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
   // 目標の進行度合いを文字で表現
   const getProgressText = () => {
     const progressPercent = Math.round(progress);
-    
-    if (goal.type === "debt") {
+
+    if (goal.type === 'debt') {
       return `${goal.currentValue.toLocaleString()}円 / ${goal.targetValue.toLocaleString()}円まで削減`;
     } else {
       return `${goal.currentValue.toLocaleString()}円 / ${goal.targetValue.toLocaleString()}円`;
@@ -169,8 +174,8 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
             </div>
             <CardTitle className="text-lg">{goal.title}</CardTitle>
             <CardDescription>
-              {format(parseISO(goal.startDate), "yyyy/MM/dd")} 〜{" "}
-              {format(parseISO(goal.targetDate), "yyyy/MM/dd")}
+              {format(parseISO(goal.startDate), 'yyyy/MM/dd')} 〜{' '}
+              {format(parseISO(goal.targetDate), 'yyyy/MM/dd')}
             </CardDescription>
           </div>
           <DropdownMenu>
@@ -189,10 +194,7 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
                 <span>詳細を見る</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => onDelete(goal.id)}
-                className="text-red-600"
-              >
+              <DropdownMenuItem onClick={() => onDelete(goal.id)} className="text-red-600">
                 <Trash2 className="mr-2 h-4 w-4" />
                 <span>削除</span>
               </DropdownMenuItem>
@@ -227,10 +229,8 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
               <div className="space-y-1">
                 {recentHistory.map((item, index) => (
                   <div key={index} className="flex justify-between text-xs">
-                    <span>{format(parseISO(item.date), "yyyy/MM/dd")}</span>
-                    <span className="font-medium">
-                      {item.value.toLocaleString()}円
-                    </span>
+                    <span>{format(parseISO(item.date), 'yyyy/MM/dd')}</span>
+                    <span className="font-medium">{item.value.toLocaleString()}円</span>
                   </div>
                 ))}
               </div>
@@ -242,14 +242,14 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="text-xs px-2 py-1 h-auto"
                 onClick={() => setShowTrend(!showTrend)}
               >
                 <TrendingUp className="h-3 w-3 mr-1" />
-                {showTrend ? "グラフを隠す" : "グラフを表示"}
+                {showTrend ? 'グラフを隠す' : 'グラフを表示'}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -258,16 +258,19 @@ export function GoalCard({ goal, onEdit, onDelete, onViewDetails }) {
           </Tooltip>
         </TooltipProvider>
 
-        <Badge variant="outline" className={`text-${dailyAmount > 0 ? 'blue' : 'green'}-600 text-xs`}>
+        <Badge
+          variant="outline"
+          className={`text-${dailyAmount > 0 ? 'blue' : 'green'}-600 text-xs`}
+        >
           {dailyAmount > 0 ? (
             <>
-              目標達成まで 
+              目標達成まで
               <span className="font-bold ml-1">
                 {Math.round(dailyAmount).toLocaleString()}円/日
               </span>
             </>
           ) : (
-            "目標達成済み！"
+            '目標達成済み！'
           )}
         </Badge>
       </CardFooter>

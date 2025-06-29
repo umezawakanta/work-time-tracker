@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // 習慣の統計情報の型定義
 interface HabitStats {
@@ -44,12 +44,23 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
   const [showCongrats, setShowCongrats] = useState<boolean>(false);
 
   // 習慣カテゴリーのマッピング（useMemoで最適化）
-  const habitCategoryMapping = useMemo<Record<string, string[]>>(() => ({
-    "健康": ["酒", "たばこ", "ジャンクフード", "睡眠不足", "姿勢が悪い", "コンビニ弁当", "エナジードリンク"],
-    "生活": ["昼夜逆転", "後回し癖", "すぐSNS開く"],
-    "マインド": ["ネガティブ", "失敗を恐れる", "嘘をつく", "すぐ否定する", "謎のプライド"],
-    "その他": []
-  }), []);
+  const habitCategoryMapping = useMemo<Record<string, string[]>>(
+    () => ({
+      健康: [
+        '酒',
+        'たばこ',
+        'ジャンクフード',
+        '睡眠不足',
+        '姿勢が悪い',
+        'コンビニ弁当',
+        'エナジードリンク',
+      ],
+      生活: ['昼夜逆転', '後回し癖', 'すぐSNS開く'],
+      マインド: ['ネガティブ', '失敗を恐れる', '嘘をつく', 'すぐ否定する', '謎のプライド'],
+      その他: [],
+    }),
+    []
+  );
 
   // 初期化
   useEffect(() => {
@@ -59,28 +70,28 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
         const storedHabits = localStorage.getItem('habits');
         const storedArchivedHabits = localStorage.getItem('archivedHabits');
         const storedHabitsData = localStorage.getItem('habitsData');
-        
+
         if (storedHabits) {
           setHabits(JSON.parse(storedHabits));
         } else {
           setHabits(initialHabits);
         }
-        
+
         if (storedArchivedHabits) {
           setArchivedHabits(JSON.parse(storedArchivedHabits));
         }
-        
+
         if (storedHabitsData) {
           setHabitsData(JSON.parse(storedHabitsData));
         } else {
           // 初期データの構築
           const initialData: Record<string, boolean[]> = {};
-          initialHabits.forEach(habit => {
+          initialHabits.forEach((habit) => {
             initialData[habit] = Array(31).fill(false);
           });
           setHabitsData(initialData);
         }
-        
+
         setIsLoading(false);
       } catch (err) {
         console.error('ローカルストレージからの読み込みエラー:', err);
@@ -88,7 +99,7 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
         setIsLoading(false);
       }
     };
-    
+
     loadHabitsFromStorage();
   }, [initialHabits]);
 
@@ -104,15 +115,15 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
   // 統計データの計算
   useEffect(() => {
     if (isLoading) return;
-    
+
     const calculateStats = (): void => {
       const newStats: Record<string, HabitStats> = {};
       const today = new Date().getDate();
-      
+
       // 全ての習慣（アクティブとアーカイブ両方）に対して統計を計算
-      [...habits, ...archivedHabits].forEach(habit => {
+      [...habits, ...archivedHabits].forEach((habit) => {
         const habitData = habitsData[habit] || Array(31).fill(false);
-        
+
         // 現在のストリーク（連続達成日数）を計算
         let currentStreak = 0;
         for (let i = today - 1; i >= 0; i--) {
@@ -122,11 +133,11 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
             break;
           }
         }
-        
+
         // 最長ストリークを計算
         let longestStreak = 0;
         let currentLongestStreak = 0;
-        habitData.forEach(avoided => {
+        habitData.forEach((avoided) => {
           if (avoided) {
             currentLongestStreak++;
             longestStreak = Math.max(longestStreak, currentLongestStreak);
@@ -134,117 +145,121 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
             currentLongestStreak = 0;
           }
         });
-        
+
         // 月間達成率
         const daysInMonth = new Date(
           currentDate.getFullYear(),
           currentDate.getMonth() + 1,
           0
         ).getDate();
-        
+
         const validDaysCount = Math.min(today, daysInMonth);
-        const achievedDaysCount = habitData
-          .slice(0, validDaysCount)
-          .filter(day => day).length;
-        
-        const monthlyProgress = validDaysCount > 0
-          ? Math.round((achievedDaysCount / validDaysCount) * 100)
-          : 0;
-        
+        const achievedDaysCount = habitData.slice(0, validDaysCount).filter((day) => day).length;
+
+        const monthlyProgress =
+          validDaysCount > 0 ? Math.round((achievedDaysCount / validDaysCount) * 100) : 0;
+
         newStats[habit] = {
           currentStreak,
           longestStreak,
-          monthlyProgress
+          monthlyProgress,
         };
       });
-      
+
       setStats(newStats);
-      
+
       // 7日以上の連続達成があるか確認
-      const hasSevenDayStreak = Object.values(newStats).some(
-        stat => stat.currentStreak >= 7
-      );
-      
+      const hasSevenDayStreak = Object.values(newStats).some((stat) => stat.currentStreak >= 7);
+
       setShowCongrats(hasSevenDayStreak);
     };
-    
+
     calculateStats();
   }, [habitsData, habits, archivedHabits, isLoading, currentDate]);
 
   // 習慣の切り替え
   const toggleHabit = useCallback((habit: string, dayIndex: number): void => {
-    setHabitsData(prevData => {
+    setHabitsData((prevData) => {
       const habitData = [...(prevData[habit] || Array(31).fill(false))];
       habitData[dayIndex] = !habitData[dayIndex];
-      
+
       return {
         ...prevData,
-        [habit]: habitData
+        [habit]: habitData,
       };
     });
   }, []);
 
   // 月の変更
-  const handleMonthChange = useCallback((direction: number): void => {
-    setCurrentDate(prevDate => {
-      const newDate = new Date(prevDate);
-      newDate.setMonth(newDate.getMonth() + direction);
-      
-      // 新しい月のデータをリセット
-      const newHabitsData: Record<string, boolean[]> = {};
-      
-      // 全ての習慣についてその月のデータを更新
-      Object.keys(habitsData).forEach(habit => {
-        newHabitsData[habit] = Array(31).fill(false);
+  const handleMonthChange = useCallback(
+    (direction: number): void => {
+      setCurrentDate((prevDate) => {
+        const newDate = new Date(prevDate);
+        newDate.setMonth(newDate.getMonth() + direction);
+
+        // 新しい月のデータをリセット
+        const newHabitsData: Record<string, boolean[]> = {};
+
+        // 全ての習慣についてその月のデータを更新
+        Object.keys(habitsData).forEach((habit) => {
+          newHabitsData[habit] = Array(31).fill(false);
+        });
+
+        setHabitsData(newHabitsData);
+
+        return newDate;
       });
-      
-      setHabitsData(newHabitsData);
-      
-      return newDate;
-    });
-  }, [habitsData]);
+    },
+    [habitsData]
+  );
 
   // 習慣のデータを取得する
-  const getHabitData = useCallback((habit: string): boolean[] => {
-    return habitsData[habit] || Array(31).fill(false);
-  }, [habitsData]);
+  const getHabitData = useCallback(
+    (habit: string): boolean[] => {
+      return habitsData[habit] || Array(31).fill(false);
+    },
+    [habitsData]
+  );
 
   // 新しい習慣を追加する
-  const addCustomHabit = useCallback((habitName: string): void => {
-    // 既に存在する場合は追加しない
-    if (habits.includes(habitName) || archivedHabits.includes(habitName)) {
-      return;
-    }
-    
-    setHabits(prev => [...prev, habitName]);
-    
-    // 新しい習慣のデータ初期化
-    setHabitsData(prev => ({
-      ...prev,
-      [habitName]: Array(31).fill(false)
-    }));
-  }, [habits, archivedHabits]);
+  const addCustomHabit = useCallback(
+    (habitName: string): void => {
+      // 既に存在する場合は追加しない
+      if (habits.includes(habitName) || archivedHabits.includes(habitName)) {
+        return;
+      }
+
+      setHabits((prev) => [...prev, habitName]);
+
+      // 新しい習慣のデータ初期化
+      setHabitsData((prev) => ({
+        ...prev,
+        [habitName]: Array(31).fill(false),
+      }));
+    },
+    [habits, archivedHabits]
+  );
 
   // 習慣をアーカイブする
   const archiveHabit = useCallback((habit: string): void => {
-    setHabits(prev => prev.filter(h => h !== habit));
-    setArchivedHabits(prev => [...prev, habit]);
+    setHabits((prev) => prev.filter((h) => h !== habit));
+    setArchivedHabits((prev) => [...prev, habit]);
   }, []);
 
   // アーカイブから習慣を復元する
   const unarchiveHabit = useCallback((habit: string): void => {
-    setArchivedHabits(prev => prev.filter(h => h !== habit));
-    setHabits(prev => [...prev, habit]);
+    setArchivedHabits((prev) => prev.filter((h) => h !== habit));
+    setHabits((prev) => [...prev, habit]);
   }, []);
 
   // 習慣を削除する
   const deleteHabit = useCallback((habit: string): void => {
     // 活動中とアーカイブの両方から削除
-    setHabits(prev => prev.filter(h => h !== habit));
-    setArchivedHabits(prev => prev.filter(h => h !== habit));
-    
+    setHabits((prev) => prev.filter((h) => h !== habit));
+    setArchivedHabits((prev) => prev.filter((h) => h !== habit));
+
     // データも削除
-    setHabitsData(prev => {
+    setHabitsData((prev) => {
       const newData = { ...prev };
       delete newData[habit];
       return newData;
@@ -267,17 +282,18 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
   }, [habits, archivedHabits]);
 
   // カテゴリに属する習慣を取得
-  const getCategoryHabits = useCallback((category: string): string[] => {
-    if (category === 'その他') {
-      // 他のカテゴリに属さない習慣を「その他」として扱う
-      const categorizedHabits = Object.values(habitCategoryMapping).flat();
-      return [...habits, ...archivedHabits].filter(
-        habit => !categorizedHabits.includes(habit)
-      );
-    }
-    
-    return habitCategoryMapping[category] || [];
-  }, [habits, archivedHabits, habitCategoryMapping]);
+  const getCategoryHabits = useCallback(
+    (category: string): string[] => {
+      if (category === 'その他') {
+        // 他のカテゴリに属さない習慣を「その他」として扱う
+        const categorizedHabits = Object.values(habitCategoryMapping).flat();
+        return [...habits, ...archivedHabits].filter((habit) => !categorizedHabits.includes(habit));
+      }
+
+      return habitCategoryMapping[category] || [];
+    },
+    [habits, archivedHabits, habitCategoryMapping]
+  );
 
   // 戻り値のオブジェクト
   return {
@@ -296,6 +312,6 @@ export function useHabitTracker(initialHabits: string[] = []): UseHabitTrackerRe
     getActiveHabits,
     getArchivedHabits,
     getAllHabits,
-    getCategoryHabits
+    getCategoryHabits,
   };
 }

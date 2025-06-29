@@ -1,14 +1,14 @@
 import React from 'react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Download, Upload } from "lucide-react";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Download, Upload } from 'lucide-react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 // 共通の型をインポート
 import { TaskType } from '@/types/todo';
@@ -35,7 +35,7 @@ const TodoEditor: React.FC<TodoEditorProps> = ({
   onTypeChange,
   onDeadlineChange,
   onCancel,
-  onSave
+  onSave,
 }) => {
   // 期限の最小値は今日
   const getTodayString = () => {
@@ -65,12 +65,9 @@ const TodoEditor: React.FC<TodoEditorProps> = ({
           onKeyDown={handleKeyDown}
           autoFocus
         />
-        
+
         <div className="flex gap-2 items-center">
-          <Select
-            value={type}
-            onValueChange={(value: TaskType) => onTypeChange(value)}
-          >
+          <Select value={type} onValueChange={(value: TaskType) => onTypeChange(value)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="タイプを選択" />
             </SelectTrigger>
@@ -89,30 +86,22 @@ const TodoEditor: React.FC<TodoEditorProps> = ({
               </SelectItem>
             </SelectContent>
           </Select>
-          
+
           <input
             type="date"
-            value={deadline || ""}
+            value={deadline || ''}
             min={getTodayString()}
             onChange={(e) => onDeadlineChange(e.target.value || undefined)}
             className="p-2 text-sm border rounded flex-1"
             placeholder="期限日を選択"
           />
         </div>
-        
+
         <div className="flex justify-end space-x-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onCancel}
-          >
+          <Button size="sm" variant="outline" onClick={onCancel}>
             キャンセル
           </Button>
-          <Button
-            size="sm"
-            onClick={onSave}
-            disabled={!text.trim()}
-          >
+          <Button size="sm" onClick={onSave} disabled={!text.trim()}>
             保存
           </Button>
         </div>

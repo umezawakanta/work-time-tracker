@@ -1,14 +1,20 @@
 // DiaryForm.tsx
-import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { DiaryEntry, TagOption } from "@/types";
-import { LightbulbIcon } from "lucide-react";
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { DiaryEntry, TagOption } from '@/types';
+import { LightbulbIcon } from 'lucide-react';
 
 interface DiaryFormProps {
   editingEntry: DiaryEntry | null;
@@ -51,17 +57,13 @@ const DiaryForm: React.FC<DiaryFormProps> = ({
   moodEmojis,
   moodLabels,
   showTips = false,
-  encouragementMessage = "",
+  encouragementMessage = '',
 }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          {editingEntry ? "エントリーを編集" : "今日の達成"}
-        </CardTitle>
-        <CardDescription>
-          今日達成できたことを記録して、自己肯定感を高めましょう
-        </CardDescription>
+        <CardTitle>{editingEntry ? 'エントリーを編集' : '今日の達成'}</CardTitle>
+        <CardDescription>今日達成できたことを記録して、自己肯定感を高めましょう</CardDescription>
       </CardHeader>
       <CardContent>
         {showTips && encouragementMessage && (
@@ -94,9 +96,7 @@ const DiaryForm: React.FC<DiaryFormProps> = ({
                 <SelectValue placeholder="今日の気分は？">
                   {newMood && (
                     <div className="flex items-center">
-                      <span className="mr-2">
-                        {moodEmojis[newMood]}
-                      </span>
+                      <span className="mr-2">{moodEmojis[newMood]}</span>
                       <span>{moodLabels[newMood]}</span>
                     </div>
                   )}
@@ -143,11 +143,7 @@ const DiaryForm: React.FC<DiaryFormProps> = ({
               {tagOptions.map((tag) => (
                 <Badge
                   key={tag.value}
-                  variant={
-                    selectedTags.includes(tag.value)
-                      ? "default"
-                      : "outline"
-                  }
+                  variant={selectedTags.includes(tag.value) ? 'default' : 'outline'}
                   className="cursor-pointer"
                   onClick={() => handleTagToggle(tag.value)}
                 >
@@ -167,16 +163,12 @@ const DiaryForm: React.FC<DiaryFormProps> = ({
                 min="1"
                 max="5"
                 value={difficulty}
-                onChange={(e) =>
-                  setDifficulty(parseInt(e.target.value))
-                }
+                onChange={(e) => setDifficulty(parseInt(e.target.value))}
                 className="flex-1"
                 aria-label="難易度を選択"
               />
               <span className="text-sm">難しい</span>
-              <span className="ml-2 text-sm font-medium">
-                {difficulty}
-              </span>
+              <span className="ml-2 text-sm font-medium">{difficulty}</span>
             </div>
           </div>
 
@@ -186,15 +178,11 @@ const DiaryForm: React.FC<DiaryFormProps> = ({
               checked={isImportant}
               onCheckedChange={setIsImportant}
             />
-            <Label htmlFor="important-achievement">
-              これは重要な達成
-            </Label>
+            <Label htmlFor="important-achievement">これは重要な達成</Label>
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit">
-              {editingEntry ? "更新" : "記録する"}
-            </Button>
+            <Button type="submit">{editingEntry ? '更新' : '記録する'}</Button>
             {editingEntry && (
               <Button
                 type="button"

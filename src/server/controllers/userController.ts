@@ -28,22 +28,22 @@ export const updateUserProfile = async (req: AuthRequest, res: Response) => {
     if (!req.user?.id) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-    
+
     const { name, email } = req.body;
-    
+
     // nameとemailが文字列であることを確認
     const nameStr = typeof name === 'string' ? name : '';
     const emailStr = typeof email === 'string' ? email : '';
-    
+
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    
+
     // 文字列に変換した値を使用
     if (nameStr) user.name = nameStr;
     if (emailStr) user.email = emailStr;
-    
+
     await user.save();
     res.json({ name: user.name, email: user.email });
   } catch (error) {

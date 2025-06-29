@@ -32,14 +32,14 @@ class ApiRequestQueue {
   public enqueue(item: QueueItem): void {
     if (this.queue.length >= this.maxQueueSize) {
       // 低優先度のリクエストを優先的に削除
-      const lowPriorityIndex = this.queue.findIndex(i => i.priority === 'low');
-      
+      const lowPriorityIndex = this.queue.findIndex((i) => i.priority === 'low');
+
       if (lowPriorityIndex !== -1) {
         this.queue.splice(lowPriorityIndex, 1);
       } else {
         // 低優先度がなければ最も古いnormal優先度を削除
-        const normalPriorityIndex = this.queue.findIndex(i => i.priority === 'normal');
-        
+        const normalPriorityIndex = this.queue.findIndex((i) => i.priority === 'normal');
+
         if (normalPriorityIndex !== -1) {
           this.queue.splice(normalPriorityIndex, 1);
         } else {
@@ -47,20 +47,20 @@ class ApiRequestQueue {
           this.queue.shift();
         }
       }
-      
+
       this.logger.warn('キューが最大サイズに達したため、リクエストを削除しました');
     }
-    
+
     // タイムスタンプとリトライカウンターを追加
     this.queue.push({
       ...item,
       timestamp: Date.now(),
-      retries: 0
+      retries: 0,
     });
-    
+
     this.logger.info('リクエストがキューに追加されました', {
       queueSize: this.queue.length,
-      priority: item.priority
+      priority: item.priority,
     });
   }
 
@@ -69,19 +69,19 @@ class ApiRequestQueue {
    */
   public async processQueue(): Promise<void> {
     if (this.isProcessing || this.queue.length === 0) return;
-    
+
     this.isProcessing = true;
     this.logger.info('キュー処理を開始します', { queueSize: this.queue.length });
-    
+
     try {
       // 優先度でソート
       this.sortQueueByPriority();
-      
+
       // キューの処理
       while (this.queue.length > 0) {
         const item = this.queue.shift();
         if (!item) continue;
-        
+
         try {
           await item.execute();
         } catch (error) {
@@ -89,17 +89,17 @@ class ApiRequestQueue {
           if ((item.retries || 0) < this.maxRetries) {
             this.queue.push({
               ...item,
-              retries: (item.retries || 0) + 1
+              retries: (item.retries || 0) + 1,
             });
-            
+
             this.logger.warn('リクエスト実行に失敗しました。再キューイングします', {
               retries: (item.retries || 0) + 1,
-              error
+              error,
             });
           } else {
             this.logger.error('リクエスト実行に最大回数失敗しました', {
               maxRetries: this.maxRetries,
-              error
+              error,
             });
           }
         }
@@ -115,19 +115,19 @@ class ApiRequestQueue {
    */
   private sortQueueByPriority(): void {
     const priorityValues = {
-      'high': 3,
-      'normal': 2,
-      'low': 1
+      high: 3,
+      normal: 2,
+      low: 1,
     };
-    
+
     this.queue.sort((a, b) => {
       const priorityDiff = priorityValues[b.priority] - priorityValues[a.priority];
-      
+
       // 優先度が同じ場合は古いものを先に処理
       if (priorityDiff === 0) {
         return (a.timestamp || 0) - (b.timestamp || 0);
       }
-      
+
       return priorityDiff;
     });
   }

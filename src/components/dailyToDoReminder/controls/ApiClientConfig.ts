@@ -40,7 +40,7 @@ export class ApiClientConfig implements IApiClientConfig {
   public retryDelay: number;
   public graphqlEndpoint: string;
   public headers: Record<string, string>;
-  
+
   private static instance: ApiClientConfig | null = null;
 
   /**
@@ -67,8 +67,8 @@ export class ApiClientConfig implements IApiClientConfig {
     this.graphqlEndpoint = 'graphql';
     this.headers = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-Client-Version': this.getEnvVariable('NEXT_PUBLIC_APP_VERSION', '1.0.0')
+      Accept: 'application/json',
+      'X-Client-Version': this.getEnvVariable('NEXT_PUBLIC_APP_VERSION', '1.0.0'),
     };
   }
 
@@ -114,22 +114,25 @@ export class ApiClientConfig implements IApiClientConfig {
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
       return endpoint;
     }
-    
+
     // ベースURLとバージョンを結合
     let url = this.baseUrl;
-    
+
     // APIバージョンが含まれていない場合は追加
-    if (!endpoint.startsWith(`/${this.apiVersion}/`) && !endpoint.startsWith(this.apiVersion + '/')) {
+    if (
+      !endpoint.startsWith(`/${this.apiVersion}/`) &&
+      !endpoint.startsWith(this.apiVersion + '/')
+    ) {
       url += `/${this.apiVersion}`;
     }
-    
+
     // エンドポイントが/で始まる場合は調整
     if (endpoint.startsWith('/')) {
       url += endpoint;
     } else {
       url += `/${endpoint}`;
     }
-    
+
     return url;
   }
 
@@ -149,10 +152,10 @@ export class ApiClientConfig implements IApiClientConfig {
   public calculateRetryDelay(attempt: number): number {
     const backoffFactor = 2;
     const maxDelay = 30000; // 最大30秒
-    
+
     // 指数バックオフ: retryDelay * (backoffFactor ^ attempt)
     const delay = this.retryDelay * Math.pow(backoffFactor, attempt);
-    
+
     // 最大遅延時間を超えないようにする
     return Math.min(delay, maxDelay);
   }
@@ -170,16 +173,18 @@ export class ApiClientConfig implements IApiClientConfig {
     // 各プロパティを型安全に更新
     if (configUpdates.baseUrl !== undefined) this.baseUrl = configUpdates.baseUrl;
     if (configUpdates.apiVersion !== undefined) this.apiVersion = configUpdates.apiVersion;
-    if (configUpdates.graphqlEndpoint !== undefined) this.graphqlEndpoint = configUpdates.graphqlEndpoint;
-    if (configUpdates.requestTimeoutMs !== undefined) this.requestTimeoutMs = configUpdates.requestTimeoutMs;
+    if (configUpdates.graphqlEndpoint !== undefined)
+      this.graphqlEndpoint = configUpdates.graphqlEndpoint;
+    if (configUpdates.requestTimeoutMs !== undefined)
+      this.requestTimeoutMs = configUpdates.requestTimeoutMs;
     if (configUpdates.maxRetries !== undefined) this.maxRetries = configUpdates.maxRetries;
     if (configUpdates.retryDelay !== undefined) this.retryDelay = configUpdates.retryDelay;
-    
+
     // ヘッダーのマージ（既存のヘッダーは残す）
     if (configUpdates.headers) {
       this.headers = {
         ...this.headers,
-        ...configUpdates.headers
+        ...configUpdates.headers,
       };
     }
   }
@@ -196,7 +201,7 @@ export class ApiClientConfig implements IApiClientConfig {
       maxRetries: this.maxRetries,
       retryDelay: this.retryDelay,
       graphqlEndpoint: this.graphqlEndpoint,
-      headers: { ...this.headers }
+      headers: { ...this.headers },
     };
   }
 

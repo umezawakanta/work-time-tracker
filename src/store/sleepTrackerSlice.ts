@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { sleepTrackerApi } from "@/services/api/sleepTrackerApi";
-import { RootState } from "./index";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { sleepTrackerApi } from '@/services/api/sleepTrackerApi';
+import { RootState } from './index';
 
 export interface SleepRecord {
   _id: string;
@@ -8,39 +8,36 @@ export interface SleepRecord {
   wakeUp: string | null;
   bedtime: string | null;
   quality?: string; // 'good' | 'neutral' | 'bad'
-  notes?: string;   // 睡眠に関するメモ
+  notes?: string; // 睡眠に関するメモ
 }
 
 interface SleepTrackerState {
   records: SleepRecord[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
 const initialState: SleepTrackerState = {
   records: [],
-  status: "idle",
+  status: 'idle',
   error: null,
 };
 
-export const fetchSleepRecords = createAsyncThunk(
-  "sleepTracker/fetchSleepRecords",
-  async () => {
-    const response = await sleepTrackerApi.getAll();
-    return response.data;
-  }
-);
+export const fetchSleepRecords = createAsyncThunk('sleepTracker/fetchSleepRecords', async () => {
+  const response = await sleepTrackerApi.getAll();
+  return response.data;
+});
 
 export const addSleepRecord = createAsyncThunk(
-  "sleepTracker/addSleepRecord",
-  async (record: Omit<SleepRecord, "_id">) => {
+  'sleepTracker/addSleepRecord',
+  async (record: Omit<SleepRecord, '_id'>) => {
     const response = await sleepTrackerApi.create(record);
     return response.data.sleepRecord;
   }
 );
 
 export const updateSleepRecord = createAsyncThunk(
-  "sleepTracker/updateSleepRecord",
+  'sleepTracker/updateSleepRecord',
   async ({ _id, updates }: { _id: string; updates: Partial<SleepRecord> }) => {
     const response = await sleepTrackerApi.update(_id, updates);
     return response.data.sleepRecord;
@@ -48,7 +45,7 @@ export const updateSleepRecord = createAsyncThunk(
 );
 
 export const deleteSleepRecord = createAsyncThunk(
-  "sleepTracker/deleteSleepRecord",
+  'sleepTracker/deleteSleepRecord',
   async (_id: string) => {
     await sleepTrackerApi.delete(_id);
     return _id;
@@ -56,22 +53,22 @@ export const deleteSleepRecord = createAsyncThunk(
 );
 
 const sleepTrackerSlice = createSlice({
-  name: "sleepTracker",
+  name: 'sleepTracker',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchSleepRecords.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(fetchSleepRecords.fulfilled, (state, action: PayloadAction<SleepRecord[]>) => {
-        state.status = "succeeded";
+        state.status = 'succeeded';
         state.records = action.payload;
         state.error = null;
       })
       .addCase(fetchSleepRecords.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Something went wrong";
+        state.status = 'failed';
+        state.error = action.error.message || 'Something went wrong';
       })
       .addCase(addSleepRecord.fulfilled, (state, action: PayloadAction<SleepRecord>) => {
         state.records.push(action.payload);

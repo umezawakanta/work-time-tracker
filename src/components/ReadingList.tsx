@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface ReadingListItem {
   id: string;
@@ -25,12 +25,12 @@ const ReadingList: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setNewItem(prev => ({ ...prev, [name]: value }));
+    setNewItem((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddItem = () => {
     const id = Math.random().toString(36).substr(2, 9);
-    setItems(prev => [...prev, { ...newItem, id }]);
+    setItems((prev) => [...prev, { ...newItem, id }]);
     setNewItem({ title: '', author: '', priority: 1, notes: '' });
   };
 
@@ -93,7 +93,9 @@ const ReadingList: React.FC = () => {
               placeholder="メモを入力"
             />
           </div>
-          <Button onClick={handleAddItem} className="mt-4">追加</Button>
+          <Button onClick={handleAddItem} className="mt-4">
+            追加
+          </Button>
         </CardContent>
       </Card>
 
@@ -117,7 +119,9 @@ const ReadingList: React.FC = () => {
                           <p className="text-sm">優先度: {item.priority}</p>
                           {item.notes && <p className="text-sm mt-2">{item.notes}</p>}
                         </div>
-                        <Button variant="outline" size="sm">完了</Button>
+                        <Button variant="outline" size="sm">
+                          完了
+                        </Button>
                       </CardContent>
                     </Card>
                   )}
@@ -133,4 +137,3 @@ const ReadingList: React.FC = () => {
 };
 
 export default ReadingList;
-

@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
-import { blogApi } from "@/services/api/blogApi";
-import { RootState } from "./index";
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
+import { blogApi } from '@/services/api/blogApi';
+import { RootState } from './index';
 
 export interface BlogPost {
   _id: string;
@@ -37,77 +37,65 @@ const initialState: BlogState = {
   todoHistory: {},
 };
 
-export const fetchBlogPosts = createAsyncThunk("blog/fetchBlogPosts", async () => {
+export const fetchBlogPosts = createAsyncThunk('blog/fetchBlogPosts', async () => {
   const response = await blogApi.getAll();
   return response.data;
 });
 
 export const addBlogPost = createAsyncThunk(
-  "blog/addBlogPost",
-  async (post: Omit<BlogPost, "_id" | "createdAt" | "updatedAt" | "likes" | "comments">) => {
+  'blog/addBlogPost',
+  async (post: Omit<BlogPost, '_id' | 'createdAt' | 'updatedAt' | 'likes' | 'comments'>) => {
     const response = await blogApi.create(post);
     return response.data.post;
   }
 );
 
 export const updateBlogPost = createAsyncThunk(
-  "blog/updateBlogPost",
+  'blog/updateBlogPost',
   async ({ _id, updates }: { _id: string; updates: Partial<BlogPost> }) => {
     const response = await blogApi.update(_id, updates);
     return response.data.post;
   }
 );
 
-export const deleteBlogPost = createAsyncThunk(
-  "blog/deleteBlogPost",
-  async (id: string) => {
-    await blogApi.delete(id);
-    return id;
-  }
-);
+export const deleteBlogPost = createAsyncThunk('blog/deleteBlogPost', async (id: string) => {
+  await blogApi.delete(id);
+  return id;
+});
 
-export const fetchBlogPost = createAsyncThunk(
-  "blog/fetchBlogPost",
-  async (id: string) => {
-    const response = await blogApi.getById(id);
-    return response.data;
-  }
-);
+export const fetchBlogPost = createAsyncThunk('blog/fetchBlogPost', async (id: string) => {
+  const response = await blogApi.getById(id);
+  return response.data;
+});
 
 export const addComment = createAsyncThunk(
-  "blog/addComment",
-  async ({ postId, comment }: { postId: string; comment: Omit<Comment, "_id" | "createdAt"> }) => {
+  'blog/addComment',
+  async ({ postId, comment }: { postId: string; comment: Omit<Comment, '_id' | 'createdAt'> }) => {
     const response = await blogApi.addComment(postId, comment);
     return { postId, comment: response.data.comment };
   }
 );
 
 export const toggleLike = createAsyncThunk(
-  "blog/toggleLike",
+  'blog/toggleLike',
   async ({ postId, userId }: { postId: string; userId: string }) => {
     const response = await blogApi.toggleLike(postId, userId);
     return { postId, likes: response.data.likes };
   }
 );
 
-export const saveDraft = createAsyncThunk(
-  "blog/saveDraft",
-  async (postData: Partial<BlogPost>) => {
-    const response = await blogApi.saveDraft(postData);
-    return response.data.draft;
-  }
-);
+export const saveDraft = createAsyncThunk('blog/saveDraft', async (postData: Partial<BlogPost>) => {
+  const response = await blogApi.saveDraft(postData);
+  return response.data.draft;
+});
 
-export const publishPost = createAsyncThunk(
-  "blog/publishPost",
-  async (postId: string) => {
-    const response = await blogApi.publishPost(postId);
-    return response.data.post;
-  }
-);
+export const publishPost = createAsyncThunk('blog/publishPost', async (postId: string) => {
+  const response = await blogApi.publishPost(postId);
+  return response.data.post;
+});
 
 const blogSlice = createSlice({
-  name: "blog",
+  name: 'blog',
   initialState,
   reducers: {
     updateTodoHistory: (state) => {
@@ -187,9 +175,8 @@ export const selectBlogPostById = (state: RootState, postId: string | undefined)
 export const selectTodoHistory = (state: RootState) => state.blog.todoHistory;
 
 // Memoized selector for drafts
-export const selectDrafts = createSelector(
-  [selectBlogPosts],
-  (posts) => posts.filter(post => post.status === 'draft')
+export const selectDrafts = createSelector([selectBlogPosts], (posts) =>
+  posts.filter((post) => post.status === 'draft')
 );
 
 export default blogSlice.reducer;

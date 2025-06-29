@@ -1,42 +1,33 @@
 ﻿import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { 
-  BrainCircuit, 
-  Tag, 
-  Sparkles, 
-  Edit2, 
-  Trash2, 
-  Plus, 
-  Save, 
-  X 
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { BrainCircuit, Tag, Sparkles, Edit2, Trash2, Plus, Save, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 // TaskTypeをenumとして定義
 export enum TaskType {
@@ -47,7 +38,7 @@ export enum TaskType {
   EDUCATION = 'EDUCATION',
   FINANCE = 'FINANCE',
   SOCIAL = 'SOCIAL',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 // カテゴリルールの型定義
@@ -74,7 +65,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
   isPremium,
   onUpgrade,
   isEnabled,
-  onToggle
+  onToggle,
 }) => {
   // デフォルトのカテゴリルール
   const defaultRules: CategoryRule[] = [
@@ -83,24 +74,24 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
       keywords: ['会議', 'ミーティング', '打ち合わせ', 'call', 'zoom'],
       category: TaskType.WORK,
       priority: 2,
-      isActive: true
+      isActive: true,
     },
     {
       id: '2',
       keywords: ['買い物', '購入', 'スーパー', 'コンビニ', '食料'],
       category: TaskType.SHOPPING,
       priority: 1,
-      isActive: true
+      isActive: true,
     },
     {
       id: '3',
       keywords: ['健康', '運動', 'ジム', 'トレーニング', '病院', '医者'],
       category: TaskType.HEALTH,
       priority: 3,
-      isActive: true
-    }
+      isActive: true,
+    },
   ];
-  
+
   // 状態管理
   const [categoryRules, setCategoryRules] = useState<CategoryRule[]>(defaultRules);
   const [isEditing, setIsEditing] = useState<string | null>(null);
@@ -108,10 +99,10 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
     keywords: [],
     category: TaskType.WORK,
     priority: 2,
-    isActive: true
+    isActive: true,
   });
   const [newKeyword, setNewKeyword] = useState<string>('');
-  
+
   // カテゴリの表示名を取得
   const getCategoryDisplayName = (category: TaskType): string => {
     switch (category) {
@@ -135,7 +126,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
         return 'その他';
     }
   };
-  
+
   // カテゴリの色を取得
   const getCategoryColor = (category: TaskType): string => {
     switch (category) {
@@ -159,7 +150,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
   // 優先度の表示名を取得
   const getPriorityDisplayName = (priority?: number): string => {
     switch (priority) {
@@ -175,15 +166,15 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
         return '未設定';
     }
   };
-  
+
   // 新しいキーワードを追加
   const addKeyword = () => {
     if (!newKeyword || newKeyword.trim() === '') return;
-    
+
     if (isEditing) {
       // 既存ルールの編集
-      setCategoryRules(prev => 
-        prev.map(rule => 
+      setCategoryRules((prev) =>
+        prev.map((rule) =>
           rule.id === isEditing
             ? { ...rule, keywords: [...rule.keywords, newKeyword.trim()] }
             : rule
@@ -191,102 +182,94 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
       );
     } else {
       // 新規ルールの作成
-      setNewRule(prev => ({
+      setNewRule((prev) => ({
         ...prev,
-        keywords: [...(prev.keywords || []), newKeyword.trim()]
+        keywords: [...(prev.keywords || []), newKeyword.trim()],
       }));
     }
-    
+
     setNewKeyword('');
   };
-  
+
   // キーワードを削除
   const removeKeyword = (ruleId: string | null, keyword: string) => {
     if (ruleId) {
       // 既存ルールのキーワード削除
-      setCategoryRules(prev => 
-        prev.map(rule => 
+      setCategoryRules((prev) =>
+        prev.map((rule) =>
           rule.id === ruleId
-            ? { ...rule, keywords: rule.keywords.filter(k => k !== keyword) }
+            ? { ...rule, keywords: rule.keywords.filter((k) => k !== keyword) }
             : rule
         )
       );
     } else {
       // 新規ルールのキーワード削除
-      setNewRule(prev => ({
+      setNewRule((prev) => ({
         ...prev,
-        keywords: (prev.keywords || []).filter(k => k !== keyword)
+        keywords: (prev.keywords || []).filter((k) => k !== keyword),
       }));
     }
   };
-  
+
   // 新しいルールを保存
   const saveNewRule = () => {
     if (!newRule.keywords?.length || !newRule.category) return;
-    
+
     const newId = Date.now().toString();
-    setCategoryRules(prev => [
+    setCategoryRules((prev) => [
       ...prev,
       {
         id: newId,
         keywords: newRule.keywords || [],
         category: newRule.category as TaskType,
         priority: newRule.priority || 2,
-        isActive: newRule.isActive === undefined ? true : newRule.isActive
-      }
+        isActive: newRule.isActive === undefined ? true : newRule.isActive,
+      },
     ]);
-    
+
     // 新規ルールをリセット
     setNewRule({
       keywords: [],
       category: TaskType.WORK,
       priority: 2,
-      isActive: true
+      isActive: true,
     });
   };
-  
+
   // ルールを削除
   const deleteRule = (ruleId: string) => {
-    setCategoryRules(prev => prev.filter(rule => rule.id !== ruleId));
+    setCategoryRules((prev) => prev.filter((rule) => rule.id !== ruleId));
     if (isEditing === ruleId) {
       setIsEditing(null);
     }
   };
-  
+
   // ルールの編集を開始
   const startEditing = (ruleId: string) => {
     setIsEditing(ruleId);
     setNewKeyword('');
   };
-  
+
   // ルールの編集を保存
   const saveEditedRule = (ruleId: string, field: string, value: any) => {
-    setCategoryRules(prev => 
-      prev.map(rule => 
-        rule.id === ruleId
-          ? { ...rule, [field]: value }
-          : rule
-      )
+    setCategoryRules((prev) =>
+      prev.map((rule) => (rule.id === ruleId ? { ...rule, [field]: value } : rule))
     );
   };
-  
+
   // ルールの編集を終了
   const finishEditing = () => {
     setIsEditing(null);
     setNewKeyword('');
   };
-  
+
   // ルールのオン/オフを切り替え
   const toggleRuleActive = (ruleId: string) => {
-    setCategoryRules(prev => 
-      prev.map(rule => 
-        rule.id === ruleId
-          ? { ...rule, isActive: !rule.isActive }
-          : rule
-      )
+    setCategoryRules((prev) =>
+      prev.map((rule) => (rule.id === ruleId ? { ...rule, isActive: !rule.isActive } : rule))
     );
   };
-  
+
   return (
     <Card>
       <CardHeader>
@@ -296,7 +279,10 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
               <BrainCircuit className="h-5 w-5 mr-2 text-purple-600" />
               タスク自動カテゴリ分類
               {isPremium && (
-                <Badge variant="outline" className="ml-2 bg-amber-100 text-amber-800 border-amber-200">
+                <Badge
+                  variant="outline"
+                  className="ml-2 bg-amber-100 text-amber-800 border-amber-200"
+                >
                   プレミアム
                 </Badge>
               )}
@@ -305,21 +291,17 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
               キーワードに基づいて新規タスクを自動的にカテゴリ分類します
             </CardDescription>
           </div>
-          
+
           {isPremium ? (
             <div className="flex items-center space-x-2">
-              <Switch
-                id="auto-categorize"
-                checked={isEnabled}
-                onCheckedChange={onToggle}
-              />
+              <Switch id="auto-categorize" checked={isEnabled} onCheckedChange={onToggle} />
               <Label htmlFor="auto-categorize" className="text-sm">
                 {isEnabled ? '有効' : '無効'}
               </Label>
             </div>
           ) : (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="bg-gradient-to-r from-purple-100 to-blue-100 border-purple-200"
               onClick={onUpgrade}
@@ -330,7 +312,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {isPremium ? (
           <>
@@ -346,7 +328,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {categoryRules.map(rule => (
+                  {categoryRules.map((rule) => (
                     <TableRow key={rule.id}>
                       <TableCell>
                         <Switch
@@ -358,7 +340,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                       <TableCell>
                         {isEditing === rule.id ? (
                           <div className="flex flex-wrap gap-1 items-center">
-                            {rule.keywords.map(keyword => (
+                            {rule.keywords.map((keyword) => (
                               <Badge
                                 key={keyword}
                                 variant="outline"
@@ -392,12 +374,8 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                           </div>
                         ) : (
                           <div className="flex flex-wrap gap-1">
-                            {rule.keywords.map(keyword => (
-                              <Badge
-                                key={keyword}
-                                variant="outline"
-                                className="bg-gray-50"
-                              >
+                            {rule.keywords.map((keyword) => (
+                              <Badge key={keyword} variant="outline" className="bg-gray-50">
                                 {keyword}
                               </Badge>
                             ))}
@@ -414,7 +392,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                               <SelectValue placeholder="カテゴリ" />
                             </SelectTrigger>
                             <SelectContent>
-                              {Object.values(TaskType).map(type => (
+                              {Object.values(TaskType).map((type) => (
                                 <SelectItem key={type} value={type}>
                                   {getCategoryDisplayName(type as TaskType)}
                                 </SelectItem>
@@ -422,9 +400,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                             </SelectContent>
                           </Select>
                         ) : (
-                          <Badge
-                            className={getCategoryColor(rule.category)}
-                          >
+                          <Badge className={getCategoryColor(rule.category)}>
                             {getCategoryDisplayName(rule.category)}
                           </Badge>
                         )}
@@ -433,7 +409,9 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                         {isEditing === rule.id ? (
                           <Select
                             value={rule.priority?.toString()}
-                            onValueChange={(value) => saveEditedRule(rule.id, 'priority', parseInt(value))}
+                            onValueChange={(value) =>
+                              saveEditedRule(rule.id, 'priority', parseInt(value))
+                            }
                           >
                             <SelectTrigger className="h-7 text-xs">
                               <SelectValue placeholder="優先度" />
@@ -446,9 +424,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                             </SelectContent>
                           </Select>
                         ) : (
-                          <span className="text-sm">
-                            {getPriorityDisplayName(rule.priority)}
-                          </span>
+                          <span className="text-sm">{getPriorityDisplayName(rule.priority)}</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -487,13 +463,13 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                 </TableBody>
               </Table>
             </div>
-            
+
             <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
               <h4 className="text-sm font-medium mb-2 flex items-center">
                 <Plus className="h-4 w-4 mr-1" />
                 新しいルールを追加
               </h4>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
                 <div>
                   <Label htmlFor="new-category" className="text-xs mb-1 block">
@@ -501,13 +477,15 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                   </Label>
                   <Select
                     value={newRule.category}
-                    onValueChange={(value) => setNewRule({ ...newRule, category: value as TaskType })}
+                    onValueChange={(value) =>
+                      setNewRule({ ...newRule, category: value as TaskType })
+                    }
                   >
                     <SelectTrigger id="new-category" className="text-xs">
                       <SelectValue placeholder="カテゴリを選択" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(TaskType).map(type => (
+                      {Object.values(TaskType).map((type) => (
                         <SelectItem key={type} value={type}>
                           {getCategoryDisplayName(type as TaskType)}
                         </SelectItem>
@@ -515,7 +493,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="new-priority" className="text-xs mb-1 block">
                     優先度
@@ -535,7 +513,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="flex items-end">
                   <div className="flex justify-between items-center w-full">
                     <div className="flex items-center space-x-2">
@@ -548,7 +526,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                         有効にする
                       </Label>
                     </div>
-                    
+
                     <Button
                       type="button"
                       size="sm"
@@ -561,13 +539,13 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="new-keywords" className="text-xs mb-1 block">
                   キーワード
                 </Label>
                 <div className="flex flex-wrap gap-1 mb-2">
-                  {newRule.keywords?.map(keyword => (
+                  {newRule.keywords?.map((keyword) => (
                     <Badge
                       key={keyword}
                       variant="outline"
@@ -590,12 +568,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
                     placeholder="キーワードを入力（例: 会議, ミーティング, 打ち合わせ）"
                     onKeyDown={(e) => e.key === 'Enter' && addKeyword()}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addKeyword}
-                  >
+                  <Button type="button" variant="outline" size="sm" onClick={addKeyword}>
                     <Plus className="h-3.5 w-3.5 mr-1" />
                     <span className="text-xs">追加</span>
                   </Button>
@@ -633,7 +606,7 @@ export const TaskAutoCategorizer: React.FC<TaskAutoCategorizerProps> = ({
           </div>
         )}
       </CardContent>
-      
+
       {isPremium && (
         <CardFooter className="bg-gray-50 border-t">
           <p className="text-xs text-gray-500">

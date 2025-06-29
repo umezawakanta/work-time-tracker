@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "./index";
-import { todoApi } from "@/services/api/todoApi";
-import { TodoItem } from "@/types";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from './index';
+import { todoApi } from '@/services/api/todoApi';
+import { TodoItem } from '@/types';
 
 // 分析サマリーの型定義
 interface AnalysisSummary {
@@ -29,7 +29,7 @@ export const DeadlineUtils = {
     return date.toLocaleDateString('ja-JP', {
       month: 'numeric',
       day: 'numeric',
-      weekday: 'short'
+      weekday: 'short',
     });
   },
 
@@ -73,41 +73,41 @@ export const DeadlineUtils = {
     if (daysRemaining <= 3) return `残り${daysRemaining}日(${formattedDate})`;
 
     return formattedDate || '';
-  }
+  },
 };
 
 interface TodoState {
   items: TodoItem[];
-  status: "idle" | "loading" | "succeeded" | "failed";
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   todoHistory: Record<string, number>;
   dailyHistory: Array<{ date: string; count: number }>;
-  isPremium: boolean;  // プレミアム状態を追加
+  isPremium: boolean; // プレミアム状態を追加
   analysisSummary: AnalysisSummary | null; // 型を明示的に定義
 }
 
 const initialState: TodoState = {
   items: [],
-  status: "idle",
+  status: 'idle',
   error: null,
   todoHistory: {}, // 既存の履歴データ形式を維持
   dailyHistory: [], // 日別の履歴データを追加
   isPremium: false, // デフォルトは非プレミアム
-  analysisSummary: null // 初期値はnull
+  analysisSummary: null, // 初期値はnull
 };
 
-export const fetchTodoItems = createAsyncThunk("todo/fetchTodoItems", async () => {
+export const fetchTodoItems = createAsyncThunk('todo/fetchTodoItems', async () => {
   const response = await todoApi.getAll();
   return response.data;
 });
 
 export const addTodoItem = createAsyncThunk(
-  "todo/addTodoItem",
+  'todo/addTodoItem',
   async (todo: {
     task: string;
     priority: number;
     isPrioritized: boolean;
-    type?: "input" | "output";
+    type?: 'input' | 'output';
     deadline?: string;
     createdAt?: string; // createdAt プロパティを追加
   }) => {
@@ -116,7 +116,7 @@ export const addTodoItem = createAsyncThunk(
       todo.task,
       todo.priority,
       todo.isPrioritized,
-      todo.type || "input",
+      todo.type || 'input',
       todo.deadline,
       todo.createdAt // API 関数が対応していない場合は修正が必要
     );
@@ -125,46 +125,37 @@ export const addTodoItem = createAsyncThunk(
 );
 
 export const updateTodoItem = createAsyncThunk(
-  "todo/updateTodoItem",
+  'todo/updateTodoItem',
   async ({ _id, updates }: { _id: string; updates: Partial<TodoItem> }) => {
     const response = await todoApi.update(_id, updates);
     return response.data.todo;
   }
 );
 
-export const deleteTodoItem = createAsyncThunk(
-  "todo/deleteTodoItem",
-  async (id: string) => {
-    await todoApi.delete(id);
-    return id;
-  }
-);
+export const deleteTodoItem = createAsyncThunk('todo/deleteTodoItem', async (id: string) => {
+  await todoApi.delete(id);
+  return id;
+});
 
-export const resetTodoList = createAsyncThunk("todo/resetTodoList", async () => {
+export const resetTodoList = createAsyncThunk('todo/resetTodoList', async () => {
   const response = await todoApi.reset();
   return response.data;
 });
 
 // 履歴データ取得のためのアクションを追加
-export const fetchTodoHistory = createAsyncThunk(
-  "todo/fetchTodoHistory",
-  async () => {
-    const response = await todoApi.getHistory();
-    return response.data;
-  }
-);
+export const fetchTodoHistory = createAsyncThunk('todo/fetchTodoHistory', async () => {
+  const response = await todoApi.getHistory();
+  return response.data;
+});
 
 // 日別の履歴データを取得するアクションを追加
-export const fetchDailyTodoHistory = createAsyncThunk(
-  "todo/fetchDailyTodoHistory",
-  async () => {
-    const response = await todoApi.getDailyHistory();
-    return response.data;
-  }
-);
+export const fetchDailyTodoHistory = createAsyncThunk('todo/fetchDailyTodoHistory', async () => {
+  const response = await todoApi.getDailyHistory();
+  return response.data;
+});
 
 export const reorderTodoItems = createAsyncThunk(
-  "todo/reorderTodoItems",
+  'todo/reorderTodoItems',
   async (items: TodoItem[]) => {
     const response = await todoApi.reorder(items);
     return response.data.todos;
@@ -172,7 +163,7 @@ export const reorderTodoItems = createAsyncThunk(
 );
 
 export const toggleTodoPriority = createAsyncThunk(
-  "todo/toggleTodoPriority",
+  'todo/toggleTodoPriority',
   async (id: string) => {
     const response = await todoApi.togglePriority(id);
     return response.data.todo;
@@ -180,52 +171,43 @@ export const toggleTodoPriority = createAsyncThunk(
 );
 
 // プレミアム状態をチェックするアクションを追加
-export const checkPremiumStatus = createAsyncThunk(
-  "todo/checkPremiumStatus",
-  async () => {
-    // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
-    // 実際には適切なAPIエンドポイントを使用する必要があります
-    // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
-    return { isPremium: true };
-  }
-);
+export const checkPremiumStatus = createAsyncThunk('todo/checkPremiumStatus', async () => {
+  // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
+  // 実際には適切なAPIエンドポイントを使用する必要があります
+  // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
+  return { isPremium: true };
+});
 
 // タスク分析サマリーを取得するアクションを追加
-export const fetchAnalysisSummary = createAsyncThunk(
-  "todo/fetchAnalysisSummary",
-  async () => {
-    // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
-    // 実際には適切なAPIエンドポイントを使用する必要があります
-    // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
-    return {
-      completionRate: 75,
-      averageTasksPerDay: 5.2,
-      mostProductiveDay: '水曜日',
-      categoryStats: {
-        input: 120,
-        output: 85
-      },
-      categoryDistribution: {
-        input: 0.6,
-        output: 0.4
-      },
-      recommendations: [
-        'アウトプットタスクの比率を増やすことでバランス改善が見込めます。',
-        '午前中の集中タスクを増やして生産性向上を目指しましょう。'
-      ]
-    };
-  }
-);
+export const fetchAnalysisSummary = createAsyncThunk('todo/fetchAnalysisSummary', async () => {
+  // 直接サービスAPIを使用せず、todoApiのサポートメソッドがない場合はモック実装
+  // 実際には適切なAPIエンドポイントを使用する必要があります
+  // モックデータを返す例（実装時には適切なAPI呼び出しに置き換えてください）
+  return {
+    completionRate: 75,
+    averageTasksPerDay: 5.2,
+    mostProductiveDay: '水曜日',
+    categoryStats: {
+      input: 120,
+      output: 85,
+    },
+    categoryDistribution: {
+      input: 0.6,
+      output: 0.4,
+    },
+    recommendations: [
+      'アウトプットタスクの比率を増やすことでバランス改善が見込めます。',
+      '午前中の集中タスクを増やして生産性向上を目指しましょう。',
+    ],
+  };
+});
 
 const todoSlice = createSlice({
-  name: "todo",
+  name: 'todo',
   initialState,
   reducers: {
     // 引数を受け取る形に変更
-    updateTodoHistory: (
-      state,
-      action: { payload: { date: string; count: number } }
-    ) => {
+    updateTodoHistory: (state, action: { payload: { date: string; count: number } }) => {
       const { date, count } = action.payload;
       state.todoHistory[date] = count;
     },
@@ -233,10 +215,10 @@ const todoSlice = createSlice({
     // 期限に基づいて優先度を調整するreducerを追加
     adjustDeadlinePriorities: (state) => {
       // 完了していないタスクのみを対象
-      const activeTodos = state.items.filter(todo => !todo.completed);
+      const activeTodos = state.items.filter((todo) => !todo.completed);
 
       // 各タスクの期限に基づいて優先度スコアを計算
-      const todosWithScore = activeTodos.map(todo => {
+      const todosWithScore = activeTodos.map((todo) => {
         let priorityScore = todo.priority || 0;
 
         // 既に優先化されているタスクには基本点を追加
@@ -283,27 +265,24 @@ const todoSlice = createSlice({
       const reorderedTodos = todosWithScore.map((todo, index) => ({
         ...todo,
         priority: todosWithScore.length - index, // インデックスの逆順で優先度を設定
-        isPrioritized: index < 3 || todo.isPrioritized // 上位3つのタスクと既に優先化されているタスクを優先マーク
+        isPrioritized: index < 3 || todo.isPrioritized, // 上位3つのタスクと既に優先化されているタスクを優先マーク
       }));
 
       // 状態を更新（完了タスクは変更せず、アクティブなタスクのみ更新）
-      state.items = [
-        ...reorderedTodos,
-        ...state.items.filter(todo => todo.completed)
-      ];
-    }
+      state.items = [...reorderedTodos, ...state.items.filter((todo) => todo.completed)];
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodoItems.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = 'succeeded';
         state.items = action.payload;
       })
       .addCase(fetchTodoItems.rejected, (state, action) => {
-        state.status = "failed";
+        state.status = 'failed';
         state.error = action.error.message || null;
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {
@@ -316,26 +295,29 @@ const todoSlice = createSlice({
           state.items[index] = action.payload;
 
           // デバッグ用にログを追加
-          console.log("Todo updated in Redux store:", action.payload);
+          console.log('Todo updated in Redux store:', action.payload);
         }
       })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
       .addCase(resetTodoList.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(resetTodoList.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = 'succeeded';
         state.items = action.payload;
         // 履歴データはそのまま保持
       })
       .addCase(fetchTodoHistory.fulfilled, (state, action) => {
         // 履歴データを適切な形式に変換
-        const historyData = action.payload.reduce((acc: Record<string, number>, item: { date: string; completedCount: number }) => {
-          acc[item.date] = item.completedCount;
-          return acc;
-        }, {});
+        const historyData = action.payload.reduce(
+          (acc: Record<string, number>, item: { date: string; completedCount: number }) => {
+            acc[item.date] = item.completedCount;
+            return acc;
+          },
+          {}
+        );
         state.todoHistory = historyData;
       })
       .addCase(fetchDailyTodoHistory.fulfilled, (state, action) => {

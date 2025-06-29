@@ -52,7 +52,9 @@ export const createTweet = async (req: MulterRequest, res: Response): Promise<vo
     if (error instanceof Error) {
       res.status(500).json({ message: 'ツイートの作成に失敗しました', error: error.message });
     } else {
-      res.status(500).json({ message: 'ツイートの作成に失敗しました', error: '不明なエラーが発生しました' });
+      res
+        .status(500)
+        .json({ message: 'ツイートの作成に失敗しました', error: '不明なエラーが発生しました' });
     }
   }
 };
@@ -71,19 +73,18 @@ export const getTweets = async (req: MulterRequest, res: Response): Promise<void
     const baseQuery = { user: userId };
 
     // 検索条件の追加
-    const query = search && typeof search === 'string' && search.trim() !== ''
-      ? {
-          ...baseQuery,
-          content: {
-            $regex: search.trim(),
-            $options: 'i'  // 大文字小文字を区別しない
+    const query =
+      search && typeof search === 'string' && search.trim() !== ''
+        ? {
+            ...baseQuery,
+            content: {
+              $regex: search.trim(),
+              $options: 'i', // 大文字小文字を区別しない
+            },
           }
-        }
-      : baseQuery;
+        : baseQuery;
 
-    const tweets = await Tweet.find(query)
-      .sort({ createdAt: -1 })
-      .exec();
+    const tweets = await Tweet.find(query).sort({ createdAt: -1 }).exec();
 
     res.json(tweets);
   } catch (error: unknown) {
@@ -91,7 +92,9 @@ export const getTweets = async (req: MulterRequest, res: Response): Promise<void
     if (error instanceof Error) {
       res.status(500).json({ message: 'ツイートの取得に失敗しました', error: error.message });
     } else {
-      res.status(500).json({ message: 'ツイートの取得に失敗しました', error: '不明なエラーが発生しました' });
+      res
+        .status(500)
+        .json({ message: 'ツイートの取得に失敗しました', error: '不明なエラーが発生しました' });
     }
   }
 };
@@ -136,7 +139,9 @@ export const updateTweet = async (req: MulterRequest, res: Response): Promise<vo
     if (error instanceof Error) {
       res.status(500).json({ message: 'ツイートの更新に失敗しました', error: error.message });
     } else {
-      res.status(500).json({ message: 'ツイートの更新に失敗しました', error: '不明なエラーが発生しました' });
+      res
+        .status(500)
+        .json({ message: 'ツイートの更新に失敗しました', error: '不明なエラーが発生しました' });
     }
   }
 };

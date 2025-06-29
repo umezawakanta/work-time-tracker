@@ -1,5 +1,5 @@
-import * as express from "express";
-import { Request, Response } from "express";
+import * as express from 'express';
+import { Request, Response } from 'express';
 import { SleepRecord } from '../models/SleepRecord.js';
 
 const router = express.Router();
@@ -20,7 +20,9 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const { date, wakeUp, bedtime } = req.body;
     const newRecord = new SleepRecord({ date, wakeUp, bedtime });
     const savedRecord = await newRecord.save();
-    res.status(201).json({ message: 'Sleep record created successfully', sleepRecord: savedRecord });
+    res
+      .status(201)
+      .json({ message: 'Sleep record created successfully', sleepRecord: savedRecord });
   } catch (error) {
     res.status(500).json({ message: 'Error creating sleep record', error });
   }

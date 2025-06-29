@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { candidateApi } from "@/services/api";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { candidateApi } from '@/services/api';
 import {
   LineChart,
   Line,
@@ -14,9 +14,9 @@ import {
   Legend,
   ResponsiveContainer,
   TooltipProps,
-} from "recharts";
-import { RefreshCw } from "lucide-react";
-import { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
+} from 'recharts';
+import { RefreshCw } from 'lucide-react';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface SupportRatePoint {
   date: string;
@@ -45,16 +45,16 @@ const SupportRateChart: React.FC<SupportRateChartProps> = ({ candidateId }) => {
         );
         setSupportData(sortedData);
       } else {
-        setError("データの形式が正しくありません");
+        setError('データの形式が正しくありません');
       }
     } catch (err) {
-      console.error("支持率データの取得に失敗しました:", err);
-      setError("支持率データの取得に失敗しました");
+      console.error('支持率データの取得に失敗しました:', err);
+      setError('支持率データの取得に失敗しました');
     } finally {
       setLoading(false);
     }
   }, [candidateId]);
-  
+
   useEffect(() => {
     if (candidateId) {
       fetchSupportData();
@@ -72,9 +72,7 @@ const SupportRateChart: React.FC<SupportRateChartProps> = ({ candidateId }) => {
       return (
         <Card className="p-2 bg-white shadow-md border border-gray-200">
           <CardContent className="p-2 text-xs">
-            <p className="font-bold">
-              {new Date(dataPoint.date).toLocaleDateString("ja-JP")}
-            </p>
+            <p className="font-bold">{new Date(dataPoint.date).toLocaleDateString('ja-JP')}</p>
             <p>支持率: {dataPoint.rate}%</p>
             <p>出典: {dataPoint.source}</p>
           </CardContent>
@@ -98,12 +96,7 @@ const SupportRateChart: React.FC<SupportRateChartProps> = ({ candidateId }) => {
       <Alert variant="destructive">
         <AlertDescription>
           {error}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchSupportData}
-            className="ml-2"
-          >
+          <Button variant="outline" size="sm" onClick={fetchSupportData} className="ml-2">
             <RefreshCw className="h-4 w-4 mr-1" />
             再読み込み
           </Button>
@@ -115,26 +108,16 @@ const SupportRateChart: React.FC<SupportRateChartProps> = ({ candidateId }) => {
   if (supportData.length === 0) {
     return (
       <Alert>
-        <AlertDescription>
-          この候補者の支持率データはまだありません。
-        </AlertDescription>
+        <AlertDescription>この候補者の支持率データはまだありません。</AlertDescription>
       </Alert>
     );
   }
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart
-        data={supportData}
-        margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-      >
+      <LineChart data={supportData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-        <XAxis
-          dataKey="date"
-          tickFormatter={formatDate}
-          stroke="#888888"
-          fontSize={12}
-        />
+        <XAxis dataKey="date" tickFormatter={formatDate} stroke="#888888" fontSize={12} />
         <YAxis
           domain={[0, 100]}
           stroke="#888888"

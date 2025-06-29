@@ -1,6 +1,6 @@
-import React from "react";
-import { AssetForm } from "@/components/forms/AssetForm";
-import { DebtForm } from "@/components/forms/DebtForm";
+import React from 'react';
+import { AssetForm } from '@/components/forms/AssetForm';
+import { DebtForm } from '@/components/forms/DebtForm';
 
 interface AssetDebtFormsProps {
   editingAsset: string | null;

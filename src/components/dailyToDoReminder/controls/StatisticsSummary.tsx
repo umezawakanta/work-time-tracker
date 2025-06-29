@@ -1,14 +1,7 @@
 import React from 'react';
-import { 
-  BarChart4, 
-  Zap, 
-  Trophy, 
-  Clock, 
-  Calendar,
-  ChevronRight 
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { BarChart4, Zap, Trophy, Clock, Calendar, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -17,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 import { TodoStats } from '@/types/todo';
 import { StatisticsDetail } from './StatisticsDetail';
@@ -38,7 +31,7 @@ export const StatisticsSummary: React.FC<StatisticsSummaryProps> = ({
   achievementDetails,
   setAchievementDetails,
   onShowFullStats,
-  getCompletionRateStyle
+  getCompletionRateStyle,
 }) => {
   return (
     <div className="py-2 space-y-3">
@@ -51,7 +44,7 @@ export const StatisticsSummary: React.FC<StatisticsSummaryProps> = ({
           {stats.completedTasks}
         </Badge>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           <Zap className="h-3 w-3 text-gray-500" />
@@ -61,7 +54,7 @@ export const StatisticsSummary: React.FC<StatisticsSummaryProps> = ({
           {stats.streakDays}日
         </Badge>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           <Trophy className="h-3 w-3 text-gray-500" />
@@ -71,32 +64,29 @@ export const StatisticsSummary: React.FC<StatisticsSummaryProps> = ({
           {stats.longestStreak}日
         </Badge>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3 text-gray-500" />
           <span className="text-xs">平均タスク完了時間</span>
         </div>
         <Badge variant="outline" className="bg-amber-50">
-          {stats.averageCompletionTime < 60 
+          {stats.averageCompletionTime < 60
             ? `${stats.averageCompletionTime}分`
             : `${(stats.averageCompletionTime / 60).toFixed(1)}時間`}
         </Badge>
       </div>
-      
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           <Calendar className="h-3 w-3 text-gray-500" />
           <span className="text-xs">期限内完了率</span>
         </div>
-        <Badge 
-          variant="outline" 
-          className={getCompletionRateStyle(stats.deadlineMeetRate)}
-        >
+        <Badge variant="outline" className={getCompletionRateStyle(stats.deadlineMeetRate)}>
           {stats.deadlineMeetRate}%
         </Badge>
       </div>
-      
+
       {/* 詳細統計ダイアログ */}
       <Dialog open={achievementDetails} onOpenChange={setAchievementDetails}>
         <DialogTrigger asChild>
@@ -113,20 +103,18 @@ export const StatisticsSummary: React.FC<StatisticsSummaryProps> = ({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>タスク統計</DialogTitle>
-            <DialogDescription>
-              あなたのタスク管理の詳細な統計情報
-            </DialogDescription>
+            <DialogDescription>あなたのタスク管理の詳細な統計情報</DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 mt-4">
             {/* 詳細な統計情報 */}
             <StatisticsDetail stats={stats} />
-            
+
             {/* フル統計表示ボタン */}
             {onShowFullStats && (
               <DialogFooter>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => {
                     setAchievementDetails(false);

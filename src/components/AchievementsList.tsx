@@ -1,16 +1,10 @@
 // AchievementsList.tsx
-import React from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Medal, Star, Zap, Crown, CheckCircle } from "lucide-react";
-import { Achievement } from "@/types";
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Trophy, Medal, Star, Zap, Crown, CheckCircle } from 'lucide-react';
+import { Achievement } from '@/types';
 
 interface AchievementsListProps {
   achievements: Achievement[];
@@ -21,24 +15,21 @@ interface AchievementsListProps {
   };
 }
 
-const AchievementsList: React.FC<AchievementsListProps> = ({
-  achievements,
-  streakData,
-}) => {
+const AchievementsList: React.FC<AchievementsListProps> = ({ achievements, streakData }) => {
   // アイコンのマッピング
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case "Trophy":
+      case 'Trophy':
         return <Trophy className="h-5 w-5" />;
-      case "Medal":
+      case 'Medal':
         return <Medal className="h-5 w-5" />;
-      case "Star":
+      case 'Star':
         return <Star className="h-5 w-5" />;
-      case "Zap":
+      case 'Zap':
         return <Zap className="h-5 w-5" />;
-      case "Crown":
+      case 'Crown':
         return <Crown className="h-5 w-5" />;
-      case "CheckCircle":
+      case 'CheckCircle':
         return <CheckCircle className="h-5 w-5" />;
       default:
         return <Trophy className="h-5 w-5" />;
@@ -47,9 +38,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
 
   // 取得した実績数と取得率
   const earnedCount = achievements.filter((a) => a.earned).length;
-  const earnedPercentage = Math.round(
-    (earnedCount / achievements.length) * 100
-  );
+  const earnedPercentage = Math.round((earnedCount / achievements.length) * 100);
 
   function getDynamicWidthClass(percentage: number) {
     return `w-[${percentage}%]`;
@@ -69,18 +58,13 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Zap className="h-8 w-8 text-amber-500 mr-2" />
-                  <span className="text-2xl font-bold">
-                    {streakData.currentStreak}
-                  </span>
+                  <span className="text-2xl font-bold">{streakData.currentStreak}</span>
                   <span className="ml-1 text-gray-500">日</span>
                 </div>
                 <div className="text-right text-sm text-gray-500">
                   <div>最長記録: {streakData.longestStreak}日</div>
                   {streakData.lastEntryDate && (
-                    <div>
-                      最終記録日:{" "}
-                      {new Date(streakData.lastEntryDate).toLocaleDateString()}
-                    </div>
+                    <div>最終記録日: {new Date(streakData.lastEntryDate).toLocaleDateString()}</div>
                   )}
                 </div>
               </div>
@@ -121,9 +105,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                     ))}
                 </ul>
               ) : (
-                <p className="text-sm">
-                  すべての実績を獲得しました！おめでとうございます！
-                </p>
+                <p className="text-sm">すべての実績を獲得しました！おめでとうございます！</p>
               )}
             </div>
           </div>
@@ -135,9 +117,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
           <CardTitle>実績一覧</CardTitle>
           <div className="flex mt-2">
             <Badge className="mr-2">獲得済み: {earnedCount}</Badge>
-            <Badge variant="outline">
-              未獲得: {achievements.length - earnedCount}
-            </Badge>
+            <Badge variant="outline">未獲得: {achievements.length - earnedCount}</Badge>
           </div>
         </CardHeader>
         <CardContent>
@@ -148,42 +128,32 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                   key={achievement.id}
                   className={`flex items-start p-3 rounded-md border ${
                     achievement.earned
-                      ? "bg-green-50 border-green-200"
-                      : "bg-gray-50 border-gray-200"
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-gray-50 border-gray-200'
                   }`}
                 >
                   <div
                     className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
                       achievement.earned
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-200 text-gray-400"
+                        ? 'bg-green-100 text-green-600'
+                        : 'bg-gray-200 text-gray-400'
                     }`}
                   >
                     {getIcon(achievement.icon)}
                   </div>
                   <div>
-                    <h4
-                      className={`font-medium ${
-                        achievement.earned ? "" : "text-gray-500"
-                      }`}
-                    >
+                    <h4 className={`font-medium ${achievement.earned ? '' : 'text-gray-500'}`}>
                       {achievement.name}
                     </h4>
-                    <p className="text-sm text-gray-500">
-                      {achievement.description}
-                    </p>
+                    <p className="text-sm text-gray-500">{achievement.description}</p>
                     {achievement.earned && achievement.date && (
                       <div className="text-xs text-green-600 mt-1">
-                        獲得日:{" "}
-                        {new Date(achievement.date).toLocaleDateString()}
+                        獲得日: {new Date(achievement.date).toLocaleDateString()}
                       </div>
                     )}
                   </div>
                   {achievement.earned && (
-                    <Badge
-                      className="ml-auto flex-shrink-0 bg-green-500"
-                      title="獲得済み"
-                    >
+                    <Badge className="ml-auto flex-shrink-0 bg-green-500" title="獲得済み">
                       獲得済み
                     </Badge>
                   )}

@@ -1,16 +1,22 @@
 // GoalManagement.tsx
-import React, { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Edit, Trash2, Plus, Filter, ArrowUp, ArrowDown, CheckCircle2 } from "lucide-react";
-import { Goal, GoalCategory } from "@/types";
-import "./GoalManagement.css"; // CSSファイルをインポート
+import React, { useState, useEffect, useRef } from 'react';
+import { format } from 'date-fns';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Edit, Trash2, Plus, Filter, ArrowUp, ArrowDown, CheckCircle2 } from 'lucide-react';
+import { Goal, GoalCategory } from '@/types';
+import './GoalManagement.css'; // CSSファイルをインポート
 
 interface GoalManagementProps {
   goals: Goal[];
@@ -41,22 +47,22 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
   handleDeleteGoal,
   goalCategories,
 }) => {
-  const [sortOption, setSortOption] = useState("default");
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortOption, setSortOption] = useState('default');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
-  
+
   // プログレスバーへの参照
   const totalProgressRef = useRef<HTMLDivElement>(null);
-  const categoryProgressRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+  const categoryProgressRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // 目標の更新
   const handleUpdateGoal = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingGoal) return;
-    
-    const updatedGoals = goals.map((goal) => 
-      goal.id === editingGoal.id 
+
+    const updatedGoals = goals.map((goal) =>
+      goal.id === editingGoal.id
         ? {
             ...goal,
             description: newGoal,
@@ -65,12 +71,12 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
           }
         : goal
     );
-    
+
     saveGoals(updatedGoals);
     setEditingGoal(null);
-    setNewGoal("");
-    setNewGoalCategory("daily");
-    setNewGoalDate("");
+    setNewGoal('');
+    setNewGoalCategory('daily');
+    setNewGoalDate('');
   };
 
   // 目標の編集開始
@@ -78,67 +84,68 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
     setEditingGoal(goal);
     setNewGoal(goal.description);
     setNewGoalCategory(goal.category);
-    setNewGoalDate(goal.targetDate || "");
+    setNewGoalDate(goal.targetDate || '');
   };
 
   // 表示する目標のソートとフィルタリング
   const filteredAndSortedGoals = () => {
     // まずフィルタリング
     let filtered = goals;
-    
-    if (filterCategory !== "all") {
-      filtered = filtered.filter(goal => goal.category === filterCategory);
+
+    if (filterCategory !== 'all') {
+      filtered = filtered.filter((goal) => goal.category === filterCategory);
     }
-    
-    if (filterStatus !== "all") {
-      filtered = filtered.filter(goal => 
-        (filterStatus === "completed" && goal.completed) ||
-        (filterStatus === "active" && !goal.completed)
+
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(
+        (goal) =>
+          (filterStatus === 'completed' && goal.completed) ||
+          (filterStatus === 'active' && !goal.completed)
       );
     }
-    
+
     // 次にソート
     return filtered.sort((a, b) => {
       // デフォルトのソート：完了していない目標を先に、期限順に
-      if (sortOption === "default") {
+      if (sortOption === 'default') {
         // 完了フラグで優先度付け
         if (a.completed !== b.completed) {
           return a.completed ? 1 : -1;
         }
-        
+
         // 目標日がある場合は期限順
         if (a.targetDate && b.targetDate) {
           return new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime();
         }
-        
+
         // 目標日がある方を優先
         if (a.targetDate) return -1;
         if (b.targetDate) return 1;
-        
+
         // 最後は作成順（新しい順）
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
-      
+
       // 期限順
-      if (sortOption === "dueDate") {
+      if (sortOption === 'dueDate') {
         // 期限がない場合は後ろに
         if (!a.targetDate && !b.targetDate) return 0;
         if (!a.targetDate) return 1;
         if (!b.targetDate) return -1;
-        
+
         return new Date(a.targetDate).getTime() - new Date(b.targetDate).getTime();
       }
-      
+
       // カテゴリー順
-      if (sortOption === "category") {
+      if (sortOption === 'category') {
         return a.category.localeCompare(b.category);
       }
-      
+
       // 新しい順
-      if (sortOption === "newest") {
+      if (sortOption === 'newest') {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
-      
+
       return 0;
     });
   };
@@ -148,34 +155,36 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
     if (!goal.targetDate || goal.completed) return false;
     return new Date(goal.targetDate) < new Date();
   };
-  
+
   // 目標達成率
-  const completionRate = Math.round((goals.filter(goal => goal.completed).length / (goals.length || 1)) * 100);
-  
+  const completionRate = Math.round(
+    (goals.filter((goal) => goal.completed).length / (goals.length || 1)) * 100
+  );
+
   // カテゴリーごとの達成率
-  const categoryCompletionRates = goalCategories.map(category => {
-    const categoryGoals = goals.filter(goal => goal.category === category.value);
-    const completed = categoryGoals.filter(goal => goal.completed).length;
+  const categoryCompletionRates = goalCategories.map((category) => {
+    const categoryGoals = goals.filter((goal) => goal.category === category.value);
+    const completed = categoryGoals.filter((goal) => goal.completed).length;
     const total = categoryGoals.length;
     const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
+
     return {
       category: category,
       rate: rate,
       completed: completed,
-      total: total
+      total: total,
     };
   });
-  
+
   // プログレスバーの幅を更新
   useEffect(() => {
     // メインプログレスバーの更新
     if (totalProgressRef.current) {
       totalProgressRef.current.style.setProperty('--progress-width', `${completionRate}%`);
     }
-    
+
     // カテゴリー別プログレスバーの更新
-    categoryCompletionRates.forEach(item => {
+    categoryCompletionRates.forEach((item) => {
       const ref = categoryProgressRefs.current[item.category.value];
       if (ref) {
         ref.style.setProperty('--progress-width', `${item.rate}%`);
@@ -187,11 +196,11 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>{editingGoal ? "目標を編集" : "新しい目標"}</CardTitle>
+          <CardTitle>{editingGoal ? '目標を編集' : '新しい目標'}</CardTitle>
           <CardDescription>
-            {editingGoal 
-              ? "目標の詳細を編集してください" 
-              : "自己肯定感を高めるための具体的な目標を設定しましょう"}
+            {editingGoal
+              ? '目標の詳細を編集してください'
+              : '自己肯定感を高めるための具体的な目標を設定しましょう'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -210,19 +219,13 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="goal-category">カテゴリー</Label>
-                <Select
-                  value={newGoalCategory}
-                  onValueChange={setNewGoalCategory}
-                >
+                <Select value={newGoalCategory} onValueChange={setNewGoalCategory}>
                   <SelectTrigger id="goal-category">
                     <SelectValue placeholder="カテゴリーを選択" />
                   </SelectTrigger>
                   <SelectContent>
                     {goalCategories.map((category) => (
-                      <SelectItem
-                        key={category.value}
-                        value={category.value}
-                      >
+                      <SelectItem key={category.value} value={category.value}>
                         {category.label}
                       </SelectItem>
                     ))}
@@ -254,7 +257,7 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                 </>
               )}
             </Button>
-            
+
             {editingGoal && (
               <Button
                 type="button"
@@ -262,16 +265,16 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                 className="w-full mt-2"
                 onClick={() => {
                   setEditingGoal(null);
-                  setNewGoal("");
-                  setNewGoalCategory("daily");
-                  setNewGoalDate("");
+                  setNewGoal('');
+                  setNewGoalCategory('daily');
+                  setNewGoalDate('');
                 }}
               >
                 キャンセル
               </Button>
             )}
           </form>
-          
+
           {/* 目標達成率 */}
           <div className="mt-6 pt-4 border-t">
             <h4 className="font-medium mb-2">進捗状況</h4>
@@ -280,30 +283,31 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
               <span>{completionRate}%</span>
             </div>
             <div className="progress-container">
-              <div 
-                ref={totalProgressRef}
-                className="progress-bar"
-              ></div>
+              <div ref={totalProgressRef} className="progress-bar"></div>
             </div>
-            
+
             {/* カテゴリー別達成率 */}
             <div className="mt-4 space-y-2">
               {categoryCompletionRates
-                .filter(item => item.total > 0)
-                .map(item => (
-                <div key={item.category.value}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{item.category.label}</span>
-                    <span>{item.completed}/{item.total} ({item.rate}%)</span>
+                .filter((item) => item.total > 0)
+                .map((item) => (
+                  <div key={item.category.value}>
+                    <div className="flex items-center justify-between text-sm">
+                      <span>{item.category.label}</span>
+                      <span>
+                        {item.completed}/{item.total} ({item.rate}%)
+                      </span>
+                    </div>
+                    <div className="progress-container">
+                      <div
+                        ref={(el) => {
+                          if (el) categoryProgressRefs.current[item.category.value] = el;
+                        }}
+                        className="category-progress-bar"
+                      ></div>
+                    </div>
                   </div>
-                  <div className="progress-container">
-                    <div 
-                      ref={(el) => { if (el) categoryProgressRefs.current[item.category.value] = el; }}
-                      className="category-progress-bar"
-                    ></div>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </CardContent>
@@ -314,33 +318,30 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
           <CardTitle>目標リスト</CardTitle>
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <Badge
-              variant={filterStatus === "all" ? "default" : "outline"}
+              variant={filterStatus === 'all' ? 'default' : 'outline'}
               className="cursor-pointer"
-              onClick={() => setFilterStatus("all")}
+              onClick={() => setFilterStatus('all')}
             >
               すべて ({goals.length})
             </Badge>
             <Badge
-              variant={filterStatus === "active" ? "default" : "outline"}
+              variant={filterStatus === 'active' ? 'default' : 'outline'}
               className="cursor-pointer"
-              onClick={() => setFilterStatus("active")}
+              onClick={() => setFilterStatus('active')}
             >
-              進行中 ({goals.filter(g => !g.completed).length})
+              進行中 ({goals.filter((g) => !g.completed).length})
             </Badge>
             <Badge
-              variant={filterStatus === "completed" ? "default" : "outline"}
+              variant={filterStatus === 'completed' ? 'default' : 'outline'}
               className="cursor-pointer"
-              onClick={() => setFilterStatus("completed")}
+              onClick={() => setFilterStatus('completed')}
             >
-              完了 ({goals.filter(g => g.completed).length})
+              完了 ({goals.filter((g) => g.completed).length})
             </Badge>
-            
+
             {/* 並び替えとフィルタリング */}
             <div className="ml-auto flex gap-1">
-              <Select
-                value={filterCategory}
-                onValueChange={setFilterCategory}
-              >
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="h-8 w-32">
                   <Filter className="h-3.5 w-3.5 mr-1" />
                   <SelectValue placeholder="フィルター" />
@@ -348,22 +349,16 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                 <SelectContent>
                   <SelectItem value="all">すべてのカテゴリー</SelectItem>
                   {goalCategories.map((category) => (
-                    <SelectItem
-                      key={category.value}
-                      value={category.value}
-                    >
+                    <SelectItem key={category.value} value={category.value}>
                       {category.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              
-              <Select
-                value={sortOption}
-                onValueChange={setSortOption}
-              >
+
+              <Select value={sortOption} onValueChange={setSortOption}>
                 <SelectTrigger className="h-8 w-32">
-                  {sortOption === "default" ? (
+                  {sortOption === 'default' ? (
                     <ArrowDown className="h-3.5 w-3.5 mr-1" />
                   ) : (
                     <ArrowUp className="h-3.5 w-3.5 mr-1" />
@@ -397,10 +392,10 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                     key={goal.id}
                     className={`flex items-center justify-between p-3 rounded-md border ${
                       goal.completed
-                        ? "bg-green-50 border-green-200"
+                        ? 'bg-green-50 border-green-200'
                         : isOverdue(goal)
-                        ? "bg-red-50 border-red-200"
-                        : "border-gray-200"
+                          ? 'bg-red-50 border-red-200'
+                          : 'border-gray-200'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -416,32 +411,23 @@ const GoalManagement: React.FC<GoalManagementProps> = ({
                       <div>
                         <Label
                           htmlFor={`goal-${goal.id}`}
-                          className={`${
-                            goal.completed
-                              ? "line-through text-gray-500"
-                              : ""
-                          }`}
+                          className={`${goal.completed ? 'line-through text-gray-500' : ''}`}
                         >
                           {goal.description}
                         </Label>
                         <div className="flex items-center mt-1 space-x-2">
                           <Badge variant="outline" className="text-xs">
-                            {goalCategories.find(
-                              (c) => c.value === goal.category
-                            )?.label || "日常習慣"}
+                            {goalCategories.find((c) => c.value === goal.category)?.label ||
+                              '日常習慣'}
                           </Badge>
                           {goal.targetDate && (
-                            <span className={`text-xs ${
-                              isOverdue(goal)
-                              ? "text-red-500 font-medium"
-                              : "text-gray-500"
-                            }`}>
-                              目標日:{" "}
-                              {format(
-                                new Date(goal.targetDate),
-                                "yyyy/MM/dd"
-                              )}
-                              {isOverdue(goal) && " (期限切れ)"}
+                            <span
+                              className={`text-xs ${
+                                isOverdue(goal) ? 'text-red-500 font-medium' : 'text-gray-500'
+                              }`}
+                            >
+                              目標日: {format(new Date(goal.targetDate), 'yyyy/MM/dd')}
+                              {isOverdue(goal) && ' (期限切れ)'}
                             </span>
                           )}
                         </div>

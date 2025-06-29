@@ -14,7 +14,7 @@ interface HabitDocument extends mongoose.Document {
   data: Map<string, boolean[]>;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Mongoose Document メソッドを追加
   markModified(path: string): void;
   save(): Promise<this>;
@@ -32,7 +32,10 @@ export const getHabits = async (req: AuthRequest, res: Response): Promise<void> 
     res.json(habits);
   } catch (error) {
     console.error('Error fetching habits:', error);
-    res.status(500).json({ message: '習慣データの取得に失敗しました', error: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({
+      message: '習慣データの取得に失敗しました',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 };
 
@@ -49,14 +52,17 @@ export const createHabit = async (req: AuthRequest, res: Response): Promise<void
     const habit = new Habit({
       userId: new mongoose.Types.ObjectId(userId),
       name,
-      data: new Map()
+      data: new Map(),
     });
 
     await habit.save();
     res.status(201).json(habit);
   } catch (error) {
     console.error('Error creating habit:', error);
-    res.status(500).json({ message: '習慣の作成に失敗しました', error: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({
+      message: '習慣の作成に失敗しました',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 };
 
@@ -78,17 +84,20 @@ export const initializeHabits = async (req: AuthRequest, res: Response): Promise
     await Habit.deleteMany({ userId: new mongoose.Types.ObjectId(userId) });
 
     // 新しい習慣を作成
-    const habitDocs = habits.map(habit => ({
+    const habitDocs = habits.map((habit) => ({
       userId: new mongoose.Types.ObjectId(userId),
       name: habit,
-      data: new Map()
+      data: new Map(),
     }));
 
     const createdHabits = await Habit.insertMany(habitDocs);
     res.status(201).json(createdHabits);
   } catch (error) {
     console.error('Error initializing habits:', error);
-    res.status(500).json({ message: '習慣の初期化に失敗しました', error: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({
+      message: '習慣の初期化に失敗しました',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 };
 
@@ -100,12 +109,12 @@ export const updateHabit = async (req: AuthRequest, res: Response): Promise<void
 
     // dataがundefinedか空オブジェクトの場合に対応
     const dataArray = Array.isArray(data) ? data : [];
-    
-    console.log('Update request:', { 
-      userId, 
-      habitId, 
-      monthKey, 
-      dataLength: dataArray.length // 安全にlengthにアクセス
+
+    console.log('Update request:', {
+      userId,
+      habitId,
+      monthKey,
+      dataLength: dataArray.length, // 安全にlengthにアクセス
     });
 
     if (!userId) {
@@ -128,10 +137,10 @@ export const updateHabit = async (req: AuthRequest, res: Response): Promise<void
       return;
     }
 
-    const habit = await Habit.findOne({ 
+    const habit = (await Habit.findOne({
       _id: habitId,
-      userId: new mongoose.Types.ObjectId(userId)
-    }) as HabitDocument | null;
+      userId: new mongoose.Types.ObjectId(userId),
+    })) as HabitDocument | null;
 
     console.log('Found habit:', habit);
 
@@ -141,7 +150,7 @@ export const updateHabit = async (req: AuthRequest, res: Response): Promise<void
     }
 
     // データの型チェック
-    if (!data.every(item => typeof item === 'boolean')) {
+    if (!data.every((item) => typeof item === 'boolean')) {
       res.status(400).json({ message: 'データには真偽値のみを含める必要があります' });
       return;
     }
@@ -170,10 +179,15 @@ export const updateHabit = async (req: AuthRequest, res: Response): Promise<void
     }
   } catch (error) {
     console.error('Error updating habit:', error);
-    res.status(500).json({ 
-      message: '習慣の更新に失敗しました', 
+    res.status(500).json({
+      message: '習慣の更新に失敗しました',
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.stack : undefined : undefined
+      stack:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.stack
+            : undefined
+          : undefined,
     });
   }
 };

@@ -1,6 +1,6 @@
 // MonthlyCalendar.tsx
-import React from "react";
-import { format } from "date-fns";
+import React from 'react';
+import { format } from 'date-fns';
 import {
   startOfMonth,
   endOfMonth,
@@ -11,11 +11,11 @@ import {
   isToday,
   subMonths,
   addMonths,
-} from "date-fns";
-import { ja } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DiaryEntry } from "@/types";
+} from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { DiaryEntry } from '@/types';
 
 interface MonthlyCalendarProps {
   entries: DiaryEntry[];
@@ -60,7 +60,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <h3 className="text-lg font-medium">
-          {format(currentMonth, "yyyy年MM月", { locale: ja })}
+          {format(currentMonth, 'yyyy年MM月', { locale: ja })}
         </h3>
         <Button
           variant="outline"
@@ -72,7 +72,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {["日", "月", "火", "水", "木", "金", "土"].map((day, index) => (
+        {['日', '月', '火', '水', '木', '金', '土'].map((day, index) => (
           <div key={index} className="text-center text-sm font-medium">
             {day}
           </div>
@@ -81,7 +81,7 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
 
       <div className="grid grid-cols-7 gap-1">
         {dateRange.map((date, idx) => {
-          const dateStr = format(date, "yyyy-MM-dd");
+          const dateStr = format(date, 'yyyy-MM-dd');
           const entry = entriesByDate[dateStr];
           const isCurrentMonth = isSameMonth(date, currentMonth);
 
@@ -89,8 +89,8 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
             <div
               key={idx}
               className={`p-1 text-center rounded-md cursor-pointer hover:bg-gray-100 ${
-                !isCurrentMonth ? "text-gray-300" : ""
-              } ${isToday(date) ? "bg-blue-50 font-bold" : ""}`}
+                !isCurrentMonth ? 'text-gray-300' : ''
+              } ${isToday(date) ? 'bg-blue-50 font-bold' : ''}`}
               onClick={() => {
                 if (entry) {
                   handleEdit(entry);
@@ -99,8 +99,8 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                   setEditingEntry({
                     id: Date.now().toString(),
                     date: dateStr,
-                    achievement: "",
-                    mood: "",
+                    achievement: '',
+                    mood: '',
                     tags: [],
                     difficulty: 1,
                     isImportant: false,
@@ -108,14 +108,12 @@ const MonthlyCalendar: React.FC<MonthlyCalendarProps> = ({
                 }
               }}
             >
-              <div className="text-sm">{format(date, "d")}</div>
+              <div className="text-sm">{format(date, 'd')}</div>
               {entry && (
                 <div className="text-xs mt-1">
-                  {moodEmojis[entry.mood] || "📝"}
+                  {moodEmojis[entry.mood] || '📝'}
                   {showDetailed && entry.tags && entry.tags.length > 0 && (
-                    <div className="mt-1 text-[10px] text-blue-600">
-                      {entry.tags.length}タグ
-                    </div>
+                    <div className="mt-1 text-[10px] text-blue-600">{entry.tags.length}タグ</div>
                   )}
                   {showDetailed && entry.isImportant && (
                     <div className="mt-1 text-[10px] text-amber-600">重要</div>

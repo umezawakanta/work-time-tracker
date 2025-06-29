@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface MissingDataAlertProps {
   missingData: {
@@ -15,9 +15,7 @@ const MissingDataAlert: React.FC<MissingDataAlertProps> = ({ missingData }) => {
       {Object.entries(missingData).map(([media, months]) => (
         <div key={media} className="mb-2">
           <span className="font-semibold text-yellow-800">{media}</span>
-          <span className="text-yellow-700 ml-2">
-            未調査の月: {months.join(", ")}
-          </span>
+          <span className="text-yellow-700 ml-2">未調査の月: {months.join(', ')}</span>
         </div>
       ))}
     </div>

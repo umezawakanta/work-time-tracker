@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,18 +10,11 @@ import {
   Legend,
   ChartData,
   ChartOptions,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
-import { SubscriptionService } from "@/types";
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { SubscriptionService } from '@/types';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface MonthlySubscriptionChartProps {
   subscriptions: SubscriptionService[];
@@ -33,27 +26,27 @@ interface MonthData {
   totalAmount: number;
 }
 
-export const MonthlySubscriptionChart: React.FC<
-  MonthlySubscriptionChartProps
-> = ({ subscriptions }) => {
+export const MonthlySubscriptionChart: React.FC<MonthlySubscriptionChartProps> = ({
+  subscriptions,
+}) => {
   const monthNames = [
-    "1月",
-    "2月",
-    "3月",
-    "4月",
-    "5月",
-    "6月",
-    "7月",
-    "8月",
-    "9月",
-    "10月",
-    "11月",
-    "12月",
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月',
   ];
 
   const monthlyData: MonthData[] = monthNames.map((month, index) => {
     const monthSubscriptions = subscriptions.filter((sub) => {
-      const [, monthStr] = String(sub.billingDate).split("/");
+      const [, monthStr] = String(sub.billingDate).split('/');
       return parseInt(monthStr) === index + 1;
     });
 
@@ -64,16 +57,14 @@ export const MonthlySubscriptionChart: React.FC<
     };
   });
 
-  const allSubscriptionNames = Array.from(
-    new Set(subscriptions.map((sub) => sub.name))
-  );
+  const allSubscriptionNames = Array.from(new Set(subscriptions.map((sub) => sub.name)));
   const colorScale = [
-    "rgba(255, 99, 132, 0.6)",
-    "rgba(54, 162, 235, 0.6)",
-    "rgba(255, 206, 86, 0.6)",
-    "rgba(75, 192, 192, 0.6)",
-    "rgba(153, 102, 255, 0.6)",
-    "rgba(255, 159, 64, 0.6)",
+    'rgba(255, 99, 132, 0.6)',
+    'rgba(54, 162, 235, 0.6)',
+    'rgba(255, 206, 86, 0.6)',
+    'rgba(75, 192, 192, 0.6)',
+    'rgba(153, 102, 255, 0.6)',
+    'rgba(255, 159, 64, 0.6)',
   ];
 
   const datasets = allSubscriptionNames.map((name, index) => ({
@@ -84,21 +75,21 @@ export const MonthlySubscriptionChart: React.FC<
     backgroundColor: colorScale[index % colorScale.length],
   }));
 
-  const chartData: ChartData<"bar"> = {
+  const chartData: ChartData<'bar'> = {
     labels: monthNames,
     datasets: datasets,
   };
 
-  const options: ChartOptions<"bar"> = {
+  const options: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: 'top' as const,
       },
       title: {
         display: true,
-        text: "月別サブスクリプション分析",
+        text: '月別サブスクリプション分析',
       },
       tooltip: {
         callbacks: {
@@ -119,7 +110,7 @@ export const MonthlySubscriptionChart: React.FC<
         beginAtZero: true,
         title: {
           display: true,
-          text: "金額 (円)",
+          text: '金額 (円)',
         },
       },
     },

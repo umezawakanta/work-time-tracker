@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 interface BalanceUpdateModalProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ export function BalanceUpdateModal({
 }: BalanceUpdateModalProps) {
   const [newBalance, setNewBalance] = useState(currentBalance.toString());
   const [isUnknownFunds, setIsUnknownFunds] = useState(false);
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,9 +75,7 @@ export function BalanceUpdateModal({
             <Checkbox
               id="unknownFunds"
               checked={isUnknownFunds}
-              onCheckedChange={(checked) =>
-                setIsUnknownFunds(checked as boolean)
-              }
+              onCheckedChange={(checked) => setIsUnknownFunds(checked as boolean)}
             />
             <Label htmlFor="unknownFunds">不明金として記帳</Label>
           </div>

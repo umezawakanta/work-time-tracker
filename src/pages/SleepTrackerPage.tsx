@@ -1,19 +1,19 @@
-import { useState } from 'react'
-import SleepTracker from '@/components/SleepTracker'
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Moon, Sun, Settings, Crown, Bell } from 'lucide-react'
+import { useState } from 'react';
+import SleepTracker from '@/components/SleepTracker';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Moon, Sun, Settings, Crown, Bell } from 'lucide-react';
 
 export default function SleepTrackerPage() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   // ダークモード切り替え
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
+    setIsDarkMode(!isDarkMode);
     // 実際のダークモード実装はここに追加
-  }
-  
+  };
+
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50'}`}>
       {/* ヘッダー */}
@@ -23,7 +23,7 @@ export default function SleepTrackerPage() {
             <Moon className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mr-2" />
             <h1 className="text-xl font-bold">Sleep Tracker Pro</h1>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -47,7 +47,7 @@ export default function SleepTrackerPage() {
           </div>
         </div>
       </header>
-      
+
       {/* メインコンテンツ */}
       <main className="container mx-auto px-4 py-8 mb-16">
         <div className="mb-6 text-center">
@@ -57,10 +57,10 @@ export default function SleepTrackerPage() {
             あなたの睡眠パターンを分析し、最適な睡眠サイクルを見つけましょう。
           </p>
         </div>
-        
+
         <SleepTracker />
       </main>
-      
+
       {/* フッター */}
       <footer className="bg-white dark:bg-gray-800 border-t py-8 mt-auto">
         <div className="container mx-auto px-4">
@@ -74,18 +74,30 @@ export default function SleepTrackerPage() {
                 ©2025 Sleep Tracker Pro. All rights reserved.
               </p>
             </div>
-            
+
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
                 利用規約
               </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
                 プライバシーポリシー
               </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
                 ヘルプ
               </a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+              >
                 お問い合わせ
               </a>
             </div>
@@ -93,5 +105,5 @@ export default function SleepTrackerPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

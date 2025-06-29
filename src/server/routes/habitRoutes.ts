@@ -1,11 +1,7 @@
 // src/routes/habitRoutes.ts
-import * as express from "express";
+import * as express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { 
-  getHabits,
-  updateHabit,
-  initializeHabits
-} from '../controllers/habitController.js';
+import { getHabits, updateHabit, initializeHabits } from '../controllers/habitController.js';
 
 const router = express.Router();
 

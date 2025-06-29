@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import React from 'react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface CompareOverlayProps {
   mediaList: string[];
@@ -34,7 +34,7 @@ const CompareOverlay: React.FC<CompareOverlayProps> = ({
         <p className="text-xs text-muted-foreground mb-3">
           {activeMedia}と比較するメディアを選択してください
         </p>
-        <RadioGroup value={selectedMedia || ""} onValueChange={onSelectMedia}>
+        <RadioGroup value={selectedMedia || ''} onValueChange={onSelectMedia}>
           {mediaList.map((media) => (
             <div key={media} className="flex items-center space-x-2 mb-2">
               <RadioGroupItem value={media} id={media} />
@@ -46,12 +46,7 @@ const CompareOverlay: React.FC<CompareOverlayProps> = ({
         </RadioGroup>
       </CardContent>
       <CardFooter className="pt-2">
-        <Button 
-          variant="default" 
-          size="sm" 
-          className="w-full"
-          disabled={!selectedMedia}
-        >
+        <Button variant="default" size="sm" className="w-full" disabled={!selectedMedia}>
           比較を実行
         </Button>
       </CardFooter>

@@ -1,7 +1,7 @@
 // src/components/todoAnalysis/components/AnalysisSummary.tsx
-import { FC } from "react";
-import { AnalysisSummary as AnalysisSummaryType } from "../types";
-import styles from "../TodoAnalysis.module.css";
+import { FC } from 'react';
+import { AnalysisSummary as AnalysisSummaryType } from '../types';
+import styles from '../TodoAnalysis.module.css';
 
 interface AnalysisSummaryProps {
   summary: AnalysisSummaryType;

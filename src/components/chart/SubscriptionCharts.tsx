@@ -1,6 +1,6 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -10,36 +10,19 @@ import {
   LinearScale,
   BarElement,
   Title,
-} from "chart.js";
-import { Pie, Bar } from "react-chartjs-2";
-import { SubscriptionService } from "@/types";
+} from 'chart.js';
+import { Pie, Bar } from 'react-chartjs-2';
+import { SubscriptionService } from '@/types';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title
-);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 interface SubscriptionChartsProps {
   subscriptions: SubscriptionService[];
 }
 
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884D8",
-  "#82CA9D",
-];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
-export const SubscriptionCharts: React.FC<SubscriptionChartsProps> = ({
-  subscriptions,
-}) => {
+export const SubscriptionCharts: React.FC<SubscriptionChartsProps> = ({ subscriptions }) => {
   const labels = subscriptions.map((sub) => sub.name);
   const amounts = subscriptions.map((sub) => sub.amount);
 
@@ -59,9 +42,9 @@ export const SubscriptionCharts: React.FC<SubscriptionChartsProps> = ({
     labels: labels,
     datasets: [
       {
-        label: "金額",
+        label: '金額',
         data: amounts,
-        backgroundColor: "#8884d8",
+        backgroundColor: '#8884d8',
       },
     ],
   };
@@ -71,11 +54,11 @@ export const SubscriptionCharts: React.FC<SubscriptionChartsProps> = ({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: 'top' as const,
       },
       title: {
         display: true,
-        text: "サブスクリプション金額",
+        text: 'サブスクリプション金額',
       },
     },
   };

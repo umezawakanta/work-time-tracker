@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 
 interface Goal {
   year: number;
@@ -12,7 +12,11 @@ interface Goal {
 
 const ReadingGoals: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [newGoal, setNewGoal] = useState<Goal>({ year: new Date().getFullYear(), target: 0, achieved: 0 });
+  const [newGoal, setNewGoal] = useState<Goal>({
+    year: new Date().getFullYear(),
+    target: 0,
+    achieved: 0,
+  });
 
   useEffect(() => {
     const savedGoals = localStorage.getItem('readingGoals');
@@ -82,4 +86,3 @@ const ReadingGoals: React.FC = () => {
 };
 
 export default ReadingGoals;
-

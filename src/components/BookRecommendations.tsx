@@ -1,6 +1,6 @@
-import React from "react";
-import { Book } from "../store/bookSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { Book } from '../store/bookSlice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface BookRecommendationsProps {
   books: Book[];
@@ -37,4 +37,3 @@ const BookRecommendations: React.FC<BookRecommendationsProps> = ({ books }) => {
 };
 
 export default BookRecommendations;
-

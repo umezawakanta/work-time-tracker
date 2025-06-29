@@ -1,35 +1,35 @@
-import * as express from "express";
-import { Request, Response, NextFunction } from "express";
-import { body, validationResult } from "express-validator";
-import { Candidate, ICandidate } from "../models/Candidate.js";
+import * as express from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { body, validationResult } from 'express-validator';
+import { Candidate, ICandidate } from '../models/Candidate.js';
 
 const router = express.Router();
 
 const validateCandidate = [
-  body("name").notEmpty().withMessage("名前は必須です"),
-  body("party").notEmpty().withMessage("政党は必須です"),
-  body("prefecture")
+  body('name').notEmpty().withMessage('名前は必須です'),
+  body('party').notEmpty().withMessage('政党は必須です'),
+  body('prefecture')
     .optional({ nullable: true })
     .isString()
-    .withMessage("都道府県は文字列である必要があります"),
-  body("district")
+    .withMessage('都道府県は文字列である必要があります'),
+  body('district')
     .optional({ nullable: true })
     .isInt({ min: 1 })
-    .withMessage("選挙区は1以上の整数である必要があります"),
-  body("proportionalBlock")
+    .withMessage('選挙区は1以上の整数である必要があります'),
+  body('proportionalBlock')
     .optional({ nullable: true })
     .isString()
-    .withMessage("比例代表ブロックは文字列である必要があります"),
+    .withMessage('比例代表ブロックは文字列である必要があります'),
   body().custom((value) => {
     if ((value.prefecture && value.district) || value.proportionalBlock) {
       return true;
     }
-    throw new Error("選挙区情報または比例代表ブロックのいずれかが必要です");
+    throw new Error('選挙区情報または比例代表ブロックのいずれかが必要です');
   }),
 ];
 
 router.post(
-  "/",
+  '/',
   validateCandidate,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
@@ -49,7 +49,7 @@ router.post(
 
       const savedCandidate = await candidateData.save();
       res.status(201).json({
-        message: "候補者が正常に登録されました",
+        message: '候補者が正常に登録されました',
         candidate: savedCandidate,
       });
     } catch (error) {
@@ -58,7 +58,7 @@ router.post(
   }
 );
 
-router.get("/", async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.get('/', async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const candidates = await Candidate.find().sort({ name: 1 });
     res.json(candidates);
@@ -68,7 +68,7 @@ router.get("/", async (_req: Request, res: Response, next: NextFunction): Promis
 });
 
 router.put(
-  "/:id",
+  '/:id',
   validateCandidate,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const errors = validationResult(req);
@@ -78,17 +78,15 @@ router.put(
     }
 
     try {
-      const updatedCandidate = await Candidate.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-      );
+      const updatedCandidate = await Candidate.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
       if (!updatedCandidate) {
-        res.status(404).json({ message: "指定された候補者が見つかりません" });
+        res.status(404).json({ message: '指定された候補者が見つかりません' });
         return;
       }
       res.json({
-        message: "候補者情報が正常に更新されました",
+        message: '候補者情報が正常に更新されました',
         candidate: updatedCandidate,
       });
     } catch (error) {
@@ -97,23 +95,20 @@ router.put(
   }
 );
 
-router.delete(
-  "/:id",
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id);
-      if (!deletedCandidate) {
-        res.status(404).json({ message: "指定された候補者が見つかりません" });
-        return;
-      }
-      res.json({
-        message: "候補者が正常に削除されました",
-        candidate: deletedCandidate,
-      });
-    } catch (error) {
-      next(error);
+router.delete('/:id', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const deletedCandidate = await Candidate.findByIdAndDelete(req.params.id);
+    if (!deletedCandidate) {
+      res.status(404).json({ message: '指定された候補者が見つかりません' });
+      return;
     }
+    res.json({
+      message: '候補者が正常に削除されました',
+      candidate: deletedCandidate,
+    });
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 export default router;

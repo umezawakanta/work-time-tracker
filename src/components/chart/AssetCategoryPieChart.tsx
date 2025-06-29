@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   PieChart,
   Pie,
@@ -9,10 +9,10 @@ import {
   Tooltip,
   Legend,
   LegendProps as RechartsLegendProps,
-} from "recharts";
+} from 'recharts';
 
 // styles.cssは実際のプロジェクト構造によって正しいパスに調整してください
-import "./styles.css";
+import './styles.css';
 
 interface AssetCategoryData {
   name: string;
@@ -26,11 +26,11 @@ interface AssetCategoryPieChartProps {
 
 // 円グラフのカラーパレット
 const COLORS = [
-  "#4299E1", // 現金・預金用の青
-  "#38B2AC", // 投資用のティール
-  "#ED8936", // 不動産用のオレンジ
-  "#9F7AEA", // 年金・保険用の紫
-  "#718096", // その他用のグレー
+  '#4299E1', // 現金・預金用の青
+  '#38B2AC', // 投資用のティール
+  '#ED8936', // 不動産用のオレンジ
+  '#9F7AEA', // 年金・保険用の紫
+  '#718096', // その他用のグレー
 ];
 
 // カスタムツールチップの型定義
@@ -83,9 +83,7 @@ const CustomLegend: React.FC<CustomLegendProps> = (props) => {
   );
 };
 
-export const AssetCategoryPieChart: React.FC<AssetCategoryPieChartProps> = ({
-  data,
-}) => {
+export const AssetCategoryPieChart: React.FC<AssetCategoryPieChartProps> = ({ data }) => {
   // データが空の場合は代替表示
   if (!data || data.length === 0) {
     return (

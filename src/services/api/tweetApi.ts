@@ -5,7 +5,7 @@ export const createTweet = async (content: string, image: string | null) => {
     const formData = new FormData();
     formData.append('content', content);
     if (image) {
-      const blob = await fetch(image).then(r => r.blob());
+      const blob = await fetch(image).then((r) => r.blob());
       formData.append('image', blob, 'image.png');
     }
     const response = await api.post('/tweets', formData, {

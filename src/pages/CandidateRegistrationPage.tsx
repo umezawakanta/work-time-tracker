@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { AppDispatch, RootState } from "../store";
-import { addCandidate, fetchCandidates } from "../store/candidateSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AppDispatch, RootState } from '../store';
+import { addCandidate, fetchCandidates } from '../store/candidateSlice';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -19,11 +19,11 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/card';
+import { useToast } from '@/components/ui/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -31,8 +31,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import {
   AlertCircle,
   CheckCircle,
@@ -42,78 +42,73 @@ import {
   Bookmark,
   Users,
   Database,
-} from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Candidate } from "@/types";
+} from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Candidate } from '@/types';
 
 const parties = [
-  "自民党",
-  "立憲民主党",
-  "日本維新の会",
-  "公明党",
-  "共産党",
-  "国民民主党",
-  "社民党",
-  "れいわ新選組",
-  "参政党",
-  "無所属",
+  '自民党',
+  '立憲民主党',
+  '日本維新の会',
+  '公明党',
+  '共産党',
+  '国民民主党',
+  '社民党',
+  'れいわ新選組',
+  '参政党',
+  '無所属',
 ];
 
 const prefectures = [
-  "北海道",
-  "青森県",
-  "岩手県",
-  "宮城県",
-  "秋田県",
-  "山形県",
-  "福島県",
-  "茨城県",
-  "栃木県",
-  "群馬県",
-  "埼玉県",
-  "千葉県",
-  "東京都",
-  "神奈川県",
-  "新潟県",
-  "富山県",
-  "石川県",
-  "福井県",
-  "山梨県",
-  "長野県",
-  "岐阜県",
-  "静岡県",
-  "愛知県",
-  "三重県",
-  "滋賀県",
-  "京都府",
-  "大阪府",
-  "兵庫県",
-  "奈良県",
-  "和歌山県",
-  "鳥取県",
-  "島根県",
-  "岡山県",
-  "広島県",
-  "山口県",
-  "徳島県",
-  "香川県",
-  "愛媛県",
-  "高知県",
-  "福岡県",
-  "佐賀県",
-  "長崎県",
-  "熊本県",
-  "大分県",
-  "宮崎県",
-  "鹿児島県",
-  "沖縄県",
+  '北海道',
+  '青森県',
+  '岩手県',
+  '宮城県',
+  '秋田県',
+  '山形県',
+  '福島県',
+  '茨城県',
+  '栃木県',
+  '群馬県',
+  '埼玉県',
+  '千葉県',
+  '東京都',
+  '神奈川県',
+  '新潟県',
+  '富山県',
+  '石川県',
+  '福井県',
+  '山梨県',
+  '長野県',
+  '岐阜県',
+  '静岡県',
+  '愛知県',
+  '三重県',
+  '滋賀県',
+  '京都府',
+  '大阪府',
+  '兵庫県',
+  '奈良県',
+  '和歌山県',
+  '鳥取県',
+  '島根県',
+  '岡山県',
+  '広島県',
+  '山口県',
+  '徳島県',
+  '香川県',
+  '愛媛県',
+  '高知県',
+  '福岡県',
+  '佐賀県',
+  '長崎県',
+  '熊本県',
+  '大分県',
+  '宮崎県',
+  '鹿児島県',
+  '沖縄県',
 ];
 
 // 各都道府県の選挙区数
@@ -168,17 +163,17 @@ const districtsByPrefecture = {
 };
 
 const proportionalBlocks = [
-  "北海道",
-  "東北",
-  "北関東",
-  "南関東",
-  "東京",
-  "北陸信越",
-  "東海",
-  "近畿",
-  "中国",
-  "四国",
-  "九州",
+  '北海道',
+  '東北',
+  '北関東',
+  '南関東',
+  '東京',
+  '北陸信越',
+  '東海',
+  '近畿',
+  '中国',
+  '四国',
+  '九州',
 ];
 
 // 比例ブロックごとの定数
@@ -198,100 +193,94 @@ const proportionalBlockSeats = {
 
 // 都道府県コードマッピング（選挙ウォッチURLでの使用）
 const prefectureCodeMap = {
-  北海道: "01",
-  青森県: "02",
-  岩手県: "03",
-  宮城県: "04",
-  秋田県: "05",
-  山形県: "06",
-  福島県: "07",
-  茨城県: "08",
-  栃木県: "09",
-  群馬県: "10",
-  埼玉県: "11",
-  千葉県: "12",
-  東京都: "13",
-  神奈川県: "14",
-  新潟県: "15",
-  富山県: "16",
-  石川県: "17",
-  福井県: "18",
-  山梨県: "19",
-  長野県: "20",
-  岐阜県: "21",
-  静岡県: "22",
-  愛知県: "23",
-  三重県: "24",
-  滋賀県: "25",
-  京都府: "26",
-  大阪府: "27",
-  兵庫県: "28",
-  奈良県: "29",
-  和歌山県: "30",
-  鳥取県: "31",
-  島根県: "32",
-  岡山県: "33",
-  広島県: "34",
-  山口県: "35",
-  徳島県: "36",
-  香川県: "37",
-  愛媛県: "38",
-  高知県: "39",
-  福岡県: "40",
-  佐賀県: "41",
-  長崎県: "42",
-  熊本県: "43",
-  大分県: "44",
-  宮崎県: "45",
-  鹿児島県: "46",
-  沖縄県: "47",
+  北海道: '01',
+  青森県: '02',
+  岩手県: '03',
+  宮城県: '04',
+  秋田県: '05',
+  山形県: '06',
+  福島県: '07',
+  茨城県: '08',
+  栃木県: '09',
+  群馬県: '10',
+  埼玉県: '11',
+  千葉県: '12',
+  東京都: '13',
+  神奈川県: '14',
+  新潟県: '15',
+  富山県: '16',
+  石川県: '17',
+  福井県: '18',
+  山梨県: '19',
+  長野県: '20',
+  岐阜県: '21',
+  静岡県: '22',
+  愛知県: '23',
+  三重県: '24',
+  滋賀県: '25',
+  京都府: '26',
+  大阪府: '27',
+  兵庫県: '28',
+  奈良県: '29',
+  和歌山県: '30',
+  鳥取県: '31',
+  島根県: '32',
+  岡山県: '33',
+  広島県: '34',
+  山口県: '35',
+  徳島県: '36',
+  香川県: '37',
+  愛媛県: '38',
+  高知県: '39',
+  福岡県: '40',
+  佐賀県: '41',
+  長崎県: '42',
+  熊本県: '43',
+  大分県: '44',
+  宮崎県: '45',
+  鹿児島県: '46',
+  沖縄県: '47',
 };
 
 // 比例ブロックコードマッピング
 const proportionalBlockCodeMap = {
-  北海道: "01",
-  東北: "02",
-  北関東: "03",
-  南関東: "04",
-  東京: "05",
-  北陸信越: "06",
-  東海: "07",
-  近畿: "08",
-  中国: "09",
-  四国: "10",
-  九州: "11",
+  北海道: '01',
+  東北: '02',
+  北関東: '03',
+  南関東: '04',
+  東京: '05',
+  北陸信越: '06',
+  東海: '07',
+  近畿: '08',
+  中国: '09',
+  四国: '10',
+  九州: '11',
 };
 
 export default function CandidateRegistrationPage({ isPremium = false }) {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const candidates = useSelector(
-    (state: RootState) => state.candidate.candidates || []
-  );
-  const candidatesStatus = useSelector(
-    (state: RootState) => state.candidate.status
-  );
+  const candidates = useSelector((state: RootState) => state.candidate.candidates || []);
+  const candidatesStatus = useSelector((state: RootState) => state.candidate.status);
 
-  const [newCandidate, setNewCandidate] = useState<Omit<Candidate, "_id">>({
-    name: "",
-    party: "",
-    prefecture: "",
+  const [newCandidate, setNewCandidate] = useState<Omit<Candidate, '_id'>>({
+    name: '',
+    party: '',
+    prefecture: '',
     district: null,
-    proportionalBlock: "", // null の代わりに空文字列を使用
+    proportionalBlock: '', // null の代わりに空文字列を使用
   });
 
   const [isProportionalOnly, setIsProportionalOnly] = useState(false);
-  const [selectedTabPrefecture, setSelectedTabPrefecture] =
-    useState<string>("東京都");
-  const [selectedProportionalBlock, setSelectedProportionalBlock] =
-    useState<string>("東京");
-  const [activeTab, setActiveTab] = useState<string>("registration");
+  const [selectedTabPrefecture, setSelectedTabPrefecture] = useState<string>('東京都');
+  const [selectedProportionalBlock, setSelectedProportionalBlock] = useState<string>('東京');
+  const [activeTab, setActiveTab] = useState<string>('registration');
   const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
   const [dataSourceExpanded, setDataSourceExpanded] = useState(true);
 
   useEffect(() => {
-    if (candidatesStatus === "idle") {
+    if (candidatesStatus === 'idle') {
       dispatch(fetchCandidates());
     }
   }, [candidatesStatus, dispatch]);
@@ -300,8 +289,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     const { name, value } = event.target;
     setNewCandidate((prev) => ({
       ...prev,
-      [name]:
-        name === "district" ? (value ? parseInt(value, 10) : null) : value,
+      [name]: name === 'district' ? (value ? parseInt(value, 10) : null) : value,
     }));
   };
 
@@ -309,13 +297,13 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     setNewCandidate((prev) => ({ ...prev, [name]: value }));
 
     // プレフィックスが変更された場合、選挙区をリセット
-    if (name === "prefecture") {
+    if (name === 'prefecture') {
       setNewCandidate((prev) => ({ ...prev, district: null }));
       setSelectedTabPrefecture(value);
     }
 
     // 比例ブロックが変更された場合
-    if (name === "proportionalBlock") {
+    if (name === 'proportionalBlock') {
       setSelectedProportionalBlock(value);
     }
   };
@@ -323,9 +311,9 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
   const handleProportionalOnlyChange = (checked: boolean) => {
     setIsProportionalOnly(checked);
     if (checked) {
-      setNewCandidate((prev) => ({ ...prev, district: null, prefecture: "" }));
+      setNewCandidate((prev) => ({ ...prev, district: null, prefecture: '' }));
     } else {
-      setNewCandidate((prev) => ({ ...prev, proportionalBlock: "" })); // null の代わりに空文字列
+      setNewCandidate((prev) => ({ ...prev, proportionalBlock: '' })); // null の代わりに空文字列
     }
   };
 
@@ -333,33 +321,30 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     event.preventDefault();
     try {
       await dispatch(addCandidate(newCandidate)).unwrap();
-      toast({ title: "新しい候補者を登録しました" });
+      toast({ title: '新しい候補者を登録しました' });
 
       // フォームをリセット
       setNewCandidate({
-        name: "",
-        party: "",
-        prefecture: isProportionalOnly ? "" : newCandidate.prefecture,
+        name: '',
+        party: '',
+        prefecture: isProportionalOnly ? '' : newCandidate.prefecture,
         district: null,
-        proportionalBlock: isProportionalOnly
-          ? newCandidate.proportionalBlock
-          : "",
+        proportionalBlock: isProportionalOnly ? newCandidate.proportionalBlock : '',
       });
 
       // 候補者リストを更新
       dispatch(fetchCandidates());
     } catch (error) {
       toast({
-        title: "登録に失敗しました",
-        description:
-          error instanceof Error ? error.message : "不明なエラーが発生しました",
-        variant: "destructive",
+        title: '登録に失敗しました',
+        description: error instanceof Error ? error.message : '不明なエラーが発生しました',
+        variant: 'destructive',
       });
     }
   };
 
   const handleCancel = () => {
-    navigate("/election-candidates");
+    navigate('/election-candidates');
   };
 
   const handleSelectDistrict = (prefecture: string, district: number) => {
@@ -367,22 +352,22 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
       ...newCandidate,
       prefecture,
       district,
-      proportionalBlock: "", // null の代わりに空文字列
+      proportionalBlock: '', // null の代わりに空文字列
     });
     setIsProportionalOnly(false);
     setSelectedDistrict(district);
-    setActiveTab("registration");
+    setActiveTab('registration');
   };
 
   const handleSelectProportionalBlock = (block: string) => {
     setNewCandidate({
       ...newCandidate,
-      prefecture: "",
+      prefecture: '',
       district: null,
       proportionalBlock: block,
     });
     setIsProportionalOnly(true);
-    setActiveTab("registration");
+    setActiveTab('registration');
   };
 
   // 選挙ウォッチURLの生成
@@ -393,38 +378,24 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
           newCandidate.proportionalBlock as keyof typeof proportionalBlockCodeMap
         ];
       return `https://senkyo.watch/shu/hirei/${blockCode}`;
-    } else if (
-      !isProportionalOnly &&
-      newCandidate.prefecture &&
-      newCandidate.district
-    ) {
-      const prefCode =
-        prefectureCodeMap[
-          newCandidate.prefecture as keyof typeof prefectureCodeMap
-        ];
+    } else if (!isProportionalOnly && newCandidate.prefecture && newCandidate.district) {
+      const prefCode = prefectureCodeMap[newCandidate.prefecture as keyof typeof prefectureCodeMap];
       return `https://senkyo.watch/shu/senkyoku/${prefCode}/${newCandidate.district
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, '0')}`;
     }
-    return "https://senkyo.watch/shu/senkyoku";
+    return 'https://senkyo.watch/shu/senkyoku';
   };
 
   // 選挙区選択時の選挙ウォッチURL
-  const getDistrictElectionWatchUrl = (
-    prefecture: string,
-    district: number
-  ) => {
-    const prefCode =
-      prefectureCodeMap[prefecture as keyof typeof prefectureCodeMap];
-    return `https://senkyo.watch/shu/senkyoku/${prefCode}/${district
-      .toString()
-      .padStart(2, "0")}`;
+  const getDistrictElectionWatchUrl = (prefecture: string, district: number) => {
+    const prefCode = prefectureCodeMap[prefecture as keyof typeof prefectureCodeMap];
+    return `https://senkyo.watch/shu/senkyoku/${prefCode}/${district.toString().padStart(2, '0')}`;
   };
 
   // 比例ブロック選択時の選挙ウォッチURL
   const getProportionalElectionWatchUrl = (block: string) => {
-    const blockCode =
-      proportionalBlockCodeMap[block as keyof typeof proportionalBlockCodeMap];
+    const blockCode = proportionalBlockCodeMap[block as keyof typeof proportionalBlockCodeMap];
     return `https://senkyo.watch/shu/hirei/${blockCode}`;
   };
 
@@ -435,9 +406,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
     prefectures.forEach((prefecture) => {
       status[prefecture] = {};
       const maxDistricts =
-        districtsByPrefecture[
-          prefecture as keyof typeof districtsByPrefecture
-        ] || 0;
+        districtsByPrefecture[prefecture as keyof typeof districtsByPrefecture] || 0;
 
       for (let i = 1; i <= maxDistricts; i++) {
         status[prefecture][i] = [];
@@ -480,14 +449,10 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
   const getUnregisteredDistricts = (prefecture: string) => {
     const districts: number[] = [];
     const maxDistricts =
-      districtsByPrefecture[prefecture as keyof typeof districtsByPrefecture] ||
-      0;
+      districtsByPrefecture[prefecture as keyof typeof districtsByPrefecture] || 0;
 
     for (let i = 1; i <= maxDistricts; i++) {
-      if (
-        !districtStatus[prefecture][i] ||
-        districtStatus[prefecture][i].length === 0
-      ) {
+      if (!districtStatus[prefecture][i] || districtStatus[prefecture][i].length === 0) {
         districts.push(i);
       }
     }
@@ -521,9 +486,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4 text-center">
-        候補者登録システム
-      </h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">候補者登録システム</h1>
 
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="bg-blue-50 p-4 rounded-lg flex items-center space-x-4 w-full md:w-auto">
@@ -533,8 +496,8 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
           <div>
             <p className="text-sm font-medium text-blue-900">登録状況</p>
             <p className="text-xs text-blue-700">
-              選挙区: {totalDistricts - totalUnregisteredDistricts}/
-              {totalDistricts} 区 ({registrationProgress}%)
+              選挙区: {totalDistricts - totalUnregisteredDistricts}/{totalDistricts} 区 (
+              {registrationProgress}%)
             </p>
           </div>
         </div>
@@ -550,11 +513,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
         )}
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-full mb-8"
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-8">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="registration">候補者登録</TabsTrigger>
           <TabsTrigger value="status">選挙区登録状況</TabsTrigger>
@@ -568,8 +527,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                   <CardTitle>新規候補者登録</CardTitle>
                   {selectedDistrict && !isProportionalOnly && (
                     <CardDescription>
-                      現在選択: {newCandidate.prefecture} 第
-                      {newCandidate.district}区
+                      現在選択: {newCandidate.prefecture} 第{newCandidate.district}区
                     </CardDescription>
                   )}
                   {isProportionalOnly && newCandidate.proportionalBlock && (
@@ -608,7 +566,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                       </label>
                       <Select
                         value={newCandidate.party}
-                        onValueChange={handleSelectChange("party")}
+                        onValueChange={handleSelectChange('party')}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="政党を選択してください" />
@@ -641,10 +599,8 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                           比例代表ブロック
                         </label>
                         <Select
-                          value={newCandidate.proportionalBlock || ""}
-                          onValueChange={handleSelectChange(
-                            "proportionalBlock"
-                          )}
+                          value={newCandidate.proportionalBlock || ''}
+                          onValueChange={handleSelectChange('proportionalBlock')}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="比例代表ブロックを選択してください" />
@@ -668,8 +624,8 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                             都道府県
                           </label>
                           <Select
-                            value={newCandidate.prefecture || ""}
-                            onValueChange={handleSelectChange("prefecture")}
+                            value={newCandidate.prefecture || ''}
+                            onValueChange={handleSelectChange('prefecture')}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="都道府県を選択してください" />
@@ -679,10 +635,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                 const unregisteredCount =
                                   getUnregisteredDistricts(prefecture).length;
                                 return (
-                                  <SelectItem
-                                    key={prefecture}
-                                    value={prefecture}
-                                  >
+                                  <SelectItem key={prefecture} value={prefecture}>
                                     {prefecture}
                                     {unregisteredCount > 0 && (
                                       <span className="ml-2 text-red-500 text-xs">
@@ -704,7 +657,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                             選挙区
                           </label>
                           <Select
-                            value={newCandidate.district?.toString() || ""}
+                            value={newCandidate.district?.toString() || ''}
                             onValueChange={(value) => {
                               setNewCandidate((prev) => ({
                                 ...prev,
@@ -728,22 +681,13 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                   (_, i) => i + 1
                                 ).map((district) => {
                                   const isUnregistered =
-                                    !districtStatus[newCandidate.prefecture][
-                                      district
-                                    ] ||
-                                    districtStatus[newCandidate.prefecture][
-                                      district
-                                    ].length === 0;
+                                    !districtStatus[newCandidate.prefecture][district] ||
+                                    districtStatus[newCandidate.prefecture][district].length === 0;
                                   return (
-                                    <SelectItem
-                                      key={district}
-                                      value={district.toString()}
-                                    >
+                                    <SelectItem key={district} value={district.toString()}>
                                       第{district}区
                                       {isUnregistered && (
-                                        <span className="ml-2 text-red-500 text-xs">
-                                          (未登録)
-                                        </span>
+                                        <span className="ml-2 text-red-500 text-xs">(未登録)</span>
                                       )}
                                     </SelectItem>
                                   );
@@ -783,20 +727,16 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                       size="sm"
                       onClick={() => setDataSourceExpanded(!dataSourceExpanded)}
                     >
-                      {dataSourceExpanded ? "縮小" : "拡大"}
+                      {dataSourceExpanded ? '縮小' : '拡大'}
                     </Button>
                   </CardTitle>
-                  <CardDescription>
-                    選挙区情報を確認する外部リソース
-                  </CardDescription>
+                  <CardDescription>選挙区情報を確認する外部リソース</CardDescription>
                 </CardHeader>
                 {dataSourceExpanded && (
                   <CardContent className="pb-3">
                     <Alert className="mb-4 bg-orange-50 border-orange-200">
                       <Info className="h-4 w-4 text-orange-600" />
-                      <AlertTitle className="text-orange-800">
-                        候補者情報の参照元
-                      </AlertTitle>
+                      <AlertTitle className="text-orange-800">候補者情報の参照元</AlertTitle>
                       <AlertDescription className="text-orange-700 text-sm">
                         選挙ウォッチサイトでは各選挙区の最新候補者情報を確認できます。
                       </AlertDescription>
@@ -815,13 +755,11 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                             className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
                           >
                             <span className="mr-1 font-medium">
-                              {isProportionalOnly &&
-                              newCandidate.proportionalBlock
+                              {isProportionalOnly && newCandidate.proportionalBlock
                                 ? `比例代表 ${newCandidate.proportionalBlock}ブロック`
-                                : newCandidate.prefecture &&
-                                  newCandidate.district
-                                ? `${newCandidate.prefecture} 第${newCandidate.district}区`
-                                : "未選択"}
+                                : newCandidate.prefecture && newCandidate.district
+                                  ? `${newCandidate.prefecture} 第${newCandidate.district}区`
+                                  : '未選択'}
                             </span>
                             <ExternalLink className="h-3 w-3" />
                           </a>
@@ -871,41 +809,28 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                           <div className="max-h-32 overflow-y-auto text-sm">
                             <ul className="space-y-1">
                               {prefectures.map((prefecture) => {
-                                const unregisteredDistricts =
-                                  getUnregisteredDistricts(prefecture);
-                                if (unregisteredDistricts.length === 0)
-                                  return null;
+                                const unregisteredDistricts = getUnregisteredDistricts(prefecture);
+                                if (unregisteredDistricts.length === 0) return null;
 
                                 return (
                                   <li key={prefecture} className="text-red-700">
                                     <strong>{prefecture}</strong>:
-                                    {unregisteredDistricts.map(
-                                      (district, index) => (
-                                        <a
-                                          key={`${prefecture}-${district}`}
-                                          href={getDistrictElectionWatchUrl(
-                                            prefecture,
-                                            district
-                                          )}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="ml-1 text-blue-600 hover:text-blue-800 underline"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleSelectDistrict(
-                                              prefecture,
-                                              district
-                                            );
-                                          }}
-                                        >
-                                          {district}区
-                                          {index <
-                                          unregisteredDistricts.length - 1
-                                            ? ", "
-                                            : ""}
-                                        </a>
-                                      )
-                                    )}
+                                    {unregisteredDistricts.map((district, index) => (
+                                      <a
+                                        key={`${prefecture}-${district}`}
+                                        href={getDistrictElectionWatchUrl(prefecture, district)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="ml-1 text-blue-600 hover:text-blue-800 underline"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleSelectDistrict(prefecture, district);
+                                        }}
+                                      >
+                                        {district}区
+                                        {index < unregisteredDistricts.length - 1 ? ', ' : ''}
+                                      </a>
+                                    ))}
                                   </li>
                                 );
                               })}
@@ -916,17 +841,14 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                     </div>
                   </CardContent>
                 )}
-                <CardFooter className={dataSourceExpanded ? "pt-0" : ""}>
+                <CardFooter className={dataSourceExpanded ? 'pt-0' : ''}>
                   <a
                     href={getElectionWatchUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full"
                   >
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center"
-                    >
+                    <Button variant="outline" className="w-full flex items-center justify-center">
                       <Bookmark className="h-4 w-4 mr-2" />
                       選挙ウォッチで確認
                       <ExternalLink className="h-3 w-3 ml-2" />
@@ -944,27 +866,21 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
             <Card>
               <CardHeader>
                 <CardTitle>未登録選挙区一覧</CardTitle>
-                <CardDescription>
-                  候補者が登録されていない選挙区
-                </CardDescription>
+                <CardDescription>候補者が登録されていない選挙区</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs
-                  defaultValue={selectedTabPrefecture}
-                  onValueChange={setSelectedTabPrefecture}
-                >
+                <Tabs defaultValue={selectedTabPrefecture} onValueChange={setSelectedTabPrefecture}>
                   <ScrollArea className="h-12 whitespace-nowrap">
                     <TabsList className="w-full inline-flex">
                       {prefectures.map((prefecture) => {
-                        const unregisteredCount =
-                          getUnregisteredDistricts(prefecture).length;
+                        const unregisteredCount = getUnregisteredDistricts(prefecture).length;
                         const hasUnregistered = unregisteredCount > 0;
 
                         return (
                           <TabsTrigger
                             key={prefecture}
                             value={prefecture}
-                            className={hasUnregistered ? "relative" : ""}
+                            className={hasUnregistered ? 'relative' : ''}
                           >
                             {prefecture}
                             {hasUnregistered && (
@@ -986,9 +902,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                             <TableRow>
                               <TableHead>選挙区</TableHead>
                               <TableHead>状態</TableHead>
-                              <TableHead className="text-right">
-                                アクション
-                              </TableHead>
+                              <TableHead className="text-right">アクション</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -1001,8 +915,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                               },
                               (_, i) => i + 1
                             ).map((district) => {
-                              const candidates =
-                                districtStatus[prefecture][district] || [];
+                              const candidates = districtStatus[prefecture][district] || [];
                               const isRegistered = candidates.length > 0;
 
                               return (
@@ -1012,9 +925,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                     {isRegistered ? (
                                       <div className="flex items-center">
                                         <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                                        <span>
-                                          {candidates.length}名登録済み
-                                        </span>
+                                        <span>{candidates.length}名登録済み</span>
                                       </div>
                                     ) : (
                                       <div className="flex items-center">
@@ -1028,12 +939,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() =>
-                                          handleSelectDistrict(
-                                            prefecture,
-                                            district
-                                          )
-                                        }
+                                        onClick={() => handleSelectDistrict(prefecture, district)}
                                       >
                                         選択
                                       </Button>
@@ -1096,9 +1002,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                   {proportionalBlocks.map((block) => {
                     const candidates = proportionalStatus[block] || [];
                     const totalSeats =
-                      proportionalBlockSeats[
-                        block as keyof typeof proportionalBlockSeats
-                      ] || 0;
+                      proportionalBlockSeats[block as keyof typeof proportionalBlockSeats] || 0;
 
                     return (
                       <TabsContent key={block} value={block}>
@@ -1106,16 +1010,12 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                           <div className="flex justify-between items-center">
                             <div>
                               <p className="font-medium">{block}ブロック</p>
-                              <p className="text-sm text-gray-500">
-                                定数: {totalSeats}名
-                              </p>
+                              <p className="text-sm text-gray-500">定数: {totalSeats}名</p>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Button
                                 variant="outline"
-                                onClick={() =>
-                                  handleSelectProportionalBlock(block)
-                                }
+                                onClick={() => handleSelectProportionalBlock(block)}
                               >
                                 このブロックで登録
                               </Button>
@@ -1123,9 +1023,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <a
-                                      href={getProportionalElectionWatchUrl(
-                                        block
-                                      )}
+                                      href={getProportionalElectionWatchUrl(block)}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
@@ -1170,9 +1068,7 @@ export default function CandidateRegistrationPage({ isPremium = false }) {
                           </div>
                         ) : (
                           <div className="text-center py-8 text-gray-500">
-                            <p>
-                              このブロックにはまだ候補者が登録されていません
-                            </p>
+                            <p>このブロックにはまだ候補者が登録されていません</p>
                           </div>
                         )}
                       </TabsContent>

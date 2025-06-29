@@ -1,16 +1,16 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { InfoIcon, Edit2Icon } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Candidate } from "@/types";
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { InfoIcon, Edit2Icon } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Candidate } from '@/types';
 
 // 型定義を修正して必要なプロパティをすべて含める
 interface DistrictCandidatesListProps {
@@ -25,30 +25,30 @@ interface DistrictCandidatesListProps {
 }
 
 const partyColors: { [key: string]: string } = {
-  自民党: "bg-red-500",
-  立憲民主党: "bg-blue-500",
-  日本維新の会: "bg-green-500",
-  公明党: "bg-yellow-500",
-  共産党: "bg-pink-500",
-  国民民主党: "bg-cyan-500",
-  社民党: "bg-orange-500",
-  れいわ新選組: "bg-teal-500",
-  参政党: "bg-purple-500",
-  無所属: "bg-gray-500",
+  自民党: 'bg-red-500',
+  立憲民主党: 'bg-blue-500',
+  日本維新の会: 'bg-green-500',
+  公明党: 'bg-yellow-500',
+  共産党: 'bg-pink-500',
+  国民民主党: 'bg-cyan-500',
+  社民党: 'bg-orange-500',
+  れいわ新選組: 'bg-teal-500',
+  参政党: 'bg-purple-500',
+  無所属: 'bg-gray-500',
 };
 
 const proportionalBlocks = [
-  "北海道",
-  "東北",
-  "北関東",
-  "南関東",
-  "東京",
-  "北陸信越",
-  "東海",
-  "近畿",
-  "中国",
-  "四国",
-  "九州",
+  '北海道',
+  '東北',
+  '北関東',
+  '南関東',
+  '東京',
+  '北陸信越',
+  '東海',
+  '近畿',
+  '中国',
+  '四国',
+  '九州',
 ];
 
 export default function DistrictCandidatesList({
@@ -61,9 +61,7 @@ export default function DistrictCandidatesList({
   onViewCandidate,
   isPremium,
 }: DistrictCandidatesListProps) {
-  const [selectedProportionalBlock, setSelectedProportionalBlock] = useState(
-    proportionalBlocks[0]
-  );
+  const [selectedProportionalBlock, setSelectedProportionalBlock] = useState(proportionalBlocks[0]);
 
   const prefectures = useMemo(() => {
     // 明示的にフィルタリング処理を行い、null/undefinedを除外し、string型の配列を確保
@@ -75,13 +73,11 @@ export default function DistrictCandidatesList({
 
   const districts = useMemo(() => {
     if (!selectedPrefecture) return [];
-    
+
     const uniqueDistricts = Array.from(
       new Set(
         candidates
-          .filter(
-            (c) => c.prefecture === selectedPrefecture && c.district != null
-          )
+          .filter((c) => c.prefecture === selectedPrefecture && c.district != null)
           .map((c) => c.district)
       )
     ).filter((district): district is number => district != null);
@@ -93,10 +89,7 @@ export default function DistrictCandidatesList({
   };
 
   const proportionalCandidates = useMemo(
-    () =>
-      candidates.filter(
-        (c) => c.proportionalBlock === selectedProportionalBlock
-      ),
+    () => candidates.filter((c) => c.proportionalBlock === selectedProportionalBlock),
     [candidates, selectedProportionalBlock]
   );
 
@@ -110,30 +103,19 @@ export default function DistrictCandidatesList({
           }`}
         >
           <div
-            className={`w-6 h-6 rounded-full ${
-              partyColors[candidate.party] || "bg-gray-500"
-            }`}
+            className={`w-6 h-6 rounded-full ${partyColors[candidate.party] || 'bg-gray-500'}`}
           />
           <div className="flex-grow">
             <div className="font-medium">{candidate.name}</div>
             <div className="text-sm text-gray-500">{candidate.party}</div>
           </div>
           {isPremium ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEditCandidate(candidate)}
-            >
+            <Button variant="outline" size="sm" onClick={() => onEditCandidate(candidate)}>
               <Edit2Icon className="w-4 h-4 mr-2" />
               編集
             </Button>
           ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              disabled
-              title="プレミアム会員限定機能"
-            >
+            <Button variant="outline" size="sm" disabled title="プレミアム会員限定機能">
               <Edit2Icon className="w-4 h-4 mr-2" />
               編集
             </Button>
@@ -154,9 +136,7 @@ export default function DistrictCandidatesList({
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
-          選挙ウォッチ 次期衆院選
-        </CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">選挙ウォッチ 次期衆院選</CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="district" className="w-full">
@@ -167,7 +147,7 @@ export default function DistrictCandidatesList({
           <TabsContent value="district">
             <div className="flex justify-center items-center space-x-2 mt-4 mb-6">
               <Select
-                value={selectedPrefecture || ""}
+                value={selectedPrefecture || ''}
                 onValueChange={(value) => onPrefectureChange(value || null)}
               >
                 <SelectTrigger className="w-[200px]">
@@ -184,26 +164,24 @@ export default function DistrictCandidatesList({
             </div>
             {districts.map((district) => {
               const districtCandidates = candidates.filter(
-                (c) =>
-                  c.prefecture === selectedPrefecture && c.district === district
+                (c) => c.prefecture === selectedPrefecture && c.district === district
               );
               if (districtCandidates.length === 0) return null;
-              
+
               const isSelected = selectedDistrict === district.toString();
 
               return (
-                <div 
-                  key={district} 
+                <div
+                  key={district}
                   className={`mb-8 ${isSelected ? 'bg-blue-50 p-4 rounded-lg' : ''}`}
                 >
-                  <div 
+                  <div
                     className={`text-xl font-semibold mb-4 hover:text-blue-600 cursor-pointer ${
                       isSelected ? 'text-blue-600' : ''
                     }`}
                     onClick={() => handleDistrictChange(district)}
                   >
-                    {selectedPrefecture} 第{district}区
-                    {isSelected && " (選択中)"}
+                    {selectedPrefecture} 第{district}区{isSelected && ' (選択中)'}
                   </div>
                   {renderCandidateList(districtCandidates)}
                 </div>

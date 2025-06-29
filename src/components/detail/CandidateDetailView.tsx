@@ -1,15 +1,15 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, Globe, MapPin, Lock, Users } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import SupportRateChart from "@/components/chart/SupportRateChart";
-import CandidateTimeline from "@/components/timeline/CandidateTimeline";
-import { Candidate } from "@/types";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Calendar, Globe, MapPin, Lock, Users } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import SupportRateChart from '@/components/chart/SupportRateChart';
+import CandidateTimeline from '@/components/timeline/CandidateTimeline';
+import { Candidate } from '@/types';
 
 interface CandidateDetailViewProps {
   candidate: Candidate;
@@ -32,28 +32,28 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
   // ステータスバッジの色を決定
   const getStatusBadgeVariant = (status?: string) => {
     switch (status) {
-      case "confirmed":
-        return "default";
-      case "unofficial":
-        return "secondary";
-      case "rumored":
-        return "secondary";
+      case 'confirmed':
+        return 'default';
+      case 'unofficial':
+        return 'secondary';
+      case 'rumored':
+        return 'secondary';
       default:
-        return "outline";
+        return 'outline';
     }
   };
 
   // ステータスの日本語表示
   const getStatusText = (status?: string) => {
     switch (status) {
-      case "confirmed":
-        return "確定";
-      case "unofficial":
-        return "非公式";
-      case "rumored":
-        return "噂";
+      case 'confirmed':
+        return '確定';
+      case 'unofficial':
+        return '非公式';
+      case 'rumored':
+        return '噂';
       default:
-        return "未定";
+        return '未定';
     }
   };
 
@@ -115,9 +115,7 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                 <span className="font-medium">選挙区:</span>
                 <span className="ml-2">
                   {candidate.prefecture}
-                  {candidate.district !== null
-                    ? ` 第${candidate.district}区`
-                    : ""}
+                  {candidate.district !== null ? ` 第${candidate.district}区` : ''}
                 </span>
               </div>
 
@@ -148,18 +146,18 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                   </div>
                   <span className="font-medium">性別:</span>
                   <span className="ml-2">
-                    {candidate.gender === "male"
-                      ? "男性"
-                      : candidate.gender === "female"
-                      ? "女性"
-                      : "その他"}
+                    {candidate.gender === 'male'
+                      ? '男性'
+                      : candidate.gender === 'female'
+                        ? '女性'
+                        : 'その他'}
                   </span>
                 </div>
               )}
 
               {candidate.lastUpdated && (
                 <div className="text-xs text-gray-500 mt-4">
-                  最終更新: {new Date(candidate.lastUpdated).toLocaleString("ja-JP")}
+                  最終更新: {new Date(candidate.lastUpdated).toLocaleString('ja-JP')}
                 </div>
               )}
             </div>
@@ -248,9 +246,7 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 text-center">
                     <Lock className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2">
-                      プレミアム会員限定コンテンツ
-                    </h3>
+                    <h3 className="text-lg font-medium mb-2">プレミアム会員限定コンテンツ</h3>
                     <p className="text-sm text-gray-500 mb-4">
                       詳細プロフィール情報を閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>
@@ -265,14 +261,12 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                 {isPremium ? (
                   <div>
                     <h4 className="font-medium mb-4">支持率推移</h4>
-                    <SupportRateChart candidateId={candidate._id || ""} />
+                    <SupportRateChart candidateId={candidate._id || ''} />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 text-center">
                     <Lock className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2">
-                      プレミアム会員限定コンテンツ
-                    </h3>
+                    <h3 className="text-lg font-medium mb-2">プレミアム会員限定コンテンツ</h3>
                     <p className="text-sm text-gray-500 mb-4">
                       支持率データを閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>
@@ -287,14 +281,12 @@ const CandidateDetailView: React.FC<CandidateDetailViewProps> = ({
                 {isPremium ? (
                   <div>
                     <h4 className="font-medium mb-4">活動履歴</h4>
-                    <CandidateTimeline candidateId={candidate._id || ""} />
+                    <CandidateTimeline candidateId={candidate._id || ''} />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 text-center">
                     <Calendar className="h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium mb-2">
-                      プレミアム会員限定コンテンツ
-                    </h3>
+                    <h3 className="text-lg font-medium mb-2">プレミアム会員限定コンテンツ</h3>
                     <p className="text-sm text-gray-500 mb-4">
                       活動履歴や詳細情報を閲覧するには、プレミアム会員にアップグレードしてください。
                     </p>

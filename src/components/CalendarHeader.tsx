@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { Button } from "@/components/ui/button"
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from "react"
+import { Button } from '@/components/ui/button';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
 
 interface CalendarHeaderProps {
   view: 'day' | 'week' | 'month';
@@ -10,31 +10,31 @@ interface CalendarHeaderProps {
 }
 
 export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const goToToday = () => setCurrentDate(new Date())
+  const goToToday = () => setCurrentDate(new Date());
   const previousPeriod = () => {
-    const newDate = new Date(currentDate)
+    const newDate = new Date(currentDate);
     if (view === 'day') {
-      newDate.setDate(currentDate.getDate() - 1)
+      newDate.setDate(currentDate.getDate() - 1);
     } else if (view === 'week') {
-      newDate.setDate(currentDate.getDate() - 7)
+      newDate.setDate(currentDate.getDate() - 7);
     } else {
-      newDate.setMonth(currentDate.getMonth() - 1)
+      newDate.setMonth(currentDate.getMonth() - 1);
     }
-    setCurrentDate(newDate)
-  }
+    setCurrentDate(newDate);
+  };
   const nextPeriod = () => {
-    const newDate = new Date(currentDate)
+    const newDate = new Date(currentDate);
     if (view === 'day') {
-      newDate.setDate(currentDate.getDate() + 1)
+      newDate.setDate(currentDate.getDate() + 1);
     } else if (view === 'week') {
-      newDate.setDate(currentDate.getDate() + 7)
+      newDate.setDate(currentDate.getDate() + 7);
     } else {
-      newDate.setMonth(currentDate.getMonth() + 1)
+      newDate.setMonth(currentDate.getMonth() + 1);
     }
-    setCurrentDate(newDate)
-  }
+    setCurrentDate(newDate);
+  };
 
   return (
     <header className="flex items-center justify-between p-4 border-b">
@@ -46,15 +46,23 @@ export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={previousPeriod}>
             <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">前の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}</span>
+            <span className="sr-only">
+              前の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}
+            </span>
           </Button>
           <Button variant="ghost" size="icon" onClick={nextPeriod}>
             <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">次の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}</span>
+            <span className="sr-only">
+              次の{view === 'day' ? '日' : view === 'week' ? '週' : '月'}
+            </span>
           </Button>
         </div>
         <h2 className="text-lg font-semibold">
-          {currentDate.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" })}
+          {currentDate.toLocaleDateString('ja-JP', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
         </h2>
       </div>
       <div className="flex items-center gap-2">
@@ -81,6 +89,5 @@ export function CalendarHeader({ view, onViewChange }: CalendarHeaderProps) {
         </Button>
       </div>
     </header>
-  )
+  );
 }
-

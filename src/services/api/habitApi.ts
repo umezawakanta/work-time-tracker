@@ -1,4 +1,4 @@
-import { api } from './apiConfig'
+import { api } from './apiConfig';
 
 interface HabitData {
   _id: string;
@@ -52,7 +52,7 @@ export const updateHabit = async (habitId: string, monthKey: string, data: boole
       throw new Error('Invalid monthKey');
     }
 
-    if (!Array.isArray(data) || !data.every(item => typeof item === 'boolean')) {
+    if (!Array.isArray(data) || !data.every((item) => typeof item === 'boolean')) {
       throw new Error('Invalid data format');
     }
 

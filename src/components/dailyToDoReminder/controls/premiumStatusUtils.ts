@@ -49,21 +49,21 @@ export async function fetchPremiumStatus(): Promise<PremiumStatus> {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
-    
+
     if (!response.ok) {
       throw new Error('プレミアムステータスの取得に失敗しました');
     }
-    
+
     const data = await response.json();
-    
+
     // APIからのレスポンスをプレミアムステータスに変換
     return processPremiumStatusData(data);
   } catch (error) {
     console.error('プレミアムステータス取得エラー:', error);
-    
+
     // エラー時はデフォルト値を返す
     return {
       isPremium: false,
@@ -79,8 +79,8 @@ export async function fetchPremiumStatus(): Promise<PremiumStatus> {
         unlimitedStorage: false,
         unlimitedTasks: false,
         referralBonus: false,
-        prioritySupport: false
-      }
+        prioritySupport: false,
+      },
     };
   }
 }
@@ -94,7 +94,7 @@ function processPremiumStatusData(data: any): PremiumStatus {
   const expiresAt = data.expiresAt;
   const daysRemaining = calculateDaysRemaining(expiresAt);
   const isInTrial = data.isInTrial || false;
-  
+
   return {
     isPremium: data.isPremium || false,
     expiresAt: expiresAt,
@@ -112,8 +112,8 @@ function processPremiumStatusData(data: any): PremiumStatus {
       unlimitedStorage: data.features?.unlimitedStorage || false,
       unlimitedTasks: data.features?.unlimitedTasks || false,
       referralBonus: data.features?.referralBonus || false,
-      prioritySupport: data.features?.prioritySupport || false
-    }
+      prioritySupport: data.features?.prioritySupport || false,
+    },
   };
 }
 
@@ -124,18 +124,18 @@ function processPremiumStatusData(data: any): PremiumStatus {
  */
 export function calculateDaysRemaining(dateString?: string): number {
   if (!dateString) return Infinity;
-  
+
   try {
     const expiryDate = new Date(dateString);
     const today = new Date();
-    
+
     // 時間部分をリセットして日付のみで比較
     expiryDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    
+
     const diffTime = expiryDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return Math.max(diffDays, 0); // 負の値にならないよう調整
   } catch (e) {
     console.error('日付計算エラー:', e);
@@ -150,13 +150,13 @@ export function calculateDaysRemaining(dateString?: string): number {
  */
 export function formatExpiryDate(dateString?: string): string {
   if (!dateString) return '無期限';
-  
+
   try {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('ja-JP', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   } catch (e) {
     console.error('日付形式エラー:', e);
@@ -171,7 +171,7 @@ export function formatExpiryDate(dateString?: string): string {
  * @returns プランの表示名
  */
 export function getPlanDisplayName(
-  planType?: PremiumPlanType, 
+  planType?: PremiumPlanType,
   planCycle?: PremiumPlanCycle
 ): string {
   let cycleText = '';
@@ -188,7 +188,7 @@ export function getPlanDisplayName(
         break;
     }
   }
-  
+
   let typeText = '';
   if (planType) {
     switch (planType) {
@@ -203,11 +203,11 @@ export function getPlanDisplayName(
         break;
     }
   }
-  
+
   if (!typeText && !cycleText) return 'プレミアム';
   if (!typeText) return `${cycleText}プラン`;
   if (!cycleText) return typeText;
-  
+
   return `${cycleText}${typeText}`;
 }
 
@@ -225,21 +225,21 @@ export async function extendTrialPeriod(): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+      },
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'トライアル期間の延長に失敗しました');
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('トライアル延長エラー:', error);
     return {
       success: false,
-      message: error instanceof Error ? error.message : '不明なエラーが発生しました'
+      message: error instanceof Error ? error.message : '不明なエラーが発生しました',
     };
   }
 }
