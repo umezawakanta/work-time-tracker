@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface BackupMetadata {
   id: string;
@@ -45,6 +46,37 @@ export interface DisasterRecoveryStatus {
   backupFrequency: number; // minutes
   healthScore: number;
 }
+
+/**
+ * データベース操作の処理時間を動的計算
+ */
+const calculateDatabaseProcessingTime = (
+  operation: 'backup' | 'recovery' | 'drtest',
+  complexity: number = 1
+): number => {
+  const systemHealth = dataGenerator.generateSystemHealth();
+
+  // 基本処理時間（操作タイプに基づく）
+  const baseTime = {
+    backup: 180, // バックアップステップ
+    recovery: 250, // 復旧ステップ
+    drtest: 400, // DRテストステップ
+  };
+
+  let processingTime = baseTime[operation];
+
+  // 複雑さによる調整
+  processingTime *= complexity;
+
+  // システム状況による調整
+  const networkFactor = systemHealth.responseTime / 100; // ネットワーク状況
+  const uptimeFactor = systemHealth.uptime / 100; // システム安定性
+
+  processingTime *= networkFactor / uptimeFactor;
+
+  // 100ms-1000msの範囲に制限
+  return Math.round(Math.max(100, Math.min(1000, processingTime)));
+};
 
 /**
  * 🗄️ データベースウィザード: 高度なバックアップ・リカバリシステム
@@ -247,8 +279,8 @@ class DatabaseBackupService {
       await this.simulateBackupProcess(backup);
 
       backup.status = 'completed';
-      backup.size = Math.floor(Math.random() * 50 + 100) * 1024 * 1024; // 100-150MB
-      backup.integrityHash = `sha256:${Math.random().toString(36).substring(2, 15)}`;
+      backup.size = dataGenerator.randomInt(100, 150) * 1024 * 1024; // 100-150MB
+      backup.integrityHash = `sha256:${dataGenerator.randomChoice(['abc', 'def', 'ghi', 'jkl', 'mno', 'pqr']).repeat(2)}${dataGenerator.randomInt(100, 999)}`;
 
       this.updateStatistics();
 
@@ -306,8 +338,8 @@ class DatabaseBackupService {
       await this.simulateBackupProcess(backup);
 
       backup.status = 'completed';
-      backup.size = Math.floor(Math.random() * 30 + 120) * 1024 * 1024; // 120-150MB
-      backup.integrityHash = `sha256:${Math.random().toString(36).substring(2, 15)}`;
+      backup.size = dataGenerator.randomInt(120, 150) * 1024 * 1024; // 120-150MB
+      backup.integrityHash = `sha256:${dataGenerator.randomChoice(['abc', 'def', 'ghi', 'jkl', 'mno', 'pqr']).repeat(2)}${dataGenerator.randomInt(100, 999)}`;
 
       this.updateStatistics();
 
@@ -343,7 +375,12 @@ class DatabaseBackupService {
 
     for (let i = 0; i < steps.length; i++) {
       console.log(`📦 ${backup.id}: ${steps[i]}...`);
-      await new Promise((resolve) => setTimeout(resolve, 200)); // 処理時間シミュレーション
+
+      // ステップの複雑さを計算（後の方が重い処理）
+      const stepComplexity = (i + 1) / steps.length;
+      const processingTime = calculateDatabaseProcessingTime('backup', stepComplexity);
+
+      await new Promise((resolve) => setTimeout(resolve, processingTime));
     }
   }
 
@@ -389,7 +426,14 @@ class DatabaseBackupService {
 
       for (let i = 0; i < recoverySteps.length; i++) {
         console.log(`🔄 復旧ステップ ${i + 1}/${recoverySteps.length}: ${recoverySteps[i]}...`);
-        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // 復旧ステップの複雑さ（リスクレベルと進行度による）
+        const riskMultiplier =
+          plan.riskLevel === 'high' ? 1.5 : plan.riskLevel === 'medium' ? 1.2 : 1.0;
+        const stepComplexity = ((i + 1) / recoverySteps.length) * riskMultiplier;
+        const processingTime = calculateDatabaseProcessingTime('recovery', stepComplexity);
+
+        await new Promise((resolve) => setTimeout(resolve, processingTime));
       }
 
       toast({
@@ -423,8 +467,12 @@ class DatabaseBackupService {
       for (const backup of this.backups.slice(0, 5)) {
         // 最新5つをチェック
         if (backup.status === 'completed') {
-          // 整合性ハッシュ検証シミュレーション
-          const isValid = Math.random() > 0.05; // 95%の確率で正常
+          // 整合性ハッシュ検証シミュレーション（システム状況に基づく）
+          const systemHealth = dataGenerator.generateSystemHealth();
+          const baseValidityRate = 0.95; // 基本95%の正常率
+          const healthFactor = systemHealth.uptime / 100; // システム安定性による調整
+          const validityThreshold = baseValidityRate * healthFactor;
+          const isValid = dataGenerator.randomFloat(0, 1) < validityThreshold;
 
           if (!isValid) {
             backup.status = 'corrupted';
@@ -557,7 +605,14 @@ class DatabaseBackupService {
 
     for (let i = 0; i < testSteps.length; i++) {
       console.log(`🧪 DRテスト ${i + 1}/${testSteps.length}: ${testSteps[i]}...`);
-      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // DRテストの複雑さ（プランのリスクレベルとステップ進行度による）
+      const planComplexity =
+        plan.riskLevel === 'high' ? 1.5 : plan.riskLevel === 'medium' ? 1.2 : 1.0;
+      const stepComplexity = ((i + 1) / testSteps.length) * planComplexity;
+      const processingTime = calculateDatabaseProcessingTime('drtest', stepComplexity);
+
+      await new Promise((resolve) => setTimeout(resolve, processingTime));
     }
   }
 

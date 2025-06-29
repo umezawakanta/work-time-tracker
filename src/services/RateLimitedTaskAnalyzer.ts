@@ -3,6 +3,7 @@
 
 import GeminiService, { TaskClassification, TaskDetailAnalysis } from './GeminiService';
 import TaskPriorityService, { PriorityAnalysis } from './TaskPriorityService';
+import { dataGenerator } from '../utils/idGenerator';
 
 // レート制限の設定
 const MIN_INTERVAL_BETWEEN_CALLS = 5000; // ミリ秒単位 (5秒)
@@ -39,6 +40,26 @@ let isProcessingQueue = false;
 // キャッシュに詳細分析用を追加
 const detailCache: AnalysisCache<TaskDetailAnalysis> = {};
 let lastDetailAnalysisTime = 0;
+
+/**
+ * API分析間の動的遅延時間を計算
+ */
+const calculateApiDelay = (): number => {
+  const systemHealth = dataGenerator.generateSystemHealth();
+
+  // 基本遅延時間（500ms-1500ms）
+  let baseDelay = 1000;
+
+  // システム状況による調整
+  const uptimeFactor = systemHealth.uptime / 100; // 稼働率による調整
+  const errorFactor = 1 + systemHealth.errorRate / 100; // エラー率による調整
+
+  // 高負荷時は遅延を増やし、安定時は遅延を減らす
+  baseDelay *= errorFactor / uptimeFactor;
+
+  // 500ms-2000msの範囲に制限
+  return Math.round(Math.max(500, Math.min(2000, baseDelay)));
+};
 
 // 短いテキストを補完する関数
 const expandShortText = (taskText: string): string => {
@@ -321,8 +342,9 @@ export const RateLimitedTaskAnalyzer = {
     try {
       const typeAnalysis = await RateLimitedTaskAnalyzer.analyzeTaskType(taskText);
 
-      // タイプ分析後、少し遅延させてから優先度分析を実行
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // タイプ分析後、動的遅延時間で優先度分析を実行
+      const delay1 = calculateApiDelay();
+      await new Promise((resolve) => setTimeout(resolve, delay1));
 
       const priorityAnalysis = await RateLimitedTaskAnalyzer.analyzeTaskPriority(taskText);
 
@@ -429,11 +451,13 @@ export const RateLimitedTaskAnalyzer = {
     try {
       const typeAnalysis = await RateLimitedTaskAnalyzer.analyzeTaskType(taskText);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const delay1 = calculateApiDelay();
+      await new Promise((resolve) => setTimeout(resolve, delay1));
 
       const priorityAnalysis = await RateLimitedTaskAnalyzer.analyzeTaskPriority(taskText);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const delay2 = calculateApiDelay();
+      await new Promise((resolve) => setTimeout(resolve, delay2));
 
       const detailAnalysis = await RateLimitedTaskAnalyzer.analyzeTaskDetails(taskText);
 

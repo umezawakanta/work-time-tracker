@@ -151,7 +151,13 @@ export const usePomodoroStore = create<PomodoroStore>(
           (nextMode !== 'work' && state.settings.autoStartBreaks);
 
         if (shouldAutoStart) {
-          setTimeout(() => (get() as PomodoroStore).startTimer(), 1000);
+          // 動的な自動開始遅延時間を計算
+          const baseDelay = 1000; // 基本遅延1秒
+          const modeMultiplier = nextMode === 'work' ? 1.5 : 0.5; // 作業開始は少し長め、休憩は短め
+          const sessionMultiplier = Math.min(state.currentSession / 10, 0.5); // セッション数による調整
+          const delay = Math.round(baseDelay * modeMultiplier * (1 + sessionMultiplier));
+
+          setTimeout(() => (get() as PomodoroStore).startTimer(), delay);
         }
       },
 

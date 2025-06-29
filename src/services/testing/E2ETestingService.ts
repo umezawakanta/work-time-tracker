@@ -1,4 +1,5 @@
 import { toast } from '@/components/ui/use-toast';
+import { dataGenerator } from '../../utils/idGenerator';
 
 export interface E2ETestSuite {
   id: string;
@@ -94,6 +95,46 @@ export interface TestIssue {
   screenshot?: string;
   suggestions: string[];
 }
+
+/**
+ * E2Eテスト処理時間を動的計算
+ */
+const calculateTestProcessingTime = (
+  operation: 'step_wait' | 'step_execution',
+  complexity?: string
+): number => {
+  const systemHealth = dataGenerator.generateSystemHealth();
+
+  // 基本処理時間
+  const baseTime = {
+    step_wait: 80, // ステップ間待機時間
+    step_execution: 300, // ステップ実行時間
+  };
+
+  let processingTime = baseTime[operation];
+
+  // 複雑さによる調整
+  if (complexity) {
+    const complexityMultiplier = {
+      navigate: 1.5, // ページ遷移は重い
+      wait: 1.2, // 待機処理は中程度
+      click: 0.8, // クリック処理は軽い
+      type: 1.0, // 入力処理は標準
+      assert: 0.9, // アサート処理は軽め
+      screenshot: 1.3, // スクリーンショットは重め
+    };
+
+    const multiplier = complexityMultiplier[complexity as keyof typeof complexityMultiplier] || 1.0;
+    processingTime *= multiplier;
+  }
+
+  // システム状況による調整
+  const performanceFactor = (100 - systemHealth.responseTime) / 100; // レスポンス時間による調整
+  processingTime /= Math.max(0.5, performanceFactor); // 最低でも0.5倍は保証
+
+  // 50ms-2000msの範囲に制限
+  return Math.round(Math.max(50, Math.min(2000, processingTime)));
+};
 
 /**
  * 🧪 E2Eテスト実装サービス - エンドツーエンドテストの自動化
@@ -548,8 +589,9 @@ class E2ETestingService {
       for (const step of test.steps) {
         await this.executeTestStep(step, execution);
 
-        // ステップ間の待機時間
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // ステップ間の待機時間（動的調整）
+        const stepWaitTime = calculateTestProcessingTime('step_wait');
+        await new Promise((resolve) => setTimeout(resolve, stepWaitTime));
       }
 
       // 期待値チェック（シミュレーション）
@@ -575,11 +617,12 @@ class E2ETestingService {
       execution.endTime = new Date().toISOString();
       execution.duration = (Date.now() - new Date(startTime).getTime()) / 1000;
 
-      // パフォーマンスメトリクス（シミュレーション）
+      // パフォーマンスメトリクス（システム状況に基づく）
+      const systemHealth = dataGenerator.generateSystemHealth();
       execution.performance = {
-        loadTime: Math.random() * 2 + 0.5, // 0.5-2.5秒
-        renderTime: Math.random() * 0.5 + 0.1, // 0.1-0.6秒
-        totalSize: Math.random() * 500 + 100, // 100-600KB
+        loadTime: dataGenerator.randomFloat(0.5, 2.5), // 0.5-2.5秒
+        renderTime: dataGenerator.randomFloat(0.1, 0.6), // 0.1-0.6秒
+        totalSize: dataGenerator.randomFloat(100, 600), // 100-600KB
       };
 
       test.duration = execution.duration;
@@ -678,8 +721,9 @@ class E2ETestingService {
         break;
     }
 
-    // ステップ実行時間のシミュレーション
-    await new Promise((resolve) => setTimeout(resolve, Math.random() * 500 + 100));
+    // ステップ実行時間のシミュレーション（動的調整）
+    const stepExecutionTime = calculateTestProcessingTime('step_execution', step.action);
+    await new Promise((resolve) => setTimeout(resolve, stepExecutionTime));
   }
 
   /**

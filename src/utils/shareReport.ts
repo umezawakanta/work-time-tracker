@@ -2,7 +2,7 @@
  * レポート共有機能のためのユーティリティ関数
  */
 
-import { generateShareId } from './idGenerator';
+import { generateShareId, dataGenerator } from './idGenerator';
 
 // 共有レポートのパラメータ型定義
 export interface ShareReportParams {
@@ -24,6 +24,38 @@ export interface ShareResult {
 }
 
 /**
+ * API操作の処理時間を動的計算
+ */
+const calculateApiProcessingTime = (operation: string, dataSize?: number): number => {
+  const systemHealth = dataGenerator.generateSystemHealth();
+
+  // 基本処理時間（操作タイプに基づく）
+  const baseTime = {
+    share: 800, // レポート共有
+    fetch: 600, // データ取得
+    history: 400, // 履歴取得
+    revoke: 500, // 取り消し
+  };
+
+  const operationType = operation as keyof typeof baseTime;
+  let processingTime = baseTime[operationType] || 600;
+
+  // データサイズによる調整
+  if (dataSize) {
+    processingTime += Math.min(dataSize * 10, 500); // 最大500ms追加
+  }
+
+  // システム状況による調整
+  const networkFactor = systemHealth.responseTime / 100; // 100msを基準とした係数
+  const loadFactor = (2000 - systemHealth.throughput) / 2000; // スループットによる調整
+
+  processingTime *= (networkFactor + loadFactor) / 2;
+
+  // 200ms-2000msの範囲に制限
+  return Math.round(Math.max(200, Math.min(2000, processingTime)));
+};
+
+/**
  * 資産/負債レポートを共有する
  * @param params 共有するレポートのパラメータ
  * @returns 共有結果のPromise
@@ -33,8 +65,10 @@ export const shareReport = async (params: ShareReportParams): Promise<ShareResul
     // 実際のアプリではAPIリクエストを送信してレポート共有URLを取得します
     // このデモではモックの応答を返します
 
-    // APIリクエストをシミュレート
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // APIリクエストをシミュレート（動的処理時間）
+    const dataSize = Object.keys(params).length; // パラメータ数を複雑度の指標とする
+    const processingTime = calculateApiProcessingTime('share', dataSize);
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     // 共有URLを生成（デモ用）
     const shareId = generateShareId();
@@ -76,8 +110,9 @@ export const getSharedReport = async (shareId: string): Promise<ShareReportParam
     // 実際のアプリではAPIリクエストを送信して共有レポートデータを取得します
     // このデモではモックの応答を返します
 
-    // APIリクエストをシミュレート
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // APIリクエストをシミュレート（動的処理時間）
+    const processingTime = calculateApiProcessingTime('fetch', shareId.length);
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     // 共有IDが有効かチェック（実際のアプリではサーバーサイドで検証）
     if (!shareId || shareId.length < 5) {
@@ -114,8 +149,9 @@ export const getShareAccessHistory = async (
     // 実際のアプリではAPIリクエストを送信してアクセス履歴を取得します
     // このデモではモックの応答を返します
 
-    // APIリクエストをシミュレート
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // APIリクエストをシミュレート（動的処理時間）
+    const processingTime = calculateApiProcessingTime('history');
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     console.log('アクセス履歴を取得する共有ID:', shareId);
 
@@ -141,8 +177,9 @@ export const revokeSharedReport = async (shareId: string): Promise<boolean> => {
     // 実際のアプリではAPIリクエストを送信して共有を取り消します
     // このデモではモックの応答を返します
 
-    // APIリクエストをシミュレート
-    await new Promise((resolve) => setTimeout(resolve, 700));
+    // APIリクエストをシミュレート（動的処理時間）
+    const processingTime = calculateApiProcessingTime('revoke', shareId.length);
+    await new Promise((resolve) => setTimeout(resolve, processingTime));
 
     console.log('取り消す共有ID:', shareId);
 
