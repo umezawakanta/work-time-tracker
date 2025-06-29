@@ -5,30 +5,57 @@
  * 環境変数からの読み込みと、デフォルト値の設定
  */
 
+// 環境変数を安全に取得するユーティリティ関数
+const getEnvVar = (key: string): string | undefined => {
+  // Jest環境ではprocess.envを優先
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+
+  // Vite環境でのimport.meta.env（安全にアクセス）
+  try {
+    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+      return (globalThis as any).import.meta.env[key];
+    }
+  } catch (e) {
+    // import.metaが利用できない場合は無視
+  }
+
+  return undefined;
+};
+
+const isDev = () => {
+  return (
+    getEnvVar('NODE_ENV') === 'development' ||
+    getEnvVar('DEV') === 'true' ||
+    getEnvVar('MODE') === 'development'
+  );
+};
+
 // デバッグ用の設定確認
-if (import.meta.env.DEV) {
+if (isDev()) {
   console.log('🔧 Firebase Config Check:', {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Missing',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ? 'Set' : 'Missing',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 'Set' : 'Missing',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ? 'Set' : 'Missing',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ? 'Set' : 'Missing',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID ? 'Set' : 'Missing',
+    apiKey: getEnvVar('VITE_FIREBASE_API_KEY') ? 'Set' : 'Missing',
+    authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN') ? 'Set' : 'Missing',
+    projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID') ? 'Set' : 'Missing',
+    storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET') ? 'Set' : 'Missing',
+    messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID') ? 'Set' : 'Missing',
+    appId: getEnvVar('VITE_FIREBASE_APP_ID') ? 'Set' : 'Missing',
   });
 }
 
 // Firebase設定をデバッグ情報と共にエクスポート
 const firebaseEnvVars = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: getEnvVar('VITE_FIREBASE_API_KEY'),
+  authDomain: getEnvVar('VITE_FIREBASE_AUTH_DOMAIN'),
+  projectId: getEnvVar('VITE_FIREBASE_PROJECT_ID'),
+  storageBucket: getEnvVar('VITE_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: getEnvVar('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: getEnvVar('VITE_FIREBASE_APP_ID'),
 };
 
 // 開発環境でのデバッグ情報
-if (import.meta.env.DEV) {
+if (isDev()) {
   const configStatus = Object.entries(firebaseEnvVars).reduce(
     (acc, [key, value]) => {
       acc[key] = value ? 'Set' : 'Missing';
@@ -59,24 +86,24 @@ export const firebaseConfig = firebaseEnvVars;
 
 // アプリケーション情報
 export const appInfo = {
-  name: import.meta.env.VITE_APP_NAME || '資産/負債管理アプリ',
-  version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+  name: getEnvVar('VITE_APP_NAME') || '資産/負債管理アプリ',
+  version: getEnvVar('VITE_APP_VERSION') || '1.0.0',
   description:
-    import.meta.env.VITE_APP_DESCRIPTION || 'あなたの財務状況を分析・管理するためのダッシュボード',
+    getEnvVar('VITE_APP_DESCRIPTION') || 'あなたの財務状況を分析・管理するためのダッシュボード',
 };
 
 // サブスクリプションプラン設定
 export const subscriptionPlans = {
   premium: {
     monthly: {
-      id: import.meta.env.VITE_PREMIUM_MONTHLY_PLAN_ID,
+      id: getEnvVar('VITE_PREMIUM_MONTHLY_PLAN_ID'),
       price: 980,
       currency: 'JPY',
       interval: 'month',
       name: 'プレミアム（月額）',
     },
     annual: {
-      id: import.meta.env.VITE_PREMIUM_ANNUAL_PLAN_ID,
+      id: getEnvVar('VITE_PREMIUM_ANNUAL_PLAN_ID'),
       price: 9800,
       currency: 'JPY',
       interval: 'year',
@@ -84,7 +111,7 @@ export const subscriptionPlans = {
     },
   },
   business: {
-    id: import.meta.env.VITE_BUSINESS_PLAN_ID,
+    id: getEnvVar('VITE_BUSINESS_PLAN_ID'),
     price: 2980,
     currency: 'JPY',
     interval: 'month',
@@ -128,7 +155,7 @@ export const premiumFeatures = [
 
 // API設定
 export const apiConfig = {
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+  baseURL: getEnvVar('VITE_API_BASE_URL') || 'http://localhost:3001/api',
   timeout: 10000,
 };
 
@@ -142,9 +169,9 @@ export const feedbackTypes = [
 
 // 設定
 export const appConfig = {
-  debug: import.meta.env.VITE_DEBUG_MODE === 'true',
-  enableAnalytics: import.meta.env.VITE_ENABLE_ANALYTICS !== 'false',
-  defaultLocale: import.meta.env.VITE_DEFAULT_LOCALE || 'ja',
+  debug: getEnvVar('VITE_DEBUG_MODE') === 'true',
+  enableAnalytics: getEnvVar('VITE_ENABLE_ANALYTICS') !== 'false',
+  defaultLocale: getEnvVar('VITE_DEFAULT_LOCALE') || 'ja',
   supportedLocales: ['ja', 'en'],
   defaultCurrency: 'JPY',
   supportedCurrencies: ['JPY', 'USD', 'EUR'],

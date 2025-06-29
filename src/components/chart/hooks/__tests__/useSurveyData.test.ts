@@ -5,22 +5,25 @@ import { useSurveyData } from '../useSurveyData';
 // モック設定
 jest.mock('react-hot-toast');
 
-// APIモックを先に定義
-const mockSurveyGetAll = jest.fn();
-const mockPartyGetAll = jest.fn();
-
+// APIモックを関数内で定義
 jest.mock('@/services/api/surveyApi', () => ({
   surveyApi: {
-    getAll: mockSurveyGetAll,
+    getAll: jest.fn(),
   },
 }));
 
 jest.mock('@/services/api/partyApi', () => ({
   partyApi: {
-    getAll: mockPartyGetAll,
+    getAll: jest.fn(),
   },
 }));
 
+// モックをimportで取得
+import { surveyApi } from '@/services/api/surveyApi';
+import { partyApi } from '@/services/api/partyApi';
+
+const mockSurveyApi = surveyApi as jest.Mocked<typeof surveyApi>;
+const mockPartyApi = partyApi as jest.Mocked<typeof partyApi>;
 const mockToast = toast as jest.Mocked<typeof toast>;
 
 describe('useSurveyData', () => {
@@ -60,8 +63,8 @@ describe('useSurveyData', () => {
     };
     const mockPartyData = [{ _id: '1', name: '自民党', shortName: '自民', colorCode: '#FF0000' }];
 
-    mockSurveyGetAll.mockResolvedValue({ data: mockSurveyData });
-    mockPartyGetAll.mockResolvedValue({ data: mockPartyData });
+    mockSurveyApi.getAll.mockResolvedValue({ data: mockSurveyData });
+    mockPartyApi.getAll.mockResolvedValue({ data: mockPartyData });
 
     const { result } = renderHook(() => useSurveyData());
 
@@ -77,8 +80,8 @@ describe('useSurveyData', () => {
   });
 
   it('APIエラー時にモックデータにフォールバックする', async () => {
-    mockSurveyGetAll.mockRejectedValue(new Error('API Error'));
-    mockPartyGetAll.mockRejectedValue(new Error('API Error'));
+    mockSurveyApi.getAll.mockRejectedValue(new Error('API Error'));
+    mockPartyApi.getAll.mockRejectedValue(new Error('API Error'));
 
     const { result } = renderHook(() => useSurveyData());
 
@@ -100,8 +103,8 @@ describe('useSurveyData', () => {
     };
     const mockParties = [{ _id: '1', name: '自民党', shortName: '自民', colorCode: '#FF0000' }];
 
-    mockSurveyGetAll.mockResolvedValue({ data: mockData });
-    mockPartyGetAll.mockResolvedValue({ data: mockParties });
+    mockSurveyApi.getAll.mockResolvedValue({ data: mockData });
+    mockPartyApi.getAll.mockResolvedValue({ data: mockParties });
 
     const { result } = renderHook(() => useSurveyData());
 
@@ -119,14 +122,14 @@ describe('useSurveyData', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockSurveyGetAll).toHaveBeenCalledTimes(2);
-    expect(mockPartyGetAll).toHaveBeenCalledTimes(2);
+    expect(mockSurveyApi.getAll).toHaveBeenCalledTimes(2);
+    expect(mockPartyApi.getAll).toHaveBeenCalledTimes(2);
   });
 
   it('HTMLレスポンスが返された場合にモックデータを使用する', async () => {
     const htmlResponse = '<!doctype html><html><head></head><body></body></html>';
-    mockSurveyGetAll.mockResolvedValue({ data: htmlResponse });
-    mockPartyGetAll.mockResolvedValue({ data: [] });
+    mockSurveyApi.getAll.mockResolvedValue({ data: htmlResponse });
+    mockPartyApi.getAll.mockResolvedValue({ data: [] });
 
     const { result } = renderHook(() => useSurveyData());
 

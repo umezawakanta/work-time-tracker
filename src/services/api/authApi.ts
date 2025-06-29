@@ -230,12 +230,16 @@ export const checkAuth = async (): Promise<boolean> => {
     });
 
     // 開発環境でのタイムアウトやネットワークエラーの場合は認証状態を維持
+    const isDev =
+      process.env.NODE_ENV === 'development' ||
+      (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true');
+
     if (
       err.name === 'AbortError' ||
       err.code === 'ECONNREFUSED' ||
       err.code === 'NETWORK_ERROR' ||
       !err.response ||
-      import.meta.env.DEV
+      isDev
     ) {
       console.log('⚠️ Network error or timeout - maintaining auth state (dev mode)');
       return true; // 開発環境では認証状態を維持
@@ -301,7 +305,27 @@ export const fetchUserData = async (): Promise<User> => {
 
     // 環境変数による管理者権限の確認
     const userData = response.data.user;
-    const adminEmails = import.meta.env.VITE_ADMIN_EMAILS?.split(',') || [];
+
+    // 安全な環境変数取得
+    const getEnvVar = (key: string): string | undefined => {
+      // Jest環境ではprocess.envを優先
+      if (typeof process !== 'undefined' && process.env && process.env[key]) {
+        return process.env[key];
+      }
+
+      // Vite環境でのimport.meta.env（安全にアクセス）
+      try {
+        if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+          return (globalThis as any).import.meta.env[key];
+        }
+      } catch (e) {
+        // import.metaが利用できない場合は無視
+      }
+
+      return undefined;
+    };
+
+    const adminEmails = getEnvVar('VITE_ADMIN_EMAILS')?.split(',') || [];
 
     if (adminEmails.includes(userData.email)) {
       userData.isAdmin = true;

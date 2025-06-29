@@ -104,13 +104,32 @@ export const blogApi = {
       } as AxiosResponse<BlogPost[]>);
     }
 
-    if (import.meta?.env?.DEV || process.env.NODE_ENV === 'development') {
+    // 安全な環境変数取得
+    const getEnvVar = (key: string): string | undefined => {
+      // Jest環境ではprocess.envを優先
+      if (typeof process !== 'undefined' && process.env && process.env[key]) {
+        return process.env[key];
+      }
+
+      // Vite環境でのimport.meta.env（安全にアクセス）
+      try {
+        if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+          return (globalThis as any).import.meta.env[key];
+        }
+      } catch (e) {
+        // import.metaが利用できない場合は無視
+      }
+
+      return undefined;
+    };
+
+    if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
       console.log('🔄 API Call: GET /blog');
     }
     return api
       .get<BlogPost[]>('/blog')
       .then((response) => {
-        if (import.meta?.env?.DEV || process.env.NODE_ENV === 'development') {
+        if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
           console.log('✅ Blog API Response:', response.status, response.data?.length, 'posts');
         }
         return response;
@@ -184,14 +203,33 @@ export const blogApi = {
       } as AxiosResponse<BlogPost>);
     }
 
-    if (import.meta?.env?.DEV || process.env.NODE_ENV === 'development') {
+    // 安全な環境変数取得
+    const getEnvVar = (key: string): string | undefined => {
+      // Jest環境ではprocess.envを優先
+      if (typeof process !== 'undefined' && process.env && process.env[key]) {
+        return process.env[key];
+      }
+
+      // Vite環境でのimport.meta.env（安全にアクセス）
+      try {
+        if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+          return (globalThis as any).import.meta.env[key];
+        }
+      } catch (e) {
+        // import.metaが利用できない場合は無視
+      }
+
+      return undefined;
+    };
+
+    if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
       console.log('🔄 API Call: GET /blog/' + id);
     }
 
     return api
       .get<BlogPost>(`/blog/${id}`)
       .then((response) => {
-        if (import.meta?.env?.DEV || process.env.NODE_ENV === 'development') {
+        if (getEnvVar('DEV') === 'true' || process.env.NODE_ENV === 'development') {
           console.log('✅ Blog Post API Response:', response.status, response.data?.title);
         }
         return response;

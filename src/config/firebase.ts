@@ -22,7 +22,7 @@ const validateFirebaseConfig = (): boolean => {
   );
 
   if (missingFields.length > 0) {
-    if (import.meta.env.DEV) {
+    if (process.env.NODE_ENV === 'development') {
       console.warn('🚧 Development mode: Missing Firebase config fields:', missingFields);
       return false;
     } else {
@@ -53,7 +53,7 @@ if (isFirebaseConfigValid) {
     storage = getStorage(app);
 
     // Analytics は本番環境でのみ有効化
-    if (!import.meta.env.DEV) {
+    if (process.env.NODE_ENV !== 'development') {
       analytics = isSupported().then((yes) => (yes ? getAnalytics(app) : null));
     } else {
       analytics = Promise.resolve(null);
