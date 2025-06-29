@@ -1,5 +1,25 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { BarChart3, Star } from 'lucide-react';
+
+interface MonthlyMetrics {
+  month: string;
+  year: number;
+  totalBadges: number;
+  completedBadges: number;
+  inProgressBadges: number;
+  plannedHours: number;
+  actualHours: number;
+  efficiency: number;
+  completionRate: number;
+  averageConfidence: number;
+  streakDays: number;
+  topPerformingCategory: string;
+}
+
 // 月次メトリクス表示コンポーネント
-const renderMonthlyMetrics = (metrics: MonthlyMetrics) => (
+export const renderMonthlyMetrics = (metrics: MonthlyMetrics) => (
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center gap-2">

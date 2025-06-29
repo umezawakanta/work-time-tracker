@@ -1,5 +1,31 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { BarChart3, Target, Star, AlertTriangle } from 'lucide-react';
+
+interface TimelineBadge {
+  category: string;
+  status: string;
+  progress: number;
+  confidence: number;
+  estimatedHours: number;
+  actualHours?: number;
+  difficulty: string;
+  risks: Array<{ level: string }>;
+}
+
+interface TimelineEvent {
+  id: string;
+  type: string;
+  date: string;
+  title: string;
+  description?: string;
+  importance?: string;
+  status?: string;
+}
+
 // タイムライン統計・分析コンポーネント
-const renderTimelineAnalytics = (badges: TimelineBadge[], events: TimelineEvent[]) => {
+export const renderTimelineAnalytics = (badges: TimelineBadge[], events: TimelineEvent[]) => {
   // 統計計算
   const totalBadges = badges.length;
   const completedBadges = badges.filter((b) => b.status === 'completed').length;

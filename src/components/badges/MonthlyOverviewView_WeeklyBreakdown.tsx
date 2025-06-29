@@ -1,5 +1,11 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Calendar } from 'lucide-react';
+
 // 週次内訳表示コンポーネント
-const renderWeeklyBreakdown = (
+export const renderWeeklyBreakdown = (
   weeklyBreakdown: Array<{
     weekNumber: number;
     startDate: string;

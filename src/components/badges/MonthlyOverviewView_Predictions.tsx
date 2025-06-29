@@ -1,5 +1,9 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Brain, ArrowRight, Lightbulb, CheckCircle2 } from 'lucide-react';
+
 // 来月予測表示コンポーネント
-const renderNextMonthPredictions = (predictions: {
+export const renderNextMonthPredictions = (predictions: {
   nextMonthBadges: number;
   nextMonthHours: number;
   recommendedFocus: string[];

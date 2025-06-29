@@ -1,5 +1,26 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Activity } from 'lucide-react';
+
+interface TimelineEvent {
+  id: string;
+  type: string;
+  date: string;
+  title: string;
+  description?: string;
+  importance: string;
+  status: string;
+  badgeId?: string;
+  relatedBadges?: string[];
+}
+
+interface TimelineFilter {
+  // Add filter properties as needed
+}
+
 // タイムラインイベント表示コンポーネント
-const renderTimelineEvents = (events: TimelineEvent[], filter: TimelineFilter) => {
+export const renderTimelineEvents = (events: TimelineEvent[], filter: TimelineFilter) => {
   // 日付でソート
   const sortedEvents = [...events].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
