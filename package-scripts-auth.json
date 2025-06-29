@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "test:auth": "jest --config jest.auth.config.js",
+    "test:auth:watch": "jest --config jest.auth.config.js --watch",
+    "test:auth:coverage": "jest --config jest.auth.config.js --coverage",
+    "test:auth:ci": "jest --config jest.auth.config.js --ci --coverage --watchAll=false",
+    "test:auth:debug": "jest --config jest.auth.config.js --runInBand --detectOpenHandles",
+    "test:auth:update-snapshots": "jest --config jest.auth.config.js --updateSnapshot",
+    "test:auth:verbose": "jest --config jest.auth.config.js --verbose --coverage",
+    "test:auth:only-changed": "jest --config jest.auth.config.js --onlyChanged",
+    "test:auth:specific": "jest --config jest.auth.config.js --testPathPattern",
+    "test:auth:serve-coverage": "npm run test:auth:coverage && npx http-server coverage/auth/lcov-report -p 8081 -o"
+  }
+}
