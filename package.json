@@ -38,7 +38,14 @@
         "quality:fix": "pnpm run lint:fix && pnpm run format && pnpm run test:coverage",
         "lighthouse": "lhci collect --config=lighthouserc.json",
         "lighthouse:ci": "pnpm run build && pnpm run preview & sleep 5 && pnpm run lighthouse",
-        "ci:quality": "pnpm run quality:full && pnpm run lighthouse:ci"
+        "ci:quality": "pnpm run quality:full && pnpm run lighthouse:ci",
+        "test:auth": "jest --config jest.auth.config.js",
+        "test:auth:watch": "jest --config jest.auth.config.js --watch",
+        "test:auth:coverage": "jest --config jest.auth.config.js --coverage",
+        "test:auth:ci": "jest --config jest.auth.config.js --ci --coverage --watchAll=false",
+        "test:auth:debug": "jest --config jest.auth.config.js --runInBand --detectOpenHandles",
+        "test:auth:verbose": "jest --config jest.auth.config.js --verbose",
+        "test:auth:clean": "jest --config jest.auth.config.js --clearCache"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
@@ -196,12 +203,16 @@
         "glob": "^11.0.2",
         "globals": "^16.0.0",
         "googleapis": "^140.0.1",
-        "husky": "^9.0.11",
         "http-server": "^14.1.1",
+        "husky": "^9.0.11",
         "identity-obj-proxy": "^3.0.0",
         "jest": "^29.7.0",
         "jest-environment-jsdom": "^29.7.0",
         "jest-fetch-mock": "^3.0.3",
+        "jest-html-reporters": "^3.1.7",
+        "jest-junit": "^16.0.0",
+        "jest-transform-stub": "^2.0.0",
+        "jest-watch-typeahead": "^3.0.1",
         "lighthouse": "^11.7.1",
         "lint-staged": "^15.2.0",
         "papaparse": "^5.4.1",
