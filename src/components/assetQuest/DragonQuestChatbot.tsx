@@ -21,7 +21,10 @@ import {
   PieChart,
   Wrench,
 } from 'lucide-react';
-import { dragonQuestAIService } from '@/services/assetQuest/DragonQuestAIService';
+import {
+  dragonQuestAIService,
+  DragonQuestAIService,
+} from '@/services/assetQuest/DragonQuestAIService';
 import { developmentTaskService } from '@/services/assetQuest/DevelopmentTaskService';
 import { soundManager } from '@/utils/soundManager';
 
@@ -85,6 +88,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const [showDevActions, setShowDevActions] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastSoundTime = useRef<number>(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     initializeBot();
@@ -448,6 +452,81 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     }
   };
 
+  // ライフサポートボタンのクリック処理
+  const handleLifeSupportAction = async (actionType: string) => {
+    setLoading(true);
+    try {
+      console.log(`🎯 ライフサポートアクション: ${actionType}`);
+
+      // 新しいAI統合を使用
+      const aiResponse = await DragonQuestAIService.generateResponse(actionType, {
+        userStatus: {
+          level: 1,
+          totalAssets: 0,
+          savingsRate: 0,
+          questCompleted: false,
+          streakDays: 0,
+        },
+        lifeStatus: {
+          bankBalance: undefined,
+          hasJob: undefined,
+          hasHome: undefined,
+          healthStatus: 'unknown',
+          hasHealthInsurance: undefined,
+          anxietyLevel: 'medium',
+          depressionLevel: 'low',
+          socialSupport: 'moderate',
+        },
+      });
+
+      // DragonQuestResponseをChatMessageに変換
+      const chatMessage = {
+        id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        character: aiResponse.character,
+        message: aiResponse.message,
+        timestamp: new Date(),
+        type: aiResponse.type,
+        actions:
+          aiResponse.actions?.map((action: { label: string; actionType: string }) => ({
+            label: action.label,
+            action: () => handleLifeSupportAction(action.actionType),
+            icon: undefined,
+          })) || [],
+      };
+
+      setMessages((prev) => [...prev, chatMessage]);
+
+      // メッセージエリアを最下部にスクロール
+      setTimeout(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } catch (error) {
+      console.error('❌ AI応答生成エラー:', error);
+
+      // エラー時のフォールバックメッセージ
+      const errorMessage = {
+        id: `error_${Date.now()}`,
+        character: 'sage' as const,
+        message: `申し訳ありません！AI応答の生成中にエラーが発生しました。\n\nエラー内容: ${error instanceof Error ? error.message : 'Unknown error'}\n\n通常の応答に戻ります。もう一度お試しください。`,
+        timestamp: new Date(),
+        type: 'warning' as const,
+        actions: [
+          {
+            label: '再試行',
+            action: () => handleLifeSupportAction(actionType),
+            icon: undefined,
+          },
+        ],
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) {
     return (
       <div className="fixed bottom-6 right-32 z-50">
@@ -609,7 +688,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
-                    onClick={() => handleQuickAction('life-support')}
+                    onClick={() => handleLifeSupportAction('life-support')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-pink-300 hover:bg-pink-50 text-pink-800"
@@ -617,7 +696,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                     🤗 何をすべき？
                   </Button>
                   <Button
-                    onClick={() => handleQuickAction('daily-plan')}
+                    onClick={() => handleLifeSupportAction('daily-plan')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-orange-300 hover:bg-orange-50 text-orange-800"
@@ -625,7 +704,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                     🌅 今日の計画
                   </Button>
                   <Button
-                    onClick={() => handleQuickAction('emergency-help')}
+                    onClick={() => handleLifeSupportAction('emergency-help')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-red-300 hover:bg-red-50 text-red-800"
@@ -633,7 +712,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                     🚨 緊急時対応
                   </Button>
                   <Button
-                    onClick={() => handleQuickAction('basic-needs')}
+                    onClick={() => handleLifeSupportAction('basic-needs')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-green-300 hover:bg-green-50 text-green-800"
@@ -641,7 +720,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                     🏠 基本確認
                   </Button>
                   <Button
-                    onClick={() => handleQuickAction('mental-health')}
+                    onClick={() => handleLifeSupportAction('mental-health')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-purple-300 hover:bg-purple-50 text-purple-800"
@@ -649,7 +728,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
                     🧠 心のケア
                   </Button>
                   <Button
-                    onClick={() => handleQuickAction('skill-building')}
+                    onClick={() => handleLifeSupportAction('skill-building')}
                     variant="outline"
                     size="sm"
                     className="bg-white border-2 border-blue-300 hover:bg-blue-50 text-blue-800"

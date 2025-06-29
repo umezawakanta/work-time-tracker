@@ -1,9 +1,33 @@
+import { LifeStatus as ImportedLifeStatus } from '../ai/LifeSupportAIService';
+import {
+  lifeSupportChatService,
+  LifeSupportContext,
+  AIResponse,
+} from '../ai/LifeSupportChatService';
+
 interface UserStatus {
   level: number;
   totalAssets: number;
   savingsRate: number;
   questCompleted: boolean;
   streakDays: number;
+}
+
+interface DragonQuestResponse {
+  character: 'king' | 'sage' | 'merchant' | 'guard' | 'architect' | 'tester';
+  type: 'advice' | 'mission' | 'celebration' | 'warning' | 'development' | 'technical';
+  message: string;
+  title: string;
+  actions?: Array<{
+    label: string;
+    actionType: string;
+  }>;
+  metadata?: {
+    confidence: number;
+    source: string;
+    timestamp: number;
+    actionType: string;
+  };
 }
 
 interface LifeStatus {
@@ -173,22 +197,34 @@ class DragonQuestAIService {
           return developerStatus ? this.generateBadgeRecommendationsMessage(developerStatus) : null;
         case 'life-support':
           console.log('🤗 ライフサポートアドバイス生成中...');
-          return this.generateLifeSupportAdvice();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateLifeSupportAdvice({})
+          );
         case 'daily-plan':
           console.log('🌅 今日の行動プラン生成中...');
-          return this.generateDailyActionPlan();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateDailyActionPlan({})
+          );
         case 'emergency-help':
           console.log('🚨 緊急時サポート生成中...');
-          return this.generateEmergencyHelp();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateEmergencyHelp({})
+          );
         case 'basic-needs':
           console.log('🏠 基本ニーズ確認生成中...');
-          return this.generateBasicNeedsCheck();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateBasicNeedsCheck({})
+          );
         case 'mental-health':
           console.log('🧠 メンタルヘルスサポート生成中...');
-          return this.generateMentalHealthSupport();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateMentalHealthSupport({})
+          );
         case 'skill-building':
           console.log('🎯 スキル構築アドバイス生成中...');
-          return this.generateSkillBuildingAdvice();
+          return this.convertDragonQuestResponseToChatMessage(
+            await DragonQuestAIService.generateSkillBuildingAdvice({})
+          );
         default:
           console.warn(`⚠️ 未知のアクションタイプ: ${actionType}`);
           return null;
@@ -494,6 +530,27 @@ class DragonQuestAIService {
 
   private generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  /**
+   * DragonQuestResponseをChatMessageに変換
+   */
+  private convertDragonQuestResponseToChatMessage(
+    dragonResponse: DragonQuestResponse
+  ): ChatMessage {
+    return {
+      id: this.generateId(),
+      character: dragonResponse.character,
+      message: dragonResponse.message,
+      timestamp: new Date(),
+      type: dragonResponse.type,
+      actions:
+        dragonResponse.actions?.map((action) => ({
+          label: action.label,
+          action: () => console.log(`Action: ${action.actionType}`),
+          icon: undefined,
+        })) || [],
+    };
   }
 
   // 🔧 開発者向けメソッド
@@ -1089,346 +1146,326 @@ class DragonQuestAIService {
       ],
     };
   }
-  // 🤗 ライフサポート機能
 
   /**
-   * 総合的なライフサポートアドバイス
+   * AI応答生成のメインメソッド
    */
-  private generateLifeSupportAdvice(): ChatMessage {
-    const message = `🤗 こんにちは！あなたの人生をサポートする賢者じゃ！
+  static async generateResponse(
+    actionType: string,
+    context?: {
+      userStatus?: {
+        level?: number;
+        totalAssets?: number;
+        savingsRate?: number;
+        questCompleted?: boolean;
+        streakDays?: number;
+      };
+      lifeStatus?: LifeStatus;
+    }
+  ): Promise<DragonQuestResponse> {
+    console.log(`🐉 Generating AI response for: ${actionType}`);
 
-どんな知能指数でも、社会に適応できなくても大丈夫じゃ。
-一歩ずつ進めば、必ず幸せな人生を送れるぞ！
+    try {
+      // LifeSupportChatServiceのコンテキストに変換
+      const aiContext: LifeSupportContext = {
+        userStatus: context?.userStatus,
+        lifeStatus: context?.lifeStatus
+          ? {
+              bankBalance: context.lifeStatus.bankBalance,
+              hasJob: context.lifeStatus.hasJob,
+              hasHome: context.lifeStatus.hasHome,
+              healthStatus: context.lifeStatus.healthStatus,
+              hasHealthInsurance: context.lifeStatus.hasHealthInsurance,
+              anxietyLevel: context.lifeStatus.anxietyLevel,
+              depressionLevel: context.lifeStatus.depressionLevel,
+              socialSupport: context.lifeStatus.socialSupport,
+            }
+          : undefined,
+        urgencyLevel: actionType === 'emergency-help' ? 'emergency' : 'normal',
+      };
 
-今、何をすべきか迷っているかもしれんが、
-まずは基本的なことから始めてみよう：
+      // AI APIを呼び出してレスポンスを生成
+      const aiResponse: AIResponse = await lifeSupportChatService.generateResponse(
+        actionType,
+        aiContext
+      );
 
-1. 💰 お金の状況を確認しよう
-2. 🏠 安全な住む場所があるか確認しよう  
-3. 🏥 健康保険に加入しているか確認しよう
-4. 🍳 簡単な料理ができるか確認しよう
-5. 🧠 心の健康をケアしよう
+      // DragonQuestResponseに変換
+      return this.convertAIResponseToDragonQuest(aiResponse, actionType);
+    } catch (error) {
+      console.error('AI response generation failed:', error);
+      // フォールバックとして固定レスポンスを使用
+      return this.generateFallbackResponse(actionType);
+    }
+  }
 
-一つずつ、ゆっくりで構わない。
-君のペースで進んでいこう！`;
+  /**
+   * AI応答をDragonQuestレスポンスに変換
+   */
+  private static convertAIResponseToDragonQuest(
+    aiResponse: AIResponse,
+    actionType: string
+  ): DragonQuestResponse {
+    // キャラクターマッピング
+    const characterMapping: Record<
+      string,
+      'king' | 'sage' | 'merchant' | 'guard' | 'architect' | 'tester'
+    > = {
+      king: 'king',
+      sage: 'sage',
+      merchant: 'merchant',
+      guard: 'guard',
+      architect: 'sage', // architect -> sage
+      tester: 'sage', // tester -> sage
+    };
+
+    // タイプマッピング
+    const typeMapping: Record<
+      string,
+      'advice' | 'mission' | 'celebration' | 'warning' | 'development' | 'technical'
+    > = {
+      advice: 'advice',
+      mission: 'mission',
+      celebration: 'celebration',
+      warning: 'warning',
+      development: 'development',
+      technical: 'technical',
+    };
+
+    const character = characterMapping[aiResponse.character] || 'sage';
+    const type = typeMapping[aiResponse.type] || 'advice';
 
     return {
-      id: this.generateId(),
-      character: 'sage',
-      message,
-      timestamp: new Date(),
-      type: 'advice',
-      actions: [
-        {
-          label: '今日やることを教えて',
-          action: () => console.log('Daily plan requested'),
-        },
-        {
-          label: '緊急時の対応を知りたい',
-          action: () => console.log('Emergency help requested'),
-        },
-        {
-          label: '基本的なことから始めたい',
-          action: () => console.log('Basic needs requested'),
-        },
-      ],
+      character,
+      type,
+      message: aiResponse.message,
+      title: this.generateTitleForResponse(type, character),
+      actions: aiResponse.actions || [],
+      metadata: {
+        confidence: aiResponse.confidence,
+        source: aiResponse.source,
+        timestamp: Date.now(),
+        actionType,
+      },
     };
   }
 
   /**
-   * 今日の行動プラン提案
+   * レスポンスタイトルの生成
    */
-  private generateDailyActionPlan(): ChatMessage {
-    const today = new Date().toLocaleDateString('ja-JP');
-    const message = `🌅 ${today} の行動プランじゃ！
-
-【朝（起きたらすぐ）】
-1. 顔を洗って歯を磨く（5分）
-2. コップ一杯の水を飲む（1分）
-3. 今日の目標を1つ決める（3分）
-
-【昼（午前中または昼）】
-1. 銀行口座の残高を確認する（15分）
-   → コンビニのATMで「残高照会」を選択
-   → 金額をメモまたは写真に撮る
-2. このサイトに残高を登録する（5分）
-
-【夕方（夜ご飯前）】
-1. 簡単な料理にチャレンジ（30分）
-   → 卵かけご飯から始めてOK
-   → インスタントラーメンに卵を入れてもOK
-2. 今日頑張ったことを1つ思い出す（5分）
-
-【夜（寝る前）】
-1. 明日やりたいことを1つ決める（5分）
-2. 深呼吸を3回する（3分）
-
-無理しないで、できることから始めよう！
-1つでもできたら大成功じゃ！`;
-
-    return {
-      id: this.generateId(),
-      character: 'king',
-      message,
-      timestamp: new Date(),
-      type: 'mission',
-      actions: [
-        {
-          label: 'ATMの使い方を詳しく',
-          action: () => console.log('ATM guide requested'),
-        },
-        {
-          label: '簡単な料理のレシピ',
-          action: () => console.log('Simple recipes requested'),
-        },
-        {
-          label: '今日は何から始めればいい？',
-          action: () => console.log('Starting point requested'),
-        },
-      ],
+  private static generateTitleForResponse(
+    type: 'advice' | 'mission' | 'celebration' | 'warning' | 'development' | 'technical',
+    character: 'king' | 'sage' | 'merchant' | 'guard' | 'architect' | 'tester'
+  ): string {
+    const titles: Record<string, Record<string, string>> = {
+      advice: {
+        king: '👑 王様からのアドバイス',
+        sage: '🧙‍♂️ 賢者の知恵',
+        merchant: '💰 商人の実用アドバイス',
+        guard: '🛡️ 衛兵の安全指導',
+      },
+      mission: {
+        king: '👑 王様からの重要任務',
+        sage: '🧙‍♂️ 賢者の導き',
+        merchant: '💰 商人の取引提案',
+        guard: '🛡️ 衛兵の警護任務',
+      },
+      celebration: {
+        king: '👑 王様からの祝福',
+        sage: '🧙‍♂️ 賢者の賞賛',
+        merchant: '💰 商人の成功祝い',
+        guard: '🛡️ 衛兵の栄誉',
+      },
+      warning: {
+        king: '👑 王様からの警告',
+        sage: '🧙‍♂️ 賢者の警告',
+        merchant: '💰 商人の注意喚起',
+        guard: '🛡️ 衛兵の緊急警報',
+      },
+      development: {
+        king: '👑 王様の開発指令',
+        sage: '🧙‍♂️ 賢者の技術指導',
+        merchant: '💰 商人の事業計画',
+        guard: '🛡️ 衛兵の作戦立案',
+      },
+      technical: {
+        king: '👑 王様の技術諮問',
+        sage: '🧙‍♂️ 賢者の技術解説',
+        merchant: '💰 商人の技術投資',
+        guard: '🛡️ 衛兵の技術訓練',
+      },
     };
+
+    return titles[type]?.[character] || '🤖 AIアシスタント';
   }
 
   /**
-   * 緊急時のサポート
+   * フォールバック応答の生成（AI API呼び出しに失敗した場合）
    */
-  private generateEmergencyHelp(): ChatMessage {
-    const message = `🚨 緊急時のサポートじゃ！状況に応じて行動しよう！
+  private static generateFallbackResponse(actionType: string): DragonQuestResponse {
+    const fallbackResponses: Record<string, DragonQuestResponse> = {
+      'life-support': {
+        character: 'sage',
+        type: 'advice',
+        title: '🧙‍♂️ 賢者の知恵',
+        message: `🤗 こんにちは！私は人生をサポートする賢者です。
 
-【生命に危険がある場合】
-🚑 救急車: 119番
-🚓 警察: 110番
-迷わずすぐに電話するのじゃ！
+まずは基本的なことから確認してみましょう：
+1. 💰 銀行口座の残高を確認する
+2. 🏠 安全な住む場所があるか確認する  
+3. 🏥 健康保険に加入しているか確認する
+4. 🍳 簡単な料理ができるか確認する
 
-【住む場所がない場合】
-🏛️ 市役所・区役所に行って「生活保護の相談をしたい」と伝える
-📞 生活保護ホットライン: 0120-919-024（24時間無料）
-
-【お金が全くない場合】
-🏛️ 市役所・区役所の福祉窓口で相談
-🍞 フードバンクの利用
-📞 生活困窮者自立相談支援機関に電話
-
-【心が辛い・死にたい場合】
-📞 いのちの電話: 0570-783-556（24時間無料）
-💬 チャット相談: https://www.npo-bond.org/chat.html
-🧠 心療内科・精神科を受診
-
-【病気・ケガの場合】
-🏥 近くの病院に行く
-📞 健康相談: #8000（夜間・休日）
-※保険証がなくても診てもらえるぞ！
-
-君は一人じゃない！必ず助けてくれる人がいる！
-恥ずかしがらずに助けを求めるのじゃ！`;
-
-    return {
-      id: this.generateId(),
-      character: 'guard',
-      message,
-      timestamp: new Date(),
-      type: 'warning',
-      actions: [
-        {
-          label: '市役所の場所を調べる',
-          action: () => console.log('City hall location requested'),
+一つずつ、あなたのペースで進んでいきましょう！誰でも幸せに生きる権利があります。`,
+        actions: [
+          { label: '詳しく教えて', actionType: 'advice' },
+          { label: '今日の計画', actionType: 'daily-plan' },
+        ],
+        metadata: {
+          confidence: 0.5,
+          source: 'fallback',
+          timestamp: Date.now(),
+          actionType,
         },
-        {
-          label: '病院の場所を調べる',
-          action: () => console.log('Hospital location requested'),
+      },
+
+      'daily-plan': {
+        character: 'king',
+        type: 'mission',
+        title: '👑 王様からの重要任務',
+        message: `🌅 今日の行動プランを一緒に立てましょう！
+
+【朝の任務】
+- 顔を洗って歯を磨く（5分）
+- 水を一杯飲む（1分）
+
+【昼の任務】  
+- 銀行口座の残高を確認する（15分）
+- このサイトに記録する（5分）
+
+【夜の任務】
+- 今日頑張ったことを思い出す（5分）
+- 深呼吸を3回する（3分）
+
+小さな一歩でも、着実に前進することが重要です！`,
+        actions: [
+          { label: 'できました！', actionType: 'celebration' },
+          { label: 'もっと詳しく', actionType: 'advice' },
+        ],
+        metadata: {
+          confidence: 0.5,
+          source: 'fallback',
+          timestamp: Date.now(),
+          actionType,
         },
-        {
-          label: '相談窓口の一覧',
-          action: () => console.log('Support services list requested'),
+      },
+
+      'emergency-help': {
+        character: 'guard',
+        type: 'warning',
+        title: '🛡️ 衛兵の緊急警報',
+        message: `🚨 緊急時のサポート情報です！
+
+【生命に危険】🚑 119番 / 🚓 110番
+【住居なし】🏛️ 市役所で「生活保護相談」
+【お金なし】🏛️ 市役所の福祉窓口  
+【心が辛い】📞 いのちの電話: 0570-783-556
+
+あなたは一人じゃありません。必ず助けてくれる人がいます！
+困った時は遠慮せずに助けを求めてください。`,
+        actions: [
+          { label: '市役所の場所', actionType: 'basic-needs' },
+          { label: '心のケア', actionType: 'mental-health' },
+        ],
+        metadata: {
+          confidence: 0.8,
+          source: 'fallback',
+          timestamp: Date.now(),
+          actionType,
         },
-      ],
+      },
+
+      'basic-needs': {
+        character: 'sage',
+        type: 'advice',
+        title: '🧙‍♂️ 賢者の知恵',
+        message: `🏠 基本的な生活ニーズを一緒に確認しましょう：
+
+【住居】安全に眠れる場所はありますか？
+【食事】毎日食べ物を確保できていますか？
+【お金】生活費は足りていますか？
+【健康】病気や怪我の心配はありませんか？
+【スキル】基本的な生活スキルに困っていませんか？
+
+一つでも「いいえ」があれば、一緒に解決策を考えましょう。`,
+        actions: [
+          { label: '住居について', actionType: 'advice' },
+          { label: 'お金について', actionType: 'advice' },
+          { label: 'スキルを学ぶ', actionType: 'skill-building' },
+        ],
+        metadata: {
+          confidence: 0.6,
+          source: 'fallback',
+          timestamp: Date.now(),
+          actionType,
+        },
+      },
     };
+
+    return fallbackResponses[actionType] || fallbackResponses['life-support'];
+  }
+
+  // ... existing methods (generateLifeSupportAdvice, etc.) を削除または非推奨に
+  // 以下は後方互換性のため残しておく
+
+  /**
+   * @deprecated Use generateResponse instead
+   */
+  static async generateLifeSupportAdvice(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateLifeSupportAdvice is deprecated. Use generateResponse instead.');
+    return this.generateResponse('life-support', { lifeStatus: status });
   }
 
   /**
-   * 基本的なニーズの確認
+   * @deprecated Use generateResponse instead
    */
-  private generateBasicNeedsCheck(): ChatMessage {
-    const message = `🏠 基本的な生活の確認をしてみよう！
-
-【住居について】
-✓ 安全な場所で眠れているか？
-✓ 雨風をしのげる場所があるか？
-→ もしない場合は、すぐに市役所に相談じゃ！
-
-【食事について】  
-✓ 毎日何かしら食べられているか？
-✓ 水分補給ができているか？
-→ 困った時はフードバンクや炊き出しもあるぞ！
-
-【お金について】
-✓ 銀行口座の残高はいくらか？
-✓ 今月の生活費は足りそうか？
-→ 残高確認をまだしていないなら、今すぐやってみよう！
-
-【健康について】
-✓ 健康保険に加入しているか？
-✓ 体調が悪い時に病院に行けるか？
-→ 保険証がなくても緊急時は診てもらえるぞ！
-
-【基本スキル】
-✓ 簡単な料理ができるか？
-✓ お金の計算ができるか？
-✓ インターネットを使えるか？
-→ できないことがあっても大丈夫！一つずつ覚えていこう！
-
-どれか一つでも「できていない」「わからない」ことがあったら、
-それが今日の最優先タスクじゃ！`;
-
-    return {
-      id: this.generateId(),
-      character: 'sage',
-      message,
-      timestamp: new Date(),
-      type: 'advice',
-      actions: [
-        {
-          label: '銀行口座の残高確認方法',
-          action: () => console.log('Bank balance check guide requested'),
-        },
-        {
-          label: '健康保険の加入方法',
-          action: () => console.log('Health insurance guide requested'),
-        },
-        {
-          label: '簡単な料理の始め方',
-          action: () => console.log('Cooking basics requested'),
-        },
-      ],
-    };
+  static async generateDailyActionPlan(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateDailyActionPlan is deprecated. Use generateResponse instead.');
+    return this.generateResponse('daily-plan', { lifeStatus: status });
   }
 
   /**
-   * メンタルヘルスサポート
+   * @deprecated Use generateResponse instead
    */
-  private generateMentalHealthSupport(): ChatMessage {
-    const message = `🧠 心のケアは とても大切じゃ！
-
-まず、深呼吸を3回してみよう：
-1. 鼻から4秒かけて吸う
-2. 4秒間止める
-3. 口から4秒かけて吐く
-
-【今すぐできること】
-😌 今日良かったことを1つ思い出してみよう
-💚 自分を褒められることを1つ見つけよう
-🤝 信頼できる人に「元気？」とメッセージを送ってみよう
-
-【心が辛い時の対処法】
-📞 誰かに話す（友達、家族、相談窓口）
-🚶‍♀️ 少しだけ外に出て空気を吸う
-🎵 好きな音楽を聞く
-📝 今の気持ちを紙に書き出す
-
-【専門的なサポート】
-📞 いのちの電話: 0570-783-556（24時間）
-📞 こころの健康相談: 0570-064-556
-💬 チャット相談: いつでも利用可能
-🏥 心療内科・精神科への受診も検討しよう
-
-君の気持ちは大切じゃ！
-辛い時は一人で抱え込まず、
-助けを求めることは勇気のある行動なのじゃ！
-
-完璧である必要はない。
-今日を生きているだけで十分素晴らしいぞ！`;
-
-    return {
-      id: this.generateId(),
-      character: 'sage',
-      message,
-      timestamp: new Date(),
-      type: 'advice',
-      actions: [
-        {
-          label: '相談窓口に今すぐ電話する',
-          action: () => console.log('Call counseling service'),
-        },
-        {
-          label: '心療内科を探す',
-          action: () => console.log('Find mental health clinic'),
-        },
-        {
-          label: 'リラックス方法を教えて',
-          action: () => console.log('Relaxation techniques requested'),
-        },
-      ],
-    };
+  static async generateEmergencyHelp(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateEmergencyHelp is deprecated. Use generateResponse instead.');
+    return this.generateResponse('emergency-help', { lifeStatus: status });
   }
 
   /**
-   * スキル構築のアドバイス
+   * @deprecated Use generateResponse instead
    */
-  private generateSkillBuildingAdvice(): ChatMessage {
-    const message = `🎯 生活に必要なスキルを一緒に身につけよう！
+  static async generateBasicNeedsCheck(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateBasicNeedsCheck is deprecated. Use generateResponse instead.');
+    return this.generateResponse('basic-needs', { lifeStatus: status });
+  }
 
-【料理スキル（超初心者向け）】
-🥚 卵かけご飯の作り方
-1. ご飯を茶碗によそう
-2. 卵を割って入れる
-3. 醤油を少し垂らす
-4. 混ぜて食べる → 完成！
+  /**
+   * @deprecated Use generateResponse instead
+   */
+  static async generateMentalHealthSupport(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateMentalHealthSupport is deprecated. Use generateResponse instead.');
+    return this.generateResponse('mental-health', { lifeStatus: status });
+  }
 
-🍜 インスタントラーメン+卵
-1. お湯を沸かす
-2. 麺を入れて3分
-3. 卵を割って入れる
-4. 粉末スープを入れる → 完成！
-
-【お金の管理スキル】
-💰 ATMの使い方
-1. カードを入れる
-2. 「残高照会」を選ぶ
-3. 暗証番号（4桁）を入力
-4. 金額をメモする
-
-💳 簡単な家計管理
-1. 今日使ったお金をメモ
-2. レシートを1つの場所に集める
-3. 1週間でいくら使ったか計算
-
-【インターネットスキル】
-🔍 検索の仕方
-1. Googleを開く
-2. 知りたいことを入力
-3. Enterを押す
-例：「近くの病院」「簡単なレシピ」
-
-📱 このサイトの使い方
-1. 「資産管理」で残高を登録
-2. 「タスク管理」で今日やることを記録
-3. 毎日少しずつ使ってみる
-
-失敗しても大丈夫！
-練習すれば必ずできるようになるぞ！`;
-
-    return {
-      id: this.generateId(),
-      character: 'merchant',
-      message,
-      timestamp: new Date(),
-      type: 'advice',
-      actions: [
-        {
-          label: '料理の動画を見せて',
-          action: () => console.log('Cooking videos requested'),
-        },
-        {
-          label: '家計管理のやり方',
-          action: () => console.log('Budget management guide requested'),
-        },
-        {
-          label: '今すぐ練習してみたい',
-          action: () => console.log('Practice mode requested'),
-        },
-      ],
-    };
+  /**
+   * @deprecated Use generateResponse instead
+   */
+  static async generateSkillBuildingAdvice(status: LifeStatus): Promise<DragonQuestResponse> {
+    console.warn('generateSkillBuildingAdvice is deprecated. Use generateResponse instead.');
+    return this.generateResponse('skill-building', { lifeStatus: status });
   }
 }
 
+export { DragonQuestAIService };
 export const dragonQuestAIService = new DragonQuestAIService();
