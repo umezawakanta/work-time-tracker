@@ -319,3 +319,13 @@ const generateTimelineSampleData = () => {
 
   return { timelineBadges, timelineEvents };
 };
+
+export const TimelineViewComplete: React.FC = () => {
+  const [filter, setFilter] = useState<TimelineFilter>({
+    // ...
+  });
+
+  return (
+    // ... existing JSX
+  );
+};

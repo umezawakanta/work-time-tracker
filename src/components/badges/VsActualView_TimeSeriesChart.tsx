@@ -1,5 +1,18 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { BarChart3 } from 'lucide-react';
+
+interface TimeSeriesComparison {
+  date: string;
+  plannedCumulative: number;
+  actualCumulative: number;
+  plannedDaily: number;
+  actualDaily: number;
+  gap: number;
+}
+
 // 時系列比較チャート表示コンポーネント
-const renderTimeSeriesComparison = (timeSeriesData: TimeSeriesComparison[]) => (
+export const renderTimeSeriesComparison = (timeSeriesData: TimeSeriesComparison[]) => (
   <Card>
     <CardHeader>
       <CardTitle className="flex items-center gap-2">

@@ -30,7 +30,7 @@ export const createBadge = (
   icon,
   requirements: [
     {
-      type: 'skill_development',
+      type: 'feature_complete',
       target: 100,
       current: progress,
       description: `${name}の習得`,
@@ -53,5 +53,4 @@ export const createBadge = (
             ? 100
             : 200,
   tags,
-  estimatedHours,
 });

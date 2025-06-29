@@ -1,5 +1,29 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
+
+interface TimelineFilter {
+  categories: string[];
+  difficulties: string[];
+  statuses: string[];
+  priorities: string[];
+  dateRange: { start: string; end: string };
+  showDependencies: boolean;
+  showMilestones: boolean;
+  showRisks: boolean;
+}
+
+interface TimelineViewSettings {
+  viewMode: 'timeline' | 'gantt' | 'calendar' | 'list';
+  timeScale: 'day' | 'week' | 'month' | 'quarter';
+  groupBy: 'category' | 'priority' | 'status' | 'none';
+  showDetails: boolean;
+  autoRefresh: boolean;
+}
+
 // タイムラインフィルターコンポーネント
-const renderTimelineFilters = (
+export const renderTimelineFilters = (
   filter: TimelineFilter,
   onFilterChange: (newFilter: TimelineFilter) => void,
   viewSettings: TimelineViewSettings,
