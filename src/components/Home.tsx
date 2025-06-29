@@ -181,6 +181,17 @@ export const Home: React.FC = () => {
 
   const [quickActions, setQuickActions] = useState<QuickAction[]>([
     {
+      id: 'asset-quest',
+      title: '🏰 資産形成クエスト',
+      description: '毎月の収支管理でレベルアップ',
+      icon: <DollarSign className="w-6 h-6" />,
+      path: '/asset-quest',
+      color: '#059669',
+      category: 'finance',
+      priority: 11,
+      status: 'active',
+    },
+    {
       id: 'dashboard',
       title: '統合ダッシュボード',
       description: 'リアルタイム監視・分析',

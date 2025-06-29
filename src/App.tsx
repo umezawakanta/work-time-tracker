@@ -143,6 +143,13 @@ const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const ApiTest = lazy(() => import('./pages/ApiTest'));
 
+// 🏰 Asset Quest pages
+const AssetFormationQuestPage = lazy(() =>
+  import('./components/assetQuest/AssetFormationQuestDashboard').then((module) => ({
+    default: module.AssetFormationQuestDashboard,
+  }))
+);
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -378,6 +385,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <IntegratedDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/asset-quest"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <AssetFormationQuestPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
