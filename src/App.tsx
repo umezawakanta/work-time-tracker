@@ -165,6 +165,9 @@ const QuickLanguageTestPage = lazy(() =>
   }))
 );
 
+// 🤖 Self Improvement Dashboard
+const SelfImprovementDashboard = lazy(() => import('./pages/SelfImprovementDashboard'));
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -762,6 +765,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <BadgeCompletionPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/self-improvement"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <SelfImprovementDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
