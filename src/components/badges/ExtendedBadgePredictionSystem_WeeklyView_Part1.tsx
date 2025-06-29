@@ -64,3 +64,41 @@ const renderWeeklyViewDetailedContent = (
     </div>
   </div>
 );
+
+interface WeeklySchedule {
+  weekNumber: number;
+  totalPlannedHours: number;
+  plannedBadges: WeeklyBadgePlan[];
+  onTrackScore: number;
+  theme: string;
+  startDate: string;
+  endDate: string;
+  riskLevel: string;
+  efficiency: number;
+  completionRate: number;
+}
+
+interface WeeklyBadgePlan {
+  badgeId: string;
+  badgeName: string;
+  badgeEmoji: string;
+  category: string;
+  priority: 'high' | 'medium' | 'low';
+  estimatedHours: number;
+  actualHours: number;
+  targetDate: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'delayed';
+  dependencies: string[];
+  progress: number;
+  confidence: number;
+}
+
+const getPriorityColor = (priority: string) =>
+  priority === 'high' ? 'destructive' : priority === 'medium' ? 'secondary' : 'outline';
+
+const getStatusColor = (status: string) =>
+  status === 'completed'
+    ? 'text-green-600'
+    : status === 'delayed'
+      ? 'text-red-600'
+      : 'text-blue-600';
