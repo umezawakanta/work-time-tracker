@@ -1024,6 +1024,13 @@ const Home: React.FC = () => {
             path: '/work-time-reports',
             gradient: 'from-emerald-500 to-emerald-600',
           },
+          {
+            icon: <AlertTriangle className="h-6 w-6" />,
+            title: '🔍 固定データ分析',
+            description: 'ハードコード箇所の可視化',
+            path: '/hardcoded-data',
+            gradient: 'from-red-500 to-pink-600',
+          },
         ].map((action, index) => (
           <EnhancedCard
             key={index}

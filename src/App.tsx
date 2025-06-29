@@ -171,6 +171,9 @@ const SelfImprovementDashboard = lazy(() => import('./pages/SelfImprovementDashb
 // 🤖 Multi AI Integration Dashboard
 const MultiAIDashboard = lazy(() => import('./pages/MultiAIDashboard'));
 
+// 🔍 Hardcoded Data Dashboard
+const HardcodedDataDashboard = lazy(() => import('./pages/HardcodedDataDashboard'));
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -788,6 +791,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <MultiAIDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/hardcoded-data"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <HardcodedDataDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
