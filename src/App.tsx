@@ -168,6 +168,9 @@ const QuickLanguageTestPage = lazy(() =>
 // 🤖 Self Improvement Dashboard
 const SelfImprovementDashboard = lazy(() => import('./pages/SelfImprovementDashboard'));
 
+// 🤖 Multi AI Integration Dashboard
+const MultiAIDashboard = lazy(() => import('./pages/MultiAIDashboard'));
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -775,6 +778,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <SelfImprovementDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/multi-ai"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <MultiAIDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

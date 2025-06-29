@@ -331,7 +331,38 @@ export const SelfImprovementDashboard: React.FC = () => {
         </Card>
 
         {/* 統合ステータス */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Brain className="h-5 w-5" />
+                <span>マルチAI統合</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm">9つのAIサービス統合済み</span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <p>• ChatGPT, Claude, Gemini</p>
+                  <p>• Manus, NotebookLM, Notion</p>
+                  <p>• AI Studio, SuperWhisper, Sora</p>
+                  <p>• コンセンサス機能により信頼性向上</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open('/multi-ai', '_blank')}
+                  className="w-full"
+                >
+                  🤖 マルチAIダッシュボード
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
