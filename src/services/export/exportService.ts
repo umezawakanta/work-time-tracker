@@ -1,6 +1,5 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
 import { TodoItem } from '@/types';
 import { DashboardMetrics } from '@/services/analytics/dashboardService';
 
@@ -59,6 +58,7 @@ class ExportService {
 
   private exportToXLSX(data: any, filename: string) {
     // TODO: implement XLSX export
+    // Note: When implementing, consider using 'exceljs' as a secure alternative
     return;
   }
 
