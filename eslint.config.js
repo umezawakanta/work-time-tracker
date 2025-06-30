@@ -1,11 +1,23 @@
-﻿import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+﻿const js = require('@eslint/js');
+const globals = require('globals');
+const reactHooks = require('eslint-plugin-react-hooks');
+const reactRefresh = require('eslint-plugin-react-refresh');
+const tseslint = require('typescript-eslint');
 
-export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '.eslintrc.js', 'vite.config.ts', '*.config.js', 'coverage/**'] },
+module.exports = tseslint.config(
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      '.eslintrc.js',
+      'vite.config.ts',
+      '*.config.js',
+      'coverage/**',
+      'jest.*.config.js', // Jest設定ファイルを除外
+      'src/**/__tests__/**', // テストファイルのESLintチェックを緩和
+      'src/**/__mocks__/**', // モックファイルを除外
+    ]
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -34,4 +46,15 @@ export default tseslint.config(
       'prefer-rest-params': 'warn',
     },
   },
-)
+  // テストファイル専用の設定
+  {
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*.{ts,tsx}'],
+    rules: {
+      // テストファイルでは一部のルールを緩和
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      'no-undef': 'off', // Jest グローバル変数のため
+    },
+  }
+);

@@ -238,41 +238,46 @@ class AuthManager {
       return this.refreshPromise;
     }
 
-    // リフレッシュ処理
-    this.refreshPromise = new Promise<boolean>(async (resolve) => {
-      try {
-        // ここで実際のAPIコールを行う
-        // 本番環境では、実際のAPIエンドポイントを呼び出す
-        const response = await fetch('/api/v1/auth/refresh', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refreshToken }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Token refresh failed');
-        }
-
-        const data = await response.json();
-
-        if (data.token) {
-          this.setAuth(data.token, data.refreshToken || refreshToken);
-          resolve(true);
-        } else {
-          throw new Error('Invalid token response');
-        }
-      } catch (error) {
-        console.error('トークンのリフレッシュに失敗しました:', error);
-        this.clearAuth();
-        resolve(false);
-      } finally {
-        this.refreshPromise = null;
-      }
-    });
+    // リフレッシュ処理（async Promise executor を修正）
+    this.refreshPromise = this.performTokenRefresh(refreshToken);
 
     return this.refreshPromise;
+  }
+
+  /**
+   * 実際のトークンリフレッシュ処理
+   */
+  private async performTokenRefresh(refreshToken: string): Promise<boolean> {
+    try {
+      // ここで実際のAPIコールを行う
+      // 本番環境では、実際のAPIエンドポイントを呼び出す
+      const response = await fetch('/api/v1/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Token refresh failed');
+      }
+
+      const data = await response.json();
+
+      if (data.token) {
+        this.setAuth(data.token, data.refreshToken || refreshToken);
+        return true;
+      } else {
+        throw new Error('Invalid token response');
+      }
+    } catch (error) {
+      console.error('トークンのリフレッシュに失敗しました:', error);
+      this.clearAuth();
+      return false;
+    } finally {
+      this.refreshPromise = null;
+    }
   }
 
   /**
