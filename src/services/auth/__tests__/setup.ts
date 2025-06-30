@@ -31,94 +31,14 @@ export const mockFirestore = {
   setDoc: jest.fn(),
   getDoc: jest.fn(),
   updateDoc: jest.fn(),
-  serverTimestamp: jest.fn(() => 'mock-timestamp'),
+  serverTimestamp: jest.fn(),
 };
 
-// 認証テスト用のモックユーザーデータ
-export const mockAuthUser = {
-  uid: 'test-uid-123',
-  email: 'test@example.com',
-  displayName: 'Test User',
-  photoURL: null,
-  emailVerified: true,
-  metadata: {
-    creationTime: '2023-01-01T00:00:00.000Z',
-    lastSignInTime: '2023-01-01T00:00:00.000Z',
-  },
-};
-
-export const mockUserDocument = {
-  exists: () => true,
-  data: () => ({
-    isPremium: false,
-    subscriptionStatus: 'free',
-    createdAt: { toDate: () => new Date('2023-01-01') },
-    lastLoginAt: { toDate: () => new Date('2023-01-01') },
-    preferences: {
-      theme: 'system',
-      language: 'ja',
-      timezone: 'Asia/Tokyo',
-      notifications: {
-        email: true,
-        push: true,
-        daily: true,
-        weekly: true,
-      },
-    },
-  }),
-};
-
-// API レスポンスのモック
-export const mockLoginResponse = {
-  accessToken: 'mock-access-token-123',
-  refreshToken: 'mock-refresh-token-456',
-  user: {
-    id: 'user-123',
-    _id: 'user-123',
-    name: 'Test User',
-    username: 'testuser',
-    email: 'test@example.com',
-    isAdmin: false,
-    avatar: '',
-  },
-  message: 'ログイン成功',
-  expiresIn: 3600,
-  refreshExpiresIn: 604800,
-};
-
-// 環境変数のモック設定
-export const setupTestEnvironment = (env: 'development' | 'production' = 'production') => {
-  const originalEnv = process.env.NODE_ENV;
-  const originalLocation = window.location;
-
-  process.env.NODE_ENV = env;
-
-  if (env === 'production') {
-    delete (window as any).location;
-    window.location = {
-      ...originalLocation,
-      hostname: 'myapp.vercel.app',
-      origin: 'https://myapp.vercel.app',
-    } as Location;
-  } else {
-    delete (window as any).location;
-    window.location = {
-      ...originalLocation,
-      hostname: 'localhost',
-      origin: 'http://localhost:3000',
-    } as Location;
-  }
-
-  return () => {
-    process.env.NODE_ENV = originalEnv;
-    window.location = originalLocation;
-  };
-};
-
-// トークンマネージャー用のモック設定
-export const mockTokenManagerApi = {
+// API モックの共通設定
+export const mockApiConfig = {
   get: jest.fn(),
   post: jest.fn(),
+  put: jest.fn(),
   delete: jest.fn(),
   defaults: {
     headers: {
@@ -135,169 +55,269 @@ export const mockTokenManagerApi = {
   },
 };
 
-// Fetch API のモック
-export const setupFetchMock = () => {
-  global.fetch = jest.fn();
-
-  (global.fetch as jest.Mock).mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: () => Promise.resolve({}),
-    text: () => Promise.resolve(''),
-  });
-
-  return global.fetch as jest.Mock;
+// ローカルストレージのモック
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
 };
 
-// Web API のモック設定
-export const setupWebApiMocks = () => {
-  // Crypto API
-  Object.defineProperty(global, 'crypto', {
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
+
+// セッションストレージのモック
+const sessionStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+});
+
+// location のモック（型安全な方法）
+const mockLocation = {
+  href: 'http://localhost:3000',
+  origin: 'http://localhost:3000',
+  protocol: 'http:',
+  host: 'localhost:3000',
+  hostname: 'localhost',
+  port: '3000',
+  pathname: '/',
+  search: '',
+  hash: '',
+  assign: jest.fn(),
+  replace: jest.fn(),
+  reload: jest.fn(),
+};
+
+Object.defineProperty(window, 'location', {
+  value: mockLocation,
+  writable: true,
+});
+
+// ヘルパー関数: location を本番環境用に設定
+export const setProductionLocation = () => {
+  Object.defineProperty(window, 'location', {
     value: {
-      randomUUID: jest.fn(() => 'test-uuid-1234-5678-9012'),
-      getRandomValues: jest.fn((arr) => {
-        for (let i = 0; i < arr.length; i++) {
-          arr[i] = Math.floor(Math.random() * 256);
-        }
-        return arr;
-      }),
+      ...mockLocation,
+      href: 'https://example.com',
+      origin: 'https://example.com',
+      protocol: 'https:',
+      host: 'example.com',
+      hostname: 'example.com',
+      port: '',
     },
     writable: true,
   });
+};
 
-  // Local Storage
-  const localStorageMock = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
-    length: 0,
-    key: jest.fn(),
-  };
-
-  Object.defineProperty(window, 'localStorage', {
-    value: localStorageMock,
+// ヘルパー関数: location を開発環境用に設定
+export const setDevelopmentLocation = () => {
+  Object.defineProperty(window, 'location', {
+    value: {
+      ...mockLocation,
+      href: 'http://localhost:3000',
+      origin: 'http://localhost:3000',
+      protocol: 'http:',
+      host: 'localhost:3000',
+      hostname: 'localhost',
+      port: '3000',
+    },
     writable: true,
   });
+};
 
-  Object.defineProperty(window, 'sessionStorage', {
-    value: localStorageMock,
+// ヘルパー関数: location をリセット
+export const resetLocation = () => {
+  Object.defineProperty(window, 'location', {
+    value: mockLocation,
     writable: true,
   });
-
-  return { localStorage: localStorageMock, sessionStorage: localStorageMock };
 };
 
-// タイマーのモック設定
-export const setupTimerMocks = () => {
-  jest.useFakeTimers();
-
-  return {
-    advanceTimers: (ms: number) => jest.advanceTimersByTime(ms),
-    runAllTimers: () => jest.runAllTimers(),
-    cleanup: () => jest.useRealTimers(),
-  };
-};
-
-// 認証エラーのモックデータ
-export const mockAuthErrors = {
-  emailExists: { code: 'auth/email-already-in-use' },
-  userNotFound: { code: 'auth/user-not-found' },
-  wrongPassword: { code: 'auth/wrong-password' },
-  weakPassword: { code: 'auth/weak-password' },
-  invalidEmail: { code: 'auth/invalid-email' },
-  tooManyRequests: { code: 'auth/too-many-requests' },
-  userDisabled: { code: 'auth/user-disabled' },
-  operationNotAllowed: { code: 'auth/operation-not-allowed' },
-  popupClosed: { code: 'auth/popup-closed-by-user' },
-  unknown: { code: 'auth/unknown-error', message: 'Unknown error occurred' },
-};
-
-// ネットワークエラーのモック
-export const mockNetworkErrors = {
-  timeout: new Error('Request timeout'),
-  networkError: new Error('Network Error'),
-  serverError: {
-    response: {
-      status: 500,
-      data: { message: 'Internal Server Error' },
-    },
+// 環境変数のモック
+export const mockEnvironmentVariables = {
+  setDevelopment: () => {
+    process.env.NODE_ENV = 'development';
   },
-  unauthorized: {
-    response: {
-      status: 401,
-      data: { message: 'Unauthorized' },
-    },
+  setProduction: () => {
+    process.env.NODE_ENV = 'production';
   },
-  rateLimited: {
-    response: {
-      status: 429,
-      data: { message: 'Too Many Requests' },
-    },
+  setTest: () => {
+    process.env.NODE_ENV = 'test';
+  },
+  reset: () => {
+    process.env.NODE_ENV = 'test';
   },
 };
 
-// テスト用のユーティリティ関数
-export const createMockPromise = <T>() => {
-  let resolve: (value: T) => void;
-  let reject: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return { promise, resolve: resolve!, reject: reject! };
+// カスタムイベントのモック
+export const mockCustomEvents = {
+  dispatchTokenExpired: () => {
+    window.dispatchEvent(new CustomEvent('auth:token-expired'));
+  },
+  dispatchAuthSuccess: () => {
+    window.dispatchEvent(new CustomEvent('auth:success'));
+  },
+  dispatchAuthFailure: () => {
+    window.dispatchEvent(new CustomEvent('auth:failure'));
+  },
 };
 
-// テスト後のクリーンアップ
-export const cleanup = () => {
+// フェッチAPIのモック
+global.fetch = jest.fn();
+
+// Intersection Observer のモック
+global.IntersectionObserver = jest.fn().mockImplementation((callback) => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+  root: null,
+  rootMargin: '',
+  thresholds: [],
+}));
+
+// ResizeObserver のモック
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
+
+// matchMedia のモック
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// テスト実行前の共通セットアップ
+export const setupAuthTest = () => {
+  // localStorage をクリア
+  localStorageMock.clear();
+  sessionStorageMock.clear();
+
+  // モックをリセット
   jest.clearAllMocks();
+
+  // 環境変数をテスト用に設定
+  mockEnvironmentVariables.setTest();
+
+  // location をデフォルトに設定
+  resetLocation();
+};
+
+// テスト実行後のクリーンアップ
+export const cleanupAuthTest = () => {
+  // 全てのモックをクリア
+  jest.clearAllMocks();
+
+  // タイマーをクリア
   jest.clearAllTimers();
-  jest.useRealTimers();
 
-  // イベントリスナーのクリーンアップ
-  try {
-    window.removeEventListener('auth:token-expired', () => {});
-    window.removeEventListener('beforeunload', () => {});
-  } catch (e) {
-    // エラーを無視
-  }
+  // 環境変数をリセット
+  mockEnvironmentVariables.reset();
+
+  // location をリセット
+  resetLocation();
 };
 
-// デフォルトのセットアップ実行
-beforeEach(() => {
-  setupWebApiMocks();
-  setupFetchMock();
-});
-
-afterEach(() => {
-  cleanup();
-});
-
-// テスト環境の検証（安全バージョン）
-export const validateTestEnvironment = () => {
-  const checks = [
-    { name: 'TextEncoder', value: global.TextEncoder },
-    { name: 'fetch', value: global.fetch },
-    { name: 'localStorage', value: window.localStorage },
-  ];
-
-  const missing = checks.filter((check) => !check.value);
-
-  if (missing.length > 0) {
-    console.warn(
-      '⚠️ Missing test environment features:',
-      missing.map((m) => m.name)
-    );
-  } else {
-    console.log('✅ Test environment validation passed');
-  }
+// Jest の beforeEach/afterEach で使用するヘルパー
+export const authTestHelpers = {
+  beforeEach: setupAuthTest,
+  afterEach: cleanupAuthTest,
 };
 
-// 初期化時に検証を実行（エラーを投げない）
-try {
-  validateTestEnvironment();
-} catch (error) {
-  console.warn('⚠️ Test environment validation failed:', error);
+// TypeScript 型定義の拡張
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeAuthenticated(): R;
+      toHaveValidToken(): R;
+    }
+  }
 }
+
+// カスタムマッチャーの追加
+expect.extend({
+  toBeAuthenticated(received) {
+    const pass = received && typeof received === 'object' && received.isAuthenticated === true;
+    if (pass) {
+      return {
+        message: () => `expected ${received} not to be authenticated`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected ${received} to be authenticated`,
+        pass: false,
+      };
+    }
+  },
+
+  toHaveValidToken(received) {
+    const pass = received && typeof received === 'string' && received.length > 0;
+    if (pass) {
+      return {
+        message: () => `expected ${received} not to have a valid token`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () => `expected ${received} to have a valid token`,
+        pass: false,
+      };
+    }
+  },
+});
+
+// デバッグ用ヘルパー
+export const debugAuthState = (component: any) => {
+  console.log('🐛 Current Auth State:', {
+    isAuthenticated: component.isAuthenticated,
+    user: component.user,
+    loading: component.loading,
+    token: localStorage.getItem('accessToken') ? 'present' : 'missing',
+  });
+};
+
+// テストデータファクトリー
+export const createMockUser = (overrides = {}) => ({
+  id: 'test-user-id',
+  _id: 'test-user-id',
+  name: 'Test User',
+  username: 'testuser',
+  email: 'test@example.com',
+  isAdmin: false,
+  avatar: '',
+  ...overrides,
+});
+
+export const createMockToken = (overrides = {}) => ({
+  accessToken: 'mock-access-token',
+  refreshToken: 'mock-refresh-token',
+  expiresAt: Date.now() + 3600000, // 1時間後
+  ...overrides,
+});
+
+export const createMockSessionInfo = (overrides = {}) => ({
+  isAuthenticated: true,
+  expiresAt: new Date(Date.now() + 3600000),
+  refreshExpiresAt: new Date(Date.now() + 604800000),
+  timeUntilExpiry: 3600,
+  timeUntilRefreshExpiry: 604800,
+  ...overrides,
+});
