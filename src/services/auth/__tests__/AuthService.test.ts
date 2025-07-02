@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { AuthUser, AuthError } from '@/types/auth';
 
 // Firebase のモック設定
@@ -17,6 +17,21 @@ jest.mock('@/config/firebase', () => ({
   db: {},
 }));
 
+// Firebase Firestore のモック
+jest.mock('firebase/firestore', () => ({
+  doc: jest.fn(),
+  setDoc: jest.fn(),
+  getDoc: jest.fn(),
+  updateDoc: jest.fn(),
+  serverTimestamp: jest.fn(),
+  Timestamp: jest.fn().mockImplementation(() => ({
+    toDate: () => new Date('2024-01-01T00:00:00Z'),
+    seconds: 1704067200,
+    nanoseconds: 0,
+  })),
+}));
+
+// Firebase Auth のモック
 jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
@@ -24,17 +39,30 @@ jest.mock('firebase/auth', () => ({
   signOut: jest.fn(),
   sendPasswordResetEmail: jest.fn(),
   updateProfile: jest.fn(),
-  GoogleAuthProvider: jest.fn().mockImplementation(() => ({})),
-  onAuthStateChanged: jest.fn(),
+  GoogleAuthProvider: jest.fn(),
 }));
 
-jest.mock('firebase/firestore', () => ({
-  doc: jest.fn(),
-  setDoc: jest.fn(),
-  getDoc: jest.fn(),
-  updateDoc: jest.fn(),
-  serverTimestamp: jest.fn(),
-}));
+// モックされた関数の型定義
+const mockSignInWithEmailAndPassword = signInWithEmailAndPassword as jest.MockedFunction<
+  typeof signInWithEmailAndPassword
+>;
+const mockCreateUserWithEmailAndPassword = createUserWithEmailAndPassword as jest.MockedFunction<
+  typeof createUserWithEmailAndPassword
+>;
+const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<typeof signInWithPopup>;
+const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
+const mockSendPasswordResetEmail = sendPasswordResetEmail as jest.MockedFunction<
+  typeof sendPasswordResetEmail
+>;
+const mockUpdateProfile = updateProfile as jest.MockedFunction<typeof updateProfile>;
+const mockDoc = doc as jest.MockedFunction<typeof doc>;
+const mockSetDoc = setDoc as jest.MockedFunction<typeof setDoc>;
+const mockGetDoc = getDoc as jest.MockedFunction<typeof getDoc>;
+const mockUpdateDoc = updateDoc as jest.MockedFunction<typeof updateDoc>;
+const mockServerTimestamp = serverTimestamp as jest.MockedFunction<typeof serverTimestamp>;
+
+// Timestamp モックのコンストラクター
+const MockTimestamp = Timestamp as jest.MockedClass<typeof Timestamp>;
 
 describe('AuthService', () => {
   const mockUser = {
@@ -72,8 +100,19 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (getDoc as jest.Mock).mockResolvedValue(mockUserDoc);
-    (serverTimestamp as jest.Mock).mockReturnValue('mock-timestamp');
+
+    // serverTimestamp のモック
+    mockServerTimestamp.mockReturnValue({} as any);
+
+    // Timestamp インスタンスの設定
+    MockTimestamp.mockImplementation(
+      () =>
+        ({
+          toDate: () => new Date('2024-01-01T00:00:00Z'),
+          seconds: 1704067200,
+          nanoseconds: 0,
+        }) as any
+    );
   });
 
   describe('signUp', () => {

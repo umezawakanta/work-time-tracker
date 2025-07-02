@@ -57,7 +57,7 @@ describe('TokenManager', () => {
     process.env.NODE_ENV = originalEnv;
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     // Fetch のモック設定
@@ -67,6 +67,13 @@ describe('TokenManager', () => {
     });
 
     tokenManager = TokenManager.getInstance();
+
+    // 各テスト前にトークンをクリア（Singletonパターン対応）
+    (api.delete as jest.Mock).mockResolvedValue({ data: {} });
+    await tokenManager.clearTokens();
+
+    // Authorization ヘッダーもクリア
+    delete api.defaults.headers.common['Authorization'];
   });
 
   describe('Singleton Pattern', () => {
@@ -129,6 +136,9 @@ describe('TokenManager', () => {
     });
 
     it('should return null when no tokens available', async () => {
+      // トークンがクリアされている状態で確認
+      expect(tokenManager.isAuthenticated()).toBe(false);
+
       const result = await tokenManager.getAccessToken();
       expect(result).toBeNull();
     });
@@ -138,20 +148,21 @@ describe('TokenManager', () => {
       const newAccessToken = 'new-token';
       const refreshToken = 'refresh-token';
 
-      // 期限切れのトークンを設定
+      // まずは期限切れのトークンを設定
       (api.post as jest.Mock).mockResolvedValue({ data: {} });
-      await tokenManager.setTokens(oldAccessToken, refreshToken, -1); // 既に期限切れ
+      // 期限切れトークンを設定（-1秒で既に期限切れ）
+      await tokenManager.setTokens(oldAccessToken, refreshToken, -1, 604800);
 
-      // リフレッシュAPIのモック
-      (api.post as jest.Mock).mockResolvedValueOnce({ data: {} }); // setTokens呼び出し
-      (api.post as jest.Mock).mockResolvedValueOnce({
+      // リフレッシュAPIのモックを設定
+      jest.clearAllMocks(); // 前の呼び出しをクリア
+      (api.post as jest.Mock).mockResolvedValue({
         data: {
           accessToken: newAccessToken,
           refreshToken: refreshToken,
           expiresIn: 3600,
           refreshExpiresIn: 604800,
         },
-      }); // refresh呼び出し
+      });
 
       const result = await tokenManager.getAccessToken();
 
@@ -174,6 +185,7 @@ describe('TokenManager', () => {
     });
 
     it('should return false when no tokens exist', () => {
+      // beforeEach でトークンがクリアされているはず
       expect(tokenManager.isAuthenticated()).toBe(false);
     });
 
@@ -197,6 +209,11 @@ describe('TokenManager', () => {
       (api.delete as jest.Mock).mockResolvedValue({ data: {} });
 
       await tokenManager.setTokens(accessToken, refreshToken);
+
+      // モックをクリアしてから clearTokens をテスト
+      jest.clearAllMocks();
+      (api.delete as jest.Mock).mockResolvedValue({ data: {} });
+
       await tokenManager.clearTokens();
 
       expect(api.delete).toHaveBeenCalledWith('/auth/tokens');
@@ -209,9 +226,10 @@ describe('TokenManager', () => {
       const refreshToken = 'refresh-token';
 
       (api.post as jest.Mock).mockResolvedValue({ data: {} });
-      (api.delete as jest.Mock).mockRejectedValue(new Error('API failed'));
-
       await tokenManager.setTokens(accessToken, refreshToken);
+
+      // API削除の失敗をモック
+      (api.delete as jest.Mock).mockRejectedValue(new Error('API failed'));
 
       // Should not throw
       await expect(tokenManager.clearTokens()).resolves.toBeUndefined();
@@ -238,6 +256,7 @@ describe('TokenManager', () => {
     });
 
     it('should return empty session info when not authenticated', () => {
+      // beforeEach でトークンがクリアされている状態
       const sessionInfo = tokenManager.getSessionInfo();
 
       expect(sessionInfo.isAuthenticated).toBe(false);

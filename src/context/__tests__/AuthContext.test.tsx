@@ -4,6 +4,11 @@ import { AuthProvider } from '../AuthContext';
 import { useAuth } from '@/hooks/useAuth';
 import * as authApi from '@/services/api/authApi';
 import { tokenManager } from '@/services/auth/TokenManager';
+import {
+  setProductionLocation,
+  setDevelopmentLocation,
+  resetLocation,
+} from '@/services/auth/__tests__/setup';
 
 // コンソールログを抑制
 const originalConsoleLog = console.log;
