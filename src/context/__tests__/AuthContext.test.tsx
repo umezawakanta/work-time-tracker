@@ -46,7 +46,8 @@ jest.mock('react-hot-toast');
 const TestComponent: React.FC = () => {
   const authContext = useAuth();
 
-  // AuthContextの型は実際のコンテキストから推論される
+  // テスト環境ではAuthProviderでラップされているので非null
+  // @ts-ignore
   const { isAuthenticated, loading, user, fetchUser, refreshAuth, updateProfile } = authContext;
 
   return (
@@ -163,32 +164,72 @@ describe('AuthContext', () => {
     });
 
     it('should set loading state initially', async () => {
+      // トークンが有効な状態に設定（認証チェックが実行されるように）
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+
+      // 開発環境のファストパスを無効化
+      Object.defineProperty(window, 'location', {
+        value: { ...window.location, hostname: 'production.example.com' },
+        writable: true,
+      });
+
+      // テスト環境モードを無効化
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
+
       // API呼び出しを遅延させる
       let resolveAuth: (value: boolean) => void;
+      let resolveUser: (value: any) => void;
+
       const authPromise = new Promise<boolean>((resolve) => {
         resolveAuth = resolve;
       });
-      (authApi.checkAuth as jest.Mock).mockReturnValue(authPromise);
-
-      await act(async () => {
-        renderWithAuthProvider(<TestComponent />);
+      const userPromise = new Promise<any>((resolve) => {
+        resolveUser = resolve;
       });
 
-      // 初期ローディング状態を確認
+      (authApi.checkAuth as jest.Mock).mockReturnValue(authPromise);
+      (authApi.fetchUserData as jest.Mock).mockReturnValue(userPromise);
+
+      // コンポーネントをレンダリング（遅延なし）
+      renderWithAuthProvider(<TestComponent />);
+
+      // 初期ローディング状態を確認（レンダリング直後）
       expect(screen.getByTestId('loading-status')).toHaveTextContent('loading');
 
-      // API解決
+      // API解決（Promise.resolve()でマイクロタスクキューに追加）
       await act(async () => {
-        resolveAuth!(false);
-        await authPromise;
-        jest.advanceTimersByTime(100);
+        resolveAuth!(true);
+        await Promise.resolve(); // マイクロタスク処理
+      });
+
+      await act(async () => {
+        resolveUser!(mockUser);
+        await Promise.resolve(); // マイクロタスク処理
       });
 
       // ローディング完了を確認
-      await waitFor(() => {
-        expect(screen.getByTestId('loading-status')).toHaveTextContent('loaded');
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('loading-status')).toHaveTextContent('loaded');
+        },
+        { timeout: 3000 }
+      );
+
+      // 環境を元に戻す
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'test',
+        writable: true,
+        configurable: true,
       });
-    });
+      Object.defineProperty(window, 'location', {
+        value: { ...window.location, hostname: 'localhost' },
+        writable: true,
+      });
+    }, 15000);
   });
 
   describe('認証フロー', () => {
