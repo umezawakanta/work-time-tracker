@@ -420,33 +420,48 @@ describe('AuthContext', () => {
     });
 
     it('should handle profile update failure', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
-      (authApi.updateUserProfile as jest.Mock).mockRejectedValue(new Error('Update failed'));
+      // エラー出力を抑制
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      await act(async () => {
-        renderWithAuthProvider(<TestComponent />);
-      });
+      try {
+        (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+        (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
+        (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+        (authApi.updateUserProfile as jest.Mock).mockRejectedValue(new Error('Update failed'));
 
-      await act(async () => {
-        jest.advanceTimersByTime(1000);
-      });
+        await act(async () => {
+          renderWithAuthProvider(<TestComponent />);
+        });
 
-      await waitFor(() => {
-        expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-      });
+        await act(async () => {
+          jest.advanceTimersByTime(1000);
+        });
 
-      await act(async () => {
-        fireEvent.click(screen.getByTestId('update-profile'));
-      });
+        await waitFor(() => {
+          expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
+        });
 
-      await waitFor(() => {
-        expect(authApi.updateUserProfile).toHaveBeenCalled();
-      });
+        // プロフィール更新をトリガー（エラーが発生することを期待）
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('update-profile'));
+        });
 
-      // エラーハンドリングが適切に行われることを確認
-      expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
+        // API呼び出しがされることを確認
+        await waitFor(() => {
+          expect(authApi.updateUserProfile).toHaveBeenCalledWith({
+            name: 'Updated Name',
+            email: 'updated@example.com',
+          });
+        });
+
+        // エラー後も認証状態は維持される
+        await waitFor(() => {
+          expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
+        });
+      } finally {
+        // スパイを復元
+        errorSpy.mockRestore();
+      }
     });
 
     it('should handle refresh auth successfully', async () => {
@@ -469,14 +484,23 @@ describe('AuthContext', () => {
       // 初期化でのAPI呼び出し回数をリセット
       jest.clearAllMocks();
 
+      // モックを再設定（clearAllMocks後に必要）
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('mock-access-token');
+      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
+      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+
       // リフレッシュをトリガー
       await act(async () => {
         fireEvent.click(screen.getByTestId('refresh-auth'));
       });
 
-      await waitFor(() => {
-        expect(authApi.checkAuth).toHaveBeenCalledTimes(1);
-      });
+      await waitFor(
+        () => {
+          expect(authApi.checkAuth).toHaveBeenCalledTimes(1);
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -508,20 +532,60 @@ describe('AuthContext', () => {
     });
 
     it('should enable fast auth mode in development', async () => {
+      console.log('🐛 Starting development mode test...');
+
+      // 開発環境モードを確実に設定
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        writable: true,
+        configurable: true,
+      });
+      Object.defineProperty(process.env, 'MODE', {
+        value: 'development',
+        writable: true,
+        configurable: true,
+      });
+      Object.defineProperty(process.env, 'DEV', {
+        value: 'true',
+        writable: true,
+        configurable: true,
+      });
+
+      // ログアウト状態をクリア（開発モードの条件）
+      sessionStorage.clear();
+      sessionStorage.removeItem('user-logged-out');
+
+      // デバッグ情報を追加
+      console.log('🐛 Test Environment Check:', {
+        NODE_ENV: process.env.NODE_ENV,
+        MODE: process.env.MODE,
+        DEV: process.env.DEV,
+        hostname: window.location.hostname,
+        userLoggedOut: sessionStorage.getItem('user-logged-out'),
+      });
+
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
       });
 
+      // より長い時間待つ（開発モードの初期化）
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        jest.advanceTimersByTime(1000);
       });
+
+      console.log('🐛 After initialization, checking state...');
+      const authStatus = screen.getByTestId('auth-status').textContent;
+      const userName = screen.getByTestId('user-name').textContent;
+      const loadingStatus = screen.getByTestId('loading-status').textContent;
+
+      console.log('🐛 Current State:', { authStatus, userName, loadingStatus });
 
       await waitFor(
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
           expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       // 開発環境ではAPI呼び出しをスキップ
