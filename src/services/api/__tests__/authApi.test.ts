@@ -333,17 +333,45 @@ describe('authApi', () => {
     });
 
     it('should clear tokens on 401 error', async () => {
+      // Complete test isolation - clear all previous mock calls
+      jest.clearAllMocks();
+
       // Ensure mock mode is completely disabled
       delete (global.window as any).__VITE_USE_MOCK_DATA__;
+      delete (global.window as any).__API_CONNECTION_FAILED__;
+
+      // Reset all environment-related mocks
       mockedGetBooleanEnv.mockReturnValue(false);
       mockedIsDev.mockReturnValue(false);
+      mockedIsProd.mockReturnValue(false);
+      mockedGetEnv.mockImplementation((key: string) => {
+        if (key === 'NODE_ENV') return 'test';
+        if (key === 'VITE_USE_MOCK_DATA') return 'false';
+        return '';
+      });
 
-      const authError = new AxiosError('Unauthorized');
+      // Reset TokenManager to ensure proper authentication state
+      mockedTokenManager.isAuthenticated.mockReturnValue(true);
+      mockedTokenManager.getAccessToken.mockResolvedValue('valid-test-token');
+      mockedTokenManager.clearTokens.mockImplementation(() => Promise.resolve());
+
+      // Create proper AxiosError with complete response structure
+      const authError = new AxiosError('Unauthorized', 'ERR_BAD_REQUEST');
       authError.response = {
         status: 401,
+        statusText: 'Unauthorized',
         data: { message: 'Unauthorized' },
+        headers: {},
+        config: {} as any,
       } as any;
-      authError.config = { url: '/auth/check' } as any;
+      authError.config = {
+        url: '/auth/check',
+        method: 'get',
+        headers: {},
+      } as any;
+      authError.code = 'ERR_BAD_REQUEST';
+      authError.name = 'AxiosError';
+
       mockedApi.get.mockRejectedValue(authError);
 
       const result = await authApi.checkAuth();
