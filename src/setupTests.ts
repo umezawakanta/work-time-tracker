@@ -3,6 +3,36 @@ import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 
 // ========================================
+// TypeScript Global Type Declarations
+// ========================================
+
+declare global {
+  // Extend global namespace for test utilities only
+  // eslint-disable-next-line @typescript-eslint/prefer-namespace-keyword
+  namespace NodeJS {
+    interface Global {
+      testUtils: {
+        delay: (ms?: number) => Promise<void>;
+        mockResolve: <T>(value: T) => jest.MockedFunction<() => Promise<T>>;
+        mockReject: (error: any) => jest.MockedFunction<() => Promise<never>>;
+        createMockUser: (overrides?: any) => any;
+        createMockTodo: (overrides?: any) => any;
+        createMockEvent: (type: string, properties?: any) => Event;
+      };
+    }
+  }
+
+  var testUtils: {
+    delay: (ms?: number) => Promise<void>;
+    mockResolve: <T>(value: T) => jest.MockedFunction<() => Promise<T>>;
+    mockReject: (error: any) => jest.MockedFunction<() => Promise<never>>;
+    createMockUser: (overrides?: any) => any;
+    createMockTodo: (overrides?: any) => any;
+    createMockEvent: (type: string, properties?: any) => Event;
+  };
+}
+
+// ========================================
 // Web API Polyfills
 // ========================================
 
@@ -38,23 +68,24 @@ const viteEnv = {
   VITE_DEBUG: 'false',
 };
 
-// Define import.meta for Vite compatibility
+// Define import.meta for Vite compatibility with proper typing
+const importMeta = {
+  env: viteEnv,
+  url: 'file:///test-file.js',
+  hot: undefined,
+  glob: jest.fn(),
+};
+
+// Set on global with type assertion to avoid 'import' reserved word issues
 Object.defineProperty(global, 'import', {
-  value: {
-    meta: {
-      env: viteEnv,
-      url: 'file:///test-file.js',
-      hot: undefined,
-      glob: jest.fn(),
-    },
-  },
+  value: { meta: importMeta },
   writable: true,
   configurable: true,
 });
 
 // Also define on globalThis for broader compatibility
 Object.defineProperty(globalThis, 'import', {
-  value: global.import,
+  value: { meta: importMeta },
   writable: true,
   configurable: true,
 });
@@ -303,24 +334,9 @@ global.console = {
 // Test Utilities
 // ========================================
 
-// Add useful test utilities to global scope
-declare global {
-  namespace NodeJS {
-    interface Global {
-      testUtils: {
-        delay: (ms?: number) => Promise<void>;
-        mockResolve: <T>(value: T) => jest.MockedFunction<() => Promise<T>>;
-        mockReject: (error: any) => jest.MockedFunction<() => Promise<never>>;
-        createMockUser: (overrides?: any) => any;
-        createMockTodo: (overrides?: any) => any;
-        createMockEvent: (type: string, properties?: any) => Event;
-      };
-    }
-  }
-}
-
-global.testUtils = {
-  delay: (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms)),
+// Add useful test utilities to global scope with proper typing
+const testUtilities = {
+  delay: (ms = 0) => new Promise<void>((resolve) => setTimeout(resolve, ms)),
   mockResolve: <T>(value: T) => jest.fn(() => Promise.resolve(value)),
   mockReject: (error: any) => jest.fn(() => Promise.reject(error)),
   createMockUser: (overrides = {}) => ({
@@ -345,6 +361,9 @@ global.testUtils = {
     return event;
   },
 };
+
+// Assign to global
+global.testUtils = testUtilities;
 
 // ========================================
 // Error Handling
@@ -374,22 +393,27 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-// Add support for EventTarget if not available
-if (typeof EventTarget === 'undefined') {
-  global.EventTarget = class EventTarget {
-    listeners: { [key: string]: Function[] } = {};
+// ========================================
+// EventTarget Implementation Fix
+// ========================================
 
-    addEventListener(type: string, listener: Function) {
+// Properly implement EventTarget if not available with simpler approach
+if (typeof EventTarget === 'undefined') {
+  // Simple EventTarget implementation that satisfies TypeScript
+  const CustomEventTarget = class {
+    private listeners: { [key: string]: EventListener[] } = {};
+
+    addEventListener(type: string, listener: EventListener | null): void {
+      if (!listener) return;
       if (!this.listeners[type]) {
         this.listeners[type] = [];
       }
       this.listeners[type].push(listener);
     }
 
-    removeEventListener(type: string, listener: Function) {
-      if (this.listeners[type]) {
-        this.listeners[type] = this.listeners[type].filter((l) => l !== listener);
-      }
+    removeEventListener(type: string, listener: EventListener | null): void {
+      if (!listener || !this.listeners[type]) return;
+      this.listeners[type] = this.listeners[type].filter((l) => l !== listener);
     }
 
     dispatchEvent(event: Event): boolean {
@@ -401,4 +425,7 @@ if (typeof EventTarget === 'undefined') {
       return true;
     }
   };
+
+  // Assign to global
+  (global as any).EventTarget = CustomEventTarget;
 }
