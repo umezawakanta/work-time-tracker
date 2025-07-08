@@ -2,11 +2,20 @@ import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
 import { tokenManager } from '../../auth/TokenManager';
+import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
 
 // Mock dependencies
 jest.mock('../apiConfig');
 jest.mock('../../auth/TokenManager');
 jest.mock('react-hot-toast');
+
+// Mock utility functions to control USE_MOCK_DATA
+jest.mock('../../../utils/env', () => ({
+  getEnv: jest.fn(),
+  getBooleanEnv: jest.fn(),
+  isDev: jest.fn(),
+  isProd: jest.fn(),
+}));
 
 // Mock globals
 Object.defineProperty(window, 'sessionStorage', {
@@ -27,9 +36,13 @@ Object.defineProperty(process, 'env', {
   writable: true,
 });
 
-// Type the mocked api
+// Type the mocked api and utilities
 const mockedApi = api as jest.Mocked<typeof api>;
 const mockedTokenManager = tokenManager as jest.Mocked<typeof tokenManager>;
+const mockedGetEnv = getEnv as jest.MockedFunction<typeof getEnv>;
+const mockedGetBooleanEnv = getBooleanEnv as jest.MockedFunction<typeof getBooleanEnv>;
+const mockedIsDev = isDev as jest.MockedFunction<typeof isDev>;
+const mockedIsProd = isProd as jest.MockedFunction<typeof isProd>;
 
 describe('authApi', () => {
   // Test data
@@ -83,7 +96,19 @@ describe('authApi', () => {
       sessionStorage: mockSessionStorage,
     } as any;
 
-    // Environment variables will be set per test as needed
+    // Setup utility function mocks to disable mock mode by default
+    mockedGetEnv.mockImplementation((key: string) => {
+      const envs: { [key: string]: string } = {
+        NODE_ENV: 'test',
+        VITE_USE_MOCK_DATA: 'false',
+        VITE_ADMIN_EMAILS: 'admin@test.com,superuser@test.com',
+        VITE_API_BASE_URL: '',
+      };
+      return envs[key] || '';
+    });
+    mockedGetBooleanEnv.mockReturnValue(false); // Disable VITE_USE_MOCK_DATA
+    mockedIsDev.mockReturnValue(false); // Disable dev mode
+    mockedIsProd.mockReturnValue(false);
 
     // Default successful responses
     mockedApi.post.mockResolvedValue({ data: mockAuthResponse, status: 200 });
@@ -249,15 +274,15 @@ describe('authApi', () => {
 
   describe('checkAuth', () => {
     it('should return true in mock mode', async () => {
-      // Mock USE_MOCK_DATA
-      jest.doMock('../apiConfig', () => ({
-        USE_MOCK_DATA: true,
-        api: mockedApi,
-      }));
+      // Enable mock mode by setting window property directly
+      (global.window as any).__VITE_USE_MOCK_DATA__ = 'true';
 
       const result = await authApi.checkAuth();
 
       expect(result).toBe(true);
+
+      // Clean up
+      delete (global.window as any).__VITE_USE_MOCK_DATA__;
     });
 
     it('should return true when window.__VITE_USE_MOCK_DATA__ is set', async () => {
@@ -308,8 +333,17 @@ describe('authApi', () => {
     });
 
     it('should clear tokens on 401 error', async () => {
+      // Ensure mock mode is completely disabled
+      delete (global.window as any).__VITE_USE_MOCK_DATA__;
+      mockedGetBooleanEnv.mockReturnValue(false);
+      mockedIsDev.mockReturnValue(false);
+
       const authError = new AxiosError('Unauthorized');
-      authError.response = { status: 401 } as any;
+      authError.response = {
+        status: 401,
+        data: { message: 'Unauthorized' },
+      } as any;
+      authError.config = { url: '/auth/check' } as any;
       mockedApi.get.mockRejectedValue(authError);
 
       const result = await authApi.checkAuth();
