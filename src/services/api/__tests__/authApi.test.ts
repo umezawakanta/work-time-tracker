@@ -1,11 +1,11 @@
 import { AxiosError } from 'axios';
 import * as authApi from '../authApi';
 import { api } from '../apiConfig';
-import { tokenManager } from '@/services/auth/TokenManager';
+import { tokenManager } from '../../auth/TokenManager';
 
 // Mock dependencies
 jest.mock('../apiConfig');
-jest.mock('@/services/auth/TokenManager');
+jest.mock('../../auth/TokenManager');
 jest.mock('react-hot-toast');
 
 // Mock globals
@@ -63,6 +63,28 @@ describe('authApi', () => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
+    // Mock sessionStorage globally
+    const mockSessionStorage = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+    };
+
+    (global as any).sessionStorage = mockSessionStorage;
+
+    // Disable mock mode for proper testing
+    delete (global as any).window;
+    global.window = {
+      location: {
+        hostname: 'localhost',
+        protocol: 'http:',
+      },
+      sessionStorage: mockSessionStorage,
+    } as any;
+
+    // Environment variables will be set per test as needed
+
     // Default successful responses
     mockedApi.post.mockResolvedValue({ data: mockAuthResponse, status: 200 });
     mockedApi.get.mockResolvedValue({ data: { user: mockUser }, status: 200 });
@@ -72,9 +94,9 @@ describe('authApi', () => {
     // TokenManager defaults
     mockedTokenManager.isAuthenticated.mockReturnValue(true);
     mockedTokenManager.getAccessToken.mockResolvedValue('mock-token');
-    mockedTokenManager.setTokens.mockImplementation(() => {});
-    mockedTokenManager.clearTokens.mockImplementation(() => {});
-    mockedTokenManager.setRememberMe.mockImplementation(() => {});
+    mockedTokenManager.setTokens.mockImplementation(() => Promise.resolve());
+    mockedTokenManager.clearTokens.mockImplementation(() => Promise.resolve());
+    mockedTokenManager.setRememberMe.mockImplementation(() => Promise.resolve());
     mockedTokenManager.getSessionInfo.mockReturnValue({
       isAuthenticated: true,
       expiresAt: new Date(),
@@ -152,7 +174,7 @@ describe('authApi', () => {
         'mock-access-token',
         'mock-refresh-token',
         3600,
-        2592000 // 30 days for remember me
+        604800 // Default refresh token expiry (not remember me logic)
       );
       expect(mockedTokenManager.setRememberMe).toHaveBeenCalledWith(true);
     });
