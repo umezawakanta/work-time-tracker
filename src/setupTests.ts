@@ -8,7 +8,7 @@ import 'whatwg-fetch';
 
 declare global {
   // Extend global namespace for test utilities only
-  // eslint-disable-next-line @typescript-eslint/prefer-namespace-keyword
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
       testUtils: {
