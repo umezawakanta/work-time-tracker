@@ -39,22 +39,25 @@ const habitSchema = new mongoose.Schema(
 );
 
 habitSchema.pre('save', function (next) {
-  if (!this.data) {
-    this.data = new Map();
+  // Type assertion to handle mongoose document typing
+  const doc = this as any;
+
+  if (!doc.data) {
+    doc.data = new Map();
   }
 
-  if (!(this.data instanceof Map)) {
+  if (!(doc.data instanceof Map)) {
     try {
       // Type assertion to handle plain object representation from database
-      const plainObject = this.data as { [k: string]: boolean[] };
-      this.data = new Map(Object.entries(plainObject));
+      const plainObject = doc.data as { [k: string]: boolean[] };
+      doc.data = new Map(Object.entries(plainObject));
     } catch {
       // エラーメッセージを直接返す
       return next(new Error('Invalid data format'));
     }
   }
 
-  for (const [key, value] of this.data.entries()) {
+  for (const [key, value] of doc.data.entries()) {
     if (!Array.isArray(value)) {
       return next(new Error(`Invalid data format for month ${key}`));
     }
