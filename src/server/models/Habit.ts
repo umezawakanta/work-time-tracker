@@ -45,7 +45,9 @@ habitSchema.pre('save', function (next) {
 
   if (!(this.data instanceof Map)) {
     try {
-      this.data = new Map(Object.entries(this.data));
+      // Type assertion to handle plain object representation from database
+      const plainObject = this.data as { [k: string]: boolean[] };
+      this.data = new Map(Object.entries(plainObject));
     } catch {
       // エラーメッセージを直接返す
       return next(new Error('Invalid data format'));
