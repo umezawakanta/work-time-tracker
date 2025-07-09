@@ -8,6 +8,11 @@ export interface IHabit extends mongoose.Document {
   updatedAt: Date;
 }
 
+// データベースから取得される時の型
+interface IHabitDocument extends Omit<IHabit, 'data'> {
+  data: Map<string, boolean[]> | { [k: string]: boolean[] };
+}
+
 const habitSchema = new mongoose.Schema(
   {
     userId: {
@@ -39,8 +44,8 @@ const habitSchema = new mongoose.Schema(
 );
 
 habitSchema.pre('save', function (next) {
-  // Type assertion to handle mongoose document typing
-  const doc = this as any;
+  // 適切な型アサーションでドキュメントの型を処理
+  const doc = this as unknown as IHabitDocument;
 
   if (!doc.data) {
     doc.data = new Map();
@@ -48,7 +53,7 @@ habitSchema.pre('save', function (next) {
 
   if (!(doc.data instanceof Map)) {
     try {
-      // Type assertion to handle plain object representation from database
+      // プレーンオブジェクトをMapに変換
       const plainObject = doc.data as { [k: string]: boolean[] };
       doc.data = new Map(Object.entries(plainObject));
     } catch {
