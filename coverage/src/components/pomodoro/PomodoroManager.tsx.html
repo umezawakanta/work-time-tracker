@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.61% </span>
+                <span class="strong">5.76% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/156</span>
+                <span class='fraction'>9/156</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.14% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/70</span>
+                <span class='fraction'>0/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.34% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/23</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">9.8% </span>
+                <span class="strong">5.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/153</span>
+                <span class='fraction'>9/153</span>
             </div>
         
             
@@ -379,10 +379,10 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -634,7 +634,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -644,21 +644,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -683,11 +683,11 @@ import { pomodoroWorkTimeIntegration } from '@/services/PomodoroWorkTimeIntegrat
 import { store } from '@/store';
 import { fetchWorkTimeEntries } from '@/store/workTimeSlice';
 &nbsp;
-const PomodoroManagerComponent: React.FC = () =&gt; {
-  const { pomodoro } = usePomodoroContext();
+const PomodoroManagerComponent: React.FC = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const { pomodoro } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span>
 &nbsp;
   // デバッグ関数をグローバルに登録（開発環境のみ）
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined' &amp;&amp; process.env.NODE_ENV === 'development') {
+<span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined' &amp;&amp; process.env.NODE_ENV === 'development') {</span>
     // すでに登録されている場合はスキップ
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!(window as any).clearPomodoroStorage) {</span>
       (<span class="cstat-no" title="statement not covered" >window as any).clearPomodoroStorage = <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
@@ -939,7 +939,7 @@ const PomodoroManagerComponent: React.FC = () =&gt; {
   }
 &nbsp;
   // 次のモードを計算
-  const getNextMode = <span class="fstat-no" title="function not covered" >(): PomodoroMode =</span>&gt; {
+  const getNextMode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(): PomodoroMode =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    if (pomodoro.currentMode === 'work') {</span>
       const shouldTakeLongBreak =
 <span class="cstat-no" title="statement not covered" >        pomodoro.currentSession % pomodoro.settings.longBreakInterval === 0;</span>
@@ -949,13 +949,13 @@ const PomodoroManagerComponent: React.FC = () =&gt; {
     }
   };
 &nbsp;
-  const handleStartNext = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const handleStartNext = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
     const nextMode = <span class="cstat-no" title="statement not covered" >getNextMode();</span>
 <span class="cstat-no" title="statement not covered" >    pomodoro.switchMode(nextMode);</span>
 <span class="cstat-no" title="statement not covered" >    pomodoro.startTimer();</span>
   };
 &nbsp;
-  const handleClose = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const handleClose = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    console.log('🚪 PomodoroManager: handleClose実行 - toggleVisibility呼び出し', {</span>
       instanceId: pomodoro.instanceId,
       currentVisibility: pomodoro.isVisible,
@@ -963,7 +963,7 @@ const PomodoroManagerComponent: React.FC = () =&gt; {
 <span class="cstat-no" title="statement not covered" >    pomodoro.toggleVisibility();</span>
   };
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;&gt;
       {/* フローティングボタン（タイマーが非表示の時に表示） */}
       &lt;PomodoroFloatingButton /&gt;
@@ -972,7 +972,7 @@ const PomodoroManagerComponent: React.FC = () =&gt; {
       {pomodoro.isVisible &amp;&amp; &lt;FloatingPomodoroTimer /&gt;}
 &nbsp;
       {/* 完了モーダル */}
-      {pomodoro.showCompletionModal &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;CompletionModal /&gt;}</span>
+      {pomodoro.showCompletionModal &amp;&amp; &lt;CompletionModal /&gt;}
     &lt;/&gt;
   );
 };
@@ -985,7 +985,7 @@ export const PomodoroManager = memo(PomodoroManagerComponent);
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T00:54:47.671Z
+                at 2025-07-10T01:15:27.261Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

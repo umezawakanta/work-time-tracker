@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/22</span>
+                <span class='fraction'>0/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/6</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/20</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -156,17 +156,17 @@
 <a name='L91'></a><a href='#L91'>91</a>
 <a name='L92'></a><a href='#L92'>92</a>
 <a name='L93'></a><a href='#L93'>93</a>
-<a name='L94'></a><a href='#L94'>94</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L94'></a><a href='#L94'>94</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,7 +199,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,17 +249,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { useADHDNotifications } from '@/hooks/useADHDNotifications';
-import { Brain, Shield, Clock, Eye, X, Zap } from 'lucide-react';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { useADHDNotifications } from '@/hooks/useADHDNotifications';</span>
+<span class="cstat-no" title="statement not covered" >import { Brain, Shield, Clock, Eye, X, Zap } from 'lucide-react';</span>
 &nbsp;
-export const ADHDFloatingButton: React.FC = () =&gt; {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { triggerEmergencyRealityCheck } = useADHDNotifications();
+export const <span class="cstat-no" title="statement not covered" >ADHDFloatingButton: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+  const [isExpanded, setIsExpanded] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const { triggerEmergencyRealityCheck } = <span class="cstat-no" title="statement not covered" >useADHDNotifications();</span>
 &nbsp;
-  const quickActions = [
+  const quickActions = <span class="cstat-no" title="statement not covered" >[</span>
     {
       icon: &lt;Shield className="h-4 w-4" /&gt;,
       label: '緊急現実チェック',
@@ -292,10 +292,10 @@ export const ADHDFloatingButton: React.FC = () =&gt; {
     },
   ];
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="fixed bottom-6 right-44 z-50"&gt;
       {isExpanded &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >        &lt;Card className="mb-4 shadow-lg border-2 border-purple-200"&gt;</span>
+        &lt;Card className="mb-4 shadow-lg border-2 border-purple-200"&gt;
           &lt;CardContent className="p-3"&gt;
             &lt;div className="space-y-2"&gt;
               &lt;div className="flex items-center justify-between mb-2"&gt;
@@ -331,13 +331,13 @@ export const ADHDFloatingButton: React.FC = () =&gt; {
           w-14 h-14 rounded-full shadow-lg border-2 border-white
           ${
             isExpanded
-              ? <span class="branch-0 cbranch-no" title="branch not covered" >'bg-purple-600 hover:bg-purple-700'</span>
+              ? 'bg-purple-600 hover:bg-purple-700'
               : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
           }
           text-white transition-all duration-300 transform hover:scale-110
         `}
       &gt;
-        {isExpanded ? <span class="branch-0 cbranch-no" title="branch not covered" >&lt;X className="h-6 w-6" /&gt; </span>: &lt;Brain className="h-6 w-6" /&gt;}
+        {isExpanded ? &lt;X className="h-6 w-6" /&gt; : &lt;Brain className="h-6 w-6" /&gt;}
       &lt;/Button&gt;
     &lt;/div&gt;
   );
@@ -349,7 +349,7 @@ export const ADHDFloatingButton: React.FC = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T00:54:47.671Z
+                at 2025-07-10T01:15:27.261Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
