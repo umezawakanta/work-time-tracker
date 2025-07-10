@@ -8,7 +8,7 @@ const mockUser = {
   uid: 'test-uid',
   email: 'test@example.com',
   name: 'Test User',
-  username: 'testuser'
+  username: 'testuser',
 };
 
 const mockAuthContext = {
@@ -21,14 +21,16 @@ const mockAuthContext = {
   resetPassword: jest.fn(),
   updateProfile: jest.fn(),
   checkAuthStatus: jest.fn(),
-  refreshToken: jest.fn()
+  refreshToken: jest.fn(),
 };
 
-const MockAuthProvider = ({ children, value = mockAuthContext }: { children: ReactNode; value?: any }) => (
-  <AuthContext.Provider value={value}>
-    {children}
-  </AuthContext.Provider>
-);
+const MockAuthProvider = ({
+  children,
+  value = mockAuthContext,
+}: {
+  children: ReactNode;
+  value?: any;
+}) => <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 
 describe('useAuth', () => {
   beforeEach(() => {
@@ -38,7 +40,7 @@ describe('useAuth', () => {
   describe('正常な動作', () => {
     it('AuthProviderから認証コンテキストを取得できる', () => {
       const { result } = renderHook(() => useAuth(), {
-        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>
+        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
       });
 
       expect(result.current).toEqual(mockAuthContext);
@@ -50,11 +52,13 @@ describe('useAuth', () => {
       const unauthenticatedContext = {
         ...mockAuthContext,
         user: null,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
 
       const { result } = renderHook(() => useAuth(), {
-        wrapper: ({ children }) => <MockAuthProvider value={unauthenticatedContext}>{children}</MockAuthProvider>
+        wrapper: ({ children }) => (
+          <MockAuthProvider value={unauthenticatedContext}>{children}</MockAuthProvider>
+        ),
       });
 
       expect(result.current.user).toBeNull();
@@ -66,11 +70,13 @@ describe('useAuth', () => {
         ...mockAuthContext,
         isLoading: true,
         user: null,
-        isAuthenticated: false
+        isAuthenticated: false,
       };
 
       const { result } = renderHook(() => useAuth(), {
-        wrapper: ({ children }) => <MockAuthProvider value={loadingContext}>{children}</MockAuthProvider>
+        wrapper: ({ children }) => (
+          <MockAuthProvider value={loadingContext}>{children}</MockAuthProvider>
+        ),
       });
 
       expect(result.current.isLoading).toBe(true);
@@ -94,7 +100,9 @@ describe('useAuth', () => {
 
       expect(() => {
         renderHook(() => useAuth(), {
-          wrapper: ({ children }) => <MockAuthProvider value={undefined}>{children}</MockAuthProvider>
+          wrapper: ({ children }) => (
+            <MockAuthProvider value={undefined}>{children}</MockAuthProvider>
+          ),
         });
       }).toThrow('useAuth must be used within an AuthProvider');
 
@@ -105,7 +113,7 @@ describe('useAuth', () => {
   describe('型安全性', () => {
     it('返り値の型が正しい', () => {
       const { result } = renderHook(() => useAuth(), {
-        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>
+        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
       });
 
       expect(typeof result.current.login).toBe('function');
@@ -121,7 +129,7 @@ describe('useAuth', () => {
 
     it('userオブジェクトの型が正しい', () => {
       const { result } = renderHook(() => useAuth(), {
-        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>
+        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
       });
 
       const user = result.current.user;
@@ -137,7 +145,7 @@ describe('useAuth', () => {
   describe('再レンダリング最適化', () => {
     it('コンテキスト値が変更されない場合は再レンダリングされない', () => {
       let renderCount = 0;
-      
+
       const TestComponent = () => {
         renderCount++;
         useAuth();
@@ -145,12 +153,12 @@ describe('useAuth', () => {
       };
 
       const { rerender } = renderHook(() => <TestComponent />, {
-        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>
+        wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
       });
 
       const initialCount = renderCount;
       rerender();
-      
+
       expect(renderCount).toBe(initialCount);
     });
 
@@ -164,16 +172,16 @@ describe('useAuth', () => {
 
       const { rerender } = renderHook(() => <TestComponent />, {
         wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
-        initialProps: { value: mockAuthContext }
+        initialProps: { value: mockAuthContext },
       });
 
       const initialCount = renderCount;
-      
+
       rerender({
-        value: { ...mockAuthContext, isLoading: true }
+        value: { ...mockAuthContext, isLoading: true },
       });
-      
+
       expect(renderCount).toBeGreaterThan(initialCount);
     });
   });
-}); 
+});

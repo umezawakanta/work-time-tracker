@@ -17,4 +17,4 @@ module.exports = {
 
   // For CSS-in-JS style access
   [Symbol.toPrimitive]: () => '',
-}; 
+};
