@@ -37,6 +37,8 @@ jest.mock('@radix-ui/react-roving-focus', () => ({
 
 describe('WorkTimeEntryForm', () => {
   beforeEach(() => {
+    // Setup fake timers for testing
+    jest.useFakeTimers();
     // Setup auth mock
     mockUseAuth.mockReturnValue({
       user: {
@@ -87,6 +89,7 @@ describe('WorkTimeEntryForm', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
   test('renders WorkTimeEntryForm', async () => {
