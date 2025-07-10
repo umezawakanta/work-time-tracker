@@ -1,19 +1,81 @@
 import React from 'react';
 import { render, RenderOptions, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 // Re-export testing utilities
 export * from '@testing-library/react';
 export { userEvent };
 
-// Custom render function with providers if needed
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  // Add any global providers here if needed in the future
+// Create a minimal test store for testing
+const createTestStore = (initialState?: any) => {
+  // Create mock reducer that returns initial state
+  const mockReducer = (state = {}, action: any) => state;
+
+  return configureStore({
+    reducer: mockReducer,
+    preloadedState: initialState || {
+      workTime: { entries: [] },
+      asset: {},
+      debt: {},
+      user: {},
+      todo: {},
+      candidate: {},
+      subscription: {},
+      withdrawal: {},
+      book: {},
+      sleepTracker: {},
+      blog: {},
+      guitarPractice: {},
+      achievements: {},
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false, // Disable for tests
+      }),
+  });
+};
+
+// Test wrapper component with all necessary providers
+interface TestWrapperProps {
+  children: React.ReactNode;
   initialState?: any;
+  disableRouter?: boolean;
 }
 
-const customRender = (ui: React.ReactElement, options?: CustomRenderOptions) => {
-  return render(ui, options);
+function TestWrapper({ children, initialState, disableRouter = false }: TestWrapperProps) {
+  const testStore = createTestStore(initialState);
+
+  if (disableRouter) {
+    return <Provider store={testStore}>{children}</Provider>;
+  }
+
+  return (
+    <Provider store={testStore}>
+      <BrowserRouter>{children}</BrowserRouter>
+    </Provider>
+  );
+}
+
+// Custom render function with providers
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  initialState?: any;
+  disableRouter?: boolean;
+}
+
+const customRender = (ui: React.ReactElement, options: CustomRenderOptions = {}) => {
+  const { initialState, disableRouter, ...renderOptions } = options;
+
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <TestWrapper initialState={initialState} disableRouter={disableRouter}>
+      {children}
+    </TestWrapper>
+  );
+
+  return render(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
 // Async testing utilities for UI components

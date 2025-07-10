@@ -430,7 +430,7 @@ describe('Form Components', () => {
       };
 
       expect(() => render(<InvalidComponent />)).toThrow(
-        'useFormField should be used within <FormField>'
+        'useFormField should be used within <FormProvider>'
       );
 
       consoleSpy.mockRestore();

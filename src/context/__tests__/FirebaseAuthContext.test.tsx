@@ -1,7 +1,9 @@
+import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { FirebaseAuthProvider, useFirebaseAuth } from '../FirebaseAuthContext';
-import { auth } from '@/config/firebase';
+import { FirebaseAuthProvider } from '../FirebaseAuthContext';
+import { useFirebaseAuth } from '../../hooks/useFirebaseAuth';
+import { auth } from '../../config/firebase';
 
 // Mock Firebase auth
 jest.mock('@/config/firebase', () => ({

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.21% </span>
+                <span class="strong">21.05% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>16/19</span>
+                <span class='fraction'>4/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">82.35% </span>
+                <span class="strong">17.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/17</span>
+                <span class='fraction'>3/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -138,33 +138,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -193,34 +193,34 @@ const breakpoints: BreakpointConfig = {
   '2xl': 1536,
 };
 &nbsp;
-export const useResponsive = () =&gt; {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
-    height: typeof window !== 'undefined' ? window.innerHeight : <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+export const useResponsive = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+  const [windowSize, setWindowSize] = <span class="cstat-no" title="statement not covered" >useState({</span>
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
   });
 &nbsp;
-  useEffect(() =&gt; {
-    const handleResize = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+    const handleResize = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setWindowSize({</span>
         width: window.innerWidth,
         height: window.innerHeight,
       });
     };
 &nbsp;
-    window.addEventListener('resize', handleResize);
-    return () =&gt; window.removeEventListener('resize', handleResize);
+<span class="cstat-no" title="statement not covered" >    window.addEventListener('resize', handleResize);</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >window.removeEventListener('resize', handleResize);</span></span>
   }, []);
 &nbsp;
-  const isMobile = windowSize.width &lt; breakpoints.md;
-  const isTablet = windowSize.width &gt;= breakpoints.md &amp;&amp; windowSize.width &lt; breakpoints.lg;
-  const isDesktop = windowSize.width &gt;= breakpoints.lg;
+  const isMobile = <span class="cstat-no" title="statement not covered" >windowSize.width &lt; breakpoints.md;</span>
+  const isTablet = <span class="cstat-no" title="statement not covered" >windowSize.width &gt;= breakpoints.md &amp;&amp; windowSize.width &lt; breakpoints.lg;</span>
+  const isDesktop = <span class="cstat-no" title="statement not covered" >windowSize.width &gt;= breakpoints.lg;</span>
 &nbsp;
   const breakpoint =
-    Object.entries(breakpoints)
+<span class="cstat-no" title="statement not covered" >    Object.entries(breakpoints)</span>
       .reverse()
-      .find(([, size]) =&gt; windowSize.width &gt;= size)?.[0] || <span class="branch-1 cbranch-no" title="branch not covered" >'sm';</span>
+      .find(<span class="fstat-no" title="function not covered" >([</span>, size]) =&gt; <span class="cstat-no" title="statement not covered" >windowSize.width &gt;= size)</span>?.[0] || 'sm';
 &nbsp;
-  return {
+<span class="cstat-no" title="statement not covered" >  return {</span>
     width: windowSize.width,
     height: windowSize.height,
     isMobile,
@@ -238,7 +238,7 @@ export const useResponsive = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T17:55:38.915Z
+                at 2025-07-10T18:08:26.784Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
