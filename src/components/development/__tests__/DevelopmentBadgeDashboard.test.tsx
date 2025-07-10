@@ -183,15 +183,19 @@ describe('DevelopmentBadgeDashboard', () => {
   it('要件の達成状況が正しく表示される', () => {
     render(<DevelopmentBadgeDashboard />);
 
-    // 達成済み要件（1/1）
-    expect(screen.getByText('1/1')).toBeInTheDocument();
+    // 達成済み要件の説明文を確認
+    expect(screen.getByText('1回のコミット')).toBeInTheDocument();
 
-    // 進行中要件（機能の進捗状況）
-    expect(screen.getByText('○')).toBeInTheDocument(); // 未完了の機能
+    // 進行中要件の説明文を確認
+    expect(screen.getByText('テスト機能完成')).toBeInTheDocument();
 
-    // 未達成要件（0/90）- 最初の一つだけを確認
-    const progressTexts = screen.getAllByText('0/90');
-    expect(progressTexts.length).toBeGreaterThan(0);
+    // 未達成要件の説明文を確認
+    expect(screen.getByText('パフォーマンススコア90+')).toBeInTheDocument();
+
+    // 各バッジの進捗率を確認
+    expect(screen.getByText('100%')).toBeInTheDocument(); // 完了済み
+    expect(screen.getByText('50%')).toBeInTheDocument(); // 進行中
+    expect(screen.getByText('0%')).toBeInTheDocument(); // 未開始
   });
 
   it('アクセシビリティ属性が適切に設定される', () => {

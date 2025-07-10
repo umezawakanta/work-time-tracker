@@ -871,7 +871,11 @@
 <a name='L806'></a><a href='#L806'>806</a>
 <a name='L807'></a><a href='#L807'>807</a>
 <a name='L808'></a><a href='#L808'>808</a>
-<a name='L809'></a><a href='#L809'>809</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L809'></a><a href='#L809'>809</a>
+<a name='L810'></a><a href='#L810'>810</a>
+<a name='L811'></a><a href='#L811'>811</a>
+<a name='L812'></a><a href='#L812'>812</a>
+<a name='L813'></a><a href='#L813'>813</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1471,12 +1475,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1989,7 +1997,7 @@ const ReadingAnalytics = <span class="cstat-no" title="statement not covered" ><
             &lt;CardContent className="py-2"&gt;
               &lt;div className="text-2xl font-bold mb-1"&gt;2.5 冊/週&lt;/div&gt;
               &lt;div className="text-xs text-muted-foreground"&gt;前週比 +0.5冊&lt;/div&gt;
-              &lt;div className="h-[100px] w-full bg-gray-100 rounded mt-2 flex items-end"&gt;
+              &lt;div className="h-[100px] w-full bg-gray-100 dark:bg-gray-800 rounded mt-2 flex items-end"&gt;
                 &lt;div className="w-1/7 h-[30px] bg-primary mx-0.5 rounded-t"&gt;&lt;/div&gt;
                 &lt;div className="w-1/7 h-[50px] bg-primary mx-0.5 rounded-t"&gt;&lt;/div&gt;
                 &lt;div className="w-1/7 h-[20px] bg-primary mx-0.5 rounded-t"&gt;&lt;/div&gt;
@@ -2079,7 +2087,7 @@ const ReadingAnalytics = <span class="cstat-no" title="statement not covered" ><
             &lt;/Card&gt;
           &lt;/div&gt;
         ) : (
-          &lt;Card className="border-dashed border-2 border-gray-300 bg-gray-50"&gt;
+          &lt;Card className="border-dashed border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800"&gt;
             &lt;CardContent className="flex flex-col items-center justify-center p-6"&gt;
               &lt;Crown className="h-8 w-8 text-amber-500 mb-2" /&gt;
               &lt;h3 className="font-medium text-center mb-1"&gt;プレミアム分析&lt;/h3&gt;
@@ -2186,7 +2194,7 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
       &lt;div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen"&gt;
         &lt;div className="text-center"&gt;
           &lt;div className="text-red-500 text-xl mb-4"&gt;エラーが発生しました&lt;/div&gt;
-          &lt;p className="text-gray-600"&gt;{booksError}&lt;/p&gt;
+          &lt;p className="text-gray-600 dark:text-gray-400"&gt;{booksError}&lt;/p&gt;
           &lt;Button onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >dispatch(fetchBooks())}</span> className="mt-4"&gt;
             再読み込み
           &lt;/Button&gt;
@@ -2199,27 +2207,29 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
     &lt;div className="container mx-auto px-4 py-8"&gt;
       &lt;div className="mb-8 text-center"&gt;
         &lt;h1 className="text-4xl font-bold mb-2"&gt;パーソナル読書管理&lt;/h1&gt;
-        &lt;p className="text-gray-600 max-w-2xl mx-auto"&gt;
+        &lt;p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"&gt;
           読書習慣を育て、知識を広げ、人生を豊かにするための本棚アプリです
         &lt;/p&gt;
       &lt;/div&gt;
 &nbsp;
       {/* モチベーションボックス - 元のコードのまま */}
       {showMotivationTip &amp;&amp; (
-        &lt;div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-4 relative"&gt;
+        &lt;div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border border-blue-100 dark:border-blue-800 rounded-lg p-4 relative"&gt;
           &lt;button
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >setShowMotivationTip(false)}</span>
           &gt;
             &amp;times;
           &lt;/button&gt;
           &lt;div className="flex items-start"&gt;
-            &lt;div className="bg-blue-100 rounded-full p-2 mr-4"&gt;
-              &lt;Sparkles className="h-5 w-5 text-blue-600" /&gt;
+            &lt;div className="bg-blue-100 dark:bg-blue-800 rounded-full p-2 mr-4"&gt;
+              &lt;Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" /&gt;
             &lt;/div&gt;
             &lt;div&gt;
-              &lt;h3 className="font-medium text-blue-800 mb-1"&gt;今日の読書モチベーション&lt;/h3&gt;
-              &lt;p className="text-blue-700"&gt;{randomTip}&lt;/p&gt;
+              &lt;h3 className="font-medium text-blue-800 dark:text-blue-200 mb-1"&gt;
+                今日の読書モチベーション
+              &lt;/h3&gt;
+              &lt;p className="text-blue-700 dark:text-blue-300"&gt;{randomTip}&lt;/p&gt;
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -2288,7 +2298,9 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
                   &lt;div
                     key={i}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                      hasReadingSession ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
+                      hasReadingSession
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
                     }`}
                   &gt;
                     {date.getDate()}
@@ -2420,7 +2432,7 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
 &nbsp;
       {/* プレミアム紹介セクション - 元のコードと同じ */}
       {!isPremium &amp;&amp; (
-        &lt;Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 mb-8"&gt;
+        &lt;Card className="border-amber-200 dark:border-amber-700 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900 dark:to-yellow-900 mb-8"&gt;
           &lt;CardHeader&gt;
             &lt;CardTitle className="flex items-center gap-2"&gt;
               &lt;Crown className="h-5 w-5 text-amber-500" /&gt;
@@ -2432,8 +2444,8 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
             &lt;div className="grid grid-cols-1 md:grid-cols-3 gap-6"&gt;
               &lt;div className="flex"&gt;
                 &lt;div className="mr-4"&gt;
-                  &lt;div className="bg-amber-100 p-3 rounded-full"&gt;
-                    &lt;Users className="h-5 w-5 text-amber-600" /&gt;
+                  &lt;div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full"&gt;
+                    &lt;Users className="h-5 w-5 text-amber-600 dark:text-amber-400" /&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
                 &lt;div&gt;
@@ -2446,8 +2458,8 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
 &nbsp;
               &lt;div className="flex"&gt;
                 &lt;div className="mr-4"&gt;
-                  &lt;div className="bg-amber-100 p-3 rounded-full"&gt;
-                    &lt;BarChart className="h-5 w-5 text-amber-600" /&gt;
+                  &lt;div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full"&gt;
+                    &lt;BarChart className="h-5 w-5 text-amber-600 dark:text-amber-400" /&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
                 &lt;div&gt;
@@ -2460,8 +2472,8 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
 &nbsp;
               &lt;div className="flex"&gt;
                 &lt;div className="mr-4"&gt;
-                  &lt;div className="bg-amber-100 p-3 rounded-full"&gt;
-                    &lt;PenTool className="h-5 w-5 text-amber-600" /&gt;
+                  &lt;div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full"&gt;
+                    &lt;PenTool className="h-5 w-5 text-amber-600 dark:text-amber-400" /&gt;
                   &lt;/div&gt;
                 &lt;/div&gt;
                 &lt;div&gt;
@@ -2494,7 +2506,7 @@ const BookShelfPage: React.FC = <span class="cstat-no" title="statement not cove
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-08T13:42:02.199Z
+                at 2025-07-10T00:54:47.671Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

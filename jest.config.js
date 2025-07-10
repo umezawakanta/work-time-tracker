@@ -7,7 +7,8 @@ module.exports = {
     // Path aliases
     '^@/(.*)$': '<rootDir>/src/$1',
 
-    // CSS and style files
+    // CSS and style files - more explicit handling
+    '^@/styles/chart\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
     '\\.css$': 'identity-obj-proxy',
     '\\.scss$': 'identity-obj-proxy',
     '\\.sass$': 'identity-obj-proxy',

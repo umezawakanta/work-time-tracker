@@ -372,4 +372,51 @@ global.testUtils = {
     createdAt: new Date().toISOString(),
     ...overrides,
   }),
+
+  // Create mock event object
+  createMockEvent: (type, properties = {}) => {
+    const event = new Event(type);
+    Object.assign(event, properties);
+    return event;
+  },
 };
+
+// ========================================
+// React Hooks Mocks
+// ========================================
+
+// Mock useAuth hook
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    isAuthenticated: true,
+    user: {
+      id: 'test-user-id',
+      email: 'test@example.com',
+      name: 'Test User',
+      isAdmin: false,
+    },
+    setIsAuthenticated: jest.fn(),
+    loading: false,
+    setUser: jest.fn(),
+    fetchUser: jest.fn(),
+    updateProfile: jest.fn(),
+    sessionExpired: false,
+    refreshAuth: jest.fn(),
+    sessionInfo: {
+      isAuthenticated: true,
+      expiresAt: new Date(Date.now() + 3600000),
+      refreshExpiresAt: new Date(Date.now() + 86400000),
+      timeUntilExpiry: 3600000,
+      timeUntilRefreshExpiry: 86400000,
+    },
+  }),
+}));
+
+// Mock useInternationalization hook
+jest.mock('@/hooks/useInternationalization', () => ({
+  useInternationalization: () => ({
+    locale: 'ja',
+    setLocale: jest.fn(),
+    t: (key) => key, // Simple passthrough for tests
+  }),
+}));

@@ -1,24 +1,14 @@
-import { render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
+import React from 'react';
+import { render, screen } from '../../../test/test-utils';
 import workTimeReducer from '../../../store/workTimeSlice';
 import WorkTimeEntryForm from '../WorkTimeEntryForm';
 
-const store = configureStore({
-  reducer: {
-    workTime: workTimeReducer,
-  },
-});
-
 test('renders WorkTimeEntryForm', () => {
-  render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <WorkTimeEntryForm />
-      </BrowserRouter>
-    </Provider>
-  );
+  render(<WorkTimeEntryForm />, {
+    initialState: {
+      workTime: workTimeReducer(undefined, { type: '@@INIT' }),
+    },
+  });
 
   expect(screen.getByText('作業時間の記録')).toBeInTheDocument();
   expect(screen.getByLabelText('プロジェクト名')).toBeInTheDocument();
