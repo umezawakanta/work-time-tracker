@@ -560,6 +560,7 @@ jest.mock('@radix-ui/react-roving-focus', () => ({
 
 // Mock Radix UI Popper to prevent infinite loops
 jest.mock('@radix-ui/react-popper', () => ({
+  createPopperScope: () => () => ({}),
   Root: ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'popper-root', ...props }, children),
   Anchor: ({ children, ...props }: any) =>
@@ -572,26 +573,56 @@ jest.mock('@radix-ui/react-popper', () => ({
 
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
-  const mockComponent = (displayName: string) => {
-    const Component = ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': displayName.toLowerCase(), ...props }, children);
+  const mockComponent = (displayName: string, element = 'div') => {
+    const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
+      let roleProps: any = {};
+
+      if (displayName === 'SelectTrigger') {
+        roleProps = {
+          role: 'combobox',
+          'aria-expanded': 'false', // Keep simple for tests
+        };
+      } else if (displayName === 'SelectContent') {
+        roleProps = {
+          role: 'listbox',
+        };
+      } else if (displayName === 'SelectItem') {
+        roleProps = {
+          role: 'option',
+        };
+      }
+
+      return React.createElement(
+        element,
+        {
+          ref,
+          'data-testid': displayName.toLowerCase(),
+          ...roleProps,
+          ...props,
+        },
+        children
+      );
+    });
     Component.displayName = displayName;
     return Component;
   };
 
   return {
     Root: mockComponent('SelectRoot'),
-    Trigger: mockComponent('SelectTrigger'),
+    Group: mockComponent('SelectGroup'),
+    Value: mockComponent('SelectValue', 'span'),
+    Trigger: mockComponent('SelectTrigger', 'button'),
     Content: mockComponent('SelectContent'),
+    Portal: ({ children }: any) => children, // Portal just renders children
     Viewport: mockComponent('SelectViewport'),
     Item: mockComponent('SelectItem'),
-    Value: mockComponent('SelectValue'),
-    Icon: mockComponent('SelectIcon'),
-    ScrollUpButton: mockComponent('SelectScrollUpButton'),
-    ScrollDownButton: mockComponent('SelectScrollDownButton'),
-    Group: mockComponent('SelectGroup'),
+    ItemText: mockComponent('SelectItemText', 'span'),
+    ItemIndicator: mockComponent('SelectItemIndicator', 'span'),
     Label: mockComponent('SelectLabel'),
-    Separator: mockComponent('SelectSeparator'),
+    Separator: mockComponent('SelectSeparator', 'hr'),
+    ScrollUpButton: mockComponent('SelectScrollUpButton', 'button'),
+    ScrollDownButton: mockComponent('SelectScrollDownButton', 'button'),
+    Icon: mockComponent('SelectIcon', 'span'),
   };
 });
 
@@ -605,4 +636,33 @@ jest.mock('@radix-ui/react-popover', () => ({
     React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
   Anchor: ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children),
+}));
+
+// Mock Radix UI Dropdown Menu
+jest.mock('@radix-ui/react-dropdown-menu', () => ({
+  Root: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-root', ...props }, children),
+  Trigger: ({ children, ...props }: any) =>
+    React.createElement('button', { 'data-testid': 'dropdown-trigger', ...props }, children),
+  Content: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-content', ...props }, children),
+  Portal: ({ children }: any) => children,
+  Item: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-item', ...props }, children),
+  CheckboxItem: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-checkbox-item', ...props }, children),
+  RadioItem: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-radio-item', ...props }, children),
+  Label: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-label', ...props }, children),
+  Separator: ({ ...props }: any) =>
+    React.createElement('hr', { 'data-testid': 'dropdown-separator', ...props }),
+  Group: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-group', ...props }, children),
+  Sub: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-sub', ...props }, children),
+  SubTrigger: ({ children, ...props }: any) =>
+    React.createElement('button', { 'data-testid': 'dropdown-sub-trigger', ...props }, children),
+  SubContent: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'dropdown-sub-content', ...props }, children),
 }));
