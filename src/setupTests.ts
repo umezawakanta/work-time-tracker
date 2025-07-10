@@ -3,6 +3,26 @@ import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 
 // ========================================
+// CSS and Asset Mocks
+// ========================================
+
+// Mock CSS imports
+jest.mock('@/styles/chart.css', () => ({}));
+jest.mock('@/styles/globals.css', () => ({}));
+
+// Mock any CSS file imports
+jest.mock('*.css', () => ({}), { virtual: true });
+jest.mock('*.scss', () => ({}), { virtual: true });
+jest.mock('*.sass', () => ({}), { virtual: true });
+
+// Mock image and asset imports
+jest.mock('*.png', () => 'test-file-stub', { virtual: true });
+jest.mock('*.jpg', () => 'test-file-stub', { virtual: true });
+jest.mock('*.jpeg', () => 'test-file-stub', { virtual: true });
+jest.mock('*.gif', () => 'test-file-stub', { virtual: true });
+jest.mock('*.svg', () => 'test-file-stub', { virtual: true });
+
+// ========================================
 // TypeScript Global Type Declarations
 // ========================================
 

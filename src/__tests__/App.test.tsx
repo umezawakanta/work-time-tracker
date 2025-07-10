@@ -9,6 +9,32 @@ import workTimeReducer from '../store/workTimeSlice';
 import { store } from '../store';
 import { render } from '../test/test-utils';
 
+// Mock the problematic imports
+jest.mock('../components/adhd/ADHDFloatingButton', () => ({
+  ADHDFloatingButton: () => <div data-testid="adhd-floating-button">ADHD Button</div>,
+}));
+
+jest.mock('../hooks/useADHDNotifications', () => ({
+  useADHDNotifications: () => ({
+    triggerEmergencyRealityCheck: jest.fn(),
+  }),
+}));
+
+// Mock other problematic components
+jest.mock('../components/pomodoro/PomodoroManager', () => ({
+  PomodoroManager: () => <div data-testid="pomodoro-manager">Pomodoro</div>,
+}));
+
+jest.mock('../context/PomodoroContext', () => ({
+  PomodoroProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock('../hooks/useInternationalization', () => ({
+  InternationalizationProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
+
 const createMockStore = () =>
   configureStore({
     reducer: {

@@ -54,8 +54,15 @@ jest.mock('recharts', () => ({
   YAxis: ({ dataKey }: any) => <div data-testid="y-axis" data-key={dataKey} />,
   Tooltip: ({ content, active, payload, label }: any) =>
     active && content ? React.createElement(content, { active, payload, label }) : null,
-  Legend: ({ content, payload }: any) =>
-    content ? React.createElement(content, { payload }) : null,
+  Legend: ({ content, payload }: any) => {
+    if (content && React.isValidElement(content)) {
+      return React.cloneElement(content, { payload } as any);
+    }
+    if (content && typeof content === 'function') {
+      return React.createElement(content, { payload });
+    }
+    return null;
+  },
 }));
 
 // Test data
