@@ -515,11 +515,39 @@ jest.mock('@radix-ui/react-tabs', () => ({
   Root: ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
   List: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'tabs-list', ...props }, children),
+    React.createElement(
+      'div',
+      {
+        'data-testid': 'tabs-list',
+        role: 'tablist',
+        'aria-orientation': 'horizontal',
+        ...props,
+      },
+      children
+    ),
   Trigger: ({ children, ...props }: any) =>
-    React.createElement('button', { 'data-testid': 'tabs-trigger', ...props }, children),
+    React.createElement(
+      'button',
+      {
+        'data-testid': 'tabs-trigger',
+        role: 'tab',
+        'aria-selected': props.value === props.defaultValue ? 'true' : 'false',
+        tabIndex: props.value === props.defaultValue ? 0 : -1,
+        ...props,
+      },
+      children
+    ),
   Content: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'tabs-content', ...props }, children),
+    React.createElement(
+      'div',
+      {
+        'data-testid': 'tabs-content',
+        role: 'tabpanel',
+        tabIndex: 0,
+        ...props,
+      },
+      children
+    ),
 }));
 
 jest.mock('@radix-ui/react-roving-focus', () => ({
@@ -528,4 +556,53 @@ jest.mock('@radix-ui/react-roving-focus', () => ({
   RovingFocusGroupItem: ({ children, ...props }: any) =>
     React.createElement('div', props, children),
   useRovingFocus: () => ({ tabStopId: undefined, focusableId: undefined }),
+}));
+
+// Mock Radix UI Popper to prevent infinite loops
+jest.mock('@radix-ui/react-popper', () => ({
+  Root: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popper-root', ...props }, children),
+  Anchor: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popper-anchor', ...props }, children),
+  Content: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popper-content', ...props }, children),
+  Arrow: ({ ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popper-arrow', ...props }),
+}));
+
+// Mock other problematic Radix UI components
+jest.mock('@radix-ui/react-select', () => {
+  const mockComponent = (displayName: string) => {
+    const Component = ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': displayName.toLowerCase(), ...props }, children);
+    Component.displayName = displayName;
+    return Component;
+  };
+
+  return {
+    Root: mockComponent('SelectRoot'),
+    Trigger: mockComponent('SelectTrigger'),
+    Content: mockComponent('SelectContent'),
+    Viewport: mockComponent('SelectViewport'),
+    Item: mockComponent('SelectItem'),
+    Value: mockComponent('SelectValue'),
+    Icon: mockComponent('SelectIcon'),
+    ScrollUpButton: mockComponent('SelectScrollUpButton'),
+    ScrollDownButton: mockComponent('SelectScrollDownButton'),
+    Group: mockComponent('SelectGroup'),
+    Label: mockComponent('SelectLabel'),
+    Separator: mockComponent('SelectSeparator'),
+  };
+});
+
+// Mock Radix UI Popover
+jest.mock('@radix-ui/react-popover', () => ({
+  Root: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popover-root', ...props }, children),
+  Trigger: ({ children, ...props }: any) =>
+    React.createElement('button', { 'data-testid': 'popover-trigger', ...props }, children),
+  Content: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
+  Anchor: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children),
 }));
