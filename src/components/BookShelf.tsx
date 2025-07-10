@@ -192,7 +192,7 @@ export default function BookShelf() {
   }, [books, searchTerm, selectedCategory, selectedTags, sortBy, readingStatus]);
 
   if (status === 'loading') {
-    return <div>Loading...</div>;
+    return <div className="text-center py-8 text-gray-600 dark:text-gray-400">Loading...</div>;
   }
 
   return (
@@ -288,11 +288,13 @@ export default function BookShelf() {
                         <p>評価: {book.rating} / 5</p>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 mb-2">カテゴリー: {book.category}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                      カテゴリー: {book.category}
+                    </p>
                     {book.notes && (
                       <div className="mt-2">
-                        <h4 className="font-semibold">メモ:</h4>
-                        <p className="text-sm">{book.notes}</p>
+                        <h4 className="font-semibold dark:text-white">メモ:</h4>
+                        <p className="text-sm dark:text-gray-300">{book.notes}</p>
                       </div>
                     )}
                   </CardContent>
@@ -312,11 +314,11 @@ export default function BookShelf() {
               {filteredAndSortedBooks.map((book) => (
                 <div
                   key={book._id}
-                  className="flex items-center justify-between p-2 border rounded"
+                  className="flex items-center justify-between p-2 border rounded dark:border-gray-700"
                 >
                   <div>
-                    <h3 className="font-semibold">{book.title}</h3>
-                    <p className="text-sm text-gray-500">{book.author}</p>
+                    <h3 className="font-semibold dark:text-white">{book.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{book.author}</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Badge>{book.category}</Badge>

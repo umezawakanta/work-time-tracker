@@ -308,7 +308,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
             <CardContent className="py-2">
               <div className="text-2xl font-bold mb-1">2.5 冊/週</div>
               <div className="text-xs text-muted-foreground">前週比 +0.5冊</div>
-              <div className="h-[100px] w-full bg-gray-100 rounded mt-2 flex items-end">
+              <div className="h-[100px] w-full bg-gray-100 dark:bg-gray-800 rounded mt-2 flex items-end">
                 <div className="w-1/7 h-[30px] bg-primary mx-0.5 rounded-t"></div>
                 <div className="w-1/7 h-[50px] bg-primary mx-0.5 rounded-t"></div>
                 <div className="w-1/7 h-[20px] bg-primary mx-0.5 rounded-t"></div>
@@ -398,7 +398,7 @@ const ReadingAnalytics = ({ isPremium = false }) => {
             </Card>
           </div>
         ) : (
-          <Card className="border-dashed border-2 border-gray-300 bg-gray-50">
+          <Card className="border-dashed border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
             <CardContent className="flex flex-col items-center justify-center p-6">
               <Crown className="h-8 w-8 text-amber-500 mb-2" />
               <h3 className="font-medium text-center mb-1">プレミアム分析</h3>
@@ -505,7 +505,7 @@ const BookShelfPage: React.FC = () => {
       <div className="container mx-auto px-4 py-8 flex justify-center items-center h-screen">
         <div className="text-center">
           <div className="text-red-500 text-xl mb-4">エラーが発生しました</div>
-          <p className="text-gray-600">{booksError}</p>
+          <p className="text-gray-600 dark:text-gray-400">{booksError}</p>
           <Button onClick={() => dispatch(fetchBooks())} className="mt-4">
             再読み込み
           </Button>
@@ -518,27 +518,29 @@ const BookShelfPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-2">パーソナル読書管理</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           読書習慣を育て、知識を広げ、人生を豊かにするための本棚アプリです
         </p>
       </div>
 
       {/* モチベーションボックス - 元のコードのまま */}
       {showMotivationTip && (
-        <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg p-4 relative">
+        <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border border-blue-100 dark:border-blue-800 rounded-lg p-4 relative">
           <button
-            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             onClick={() => setShowMotivationTip(false)}
           >
             &times;
           </button>
           <div className="flex items-start">
-            <div className="bg-blue-100 rounded-full p-2 mr-4">
-              <Sparkles className="h-5 w-5 text-blue-600" />
+            <div className="bg-blue-100 dark:bg-blue-800 rounded-full p-2 mr-4">
+              <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h3 className="font-medium text-blue-800 mb-1">今日の読書モチベーション</h3>
-              <p className="text-blue-700">{randomTip}</p>
+              <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-1">
+                今日の読書モチベーション
+              </h3>
+              <p className="text-blue-700 dark:text-blue-300">{randomTip}</p>
             </div>
           </div>
         </div>
@@ -607,7 +609,9 @@ const BookShelfPage: React.FC = () => {
                   <div
                     key={i}
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
-                      hasReadingSession ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'
+                      hasReadingSession
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500'
                     }`}
                   >
                     {date.getDate()}
@@ -739,7 +743,7 @@ const BookShelfPage: React.FC = () => {
 
       {/* プレミアム紹介セクション - 元のコードと同じ */}
       {!isPremium && (
-        <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 mb-8">
+        <Card className="border-amber-200 dark:border-amber-700 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900 dark:to-yellow-900 mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Crown className="h-5 w-5 text-amber-500" />
@@ -751,8 +755,8 @@ const BookShelfPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex">
                 <div className="mr-4">
-                  <div className="bg-amber-100 p-3 rounded-full">
-                    <Users className="h-5 w-5 text-amber-600" />
+                  <div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full">
+                    <Users className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
                 </div>
                 <div>
@@ -765,8 +769,8 @@ const BookShelfPage: React.FC = () => {
 
               <div className="flex">
                 <div className="mr-4">
-                  <div className="bg-amber-100 p-3 rounded-full">
-                    <BarChart className="h-5 w-5 text-amber-600" />
+                  <div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full">
+                    <BarChart className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
                 </div>
                 <div>
@@ -779,8 +783,8 @@ const BookShelfPage: React.FC = () => {
 
               <div className="flex">
                 <div className="mr-4">
-                  <div className="bg-amber-100 p-3 rounded-full">
-                    <PenTool className="h-5 w-5 text-amber-600" />
+                  <div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-full">
+                    <PenTool className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
                 </div>
                 <div>
