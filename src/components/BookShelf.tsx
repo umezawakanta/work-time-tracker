@@ -344,7 +344,7 @@ export default function BookShelf() {
         </TabsContent>
       </Tabs>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg z-50">
           <DialogHeader>
             <DialogTitle>{editingBook ? '本を編集' : '新しい本を追加'}</DialogTitle>
             <DialogDescription>

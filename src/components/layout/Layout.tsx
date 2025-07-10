@@ -565,6 +565,15 @@ export default function Layout({ children }: LayoutProps) {
                 {t('sidebar.other_features')}
               </h3>
             </div>
+            {/* 本棚ページ */}
+            {renderMenuItem({
+              icon: <BookOpen className="h-5 w-5" />,
+              label: '本棚',
+              path: '/bookshelf',
+              description: '読書管理と本の記録',
+              gradient: 'from-amber-500 via-orange-500 to-red-500',
+              accentColor: 'amber',
+            })}
             {/* PWA・システム関連 */}
             {renderMenuItem({
               icon: <Lightbulb className="h-5 w-5" />,
