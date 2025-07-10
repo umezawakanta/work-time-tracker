@@ -435,7 +435,7 @@ jest.mock('@/store/workTimeSlice', () => ({
 }));
 
 // Mock toast hook
-jest.mock('@/hooks/use-toast', () => ({
+jest.mock('@/components/ui/use-toast', () => ({
   useToast: () => ({
     toast: jest.fn(),
   }),

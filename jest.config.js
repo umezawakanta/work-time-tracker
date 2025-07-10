@@ -9,7 +9,8 @@ module.exports = {
 
     // CSS and style files - more explicit handling
     '^@/styles/chart\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
-    '\\.css$': 'identity-obj-proxy',
+    '^@/styles/.*\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
+    '\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
     '\\.scss$': 'identity-obj-proxy',
     '\\.sass$': 'identity-obj-proxy',
     '\\.less$': 'identity-obj-proxy',

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/15</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>13/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -99,75 +99,75 @@
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/components/ui/alert.tsx
-import * as React from 'react';
+<span class="cstat-no" title="statement not covered" >import * as React from 'react';</span>
 import { type VariantProps } from 'class-variance-authority';
 &nbsp;
-import { cn } from '@/lib/utils';
-import { alertVariants } from './alert-utils';
+<span class="cstat-no" title="statement not covered" >import { cn } from '@/lib/utils';</span>
+<span class="cstat-no" title="statement not covered" >import { alertVariants } from './alert-utils';</span>
 &nbsp;
-const Alert = React.forwardRef&lt;
+const Alert = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;</span>
   HTMLDivElement,
   React.HTMLAttributes&lt;HTMLDivElement&gt; &amp; VariantProps&lt;typeof alertVariants&gt;
-&gt;(({ className, variant, ...props }, ref) =&gt; (
-  &lt;div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props} /&gt;
+&gt;(<span class="fstat-no" title="function not covered" >({</span> className, variant, ...props }, ref) =&gt; (
+<span class="cstat-no" title="statement not covered" >  &lt;div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props} /&gt;</span>
 ));
-Alert.displayName = 'Alert';
+<span class="cstat-no" title="statement not covered" >Alert.displayName = 'Alert';</span>
 &nbsp;
-const AlertTitle = React.forwardRef&lt;HTMLParagraphElement, React.HTMLAttributes&lt;HTMLHeadingElement&gt;&gt;(
-  ({ className, ...props }, ref) =&gt; (
-    &lt;h5
+const AlertTitle = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;HTMLParagraphElement, React.HTMLAttributes&lt;HTMLHeadingElement&gt;&gt;(</span>
+<span class="fstat-no" title="function not covered" >  ({</span> className, ...props }, ref) =&gt; (
+<span class="cstat-no" title="statement not covered" >    &lt;h5</span>
       ref={ref}
       className={cn('mb-1 font-medium leading-none tracking-tight', className)}
       {...props}
     /&gt;
   )
 );
-AlertTitle.displayName = 'AlertTitle';
+<span class="cstat-no" title="statement not covered" >AlertTitle.displayName = 'AlertTitle';</span>
 &nbsp;
-const AlertDescription = React.forwardRef&lt;
+const AlertDescription = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;</span>
   HTMLParagraphElement,
   React.HTMLAttributes&lt;HTMLParagraphElement&gt;
-&gt;(({ className, ...props }, ref) =&gt; (
-  &lt;div ref={ref} className={cn('text-sm [&amp;_p]:leading-relaxed', className)} {...props} /&gt;
+&gt;(<span class="fstat-no" title="function not covered" >({</span> className, ...props }, ref) =&gt; (
+<span class="cstat-no" title="statement not covered" >  &lt;div ref={ref} className={cn('text-sm [&amp;_p]:leading-relaxed', className)} {...props} /&gt;</span>
 ));
-AlertDescription.displayName = 'AlertDescription';
+<span class="cstat-no" title="statement not covered" >AlertDescription.displayName = 'AlertDescription';</span>
 &nbsp;
-export { Alert, AlertTitle, AlertDescription };
+export { <span class="cstat-no" title="statement not covered" >Alert,</span> <span class="cstat-no" title="statement not covered" >AlertTitle,</span> <span class="cstat-no" title="statement not covered" >AlertDescription </span>};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -175,7 +175,7 @@ export { Alert, AlertTitle, AlertDescription };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T12:11:09.345Z
+                at 2025-07-10T15:55:59.783Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

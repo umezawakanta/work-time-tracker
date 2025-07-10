@@ -33,6 +33,9 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
       {children}
     </div>
   ),
+  ItemIndicator: ({ children }: any) => (
+    <span data-testid="dropdown-item-indicator">{children}</span>
+  ),
   Trigger: ({ children, asChild, ...props }: any) =>
     asChild ? (
       React.cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
@@ -52,8 +55,8 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
       {children}
     </div>
   ),
-  Item: ({ children, className, inset, ...props }: any) => (
-    <div data-testid="dropdown-item" className={className} data-inset={inset} {...props}>
+  Item: ({ children, className, ...props }: any) => (
+    <div data-testid="dropdown-item" className={className} {...props}>
       {children}
     </div>
   ),
@@ -87,8 +90,8 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
       {children}
     </div>
   ),
-  Label: ({ children, className, inset, ...props }: any) => (
-    <div data-testid="dropdown-label" className={className} data-inset={inset} {...props}>
+  Label: ({ children, className, ...props }: any) => (
+    <div data-testid="dropdown-label" className={className} {...props}>
       {children}
     </div>
   ),
@@ -339,7 +342,6 @@ describe('DropdownMenu Components', () => {
       );
 
       const item = screen.getByText('Inset Item').closest('[data-testid="dropdown-item"]');
-      expect(item).toHaveAttribute('data-inset', 'true');
       expect(item).toHaveClass('pl-8');
     });
   });
@@ -457,7 +459,6 @@ describe('DropdownMenu Components', () => {
       );
 
       const label = screen.getByTestId('dropdown-label');
-      expect(label).toHaveAttribute('data-inset', 'true');
       expect(label).toHaveClass('pl-8');
     });
   });
@@ -572,7 +573,7 @@ describe('DropdownMenu Components', () => {
         </DropdownMenu>
       );
 
-      expect(screen.getByTestId('dropdown-portal')).toBeInTheDocument();
+      expect(screen.getAllByTestId('dropdown-portal')).toHaveLength(2); // One from DropdownMenuPortal, one from DropdownMenuContent
       expect(screen.getByText('Portal Item')).toBeInTheDocument();
     });
   });

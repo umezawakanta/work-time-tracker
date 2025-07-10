@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.94% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/17</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.94% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/17</span>
+                <span class='fraction'>0/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -228,30 +228,30 @@
 <a name='L163'></a><a href='#L163'>163</a>
 <a name='L164'></a><a href='#L164'>164</a>
 <a name='L165'></a><a href='#L165'>165</a>
-<a name='L166'></a><a href='#L166'>166</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L166'></a><a href='#L166'>166</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -392,20 +392,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useEffect } from 'react';
-import { PageLayout } from '@/components/layout/PageLayout';
-import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitoringDashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
-import { Bug, Shield, Activity, TrendingUp, CheckCircle2 } from 'lucide-react';
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { PageLayout } from '@/components/layout/PageLayout';</span>
+<span class="cstat-no" title="statement not covered" >import { ErrorMonitoringDashboard } from '@/components/development/ErrorMonitoringDashboard';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';</span>
+<span class="cstat-no" title="statement not covered" >import { Bug, Shield, Activity, TrendingUp, CheckCircle2 } from 'lucide-react';</span>
 &nbsp;
 /**
  * 🐛 エラーエリミネーター: エラー監視専用ページ
  * システム全体のエラー状況を包括的に管理
  */
-const ErrorDashboardPage: React.FC = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
+const ErrorDashboardPage: React.FC = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
   const errorRecoveryService = <span class="cstat-no" title="statement not covered" >ErrorRecoveryService.getInstance();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
@@ -557,7 +557,7 @@ const ErrorDashboardPage: React.FC = <span class="fstat-no" title="function not 
   );
 };
 &nbsp;
-export default ErrorDashboardPage;
+<span class="cstat-no" title="statement not covered" >export default ErrorDashboardPage;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -565,7 +565,7 @@ export default ErrorDashboardPage;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T12:11:11.389Z
+                at 2025-07-10T15:56:01.559Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
