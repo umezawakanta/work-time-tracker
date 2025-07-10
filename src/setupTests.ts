@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
+import React from 'react';
 
 // ========================================
 // CSS and Asset Mocks
@@ -21,6 +22,61 @@ jest.mock('*.jpg', () => 'test-file-stub', { virtual: true });
 jest.mock('*.jpeg', () => 'test-file-stub', { virtual: true });
 jest.mock('*.gif', () => 'test-file-stub', { virtual: true });
 jest.mock('*.svg', () => 'test-file-stub', { virtual: true });
+
+// ========================================
+// Hook Mocks
+// ========================================
+
+// Mock useInternationalization hook globally
+jest.mock('./hooks/useInternationalization', () => ({
+  InternationalizationProvider: ({ children }: { children: React.ReactNode }) =>
+    React.createElement('div', {}, children),
+  useInternationalization: () => ({
+    locale: 'ja' as const,
+    setLocale: jest.fn(),
+    t: (key: string) => key,
+    formatDate: (date: Date) => date.toLocaleDateString(),
+    formatTime: (date: Date) => date.toLocaleTimeString(),
+    formatNumber: (number: number) => number.toString(),
+    formatCurrency: (amount: number) => `¥${amount}`,
+    getLocaleConfig: () => ({
+      code: 'ja' as const,
+      name: 'Japanese',
+      nativeName: '日本語',
+      flag: '🇯🇵',
+      direction: 'ltr' as const,
+      dateFormat: 'YYYY年MM月DD日',
+      timeFormat: 'HH:mm',
+      currency: 'JPY',
+      numberFormat: { decimal: '.', thousands: ',' },
+    }),
+    isRTL: false,
+  }),
+  SUPPORTED_LOCALES: {
+    ja: {
+      code: 'ja' as const,
+      name: 'Japanese',
+      nativeName: '日本語',
+      flag: '🇯🇵',
+      direction: 'ltr' as const,
+      dateFormat: 'YYYY年MM月DD日',
+      timeFormat: 'HH:mm',
+      currency: 'JPY',
+      numberFormat: { decimal: '.', thousands: ',' },
+    },
+    en: {
+      code: 'en' as const,
+      name: 'English',
+      nativeName: 'English',
+      flag: '🇺🇸',
+      direction: 'ltr' as const,
+      dateFormat: 'MM/DD/YYYY',
+      timeFormat: 'hh:mm A',
+      currency: 'USD',
+      numberFormat: { decimal: '.', thousands: ',' },
+    },
+  },
+}));
 
 // ========================================
 // TypeScript Global Type Declarations

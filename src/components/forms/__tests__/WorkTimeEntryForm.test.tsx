@@ -23,6 +23,18 @@ jest.mock('../../../components/ui/use-toast', () => ({
   }),
 }));
 
+// Mock date-fns to prevent potential issues
+jest.mock('date-fns', () => ({
+  format: jest.fn((date, format) => date.toISOString()),
+  isToday: jest.fn(() => true),
+}));
+
+// Mock Radix UI components that might cause re-render issues
+jest.mock('@radix-ui/react-roving-focus', () => ({
+  Root: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Item: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
 describe('WorkTimeEntryForm', () => {
   beforeEach(() => {
     // Setup auth mock

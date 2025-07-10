@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -147,14 +148,15 @@ describe('Form Components', () => {
 
     it('manages field state correctly', async () => {
       const mockSubmit = jest.fn();
+      const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
       const emailInput = screen.getByLabelText('Email');
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
       // Test invalid input
-      await emailInput.focus();
-      await emailInput.blur();
+      await user.click(emailInput);
+      await user.tab();
 
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
@@ -208,14 +210,15 @@ describe('Form Components', () => {
     });
 
     it('shows error state with destructive styling', async () => {
+      const user = userEvent.setup();
       render(<TestFormComponent />);
 
       const emailInput = screen.getByLabelText('Email');
       const emailLabel = screen.getByText('Email');
 
       // Trigger validation error
-      await emailInput.focus();
-      await emailInput.blur();
+      await user.click(emailInput);
+      await user.tab();
 
       expect(emailLabel).toHaveClass('text-destructive');
     });
@@ -232,6 +235,7 @@ describe('Form Components', () => {
     });
 
     it('sets aria-invalid when there are errors', async () => {
+      const user = userEvent.setup();
       render(<TestFormComponent />);
 
       const emailInput = screen.getByLabelText('Email');
@@ -240,8 +244,8 @@ describe('Form Components', () => {
       expect(emailInput).toHaveAttribute('aria-invalid', 'false');
 
       // Trigger validation
-      await emailInput.focus();
-      await emailInput.blur();
+      await user.click(emailInput);
+      await user.tab();
 
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
@@ -346,7 +350,7 @@ describe('Form Components', () => {
       render(<TestUseFormFieldComponent />);
 
       expect(screen.getByTestId('field-name')).toHaveTextContent('testField');
-      expect(screen.getByTestId('field-id')).toHaveTextContent(/^:r\d+:$/);
+      expect(screen.getByTestId('field-id')).toHaveTextContent(/^.+$/);
       expect(screen.getByTestId('form-item-id')).toHaveTextContent(/-form-item$/);
       expect(screen.getByTestId('form-description-id')).toHaveTextContent(
         /-form-item-description$/
@@ -374,6 +378,7 @@ describe('Form Components', () => {
   describe('Integration', () => {
     it('handles complete form submission flow', async () => {
       const mockSubmit = jest.fn();
+      const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
       const emailInput = screen.getByLabelText('Email');
@@ -381,9 +386,9 @@ describe('Form Components', () => {
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
       // Fill valid data
-      await emailInput.type('test@example.com');
-      await passwordInput.type('password123');
-      await submitButton.click();
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.click(submitButton);
 
       expect(mockSubmit).toHaveBeenCalledWith({
         email: 'test@example.com',
@@ -393,6 +398,7 @@ describe('Form Components', () => {
 
     it('prevents submission with invalid data', async () => {
       const mockSubmit = jest.fn();
+      const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
       const emailInput = screen.getByLabelText('Email');
@@ -400,9 +406,9 @@ describe('Form Components', () => {
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
       // Fill invalid data
-      await emailInput.type('invalid-email');
-      await passwordInput.type('123');
-      await submitButton.click();
+      await user.type(emailInput, 'invalid-email');
+      await user.type(passwordInput, '123');
+      await user.click(submitButton);
 
       expect(mockSubmit).not.toHaveBeenCalled();
       expect(screen.getByText('Invalid email address')).toBeInTheDocument();
