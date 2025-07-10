@@ -505,3 +505,27 @@ if (typeof EventTarget === 'undefined') {
   // Assign to global
   (global as any).EventTarget = CustomEventTarget;
 }
+
+// ========================================
+// Radix UI Component Mocks
+// ========================================
+
+// Mock Radix UI components that cause issues in Jest
+jest.mock('@radix-ui/react-tabs', () => ({
+  Root: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
+  List: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'tabs-list', ...props }, children),
+  Trigger: ({ children, ...props }: any) =>
+    React.createElement('button', { 'data-testid': 'tabs-trigger', ...props }, children),
+  Content: ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'tabs-content', ...props }, children),
+}));
+
+jest.mock('@radix-ui/react-roving-focus', () => ({
+  createRovingFocusGroupScope: () => () => ({}),
+  RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
+  RovingFocusGroupItem: ({ children, ...props }: any) =>
+    React.createElement('div', props, children),
+  useRovingFocus: () => ({ tabStopId: undefined, focusableId: undefined }),
+}));

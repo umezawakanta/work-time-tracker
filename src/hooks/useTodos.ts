@@ -36,7 +36,7 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
       (updatedTodos) => {
         setTodos(updatedTodos);
         setLoading(false);
-        setError(null);
+        // Don't clear error here - let operations manage their own error states
       },
       filter
     );
@@ -65,6 +65,7 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
 
       try {
         await TodoService.createTodo(user.uid!, todoData);
+        setError(null); // Clear error on success
       } catch (err) {
         setError('タスクの追加に失敗しました');
         throw err;
@@ -76,6 +77,7 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
   const updateTodo = useCallback(async (update: TodoUpdate) => {
     try {
       await TodoService.updateTodo(update);
+      setError(null); // Clear error on success
     } catch (err) {
       setError('タスクの更新に失敗しました');
       throw err;
@@ -85,6 +87,7 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
   const deleteTodo = useCallback(async (id: string) => {
     try {
       await TodoService.deleteTodo(id);
+      setError(null); // Clear error on success
     } catch (err) {
       setError('タスクの削除に失敗しました');
       throw err;

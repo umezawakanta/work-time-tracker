@@ -289,13 +289,15 @@ describe('Chart Components', () => {
     });
 
     it('does not render when inactive', () => {
-      const { container } = render(
+      render(
         <ChartContainer config={testConfig}>
           <ChartTooltipContent active={false} payload={[]} />
         </ChartContainer>
       );
 
-      expect(container.firstChild).toBeNull();
+      // When inactive, tooltip content should not be rendered
+      expect(screen.queryByText('Sales')).not.toBeInTheDocument();
+      expect(screen.queryByText('Revenue')).not.toBeInTheDocument();
     });
 
     it('renders with different indicators', () => {
@@ -599,7 +601,7 @@ describe('Chart Components', () => {
           <PieChart data={testData}>
             <Pie dataKey="sales" data={testData}>
               {testData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={`var(--color-sales)`} />
+                <Cell key={`cell-${index}`} fill={`var(--color-sales)`} data-testid="chart-cell" />
               ))}
             </Pie>
             <ChartTooltip content={<ChartTooltipContent />} />

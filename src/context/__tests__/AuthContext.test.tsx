@@ -534,7 +534,21 @@ describe('AuthContext', () => {
     it('should enable fast auth mode in development', async () => {
       console.log('🐛 Starting development mode test...');
 
-      // Mock tokenManager to return false (no token)
+      // Mock tokenManager to return false consistently (no token)
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
+        isAuthenticated: false,
+        expiresAt: null,
+        refreshExpiresAt: null,
+        timeUntilExpiry: 0,
+        timeUntilRefreshExpiry: 0,
+      });
+      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({});
+
+      // Clear all API mocks to prevent unwanted calls
+      jest.clearAllMocks();
+
+      // Re-setup mocks after clearing
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
       (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
         isAuthenticated: false,
@@ -606,7 +620,9 @@ describe('AuthContext', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (No Token)');
+          // In development mode with no token, it should create "Demo User (Dev)" not "Demo User (No Token)"
+          // because the fast auth mode takes precedence
+          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
         },
         { timeout: 5000 }
       );
