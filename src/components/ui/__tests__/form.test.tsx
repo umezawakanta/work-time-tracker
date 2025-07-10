@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,7 +34,7 @@ type TestFormData = z.infer<typeof testSchema>;
 const TestFormComponent: React.FC<{
   onSubmit?: (data: TestFormData) => void;
   defaultValues?: Partial<TestFormData>;
-}> = ({ onSubmit = jest.fn(), defaultValues }) => {
+}> = ({ onSubmit, defaultValues }) => {
   const form = useForm<TestFormData>({
     resolver: zodResolver(testSchema),
     defaultValues: {
@@ -42,11 +42,18 @@ const TestFormComponent: React.FC<{
       password: '',
       ...defaultValues,
     },
+    mode: 'onChange', // Enable validation on change for better test reliability
   });
+
+  const handleSubmit = (data: TestFormData) => {
+    if (onSubmit) {
+      onSubmit(data);
+    }
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -163,11 +170,20 @@ describe('Form Components', () => {
 
       // Type invalid email to trigger validation
       await user.type(emailInput, 'invalid-email');
-      await user.click(submitButton);
+      await global.testUtils.waitForFormValidation();
 
-      // Wait for validation to complete - look for either specific error or required
-      const errorElement = await screen.findByText(/Invalid email address|Required/);
-      expect(errorElement).toBeInTheDocument();
+      // Trigger validation by blurring the field
+      await user.tab();
+      await global.testUtils.waitForFormValidation();
+
+      // Check for validation message
+      await waitFor(
+        () => {
+          const errorMessage = screen.queryByText('Invalid email address');
+          expect(errorMessage).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
@@ -226,16 +242,19 @@ describe('Form Components', () => {
 
       const emailInput = screen.getByLabelText('Email');
       const emailLabel = screen.getByText('Email');
-      const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      // Type invalid email to trigger validation
+      // Type invalid email and trigger validation
       await user.type(emailInput, 'invalid-email');
-      await user.click(submitButton);
+      await user.tab(); // Trigger blur to validate
+      await global.testUtils.waitForFormValidation();
 
-      // Wait for validation to complete - look for either error message
-      await screen.findByText(/Invalid email address|Required/);
-
-      expect(emailLabel).toHaveClass('text-destructive');
+      // Wait for error state to apply
+      await waitFor(
+        () => {
+          expect(emailLabel).toHaveClass('text-destructive');
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -254,18 +273,22 @@ describe('Form Components', () => {
       render(<TestFormComponent />);
 
       const emailInput = screen.getByLabelText('Email');
-      const submitButton = screen.getByRole('button', { name: 'Submit' });
 
       // Initially no error
       expect(emailInput).toHaveAttribute('aria-invalid', 'false');
 
-      // Trigger validation by submitting empty form (will trigger required validation)
-      await user.click(submitButton);
+      // Type invalid data and trigger validation
+      await user.type(emailInput, 'invalid-email');
+      await user.tab(); // Blur to trigger validation
+      await global.testUtils.waitForFormValidation();
 
-      // Wait for validation to complete - look for either error message
-      await screen.findByText(/Email is required|Required/);
-
-      expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+      // Wait for validation to complete
+      await waitFor(
+        () => {
+          expect(emailInput).toHaveAttribute('aria-invalid', 'true');
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -320,22 +343,21 @@ describe('Form Components', () => {
       const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
-      const submitButton = screen.getByRole('button', { name: 'Submit' });
+      const emailInput = screen.getByLabelText('Email');
 
-      // Click submit button to trigger validation
-      await user.click(submitButton);
+      // Type invalid email and trigger validation
+      await user.type(emailInput, 'invalid-email');
+      await user.tab(); // Blur to trigger validation
+      await global.testUtils.waitForFormValidation();
 
-      // For empty form, check if we get any validation error
-      const allText = screen.getByRole('button').closest('form')?.textContent || '';
-
-      // If no specific error messages appear, that's actually OK -
-      // some forms don't show errors until fields are touched
-      if (allText.includes('required') || allText.includes('Required')) {
-        expect(screen.getByText(/required|Required/i)).toBeInTheDocument();
-      } else {
-        // Form might not show errors on first submit if fields aren't touched
-        expect(mockSubmit).not.toHaveBeenCalled();
-      }
+      // Wait for error message to appear
+      await waitFor(
+        () => {
+          const errorMessage = screen.getByText('Invalid email address');
+          expect(errorMessage).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('renders custom children when no error', () => {
@@ -362,21 +384,25 @@ describe('Form Components', () => {
     });
 
     it('applies correct styling for error messages', async () => {
-      const mockSubmit = jest.fn();
       const user = userEvent.setup();
-      render(<TestFormComponent onSubmit={mockSubmit} />);
+      render(<TestFormComponent />);
 
       const emailInput = screen.getByLabelText('Email');
-      const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      // Type invalid email to trigger validation
+      // Type invalid email and trigger validation
       await user.type(emailInput, 'invalid-email');
-      await user.click(submitButton);
+      await user.tab(); // Blur to trigger validation
+      await global.testUtils.waitForFormValidation();
 
-      // Wait for error message to appear
-      const errorMessage = await screen.findByText(/Invalid email address|Required/);
-      expect(errorMessage).toHaveClass('text-destructive');
-      expect(errorMessage).toHaveClass('font-medium');
+      // Wait for error message to appear and check styling
+      await waitFor(
+        () => {
+          const errorMessage = screen.getByText('Invalid email address');
+          expect(errorMessage).toHaveClass('text-destructive');
+          expect(errorMessage).toHaveClass('font-medium');
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -395,6 +421,7 @@ describe('Form Components', () => {
     });
 
     it('throws error when used outside FormField', () => {
+      // Suppress console error for this test
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       const InvalidComponent = () => {
@@ -430,9 +457,13 @@ describe('Form Components', () => {
       expect(passwordInput).toHaveValue('password123');
 
       await user.click(submitButton);
+      await global.testUtils.waitForFormValidation();
 
-      // Check that the mock was called with form data (may include event as second parameter)
-      expect(mockSubmit).toHaveBeenCalled();
+      // Wait for form submission
+      await waitFor(() => {
+        expect(mockSubmit).toHaveBeenCalled();
+      });
+
       const callArgs = mockSubmit.mock.calls[0];
       expect(callArgs[0]).toEqual(
         expect.objectContaining({
@@ -451,18 +482,31 @@ describe('Form Components', () => {
       const passwordInput = screen.getByLabelText('Password');
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      // Type invalid data to trigger validation
+      // Type invalid data
       await user.type(emailInput, 'invalid-email');
       await user.type(passwordInput, '123');
+
+      // Try to submit
       await user.click(submitButton);
+      await global.testUtils.waitForFormValidation();
 
-      // Wait for error messages to appear
-      await screen.findByText(/Invalid email address/);
-      await screen.findByText(/Password must be at least 6 characters/);
+      // Wait for validation errors to appear
+      await waitFor(
+        () => {
+          expect(screen.getByText('Invalid email address')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
+      await waitFor(
+        () => {
+          expect(screen.getByText('Password must be at least 6 characters')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Form should not submit with invalid data
       expect(mockSubmit).not.toHaveBeenCalled();
-      expect(screen.getByText(/Invalid email address/)).toBeInTheDocument();
-      expect(screen.getByText(/Password must be at least 6 characters/)).toBeInTheDocument();
     });
   });
 });

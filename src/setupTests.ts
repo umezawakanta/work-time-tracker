@@ -666,3 +666,239 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
   SubContent: ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'dropdown-sub-content', ...props }, children),
 }));
+
+// ========================================
+// Radix UI Specific Mocks and Setup
+// ========================================
+
+// Mock Radix UI Portal for better test reliability
+jest.mock('@radix-ui/react-portal', () => {
+  return {
+    Portal: ({ children }: { children: React.ReactNode }) => children,
+    Root: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
+// Enhance Radix UI testing utilities
+const mockRadixUIBehavior = () => {
+  // Mock createPortal to render in place instead of in document.body
+  const ReactDOM = jest.requireActual('react-dom');
+  const originalCreatePortal = ReactDOM.createPortal;
+  ReactDOM.createPortal = jest.fn(
+    (element: React.ReactNode, _container: Element | DocumentFragment) => element
+  );
+
+  // Restore function for cleanup
+  return () => {
+    ReactDOM.createPortal = originalCreatePortal;
+  };
+};
+
+// Apply Radix UI behavior mock globally
+const restoreRadixUI = mockRadixUIBehavior();
+
+// Add to global cleanup
+if (typeof global.afterEach === 'function') {
+  global.afterEach(() => {
+    // Reset any DOM state that might affect subsequent tests
+    document.body.innerHTML = '';
+  });
+}
+
+// ========================================
+// Enhanced Test Utilities for Async Components
+// ========================================
+
+// Add async testing utilities specifically for UI components
+const asyncTestUtilities = {
+  ...testUtilities,
+
+  // Wait for Radix UI state changes
+  waitForRadixUI: async (timeout = 1000) => {
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 50); // Allow for Radix UI internal state updates
+    });
+
+    // Wait for any pending microtasks
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  },
+
+  // Wait for form validation to complete
+  waitForFormValidation: async (timeout = 1000) => {
+    // Allow react-hook-form validation to complete
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 100);
+    });
+
+    // Wait for DOM updates
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  },
+
+  // Trigger focus events properly for tests
+  focusElement: async (element: HTMLElement) => {
+    element.focus();
+    element.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+    await asyncTestUtilities.waitForRadixUI();
+  },
+
+  // Trigger blur events properly for tests
+  blurElement: async (element: HTMLElement) => {
+    element.blur();
+    element.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+    await asyncTestUtilities.waitForRadixUI();
+  },
+
+  // Click with proper async handling
+  clickElement: async (element: Element) => {
+    element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+    element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+    element.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await asyncTestUtilities.waitForRadixUI();
+  },
+
+  // Keyboard interaction with proper async handling
+  keyboardInteraction: async (element: Element, key: string, options: KeyboardEventInit = {}) => {
+    const keyboardOptions = { bubbles: true, cancelable: true, key, ...options };
+    element.dispatchEvent(new KeyboardEvent('keydown', keyboardOptions));
+    element.dispatchEvent(new KeyboardEvent('keyup', keyboardOptions));
+    await asyncTestUtilities.waitForRadixUI();
+  },
+};
+
+// Update global testUtils
+global.testUtils = asyncTestUtilities;
+
+// ========================================
+// Form Testing Enhancements
+// ========================================
+
+// Mock react-hook-form validation timing - keep original setTimeout behavior
+const originalSetTimeout = global.setTimeout;
+global.setTimeout = jest.fn().mockImplementation((fn: (...args: any[]) => void, delay = 0) => {
+  // For form validation, execute immediately in tests
+  if (delay <= 100) {
+    return originalSetTimeout(fn, 0);
+  }
+  return originalSetTimeout(fn, delay);
+}) as unknown as typeof setTimeout;
+
+// ========================================
+// Additional DOM Event Fixes
+// ========================================
+
+// Fix PointerEvent for better Radix UI compatibility
+if (!global.PointerEvent) {
+  const MockPointerEvent = class extends MouseEvent {
+    pointerId: number = 0;
+    width: number = 1;
+    height: number = 1;
+    pressure: number = 0;
+    tangentialPressure: number = 0;
+    tiltX: number = 0;
+    tiltY: number = 0;
+    twist: number = 0;
+    pointerType: string = 'mouse';
+    isPrimary: boolean = false;
+    altitudeAngle: number = 0;
+    azimuthAngle: number = 0;
+
+    constructor(type: string, eventInitDict: PointerEventInit = {}) {
+      super(type, eventInitDict);
+      this.pointerId = eventInitDict.pointerId ?? 0;
+      this.width = eventInitDict.width ?? 1;
+      this.height = eventInitDict.height ?? 1;
+      this.pressure = eventInitDict.pressure ?? 0;
+      this.tangentialPressure = eventInitDict.tangentialPressure ?? 0;
+      this.tiltX = eventInitDict.tiltX ?? 0;
+      this.tiltY = eventInitDict.tiltY ?? 0;
+      this.twist = eventInitDict.twist ?? 0;
+      this.pointerType = eventInitDict.pointerType ?? 'mouse';
+      this.isPrimary = eventInitDict.isPrimary ?? false;
+    }
+
+    getCoalescedEvents(): PointerEvent[] {
+      return [];
+    }
+
+    getPredictedEvents(): PointerEvent[] {
+      return [];
+    }
+  } as any;
+
+  (global as any).PointerEvent = MockPointerEvent;
+}
+
+// Add better FocusEvent support
+const enhanceFocusEvents = () => {
+  const originalAddEventListener = Element.prototype.addEventListener;
+  Element.prototype.addEventListener = function (
+    type: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions
+  ) {
+    // Return early if listener is null
+    if (!listener) {
+      return;
+    }
+
+    // Enhance focus events for better test reliability
+    if (type === 'focus' || type === 'blur') {
+      const enhancedListener = (event: Event) => {
+        // Ensure proper event target and bubbling
+        Object.defineProperty(event, 'target', { value: this, writable: false });
+        if (typeof listener === 'function') {
+          listener.call(this, event);
+        } else if (typeof listener.handleEvent === 'function') {
+          listener.handleEvent(event);
+        }
+      };
+      return originalAddEventListener.call(this, type, enhancedListener, options);
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+};
+
+enhanceFocusEvents();
+
+// ========================================
+// CSS and Animation Mocks for Radix UI
+// ========================================
+
+// Mock CSS transitions and animations for tests
+const mockCSSProperties = () => {
+  const mockComputedStyle = {
+    getPropertyValue: jest.fn(() => ''),
+    setProperty: jest.fn(),
+    removeProperty: jest.fn(),
+    animation: '',
+    transition: '',
+    transform: '',
+    opacity: '1',
+    display: 'block',
+    visibility: 'visible',
+    // Add more CSS properties that might be used
+    length: 0,
+    parentRule: null,
+    cssFloat: '',
+    cssText: '',
+    item: jest.fn(() => ''),
+    getPropertyPriority: jest.fn(() => ''),
+  } as Partial<CSSStyleDeclaration>;
+
+  global.getComputedStyle = jest.fn(() => mockComputedStyle as CSSStyleDeclaration);
+
+  // Mock CSSStyleDeclaration properties that Radix UI might use
+  Object.defineProperty(HTMLElement.prototype, 'style', {
+    get: function () {
+      return {
+        ...mockComputedStyle,
+        setProperty: jest.fn(),
+        removeProperty: jest.fn(),
+        getPropertyValue: jest.fn(() => ''),
+      } as CSSStyleDeclaration;
+    },
+    configurable: true,
+  });
+};
+
+mockCSSProperties();
