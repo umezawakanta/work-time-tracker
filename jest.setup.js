@@ -420,3 +420,53 @@ jest.mock('@/hooks/useInternationalization', () => ({
     t: (key) => key, // Simple passthrough for tests
   }),
 }));
+
+// Mock Redux store actions
+jest.mock('@/store/workTimeSlice', () => ({
+  createWorkTimeEntry: jest.fn((data) => ({
+    type: 'workTime/createEntry',
+    payload: { id: 'test-entry-id', ...data },
+    unwrap: () => Promise.resolve({ id: 'test-entry-id', ...data }),
+  })),
+  fetchWorkTimeEntries: jest.fn(() => ({
+    type: 'workTime/fetchEntries',
+    payload: [],
+  })),
+}));
+
+// Mock toast hook
+jest.mock('@/hooks/use-toast', () => ({
+  useToast: () => ({
+    toast: jest.fn(),
+  }),
+}));
+
+// Mock react-router-dom
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  BrowserRouter: ({ children }) => children,
+}));
+
+// Mock API services
+jest.mock('@/services/api', () => ({
+  projectApi: {
+    getUserProjects: jest.fn(() => Promise.resolve({ data: [] })),
+    createProject: jest.fn((project) => Promise.resolve({
+      data: { _id: 'test-project-id', ...project }
+    })),
+    updateProject: jest.fn((id, data) => Promise.resolve({
+      data: { _id: id, ...data }
+    })),
+  },
+  userSubscriptionApi: {
+    getUserSubscription: jest.fn(() => Promise.resolve({
+      data: { status: 'active', planId: 'free' }
+    })),
+  },
+  presetApi: {
+    createPreset: jest.fn((preset) => Promise.resolve({
+      data: { _id: 'test-preset-id', ...preset }
+    })),
+  },
+}));

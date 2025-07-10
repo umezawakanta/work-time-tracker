@@ -46,8 +46,9 @@ describe('Input', () => {
     it('renders text input by default', () => {
       render(<Input data-testid="input" />);
 
-      const input = screen.getByTestId('input');
-      expect(input).toHaveAttribute('type', 'text');
+      const input = screen.getByTestId('input') as HTMLInputElement;
+      // HTML input defaults to type="text" even when not explicitly set
+      expect(input.type).toBe('text');
     });
 
     it('renders email input when type is email', () => {

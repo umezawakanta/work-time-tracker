@@ -14,7 +14,19 @@ const createMockStore = (initialState = {}) => {
       book: (state = { books: [], status: 'idle', error: null }, action) => state,
       user: (state = { hasActiveSubscription: false }, action) => state,
       todo: (state = { todos: [], status: 'idle', error: null }, action) => state,
-      workTime: (state = { entries: [], status: 'idle', error: null }, action) => state,
+      workTime: (
+        state = {
+          entries: [],
+          currentEntry: null,
+          isRunning: false,
+          totalTime: 0,
+          projects: [],
+          categories: [],
+          status: 'idle',
+          error: null,
+        },
+        action
+      ) => state,
       habit: (state = { habits: [], status: 'idle', error: null }, action) => state,
       assetQuest: (state = { badges: [], progress: {} }, action) => state,
       badge: (state = { badges: [], status: 'idle' }, action) => state,
