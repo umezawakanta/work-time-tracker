@@ -45,7 +45,12 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     if (!isFirebaseEnabled) {
       console.warn('🚧 Firebase is not enabled. Using mock authentication for development.');
       // 開発環境用のダミーユーザー
-      if (import.meta.env.DEV) {
+      const isDev =
+        process.env.NODE_ENV === 'development' ||
+        process.env.DEV === 'true' ||
+        (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+
+      if (isDev) {
         setUser({
           uid: 'dev-user',
           email: 'dev@example.com',

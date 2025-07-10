@@ -321,3 +321,15 @@ export const createMockSessionInfo = (overrides = {}) => ({
   timeUntilRefreshExpiry: 604800,
   ...overrides,
 });
+
+// Add a test to satisfy Jest requirement
+describe('Auth Test Setup', () => {
+  it('should provide test utilities', () => {
+    expect(mockFirebaseAuth).toBeDefined();
+    expect(mockFirestore).toBeDefined();
+    expect(mockApiConfig).toBeDefined();
+    expect(createMockUser).toBeDefined();
+    expect(createMockToken).toBeDefined();
+    expect(createMockSessionInfo).toBeDefined();
+  });
+});

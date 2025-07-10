@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">44% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/25</span>
+                <span class='fraction'>11/25</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">16.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>1/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.66% </span>
+                <span class="strong">41.66% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/24</span>
+                <span class='fraction'>10/24</span>
             </div>
         
             
@@ -153,22 +153,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -176,7 +167,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -185,7 +176,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -233,14 +233,14 @@ interface SkipLinksProps {
   className?: string;
 }
 &nbsp;
-export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = <span class="fstat-no" title="function not covered" >({</span> className }) =&gt; {
-  const { skipToContent, announceToScreenReader } = <span class="cstat-no" title="statement not covered" >useAccessibilityContext();</span>
+export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = ({ className }) =&gt; {
+  const { skipToContent, announceToScreenReader } = useAccessibilityContext();
 &nbsp;
-  const handleSkipToMain = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleSkipToMain = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
 <span class="cstat-no" title="statement not covered" >    skipToContent();</span>
   };
 &nbsp;
-  const handleSkipToNav = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleSkipToNav = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
     const nav = <span class="cstat-no" title="statement not covered" >document.querySelector('nav') || document.querySelector('[role="navigation"]');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (nav) {</span>
       (<span class="cstat-no" title="statement not covered" >nav as HTMLElement).focus();</span>
@@ -248,7 +248,7 @@ export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = <span class="fstat-no" 
     }
   };
 &nbsp;
-  const handleSkipToSearch = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleSkipToSearch = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
     const search =
 <span class="cstat-no" title="statement not covered" >      document.querySelector('input[type="search"]') || document.querySelector('[role="search"]');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (search) {</span>
@@ -257,7 +257,7 @@ export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = <span class="fstat-no" 
     }
   };
 &nbsp;
-  const handleSkipToFooter = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+  const handleSkipToFooter = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
     const footer =
 <span class="cstat-no" title="statement not covered" >      document.querySelector('footer') || document.querySelector('[role="contentinfo"]');</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (footer) {</span>
@@ -266,7 +266,7 @@ export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = <span class="fstat-no" 
     }
   };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div
       className={cn(
         'sr-only focus-within:not-sr-only fixed top-4 left-4 z-[9999] flex flex-col gap-2',
@@ -313,7 +313,7 @@ export const SkipLinks: React.FC&lt;SkipLinksProps&gt; = <span class="fstat-no" 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T16:39:30.926Z
+                at 2025-07-10T16:47:30.794Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

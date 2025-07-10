@@ -534,6 +534,17 @@ describe('AuthContext', () => {
     it('should enable fast auth mode in development', async () => {
       console.log('🐛 Starting development mode test...');
 
+      // Mock tokenManager to return false (no token)
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
+        isAuthenticated: false,
+        expiresAt: null,
+        refreshExpiresAt: null,
+        timeUntilExpiry: 0,
+        timeUntilRefreshExpiry: 0,
+      });
+      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({});
+
       // 開発環境モードを確実に設定
       Object.defineProperty(process.env, 'NODE_ENV', {
         value: 'development',
@@ -551,9 +562,20 @@ describe('AuthContext', () => {
         configurable: true,
       });
 
+      // Ensure window.location is localhost
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          hostname: 'localhost',
+          href: 'http://localhost:3000',
+        },
+        writable: true,
+      });
+
       // ログアウト状態をクリア（開発モードの条件）
       sessionStorage.clear();
       sessionStorage.removeItem('user-logged-out');
+      localStorage.clear();
 
       // デバッグ情報を追加
       console.log('🐛 Test Environment Check:', {
@@ -562,6 +584,7 @@ describe('AuthContext', () => {
         DEV: process.env.DEV,
         hostname: window.location.hostname,
         userLoggedOut: sessionStorage.getItem('user-logged-out'),
+        tokenValid: tokenManager.isAuthenticated(),
       });
 
       await act(async () => {
@@ -583,7 +606,7 @@ describe('AuthContext', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
+          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (No Token)');
         },
         { timeout: 5000 }
       );

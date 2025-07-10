@@ -58,7 +58,7 @@ module.exports = {
 
   // Enhanced transform ignore patterns for modern packages
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$|@testing-library|@radix-ui|lucide-react|recharts|date-fns))',
+    'node_modules/(?!(.*\\.mjs$|@testing-library|@radix-ui|lucide-react|recharts|date-fns|react-hook-form|@hookform|react-day-picker))',
   ],
 
   // File extensions Jest should handle

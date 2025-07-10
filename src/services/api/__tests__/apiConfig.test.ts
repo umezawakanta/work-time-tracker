@@ -1,14 +1,13 @@
-import axios from 'axios';
-import { api, USE_MOCK_DATA, clearTokenCache } from '../apiConfig';
-import { fetchTokenFromDB } from '../tokenService';
-import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
-import { logger } from '../../../utils/logger';
-
-// Mock dependencies
+// Mock dependencies BEFORE importing
 jest.mock('axios');
 jest.mock('../tokenService');
 jest.mock('../../../utils/env');
 jest.mock('../../../utils/logger');
+
+import axios from 'axios';
+import { fetchTokenFromDB } from '../tokenService';
+import { getEnv, getBooleanEnv, isDev, isProd } from '../../../utils/env';
+import { logger } from '../../../utils/logger';
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockedFetchTokenFromDB = fetchTokenFromDB as jest.MockedFunction<typeof fetchTokenFromDB>;
@@ -17,6 +16,11 @@ const mockedGetBooleanEnv = getBooleanEnv as jest.MockedFunction<typeof getBoole
 const mockedIsDev = isDev as jest.MockedFunction<typeof isDev>;
 const mockedIsProd = isProd as jest.MockedFunction<typeof isProd>;
 const mockedLogger = logger as jest.Mocked<typeof logger>;
+
+// Import apiConfig module functions dynamically after mocks are set up
+let api: any;
+let USE_MOCK_DATA: any;
+let clearTokenCache: any;
 
 // Mock axios create
 const mockAxiosInstance = {
@@ -47,15 +51,22 @@ describe('apiConfig', () => {
     originalWindow = global.window;
     originalConsole = global.console;
 
-    // Mock window
-    global.window = {
+    // Mock window with proper typing
+    (global as any).window = {
       location: {
         hostname: 'localhost',
         protocol: 'http:',
       },
       __VITE_USE_MOCK_DATA__: undefined,
       __API_CONNECTION_FAILED__: undefined,
-    } as any;
+    };
+
+    // Import apiConfig module dynamically after setting up mocks
+    jest.resetModules();
+    const apiConfigModule = require('../apiConfig');
+    api = apiConfigModule.api;
+    USE_MOCK_DATA = apiConfigModule.USE_MOCK_DATA;
+    clearTokenCache = apiConfigModule.clearTokenCache;
 
     // Mock console
     global.console = {
@@ -99,7 +110,7 @@ describe('apiConfig', () => {
     });
 
     it('should use mock data when window.__VITE_USE_MOCK_DATA__ is true', () => {
-      global.window.__VITE_USE_MOCK_DATA__ = 'true';
+      (global.window as any).__VITE_USE_MOCK_DATA__ = 'true';
 
       jest.resetModules();
       const { USE_MOCK_DATA } = require('../apiConfig');
@@ -556,7 +567,7 @@ describe('apiConfig', () => {
       expect(console.warn).toHaveBeenCalledWith(
         '💡 本番環境: APIサーバーに接続できません。デモモードの利用を検討してください。'
       );
-      expect(global.window.__API_CONNECTION_FAILED__).toBe(true);
+      expect((global.window as any).__API_CONNECTION_FAILED__).toBe(true);
     });
 
     it('should handle connection errors in development', () => {

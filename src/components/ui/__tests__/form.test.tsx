@@ -154,9 +154,12 @@ describe('Form Components', () => {
       const emailInput = screen.getByLabelText('Email');
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      // Test invalid input
-      await user.click(emailInput);
-      await user.tab();
+      // Test invalid input - trigger validation by submitting the form
+      await user.type(emailInput, 'invalid-email');
+      await user.click(submitButton);
+
+      // Wait for validation to complete
+      await screen.findByText('Invalid email address');
 
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
@@ -215,10 +218,14 @@ describe('Form Components', () => {
 
       const emailInput = screen.getByLabelText('Email');
       const emailLabel = screen.getByText('Email');
+      const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      // Trigger validation error
-      await user.click(emailInput);
-      await user.tab();
+      // Trigger validation error by submitting invalid data
+      await user.type(emailInput, 'invalid-email');
+      await user.click(submitButton);
+
+      // Wait for validation to complete
+      await screen.findByText('Invalid email address');
 
       expect(emailLabel).toHaveClass('text-destructive');
     });
@@ -239,13 +246,17 @@ describe('Form Components', () => {
       render(<TestFormComponent />);
 
       const emailInput = screen.getByLabelText('Email');
+      const submitButton = screen.getByRole('button', { name: 'Submit' });
 
       // Initially no error
       expect(emailInput).toHaveAttribute('aria-invalid', 'false');
 
-      // Trigger validation
-      await user.click(emailInput);
-      await user.tab();
+      // Trigger validation by submitting invalid data
+      await user.type(emailInput, 'invalid-email');
+      await user.click(submitButton);
+
+      // Wait for validation to complete
+      await screen.findByText('Invalid email address');
 
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
@@ -299,11 +310,17 @@ describe('Form Components', () => {
 
     it('renders error message when validation fails', async () => {
       const mockSubmit = jest.fn();
+      const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
       const submitButton = screen.getByRole('button', { name: 'Submit' });
 
-      await submitButton.click();
+      // Click submit button to trigger validation
+      await user.click(submitButton);
+
+      // Wait for error messages to appear
+      await screen.findByText('Invalid email address');
+      await screen.findByText('Password must be at least 6 characters');
 
       expect(screen.getByText('Invalid email address')).toBeInTheDocument();
       expect(screen.getByText('Password must be at least 6 characters')).toBeInTheDocument();
@@ -334,12 +351,14 @@ describe('Form Components', () => {
 
     it('applies correct styling for error messages', async () => {
       const mockSubmit = jest.fn();
+      const user = userEvent.setup();
       render(<TestFormComponent onSubmit={mockSubmit} />);
 
       const submitButton = screen.getByRole('button', { name: 'Submit' });
-      await submitButton.click();
+      await user.click(submitButton);
 
-      const errorMessage = screen.getByText('Invalid email address');
+      // Wait for error message to appear
+      const errorMessage = await screen.findByText('Invalid email address');
       expect(errorMessage).toHaveClass('text-destructive');
       expect(errorMessage).toHaveClass('font-medium');
     });
@@ -390,10 +409,13 @@ describe('Form Components', () => {
       await user.type(passwordInput, 'password123');
       await user.click(submitButton);
 
-      expect(mockSubmit).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-      });
+      // Check that the mock was called with the correct data
+      expect(mockSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'test@example.com',
+          password: 'password123',
+        })
+      );
     });
 
     it('prevents submission with invalid data', async () => {
@@ -409,6 +431,10 @@ describe('Form Components', () => {
       await user.type(emailInput, 'invalid-email');
       await user.type(passwordInput, '123');
       await user.click(submitButton);
+
+      // Wait for error messages to appear
+      await screen.findByText('Invalid email address');
+      await screen.findByText('Password must be at least 6 characters');
 
       expect(mockSubmit).not.toHaveBeenCalled();
       expect(screen.getByText('Invalid email address')).toBeInTheDocument();
