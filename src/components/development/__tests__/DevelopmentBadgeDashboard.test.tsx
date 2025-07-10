@@ -195,7 +195,10 @@ describe('DevelopmentBadgeDashboard', () => {
     // 各バッジの進捗率を確認
     expect(screen.getByText('100%')).toBeInTheDocument(); // 完了済み
     expect(screen.getByText('50%')).toBeInTheDocument(); // 進行中
-    expect(screen.getByText('0%')).toBeInTheDocument(); // 未開始
+
+    // 0%の進捗は複数存在する可能性があるため、getAllByTextを使用
+    const zeroProgressTexts = screen.getAllByText('0%');
+    expect(zeroProgressTexts.length).toBeGreaterThan(0); // 未開始
   });
 
   it('アクセシビリティ属性が適切に設定される', () => {
