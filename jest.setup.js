@@ -76,6 +76,13 @@ Object.assign(process.env, {
   VITE_API_BASE_URL: 'http://localhost:3001/api',
   VITE_ENABLE_ANALYTICS: 'false',
   VITE_DEBUG: 'false',
+  // Firebase environment variables for tests
+  VITE_FIREBASE_API_KEY: 'test-api-key',
+  VITE_FIREBASE_AUTH_DOMAIN: 'test.firebaseapp.com',
+  VITE_FIREBASE_PROJECT_ID: 'test-project',
+  VITE_FIREBASE_STORAGE_BUCKET: 'test.appspot.com',
+  VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
+  VITE_FIREBASE_APP_ID: 'test-app-id',
 });
 
 // ========================================
@@ -385,31 +392,33 @@ global.testUtils = {
 // React Hooks Mocks
 // ========================================
 
-// Mock useAuth hook
-jest.mock('@/hooks/useAuth', () => ({
-  useAuth: () => ({
+// Mock useAuth hook with jest.fn for better control in individual tests
+const mockUseAuth = jest.fn(() => ({
+  isAuthenticated: true,
+  user: {
+    id: 'test-user-id',
+    email: 'test@example.com',
+    name: 'Test User',
+    isAdmin: false,
+  },
+  setIsAuthenticated: jest.fn(),
+  loading: false,
+  setUser: jest.fn(),
+  fetchUser: jest.fn(),
+  updateProfile: jest.fn(),
+  sessionExpired: false,
+  refreshAuth: jest.fn(),
+  sessionInfo: {
     isAuthenticated: true,
-    user: {
-      id: 'test-user-id',
-      email: 'test@example.com',
-      name: 'Test User',
-      isAdmin: false,
-    },
-    setIsAuthenticated: jest.fn(),
-    loading: false,
-    setUser: jest.fn(),
-    fetchUser: jest.fn(),
-    updateProfile: jest.fn(),
-    sessionExpired: false,
-    refreshAuth: jest.fn(),
-    sessionInfo: {
-      isAuthenticated: true,
-      expiresAt: new Date(Date.now() + 3600000),
-      refreshExpiresAt: new Date(Date.now() + 86400000),
-      timeUntilExpiry: 3600000,
-      timeUntilRefreshExpiry: 86400000,
-    },
-  }),
+    expiresAt: new Date(Date.now() + 3600000),
+    refreshExpiresAt: new Date(Date.now() + 86400000),
+    timeUntilExpiry: 3600000,
+    timeUntilRefreshExpiry: 86400000,
+  },
+}));
+
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: mockUseAuth,
 }));
 
 // Mock useInternationalization hook
@@ -446,6 +455,35 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => jest.fn(),
   BrowserRouter: ({ children }) => children,
+}));
+
+// Mock Firebase
+jest.mock('@/config/firebase', () => ({
+  auth: {
+    currentUser: null,
+    signInWithEmailAndPassword: jest.fn(() => Promise.resolve({ user: { uid: 'test-uid' } })),
+    createUserWithEmailAndPassword: jest.fn(() => Promise.resolve({ user: { uid: 'test-uid' } })),
+    signOut: jest.fn(() => Promise.resolve()),
+    onAuthStateChanged: jest.fn((callback) => {
+      // Call immediately with null user for tests
+      callback(null);
+      return jest.fn(); // Return unsubscribe function
+    }),
+  },
+  db: {
+    collection: jest.fn(() => ({
+      doc: jest.fn(() => ({
+        get: jest.fn(() => Promise.resolve({ exists: false, data: () => null })),
+        set: jest.fn(() => Promise.resolve()),
+        update: jest.fn(() => Promise.resolve()),
+        delete: jest.fn(() => Promise.resolve()),
+      })),
+      add: jest.fn(() => Promise.resolve({ id: 'test-doc-id' })),
+      where: jest.fn(() => ({
+        get: jest.fn(() => Promise.resolve({ docs: [] })),
+      })),
+    })),
+  },
 }));
 
 // Mock API services

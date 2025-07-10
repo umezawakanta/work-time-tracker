@@ -4,18 +4,13 @@ module.exports = {
 
   // Enhanced module name mapping for comprehensive file type support
   moduleNameMapper: {
-    // Path aliases
-    '^@/(.*)$': '<rootDir>/src/$1',
-
-    // CSS and style files - more explicit handling
-    '^@/styles/chart\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
-    '^@/styles/.*\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
-    '\\.css$': '<rootDir>/src/__mocks__/cssMock.js',
-    '\\.scss$': 'identity-obj-proxy',
-    '\\.sass$': 'identity-obj-proxy',
-    '\\.less$': 'identity-obj-proxy',
-    '\\.styl$': 'identity-obj-proxy',
+    // CSS and style files FIRST - before path aliases to catch them early
+    '^@/styles/.*\\.(css|scss|sass|less|styl)$': '<rootDir>/src/__mocks__/cssMock.js',
+    '\\.(css|scss|sass|less|styl)$': '<rootDir>/src/__mocks__/cssMock.js',
     '\\.module\\.(css|scss|sass|less|styl)$': 'identity-obj-proxy',
+
+    // Path aliases AFTER CSS handling
+    '^@/(.*)$': '<rootDir>/src/$1',
 
     // Static assets
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/src/__mocks__/fileMock.js',

@@ -1,12 +1,16 @@
 import React from 'react';
 import { render, screen } from '../../../test/test-utils';
-import workTimeReducer from '../../../store/workTimeSlice';
 import WorkTimeEntryForm from '../WorkTimeEntryForm';
 
 test('renders WorkTimeEntryForm', () => {
   render(<WorkTimeEntryForm />, {
     initialState: {
-      workTime: workTimeReducer(undefined, { type: '@@INIT' }),
+      workTime: {
+        entries: [],
+        isLoading: false,
+        error: null,
+        workState: null,
+      },
     },
   });
 

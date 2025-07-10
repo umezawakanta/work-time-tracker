@@ -17,13 +17,9 @@ const createMockStore = (initialState = {}) => {
       workTime: (
         state = {
           entries: [],
-          currentEntry: null,
-          isRunning: false,
-          totalTime: 0,
-          projects: [],
-          categories: [],
-          status: 'idle',
+          isLoading: false,
           error: null,
+          workState: null,
         },
         action
       ) => state,
@@ -32,7 +28,6 @@ const createMockStore = (initialState = {}) => {
       badge: (state = { badges: [], status: 'idle' }, action) => state,
       achievement: (state = { achievements: [], status: 'idle' }, action) => state,
       gamification: (state = { level: 1, experience: 0 }, action) => state,
-      ...initialState,
     },
     preloadedState: initialState,
   });

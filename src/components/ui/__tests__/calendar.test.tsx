@@ -7,33 +7,50 @@ import { Calendar } from '../calendar';
 
 // Mock react-day-picker to avoid complex date picker testing
 jest.mock('react-day-picker', () => ({
-  DayPicker: ({ selected, onSelect, mode, ...props }: any) => (
-    <div data-testid="day-picker" data-mode={mode} {...props}>
-      <div data-testid="selected-date">
-        {selected ? selected.toISOString().split('T')[0] : 'No date selected'}
+  DayPicker: ({ selected, onSelect, mode, ...props }: any) => {
+    const getSelectedText = () => {
+      if (!selected) return 'No date selected';
+      if (Array.isArray(selected)) {
+        return selected.length > 0 ? `${selected.length} dates selected` : 'No date selected';
+      }
+      if (selected instanceof Date && !isNaN(selected.getTime())) {
+        return selected.toISOString().split('T')[0];
+      }
+      if (selected.from) {
+        // Range mode
+        return selected.to
+          ? `${selected.from.toISOString().split('T')[0]} to ${selected.to.toISOString().split('T')[0]}`
+          : `From ${selected.from.toISOString().split('T')[0]}`;
+      }
+      return 'No date selected';
+    };
+
+    return (
+      <div data-testid="day-picker" data-mode={mode} {...props}>
+        <div data-testid="selected-date">{getSelectedText()}</div>
+        <button
+          data-testid="select-date"
+          onClick={() => onSelect && onSelect(new Date('2023-10-15'))}
+        >
+          Select October 15, 2023
+        </button>
+        <button
+          data-testid="select-range-start"
+          onClick={() => onSelect && onSelect({ from: new Date('2023-10-15'), to: undefined })}
+        >
+          Select Range Start
+        </button>
+        <button
+          data-testid="select-range-end"
+          onClick={() =>
+            onSelect && onSelect({ from: new Date('2023-10-15'), to: new Date('2023-10-20') })
+          }
+        >
+          Select Range End
+        </button>
       </div>
-      <button
-        data-testid="select-date"
-        onClick={() => onSelect && onSelect(new Date('2023-10-15'))}
-      >
-        Select October 15, 2023
-      </button>
-      <button
-        data-testid="select-range-start"
-        onClick={() => onSelect && onSelect({ from: new Date('2023-10-15'), to: undefined })}
-      >
-        Select Range Start
-      </button>
-      <button
-        data-testid="select-range-end"
-        onClick={() =>
-          onSelect && onSelect({ from: new Date('2023-10-15'), to: new Date('2023-10-20') })
-        }
-      >
-        Select Range End
-      </button>
-    </div>
-  ),
+    );
+  },
 }));
 
 describe('Calendar', () => {

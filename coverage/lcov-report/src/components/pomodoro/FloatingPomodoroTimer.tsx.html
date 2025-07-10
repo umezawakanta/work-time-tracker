@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">6.97% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/86</span>
+                <span class='fraction'>6/86</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.05% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/85</span>
+                <span class='fraction'>6/85</span>
             </div>
         
             
@@ -554,16 +554,17 @@
 <a name='L489'></a><a href='#L489'>489</a>
 <a name='L490'></a><a href='#L490'>490</a>
 <a name='L491'></a><a href='#L491'>491</a>
-<a name='L492'></a><a href='#L492'>492</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L492'></a><a href='#L492'>492</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -572,7 +573,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1044,18 +1044,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState, useRef, useEffect, memo, useCallback } from 'react';</span>
-<span class="cstat-no" title="statement not covered" >import { Play, Pause, RotateCcw, SkipForward, Settings, Minimize2, X, Timer } from 'lucide-react';</span>
-<span class="cstat-no" title="statement not covered" >import { usePomodoroContext } from '@/context/PomodoroContext';</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
+import { Play, Pause, RotateCcw, SkipForward, Settings, Minimize2, X, Timer } from 'lucide-react';
+import { usePomodoroContext } from '@/context/PomodoroContext';
 import { PomodoroMode } from '@/types/pomodoro';
-<span class="cstat-no" title="statement not covered" >import { useInternationalization } from '@/hooks/useInternationalization';</span>
+import { useInternationalization } from '@/hooks/useInternationalization';
 &nbsp;
 interface FloatingPomodoroTimerProps {
   onClose?: () =&gt; void;
 }
 &nbsp;
-const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> onClose }) =&gt; {</span>
+const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt; = <span class="fstat-no" title="function not covered" >({</span> onClose }) =&gt; {
   const { pomodoro } = <span class="cstat-no" title="statement not covered" >usePomodoroContext();</span>
   const { t } = <span class="cstat-no" title="statement not covered" >useInternationalization();</span>
   const [isDragging, setIsDragging] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
@@ -1535,7 +1535,7 @@ const FloatingPomodoroTimerComponent: React.FC&lt;FloatingPomodoroTimerProps&gt;
   );
 };
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >FloatingPomodoroTimer = memo(FloatingPomodoroTimerComponent);</span>
+export const FloatingPomodoroTimer = memo(FloatingPomodoroTimerComponent);
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1543,7 +1543,7 @@ export const <span class="cstat-no" title="statement not covered" >FloatingPomod
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-10T15:55:59.783Z
+                at 2025-07-10T16:15:29.928Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
