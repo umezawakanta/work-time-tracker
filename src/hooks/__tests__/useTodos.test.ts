@@ -251,7 +251,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow('API Error');
 
-      expect(result.current.error).toBe('タスクの追加に失敗しました');
+      // Wait for error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの追加に失敗しました');
+      });
     });
   });
 
@@ -291,7 +294,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow('Update Error');
 
-      expect(result.current.error).toBe('タスクの更新に失敗しました');
+      // Wait for error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの更新に失敗しました');
+      });
     });
   });
 
@@ -318,7 +324,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow('Delete Error');
 
-      expect(result.current.error).toBe('タスクの削除に失敗しました');
+      // Wait for error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの削除に失敗しました');
+      });
     });
   });
 
@@ -457,7 +466,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow();
 
-      expect(result.current.error).toBe('タスクの追加に失敗しました');
+      // Wait for first error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの追加に失敗しました');
+      });
 
       // Second error
       mockTodoService.updateTodo.mockRejectedValue(new Error('Update Error'));
@@ -468,7 +480,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow();
 
-      expect(result.current.error).toBe('タスクの更新に失敗しました');
+      // Wait for second error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの更新に失敗しました');
+      });
     });
 
     it('成功時にエラー状態をクリアする', async () => {
@@ -483,7 +498,10 @@ describe('useTodos', () => {
         });
       }).rejects.toThrow();
 
-      expect(result.current.error).toBe('タスクの追加に失敗しました');
+      // Wait for error state to be set
+      await waitFor(() => {
+        expect(result.current.error).toBe('タスクの追加に失敗しました');
+      });
 
       // Success should clear error
       mockTodoService.createTodo.mockResolvedValue();
@@ -492,7 +510,10 @@ describe('useTodos', () => {
         await result.current.addTodo({ title: 'Test Success', priority: 'medium' });
       });
 
-      expect(result.current.error).toBeNull();
+      // Wait for error to be cleared
+      await waitFor(() => {
+        expect(result.current.error).toBeNull();
+      });
     });
   });
 

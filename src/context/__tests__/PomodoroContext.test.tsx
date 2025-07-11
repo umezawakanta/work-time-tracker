@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { PomodoroProvider, usePomodoroContext } from '../PomodoroContext';
@@ -58,18 +59,18 @@ describe('PomodoroContext', () => {
     it('初期状態が正しく設定される', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(result.current.isRunning).toBe(false);
-      expect(result.current.timeLeft).toBe(1500);
-      expect(result.current.totalTime).toBe(1500);
-      expect(result.current.currentSession).toBeNull();
-      expect(result.current.sessionType).toBe('work');
-      expect(result.current.completedPomodoros).toBe(0);
+      expect(result.current.pomodoro.isRunning).toBe(false);
+      expect(result.current.pomodoro.timeLeft).toBe(1500);
+      expect(result.current.pomodoro.totalTime).toBe(1500);
+      expect(result.current.pomodoro.currentSession).toBeNull();
+      expect(result.current.pomodoro.sessionType).toBe('work');
+      expect(result.current.pomodoro.completedPomodoros).toBe(0);
     });
 
     it('設定が正しく初期化される', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(result.current.settings).toEqual({
+      expect(result.current.pomodoro.settings).toEqual({
         workDuration: 25,
         shortBreakDuration: 5,
         longBreakDuration: 15,
@@ -85,7 +86,7 @@ describe('PomodoroContext', () => {
     it('統計データが取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      const stats = result.current.getStats();
+      const stats = result.current.pomodoro.getStats();
 
       expect(stats).toEqual({
         totalSessions: 10,
@@ -104,61 +105,61 @@ describe('PomodoroContext', () => {
     it('startTimer関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.startTimer).toBe('function');
+      expect(typeof result.current.pomodoro.startTimer).toBe('function');
 
       act(() => {
-        result.current.startTimer('テストタスク');
+        result.current.pomodoro.startTimer('テストタスク');
       });
 
-      expect(result.current.startTimer).toHaveBeenCalledWith('テストタスク');
+      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク');
     });
 
     it('pauseTimer関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.pauseTimer).toBe('function');
+      expect(typeof result.current.pomodoro.pauseTimer).toBe('function');
 
       act(() => {
-        result.current.pauseTimer();
+        result.current.pomodoro.pauseTimer();
       });
 
-      expect(result.current.pauseTimer).toHaveBeenCalled();
+      expect(result.current.pomodoro.pauseTimer).toHaveBeenCalled();
     });
 
     it('resumeTimer関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.resumeTimer).toBe('function');
+      expect(typeof result.current.pomodoro.resumeTimer).toBe('function');
 
       act(() => {
-        result.current.resumeTimer();
+        result.current.pomodoro.resumeTimer();
       });
 
-      expect(result.current.resumeTimer).toHaveBeenCalled();
+      expect(result.current.pomodoro.resumeTimer).toHaveBeenCalled();
     });
 
     it('resetTimer関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.resetTimer).toBe('function');
+      expect(typeof result.current.pomodoro.resetTimer).toBe('function');
 
       act(() => {
-        result.current.resetTimer();
+        result.current.pomodoro.resetTimer();
       });
 
-      expect(result.current.resetTimer).toHaveBeenCalled();
+      expect(result.current.pomodoro.resetTimer).toHaveBeenCalled();
     });
 
     it('stopTimer関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.stopTimer).toBe('function');
+      expect(typeof result.current.pomodoro.stopTimer).toBe('function');
 
       act(() => {
-        result.current.stopTimer();
+        result.current.pomodoro.stopTimer();
       });
 
-      expect(result.current.stopTimer).toHaveBeenCalled();
+      expect(result.current.pomodoro.stopTimer).toHaveBeenCalled();
     });
   });
 
@@ -166,46 +167,46 @@ describe('PomodoroContext', () => {
     it('startBreak関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.startBreak).toBe('function');
+      expect(typeof result.current.pomodoro.startBreak).toBe('function');
 
       act(() => {
-        result.current.startBreak('short');
+        result.current.pomodoro.startBreak('short');
       });
 
-      expect(result.current.startBreak).toHaveBeenCalledWith('short');
+      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('short');
     });
 
     it('switchSessionType関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.switchSessionType).toBe('function');
+      expect(typeof result.current.pomodoro.switchSessionType).toBe('function');
 
       act(() => {
-        result.current.switchSessionType('shortBreak');
+        result.current.pomodoro.switchSessionType('shortBreak');
       });
 
-      expect(result.current.switchSessionType).toHaveBeenCalledWith('shortBreak');
+      expect(result.current.pomodoro.switchSessionType).toHaveBeenCalledWith('shortBreak');
     });
 
     it('セッション履歴を取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      const history = result.current.getSessionHistory();
+      const history = result.current.pomodoro.getSessionHistory();
 
       expect(Array.isArray(history)).toBe(true);
-      expect(result.current.getSessionHistory).toHaveBeenCalled();
+      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalled();
     });
 
     it('期間指定でセッション履歴を取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      const todayHistory = result.current.getSessionHistory('today');
-      const weekHistory = result.current.getSessionHistory('week');
+      const todayHistory = result.current.pomodoro.getSessionHistory('today');
+      const weekHistory = result.current.pomodoro.getSessionHistory('week');
 
       expect(Array.isArray(todayHistory)).toBe(true);
       expect(Array.isArray(weekHistory)).toBe(true);
-      expect(result.current.getSessionHistory).toHaveBeenCalledWith('today');
-      expect(result.current.getSessionHistory).toHaveBeenCalledWith('week');
+      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalledWith('today');
+      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalledWith('week');
     });
   });
 
@@ -213,7 +214,7 @@ describe('PomodoroContext', () => {
     it('updateSettings関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.updateSettings).toBe('function');
+      expect(typeof result.current.pomodoro.updateSettings).toBe('function');
 
       const newSettings = {
         workDuration: 30,
@@ -221,24 +222,24 @@ describe('PomodoroContext', () => {
       };
 
       act(() => {
-        result.current.updateSettings(newSettings);
+        result.current.pomodoro.updateSettings(newSettings);
       });
 
-      expect(result.current.updateSettings).toHaveBeenCalledWith(newSettings);
+      expect(result.current.pomodoro.updateSettings).toHaveBeenCalledWith(newSettings);
     });
 
     it('設定の各プロパティが正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(result.current.settings.workDuration).toBe(25);
-      expect(result.current.settings.shortBreakDuration).toBe(5);
-      expect(result.current.settings.longBreakDuration).toBe(15);
-      expect(result.current.settings.longBreakInterval).toBe(4);
-      expect(result.current.settings.autoStartBreaks).toBe(false);
-      expect(result.current.settings.autoStartPomodoros).toBe(false);
-      expect(result.current.settings.notifications).toBe(true);
-      expect(result.current.settings.sounds).toBe(true);
-      expect(result.current.settings.volume).toBe(0.5);
+      expect(result.current.pomodoro.settings.workDuration).toBe(25);
+      expect(result.current.pomodoro.settings.shortBreakDuration).toBe(5);
+      expect(result.current.pomodoro.settings.longBreakDuration).toBe(15);
+      expect(result.current.pomodoro.settings.longBreakInterval).toBe(4);
+      expect(result.current.pomodoro.settings.autoStartBreaks).toBe(false);
+      expect(result.current.pomodoro.settings.autoStartPomodoros).toBe(false);
+      expect(result.current.pomodoro.settings.notifications).toBe(true);
+      expect(result.current.pomodoro.settings.sounds).toBe(true);
+      expect(result.current.pomodoro.settings.volume).toBe(0.5);
     });
   });
 
@@ -246,7 +247,7 @@ describe('PomodoroContext', () => {
     it('統計データの各項目が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      const stats = result.current.getStats();
+      const stats = result.current.pomodoro.getStats();
 
       expect(stats.totalSessions).toBe(10);
       expect(stats.completedSessions).toBe(8);
@@ -261,13 +262,13 @@ describe('PomodoroContext', () => {
     it('resetDailyStats関数が利用できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.resetDailyStats).toBe('function');
+      expect(typeof result.current.pomodoro.resetDailyStats).toBe('function');
 
       act(() => {
-        result.current.resetDailyStats();
+        result.current.pomodoro.resetDailyStats();
       });
 
-      expect(result.current.resetDailyStats).toHaveBeenCalled();
+      expect(result.current.pomodoro.resetDailyStats).toHaveBeenCalled();
     });
   });
 
@@ -275,42 +276,42 @@ describe('PomodoroContext', () => {
     it('実行状態が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.isRunning).toBe('boolean');
-      expect(result.current.isRunning).toBe(false);
+      expect(typeof result.current.pomodoro.isRunning).toBe('boolean');
+      expect(result.current.pomodoro.isRunning).toBe(false);
     });
 
     it('残り時間が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.timeLeft).toBe('number');
-      expect(result.current.timeLeft).toBe(1500);
+      expect(typeof result.current.pomodoro.timeLeft).toBe('number');
+      expect(result.current.pomodoro.timeLeft).toBe(1500);
     });
 
     it('総時間が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.totalTime).toBe('number');
-      expect(result.current.totalTime).toBe(1500);
+      expect(typeof result.current.pomodoro.totalTime).toBe('number');
+      expect(result.current.pomodoro.totalTime).toBe(1500);
     });
 
     it('セッションタイプが正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.sessionType).toBe('string');
-      expect(result.current.sessionType).toBe('work');
+      expect(typeof result.current.pomodoro.sessionType).toBe('string');
+      expect(result.current.pomodoro.sessionType).toBe('work');
     });
 
     it('完了したポモドーロ数が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(typeof result.current.completedPomodoros).toBe('number');
-      expect(result.current.completedPomodoros).toBe(0);
+      expect(typeof result.current.pomodoro.completedPomodoros).toBe('number');
+      expect(result.current.pomodoro.completedPomodoros).toBe(0);
     });
 
     it('現在のセッション情報が正しく取得できる', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(result.current.currentSession).toBeNull();
+      expect(result.current.pomodoro.currentSession).toBeNull();
     });
   });
 
@@ -331,23 +332,23 @@ describe('PomodoroContext', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
       // タイマー制御関数
-      expect(typeof result.current.startTimer).toBe('function');
-      expect(typeof result.current.pauseTimer).toBe('function');
-      expect(typeof result.current.resumeTimer).toBe('function');
-      expect(typeof result.current.resetTimer).toBe('function');
-      expect(typeof result.current.stopTimer).toBe('function');
+      expect(typeof result.current.pomodoro.startTimer).toBe('function');
+      expect(typeof result.current.pomodoro.pauseTimer).toBe('function');
+      expect(typeof result.current.pomodoro.resumeTimer).toBe('function');
+      expect(typeof result.current.pomodoro.resetTimer).toBe('function');
+      expect(typeof result.current.pomodoro.stopTimer).toBe('function');
 
       // セッション管理関数
-      expect(typeof result.current.startBreak).toBe('function');
-      expect(typeof result.current.switchSessionType).toBe('function');
+      expect(typeof result.current.pomodoro.startBreak).toBe('function');
+      expect(typeof result.current.pomodoro.switchSessionType).toBe('function');
 
       // 設定管理関数
-      expect(typeof result.current.updateSettings).toBe('function');
+      expect(typeof result.current.pomodoro.updateSettings).toBe('function');
 
       // 統計関数
-      expect(typeof result.current.getStats).toBe('function');
-      expect(typeof result.current.getSessionHistory).toBe('function');
-      expect(typeof result.current.resetDailyStats).toBe('function');
+      expect(typeof result.current.pomodoro.getStats).toBe('function');
+      expect(typeof result.current.pomodoro.getSessionHistory).toBe('function');
+      expect(typeof result.current.pomodoro.resetDailyStats).toBe('function');
     });
 
     it('startTimer関数が正しい引数を受け取る', () => {
@@ -355,16 +356,16 @@ describe('PomodoroContext', () => {
 
       // タスク名のみ
       act(() => {
-        result.current.startTimer('テストタスク');
+        result.current.pomodoro.startTimer('テストタスク');
       });
 
       // タスク名とメモ
       act(() => {
-        result.current.startTimer('テストタスク', 'メモ');
+        result.current.pomodoro.startTimer('テストタスク', 'メモ');
       });
 
-      expect(result.current.startTimer).toHaveBeenCalledWith('テストタスク');
-      expect(result.current.startTimer).toHaveBeenCalledWith('テストタスク', 'メモ');
+      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク');
+      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク', 'メモ');
     });
 
     it('startBreak関数が正しい引数を受け取る', () => {
@@ -372,21 +373,21 @@ describe('PomodoroContext', () => {
 
       // 引数なし（自動判定）
       act(() => {
-        result.current.startBreak();
+        result.current.pomodoro.startBreak();
       });
 
       // 休憩タイプ指定
       act(() => {
-        result.current.startBreak('short');
+        result.current.pomodoro.startBreak('short');
       });
 
       act(() => {
-        result.current.startBreak('long');
+        result.current.pomodoro.startBreak('long');
       });
 
-      expect(result.current.startBreak).toHaveBeenCalledWith();
-      expect(result.current.startBreak).toHaveBeenCalledWith('short');
-      expect(result.current.startBreak).toHaveBeenCalledWith('long');
+      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith();
+      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('short');
+      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('long');
     });
   });
 
@@ -394,15 +395,15 @@ describe('PomodoroContext', () => {
     it('関数インスタンスが安定している', () => {
       const { result, rerender } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      const initialStartTimer = result.current.startTimer;
-      const initialUpdateSettings = result.current.updateSettings;
-      const initialGetStats = result.current.getStats;
+      const initialStartTimer = result.current.pomodoro.startTimer;
+      const initialUpdateSettings = result.current.pomodoro.updateSettings;
+      const initialGetStats = result.current.pomodoro.getStats;
 
       rerender();
 
-      expect(result.current.startTimer).toBe(initialStartTimer);
-      expect(result.current.updateSettings).toBe(initialUpdateSettings);
-      expect(result.current.getStats).toBe(initialGetStats);
+      expect(result.current.pomodoro.startTimer).toBe(initialStartTimer);
+      expect(result.current.pomodoro.updateSettings).toBe(initialUpdateSettings);
+      expect(result.current.pomodoro.getStats).toBe(initialGetStats);
     });
 
     it('状態が変更されない場合は再レンダリングされない', () => {
@@ -428,32 +429,34 @@ describe('PomodoroContext', () => {
       const { result } = renderHook(() => usePomodoroContext(), { wrapper });
 
       // 状態確認
-      expect(result.current.isRunning).toBeDefined();
-      expect(result.current.timeLeft).toBeDefined();
-      expect(result.current.sessionType).toBeDefined();
-      expect(result.current.settings).toBeDefined();
+      expect(result.current.pomodoro.isRunning).toBeDefined();
+      expect(result.current.pomodoro.timeLeft).toBeDefined();
+      expect(result.current.pomodoro.sessionType).toBeDefined();
+      expect(result.current.pomodoro.settings).toBeDefined();
 
       // 制御関数確認
-      expect(result.current.startTimer).toBeDefined();
-      expect(result.current.pauseTimer).toBeDefined();
-      expect(result.current.resetTimer).toBeDefined();
+      expect(result.current.pomodoro.startTimer).toBeDefined();
+      expect(result.current.pomodoro.pauseTimer).toBeDefined();
+      expect(result.current.pomodoro.resetTimer).toBeDefined();
 
       // 設定関数確認
-      expect(result.current.updateSettings).toBeDefined();
+      expect(result.current.pomodoro.updateSettings).toBeDefined();
 
       // 統計関数確認
-      expect(result.current.getStats).toBeDefined();
-      expect(result.current.getSessionHistory).toBeDefined();
+      expect(result.current.pomodoro.getStats).toBeDefined();
+      expect(result.current.pomodoro.getSessionHistory).toBeDefined();
     });
 
     it('複数のコンポーネントから同じ状態にアクセスできる', () => {
       const { result: result1 } = renderHook(() => usePomodoroContext(), { wrapper });
       const { result: result2 } = renderHook(() => usePomodoroContext(), { wrapper });
 
-      expect(result1.current.isRunning).toBe(result2.current.isRunning);
-      expect(result1.current.timeLeft).toBe(result2.current.timeLeft);
-      expect(result1.current.sessionType).toBe(result2.current.sessionType);
-      expect(result1.current.completedPomodoros).toBe(result2.current.completedPomodoros);
+      expect(result1.current.pomodoro.isRunning).toBe(result2.current.pomodoro.isRunning);
+      expect(result1.current.pomodoro.timeLeft).toBe(result2.current.pomodoro.timeLeft);
+      expect(result1.current.pomodoro.sessionType).toBe(result2.current.pomodoro.sessionType);
+      expect(result1.current.pomodoro.completedPomodoros).toBe(
+        result2.current.pomodoro.completedPomodoros
+      );
     });
   });
 });

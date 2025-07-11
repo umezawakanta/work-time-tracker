@@ -236,8 +236,12 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Development error')).toBeInTheDocument();
 
     // 開発者向け詳細情報のテキストが表示されることを確認
-    // (details要素の存在ではなく、コンテンツの存在をチェック)
-    expect(screen.queryByText('開発者向け詳細情報')).toBeInTheDocument();
+    // details要素内のsummaryテキストを検索
+    expect(screen.getByText('開発者向け詳細情報')).toBeInTheDocument();
+
+    // details要素が存在することを確認
+    const detailsElement = screen.getByText('開発者向け詳細情報').closest('details');
+    expect(detailsElement).toBeInTheDocument();
 
     // 元の環境変数を復元
     Object.defineProperty(process.env, 'NODE_ENV', {

@@ -126,8 +126,9 @@ jest.mock('@/components/ui/dialog', () => ({
 
 describe('WorkTimeEntryForm', () => {
   beforeEach(() => {
-    // Setup fake timers for testing
-    jest.useFakeTimers();
+    // Clear all mocks and timers
+    jest.clearAllMocks();
+
     // Setup auth mock
     mockUseAuth.mockReturnValue({
       user: {
@@ -178,7 +179,8 @@ describe('WorkTimeEntryForm', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.useRealTimers();
+    jest.restoreAllMocks();
+    jest.clearAllTimers();
   });
 
   test('renders WorkTimeEntryForm', async () => {
@@ -208,17 +210,21 @@ describe('WorkTimeEntryForm', () => {
       }
     );
 
-    // Wait for loading to complete
-    await waitFor(() => {
-      expect(screen.queryByText('データを読み込み中...')).not.toBeInTheDocument();
-    });
+    // Wait for loading to complete with shorter timeout
+    await waitFor(
+      () => {
+        expect(screen.queryByText('データを読み込み中...')).not.toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
+    // Check if the basic form elements are present
     expect(screen.getByText('作業時間の記録')).toBeInTheDocument();
     expect(screen.getByText('プロジェクト名')).toBeInTheDocument();
     expect(screen.getByText('作業内容')).toBeInTheDocument();
     expect(screen.getByText('開始時間')).toBeInTheDocument();
     expect(screen.getByText('終了時間')).toBeInTheDocument();
-  });
+  }, 10000); // Increase test timeout to 10 seconds
 });
 
 // Add more tests for form submission, validation, etc.

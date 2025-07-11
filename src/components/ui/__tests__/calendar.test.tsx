@@ -228,9 +228,10 @@ describe('Calendar', () => {
       beforeButton.focus();
       await user.tab();
 
-      // Should move focus into the calendar - the focus should be on the first interactive element
-      const selectButton = screen.getByTestId('select-date');
-      expect(document.activeElement).toBe(selectButton);
+      // Should move focus into the calendar - since our mock DayPicker has tabIndex={0} on the container
+      // the focus will be on the day picker container itself
+      const dayPicker = screen.getByTestId('day-picker');
+      expect(document.activeElement).toBe(dayPicker);
     });
   });
 
