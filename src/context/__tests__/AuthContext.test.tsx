@@ -92,6 +92,61 @@ describe('AuthContext', () => {
     jest.clearAllMocks();
     jest.clearAllTimers();
 
+    // 環境変数を最初にクリアして確実に設定
+    delete (process.env as any).VITE_USE_MOCK_DATA;
+    delete (process.env as any).VITE_API_CONNECTION_FAILED;
+    delete (process.env as any).VITE_SKIP_AUTH;
+    delete (process.env as any).DEV;
+    delete (process.env as any).MODE;
+    delete (process.env as any).NODE_ENV;
+
+    // テスト環境に設定（production環境をシミュレート）
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'test',
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(process.env, 'DEV', {
+      value: 'false',
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(process.env, 'MODE', {
+      value: 'test',
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(process.env, 'VITE_SKIP_AUTH', {
+      value: 'false',
+      writable: true,
+      configurable: true,
+    });
+
+    // window.location.hostname を明示的に非localhost に設定
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        hostname: 'test.example.com',
+        href: 'https://test.example.com',
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    // Window プロパティをクリア
+    delete (window as any).__VITE_USE_MOCK_DATA__;
+    delete (window as any).__API_CONNECTION_FAILED__;
+
+    // セッションストレージとローカルストレージをクリア
+    sessionStorage.clear();
+    localStorage.clear();
+
+    // 明示的にログアウト状態を設定（開発モードのファストパスを無効化）
+    sessionStorage.setItem('user-logged-out', 'true');
+
     // TokenManagerのモック設定
     (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
     (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
@@ -114,54 +169,6 @@ describe('AuthContext', () => {
       ...mockUser,
       name: 'Updated Name',
       email: 'updated@example.com',
-    });
-
-    // 環境変数をクリア
-    delete process.env.VITE_USE_MOCK_DATA;
-    delete process.env.VITE_API_CONNECTION_FAILED;
-    delete process.env.VITE_SKIP_AUTH;
-    delete process.env.DEV;
-    delete process.env.MODE;
-
-    // テスト環境に設定（production環境をシミュレート）
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'production',
-      writable: true,
-      configurable: true,
-    });
-
-    Object.defineProperty(process.env, 'DEV', {
-      value: 'false',
-      writable: true,
-      configurable: true,
-    });
-
-    Object.defineProperty(process.env, 'MODE', {
-      value: 'production',
-      writable: true,
-      configurable: true,
-    });
-
-    // セッションストレージをクリア
-    sessionStorage.clear();
-    localStorage.clear();
-
-    // 明示的にログアウト状態を設定
-    sessionStorage.setItem('user-logged-out', 'true');
-
-    // Window プロパティをクリア
-    delete window.__VITE_USE_MOCK_DATA__;
-    delete window.__API_CONNECTION_FAILED__;
-
-    // window.location.hostname を明示的に非localhost に設定
-    Object.defineProperty(window, 'location', {
-      value: {
-        ...window.location,
-        hostname: 'production.example.com',
-        href: 'https://production.example.com',
-      },
-      writable: true,
-      configurable: true,
     });
   });
 
