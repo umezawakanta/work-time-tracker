@@ -35,6 +35,95 @@ jest.mock('@radix-ui/react-roving-focus', () => ({
   Item: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+// Mock UI components to avoid import issues
+jest.mock('@/components/ui/calendar', () => ({
+  Calendar: ({ children, onSelect, ...props }: any) => (
+    <div data-testid="calendar" {...props}>
+      <button onClick={() => onSelect && onSelect(new Date())}>Select Date</button>
+      {children}
+    </div>
+  ),
+}));
+
+jest.mock('@/components/ui/tabs', () => ({
+  Tabs: ({ children, ...props }: any) => (
+    <div data-testid="tabs" {...props}>
+      {children}
+    </div>
+  ),
+  TabsList: ({ children, ...props }: any) => (
+    <div data-testid="tabs-list" {...props}>
+      {children}
+    </div>
+  ),
+  TabsTrigger: ({ children, ...props }: any) => (
+    <button data-testid="tabs-trigger" {...props}>
+      {children}
+    </button>
+  ),
+  TabsContent: ({ children, ...props }: any) => (
+    <div data-testid="tabs-content" {...props}>
+      {children}
+    </div>
+  ),
+}));
+
+jest.mock('@/components/ui/popover', () => ({
+  Popover: ({ children, ...props }: any) => (
+    <div data-testid="popover" {...props}>
+      {children}
+    </div>
+  ),
+  PopoverTrigger: ({ children, ...props }: any) => (
+    <div data-testid="popover-trigger" {...props}>
+      {children}
+    </div>
+  ),
+  PopoverContent: ({ children, ...props }: any) => (
+    <div data-testid="popover-content" {...props}>
+      {children}
+    </div>
+  ),
+}));
+
+jest.mock('@/components/ui/dialog', () => ({
+  Dialog: ({ children, ...props }: any) => (
+    <div data-testid="dialog" {...props}>
+      {children}
+    </div>
+  ),
+  DialogTrigger: ({ children, ...props }: any) => (
+    <div data-testid="dialog-trigger" {...props}>
+      {children}
+    </div>
+  ),
+  DialogContent: ({ children, ...props }: any) => (
+    <div data-testid="dialog-content" {...props}>
+      {children}
+    </div>
+  ),
+  DialogHeader: ({ children, ...props }: any) => (
+    <div data-testid="dialog-header" {...props}>
+      {children}
+    </div>
+  ),
+  DialogTitle: ({ children, ...props }: any) => (
+    <div data-testid="dialog-title" {...props}>
+      {children}
+    </div>
+  ),
+  DialogDescription: ({ children, ...props }: any) => (
+    <div data-testid="dialog-description" {...props}>
+      {children}
+    </div>
+  ),
+  DialogFooter: ({ children, ...props }: any) => (
+    <div data-testid="dialog-footer" {...props}>
+      {children}
+    </div>
+  ),
+}));
+
 describe('WorkTimeEntryForm', () => {
   beforeEach(() => {
     // Setup fake timers for testing
@@ -93,16 +182,31 @@ describe('WorkTimeEntryForm', () => {
   });
 
   test('renders WorkTimeEntryForm', async () => {
-    render(<WorkTimeEntryForm />, {
-      initialState: {
-        workTime: {
-          entries: [],
-          isLoading: false,
-          error: null,
-          workState: null,
+    // Add error boundary to catch render errors
+    const ErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+      try {
+        return <>{children}</>;
+      } catch (error) {
+        console.error('Component render error:', error);
+        return <div>Render error: {String(error)}</div>;
+      }
+    };
+
+    render(
+      <ErrorBoundary>
+        <WorkTimeEntryForm />
+      </ErrorBoundary>,
+      {
+        initialState: {
+          workTime: {
+            entries: [],
+            isLoading: false,
+            error: null,
+            workState: null,
+          },
         },
-      },
-    });
+      }
+    );
 
     // Wait for loading to complete
     await waitFor(() => {

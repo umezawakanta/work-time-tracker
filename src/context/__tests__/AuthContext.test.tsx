@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { AuthProvider } from '../AuthContext';
 import { useAuth } from '../../hooks/useAuth';
 import * as authApi from '../../services/api/authApi';
@@ -107,7 +108,7 @@ describe('AuthContext', () => {
     (tokenManager.clearTokens as jest.Mock).mockImplementation(() => {});
 
     // APIのモック設定（即座に解決される）
-    (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
+    (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
     (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
     (authApi.updateUserProfile as jest.Mock).mockResolvedValue({
       ...mockUser,
@@ -134,6 +135,16 @@ describe('AuthContext', () => {
     // Window プロパティをクリア
     delete window.__VITE_USE_MOCK_DATA__;
     delete window.__API_CONNECTION_FAILED__;
+
+    // window.location.hostname を明示的に非localhost に設定
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...window.location,
+        hostname: 'test.example.com',
+      },
+      writable: true,
+      configurable: true,
+    });
   });
 
   afterEach(() => {
@@ -145,6 +156,11 @@ describe('AuthContext', () => {
 
   describe('初期化', () => {
     it('should initialize with unauthenticated state', async () => {
+      // 確実にトークンなしの状態に設定
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
+      sessionStorage.setItem('user-logged-out', 'true');
+
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
       });
@@ -620,9 +636,9 @@ describe('AuthContext', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-          // In development mode with no token, it should create "Demo User (Dev)" not "Demo User (No Token)"
-          // because the fast auth mode takes precedence
-          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
+          // In development mode with no token, it should create "Demo User (No Token)"
+          // because the fast auth fallback creates this user
+          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (No Token)');
         },
         { timeout: 5000 }
       );

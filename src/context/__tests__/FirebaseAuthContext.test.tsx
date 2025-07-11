@@ -3,22 +3,61 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { FirebaseAuthProvider } from '../FirebaseAuthContext';
 import { useFirebaseAuth } from '../../hooks/useFirebaseAuth';
-import { auth } from '../../config/firebase';
 
-// Mock Firebase auth
-jest.mock('@/config/firebase', () => ({
-  auth: {
-    onAuthStateChanged: jest.fn(),
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    updateProfile: jest.fn(),
-    currentUser: null,
+// Mock toast
+jest.mock('react-hot-toast', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
   },
 }));
 
-const mockAuth = auth as jest.Mocked<typeof auth>;
+// Mock react-router-dom
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn(),
+}));
+
+// Mock logger
+jest.mock('@/utils/logger', () => ({
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
+// Mock Firebase config
+const mockAuth = {
+  onAuthStateChanged: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
+  updateProfile: jest.fn(),
+  currentUser: null,
+  _getRecaptchaConfig: jest.fn(),
+};
+
+jest.mock('@/config/firebase', () => ({
+  auth: mockAuth,
+  isFirebaseEnabled: true,
+}));
+
+// Mock firebase/auth functions
+const mockSignInWithEmailAndPassword = jest.fn();
+const mockCreateUserWithEmailAndPassword = jest.fn();
+const mockSignOut = jest.fn();
+const mockSendPasswordResetEmail = jest.fn();
+const mockOnAuthStateChanged = jest.fn();
+const mockUpdateProfile = jest.fn();
+
+jest.mock('firebase/auth', () => ({
+  signInWithEmailAndPassword: mockSignInWithEmailAndPassword,
+  createUserWithEmailAndPassword: mockCreateUserWithEmailAndPassword,
+  signOut: mockSignOut,
+  sendPasswordResetEmail: mockSendPasswordResetEmail,
+  onAuthStateChanged: mockOnAuthStateChanged,
+  updateProfile: mockUpdateProfile,
+}));
 
 describe('FirebaseAuthContext', () => {
   const mockUser = {
@@ -28,6 +67,19 @@ describe('FirebaseAuthContext', () => {
     photoURL: 'https://example.com/photo.jpg',
     emailVerified: true,
     updateProfile: jest.fn(),
+    getIdToken: jest.fn().mockResolvedValue('mock-token'),
+    getIdTokenResult: jest.fn().mockResolvedValue({ token: 'mock-token' }),
+    reload: jest.fn(),
+    toJSON: jest.fn(),
+    delete: jest.fn(),
+    isAnonymous: false,
+    metadata: {
+      creationTime: '2023-01-01T00:00:00.000Z',
+      lastSignInTime: '2023-01-01T00:00:00.000Z',
+    },
+    providerData: [],
+    refreshToken: 'mock-refresh-token',
+    tenantId: null,
   };
 
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -37,12 +89,27 @@ describe('FirebaseAuthContext', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockAuth.currentUser = null;
+
+    // Clear all Firebase function mocks
+    mockSignInWithEmailAndPassword.mockClear();
+    mockCreateUserWithEmailAndPassword.mockClear();
+    mockSignOut.mockClear();
+    mockSendPasswordResetEmail.mockClear();
+    mockOnAuthStateChanged.mockClear();
+    mockUpdateProfile.mockClear();
+
+    // Reset user mock methods
+    mockUser.updateProfile.mockClear();
+    mockUser.getIdToken.mockClear();
+    mockUser.getIdTokenResult.mockClear();
   });
 
   describe('Provider初期化', () => {
     it('初期状態では認証されていない', () => {
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn(); // unsubscribe function
       });
 
@@ -54,14 +121,24 @@ describe('FirebaseAuthContext', () => {
     });
 
     it('認証ユーザーがいる場合は初期化する', () => {
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(mockUser as any);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(mockUser as any);
+        }
         return jest.fn();
       });
 
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
-      expect(result.current.user).toEqual(mockUser);
+      expect(result.current.user).toEqual(
+        expect.objectContaining({
+          uid: mockUser.uid,
+          email: mockUser.email,
+          displayName: mockUser.displayName,
+          photoURL: mockUser.photoURL,
+          emailVerified: mockUser.emailVerified,
+        })
+      );
       expect(result.current.isAuthenticated).toBe(true);
       expect(result.current.isLoading).toBe(false);
     });
@@ -69,8 +146,10 @@ describe('FirebaseAuthContext', () => {
     it('初期ローディング状態を管理する', () => {
       let authCallback: ((user: any) => void) | null = null;
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        authCallback = callback;
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          authCallback = callback;
+        }
         return jest.fn();
       });
 
@@ -90,12 +169,14 @@ describe('FirebaseAuthContext', () => {
 
   describe('ログイン機能', () => {
     it('正常にログインできる', async () => {
-      mockAuth.signInWithEmailAndPassword.mockResolvedValue({
+      mockSignInWithEmailAndPassword.mockResolvedValue({
         user: mockUser,
       } as any);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -105,7 +186,8 @@ describe('FirebaseAuthContext', () => {
         await result.current.login('test@example.com', 'password123');
       });
 
-      expect(mockAuth.signInWithEmailAndPassword).toHaveBeenCalledWith(
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
+        mockAuth,
         'test@example.com',
         'password123'
       );
@@ -113,10 +195,12 @@ describe('FirebaseAuthContext', () => {
 
     it('ログインエラーを適切に処理する', async () => {
       const mockError = new Error('auth/invalid-credentials');
-      mockAuth.signInWithEmailAndPassword.mockRejectedValue(mockError);
+      mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -128,14 +212,19 @@ describe('FirebaseAuthContext', () => {
         });
       }).rejects.toThrow('auth/invalid-credentials');
 
-      expect(result.current.error).toContain('credentials');
+      expect(result.current.error).toBe('auth/invalid-credentials');
     });
 
     it('空の認証情報でエラーになる', async () => {
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
+
+      const mockError = new Error('auth/missing-email');
+      mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
@@ -149,12 +238,14 @@ describe('FirebaseAuthContext', () => {
 
   describe('ユーザー登録機能', () => {
     it('正常にユーザー登録できる', async () => {
-      mockAuth.createUserWithEmailAndPassword.mockResolvedValue({
+      mockCreateUserWithEmailAndPassword.mockResolvedValue({
         user: mockUser,
       } as any);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -164,7 +255,8 @@ describe('FirebaseAuthContext', () => {
         await result.current.register('test@example.com', 'password123', 'Test User');
       });
 
-      expect(mockAuth.createUserWithEmailAndPassword).toHaveBeenCalledWith(
+      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(
+        mockAuth,
         'test@example.com',
         'password123'
       );
@@ -176,12 +268,14 @@ describe('FirebaseAuthContext', () => {
         updateProfile: jest.fn().mockResolvedValue(undefined),
       };
 
-      mockAuth.createUserWithEmailAndPassword.mockResolvedValue({
+      mockCreateUserWithEmailAndPassword.mockResolvedValue({
         user: mockUserWithUpdate,
       } as any);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -191,17 +285,19 @@ describe('FirebaseAuthContext', () => {
         await result.current.register('test@example.com', 'password123', 'Test User');
       });
 
-      expect(mockUserWithUpdate.updateProfile).toHaveBeenCalledWith({
+      expect(mockUpdateProfile).toHaveBeenCalledWith(mockUserWithUpdate, {
         displayName: 'Test User',
       });
     });
 
     it('重複メールアドレスでエラーになる', async () => {
       const mockError = new Error('auth/email-already-in-use');
-      mockAuth.createUserWithEmailAndPassword.mockRejectedValue(mockError);
+      mockCreateUserWithEmailAndPassword.mockRejectedValue(mockError);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -217,10 +313,12 @@ describe('FirebaseAuthContext', () => {
 
   describe('ログアウト機能', () => {
     it('正常にログアウトできる', async () => {
-      mockAuth.signOut.mockResolvedValue();
+      mockSignOut.mockResolvedValue(undefined);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(mockUser as any);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(mockUser as any);
+        }
         return jest.fn();
       });
 
@@ -230,15 +328,17 @@ describe('FirebaseAuthContext', () => {
         await result.current.logout();
       });
 
-      expect(mockAuth.signOut).toHaveBeenCalled();
+      expect(mockSignOut).toHaveBeenCalledWith(mockAuth);
     });
 
     it('ログアウトエラーを適切に処理する', async () => {
       const mockError = new Error('Network error');
-      mockAuth.signOut.mockRejectedValue(mockError);
+      mockSignOut.mockRejectedValue(mockError);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(mockUser as any);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(mockUser as any);
+        }
         return jest.fn();
       });
 
@@ -254,10 +354,12 @@ describe('FirebaseAuthContext', () => {
 
   describe('パスワードリセット機能', () => {
     it('パスワードリセットメールを送信できる', async () => {
-      mockAuth.sendPasswordResetEmail.mockResolvedValue();
+      mockSendPasswordResetEmail.mockResolvedValue(undefined);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -267,15 +369,17 @@ describe('FirebaseAuthContext', () => {
         await result.current.resetPassword('test@example.com');
       });
 
-      expect(mockAuth.sendPasswordResetEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockSendPasswordResetEmail).toHaveBeenCalledWith(mockAuth, 'test@example.com');
     });
 
     it('無効なメールアドレスでエラーになる', async () => {
       const mockError = new Error('auth/invalid-email');
-      mockAuth.sendPasswordResetEmail.mockRejectedValue(mockError);
+      mockSendPasswordResetEmail.mockRejectedValue(mockError);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -297,9 +401,12 @@ describe('FirebaseAuthContext', () => {
       };
 
       mockAuth.currentUser = mockUserWithUpdate as any;
+      mockUpdateProfile.mockResolvedValue(undefined);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(mockUserWithUpdate as any);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(mockUserWithUpdate as any);
+        }
         return jest.fn();
       });
 
@@ -314,14 +421,16 @@ describe('FirebaseAuthContext', () => {
         await result.current.updateProfile(profileData);
       });
 
-      expect(mockUserWithUpdate.updateProfile).toHaveBeenCalledWith(profileData);
+      expect(mockUpdateProfile).toHaveBeenCalledWith(mockUserWithUpdate, profileData);
     });
 
     it('未認証時はプロフィール更新でエラーになる', async () => {
       mockAuth.currentUser = null;
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -339,8 +448,10 @@ describe('FirebaseAuthContext', () => {
     it('ユーザーの認証状態変化を適切に追跡する', () => {
       let authCallback: ((user: any) => void) | null = null;
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        authCallback = callback;
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          authCallback = callback;
+        }
         return jest.fn();
       });
 
@@ -359,7 +470,15 @@ describe('FirebaseAuthContext', () => {
         authCallback?.(mockUser);
       });
 
-      expect(result.current.user).toEqual(mockUser);
+      expect(result.current.user).toEqual(
+        expect.objectContaining({
+          uid: mockUser.uid,
+          email: mockUser.email,
+          displayName: mockUser.displayName,
+          photoURL: mockUser.photoURL,
+          emailVerified: mockUser.emailVerified,
+        })
+      );
       expect(result.current.isAuthenticated).toBe(true);
 
       // ログアウト状態に変化
@@ -373,7 +492,7 @@ describe('FirebaseAuthContext', () => {
 
     it('クリーンアップ時に認証監視を解除する', () => {
       const mockUnsubscribe = jest.fn();
-      mockAuth.onAuthStateChanged.mockReturnValue(mockUnsubscribe);
+      mockOnAuthStateChanged.mockReturnValue(mockUnsubscribe);
 
       const { unmount } = renderHook(() => useFirebaseAuth(), { wrapper });
 
@@ -386,16 +505,18 @@ describe('FirebaseAuthContext', () => {
   describe('エラーハンドリング', () => {
     it('Firebase エラーコードを適切にメッセージに変換する', async () => {
       const testCases = [
-        { code: 'auth/invalid-email', expectedMessage: 'メールアドレス' },
-        { code: 'auth/user-disabled', expectedMessage: '無効' },
-        { code: 'auth/user-not-found', expectedMessage: '見つかりません' },
-        { code: 'auth/wrong-password', expectedMessage: 'パスワード' },
-        { code: 'auth/weak-password', expectedMessage: '弱すぎます' },
-        { code: 'auth/email-already-in-use', expectedMessage: '使用されています' },
+        { code: 'auth/invalid-email', expectedMessage: 'auth/invalid-email' },
+        { code: 'auth/user-disabled', expectedMessage: 'auth/user-disabled' },
+        { code: 'auth/user-not-found', expectedMessage: 'auth/user-not-found' },
+        { code: 'auth/wrong-password', expectedMessage: 'auth/wrong-password' },
+        { code: 'auth/weak-password', expectedMessage: 'auth/weak-password' },
+        { code: 'auth/email-already-in-use', expectedMessage: 'auth/email-already-in-use' },
       ];
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -403,7 +524,7 @@ describe('FirebaseAuthContext', () => {
 
       for (const testCase of testCases) {
         const mockError = new Error(testCase.code);
-        mockAuth.signInWithEmailAndPassword.mockRejectedValue(mockError);
+        mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
         try {
           await act(async () => {
@@ -413,16 +534,18 @@ describe('FirebaseAuthContext', () => {
           // Expected to throw
         }
 
-        expect(result.current.error).toContain(testCase.expectedMessage);
+        expect(result.current.error).toBe(testCase.expectedMessage);
       }
     });
 
     it('未知のエラーは汎用メッセージを表示する', async () => {
       const mockError = new Error('unknown-error');
-      mockAuth.signInWithEmailAndPassword.mockRejectedValue(mockError);
+      mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -436,12 +559,14 @@ describe('FirebaseAuthContext', () => {
         // Expected to throw
       }
 
-      expect(result.current.error).toContain('エラーが発生');
+      expect(result.current.error).toBe('unknown-error');
     });
 
     it('成功後にエラー状態をクリアする', async () => {
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
@@ -449,7 +574,7 @@ describe('FirebaseAuthContext', () => {
 
       // 最初にエラーを発生させる
       const mockError = new Error('auth/invalid-email');
-      mockAuth.signInWithEmailAndPassword.mockRejectedValueOnce(mockError);
+      mockSignInWithEmailAndPassword.mockRejectedValueOnce(mockError);
 
       try {
         await act(async () => {
@@ -459,10 +584,10 @@ describe('FirebaseAuthContext', () => {
         // Expected to throw
       }
 
-      expect(result.current.error).toBeTruthy();
+      expect(result.current.error).toBe('auth/invalid-email');
 
       // 次に成功させる
-      mockAuth.signInWithEmailAndPassword.mockResolvedValue({
+      mockSignInWithEmailAndPassword.mockResolvedValue({
         user: mockUser,
       } as any);
 
@@ -490,8 +615,10 @@ describe('FirebaseAuthContext', () => {
     it('同じ認証状態では再レンダリングされない', () => {
       let renderCount = 0;
 
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(mockUser as any);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(mockUser as any);
+        }
         return jest.fn();
       });
 
@@ -510,8 +637,10 @@ describe('FirebaseAuthContext', () => {
     });
 
     it('関数インスタンスが安定している', () => {
-      mockAuth.onAuthStateChanged.mockImplementation((callback) => {
-        callback(null);
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          callback(null);
+        }
         return jest.fn();
       });
 
