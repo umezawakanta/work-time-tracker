@@ -120,10 +120,24 @@ describe('AuthContext', () => {
     delete process.env.VITE_USE_MOCK_DATA;
     delete process.env.VITE_API_CONNECTION_FAILED;
     delete process.env.VITE_SKIP_AUTH;
+    delete process.env.DEV;
+    delete process.env.MODE;
 
-    // テスト環境に設定
+    // テスト環境に設定（production環境をシミュレート）
     Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'test',
+      value: 'production',
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(process.env, 'DEV', {
+      value: 'false',
+      writable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(process.env, 'MODE', {
+      value: 'production',
       writable: true,
       configurable: true,
     });
@@ -131,6 +145,9 @@ describe('AuthContext', () => {
     // セッションストレージをクリア
     sessionStorage.clear();
     localStorage.clear();
+
+    // 明示的にログアウト状態を設定
+    sessionStorage.setItem('user-logged-out', 'true');
 
     // Window プロパティをクリア
     delete window.__VITE_USE_MOCK_DATA__;
@@ -140,7 +157,8 @@ describe('AuthContext', () => {
     Object.defineProperty(window, 'location', {
       value: {
         ...window.location,
-        hostname: 'test.example.com',
+        hostname: 'production.example.com',
+        href: 'https://production.example.com',
       },
       writable: true,
       configurable: true,
@@ -159,19 +177,6 @@ describe('AuthContext', () => {
       // 確実にトークンなしの状態に設定
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
       (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
-      sessionStorage.setItem('user-logged-out', 'true');
-
-      // 開発環境の自動認証を無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -189,13 +194,6 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
     });
 
     it('should set loading state initially', async () => {
@@ -299,18 +297,6 @@ describe('AuthContext', () => {
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
       (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
 
-      // 開発環境の自動認証を無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
-
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
       });
@@ -326,13 +312,6 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
     });
 
     it('should handle network errors gracefully', async () => {
@@ -363,18 +342,6 @@ describe('AuthContext', () => {
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockRejectedValue(new Error('User fetch failed'));
 
-      // 開発環境の自動認証を無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
-
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
       });
@@ -390,13 +357,6 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
     });
   });
 
@@ -405,18 +365,6 @@ describe('AuthContext', () => {
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
-
-      // 開発環境の自動認証を無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -443,13 +391,6 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
     });
 
     it('should update session info periodically', async () => {
@@ -759,18 +700,6 @@ describe('AuthContext', () => {
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
-      // 開発環境の自動認証を無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
-
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
       });
@@ -794,13 +723,6 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
     });
   });
 });

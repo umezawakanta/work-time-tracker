@@ -48,11 +48,17 @@ describe('LocaleContext', () => {
     });
 
     it('LocalStorageからロケールを復元する', () => {
-      // Clear previous mock and setup new one
+      // Complete cleanup and setup
       jest.clearAllMocks();
-      mockLocalStorage.getItem.mockReturnValue('en');
+      jest.resetModules();
 
-      // Mock navigator to avoid browser language detection override
+      // Mock localStorage before creating new provider
+      mockLocalStorage.getItem.mockImplementation((key) => {
+        if (key === 'locale') return 'en';
+        return null;
+      });
+
+      // Mock navigator to be consistent
       const originalNavigator = global.navigator;
       Object.defineProperty(global, 'navigator', {
         value: {
@@ -60,14 +66,21 @@ describe('LocaleContext', () => {
           languages: ['en-US', 'en'],
         },
         writable: true,
+        configurable: true,
       });
 
-      // Create new wrapper instance to trigger re-initialization
-      const customWrapper = ({ children }: { children: ReactNode }) => (
-        <LocaleProvider>{children}</LocaleProvider>
+      // Force re-import of the context to get fresh initialization
+      const {
+        LocaleProvider: FreshLocaleProvider,
+        useLocale: freshUseLocale,
+      } = require('../LocaleContext');
+
+      // Create completely fresh wrapper
+      const IsolatedWrapper = ({ children }: { children: ReactNode }) => (
+        <FreshLocaleProvider>{children}</FreshLocaleProvider>
       );
 
-      const { result } = renderHook(() => useLocale(), { wrapper: customWrapper });
+      const { result } = renderHook(() => freshUseLocale(), { wrapper: IsolatedWrapper });
 
       expect(result.current.locale).toBe('en');
       expect(mockLocalStorage.getItem).toHaveBeenCalledWith('locale');
@@ -76,6 +89,7 @@ describe('LocaleContext', () => {
       Object.defineProperty(global, 'navigator', {
         value: originalNavigator,
         writable: true,
+        configurable: true,
       });
     });
 
@@ -506,8 +520,9 @@ describe('LocaleContext', () => {
     });
 
     it('ブラウザ言語設定に基づいて初期ロケールを設定する', () => {
-      // Clear all previous mocks
+      // Complete cleanup and setup
       jest.clearAllMocks();
+      jest.resetModules();
 
       // Mock navigator before creating the wrapper to affect initialization
       const originalNavigator = global.navigator;
@@ -517,17 +532,24 @@ describe('LocaleContext', () => {
           languages: ['en-US', 'en'],
         },
         writable: true,
+        configurable: true,
       });
 
       // LocalStorageに保存された設定がない場合
       mockLocalStorage.getItem.mockReturnValue(null);
 
-      // Need to create a new wrapper to trigger initialization with the new navigator
-      const customWrapper = ({ children }: { children: ReactNode }) => (
-        <LocaleProvider>{children}</LocaleProvider>
+      // Force re-import of the context to get fresh initialization
+      const {
+        LocaleProvider: FreshLocaleProvider,
+        useLocale: freshUseLocale,
+      } = require('../LocaleContext');
+
+      // Create completely fresh wrapper
+      const IsolatedWrapper = ({ children }: { children: ReactNode }) => (
+        <FreshLocaleProvider>{children}</FreshLocaleProvider>
       );
 
-      const { result } = renderHook(() => useLocale(), { wrapper: customWrapper });
+      const { result } = renderHook(() => freshUseLocale(), { wrapper: IsolatedWrapper });
 
       expect(result.current.locale).toBe('en');
 
@@ -535,6 +557,7 @@ describe('LocaleContext', () => {
       Object.defineProperty(global, 'navigator', {
         value: originalNavigator,
         writable: true,
+        configurable: true,
       });
     });
   });

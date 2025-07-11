@@ -215,10 +215,11 @@ describe('ErrorBoundary', () => {
   });
 
   it('開発環境で詳細情報が表示される', () => {
-    // 開発環境をモック
+    // 開発環境をモック - configurable: trueを追加
     const originalEnv = process.env.NODE_ENV;
     Object.defineProperty(process.env, 'NODE_ENV', {
       writable: true,
+      configurable: true,
       value: 'development',
     });
 
@@ -246,6 +247,7 @@ describe('ErrorBoundary', () => {
     // 元の環境変数を復元
     Object.defineProperty(process.env, 'NODE_ENV', {
       writable: true,
+      configurable: true,
       value: originalEnv,
     });
   });
@@ -255,6 +257,7 @@ describe('ErrorBoundary', () => {
 
     Object.defineProperty(process.env, 'NODE_ENV', {
       value: 'production',
+      writable: true,
       configurable: true,
     });
 
@@ -270,6 +273,7 @@ describe('ErrorBoundary', () => {
     // 元の環境変数を復元
     Object.defineProperty(process.env, 'NODE_ENV', {
       value: originalEnv,
+      writable: true,
       configurable: true,
     });
   });

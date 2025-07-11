@@ -26,21 +26,22 @@ jest.mock('@/utils/logger', () => ({
 }));
 
 // Mock Firebase config
-const mockAuth = {
-  onAuthStateChanged: jest.fn(),
-  signInWithEmailAndPassword: jest.fn(),
-  createUserWithEmailAndPassword: jest.fn(),
-  signOut: jest.fn(),
-  sendPasswordResetEmail: jest.fn(),
-  updateProfile: jest.fn(),
-  currentUser: null,
-  _getRecaptchaConfig: jest.fn(),
-};
-
 jest.mock('@/config/firebase', () => ({
-  auth: mockAuth,
+  auth: {
+    onAuthStateChanged: jest.fn(),
+    signInWithEmailAndPassword: jest.fn(),
+    createUserWithEmailAndPassword: jest.fn(),
+    signOut: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
+    updateProfile: jest.fn(),
+    currentUser: null,
+    _getRecaptchaConfig: jest.fn(),
+  },
   isFirebaseEnabled: true,
 }));
+
+// Get the mocked auth object for use in tests
+const { auth: mockAuth } = jest.requireMock('@/config/firebase');
 
 // Mock firebase/auth functions
 const mockSignInWithEmailAndPassword = jest.fn();
