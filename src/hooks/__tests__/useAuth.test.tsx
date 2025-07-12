@@ -97,9 +97,14 @@ describe('useAuth', () => {
     it('AuthProviderなしで使用した場合にエラーが発生する', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => {
+      try {
         renderHook(() => useAuth());
-      }).toThrow('useAuth must be used within an AuthProvider');
+        // If we reach here, the test should fail
+        expect(true).toBe(false);
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toBe('useAuth must be used within an AuthProvider');
+      }
 
       consoleSpy.mockRestore();
     });
@@ -107,13 +112,18 @@ describe('useAuth', () => {
     it('undefinedコンテキストの場合にエラーが発生する', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => {
+      try {
         renderHook(() => useAuth(), {
           wrapper: ({ children }) => (
             <MockAuthProvider value={undefined}>{children}</MockAuthProvider>
           ),
         });
-      }).toThrow('useAuth must be used within an AuthProvider');
+        // If we reach here, the test should fail
+        expect(true).toBe(false);
+      } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toBe('useAuth must be used within an AuthProvider');
+      }
 
       consoleSpy.mockRestore();
     });

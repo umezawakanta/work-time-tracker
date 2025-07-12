@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.17% </span>
+                <span class="strong">69.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>120/171</span>
+                <span class='fraction'>122/175</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">46.83% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>32/72</span>
+                <span class='fraction'>37/79</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70% </span>
+                <span class="strong">69.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>119/170</span>
+                <span class='fraction'>121/174</span>
             </div>
         
             
@@ -485,7 +485,16 @@
 <a name='L420'></a><a href='#L420'>420</a>
 <a name='L421'></a><a href='#L421'>421</a>
 <a name='L422'></a><a href='#L422'>422</a>
-<a name='L423'></a><a href='#L423'>423</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -673,6 +682,15 @@
 <span class="cline-any cline-yes">53x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">53x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -730,8 +748,8 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -823,8 +841,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -852,8 +870,8 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -1091,19 +1109,28 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     setError(null);
   }, []);
 &nbsp;
-  // Set error helper
-  const setErrorMessage = useCallback((message: string) =&gt; {
-    setError(message);
+  // Set error helper - preserves Firebase error codes
+  const setErrorMessage = useCallback((error: unknown) =&gt; {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (error &amp;&amp; typeof error === 'object' &amp;&amp; 'code' in error) {
+      // Firebase error with code
+<span class="cstat-no" title="statement not covered" >      setError(error.code as string);</span>
+    } else if (error instanceof Error) {
+      // Regular error
+      setError(error.message);
+    } else <span class="missing-if-branch" title="else path not taken" >E</span>{
+      // Unknown error
+<span class="cstat-no" title="statement not covered" >      setError(String(error));</span>
+    }
   }, []);
 &nbsp;
   const signIn = useCallback(
     async (email: string, password: string) =&gt; {
       const shouldUseFirebase = isFirebaseEnabled || <span class="branch-1 cbranch-no" title="branch not covered" >isTestEnvironment;</span>
       <span class="missing-if-branch" title="if path not taken" >I</span>if (!shouldUseFirebase || !auth) {
-        const message = <span class="cstat-no" title="statement not covered" >'Firebase認証が設定されていません';</span>
-<span class="cstat-no" title="statement not covered" >        setErrorMessage(message);</span>
-<span class="cstat-no" title="statement not covered" >        toast.error(message);</span>
-<span class="cstat-no" title="statement not covered" >        throw new Error(message);</span>
+        const error = <span class="cstat-no" title="statement not covered" >new Error('Firebase認証が設定されていません');</span>
+<span class="cstat-no" title="statement not covered" >        setErrorMessage(error);</span>
+<span class="cstat-no" title="statement not covered" >        toast.error(error.message);</span>
+<span class="cstat-no" title="statement not covered" >        throw error;</span>
       }
 &nbsp;
       setLoading(true);
@@ -1113,8 +1140,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('ログインしました');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage = error instanceof Error ? error.message : <span class="branch-1 cbranch-no" title="branch not covered" >'ログインに失敗しました';</span>
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -1136,10 +1163,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (name: string, email: string, password: string) =&gt; {
       const shouldUseFirebase = isFirebaseEnabled || <span class="branch-1 cbranch-no" title="branch not covered" >isTestEnvironment;</span>
       <span class="missing-if-branch" title="if path not taken" >I</span>if (!shouldUseFirebase || !auth) {
-        const message = <span class="cstat-no" title="statement not covered" >'Firebase認証が設定されていません';</span>
-<span class="cstat-no" title="statement not covered" >        setErrorMessage(message);</span>
-<span class="cstat-no" title="statement not covered" >        toast.error(message);</span>
-<span class="cstat-no" title="statement not covered" >        throw new Error(message);</span>
+        const error = <span class="cstat-no" title="statement not covered" >new Error('Firebase認証が設定されていません');</span>
+<span class="cstat-no" title="statement not covered" >        setErrorMessage(error);</span>
+<span class="cstat-no" title="statement not covered" >        toast.error(error.message);</span>
+<span class="cstat-no" title="statement not covered" >        throw error;</span>
       }
 &nbsp;
       setLoading(true);
@@ -1152,9 +1179,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('アカウントを作成しました。確認メールを送信しました。');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage =
           error instanceof Error ? error.message : <span class="branch-1 cbranch-no" title="branch not covered" >'アカウント作成に失敗しました';</span>
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -1174,10 +1201,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   const signInWithGoogle = useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {
     const shouldUseFirebase = <span class="cstat-no" title="statement not covered" >isFirebaseEnabled || isTestEnvironment;</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!shouldUseFirebase || !auth) {</span>
-      const message = <span class="cstat-no" title="statement not covered" >'Firebase認証が設定されていません';</span>
-<span class="cstat-no" title="statement not covered" >      setErrorMessage(message);</span>
-<span class="cstat-no" title="statement not covered" >      toast.error(message);</span>
-<span class="cstat-no" title="statement not covered" >      throw new Error(message);</span>
+      const error = <span class="cstat-no" title="statement not covered" >new Error('Firebase認証が設定されていません');</span>
+<span class="cstat-no" title="statement not covered" >      setErrorMessage(error);</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.message);</span>
+<span class="cstat-no" title="statement not covered" >      throw error;</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setLoading(true);</span>
@@ -1186,8 +1213,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       // For now, just throw an error as Google sign-in requires additional setup
 <span class="cstat-no" title="statement not covered" >      throw new Error('Google認証は実装中です');</span>
     } catch (error: unknown) {
+<span class="cstat-no" title="statement not covered" >      setErrorMessage(error);</span>
       const errorMessage = <span class="cstat-no" title="statement not covered" >error instanceof Error ? error.message : 'Googleログインに失敗しました';</span>
-<span class="cstat-no" title="statement not covered" >      setErrorMessage(errorMessage);</span>
 <span class="cstat-no" title="statement not covered" >      toast.error(errorMessage);</span>
 <span class="cstat-no" title="statement not covered" >      throw error;</span>
     } finally {
@@ -1216,8 +1243,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       toast.success('ログアウトしました');
       navigate('/firebase-login');
     } catch (error: unknown) {
+      setErrorMessage(error);
       const errorMessage = error instanceof Error ? error.message : <span class="branch-1 cbranch-no" title="branch not covered" >'ログアウトに失敗しました';</span>
-      setErrorMessage(errorMessage);
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -1233,9 +1260,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (profileData: { displayName?: string; photoURL?: string }) =&gt; {
       const shouldUseFirebase = isFirebaseEnabled || <span class="branch-1 cbranch-no" title="branch not covered" >isTestEnvironment;</span>
       if (!shouldUseFirebase || !auth || !auth.currentUser) {
-        const message = 'User not authenticated';
-        setErrorMessage(message);
-        throw new Error(message);
+        const error = new Error('User not authenticated');
+        setErrorMessage(error);
+        throw error;
       }
 &nbsp;
       setLoading(true);
@@ -1245,9 +1272,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('プロフィールを更新しました');
       } catch (error: unknown) {
+<span class="cstat-no" title="statement not covered" >        setErrorMessage(error);</span>
         const errorMessage =
 <span class="cstat-no" title="statement not covered" >          error instanceof Error ? error.message : 'プロフィール更新に失敗しました';</span>
-<span class="cstat-no" title="statement not covered" >        setErrorMessage(errorMessage);</span>
 <span class="cstat-no" title="statement not covered" >        toast.error(errorMessage);</span>
 <span class="cstat-no" title="statement not covered" >        throw error;</span>
       } finally {
@@ -1261,10 +1288,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (email: string) =&gt; {
       const shouldUseFirebase = isFirebaseEnabled || <span class="branch-1 cbranch-no" title="branch not covered" >isTestEnvironment;</span>
       <span class="missing-if-branch" title="if path not taken" >I</span>if (!shouldUseFirebase || !auth) {
-        const message = <span class="cstat-no" title="statement not covered" >'Firebase認証が設定されていません';</span>
-<span class="cstat-no" title="statement not covered" >        setErrorMessage(message);</span>
-<span class="cstat-no" title="statement not covered" >        toast.error(message);</span>
-<span class="cstat-no" title="statement not covered" >        throw new Error(message);</span>
+        const error = <span class="cstat-no" title="statement not covered" >new Error('Firebase認証が設定されていません');</span>
+<span class="cstat-no" title="statement not covered" >        setErrorMessage(error);</span>
+<span class="cstat-no" title="statement not covered" >        toast.error(error.message);</span>
+<span class="cstat-no" title="statement not covered" >        throw error;</span>
       }
 &nbsp;
       setLoading(true);
@@ -1274,9 +1301,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('パスワードリセットメールを送信しました');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage =
           error instanceof Error ? error.message : <span class="branch-1 cbranch-no" title="branch not covered" >'パスワードリセットに失敗しました';</span>
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -1336,7 +1363,7 @@ export default FirebaseAuthContext;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-12T00:30:27.696Z
+                at 2025-07-12T03:34:15.217Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

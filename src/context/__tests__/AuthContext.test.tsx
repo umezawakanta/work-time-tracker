@@ -545,27 +545,91 @@ describe('AuthContext', () => {
   });
 
   describe('development mode', () => {
-    const originalEnv = process.env.NODE_ENV;
+    beforeEach(() => {
+      // Clear previous test state and set development environment specifically for this test
+      jest.clearAllMocks();
+      jest.clearAllTimers();
 
-    beforeAll(() => {
+      // Clear storage
+      sessionStorage.clear();
+      localStorage.clear();
+
+      // Set development environment
       Object.defineProperty(process.env, 'NODE_ENV', {
         value: 'development',
         writable: true,
         configurable: true,
       });
-      // window.locationのモック
+
+      Object.defineProperty(process.env, 'DEV', {
+        value: 'true',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(process.env, 'MODE', {
+        value: 'development',
+        writable: true,
+        configurable: true,
+      });
+
+      // Set localhost hostname
       Object.defineProperty(window, 'location', {
         value: {
           ...window.location,
           hostname: 'localhost',
+          href: 'http://localhost:3000',
         },
         writable: true,
+        configurable: true,
       });
+
+      // Token manager should return false (no valid token)
+      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
+        isAuthenticated: false,
+        expiresAt: null,
+        refreshExpiresAt: null,
+        timeUntilExpiry: 0,
+        timeUntilRefreshExpiry: 0,
+      });
+      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({
+        hasTokens: false,
+        isValid: false,
+      });
+      (tokenManager.clearTokens as jest.Mock).mockImplementation(() => {});
+
+      // API should return false (not authenticated)
+      (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
+      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
     });
 
-    afterAll(() => {
+    afterEach(() => {
+      // Reset environment back to test mode
       Object.defineProperty(process.env, 'NODE_ENV', {
-        value: originalEnv,
+        value: 'test',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(process.env, 'DEV', {
+        value: 'false',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(process.env, 'MODE', {
+        value: 'test',
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...window.location,
+          hostname: 'test.example.com',
+          href: 'https://test.example.com',
+        },
         writable: true,
         configurable: true,
       });
@@ -660,9 +724,9 @@ describe('AuthContext', () => {
       await waitFor(
         () => {
           expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-          // In development mode with no token, it should create "Demo User (No Token)"
-          // because the fast auth fallback creates this user
-          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (No Token)');
+          // In development mode with localhost and no logout flag, should get fast auth
+          // which creates "Demo User (Dev)", not "Demo User (No Token)"
+          expect(screen.getByTestId('user-name')).toHaveTextContent('Demo User (Dev)');
         },
         { timeout: 5000 }
       );
