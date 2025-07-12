@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60.45% </span>
+                <span class="strong">60.6% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>159/263</span>
+                <span class='fraction'>160/264</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.77% </span>
+                <span class="strong">50.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>38/72</span>
+                <span class='fraction'>38/75</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60.31% </span>
+                <span class="strong">60.46% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>155/257</span>
+                <span class='fraction'>156/258</span>
             </div>
         
             
@@ -657,7 +657,20 @@
 <a name='L592'></a><a href='#L592'>592</a>
 <a name='L593'></a><a href='#L593'>593</a>
 <a name='L594'></a><a href='#L594'>594</a>
-<a name='L595'></a><a href='#L595'>595</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a>
+<a name='L597'></a><a href='#L597'>597</a>
+<a name='L598'></a><a href='#L598'>598</a>
+<a name='L599'></a><a href='#L599'>599</a>
+<a name='L600'></a><a href='#L600'>600</a>
+<a name='L601'></a><a href='#L601'>601</a>
+<a name='L602'></a><a href='#L602'>602</a>
+<a name='L603'></a><a href='#L603'>603</a>
+<a name='L604'></a><a href='#L604'>604</a>
+<a name='L605'></a><a href='#L605'>605</a>
+<a name='L606'></a><a href='#L606'>606</a>
+<a name='L607'></a><a href='#L607'>607</a>
+<a name='L608'></a><a href='#L608'>608</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -700,13 +713,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">248x</span>
-<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">269x</span>
+<span class="cline-any cline-yes">35x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">220x</span>
-<span class="cline-any cline-yes">220x</span>
-<span class="cline-any cline-yes">220x</span>
+<span class="cline-any cline-yes">234x</span>
+<span class="cline-any cline-yes">234x</span>
+<span class="cline-any cline-yes">234x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1016,7 +1029,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1127,6 +1148,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1610,7 +1636,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // ログアウト状態をチェック
         const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (isDev() &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >window.location.hostname === 'localhost' </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >!isLoggedOut)</span> {
+        // テスト環境では開発モードを無効化
+        const isTestEnvironment = getEnvVar('NODE_ENV') === 'test';
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (
+          isDev() &amp;&amp;
+<span class="branch-1 cbranch-no" title="branch not covered" >          !isTestEnvironment </span>&amp;&amp;
+<span class="branch-2 cbranch-no" title="branch not covered" >          window.location.hostname === 'localhost' </span>&amp;&amp;
+<span class="branch-3 cbranch-no" title="branch not covered" >          !isLoggedOut</span>
+        ) {
 <span class="cstat-no" title="statement not covered" >          console.log('🚀 Development fast auth mode enabled');</span>
 <span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (isMounted) {</span>
 <span class="cstat-no" title="statement not covered" >            setUser({</span>
@@ -1638,7 +1672,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 &nbsp;
           // 開発環境での認証スキップオプション
           const isExplicitMockMode = window.__VITE_USE_MOCK_DATA__ === 'true';
-          const isDevelopmentSkip = isDev() &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >isSkipAuth();</span>
+          const isDevelopmentSkip = isDev() &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!isTestEnvironment </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >isSkipAuth();</span>
 &nbsp;
           <span class="missing-if-branch" title="if path not taken" >I</span>if (isExplicitMockMode || isDevelopmentSkip) {
 <span class="cstat-no" title="statement not covered" >            console.log('🎭 モックモード/開発モード有効 - 認証をスキップします');</span>
@@ -1720,7 +1754,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 &nbsp;
           // 開発環境でトークンがない場合のフォールバック（ログアウトしていない場合のみ）
-          <span class="missing-if-branch" title="if path not taken" >I</span>if (isDev() &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >window.location.hostname === 'localhost' </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >!isLoggedOut)</span> {
+          <span class="missing-if-branch" title="if path not taken" >I</span>if (
+            isDev() &amp;&amp;
+<span class="branch-1 cbranch-no" title="branch not covered" >            !isTestEnvironment </span>&amp;&amp;
+<span class="branch-2 cbranch-no" title="branch not covered" >            window.location.hostname === 'localhost' </span>&amp;&amp;
+<span class="branch-3 cbranch-no" title="branch not covered" >            !isLoggedOut</span>
+          ) {
 <span class="cstat-no" title="statement not covered" >            console.log('🔧 Development mode: Setting demo auth for no token case');</span>
 <span class="cstat-no" title="statement not covered" >            setUser({</span>
               id: 'demo-user',
@@ -1852,7 +1891,7 @@ export default AuthContext;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-12T06:41:55.392Z
+                at 2025-07-12T08:01:30.285Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
