@@ -184,16 +184,20 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
   // Set error helper - preserves Firebase error codes
   const setErrorMessage = useCallback((error: unknown) => {
+    let errorMessage = '';
     if (error && typeof error === 'object' && 'code' in error) {
       // Firebase error with code
-      setError(error.code as string);
+      errorMessage = error.code as string;
     } else if (error instanceof Error) {
-      // Regular error
-      setError(error.message);
+      // Regular error - use the error message directly
+      errorMessage = error.message;
     } else {
       // Unknown error
-      setError(String(error));
+      errorMessage = String(error);
     }
+
+    console.log('🔥 Setting Firebase error:', errorMessage);
+    setError(errorMessage);
   }, []);
 
   const signIn = useCallback(

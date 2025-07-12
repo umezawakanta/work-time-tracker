@@ -28,6 +28,11 @@ export function useWorkTime() {
       return;
     }
 
+    // 初期化直後で空配列の場合は保存しない（既存データがない場合）
+    if (workTimeEntries.length === 0 && !localStorage.getItem('workTimeEntries')) {
+      return;
+    }
+
     try {
       localStorage.setItem('workTimeEntries', JSON.stringify(workTimeEntries));
     } catch (error) {

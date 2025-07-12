@@ -357,7 +357,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // ログアウト状態をチェック
         const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
-        if (isDev() && window.location.hostname === 'localhost' && !isLoggedOut) {
+        // テスト環境では開発モードを無効化
+        const isTestEnvironment = getEnvVar('NODE_ENV') === 'test';
+
+        if (
+          isDev() &&
+          !isTestEnvironment &&
+          window.location.hostname === 'localhost' &&
+          !isLoggedOut
+        ) {
           console.log('🚀 Development fast auth mode enabled');
           if (isMounted) {
             setUser({
@@ -385,7 +393,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           // 開発環境での認証スキップオプション
           const isExplicitMockMode = window.__VITE_USE_MOCK_DATA__ === 'true';
-          const isDevelopmentSkip = isDev() && isSkipAuth();
+          const isDevelopmentSkip = isDev() && !isTestEnvironment && isSkipAuth();
 
           if (isExplicitMockMode || isDevelopmentSkip) {
             console.log('🎭 モックモード/開発モード有効 - 認証をスキップします');
@@ -467,7 +475,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
           // 開発環境でトークンがない場合のフォールバック（ログアウトしていない場合のみ）
-          if (isDev() && window.location.hostname === 'localhost' && !isLoggedOut) {
+          if (
+            isDev() &&
+            !isTestEnvironment &&
+            window.location.hostname === 'localhost' &&
+            !isLoggedOut
+          ) {
             console.log('🔧 Development mode: Setting demo auth for no token case');
             setUser({
               id: 'demo-user',
