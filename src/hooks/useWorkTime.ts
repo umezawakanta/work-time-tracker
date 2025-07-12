@@ -4,6 +4,7 @@ import { WorkTimeEntry } from '@/types/workTimeEntry';
 
 export function useWorkTime() {
   const [workTimeEntries, setWorkTimeEntries] = useState<WorkTimeEntry[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     // LocalStorageから作業時間エントリーを読み込む
@@ -18,17 +19,22 @@ export function useWorkTime() {
         localStorage.removeItem('workTimeEntries');
       }
     }
+    setIsInitialized(true);
   }, []);
 
   useEffect(() => {
-    // 作業時間エントリーが更新されたらLocalStorageに保存
+    // 初期化完了後のみLocalStorageに保存（空配列の初期状態は保存しない）
+    if (!isInitialized) {
+      return;
+    }
+
     try {
       localStorage.setItem('workTimeEntries', JSON.stringify(workTimeEntries));
     } catch (error) {
       console.error('Failed to save work time entries to localStorage:', error);
       // LocalStorageエラーでもアプリケーションは続行
     }
-  }, [workTimeEntries]);
+  }, [workTimeEntries, isInitialized]);
 
   const addWorkTimeEntry = (entry: Omit<WorkTimeEntry, '_id' | 'duration'>) => {
     const startDateTime = new Date(entry.startTime);

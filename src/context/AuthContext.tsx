@@ -56,6 +56,11 @@ const getEnvVar = (key: string): string | undefined => {
 };
 
 const isDev = () => {
+  // Test environment should never be considered development
+  if (getEnvVar('NODE_ENV') === 'test') {
+    return false;
+  }
+
   return (
     getEnvVar('NODE_ENV') === 'development' ||
     getEnvVar('DEV') === 'true' ||

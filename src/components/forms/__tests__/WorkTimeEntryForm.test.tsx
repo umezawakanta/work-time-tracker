@@ -220,7 +220,7 @@ describe('WorkTimeEntryForm', () => {
 
     // Check if the basic form elements are present
     expect(screen.getByText('作業時間の記録')).toBeInTheDocument();
-    expect(screen.getByText('プロジェクト名')).toBeInTheDocument();
+    expect(screen.getAllByText('プロジェクト名')).toHaveLength(3); // Multiple tabs each have project name
     expect(screen.getByText('作業内容')).toBeInTheDocument();
     expect(screen.getByText('開始時間')).toBeInTheDocument();
     expect(screen.getByText('終了時間')).toBeInTheDocument();

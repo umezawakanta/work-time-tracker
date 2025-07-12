@@ -182,19 +182,28 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     setError(null);
   }, []);
 
-  // Set error helper
-  const setErrorMessage = useCallback((message: string) => {
-    setError(message);
+  // Set error helper - preserves Firebase error codes
+  const setErrorMessage = useCallback((error: unknown) => {
+    if (error && typeof error === 'object' && 'code' in error) {
+      // Firebase error with code
+      setError(error.code as string);
+    } else if (error instanceof Error) {
+      // Regular error
+      setError(error.message);
+    } else {
+      // Unknown error
+      setError(String(error));
+    }
   }, []);
 
   const signIn = useCallback(
     async (email: string, password: string) => {
       const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
       if (!shouldUseFirebase || !auth) {
-        const message = 'Firebase認証が設定されていません';
-        setErrorMessage(message);
-        toast.error(message);
-        throw new Error(message);
+        const error = new Error('Firebase認証が設定されていません');
+        setErrorMessage(error);
+        toast.error(error.message);
+        throw error;
       }
 
       setLoading(true);
@@ -204,8 +213,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('ログインしました');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage = error instanceof Error ? error.message : 'ログインに失敗しました';
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -227,10 +236,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (name: string, email: string, password: string) => {
       const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
       if (!shouldUseFirebase || !auth) {
-        const message = 'Firebase認証が設定されていません';
-        setErrorMessage(message);
-        toast.error(message);
-        throw new Error(message);
+        const error = new Error('Firebase認証が設定されていません');
+        setErrorMessage(error);
+        toast.error(error.message);
+        throw error;
       }
 
       setLoading(true);
@@ -243,9 +252,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('アカウントを作成しました。確認メールを送信しました。');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage =
           error instanceof Error ? error.message : 'アカウント作成に失敗しました';
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -265,10 +274,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   const signInWithGoogle = useCallback(async () => {
     const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
     if (!shouldUseFirebase || !auth) {
-      const message = 'Firebase認証が設定されていません';
-      setErrorMessage(message);
-      toast.error(message);
-      throw new Error(message);
+      const error = new Error('Firebase認証が設定されていません');
+      setErrorMessage(error);
+      toast.error(error.message);
+      throw error;
     }
 
     setLoading(true);
@@ -277,8 +286,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       // For now, just throw an error as Google sign-in requires additional setup
       throw new Error('Google認証は実装中です');
     } catch (error: unknown) {
+      setErrorMessage(error);
       const errorMessage = error instanceof Error ? error.message : 'Googleログインに失敗しました';
-      setErrorMessage(errorMessage);
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -307,8 +316,8 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       toast.success('ログアウトしました');
       navigate('/firebase-login');
     } catch (error: unknown) {
+      setErrorMessage(error);
       const errorMessage = error instanceof Error ? error.message : 'ログアウトに失敗しました';
-      setErrorMessage(errorMessage);
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -324,9 +333,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (profileData: { displayName?: string; photoURL?: string }) => {
       const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
       if (!shouldUseFirebase || !auth || !auth.currentUser) {
-        const message = 'User not authenticated';
-        setErrorMessage(message);
-        throw new Error(message);
+        const error = new Error('User not authenticated');
+        setErrorMessage(error);
+        throw error;
       }
 
       setLoading(true);
@@ -336,9 +345,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('プロフィールを更新しました');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage =
           error instanceof Error ? error.message : 'プロフィール更新に失敗しました';
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {
@@ -352,10 +361,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     async (email: string) => {
       const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
       if (!shouldUseFirebase || !auth) {
-        const message = 'Firebase認証が設定されていません';
-        setErrorMessage(message);
-        toast.error(message);
-        throw new Error(message);
+        const error = new Error('Firebase認証が設定されていません');
+        setErrorMessage(error);
+        toast.error(error.message);
+        throw error;
       }
 
       setLoading(true);
@@ -365,9 +374,9 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         clearError();
         toast.success('パスワードリセットメールを送信しました');
       } catch (error: unknown) {
+        setErrorMessage(error);
         const errorMessage =
           error instanceof Error ? error.message : 'パスワードリセットに失敗しました';
-        setErrorMessage(errorMessage);
         toast.error(errorMessage);
         throw error;
       } finally {

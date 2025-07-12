@@ -151,10 +151,23 @@ export const useSurveyData = () => {
       setIsLoading(true);
 
       // まずは実際のAPIを試行
-      const [surveyResponse, partiesResponse] = await Promise.all([
-        surveyApi.getAll().catch(() => null),
-        partyApi.getAll().catch(() => null),
-      ]);
+      let surveyResponse = null;
+      let partiesResponse = null;
+      let hasApiError = false;
+
+      try {
+        surveyResponse = await surveyApi.getAll();
+      } catch (error) {
+        hasApiError = true;
+        console.warn('Survey API failed:', error);
+      }
+
+      try {
+        partiesResponse = await partyApi.getAll();
+      } catch (error) {
+        hasApiError = true;
+        console.warn('Party API failed:', error);
+      }
 
       // APIレスポンスの検証
       const isValidSurveyResponse =
@@ -168,10 +181,10 @@ export const useSurveyData = () => {
 
       if (isValidSurveyResponse && isValidPartiesResponse) {
         // 実際のAPIデータを使用
-        const partiesData = partiesResponse.data;
+        const partiesData = partiesResponse!.data;
         setParties(partiesData);
 
-        const data = surveyResponse.data as unknown as SurveyResponseData;
+        const data = surveyResponse!.data as unknown as SurveyResponseData;
 
         const mediaGroups: Record<string, ChartDataPoint[]> = {};
         const mediaSet = new Set<string>();
@@ -358,15 +371,27 @@ export const useSurveyData = () => {
         }
       } else {
         // APIが利用できない場合はモックデータを使用
-        console.warn('API unavailable, using mock data for political trends');
-        const mockData = getMockData();
+        if (hasApiError) {
+          console.warn('API error, falling back to mock data for political trends');
+          const mockData = getMockData();
 
-        setParties(mockData.parties);
-        setMediaList(mockData.mediaList);
-        setChartData(mockData.chartData);
-        setMissingData(mockData.missingData);
+          setParties(mockData.parties);
+          setMediaList(mockData.mediaList);
+          setChartData(mockData.chartData);
+          setMissingData(mockData.missingData);
 
-        toast.success('デモデータを表示しています');
+          toast.error('APIエラーのため、デモデータを表示しています');
+        } else {
+          console.warn('API unavailable, using mock data for political trends');
+          const mockData = getMockData();
+
+          setParties(mockData.parties);
+          setMediaList(mockData.mediaList);
+          setChartData(mockData.chartData);
+          setMissingData(mockData.missingData);
+
+          toast.success('デモデータを表示しています');
+        }
       }
     } catch (error) {
       console.error('Error fetching data:', error);
