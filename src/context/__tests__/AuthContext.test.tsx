@@ -147,8 +147,10 @@ describe('AuthContext', () => {
     // 明示的にログアウト状態を設定（開発モードのファストパスを無効化）
     sessionStorage.setItem('user-logged-out', 'true');
 
-    // TokenManagerのモック設定
+    // TokenManagerのモック設定 - 全て無効状態に設定
     (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+    (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
+    (tokenManager.getRefreshToken as jest.Mock).mockReturnValue(null);
     (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
       isAuthenticated: false,
       expiresAt: null,
@@ -183,7 +185,16 @@ describe('AuthContext', () => {
     it('should initialize with unauthenticated state', async () => {
       // 確実にトークンなしの状態に設定
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
       (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
+
+      // デバッグ: モックが正しく設定されていることを確認
+      console.log('🧪 Test setup:', {
+        isAuthenticated: tokenManager.isAuthenticated(),
+        environment: process.env.NODE_ENV,
+        hostname: window.location.hostname,
+        sessionStorage: sessionStorage.getItem('user-logged-out'),
+      });
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -276,6 +287,7 @@ describe('AuthContext', () => {
     it('should restore authentication from valid token', async () => {
       // 有効なトークンが存在する状態をモック
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
 
@@ -301,7 +313,9 @@ describe('AuthContext', () => {
     });
 
     it('should handle auth check failure', async () => {
+      // ローカルトークンは有効だがサーバー認証に失敗する場合
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
       (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
 
       await act(async () => {
@@ -322,7 +336,11 @@ describe('AuthContext', () => {
     });
 
     it('should handle network errors gracefully', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      // ローカルトークンが有効でネットワークエラーが発生する場合
+      (tokenManager.isAuthenticated as jest.Mock)
+        .mockReturnValueOnce(true) // 初期チェック
+        .mockReturnValue(true); // エラー後の再チェック
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
       (authApi.checkAuth as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       await act(async () => {
@@ -345,7 +363,9 @@ describe('AuthContext', () => {
     });
 
     it('should handle user fetch errors', async () => {
+      // 認証は成功するがユーザー情報取得に失敗する場合
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
       (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
       (authApi.fetchUserData as jest.Mock).mockRejectedValue(new Error('User fetch failed'));
 
@@ -654,6 +674,8 @@ describe('AuthContext', () => {
 
       // Re-setup mocks after clearing
       (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
+      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
+      (tokenManager.getRefreshToken as jest.Mock).mockReturnValue(null);
       (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
         isAuthenticated: false,
         expiresAt: null,
@@ -661,7 +683,10 @@ describe('AuthContext', () => {
         timeUntilExpiry: 0,
         timeUntilRefreshExpiry: 0,
       });
-      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({});
+      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({
+        hasTokens: false,
+        isValid: false,
+      });
 
       // 開発環境モードを確実に設定
       Object.defineProperty(process.env, 'NODE_ENV', {
