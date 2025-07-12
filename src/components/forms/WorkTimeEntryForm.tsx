@@ -199,7 +199,7 @@ export default function WorkTimeEntryForm() {
     };
 
     fetchData();
-  }, [isAuthenticated, user, toast]);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     // コンポーネント読み込み時に作業時間を取得

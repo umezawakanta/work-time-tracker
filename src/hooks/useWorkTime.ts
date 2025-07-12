@@ -9,13 +9,25 @@ export function useWorkTime() {
     // LocalStorageから作業時間エントリーを読み込む
     const storedEntries = localStorage.getItem('workTimeEntries');
     if (storedEntries) {
-      setWorkTimeEntries(JSON.parse(storedEntries));
+      try {
+        setWorkTimeEntries(JSON.parse(storedEntries));
+      } catch (error) {
+        console.error('Failed to parse stored work time entries:', error);
+        // 無効なJSONの場合は空配列で初期化
+        setWorkTimeEntries([]);
+        localStorage.removeItem('workTimeEntries');
+      }
     }
   }, []);
 
   useEffect(() => {
     // 作業時間エントリーが更新されたらLocalStorageに保存
-    localStorage.setItem('workTimeEntries', JSON.stringify(workTimeEntries));
+    try {
+      localStorage.setItem('workTimeEntries', JSON.stringify(workTimeEntries));
+    } catch (error) {
+      console.error('Failed to save work time entries to localStorage:', error);
+      // LocalStorageエラーでもアプリケーションは続行
+    }
   }, [workTimeEntries]);
 
   const addWorkTimeEntry = (entry: Omit<WorkTimeEntry, '_id' | 'duration'>) => {

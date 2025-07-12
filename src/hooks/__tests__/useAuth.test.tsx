@@ -1,27 +1,36 @@
+import React from 'react';
 import { renderHook } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { useAuth } from '../useAuth';
-import AuthContext from '@/context/AuthContext';
+import AuthContext from '../../context/AuthContext';
 
 // Mock AuthContext
 const mockUser = {
-  uid: 'test-uid',
+  id: 'test-user-id',
+  _id: 'test-user-id',
   email: 'test@example.com',
   name: 'Test User',
-  username: 'testuser',
+  isAdmin: false,
+  avatar: '',
 };
 
 const mockAuthContext = {
   user: mockUser,
   isAuthenticated: true,
-  isLoading: false,
-  login: jest.fn(),
-  logout: jest.fn(),
-  register: jest.fn(),
-  resetPassword: jest.fn(),
+  loading: false,
+  setIsAuthenticated: jest.fn(),
+  setUser: jest.fn(),
+  fetchUser: jest.fn(),
   updateProfile: jest.fn(),
-  checkAuthStatus: jest.fn(),
-  refreshToken: jest.fn(),
+  refreshAuth: jest.fn(),
+  sessionExpired: false,
+  sessionInfo: {
+    isAuthenticated: true,
+    expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
+    refreshExpiresAt: new Date(Date.now() + 86400000), // 24 hours from now
+    timeUntilExpiry: 3600000,
+    timeUntilRefreshExpiry: 86400000,
+  },
 };
 
 const MockAuthProvider = ({
@@ -68,7 +77,7 @@ describe('useAuth', () => {
     it('ローディング状態のコンテキストを取得できる', () => {
       const loadingContext = {
         ...mockAuthContext,
-        isLoading: true,
+        loading: true,
         user: null,
         isAuthenticated: false,
       };
@@ -79,7 +88,7 @@ describe('useAuth', () => {
         ),
       });
 
-      expect(result.current.isLoading).toBe(true);
+      expect(result.current.loading).toBe(true);
       expect(result.current.user).toBeNull();
     });
   });
@@ -116,15 +125,14 @@ describe('useAuth', () => {
         wrapper: ({ children }) => <MockAuthProvider>{children}</MockAuthProvider>,
       });
 
-      expect(typeof result.current.login).toBe('function');
-      expect(typeof result.current.logout).toBe('function');
-      expect(typeof result.current.register).toBe('function');
-      expect(typeof result.current.resetPassword).toBe('function');
+      expect(typeof result.current.fetchUser).toBe('function');
       expect(typeof result.current.updateProfile).toBe('function');
-      expect(typeof result.current.checkAuthStatus).toBe('function');
-      expect(typeof result.current.refreshToken).toBe('function');
+      expect(typeof result.current.refreshAuth).toBe('function');
+      expect(typeof result.current.setIsAuthenticated).toBe('function');
+      expect(typeof result.current.setUser).toBe('function');
       expect(typeof result.current.isAuthenticated).toBe('boolean');
-      expect(typeof result.current.isLoading).toBe('boolean');
+      expect(typeof result.current.loading).toBe('boolean');
+      expect(typeof result.current.sessionExpired).toBe('boolean');
     });
 
     it('userオブジェクトの型が正しい', () => {
@@ -134,10 +142,10 @@ describe('useAuth', () => {
 
       const user = result.current.user;
       if (user) {
-        expect(typeof user.uid).toBe('string');
+        expect(typeof user.id).toBe('string');
         expect(typeof user.email).toBe('string');
         expect(typeof user.name).toBe('string');
-        expect(typeof user.username).toBe('string');
+        expect(typeof user.isAdmin).toBe('boolean');
       }
     });
   });
@@ -178,7 +186,7 @@ describe('useAuth', () => {
       const initialCount = renderCount;
 
       rerender({
-        value: { ...mockAuthContext, isLoading: true },
+        value: { ...mockAuthContext, loading: true },
       });
 
       expect(renderCount).toBeGreaterThan(initialCount);
