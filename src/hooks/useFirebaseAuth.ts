@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import FirebaseAuthContext from '@/context/FirebaseAuthContext';
+import { FirebaseAuthContext } from '@/context/FirebaseAuthContext';
 
 export function useFirebaseAuth() {
   const context = useContext(FirebaseAuthContext);

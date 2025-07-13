@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { auth, isFirebaseEnabled } from '@/config/firebase';
@@ -62,6 +62,10 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     process.env.NODE_ENV === 'test' ||
     (typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined);
 
+  // Use ref to ensure stable navigation function
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
+
   // Helper function to convert Firebase user to AuthUser
   const convertFirebaseUser = useCallback((firebaseUser: FirebaseUser | null): AuthUser | null => {
     if (!firebaseUser) return null;
@@ -119,19 +123,19 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
             uid: 'dev-user',
             email: 'dev@example.com',
             displayName: 'Development User',
-            isPremium: true,
             photoURL: null,
             emailVerified: true,
+            isPremium: false,
             createdAt: new Date().toISOString(),
-            _id: 'dev-user-id',
+            _id: 'dev-user',
             id: 'dev-user',
             name: 'Development User',
-            username: 'dev-user',
-            isAdmin: false,
-            permissions: ['read', 'write'],
-            roles: ['user'],
+            username: 'dev',
+            isAdmin: true,
+            permissions: ['read', 'write', 'admin'],
+            roles: ['admin'],
             lastActivityAt: new Date(),
-            subscriptionStatus: 'premium' as const,
+            subscriptionStatus: 'free' as const,
             preferences: {
               theme: 'light' as const,
               language: 'ja' as const,
@@ -174,15 +178,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     });
 
     return unsubscribe;
-  }, [convertFirebaseUser]);
+  }, [convertFirebaseUser, isTestEnvironment]);
 
   // 認証メソッドの実装
-  // Clear error helper
+  // Clear error helper - use useCallback for stability
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  // Set error helper - preserves Firebase error codes
+  // Set error helper - preserves Firebase error codes - use useCallback for stability
   const setErrorMessage = useCallback((error: unknown) => {
     let errorMessage = '';
     if (error && typeof error === 'object' && 'code' in error) {
@@ -200,6 +204,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     setError(errorMessage);
   }, []);
 
+  // Create stable functions using useCallback with proper dependencies
   const signIn = useCallback(
     async (email: string, password: string) => {
       const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
@@ -225,15 +230,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         setLoading(false);
       }
     },
-    [clearError, setErrorMessage]
-  );
-
-  // Test-expected method names
-  const login = useCallback(
-    async (email: string, password: string) => {
-      return signIn(email, password);
-    },
-    [signIn]
+    [clearError, setErrorMessage, isTestEnvironment]
   );
 
   const signUp = useCallback(
@@ -265,14 +262,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         setLoading(false);
       }
     },
-    [clearError, setErrorMessage]
-  );
-
-  const register = useCallback(
-    async (email: string, password: string, displayName: string) => {
-      return signUp(displayName, email, password);
-    },
-    [signUp]
+    [clearError, setErrorMessage, isTestEnvironment]
   );
 
   const signInWithGoogle = useCallback(async () => {
@@ -297,7 +287,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [clearError, setErrorMessage]);
+  }, [clearError, setErrorMessage, isTestEnvironment]);
 
   const signOut = useCallback(async () => {
     const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
@@ -306,7 +296,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       setUser(null);
       clearError();
       toast.success('ログアウトしました');
-      navigate('/firebase-login');
+      navigateRef.current('/firebase-login');
       return;
     }
 
@@ -318,7 +308,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       setUser(null);
       clearError();
       toast.success('ログアウトしました');
-      navigate('/firebase-login');
+      navigateRef.current('/firebase-login');
     } catch (error: unknown) {
       setErrorMessage(error);
       const errorMessage = error instanceof Error ? error.message : 'ログアウトに失敗しました';
@@ -327,11 +317,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [navigate, clearError, setErrorMessage]);
-
-  const logout = useCallback(async () => {
-    return signOut();
-  }, [signOut]);
+  }, [clearError, setErrorMessage, isTestEnvironment]);
 
   const updateProfile = useCallback(
     async (profileData: { displayName?: string; photoURL?: string }) => {
@@ -358,7 +344,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         setLoading(false);
       }
     },
-    [clearError, setErrorMessage]
+    [clearError, setErrorMessage, isTestEnvironment]
   );
 
   const resetPassword = useCallback(
@@ -387,7 +373,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         setLoading(false);
       }
     },
-    [clearError, setErrorMessage]
+    [clearError, setErrorMessage, isTestEnvironment]
   );
 
   const refreshAuth = useCallback(async () => {
@@ -398,38 +384,74 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
     // 実装...
   }, [isTestEnvironment]);
 
+  // Test-expected method names - create stable aliases
+  const login = useMemo(() => signIn, [signIn]);
+  const register = useMemo(
+    () => (email: string, password: string, displayName: string) => {
+      return signUp(displayName, email, password);
+    },
+    [signUp]
+  );
+  const logout = useMemo(() => signOut, [signOut]);
+
+  // Create stable context value
+  const contextValue = useMemo(
+    () => ({
+      // 基本認証状態
+      isAuthenticated,
+      user,
+      isLoading: loading,
+      loading, // Keep for backward compatibility
+      isFirebaseEnabled,
+      error,
+
+      // 認証アクション - Test expected names
+      login,
+      register,
+      logout,
+      updateProfile,
+      resetPassword,
+
+      // 認証アクション - Original names for backward compatibility
+      signIn,
+      signUp,
+      signInWithGoogle,
+      signOut,
+
+      // セッション管理
+      refreshAuth,
+      sessionExpired,
+    }),
+    [
+      isAuthenticated,
+      user,
+      loading,
+      error,
+      login,
+      register,
+      logout,
+      updateProfile,
+      resetPassword,
+      signIn,
+      signUp,
+      signInWithGoogle,
+      signOut,
+      refreshAuth,
+      sessionExpired,
+    ]
+  );
+
   return (
-    <FirebaseAuthContext.Provider
-      value={{
-        // 基本認証状態
-        isAuthenticated,
-        user,
-        isLoading: loading,
-        loading, // Keep for backward compatibility
-        isFirebaseEnabled,
-        error,
-
-        // 認証アクション - Test expected names
-        login,
-        register,
-        logout,
-        updateProfile,
-        resetPassword,
-
-        // 認証アクション - Original names for backward compatibility
-        signIn,
-        signUp,
-        signInWithGoogle,
-        signOut,
-
-        // セッション管理
-        refreshAuth,
-        sessionExpired,
-      }}
-    >
-      {children}
-    </FirebaseAuthContext.Provider>
+    <FirebaseAuthContext.Provider value={contextValue}>{children}</FirebaseAuthContext.Provider>
   );
 }
 
-export default FirebaseAuthContext;
+export const useFirebaseAuth = () => {
+  const context = React.useContext(FirebaseAuthContext);
+  if (context === undefined) {
+    throw new Error('useFirebaseAuth must be used within a FirebaseAuthProvider');
+  }
+  return context;
+};
+
+export { FirebaseAuthContext };
