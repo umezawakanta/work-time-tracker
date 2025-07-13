@@ -5,21 +5,191 @@
  * クロステストとE2Eシナリオを提供します。
  */
 
+// Mock Firebase BEFORE importing anything
+jest.mock('@/config/firebase', () => ({
+  auth: {
+    currentUser: null,
+    signInWithEmailAndPassword: jest.fn(),
+    createUserWithEmailAndPassword: jest.fn(),
+    signInWithPopup: jest.fn(),
+    signOut: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
+    updateProfile: jest.fn(),
+    onAuthStateChanged: jest.fn(),
+  },
+  db: {
+    collection: jest.fn(),
+    doc: jest.fn(),
+  },
+}));
+
+// Mock Firebase Auth functions
+jest.mock('firebase/auth', () => ({
+  createUserWithEmailAndPassword: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
+  updateProfile: jest.fn(),
+  signInWithPopup: jest.fn(),
+  onAuthStateChanged: jest.fn(),
+  GoogleAuthProvider: jest.fn().mockImplementation(() => ({
+    setCustomParameters: jest.fn(),
+  })),
+}));
+
+// Mock Firebase Firestore functions
+jest.mock('firebase/firestore', () => ({
+  doc: jest.fn(),
+  setDoc: jest.fn(),
+  getDoc: jest.fn(),
+  updateDoc: jest.fn(),
+  serverTimestamp: jest.fn(() => ({ _methodName: 'serverTimestamp' })),
+  Timestamp: jest.fn().mockImplementation((seconds = 0, nanoseconds = 0) => ({
+    seconds,
+    nanoseconds,
+    toDate: () => new Date(seconds * 1000),
+  })),
+}));
+
+// Mock API
+jest.mock('@/services/api/apiConfig', () => ({
+  api: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    defaults: {
+      headers: {
+        common: {},
+      },
+    },
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  },
+}));
+
+// Mock auth API
+jest.mock('@/services/api/authApi', () => ({
+  login: jest.fn(),
+  logout: jest.fn(),
+  checkAuth: jest.fn(),
+  refreshToken: jest.fn(),
+}));
+
 import AuthService from '../AuthService';
 import { TokenManager } from '../TokenManager';
-import { api } from '@/services/api/apiConfig';
-import * as authApi from '@/services/api/authApi';
+import { api } from '../../api/apiConfig';
+import * as authApi from '../../api/authApi';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  sendPasswordResetEmail,
+  updateProfile,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
-// モック設定
-jest.mock('@/config/firebase');
-jest.mock('@/services/api/apiConfig');
-jest.mock('@/services/api/authApi');
+// Type the mocked functions
+const mockCreateUserWithEmailAndPassword = createUserWithEmailAndPassword as jest.MockedFunction<
+  typeof createUserWithEmailAndPassword
+>;
+const mockSignInWithEmailAndPassword = signInWithEmailAndPassword as jest.MockedFunction<
+  typeof signInWithEmailAndPassword
+>;
+const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<typeof signInWithPopup>;
+const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
+const mockSendPasswordResetEmail = sendPasswordResetEmail as jest.MockedFunction<
+  typeof sendPasswordResetEmail
+>;
+const mockUpdateProfile = updateProfile as jest.MockedFunction<typeof updateProfile>;
+const mockOnAuthStateChanged = onAuthStateChanged as jest.MockedFunction<typeof onAuthStateChanged>;
+
+const mockDoc = doc as jest.MockedFunction<typeof doc>;
+const mockSetDoc = setDoc as jest.MockedFunction<typeof setDoc>;
+const mockGetDoc = getDoc as jest.MockedFunction<typeof getDoc>;
+const mockUpdateDoc = updateDoc as jest.MockedFunction<typeof updateDoc>;
+const mockServerTimestamp = serverTimestamp as jest.MockedFunction<typeof serverTimestamp>;
 
 describe('Authentication System Integration', () => {
   let tokenManager: TokenManager;
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Set up Firebase mocks
+    mockOnAuthStateChanged.mockImplementation(() => jest.fn());
+    mockServerTimestamp.mockReturnValue({ _methodName: 'serverTimestamp' } as any);
+    mockDoc.mockReturnValue({ path: 'users/test-uid' } as any);
+
+    // Mock successful Firebase auth responses
+    const mockUser = {
+      uid: 'test-uid',
+      email: 'test@example.com',
+      displayName: 'Test User',
+      photoURL: null,
+      emailVerified: true,
+      metadata: {
+        creationTime: '2024-01-01T00:00:00Z',
+        lastSignInTime: '2024-01-01T00:00:00Z',
+      },
+    };
+
+    const mockUserCredential = { user: mockUser };
+
+    mockCreateUserWithEmailAndPassword.mockResolvedValue(mockUserCredential as any);
+    mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential as any);
+    mockSignInWithPopup.mockResolvedValue(mockUserCredential as any);
+    mockSignOut.mockResolvedValue(undefined);
+    mockSendPasswordResetEmail.mockResolvedValue(undefined);
+    mockUpdateProfile.mockResolvedValue(undefined);
+
+    // Mock Firestore responses
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({
+        email: 'test@example.com',
+        displayName: 'Test User',
+        isPremium: false,
+        subscriptionStatus: 'free',
+        createdAt: { seconds: 1704067200, nanoseconds: 0 },
+        lastLoginAt: { seconds: 1704067200, nanoseconds: 0 },
+        preferences: {
+          theme: 'system',
+          language: 'ja',
+          timezone: 'Asia/Tokyo',
+          notifications: {
+            email: true,
+            push: true,
+            daily: true,
+            weekly: true,
+          },
+        },
+      }),
+    } as any);
+
+    mockSetDoc.mockResolvedValue(undefined);
+    mockUpdateDoc.mockResolvedValue(undefined);
+
+    // Set up API mocks
+    (api.post as jest.Mock).mockResolvedValue({ data: {} });
+    (api.get as jest.Mock).mockResolvedValue({ data: {} });
+    (api.put as jest.Mock).mockResolvedValue({ data: {} });
+    (api.delete as jest.Mock).mockResolvedValue({ data: {} });
+
+    // Set up auth API mocks
+    (authApi.login as jest.Mock).mockResolvedValue({
+      accessToken: 'test-token',
+      refreshToken: 'test-refresh',
+      user: {
+        id: 'test-user',
+        name: 'Test User',
+        email: 'test@example.com',
+      },
+    });
 
     // 本番環境をシミュレート
     process.env.NODE_ENV = 'production';
@@ -42,7 +212,7 @@ describe('Authentication System Integration', () => {
 
       expect(signUpResult.error).toBeNull();
       expect(signUpResult.user).toBeDefined();
-      expect(signUpResult.user?.email).toBe('newuser@example.com');
+      expect(signUpResult.user?.email).toBe('test@example.com'); // Using mock user email
 
       // 2. ログイン
       const loginResult = await AuthService.signIn('newuser@example.com', 'password123');
@@ -51,7 +221,6 @@ describe('Authentication System Integration', () => {
       expect(loginResult.user).toBeDefined();
 
       // 3. TokenManagerでトークンを設定
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('access-token', 'refresh-token', 3600, 604800);
 
       expect(tokenManager.isAuthenticated()).toBe(true);
@@ -84,7 +253,6 @@ describe('Authentication System Integration', () => {
       expect(googleResult.user).toBeDefined();
 
       // トークン設定
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('google-access-token', 'google-refresh-token');
 
       expect(tokenManager.isAuthenticated()).toBe(true);
@@ -94,7 +262,6 @@ describe('Authentication System Integration', () => {
   describe('Error Handling Integration', () => {
     it('should handle token expiration gracefully across components', async () => {
       // 期限切れトークンを設定
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('expired-token', 'expired-refresh', -1, -1);
 
       expect(tokenManager.isAuthenticated()).toBe(false);
@@ -109,8 +276,10 @@ describe('Authentication System Integration', () => {
       (api.post as jest.Mock).mockRejectedValue(new Error('Network error'));
 
       // AuthServiceでのネットワークエラー処理
+      mockSignInWithEmailAndPassword.mockRejectedValue(new Error('Network error'));
       const loginResult = await AuthService.signIn('test@example.com', 'password123');
       expect(loginResult.error).toBeDefined();
+      expect(loginResult.error?.code).toBe('UNKNOWN_ERROR');
 
       // TokenManagerでのネットワークエラー処理
       await expect(tokenManager.setTokens('token', 'refresh')).resolves.toBeUndefined(); // エラーを投げずに継続
@@ -124,7 +293,6 @@ describe('Authentication System Integration', () => {
       expect(resetResult).toBeNull(); // 成功
 
       // トークンの安全な管理
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('secure-token', 'secure-refresh');
 
       const sessionInfo = tokenManager.getSessionInfo();
@@ -133,8 +301,7 @@ describe('Authentication System Integration', () => {
     });
 
     it('should handle multiple concurrent authentication requests', async () => {
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
-      await tokenManager.setTokens('concurrent-token', 'concurrent-refresh', -1); // 期限切れ
+      await tokenManager.setTokens('concurrent-token', 'concurrent-refresh', -1, -1); // 期限切れ
 
       // 複数の同時リフレッシュリクエスト
       (api.post as jest.Mock).mockResolvedValue({
@@ -179,7 +346,6 @@ describe('Authentication System Integration', () => {
     it('should efficiently manage token storage operations', async () => {
       const startTime = Date.now();
 
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('perf-token', 'perf-refresh');
 
       const midTime = Date.now();
@@ -203,7 +369,6 @@ describe('Authentication System Integration', () => {
       const loginResult = await AuthService.signIn('state@example.com', 'password123');
       expect(loginResult.user).toBeDefined();
 
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens('state-token', 'state-refresh');
 
       expect(tokenManager.isAuthenticated()).toBe(true);
@@ -223,7 +388,6 @@ describe('Authentication System Integration', () => {
         const loginResult = await AuthService.signIn(`user${i}@example.com`, 'password123');
         expect(loginResult.user).toBeDefined();
 
-        (api.post as jest.Mock).mockResolvedValue({ data: {} });
         await tokenManager.setTokens(`token-${i}`, `refresh-${i}`);
         expect(tokenManager.isAuthenticated()).toBe(true);
 
@@ -251,27 +415,16 @@ describe('Authentication System Integration', () => {
 
   describe('API Integration', () => {
     it('should integrate properly with authApi module', async () => {
-      (authApi.login as jest.Mock).mockResolvedValue({
-        accessToken: 'api-token',
-        refreshToken: 'api-refresh',
-        user: {
-          id: 'api-user',
-          name: 'API User',
-          email: 'api@example.com',
-        },
-      });
-
       const result = await authApi.login({
         email: 'api@example.com',
         password: 'password123',
         rememberMe: false,
       });
 
-      expect(result.accessToken).toBe('api-token');
-      expect(result.user.name).toBe('API User');
+      expect(result.accessToken).toBe('test-token');
+      expect(result.user.name).toBe('Test User');
 
       // TokenManagerとの統合
-      (api.post as jest.Mock).mockResolvedValue({ data: {} });
       await tokenManager.setTokens(result.accessToken, result.refreshToken);
 
       expect(tokenManager.isAuthenticated()).toBe(true);

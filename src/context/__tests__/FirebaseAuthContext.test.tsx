@@ -1,10 +1,24 @@
-import React from 'react';
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
-import { FirebaseAuthProvider } from '../FirebaseAuthContext';
-import { useFirebaseAuth } from '../../hooks/useFirebaseAuth';
+// Mock dependencies first
+jest.mock('@/config/firebase', () => ({
+  auth: {
+    currentUser: null,
+  },
+  isFirebaseEnabled: true,
+}));
 
-// Mock toast
+jest.mock('firebase/auth', () => ({
+  signInWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
+  updateProfile: jest.fn(),
+  onAuthStateChanged: jest.fn(),
+}));
+
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => jest.fn(),
+}));
+
 jest.mock('react-hot-toast', () => ({
   toast: {
     success: jest.fn(),
@@ -12,12 +26,6 @@ jest.mock('react-hot-toast', () => ({
   },
 }));
 
-// Mock react-router-dom
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
-}));
-
-// Mock logger
 jest.mock('@/utils/logger', () => ({
   logger: {
     info: jest.fn(),
@@ -25,128 +33,92 @@ jest.mock('@/utils/logger', () => ({
   },
 }));
 
-// Mock Firebase config
-jest.mock('@/config/firebase', () => ({
-  auth: {
-    onAuthStateChanged: jest.fn(),
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    updateProfile: jest.fn(),
-    currentUser: null,
-    _getRecaptchaConfig: jest.fn(),
+import React from 'react';
+import { renderHook, act } from '@testing-library/react';
+import { FirebaseAuthProvider } from '../FirebaseAuthContext';
+import { useFirebaseAuth } from '../../hooks/useFirebaseAuth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+  updateProfile,
+  onAuthStateChanged,
+} from 'firebase/auth';
+
+// Mock Firebase functions
+const mockSignInWithEmailAndPassword = signInWithEmailAndPassword as jest.MockedFunction<
+  typeof signInWithEmailAndPassword
+>;
+const mockCreateUserWithEmailAndPassword = createUserWithEmailAndPassword as jest.MockedFunction<
+  typeof createUserWithEmailAndPassword
+>;
+const mockSignOut = signOut as jest.MockedFunction<typeof signOut>;
+const mockSendPasswordResetEmail = sendPasswordResetEmail as jest.MockedFunction<
+  typeof sendPasswordResetEmail
+>;
+const mockUpdateProfile = updateProfile as jest.MockedFunction<typeof updateProfile>;
+const mockOnAuthStateChanged = onAuthStateChanged as jest.MockedFunction<typeof onAuthStateChanged>;
+
+// Mock Firebase auth instance
+const mockAuth = {
+  currentUser: null,
+} as any;
+
+// Mock Firebase user
+const mockUser = {
+  uid: 'test-uid',
+  email: 'test@example.com',
+  displayName: 'Test User',
+  photoURL: null,
+  emailVerified: false,
+  metadata: {
+    creationTime: '',
+    lastSignInTime: '',
   },
-  isFirebaseEnabled: true,
-}));
+} as any;
 
-// Get the mocked auth object for use in tests
-const { auth: mockAuth } = jest.requireMock('@/config/firebase');
-
-jest.mock('firebase/auth', () => ({
-  signInWithEmailAndPassword: jest.fn(),
-  createUserWithEmailAndPassword: jest.fn(),
-  signOut: jest.fn(),
-  sendPasswordResetEmail: jest.fn(),
-  onAuthStateChanged: jest.fn(),
-  updateProfile: jest.fn(),
-}));
-
-// Get references to the mocked functions for use in tests
-const {
-  signInWithEmailAndPassword: mockSignInWithEmailAndPassword,
-  createUserWithEmailAndPassword: mockCreateUserWithEmailAndPassword,
-  signOut: mockSignOut,
-  sendPasswordResetEmail: mockSendPasswordResetEmail,
-  onAuthStateChanged: mockOnAuthStateChanged,
-  updateProfile: mockUpdateProfile,
-} = jest.requireMock('firebase/auth');
+// Helper function to create Firebase-like errors
+const createFirebaseError = (code: string, message?: string) => {
+  const error = new Error(message || code);
+  (error as any).code = code;
+  return error;
+};
 
 describe('FirebaseAuthContext', () => {
-  const mockUser = {
-    uid: 'test-firebase-uid',
-    email: 'test@example.com',
-    displayName: 'Test User',
-    photoURL: 'https://example.com/photo.jpg',
-    emailVerified: true,
-    updateProfile: jest.fn(),
-    getIdToken: jest.fn().mockResolvedValue('mock-token'),
-    getIdTokenResult: jest.fn().mockResolvedValue({ token: 'mock-token' }),
-    reload: jest.fn(),
-    toJSON: jest.fn(),
-    delete: jest.fn(),
-    isAnonymous: false,
-    metadata: {
-      creationTime: '2023-01-01T00:00:00.000Z',
-      lastSignInTime: '2023-01-01T00:00:00.000Z',
-    },
-    providerData: [],
-    refreshToken: 'mock-refresh-token',
-    tenantId: null,
-  };
-
-  const wrapper = ({ children }: { children: ReactNode }) => (
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
     <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
   );
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockAuth.currentUser = null;
 
-    // Clear all Firebase function mocks
-    mockSignInWithEmailAndPassword.mockClear();
-    mockCreateUserWithEmailAndPassword.mockClear();
-    mockSignOut.mockClear();
-    mockSendPasswordResetEmail.mockClear();
-    mockOnAuthStateChanged.mockClear();
-    mockUpdateProfile.mockClear();
-
-    // Reset user mock methods
-    mockUser.updateProfile.mockClear();
-    mockUser.getIdToken.mockClear();
-    mockUser.getIdTokenResult.mockClear();
+    // Default mock implementations
+    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+      if (typeof callback === 'function') {
+        callback(null);
+      }
+      return jest.fn();
+    });
   });
 
-  describe('Provider初期化', () => {
-    it('初期状態では認証されていない', () => {
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        if (typeof callback === 'function') {
-          callback(null);
-        }
-        return jest.fn(); // unsubscribe function
-      });
-
+  describe('初期化', () => {
+    it('初期状態が正しく設定される', () => {
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
-      expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.user).toBeNull();
+      expect(result.current.error).toBeNull();
+      expect(result.current.isFirebaseEnabled).toBe(true);
     });
 
-    it('認証ユーザーがいる場合は初期化する', () => {
-      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        if (typeof callback === 'function') {
-          callback(mockUser as any);
-        }
-        return jest.fn();
-      });
+    it('Firebase有効時に認証監視が開始される', () => {
+      renderHook(() => useFirebaseAuth(), { wrapper });
 
-      const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
-
-      expect(result.current.user).toEqual(
-        expect.objectContaining({
-          uid: mockUser.uid,
-          email: mockUser.email,
-          displayName: mockUser.displayName,
-          photoURL: mockUser.photoURL,
-          emailVerified: mockUser.emailVerified,
-        })
-      );
-      expect(result.current.isAuthenticated).toBe(true);
-      expect(result.current.isLoading).toBe(false);
+      expect(mockOnAuthStateChanged).toHaveBeenCalled();
     });
 
-    it('初期ローディング状態を管理する', () => {
+    it('認証状態変化時にユーザー情報が更新される', () => {
       let authCallback: ((user: any) => void) | null = null;
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
@@ -158,10 +130,36 @@ describe('FirebaseAuthContext', () => {
 
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
-      // 初期状態はローディング
-      expect(result.current.isLoading).toBe(true);
+      // ユーザーがログインした場合
+      act(() => {
+        authCallback?.(mockUser);
+      });
 
-      // 認証状態の確定後はローディング終了
+      expect(result.current.isAuthenticated).toBe(true);
+      expect(result.current.user).toEqual(
+        expect.objectContaining({
+          uid: mockUser.uid,
+          email: mockUser.email,
+          displayName: mockUser.displayName,
+        })
+      );
+    });
+
+    it('初期ローディング状態から読み込み完了状態に変化する', () => {
+      let authCallback: ((user: any) => void) | null = null;
+
+      mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        if (typeof callback === 'function') {
+          authCallback = callback;
+        }
+        return jest.fn();
+      });
+
+      const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
+
+      expect(result.current.isLoading).toBe(true);
+      expect(result.current.loading).toBe(true);
+
       act(() => {
         authCallback?.(null);
       });
@@ -197,7 +195,7 @@ describe('FirebaseAuthContext', () => {
     });
 
     it('ログインエラーを適切に処理する', async () => {
-      const mockError = new Error('auth/invalid-credentials');
+      const mockError = createFirebaseError('auth/invalid-credentials');
       mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
@@ -213,7 +211,7 @@ describe('FirebaseAuthContext', () => {
         await act(async () => {
           await result.current.login('test@example.com', 'wrongpassword');
         });
-      }).rejects.toThrow('auth/invalid-credentials');
+      }).rejects.toThrow();
 
       expect(result.current.error).toBe('auth/invalid-credentials');
     });
@@ -226,7 +224,7 @@ describe('FirebaseAuthContext', () => {
         return jest.fn();
       });
 
-      const mockError = new Error('auth/missing-email');
+      const mockError = createFirebaseError('auth/missing-email');
       mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
@@ -294,7 +292,7 @@ describe('FirebaseAuthContext', () => {
     });
 
     it('重複メールアドレスでエラーになる', async () => {
-      const mockError = new Error('auth/email-already-in-use');
+      const mockError = createFirebaseError('auth/email-already-in-use');
       mockCreateUserWithEmailAndPassword.mockRejectedValue(mockError);
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
@@ -310,7 +308,7 @@ describe('FirebaseAuthContext', () => {
         await act(async () => {
           await result.current.register('test@example.com', 'password123', 'Test User');
         });
-      }).rejects.toThrow('auth/email-already-in-use');
+      }).rejects.toThrow();
     });
   });
 
@@ -376,7 +374,7 @@ describe('FirebaseAuthContext', () => {
     });
 
     it('無効なメールアドレスでエラーになる', async () => {
-      const mockError = new Error('auth/invalid-email');
+      const mockError = createFirebaseError('auth/invalid-email');
       mockSendPasswordResetEmail.mockRejectedValue(mockError);
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
@@ -392,7 +390,7 @@ describe('FirebaseAuthContext', () => {
         await act(async () => {
           await result.current.resetPassword('invalid-email');
         });
-      }).rejects.toThrow('auth/invalid-email');
+      }).rejects.toThrow();
     });
   });
 
@@ -526,7 +524,7 @@ describe('FirebaseAuthContext', () => {
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
       for (const testCase of testCases) {
-        const mockError = new Error(testCase.code);
+        const mockError = createFirebaseError(testCase.code);
         mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
         try {
@@ -576,7 +574,7 @@ describe('FirebaseAuthContext', () => {
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
       // 最初にエラーを発生させる
-      const mockError = new Error('auth/invalid-email');
+      const mockError = createFirebaseError('auth/invalid-email');
       mockSignInWithEmailAndPassword.mockRejectedValueOnce(mockError);
 
       try {

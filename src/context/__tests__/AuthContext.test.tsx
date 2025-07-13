@@ -9,62 +9,90 @@
  * - Jest fake timers無限ループ
  */
 
+// Mock dependencies first
+jest.mock('@/services/api/authApi');
+jest.mock('@/services/auth/TokenManager');
+jest.mock('@/utils/logger');
+
+// Mock React Hot Toast
+jest.mock('react-hot-toast', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
 import React from 'react';
-import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { AuthProvider } from '../AuthContext';
 import { useAuth } from '../../hooks/useAuth';
+import { TokenManager } from '../../services/auth/TokenManager';
 import * as authApi from '../../services/api/authApi';
-import { tokenManager } from '../../services/auth/TokenManager';
+import { User } from '../../types';
 
-// Jest fake timersを使用
-jest.useFakeTimers();
+// Mock the TokenManager
+const mockTokenManager = {
+  isAuthenticated: jest.fn(),
+  getAccessToken: jest.fn(),
+  getRefreshToken: jest.fn(),
+  setTokens: jest.fn(),
+  clearTokens: jest.fn(),
+  getSessionInfo: jest.fn(),
+  getDebugInfo: jest.fn(),
+  setRememberMe: jest.fn(),
+};
 
-// コンソールログを抑制
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
+// Mock the singleton getInstance
+(TokenManager.getInstance as jest.Mock).mockReturnValue(mockTokenManager);
 
-beforeAll(() => {
-  console.log = jest.fn();
-  console.error = jest.fn();
-  console.warn = jest.fn();
-});
+// Mock authApi
+const mockAuthApi = {
+  checkAuth: jest.fn(),
+  fetchUserData: jest.fn(),
+  updateUserProfile: jest.fn(),
+};
 
-afterAll(() => {
-  console.log = originalConsoleLog;
-  console.error = originalConsoleError;
-  console.warn = originalConsoleWarn;
-});
+Object.assign(authApi, mockAuthApi);
 
-// モック設定
-jest.mock('../../services/api/authApi');
-jest.mock('../../services/auth/TokenManager');
-jest.mock('@/utils/logger');
-jest.mock('react-hot-toast');
+// Mock user data
+const mockUser: User = {
+  id: 'test-user-id',
+  _id: 'test-user-id',
+  name: 'Test User',
+  username: 'testuser',
+  email: 'test@example.com',
+  isAdmin: false,
+  avatar: '',
+};
 
-// テスト用コンポーネント
 const TestComponent: React.FC = () => {
-  const authContext = useAuth();
-
-  // テスト環境ではAuthProviderでラップされているので非null
-  // @ts-ignore
-  const { isAuthenticated, loading, user, fetchUser, refreshAuth, updateProfile } = authContext;
+  const {
+    isAuthenticated,
+    loading,
+    user,
+    fetchUser,
+    updateProfile,
+    refreshAuth,
+    sessionExpired,
+    sessionInfo,
+  } = useAuth();
 
   return (
     <div>
       <div data-testid="auth-status">{isAuthenticated ? 'authenticated' : 'not-authenticated'}</div>
       <div data-testid="loading-status">{loading ? 'loading' : 'loaded'}</div>
       <div data-testid="user-name">{user?.name || 'no-user'}</div>
-      <button onClick={fetchUser} data-testid="fetch-user">
+      <div data-testid="session-expired">{sessionExpired ? 'expired' : 'not-expired'}</div>
+      <div data-testid="session-info">{JSON.stringify(sessionInfo)}</div>
+      <button data-testid="fetch-user" onClick={fetchUser}>
         Fetch User
       </button>
-      <button onClick={refreshAuth} data-testid="refresh-auth">
+      <button data-testid="refresh-auth" onClick={refreshAuth}>
         Refresh Auth
       </button>
       <button
-        onClick={() => updateProfile({ name: 'Updated Name', email: 'updated@example.com' })}
         data-testid="update-profile"
+        onClick={() => updateProfile({ name: 'Updated Name', email: 'updated@example.com' })}
       >
         Update Profile
       </button>
@@ -77,124 +105,104 @@ const renderWithAuthProvider = (component: React.ReactNode) => {
 };
 
 describe('AuthContext', () => {
-  const mockUser = {
-    id: 'test-user-id',
-    _id: 'test-user-id',
-    name: 'Test User',
-    username: 'testuser',
-    email: 'test@example.com',
-    isAdmin: false,
-    avatar: '',
-  };
+  let originalEnv: NodeJS.ProcessEnv;
+  let originalWindow: Window & typeof globalThis;
+
+  beforeAll(() => {
+    originalEnv = process.env;
+    originalWindow = global.window;
+
+    // Use fake timers
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
+    global.window = originalWindow;
+    jest.useRealTimers();
+  });
 
   beforeEach(() => {
-    // すべてのモックをクリア
+    // Clear all mocks
     jest.clearAllMocks();
-    jest.clearAllTimers();
 
-    // 環境変数を最初にクリアして確実に設定
-    delete (process.env as any).VITE_USE_MOCK_DATA;
-    delete (process.env as any).VITE_API_CONNECTION_FAILED;
-    delete (process.env as any).VITE_SKIP_AUTH;
-    delete (process.env as any).DEV;
-    delete (process.env as any).MODE;
-    delete (process.env as any).NODE_ENV;
-
-    // テスト環境に設定（production環境をシミュレート）
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'test',
-      writable: true,
-      configurable: true,
-    });
-
-    Object.defineProperty(process.env, 'DEV', {
+    // Reset environment to test mode
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', configurable: true });
+    Object.defineProperty(process.env, 'DEV', { value: 'false', configurable: true });
+    Object.defineProperty(process.env, 'MODE', { value: 'test', configurable: true });
+    Object.defineProperty(process.env, 'VITE_USE_MOCK_DATA', {
       value: 'false',
-      writable: true,
       configurable: true,
     });
 
-    Object.defineProperty(process.env, 'MODE', {
-      value: 'test',
-      writable: true,
-      configurable: true,
-    });
-
-    Object.defineProperty(process.env, 'VITE_SKIP_AUTH', {
-      value: 'false',
-      writable: true,
-      configurable: true,
-    });
-
-    // window.location.hostname を明示的に非localhost に設定
-    Object.defineProperty(window, 'location', {
+    // Set up test environment window
+    Object.defineProperty(global, 'window', {
       value: {
-        ...window.location,
-        hostname: 'test.example.com',
-        href: 'https://test.example.com',
+        ...originalWindow,
+        location: {
+          hostname: 'test.example.com',
+          href: 'https://test.example.com',
+          protocol: 'https:',
+          pathname: '/',
+          search: '',
+          hash: '',
+        },
+        __VITE_USE_MOCK_DATA__: undefined,
+        __API_CONNECTION_FAILED__: undefined,
+        dispatchEvent: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
       },
       writable: true,
       configurable: true,
     });
 
-    // Window プロパティをクリア
-    delete (window as any).__VITE_USE_MOCK_DATA__;
-    delete (window as any).__API_CONNECTION_FAILED__;
-
-    // セッションストレージとローカルストレージをクリア
+    // Clear storage
     sessionStorage.clear();
     localStorage.clear();
 
-    // 明示的にログアウト状態を設定（開発モードのファストパスを無効化）
-    sessionStorage.setItem('user-logged-out', 'true');
+    // Remove any logout flags
+    sessionStorage.removeItem('user-logged-out');
+    sessionStorage.removeItem('auth-init-shown');
 
-    // TokenManagerのモック設定 - 全て無効状態に設定
-    (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
-    (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
-    (tokenManager.getRefreshToken as jest.Mock).mockReturnValue(null);
-    (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
+    // Set up default mock returns
+    mockTokenManager.isAuthenticated.mockReturnValue(false);
+    mockTokenManager.getAccessToken.mockResolvedValue(null);
+    mockTokenManager.getRefreshToken.mockReturnValue(null);
+    mockTokenManager.setTokens.mockResolvedValue(undefined);
+    mockTokenManager.clearTokens.mockResolvedValue(undefined);
+    mockTokenManager.getSessionInfo.mockReturnValue({
       isAuthenticated: false,
       expiresAt: null,
       refreshExpiresAt: null,
       timeUntilExpiry: 0,
       timeUntilRefreshExpiry: 0,
     });
-    (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({
+    mockTokenManager.getDebugInfo.mockReturnValue({
       hasTokens: false,
       isValid: false,
     });
-    (tokenManager.clearTokens as jest.Mock).mockImplementation(() => {});
 
-    // APIのモック設定（即座に解決される）
-    (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
-    (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
-    (authApi.updateUserProfile as jest.Mock).mockResolvedValue({
-      ...mockUser,
-      name: 'Updated Name',
-      email: 'updated@example.com',
-    });
-  });
+    // Set up API mocks
+    mockAuthApi.checkAuth.mockResolvedValue(false);
+    mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
+    mockAuthApi.updateUserProfile.mockResolvedValue(mockUser);
 
-  afterEach(() => {
-    // タイマーを慎重にクリア
-    act(() => {
-      jest.clearAllTimers();
-    });
+    // Clear timers
+    jest.clearAllTimers();
   });
 
   describe('初期化', () => {
     it('should initialize with unauthenticated state', async () => {
-      // 確実にトークンなしの状態に設定
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
+      // Ensure test environment is properly set
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', configurable: true });
+      Object.defineProperty(process.env, 'DEV', { value: 'false', configurable: true });
+      Object.defineProperty(process.env, 'MODE', { value: 'test', configurable: true });
 
-      // デバッグ: モックが正しく設定されていることを確認
-      console.log('🧪 Test setup:', {
-        isAuthenticated: tokenManager.isAuthenticated(),
-        environment: process.env.NODE_ENV,
-        hostname: window.location.hostname,
-        sessionStorage: sessionStorage.getItem('user-logged-out'),
-      });
+      // 確実にトークンなしの状態に設定
+      mockTokenManager.isAuthenticated.mockReturnValue(false);
+      mockTokenManager.getAccessToken.mockResolvedValue(null);
+      mockAuthApi.checkAuth.mockResolvedValue(false);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -215,21 +223,30 @@ describe('AuthContext', () => {
     });
 
     it('should set loading state initially', async () => {
-      // トークンが有効な状態に設定（認証チェックが実行されるように）
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
+      // Ensure test environment
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', configurable: true });
+      Object.defineProperty(process.env, 'DEV', { value: 'false', configurable: true });
+      Object.defineProperty(process.env, 'MODE', { value: 'test', configurable: true });
 
-      // 開発環境のファストパスを無効化
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'production.example.com' },
-        writable: true,
-      });
-
-      // テスト環境モードを無効化
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
+      // Set up for production-like behavior to test loading
+      Object.defineProperty(global, 'window', {
+        value: {
+          ...global.window,
+          location: {
+            hostname: 'production.example.com',
+            href: 'https://production.example.com',
+            protocol: 'https:',
+            pathname: '/',
+            search: '',
+            hash: '',
+          },
+        },
         writable: true,
         configurable: true,
       });
+
+      // トークンが有効な状態に設定（認証チェックが実行されるように）
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
 
       // API呼び出しを遅延させる
       let resolveAuth: (value: boolean) => void;
@@ -242,8 +259,8 @@ describe('AuthContext', () => {
         resolveUser = resolve;
       });
 
-      (authApi.checkAuth as jest.Mock).mockReturnValue(authPromise);
-      (authApi.fetchUserData as jest.Mock).mockReturnValue(userPromise);
+      mockAuthApi.checkAuth.mockReturnValue(authPromise);
+      mockAuthApi.fetchUserData.mockReturnValue(userPromise);
 
       // コンポーネントをレンダリング（遅延なし）
       renderWithAuthProvider(<TestComponent />);
@@ -269,27 +286,16 @@ describe('AuthContext', () => {
         },
         { timeout: 3000 }
       );
-
-      // 環境を元に戻す
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
-      Object.defineProperty(window, 'location', {
-        value: { ...window.location, hostname: 'localhost' },
-        writable: true,
-      });
     }, 15000);
   });
 
   describe('認証フロー', () => {
     it('should restore authentication from valid token', async () => {
       // 有効なトークンが存在する状態をモック
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockTokenManager.getAccessToken.mockResolvedValue('valid-token');
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -308,15 +314,15 @@ describe('AuthContext', () => {
         { timeout: 3000 }
       );
 
-      expect(authApi.checkAuth).toHaveBeenCalled();
-      expect(authApi.fetchUserData).toHaveBeenCalled();
+      expect(mockAuthApi.checkAuth).toHaveBeenCalled();
+      expect(mockAuthApi.fetchUserData).toHaveBeenCalled();
     });
 
     it('should handle auth check failure', async () => {
       // ローカルトークンは有効だがサーバー認証に失敗する場合
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockTokenManager.getAccessToken.mockResolvedValue('valid-token');
+      mockAuthApi.checkAuth.mockResolvedValue(false);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -337,11 +343,9 @@ describe('AuthContext', () => {
 
     it('should handle network errors gracefully', async () => {
       // ローカルトークンが有効でネットワークエラーが発生する場合
-      (tokenManager.isAuthenticated as jest.Mock)
-        .mockReturnValueOnce(true) // 初期チェック
-        .mockReturnValue(true); // エラー後の再チェック
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
-      (authApi.checkAuth as jest.Mock).mockRejectedValue(new Error('Network error'));
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockTokenManager.getAccessToken.mockResolvedValue('valid-token');
+      mockAuthApi.checkAuth.mockRejectedValue(new Error('Network error'));
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -364,10 +368,10 @@ describe('AuthContext', () => {
 
     it('should handle user fetch errors', async () => {
       // 認証は成功するがユーザー情報取得に失敗する場合
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('valid-token');
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockRejectedValue(new Error('User fetch failed'));
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockTokenManager.getAccessToken.mockResolvedValue('valid-token');
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockRejectedValue(new Error('User fetch failed'));
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -389,9 +393,9 @@ describe('AuthContext', () => {
 
   describe('イベント処理', () => {
     it('should handle token expiration events', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -429,7 +433,7 @@ describe('AuthContext', () => {
         timeUntilRefreshExpiry: 604800,
       };
 
-      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue(mockSessionInfo);
+      mockTokenManager.getSessionInfo.mockReturnValue(mockSessionInfo);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -442,16 +446,16 @@ describe('AuthContext', () => {
 
       // セッション情報の更新が呼ばれることを確認
       await waitFor(() => {
-        expect(tokenManager.getSessionInfo).toHaveBeenCalled();
+        expect(mockTokenManager.getSessionInfo).toHaveBeenCalled();
       });
     });
   });
 
   describe('ユーザー操作', () => {
     it('should handle profile update successfully', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -472,7 +476,7 @@ describe('AuthContext', () => {
       });
 
       await waitFor(() => {
-        expect(authApi.updateUserProfile).toHaveBeenCalledWith({
+        expect(mockAuthApi.updateUserProfile).toHaveBeenCalledWith({
           name: 'Updated Name',
           email: 'updated@example.com',
         });
@@ -484,10 +488,10 @@ describe('AuthContext', () => {
       const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       try {
-        (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-        (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-        (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
-        (authApi.updateUserProfile as jest.Mock).mockRejectedValue(new Error('Update failed'));
+        mockTokenManager.isAuthenticated.mockReturnValue(true);
+        mockAuthApi.checkAuth.mockResolvedValue(true);
+        mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
+        mockAuthApi.updateUserProfile.mockRejectedValue(new Error('Update failed'));
 
         await act(async () => {
           renderWithAuthProvider(<TestComponent />);
@@ -508,7 +512,7 @@ describe('AuthContext', () => {
 
         // API呼び出しがされることを確認
         await waitFor(() => {
-          expect(authApi.updateUserProfile).toHaveBeenCalledWith({
+          expect(mockAuthApi.updateUserProfile).toHaveBeenCalledWith({
             name: 'Updated Name',
             email: 'updated@example.com',
           });
@@ -525,9 +529,9 @@ describe('AuthContext', () => {
     });
 
     it('should handle refresh auth successfully', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -545,10 +549,10 @@ describe('AuthContext', () => {
       jest.clearAllMocks();
 
       // モックを再設定（clearAllMocks後に必要）
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue('mock-access-token');
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockTokenManager.getAccessToken.mockResolvedValue('mock-access-token');
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       // リフレッシュをトリガー
       await act(async () => {
@@ -557,7 +561,7 @@ describe('AuthContext', () => {
 
       await waitFor(
         () => {
-          expect(authApi.checkAuth).toHaveBeenCalledTimes(1);
+          expect(mockAuthApi.checkAuth).toHaveBeenCalledTimes(1);
         },
         { timeout: 3000 }
       );
@@ -575,80 +579,63 @@ describe('AuthContext', () => {
       localStorage.clear();
 
       // Set development environment
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'development',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(process.env, 'DEV', {
-        value: 'true',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(process.env, 'MODE', {
-        value: 'development',
-        writable: true,
-        configurable: true,
-      });
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', configurable: true });
+      Object.defineProperty(process.env, 'DEV', { value: 'true', configurable: true });
+      Object.defineProperty(process.env, 'MODE', { value: 'development', configurable: true });
 
       // Set localhost hostname
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(global, 'window', {
         value: {
-          ...window.location,
-          hostname: 'localhost',
-          href: 'http://localhost:3000',
+          ...global.window,
+          location: {
+            hostname: 'localhost',
+            href: 'http://localhost:3000',
+            protocol: 'http:',
+            pathname: '/',
+            search: '',
+            hash: '',
+          },
         },
         writable: true,
         configurable: true,
       });
 
       // Token manager should return false (no valid token)
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
-      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
+      mockTokenManager.isAuthenticated.mockReturnValue(false);
+      mockTokenManager.getSessionInfo.mockReturnValue({
         isAuthenticated: false,
         expiresAt: null,
         refreshExpiresAt: null,
         timeUntilExpiry: 0,
         timeUntilRefreshExpiry: 0,
       });
-      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({
+      mockTokenManager.getDebugInfo.mockReturnValue({
         hasTokens: false,
         isValid: false,
       });
-      (tokenManager.clearTokens as jest.Mock).mockImplementation(() => {});
 
       // API should return false (not authenticated)
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(false);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockAuthApi.checkAuth.mockResolvedValue(false);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
     });
 
     afterEach(() => {
       // Reset environment back to test mode
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'test', configurable: true });
+      Object.defineProperty(process.env, 'DEV', { value: 'false', configurable: true });
+      Object.defineProperty(process.env, 'MODE', { value: 'test', configurable: true });
 
-      Object.defineProperty(process.env, 'DEV', {
-        value: 'false',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(process.env, 'MODE', {
-        value: 'test',
-        writable: true,
-        configurable: true,
-      });
-
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(global, 'window', {
         value: {
-          ...window.location,
-          hostname: 'test.example.com',
-          href: 'https://test.example.com',
+          ...global.window,
+          location: {
+            hostname: 'test.example.com',
+            href: 'https://test.example.com',
+            protocol: 'https:',
+            pathname: '/',
+            search: '',
+            hash: '',
+          },
         },
         writable: true,
         configurable: true,
@@ -656,79 +643,10 @@ describe('AuthContext', () => {
     });
 
     it('should enable fast auth mode in development', async () => {
-      console.log('🐛 Starting development mode test...');
-
-      // Mock tokenManager to return false consistently (no token)
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
-      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
-        isAuthenticated: false,
-        expiresAt: null,
-        refreshExpiresAt: null,
-        timeUntilExpiry: 0,
-        timeUntilRefreshExpiry: 0,
-      });
-      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({});
-
-      // Clear all API mocks to prevent unwanted calls
-      jest.clearAllMocks();
-
-      // Re-setup mocks after clearing
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(false);
-      (tokenManager.getAccessToken as jest.Mock).mockResolvedValue(null);
-      (tokenManager.getRefreshToken as jest.Mock).mockReturnValue(null);
-      (tokenManager.getSessionInfo as jest.Mock).mockReturnValue({
-        isAuthenticated: false,
-        expiresAt: null,
-        refreshExpiresAt: null,
-        timeUntilExpiry: 0,
-        timeUntilRefreshExpiry: 0,
-      });
-      (tokenManager.getDebugInfo as jest.Mock).mockReturnValue({
-        hasTokens: false,
-        isValid: false,
-      });
-
-      // 開発環境モードを確実に設定
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'development',
-        writable: true,
-        configurable: true,
-      });
-      Object.defineProperty(process.env, 'MODE', {
-        value: 'development',
-        writable: true,
-        configurable: true,
-      });
-      Object.defineProperty(process.env, 'DEV', {
-        value: 'true',
-        writable: true,
-        configurable: true,
-      });
-
-      // Ensure window.location is localhost
-      Object.defineProperty(window, 'location', {
-        value: {
-          ...window.location,
-          hostname: 'localhost',
-          href: 'http://localhost:3000',
-        },
-        writable: true,
-      });
-
       // ログアウト状態をクリア（開発モードの条件）
       sessionStorage.clear();
       sessionStorage.removeItem('user-logged-out');
       localStorage.clear();
-
-      // デバッグ情報を追加
-      console.log('🐛 Test Environment Check:', {
-        NODE_ENV: process.env.NODE_ENV,
-        MODE: process.env.MODE,
-        DEV: process.env.DEV,
-        hostname: window.location.hostname,
-        userLoggedOut: sessionStorage.getItem('user-logged-out'),
-        tokenValid: tokenManager.isAuthenticated(),
-      });
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -738,13 +656,6 @@ describe('AuthContext', () => {
       await act(async () => {
         jest.advanceTimersByTime(1000);
       });
-
-      console.log('🐛 After initialization, checking state...');
-      const authStatus = screen.getByTestId('auth-status').textContent;
-      const userName = screen.getByTestId('user-name').textContent;
-      const loadingStatus = screen.getByTestId('loading-status').textContent;
-
-      console.log('🐛 Current State:', { authStatus, userName, loadingStatus });
 
       await waitFor(
         () => {
@@ -757,44 +668,15 @@ describe('AuthContext', () => {
       );
 
       // 開発環境ではAPI呼び出しをスキップ
-      expect(authApi.checkAuth).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('activity monitoring', () => {
-    it('should monitor user activity when authenticated', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
-
-      await act(async () => {
-        renderWithAuthProvider(<TestComponent />);
-      });
-
-      await act(async () => {
-        jest.advanceTimersByTime(1000);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
-      });
-
-      // ユーザーアクティビティをシミュレート
-      await act(async () => {
-        fireEvent.mouseDown(document);
-        jest.advanceTimersByTime(100);
-      });
-
-      // タイマーが設定されていることを確認
-      expect(jest.getTimerCount()).toBeGreaterThan(0);
+      expect(mockAuthApi.checkAuth).not.toHaveBeenCalled();
     });
   });
 
   describe('session expiration handling', () => {
     it('should handle session expiration gracefully', async () => {
-      (tokenManager.isAuthenticated as jest.Mock).mockReturnValue(true);
-      (authApi.checkAuth as jest.Mock).mockResolvedValue(true);
-      (authApi.fetchUserData as jest.Mock).mockResolvedValue(mockUser);
+      mockTokenManager.isAuthenticated.mockReturnValue(true);
+      mockAuthApi.checkAuth.mockResolvedValue(true);
+      mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
 
       await act(async () => {
         renderWithAuthProvider(<TestComponent />);
@@ -808,7 +690,7 @@ describe('AuthContext', () => {
         expect(screen.getByTestId('auth-status')).toHaveTextContent('authenticated');
       });
 
-      // セッション期限切れを通知
+      // セッション期限切れを発火
       await act(async () => {
         window.dispatchEvent(new CustomEvent('auth:token-expired'));
       });

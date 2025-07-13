@@ -3,6 +3,28 @@ import { renderHook, act } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { PomodoroProvider, usePomodoroContext } from '../PomodoroContext';
 
+// Create stable mock functions that persist across re-renders
+const mockStartTimer = jest.fn();
+const mockPauseTimer = jest.fn();
+const mockResumeTimer = jest.fn();
+const mockResetTimer = jest.fn();
+const mockStopTimer = jest.fn();
+const mockStartBreak = jest.fn();
+const mockSwitchSessionType = jest.fn();
+const mockUpdateSettings = jest.fn();
+const mockGetStats = jest.fn(() => ({
+  totalSessions: 10,
+  completedSessions: 8,
+  totalWorkTime: 200 * 60 * 1000,
+  averageSessionLength: 24 * 60 * 1000,
+  todaySessions: 3,
+  weekSessions: 15,
+  monthSessions: 45,
+  completionRate: 80,
+}));
+const mockGetSessionHistory = jest.fn(() => []);
+const mockResetDailyStats = jest.fn();
+
 // Mock usePomodoro hook
 jest.mock('../../hooks/usePomodoro', () => ({
   usePomodoro: () => ({
@@ -23,26 +45,17 @@ jest.mock('../../hooks/usePomodoro', () => ({
       sounds: true,
       volume: 0.5,
     },
-    startTimer: jest.fn(),
-    pauseTimer: jest.fn(),
-    resumeTimer: jest.fn(),
-    resetTimer: jest.fn(),
-    stopTimer: jest.fn(),
-    startBreak: jest.fn(),
-    switchSessionType: jest.fn(),
-    updateSettings: jest.fn(),
-    getStats: jest.fn(() => ({
-      totalSessions: 10,
-      completedSessions: 8,
-      totalWorkTime: 200 * 60 * 1000,
-      averageSessionLength: 24 * 60 * 1000,
-      todaySessions: 3,
-      weekSessions: 15,
-      monthSessions: 45,
-      completionRate: 80,
-    })),
-    getSessionHistory: jest.fn(() => []),
-    resetDailyStats: jest.fn(),
+    startTimer: mockStartTimer,
+    pauseTimer: mockPauseTimer,
+    resumeTimer: mockResumeTimer,
+    resetTimer: mockResetTimer,
+    stopTimer: mockStopTimer,
+    startBreak: mockStartBreak,
+    switchSessionType: mockSwitchSessionType,
+    updateSettings: mockUpdateSettings,
+    getStats: mockGetStats,
+    getSessionHistory: mockGetSessionHistory,
+    resetDailyStats: mockResetDailyStats,
   }),
 }));
 
@@ -111,7 +124,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.startTimer('テストタスク');
       });
 
-      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク');
+      expect(mockStartTimer).toHaveBeenCalledWith('テストタスク');
     });
 
     it('pauseTimer関数が利用できる', () => {
@@ -123,7 +136,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.pauseTimer();
       });
 
-      expect(result.current.pomodoro.pauseTimer).toHaveBeenCalled();
+      expect(mockPauseTimer).toHaveBeenCalled();
     });
 
     it('resumeTimer関数が利用できる', () => {
@@ -135,7 +148,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.resumeTimer();
       });
 
-      expect(result.current.pomodoro.resumeTimer).toHaveBeenCalled();
+      expect(mockResumeTimer).toHaveBeenCalled();
     });
 
     it('resetTimer関数が利用できる', () => {
@@ -147,7 +160,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.resetTimer();
       });
 
-      expect(result.current.pomodoro.resetTimer).toHaveBeenCalled();
+      expect(mockResetTimer).toHaveBeenCalled();
     });
 
     it('stopTimer関数が利用できる', () => {
@@ -159,7 +172,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.stopTimer();
       });
 
-      expect(result.current.pomodoro.stopTimer).toHaveBeenCalled();
+      expect(mockStopTimer).toHaveBeenCalled();
     });
   });
 
@@ -173,7 +186,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.startBreak('short');
       });
 
-      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('short');
+      expect(mockStartBreak).toHaveBeenCalledWith('short');
     });
 
     it('switchSessionType関数が利用できる', () => {
@@ -185,7 +198,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.switchSessionType('shortBreak');
       });
 
-      expect(result.current.pomodoro.switchSessionType).toHaveBeenCalledWith('shortBreak');
+      expect(mockSwitchSessionType).toHaveBeenCalledWith('shortBreak');
     });
 
     it('セッション履歴を取得できる', () => {
@@ -194,7 +207,7 @@ describe('PomodoroContext', () => {
       const history = result.current.pomodoro.getSessionHistory();
 
       expect(Array.isArray(history)).toBe(true);
-      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalled();
+      expect(mockGetSessionHistory).toHaveBeenCalled();
     });
 
     it('期間指定でセッション履歴を取得できる', () => {
@@ -205,8 +218,8 @@ describe('PomodoroContext', () => {
 
       expect(Array.isArray(todayHistory)).toBe(true);
       expect(Array.isArray(weekHistory)).toBe(true);
-      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalledWith('today');
-      expect(result.current.pomodoro.getSessionHistory).toHaveBeenCalledWith('week');
+      expect(mockGetSessionHistory).toHaveBeenCalledWith('today');
+      expect(mockGetSessionHistory).toHaveBeenCalledWith('week');
     });
   });
 
@@ -225,7 +238,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.updateSettings(newSettings);
       });
 
-      expect(result.current.pomodoro.updateSettings).toHaveBeenCalledWith(newSettings);
+      expect(mockUpdateSettings).toHaveBeenCalledWith(newSettings);
     });
 
     it('設定の各プロパティが正しく取得できる', () => {
@@ -268,7 +281,7 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.resetDailyStats();
       });
 
-      expect(result.current.pomodoro.resetDailyStats).toHaveBeenCalled();
+      expect(mockResetDailyStats).toHaveBeenCalled();
     });
   });
 
@@ -364,8 +377,8 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.startTimer('テストタスク', 'メモ');
       });
 
-      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク');
-      expect(result.current.pomodoro.startTimer).toHaveBeenCalledWith('テストタスク', 'メモ');
+      expect(mockStartTimer).toHaveBeenCalledWith('テストタスク');
+      expect(mockStartTimer).toHaveBeenCalledWith('テストタスク', 'メモ');
     });
 
     it('startBreak関数が正しい引数を受け取る', () => {
@@ -385,9 +398,9 @@ describe('PomodoroContext', () => {
         result.current.pomodoro.startBreak('long');
       });
 
-      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith();
-      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('short');
-      expect(result.current.pomodoro.startBreak).toHaveBeenCalledWith('long');
+      expect(mockStartBreak).toHaveBeenCalledWith();
+      expect(mockStartBreak).toHaveBeenCalledWith('short');
+      expect(mockStartBreak).toHaveBeenCalledWith('long');
     });
   });
 
