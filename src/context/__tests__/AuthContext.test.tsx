@@ -9,9 +9,32 @@
  * - Jest fake timers無限ループ
  */
 
+// Mock the TokenManager first
+const mockTokenManager = {
+  isAuthenticated: jest.fn(),
+  getAccessToken: jest.fn(),
+  getRefreshToken: jest.fn(),
+  setTokens: jest.fn(),
+  clearTokens: jest.fn(),
+  getSessionInfo: jest.fn(),
+  getDebugInfo: jest.fn(),
+  setRememberMe: jest.fn(),
+};
+
 // Mock dependencies first
 jest.mock('@/services/api/authApi');
-jest.mock('@/services/auth/TokenManager');
+jest.mock('@/services/auth/TokenManager', () => ({
+  TokenManager: {
+    getInstance: jest.fn(() => mockTokenManager),
+  },
+  tokenManager: mockTokenManager,
+}));
+jest.mock('../../services/auth/TokenManager', () => ({
+  TokenManager: {
+    getInstance: jest.fn(() => mockTokenManager),
+  },
+  tokenManager: mockTokenManager,
+}));
 jest.mock('@/utils/logger');
 
 // Mock React Hot Toast
@@ -29,21 +52,6 @@ import { useAuth } from '../../hooks/useAuth';
 import { TokenManager } from '../../services/auth/TokenManager';
 import * as authApi from '../../services/api/authApi';
 import { User } from '../../types';
-
-// Mock the TokenManager
-const mockTokenManager = {
-  isAuthenticated: jest.fn(),
-  getAccessToken: jest.fn(),
-  getRefreshToken: jest.fn(),
-  setTokens: jest.fn(),
-  clearTokens: jest.fn(),
-  getSessionInfo: jest.fn(),
-  getDebugInfo: jest.fn(),
-  setRememberMe: jest.fn(),
-};
-
-// Mock the singleton getInstance
-(TokenManager.getInstance as jest.Mock).mockReturnValue(mockTokenManager);
 
 // Mock authApi
 const mockAuthApi = {
@@ -181,6 +189,12 @@ describe('AuthContext', () => {
     mockTokenManager.getDebugInfo.mockReturnValue({
       hasTokens: false,
       isValid: false,
+    });
+
+    // Add console log to verify mocks are working
+    console.log('🧪 Mock setup verification:', {
+      isAuthenticated: mockTokenManager.isAuthenticated(),
+      sessionInfo: mockTokenManager.getSessionInfo(),
     });
 
     // Set up API mocks

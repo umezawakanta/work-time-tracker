@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">31.43% </span>
+                <span class="strong">33.7% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>83/264</span>
+                <span class='fraction'>90/267</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.33% </span>
+                <span class="strong">25.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>16/75</span>
+                <span class='fraction'>19/75</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">31% </span>
+                <span class="strong">33.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>80/258</span>
+                <span class='fraction'>87/261</span>
             </div>
         
             
@@ -670,7 +670,18 @@
 <a name='L605'></a><a href='#L605'>605</a>
 <a name='L606'></a><a href='#L606'>606</a>
 <a name='L607'></a><a href='#L607'>607</a>
-<a name='L608'></a><a href='#L608'>608</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L608'></a><a href='#L608'>608</a>
+<a name='L609'></a><a href='#L609'>609</a>
+<a name='L610'></a><a href='#L610'>610</a>
+<a name='L611'></a><a href='#L611'>611</a>
+<a name='L612'></a><a href='#L612'>612</a>
+<a name='L613'></a><a href='#L613'>613</a>
+<a name='L614'></a><a href='#L614'>614</a>
+<a name='L615'></a><a href='#L615'>615</a>
+<a name='L616'></a><a href='#L616'>616</a>
+<a name='L617'></a><a href='#L617'>617</a>
+<a name='L618'></a><a href='#L618'>618</a>
+<a name='L619'></a><a href='#L619'>619</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -713,29 +724,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">100x</span>
-<span class="cline-any cline-yes">100x</span>
+<span class="cline-any cline-yes">160x</span>
+<span class="cline-any cline-yes">120x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">80x</span>
 <span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">80x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1031,6 +1042,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1324,26 +1346,26 @@ const getEnvVar = (key: string): string | undefined =&gt; {
     return process.env[key];
   }
   // Vite環境でのimport.meta.env（安全にアクセス）
-<span class="cstat-no" title="statement not covered" >  try {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window !== 'undefined' &amp;&amp; (window as any).import?.meta?.env) {</span>
-<span class="cstat-no" title="statement not covered" >      return (window as any).import.meta.env[key];</span>
+  try {
+    if (typeof window !== 'undefined' &amp;&amp; (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env[key];
     }
   } catch (e) {
     // import.metaが利用できない場合は無視
   }
-<span class="cstat-no" title="statement not covered" >  return undefined;</span>
+  return undefined;
 };
 &nbsp;
+// 環境検出を動的にする（テスト環境で適切に動作するように）
 const isDev = () =&gt; {
   // Test environment should never be considered development
-  if (getEnvVar('NODE_ENV') === 'test') {
+  const nodeEnv = getEnvVar('NODE_ENV');
+  if (nodeEnv === 'test') {
     return false;
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-    getEnvVar('NODE_ENV') === 'development' ||
-    getEnvVar('DEV') === 'true' ||
-    getEnvVar('MODE') === 'development'
+    nodeEnv === 'development' || getEnvVar('DEV') === 'true' || getEnvVar('MODE') === 'development'
   );
 };
 &nbsp;
@@ -1638,9 +1660,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 &nbsp;
         // テスト環境では開発モードを無効化
         const isTestEnvironment = getEnvVar('NODE_ENV') === 'test';
+        const currentIsDev = isDev();
+&nbsp;
+        console.log('🔍 Environment check:', {
+          NODE_ENV: getEnvVar('NODE_ENV'),
+          DEV: getEnvVar('DEV'),
+          MODE: getEnvVar('MODE'),
+          isTestEnvironment,
+          currentIsDev,
+          hostname: window.location.hostname,
+          isLoggedOut,
+        });
 &nbsp;
         <span class="missing-if-branch" title="if path not taken" >I</span>if (
-          isDev() &amp;&amp;
+          currentIsDev &amp;&amp;
 <span class="branch-1 cbranch-no" title="branch not covered" >          !isTestEnvironment </span>&amp;&amp;
 <span class="branch-2 cbranch-no" title="branch not covered" >          window.location.hostname === 'localhost' </span>&amp;&amp;
 <span class="branch-3 cbranch-no" title="branch not covered" >          !isLoggedOut</span>
@@ -1891,7 +1924,7 @@ export default AuthContext;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-14T12:35:54.539Z
+                at 2025-07-14T14:13:11.089Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
