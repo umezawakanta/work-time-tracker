@@ -9,7 +9,7 @@
  * - Jest fake timers無限ループ
  */
 
-// Mock the TokenManager first
+// Mock the TokenManager completely before any imports
 const mockTokenManager = {
   isAuthenticated: jest.fn(),
   getAccessToken: jest.fn(),
@@ -21,16 +21,11 @@ const mockTokenManager = {
   setRememberMe: jest.fn(),
 };
 
-// Use jest.doMock to ensure proper timing
-jest.doMock('@/services/auth/TokenManager', () => {
-  console.log('🔧 Setting up TokenManager mock with doMock');
-  return {
-    TokenManager: {
-      getInstance: jest.fn(() => mockTokenManager),
-    },
-    tokenManager: mockTokenManager,
-  };
-});
+// Mock TokenManager at module level before any imports
+jest.mock('@/services/auth/TokenManager', () => ({
+  TokenManager: jest.fn().mockImplementation(() => mockTokenManager),
+  tokenManager: mockTokenManager,
+}));
 
 // Mock other dependencies
 jest.mock('@/services/api/authApi');
