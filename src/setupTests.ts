@@ -902,3 +902,13 @@ const mockCSSProperties = () => {
 };
 
 mockCSSProperties();
+
+// Global TokenManager mock for all tests
+jest.mock('./services/auth/TokenManager', () => ({
+  TokenManager: jest.fn(),
+  tokenManager: {
+    isAuthenticated: jest.fn(() => false),
+    getSessionInfo: jest.fn(() => ({ isAuthenticated: false })),
+    // ... other methods
+  },
+}));
