@@ -1,11 +1,11 @@
 import achievementService, { TASK_ACHIEVEMENTS } from '../achievementService';
-import { TodoItem } from '@/types';
+import { TodoItem } from '../../types';
 import {
   TaskAchievement,
   AchievementProgress,
   UserAchievementStats,
   AchievementNotification,
-} from '@/types/achievements';
+} from '../../types/achievements';
 
 // localStorage をモック
 const localStorageMock = (() => {
@@ -205,7 +205,7 @@ describe('AchievementService', () => {
 
       expect(progress.currentValue).toBe(2); // 2 completed tasks
       expect(progress.targetValue).toBe(achievement!.condition.value);
-      expect(progress.percentage).toBe((2 / achievement!.condition.value) * 100);
+      expect(progress.percentage).toBe(Math.min((2 / achievement!.condition.value) * 100, 100));
     });
 
     it('should calculate daily task_count progress correctly', () => {

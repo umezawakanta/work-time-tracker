@@ -28,15 +28,6 @@ import { useAuth } from '../../hooks/useAuth';
 import * as authApi from '../../services/api/authApi';
 import { User } from '../../types';
 
-// Test if global mock is working
-import { tokenManager } from '../../services/auth/TokenManager';
-
-console.log('🧪 Direct TokenManager import test:', {
-  tokenManager,
-  isAuthenticated: typeof tokenManager.isAuthenticated,
-  result: tokenManager.isAuthenticated(),
-});
-
 // Mock authApi
 const mockAuthApi = {
   checkAuth: jest.fn(),

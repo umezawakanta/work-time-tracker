@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
-import { tokenManager } from '@/services/auth/TokenManager';
+import { tokenManager } from '../services/auth/TokenManager';
 import { User } from '@/types';
 import { logger } from '@/utils/logger';
 import { toast } from 'react-hot-toast';

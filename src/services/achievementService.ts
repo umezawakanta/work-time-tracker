@@ -213,6 +213,20 @@ class AchievementService {
 
   // 実績進捗を計算
   calculateProgress(achievement: TaskAchievement, tasks: TodoItem[]): AchievementProgress {
+    // Null/undefined checks
+    if (!achievement || !achievement.condition) {
+      return {
+        achievementId: 'unknown',
+        currentValue: 0,
+        targetValue: 1,
+        percentage: 0,
+      };
+    }
+
+    if (!tasks) {
+      tasks = [];
+    }
+
     let currentValue = 0;
     const condition = achievement.condition;
 
@@ -304,6 +318,11 @@ class AchievementService {
 
   // 新しい実績をチェック・アンロック
   checkForNewAchievements(tasks: TodoItem[]): AchievementNotification[] {
+    // Null check
+    if (!tasks) {
+      return [];
+    }
+
     const notifications: AchievementNotification[] = [];
 
     for (const achievement of this.achievements) {
