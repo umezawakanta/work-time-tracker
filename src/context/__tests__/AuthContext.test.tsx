@@ -21,20 +21,19 @@ const mockTokenManager = {
   setRememberMe: jest.fn(),
 };
 
-// Mock dependencies first
+// Use jest.doMock to ensure proper timing
+jest.doMock('@/services/auth/TokenManager', () => {
+  console.log('🔧 Setting up TokenManager mock with doMock');
+  return {
+    TokenManager: {
+      getInstance: jest.fn(() => mockTokenManager),
+    },
+    tokenManager: mockTokenManager,
+  };
+});
+
+// Mock other dependencies
 jest.mock('@/services/api/authApi');
-jest.mock('@/services/auth/TokenManager', () => ({
-  TokenManager: {
-    getInstance: jest.fn(() => mockTokenManager),
-  },
-  tokenManager: mockTokenManager,
-}));
-jest.mock('../../services/auth/TokenManager', () => ({
-  TokenManager: {
-    getInstance: jest.fn(() => mockTokenManager),
-  },
-  tokenManager: mockTokenManager,
-}));
 jest.mock('@/utils/logger');
 
 // Mock React Hot Toast
@@ -191,16 +190,22 @@ describe('AuthContext', () => {
       isValid: false,
     });
 
-    // Add console log to verify mocks are working
+    // Add comprehensive mock verification
     console.log('🧪 Mock setup verification:', {
-      isAuthenticated: mockTokenManager.isAuthenticated(),
-      sessionInfo: mockTokenManager.getSessionInfo(),
+      mockTokenManagerType: typeof mockTokenManager,
+      isAuthenticatedType: typeof mockTokenManager.isAuthenticated,
+      isAuthenticatedResult: mockTokenManager.isAuthenticated(),
+      sessionInfoResult: mockTokenManager.getSessionInfo(),
     });
 
-    // Set up API mocks
+    // Verify the mock is actually being called
+    expect(mockTokenManager.isAuthenticated).toBeDefined();
+    expect(typeof mockTokenManager.isAuthenticated).toBe('function');
+
+    // Set up API mocks to fail authentication
     mockAuthApi.checkAuth.mockResolvedValue(false);
-    mockAuthApi.fetchUserData.mockResolvedValue(mockUser);
-    mockAuthApi.updateUserProfile.mockResolvedValue(mockUser);
+    mockAuthApi.fetchUserData.mockRejectedValue(new Error('Unauthorized'));
+    mockAuthApi.updateUserProfile.mockRejectedValue(new Error('Unauthorized'));
 
     // Clear timers
     jest.clearAllTimers();

@@ -323,6 +323,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoading(true);
 
         // TokenManagerから認証状態を確認
+        console.log('🔧 Debug: tokenManager type:', typeof tokenManager);
+        console.log(
+          '🔧 Debug: tokenManager.isAuthenticated type:',
+          typeof tokenManager.isAuthenticated
+        );
+
         const isTokenValid = tokenManager.isAuthenticated();
         const sessionInfo = tokenManager.getSessionInfo();
         const debugInfo = tokenManager.getDebugInfo();
