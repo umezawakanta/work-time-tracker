@@ -55,16 +55,16 @@ const getEnvVar = (key: string): string | undefined => {
   return undefined;
 };
 
+// 環境検出を動的にする（テスト環境で適切に動作するように）
 const isDev = () => {
   // Test environment should never be considered development
-  if (getEnvVar('NODE_ENV') === 'test') {
+  const nodeEnv = getEnvVar('NODE_ENV');
+  if (nodeEnv === 'test') {
     return false;
   }
 
   return (
-    getEnvVar('NODE_ENV') === 'development' ||
-    getEnvVar('DEV') === 'true' ||
-    getEnvVar('MODE') === 'development'
+    nodeEnv === 'development' || getEnvVar('DEV') === 'true' || getEnvVar('MODE') === 'development'
   );
 };
 
@@ -359,9 +359,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // テスト環境では開発モードを無効化
         const isTestEnvironment = getEnvVar('NODE_ENV') === 'test';
+        const currentIsDev = isDev();
+
+        console.log('🔍 Environment check:', {
+          NODE_ENV: getEnvVar('NODE_ENV'),
+          DEV: getEnvVar('DEV'),
+          MODE: getEnvVar('MODE'),
+          isTestEnvironment,
+          currentIsDev,
+          hostname: window.location.hostname,
+          isLoggedOut,
+        });
 
         if (
-          isDev() &&
+          currentIsDev &&
           !isTestEnvironment &&
           window.location.hostname === 'localhost' &&
           !isLoggedOut
