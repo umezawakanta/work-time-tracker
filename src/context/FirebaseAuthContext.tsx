@@ -219,13 +219,15 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       clearError();
       try {
         await signInWithEmailAndPassword(auth, email, password);
+        // Only clear error on successful completion
         clearError();
         toast.success('ログインしました');
       } catch (error: unknown) {
+        console.log('🔥 signIn catch block:', error);
         setErrorMessage(error);
         const errorMessage = error instanceof Error ? error.message : 'ログインに失敗しました';
         toast.error(errorMessage);
-        throw error;
+        throw error; // Re-throw to maintain expected behavior
       } finally {
         setLoading(false);
       }
