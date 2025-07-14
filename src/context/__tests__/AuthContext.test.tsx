@@ -9,24 +9,6 @@
  * - Jest fake timers無限ループ
  */
 
-// Mock the TokenManager completely before any imports
-const mockTokenManager = {
-  isAuthenticated: jest.fn(),
-  getAccessToken: jest.fn(),
-  getRefreshToken: jest.fn(),
-  setTokens: jest.fn(),
-  clearTokens: jest.fn(),
-  getSessionInfo: jest.fn(),
-  getDebugInfo: jest.fn(),
-  setRememberMe: jest.fn(),
-};
-
-// Mock TokenManager at module level before any imports
-jest.mock('@/services/auth/TokenManager', () => ({
-  TokenManager: jest.fn().mockImplementation(() => mockTokenManager),
-  tokenManager: mockTokenManager,
-}));
-
 // Mock other dependencies
 jest.mock('@/services/api/authApi');
 jest.mock('@/utils/logger');
@@ -43,7 +25,6 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { AuthProvider } from '../AuthContext';
 import { useAuth } from '../../hooks/useAuth';
-import { TokenManager } from '../../services/auth/TokenManager';
 import * as authApi from '../../services/api/authApi';
 import { User } from '../../types';
 
@@ -55,6 +36,9 @@ const mockAuthApi = {
 };
 
 Object.assign(authApi, mockAuthApi);
+
+// Access global TokenManager mock
+const mockTokenManager = (global as any).__mockTokenManager;
 
 // Mock user data
 const mockUser: User = {

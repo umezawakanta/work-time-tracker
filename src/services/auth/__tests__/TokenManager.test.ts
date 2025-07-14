@@ -1,8 +1,19 @@
+// Unmock TokenManager for these specific tests
+jest.unmock('../TokenManager');
+
+// Import the actual TokenManager after unmocking
 import { TokenManager } from '../TokenManager';
-import { api } from '@/services/api/apiConfig';
+
+// Mock dependencies with relative paths
+jest.mock('../../api/apiConfig');
+jest.mock('../../ErrorRecoveryService');
+
+// Import mocked dependencies
+import { api } from '../../api/apiConfig';
+import { ErrorRecoveryService } from '../../ErrorRecoveryService';
 
 // APIのモック設定
-jest.mock('@/services/api/apiConfig', () => ({
+jest.mock('../../api/apiConfig', () => ({
   api: {
     get: jest.fn(),
     post: jest.fn(),
@@ -23,7 +34,7 @@ jest.mock('@/services/api/apiConfig', () => ({
   },
 }));
 
-jest.mock('@/services/ErrorRecoveryService', () => ({
+jest.mock('../../ErrorRecoveryService', () => ({
   ErrorRecoveryService: {
     handleAuthenticationError: jest.fn().mockResolvedValue(false),
   },
@@ -42,19 +53,25 @@ describe('TokenManager', () => {
   beforeAll(() => {
     // window.location をモック
     delete (window as any).location;
-    window.location = {
+    (window as any).location = {
       ...originalLocation,
       hostname: 'myapp.vercel.app',
       origin: 'https://myapp.vercel.app',
-    } as Location;
+    };
 
     // 本番環境に設定
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      configurable: true,
+    });
   });
 
   afterAll(() => {
-    window.location = originalLocation;
-    process.env.NODE_ENV = originalEnv;
+    (window as any).location = originalLocation;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      configurable: true,
+    });
   });
 
   beforeEach(async () => {
@@ -270,14 +287,20 @@ describe('TokenManager', () => {
   describe('development environment', () => {
     beforeAll(() => {
       // 開発環境に設定
-      process.env.NODE_ENV = 'development';
-      window.location.hostname = 'localhost';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
+      (window.location as any).hostname = 'localhost';
     });
 
     afterAll(() => {
       // 本番環境に戻す
-      process.env.NODE_ENV = 'production';
-      window.location.hostname = 'myapp.vercel.app';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      });
+      (window.location as any).hostname = 'myapp.vercel.app';
     });
 
     it('should disable token management in development', async () => {

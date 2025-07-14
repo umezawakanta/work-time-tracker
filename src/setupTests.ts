@@ -904,11 +904,36 @@ const mockCSSProperties = () => {
 mockCSSProperties();
 
 // Global TokenManager mock for all tests
+const mockTokenManager = {
+  isAuthenticated: jest.fn(() => false),
+  getAccessToken: jest.fn(() => Promise.resolve(null)),
+  getRefreshToken: jest.fn(() => null),
+  setTokens: jest.fn(() => Promise.resolve()),
+  clearTokens: jest.fn(() => Promise.resolve()),
+  getSessionInfo: jest.fn(() => ({
+    isAuthenticated: false,
+    expiresAt: null,
+    refreshExpiresAt: null,
+    timeUntilExpiry: 0,
+    timeUntilRefreshExpiry: 0,
+  })),
+  getDebugInfo: jest.fn(() => ({
+    hasAccessToken: false,
+    hasRefreshToken: false,
+    accessTokenExpiry: new Date().toISOString(),
+    refreshTokenExpiry: new Date().toISOString(),
+    isRefreshing: false,
+    timeUntilRefresh: 0,
+  })),
+  setRememberMe: jest.fn(() => Promise.resolve()),
+};
+
+// Make mock available globally for test access
+(global as any).__mockTokenManager = mockTokenManager;
+
 jest.mock('./services/auth/TokenManager', () => ({
-  TokenManager: jest.fn(),
-  tokenManager: {
-    isAuthenticated: jest.fn(() => false),
-    getSessionInfo: jest.fn(() => ({ isAuthenticated: false })),
-    // ... other methods
+  TokenManager: {
+    getInstance: jest.fn(() => mockTokenManager),
   },
+  tokenManager: mockTokenManager,
 }));
