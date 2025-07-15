@@ -109,7 +109,7 @@ export class IntegratedDashboardErrorBoundary extends Component<
 }
 
 // GuitarPracticePage専用のエラーハンドリング
-export class GuitarPracticeErrorBoundary extends React.Component<
+export class GuitarPracticeErrorBoundary extends Component<
   { children: React.ReactNode },
   { hasError: boolean; error?: Error }
 > {
@@ -146,7 +146,7 @@ export class GuitarPracticeErrorBoundary extends React.Component<
   }
 }
 
-export class SubscriptionErrorBoundary extends React.Component<
+export class SubscriptionErrorBoundary extends Component<
   { children: React.ReactNode },
   { hasError: boolean; error?: Error }
 > {

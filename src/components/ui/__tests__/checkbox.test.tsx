@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -257,7 +257,7 @@ describe('Checkbox', () => {
 
   describe('ForwardRef', () => {
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLButtonElement>();
+      const ref = createRef<HTMLButtonElement>();
 
       render(<Checkbox ref={ref} data-testid="checkbox" />);
 
@@ -266,7 +266,7 @@ describe('Checkbox', () => {
     });
 
     it('allows calling focus through ref', () => {
-      const ref = React.createRef<HTMLButtonElement>();
+      const ref = createRef<HTMLButtonElement>();
 
       render(<Checkbox ref={ref} data-testid="checkbox" />);
 

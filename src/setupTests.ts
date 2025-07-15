@@ -1,11 +1,14 @@
+// CRITICAL: Import and set React globally FIRST
 import React, { type ReactElement } from 'react';
 
-// CRITICAL: Make React available globally BEFORE any other imports or mocks
+// Make React available globally immediately
+global.React = React;
 (global as any).React = React;
 if (typeof window !== 'undefined') {
   (window as any).React = React;
 }
 
+// Now import other dependencies
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
@@ -642,35 +645,37 @@ jest.mock('@radix-ui/react-popper', () => ({
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
   const mockComponent = (displayName: string, element = 'div') => {
-    const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
-      let roleProps: any = {};
+    const Component = (global.React || React).forwardRef(
+      ({ children, ...props }: any, ref: any) => {
+        let roleProps: any = {};
 
-      if (displayName === 'SelectTrigger') {
-        roleProps = {
-          role: 'combobox',
-          'aria-expanded': 'false', // Keep simple for tests
-        };
-      } else if (displayName === 'SelectContent') {
-        roleProps = {
-          role: 'listbox',
-        };
-      } else if (displayName === 'SelectItem') {
-        roleProps = {
-          role: 'option',
-        };
+        if (displayName === 'SelectTrigger') {
+          roleProps = {
+            role: 'combobox',
+            'aria-expanded': 'false', // Keep simple for tests
+          };
+        } else if (displayName === 'SelectContent') {
+          roleProps = {
+            role: 'listbox',
+          };
+        } else if (displayName === 'SelectItem') {
+          roleProps = {
+            role: 'option',
+          };
+        }
+
+        return (global.React || React).createElement(
+          element,
+          {
+            ref,
+            'data-testid': displayName.toLowerCase(),
+            ...roleProps,
+            ...props,
+          },
+          children
+        );
       }
-
-      return React.createElement(
-        element,
-        {
-          ref,
-          'data-testid': displayName.toLowerCase(),
-          ...roleProps,
-          ...props,
-        },
-        children
-      );
-    });
+    );
     Component.displayName = displayName;
     return Component;
   };
