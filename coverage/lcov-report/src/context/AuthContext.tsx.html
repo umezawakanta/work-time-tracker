@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.08% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/269</span>
+                <span class='fraction'>11/269</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.18% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/263</span>
+                <span class='fraction'>11/263</span>
             </div>
         
             
@@ -687,12 +687,12 @@
 <a name='L622'></a><a href='#L622'>622</a>
 <a name='L623'></a><a href='#L623'>623</a>
 <a name='L624'></a><a href='#L624'>624</a>
-<a name='L625'></a><a href='#L625'>625</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<a name='L625'></a><a href='#L625'>625</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -721,14 +721,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -745,7 +745,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -757,16 +757,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1310,13 +1310,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';</span>
-<span class="cstat-no" title="statement not covered" >import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';</span>
-<span class="cstat-no" title="statement not covered" >import { tokenManager } from '../services/auth/TokenManager';</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
+import { checkAuth, fetchUserData, updateUserProfile } from '@/services/api/authApi';
+import { tokenManager } from '../services/auth/TokenManager';
 import { User } from '@/types';
-<span class="cstat-no" title="statement not covered" >import { logger } from '@/utils/logger';</span>
-<span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
+import { logger } from '@/utils/logger';
+import { toast } from 'react-hot-toast';
 &nbsp;
 // Extend Window interface for custom properties
 declare global {
@@ -1345,14 +1345,14 @@ interface AuthContextType {
   };
 }
 &nbsp;
-const AuthContext = <span class="cstat-no" title="statement not covered" >createContext&lt;AuthContextType | undefined&gt;(undefined);</span>
+const AuthContext = createContext&lt;AuthContextType | undefined&gt;(undefined);
 &nbsp;
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 &nbsp;
 // 環境変数の取得をより互換性のある方法で行う
-const getEnvVar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(k</span>ey: string): string | undefined =&gt; {</span>
+const getEnvVar = <span class="fstat-no" title="function not covered" >(k</span>ey: string): string | undefined =&gt; {
   // Jest環境ではprocess.envを優先
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof process !== 'undefined' &amp;&amp; process.env &amp;&amp; process.env[key]) {</span>
 <span class="cstat-no" title="statement not covered" >    return process.env[key];</span>
@@ -1369,7 +1369,7 @@ const getEnvVar = <span class="cstat-no" title="statement not covered" ><span cl
 };
 &nbsp;
 // 環境検出を動的にする（テスト環境で適切に動作するように）
-const isDev = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const isDev = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
   // Test environment should never be considered development
   const nodeEnv = <span class="cstat-no" title="statement not covered" >getEnvVar('NODE_ENV');</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (nodeEnv === 'test') {</span>
@@ -1381,11 +1381,11 @@ const isDev = <span class="cstat-no" title="statement not covered" ><span class=
   );
 };
 &nbsp;
-const isSkipAuth = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
+const isSkipAuth = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
 <span class="cstat-no" title="statement not covered" >  return getEnvVar('VITE_SKIP_AUTH') === 'true';</span>
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >A</span>uthProvider(</span>{ children }: AuthProviderProps) {
+export function <span class="fstat-no" title="function not covered" >AuthProvider(</span>{ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
   const [loading, setLoading] = <span class="cstat-no" title="statement not covered" >useState(true);</span>
   const [user, setUser] = <span class="cstat-no" title="statement not covered" >useState&lt;User | null&gt;(null);</span>
@@ -1934,7 +1934,7 @@ const isSkipAuth = <span class="cstat-no" title="statement not covered" ><span c
 <span class="cstat-no" title="statement not covered" >  return &lt;AuthContext.Provider value={value}&gt;{children}&lt;/AuthContext.Provider&gt;;</span>
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default AuthContext;</span>
+export default AuthContext;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1942,7 +1942,7 @@ const isSkipAuth = <span class="cstat-no" title="statement not covered" ><span c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-15T00:22:39.867Z
+                at 2025-07-15T00:45:32.845Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
