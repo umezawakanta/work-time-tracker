@@ -3,9 +3,6 @@ import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 import React, { type ReactElement } from 'react';
 
-// Make React available globally for tests
-global.React = React;
-
 // Global axios mock - MUST be first to ensure it's applied before any module imports
 jest.mock('axios', () => {
   const mockAxiosInstance = {

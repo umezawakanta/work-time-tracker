@@ -353,8 +353,9 @@ describe('authApi', () => {
       };
       authApi.setCurrentUser(secondUser, 'second-token');
 
-      expect(localStorageMock.setItem).toHaveBeenLastCalledWith('token', 'second-token');
-      expect(localStorageMock.setItem).toHaveBeenLastCalledWith('user', JSON.stringify(secondUser));
+      // Check that the second user data was set correctly
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'second-token');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(secondUser));
     });
   });
 
@@ -375,13 +376,13 @@ describe('authApi', () => {
         } as User,
       };
 
-      mockApiPost.mockResolvedValue(loginResponse);
+      mockApiPost.mockResolvedValue({ data: loginResponse });
 
       // ログイン実行
       const result = await authApi.login(credentials);
 
       // レスポンス確認
-      expect(result).toEqual(loginResponse);
+      expect(result.data).toEqual(loginResponse);
 
       // ユーザー情報を localStorage に保存
       authApi.setCurrentUser(result.data.user, result.data.token);
@@ -415,7 +416,7 @@ describe('authApi', () => {
         } as User,
       };
 
-      mockApiPost.mockResolvedValue(registerResponse);
+      mockApiPost.mockResolvedValue({ data: registerResponse });
 
       // 登録実行
       const result = await authApi.register(userData);
