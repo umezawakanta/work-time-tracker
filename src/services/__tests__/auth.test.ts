@@ -224,7 +224,8 @@ describe('authApi', () => {
     };
 
     it('should return user from localStorage when valid JSON', () => {
-      localStorageMock.setItem('user', JSON.stringify(mockUser));
+      // Use the auth service method to set the user
+      authApi.setCurrentUser(mockUser, 'test-token');
 
       const result = authApi.getCurrentUser();
 
@@ -270,7 +271,8 @@ describe('authApi', () => {
         },
       };
 
-      localStorageMock.setItem('user', JSON.stringify(complexUser));
+      // Use the auth service method to set the user
+      authApi.setCurrentUser(complexUser, 'test-token');
 
       const result = authApi.getCurrentUser();
 
@@ -382,7 +384,7 @@ describe('authApi', () => {
       expect(result).toEqual(loginResponse);
 
       // ユーザー情報を localStorage に保存
-      authApi.setCurrentUser(result.user, result.token);
+      authApi.setCurrentUser(result.data.user, result.data.token);
 
       // 保存されたユーザー情報を取得
       const currentUser = authApi.getCurrentUser();
@@ -417,7 +419,7 @@ describe('authApi', () => {
 
       // 登録実行
       const result = await authApi.register(userData);
-      authApi.setCurrentUser(result.user, result.token);
+      authApi.setCurrentUser(result.data.user, result.data.token);
 
       // 登録直後のユーザー取得
       const registeredUser = authApi.getCurrentUser();

@@ -1,38 +1,31 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
-import React from 'react';
+import React, { type ReactElement } from 'react';
+
+// Make React available globally for tests
+global.React = React;
 
 // Global axios mock - MUST be first to ensure it's applied before any module imports
 jest.mock('axios', () => {
-  const mockedAxios = {
-    create: jest.fn(() => ({
-      interceptors: {
-        request: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
-        response: {
-          use: jest.fn(),
-          eject: jest.fn(),
-        },
+  const mockAxiosInstance = {
+    interceptors: {
+      request: {
+        use: jest.fn(),
+        eject: jest.fn(),
       },
-      defaults: {
-        baseURL: '',
-        timeout: 30000,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      response: {
+        use: jest.fn(),
+        eject: jest.fn(),
       },
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
-      patch: jest.fn(),
-      head: jest.fn(),
-      options: jest.fn(),
-      request: jest.fn(),
-    })),
+    },
+    defaults: {
+      baseURL: '',
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
     get: jest.fn(),
     post: jest.fn(),
     put: jest.fn(),
@@ -43,8 +36,41 @@ jest.mock('axios', () => {
     request: jest.fn(),
   };
 
+  const mockedAxios = {
+    create: jest.fn(() => mockAxiosInstance),
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    patch: jest.fn(),
+    head: jest.fn(),
+    options: jest.fn(),
+    request: jest.fn(),
+    interceptors: {
+      request: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+      response: {
+        use: jest.fn(),
+        eject: jest.fn(),
+      },
+    },
+    defaults: {
+      baseURL: '',
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  };
+
   console.log('🔧 Global axios mock created');
-  return mockedAxios;
+  return {
+    default: mockedAxios,
+    __esModule: true,
+    ...mockedAxios,
+  };
 });
 
 // ========================================

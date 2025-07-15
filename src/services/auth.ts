@@ -17,8 +17,13 @@ export const authApi = {
     localStorage.removeItem('user');
   },
   getCurrentUser: () => {
-    const userString = localStorage.getItem('user');
-    return userString ? (JSON.parse(userString) as User) : null;
+    try {
+      const userString = localStorage.getItem('user');
+      return userString ? (JSON.parse(userString) as User) : null;
+    } catch (error) {
+      // If JSON parsing fails, return null
+      return null;
+    }
   },
   setCurrentUser: (user: User, token: string) => {
     localStorage.setItem('token', token);
