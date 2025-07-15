@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { isValidElement, cloneElement, createElement } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -53,13 +53,13 @@ jest.mock('recharts', () => ({
   XAxis: ({ dataKey }: any) => <div data-testid="x-axis" data-key={dataKey} />,
   YAxis: ({ dataKey }: any) => <div data-testid="y-axis" data-key={dataKey} />,
   Tooltip: ({ content, active, payload, label }: any) =>
-    active && content ? React.createElement(content, { active, payload, label }) : null,
+    active && content ? createElement(content, { active, payload, label }) : null,
   Legend: ({ content, payload }: any) => {
-    if (content && React.isValidElement(content)) {
-      return React.cloneElement(content, { payload } as any);
+    if (content && isValidElement(content)) {
+      return cloneElement(content, { payload } as any);
     }
     if (content && typeof content === 'function') {
-      return React.createElement(content, { payload });
+      return createElement(content, { payload });
     }
     return null;
   },
