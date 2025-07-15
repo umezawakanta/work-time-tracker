@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1752549052015" clover="3.2.0">
-  <project timestamp="1752549052015" name="All files">
+<coverage generated="1752610536789" clover="3.2.0">
+  <project timestamp="1752610536790" name="All files">
     <metrics statements="51645" coveredstatements="2062" conditionals="22678" coveredconditionals="623" methods="12961" coveredmethods="336" elements="87284" coveredelements="3021" complexity="0" loc="51645" ncloc="51645" packages="167" files="843" classes="843"/>
     <package name="src">
       <metrics statements="154" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="148" coveredmethods="0"/>
@@ -7981,8 +7981,8 @@
         <line num="112" count="792" type="stmt"/>
         <line num="113" count="792" type="stmt"/>
         <line num="114" count="792" type="cond" truecount="3" falsecount="0"/>
-        <line num="115" count="782" type="stmt"/>
-        <line num="116" count="782" type="stmt"/>
+        <line num="115" count="770" type="stmt"/>
+        <line num="116" count="770" type="stmt"/>
         <line num="120" count="132" type="cond" truecount="1" falsecount="0"/>
         <line num="121" count="132" type="stmt"/>
         <line num="125" count="22" type="stmt"/>
@@ -36023,7 +36023,7 @@
         <line num="279" count="150" type="stmt"/>
         <line num="289" count="44" type="stmt"/>
         <line num="290" count="40044" type="cond" truecount="2" falsecount="0"/>
-        <line num="291" count="41304" type="stmt"/>
+        <line num="291" count="44508" type="stmt"/>
         <line num="293" count="44" type="cond" truecount="1" falsecount="0"/>
         <line num="295" count="40" type="stmt"/>
         <line num="297" count="40" type="stmt"/>
@@ -36084,12 +36084,12 @@
         <line num="14" count="6" type="stmt"/>
         <line num="16" count="5" type="stmt"/>
         <line num="17" count="5" type="stmt"/>
-        <line num="20" count="5" type="stmt"/>
-        <line num="21" count="5" type="stmt"/>
-        <line num="22" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="7" type="stmt"/>
+        <line num="21" count="7" type="stmt"/>
+        <line num="22" count="7" type="cond" truecount="2" falsecount="0"/>
         <line num="25" count="1" type="stmt"/>
-        <line num="29" count="8" type="stmt"/>
-        <line num="30" count="8" type="stmt"/>
+        <line num="29" count="10" type="stmt"/>
+        <line num="30" count="10" type="stmt"/>
       </file>
       <file name="firebaseService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\firebaseService.ts">
         <metrics statements="212" coveredstatements="0" conditionals="99" coveredconditionals="0" methods="28" coveredmethods="0"/>

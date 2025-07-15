@@ -1,7 +1,14 @@
+import React, { type ReactElement } from 'react';
+
+// CRITICAL: Make React available globally BEFORE any other imports or mocks
+(global as any).React = React;
+if (typeof window !== 'undefined') {
+  (window as any).React = React;
+}
+
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
-import React, { type ReactElement } from 'react';
 
 // Global axios mock - MUST be first to ensure it's applied before any module imports
 jest.mock('axios', () => {
