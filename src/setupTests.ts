@@ -3,18 +3,56 @@ import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 import React from 'react';
 
+// Global axios mock - MUST be first to ensure it's applied before any module imports
+jest.mock('axios', () => {
+  const mockedAxios = {
+    create: jest.fn(() => ({
+      interceptors: {
+        request: {
+          use: jest.fn(),
+          eject: jest.fn(),
+        },
+        response: {
+          use: jest.fn(),
+          eject: jest.fn(),
+        },
+      },
+      defaults: {
+        baseURL: '',
+        timeout: 30000,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+      get: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      delete: jest.fn(),
+      patch: jest.fn(),
+      head: jest.fn(),
+      options: jest.fn(),
+      request: jest.fn(),
+    })),
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    patch: jest.fn(),
+    head: jest.fn(),
+    options: jest.fn(),
+    request: jest.fn(),
+  };
+
+  console.log('🔧 Global axios mock created');
+  return mockedAxios;
+});
+
 // ========================================
 // CSS and Asset Mocks
 // ========================================
 
-// Mock CSS imports
-jest.mock('@/styles/chart.css', () => ({}));
-jest.mock('@/styles/globals.css', () => ({}));
-
-// Mock any CSS file imports
-jest.mock('*.css', () => ({}), { virtual: true });
-jest.mock('*.scss', () => ({}), { virtual: true });
-jest.mock('*.sass', () => ({}), { virtual: true });
+// CSS imports are handled by moduleNameMapper in jest.config.js
+// No need to mock CSS files here since they're already handled by the pattern matcher
 
 // Mock image and asset imports
 jest.mock('*.png', () => 'test-file-stub', { virtual: true });
@@ -903,90 +941,13 @@ const mockCSSProperties = () => {
 
 mockCSSProperties();
 
-// Global TokenManager mock for all tests
-const mockTokenManager = {
-  isAuthenticated: jest.fn(() => {
-    console.log('🔧 mockTokenManager.isAuthenticated() called, returning false');
-    return false;
-  }),
-  getAccessToken: jest.fn(() => {
-    console.log('🔧 mockTokenManager.getAccessToken() called, returning null');
-    return Promise.resolve(null);
-  }),
-  getRefreshToken: jest.fn(() => {
-    console.log('🔧 mockTokenManager.getRefreshToken() called, returning null');
-    return null;
-  }),
-  setTokens: jest.fn(() => Promise.resolve()),
-  clearTokens: jest.fn(() => Promise.resolve()),
-  getSessionInfo: jest.fn(() => {
-    const sessionInfo = {
-      isAuthenticated: false,
-      expiresAt: null,
-      refreshExpiresAt: null,
-      timeUntilExpiry: 0,
-      timeUntilRefreshExpiry: 0,
-    };
-    console.log('🔧 mockTokenManager.getSessionInfo() called, returning:', sessionInfo);
-    return sessionInfo;
-  }),
-  getDebugInfo: jest.fn(() => ({
-    hasAccessToken: false,
-    hasRefreshToken: false,
-    accessTokenExpiry: new Date().toISOString(),
-    refreshTokenExpiry: new Date().toISOString(),
-    isRefreshing: false,
-    timeUntilRefresh: 0,
-  })),
-  setRememberMe: jest.fn(() => Promise.resolve()),
-};
+// TokenManager is now mocked via Jest's moduleNameMapper and the manual mock file
+// in src/__mocks__/TokenManager.js - no need for global mocking here
 
-// Make mock available globally for test access
-(global as any).__mockTokenManager = mockTokenManager;
-
-// Mock both alias and relative paths to ensure coverage
-jest.mock('@/services/auth/TokenManager', () => {
-  console.log('🔧 Setting up global TokenManager mock (@/ alias)');
-  return {
-    TokenManager: {
-      getInstance: jest.fn(() => {
-        console.log('🔧 TokenManager.getInstance() called, returning mockTokenManager');
-        return mockTokenManager;
-      }),
-    },
-    tokenManager: mockTokenManager,
-  };
-});
-
-jest.mock('./services/auth/TokenManager', () => {
-  console.log('🔧 Setting up global TokenManager mock (relative)');
-  return {
-    TokenManager: {
-      getInstance: jest.fn(() => {
-        console.log('🔧 TokenManager.getInstance() called, returning mockTokenManager');
-        return mockTokenManager;
-      }),
-    },
-    tokenManager: mockTokenManager,
-  };
-});
-
-// Add global beforeEach to reset mocks to unauthenticated state
+// Add global beforeEach to reset all mocks
 beforeEach(() => {
   // Reset all mock calls but keep the implementations
   jest.clearAllMocks();
 
-  // Ensure the TokenManager mock returns unauthenticated state by default
-  mockTokenManager.isAuthenticated.mockReturnValue(false);
-  mockTokenManager.getAccessToken.mockResolvedValue(null);
-  mockTokenManager.getRefreshToken.mockReturnValue(null);
-  mockTokenManager.getSessionInfo.mockReturnValue({
-    isAuthenticated: false,
-    expiresAt: null,
-    refreshExpiresAt: null,
-    timeUntilExpiry: 0,
-    timeUntilRefreshExpiry: 0,
-  });
-
-  console.log('🔄 TokenManager mock reset to unauthenticated state');
+  console.log('🔄 Global beforeEach: Reset all mocks');
 });

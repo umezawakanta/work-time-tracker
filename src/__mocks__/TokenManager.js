@@ -1,4 +1,4 @@
-// Mock TokenManager for Jest tests
+// Manual mock for TokenManager - this file is used by Jest's moduleNameMapper
 const mockTokenManager = {
   isAuthenticated: jest.fn(() => {
     console.log('🔧 MockTokenManager.isAuthenticated() called, returning false');
@@ -25,24 +25,56 @@ const mockTokenManager = {
     console.log('🔧 MockTokenManager.getSessionInfo() called, returning:', sessionInfo);
     return sessionInfo;
   }),
-  getDebugInfo: jest.fn(() => ({
+  getDebugInfo: jest.fn(() => {
+    const debugInfo = {
+      hasAccessToken: false,
+      hasRefreshToken: false,
+      accessTokenExpiry: new Date().toISOString(),
+      refreshTokenExpiry: new Date().toISOString(),
+      isRefreshing: false,
+      timeUntilRefresh: 0,
+    };
+    console.log('🔧 MockTokenManager.getDebugInfo() called, returning:', debugInfo);
+    return debugInfo;
+  }),
+  setRememberMe: jest.fn(() => Promise.resolve()),
+};
+
+// Make sure to reset all mocks to unauthenticated state before each test
+const resetToUnauthenticatedState = () => {
+  mockTokenManager.isAuthenticated.mockReturnValue(false);
+  mockTokenManager.getAccessToken.mockResolvedValue(null);
+  mockTokenManager.getRefreshToken.mockReturnValue(null);
+  mockTokenManager.getSessionInfo.mockReturnValue({
+    isAuthenticated: false,
+    expiresAt: null,
+    refreshExpiresAt: null,
+    timeUntilExpiry: 0,
+    timeUntilRefreshExpiry: 0,
+  });
+  mockTokenManager.getDebugInfo.mockReturnValue({
     hasAccessToken: false,
     hasRefreshToken: false,
     accessTokenExpiry: new Date().toISOString(),
     refreshTokenExpiry: new Date().toISOString(),
     isRefreshing: false,
     timeUntilRefresh: 0,
-  })),
-  setRememberMe: jest.fn(() => Promise.resolve()),
+  });
+  console.log('🔧 TokenManager mock reset to unauthenticated state');
 };
 
-// Export the mock
+// Reset to unauthenticated state initially
+resetToUnauthenticatedState();
+
+// Export both the singleton instance pattern and the class
 module.exports = {
   TokenManager: {
     getInstance: jest.fn(() => {
-      console.log('🔧 MockTokenManager.getInstance() called, returning mockTokenManager');
+      console.log('🔧 TokenManager.getInstance() called, returning mockTokenManager');
       return mockTokenManager;
     }),
   },
   tokenManager: mockTokenManager,
+  __mockTokenManager: mockTokenManager, // For direct access in tests
+  __resetToUnauthenticatedState: resetToUnauthenticatedState, // For test utilities
 }; 
