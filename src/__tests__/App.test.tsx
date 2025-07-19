@@ -103,7 +103,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     // 認証が必要なページはログインページにリダイレクトされる
     // ログインページまたは何らかのリダイレクトが発生していることを確認
@@ -114,7 +115,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/work-time']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     // 認証が必要なページはログインページにリダイレクトされる
     expect(document.querySelector('body')).toBeInTheDocument();
@@ -124,7 +126,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/reports']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
   });
@@ -133,7 +136,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/invalid-route']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
     expect(screen.getByText('ホームに戻る')).toBeInTheDocument();
@@ -143,7 +147,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/login']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     expect(document.querySelector('body')).toBeInTheDocument();
   });
@@ -152,7 +157,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/register']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     expect(document.querySelector('body')).toBeInTheDocument();
   });
@@ -161,7 +167,8 @@ describe('App', () => {
     render(
       <MemoryRouter initialEntries={['/political-trends']}>
         <App />
-      </MemoryRouter>
+      </MemoryRouter>,
+      { disableRouter: true }
     );
     expect(document.querySelector('body')).toBeInTheDocument();
   });

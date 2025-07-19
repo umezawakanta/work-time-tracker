@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1752925362684" clover="3.2.0">
-  <project timestamp="1752925362684" name="All files">
-    <metrics statements="51645" coveredstatements="2592" conditionals="22678" coveredconditionals="647" methods="12961" coveredmethods="366" elements="87284" coveredelements="3605" complexity="0" loc="51645" ncloc="51645" packages="167" files="843" classes="843"/>
+<coverage generated="1752926344466" clover="3.2.0">
+  <project timestamp="1752926344466" name="All files">
+    <metrics statements="51646" coveredstatements="2593" conditionals="22678" coveredconditionals="647" methods="12961" coveredmethods="366" elements="87285" coveredelements="3606" complexity="0" loc="51646" ncloc="51646" packages="167" files="843" classes="843"/>
     <package name="src">
       <metrics statements="154" coveredstatements="89" conditionals="0" coveredconditionals="0" methods="148" coveredmethods="0"/>
       <file name="App.firebase.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\App.firebase.tsx">
@@ -7981,8 +7981,8 @@
         <line num="112" count="792" type="stmt"/>
         <line num="113" count="792" type="stmt"/>
         <line num="114" count="792" type="cond" truecount="3" falsecount="0"/>
-        <line num="115" count="779" type="stmt"/>
-        <line num="116" count="779" type="stmt"/>
+        <line num="115" count="778" type="stmt"/>
+        <line num="116" count="778" type="stmt"/>
         <line num="120" count="132" type="cond" truecount="1" falsecount="0"/>
         <line num="121" count="132" type="stmt"/>
         <line num="125" count="22" type="stmt"/>
@@ -21077,7 +21077,7 @@
       </file>
     </package>
     <package name="src.context">
-      <metrics statements="548" coveredstatements="210" conditionals="185" coveredconditionals="55" methods="74" coveredmethods="34"/>
+      <metrics statements="549" coveredstatements="211" conditionals="185" coveredconditionals="55" methods="74" coveredmethods="34"/>
       <file name="AuthContext.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\context\AuthContext.tsx">
         <metrics statements="263" coveredstatements="11" conditionals="75" coveredconditionals="0" methods="34" coveredmethods="0"/>
         <line num="1" count="5" type="stmt"/>
@@ -21534,83 +21534,84 @@
         <line num="459" count="1" type="stmt"/>
       </file>
       <file name="LocaleContext.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\context\LocaleContext.tsx">
-        <metrics statements="76" coveredstatements="62" conditionals="26" coveredconditionals="16" methods="17" coveredmethods="15"/>
+        <metrics statements="77" coveredstatements="63" conditionals="26" coveredconditionals="16" methods="17" coveredmethods="15"/>
         <line num="1" count="1" type="stmt"/>
         <line num="29" count="1" type="stmt"/>
         <line num="32" count="1" type="stmt"/>
-        <line num="43" count="1" type="stmt"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="47" count="1" type="stmt"/>
-        <line num="49" count="60" type="stmt"/>
-        <line num="50" count="36" type="stmt"/>
-        <line num="51" count="36" type="stmt"/>
-        <line num="52" count="34" type="cond" truecount="2" falsecount="1"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="57" count="33" type="stmt"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="60" count="36" type="stmt"/>
-        <line num="61" count="36" type="stmt"/>
-        <line num="66" count="60" type="stmt"/>
-        <line num="67" count="58" type="cond" truecount="2" falsecount="0"/>
-        <line num="71" count="60" type="stmt"/>
-        <line num="73" count="32" type="cond" truecount="1" falsecount="0"/>
-        <line num="74" count="1" type="stmt"/>
-        <line num="75" count="1" type="stmt"/>
-        <line num="78" count="31" type="cond" truecount="1" falsecount="0"/>
-        <line num="79" count="9" type="stmt"/>
-        <line num="82" count="22" type="stmt"/>
-        <line num="84" count="22" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="52" count="60" type="stmt"/>
+        <line num="53" count="36" type="stmt"/>
+        <line num="54" count="36" type="stmt"/>
+        <line num="55" count="34" type="cond" truecount="2" falsecount="1"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="60" count="33" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="36" type="stmt"/>
+        <line num="64" count="36" type="stmt"/>
+        <line num="69" count="60" type="stmt"/>
+        <line num="70" count="58" type="cond" truecount="2" falsecount="0"/>
+        <line num="74" count="60" type="stmt"/>
+        <line num="76" count="32" type="cond" truecount="1" falsecount="0"/>
+        <line num="77" count="1" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="81" count="31" type="cond" truecount="1" falsecount="0"/>
+        <line num="82" count="9" type="stmt"/>
         <line num="85" count="22" type="stmt"/>
-        <line num="87" count="1" type="stmt"/>
-        <line num="94" count="60" type="stmt"/>
-        <line num="96" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="97" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="103" count="60" type="stmt"/>
-        <line num="104" count="24" type="stmt"/>
-        <line num="112" count="60" type="stmt"/>
-        <line num="113" count="43" type="cond" truecount="2" falsecount="0"/>
-        <line num="117" count="60" type="stmt"/>
-        <line num="119" count="2" type="stmt"/>
-        <line num="120" count="2" type="stmt"/>
-        <line num="131" count="2" type="stmt"/>
-        <line num="138" count="0" type="stmt"/>
-        <line num="145" count="60" type="stmt"/>
-        <line num="147" count="2" type="stmt"/>
-        <line num="148" count="2" type="stmt"/>
-        <line num="159" count="2" type="stmt"/>
-        <line num="165" count="0" type="stmt"/>
-        <line num="172" count="60" type="stmt"/>
-        <line num="174" count="2" type="stmt"/>
-        <line num="175" count="2" type="stmt"/>
-        <line num="186" count="2" type="stmt"/>
-        <line num="189" count="0" type="stmt"/>
-        <line num="196" count="60" type="stmt"/>
-        <line num="198" count="2" type="stmt"/>
-        <line num="199" count="2" type="stmt"/>
-        <line num="210" count="2" type="stmt"/>
-        <line num="216" count="0" type="stmt"/>
-        <line num="223" count="60" type="stmt"/>
-        <line num="224" count="2" type="stmt"/>
-        <line num="225" count="2" type="cond" truecount="1" falsecount="2"/>
-        <line num="226" count="2" type="stmt"/>
+        <line num="87" count="22" type="stmt"/>
+        <line num="88" count="22" type="stmt"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="97" count="60" type="stmt"/>
+        <line num="99" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="100" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="106" count="60" type="stmt"/>
+        <line num="107" count="24" type="stmt"/>
+        <line num="115" count="60" type="stmt"/>
+        <line num="116" count="43" type="cond" truecount="2" falsecount="0"/>
+        <line num="120" count="60" type="stmt"/>
+        <line num="122" count="2" type="stmt"/>
+        <line num="123" count="2" type="stmt"/>
+        <line num="134" count="2" type="stmt"/>
+        <line num="141" count="0" type="stmt"/>
+        <line num="148" count="60" type="stmt"/>
+        <line num="150" count="2" type="stmt"/>
+        <line num="151" count="2" type="stmt"/>
+        <line num="162" count="2" type="stmt"/>
+        <line num="168" count="0" type="stmt"/>
+        <line num="175" count="60" type="stmt"/>
+        <line num="177" count="2" type="stmt"/>
+        <line num="178" count="2" type="stmt"/>
+        <line num="189" count="2" type="stmt"/>
+        <line num="192" count="0" type="stmt"/>
+        <line num="199" count="60" type="stmt"/>
+        <line num="201" count="2" type="stmt"/>
+        <line num="202" count="2" type="stmt"/>
+        <line num="213" count="2" type="stmt"/>
+        <line num="219" count="0" type="stmt"/>
+        <line num="226" count="60" type="stmt"/>
+        <line num="227" count="2" type="stmt"/>
+        <line num="228" count="2" type="cond" truecount="1" falsecount="2"/>
         <line num="229" count="2" type="stmt"/>
-        <line num="240" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="242" count="0" type="stmt"/>
-        <line num="246" count="60" type="stmt"/>
-        <line num="247" count="58" type="stmt"/>
-        <line num="275" count="60" type="stmt"/>
-        <line num="278" count="1" type="stmt"/>
-        <line num="279" count="60" type="stmt"/>
-        <line num="280" count="60" type="cond" truecount="1" falsecount="0"/>
-        <line num="281" count="2" type="stmt"/>
-        <line num="283" count="58" type="stmt"/>
-        <line num="288" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="292" count="0" type="stmt"/>
-        <line num="293" count="0" type="cond" truecount="0" falsecount="3"/>
-        <line num="294" count="0" type="stmt"/>
-        <line num="296" count="0" type="stmt"/>
-        <line num="307" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="309" count="0" type="stmt"/>
+        <line num="232" count="2" type="stmt"/>
+        <line num="243" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="245" count="0" type="stmt"/>
+        <line num="249" count="60" type="stmt"/>
+        <line num="250" count="58" type="stmt"/>
+        <line num="278" count="60" type="stmt"/>
+        <line num="281" count="1" type="stmt"/>
+        <line num="282" count="60" type="stmt"/>
+        <line num="283" count="60" type="cond" truecount="1" falsecount="0"/>
+        <line num="284" count="2" type="stmt"/>
+        <line num="286" count="58" type="stmt"/>
+        <line num="291" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="295" count="0" type="stmt"/>
+        <line num="296" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="297" count="0" type="stmt"/>
+        <line num="299" count="0" type="stmt"/>
+        <line num="310" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="312" count="0" type="stmt"/>
       </file>
       <file name="PomodoroContext.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\context\PomodoroContext.tsx">
         <metrics statements="16" coveredstatements="14" conditionals="3" coveredconditionals="1" methods="3" coveredmethods="3"/>
@@ -36023,7 +36024,7 @@
         <line num="279" count="150" type="stmt"/>
         <line num="289" count="44" type="stmt"/>
         <line num="290" count="40044" type="cond" truecount="2" falsecount="0"/>
-        <line num="291" count="44304" type="stmt"/>
+        <line num="291" count="46700" type="stmt"/>
         <line num="293" count="44" type="cond" truecount="1" falsecount="0"/>
         <line num="295" count="40" type="stmt"/>
         <line num="297" count="40" type="stmt"/>
