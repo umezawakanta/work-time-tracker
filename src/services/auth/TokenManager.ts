@@ -446,7 +446,10 @@ export class TokenManager {
       console.log('🚫 Development: Token deletion API call disabled');
     }
 
-    delete api.defaults.headers.common['Authorization'];
+    // Safely remove Authorization header if it exists
+    if (api.defaults?.headers?.common) {
+      delete api.defaults.headers.common['Authorization'];
+    }
     console.log('✅ Token cleanup completed');
   }
 

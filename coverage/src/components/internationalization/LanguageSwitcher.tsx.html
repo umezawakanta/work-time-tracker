@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.41% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/34</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">27.27% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/33</span>
+                <span class='fraction'>0/33</span>
             </div>
         
             
@@ -285,28 +285,23 @@
 <a name='L220'></a><a href='#L220'>220</a>
 <a name='L221'></a><a href='#L221'>221</a>
 <a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -314,7 +309,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -506,24 +506,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import React, { useState } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
+<span class="cstat-no" title="statement not covered" >import {</span>
   useInternationalization,
   SupportedLocale,
   SUPPORTED_LOCALES,
 } from '@/hooks/useInternationalization';
-import { Globe, Check, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+<span class="cstat-no" title="statement not covered" >import { Globe, Check, ChevronDown } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { cn } from '@/lib/utils';</span>
 &nbsp;
 interface LanguageSwitcherProps {
   variant?: 'button' | 'compact' | 'inline';
@@ -536,7 +536,7 @@ interface LanguageSwitcherProps {
  * 🌍 国際化マスター: 言語切り替えコンポーネント
  * ユーザーがアプリケーションの表示言語を簡単に変更できる
  */
-export const LanguageSwitcher: React.FC&lt;LanguageSwitcherProps&gt; = <span class="fstat-no" title="function not covered" >({</span>
+export const <span class="cstat-no" title="statement not covered" >LanguageSwitcher: React.FC&lt;LanguageSwitcherProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
   variant = <span class="branch-0 cbranch-no" title="branch not covered" >'button',</span>
   showFlag = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
   showNativeName = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
@@ -728,7 +728,7 @@ export const LanguageSwitcher: React.FC&lt;LanguageSwitcherProps&gt; = <span cla
   );
 };
 &nbsp;
-export default LanguageSwitcher;
+<span class="cstat-no" title="statement not covered" >export default LanguageSwitcher;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -736,7 +736,7 @@ export default LanguageSwitcher;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-19T11:58:57.585Z
+                at 2025-07-19T13:22:48.289Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
