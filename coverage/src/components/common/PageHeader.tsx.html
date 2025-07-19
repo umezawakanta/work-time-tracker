@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.9% </span>
+                <span class="strong">72.72% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/11</span>
+                <span class='fraction'>8/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.37% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>19/27</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/10</span>
+                <span class='fraction'>7/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -196,9 +196,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -287,7 +287,7 @@ interface PageHeaderProps {
   animated?: boolean;
 }
 &nbsp;
-export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
+export const PageHeader: React.FC&lt;PageHeaderProps&gt; = <span class="fstat-no" title="function not covered" >({</span>
   title,
   subtitle,
   badge,
@@ -295,11 +295,11 @@ export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
   actions,
   className,
   gradient = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
-  animated = true,
+  animated = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
 }) =&gt; {
-  const navigate = useNavigate();
+  const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className={cn('mb-8 relative overflow-hidden', animated &amp;&amp; 'animate-fade-in', className)}&gt;
       {/* 背景装飾 */}
       {gradient &amp;&amp; (
@@ -312,7 +312,7 @@ export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
       &lt;div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"&gt;
         &lt;div className="flex items-start gap-4"&gt;
           {backButton &amp;&amp; (
-<span class="branch-1 cbranch-no" title="branch not covered" >            &lt;Button</span>
+            &lt;Button
               variant="ghost"
               size="sm"
               onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >navigate(-1)}</span>
@@ -337,17 +337,17 @@ export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
 &nbsp;
               {badge &amp;&amp; (
                 &lt;Badge
-                  variant={badge.variant || <span class="branch-1 cbranch-no" title="branch not covered" >'default'}</span>
+                  variant={badge.variant || 'default'}
                   className={cn(
                     'animate-scale-in px-3 py-1 text-sm font-medium',
                     badge.variant === 'default' &amp;&amp;
-<span class="branch-1 cbranch-no" title="branch not covered" >                      'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0',</span>
+                      'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0',
                     badge.variant === 'secondary' &amp;&amp; 'bg-slate-100 text-slate-700',
                     badge.variant === 'destructive' &amp;&amp;
-<span class="branch-1 cbranch-no" title="branch not covered" >                      'bg-gradient-to-r from-red-500 to-pink-600 text-white border-0'</span>
+                      'bg-gradient-to-r from-red-500 to-pink-600 text-white border-0'
                   )}
                 &gt;
-                  {badge.icon &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;span className="mr-2"&gt;{badge.icon}&lt;/span&gt;}</span>
+                  {badge.icon &amp;&amp; &lt;span className="mr-2"&gt;{badge.icon}&lt;/span&gt;}
                   {badge.text}
                 &lt;/Badge&gt;
               )}
@@ -361,7 +361,7 @@ export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
           &lt;/div&gt;
         &lt;/div&gt;
 &nbsp;
-        {actions &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >&lt;div className="flex items-center gap-3 flex-shrink-0"&gt;{actions}&lt;/div&gt;}</span>
+        {actions &amp;&amp; &lt;div className="flex items-center gap-3 flex-shrink-0"&gt;{actions}&lt;/div&gt;}
       &lt;/div&gt;
     &lt;/div&gt;
   );
@@ -373,7 +373,7 @@ export const PageHeader: React.FC&lt;PageHeaderProps&gt; = ({
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-14T17:49:02.684Z
+                at 2025-07-18T05:35:31.209Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

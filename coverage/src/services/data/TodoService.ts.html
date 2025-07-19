@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.37% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/137</span>
+                <span class='fraction'>0/137</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">2.63% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/38</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">4.91% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/122</span>
+                <span class='fraction'>0/122</span>
             </div>
         
             
@@ -425,7 +425,7 @@
 <a name='L360'></a><a href='#L360'>360</a>
 <a name='L361'></a><a href='#L361'>361</a>
 <a name='L362'></a><a href='#L362'>362</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -446,7 +446,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -457,14 +457,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -784,9 +784,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/data/TodoService.ts
-import {
+<span class="cstat-no" title="statement not covered" >import {</span>
   collection,
   doc,
   getDocs,
@@ -807,7 +807,7 @@ import {
   FieldValue,
   getDoc,
 } from 'firebase/firestore';
-import { db } from '@/config/firebase';
+<span class="cstat-no" title="statement not covered" >import { db } from '@/config/firebase';</span>
 import {
   Todo,
   NewTodo,
@@ -818,14 +818,14 @@ import {
   TaskType,
   PriorityLevel,
 } from '@/types/todo';
-import TodoWBSIntegrationService from '../integration/TodoWBSIntegrationService';
+<span class="cstat-no" title="statement not covered" >import TodoWBSIntegrationService from '../integration/TodoWBSIntegrationService';</span>
 &nbsp;
 type FirestoreUpdateData = {
   [key: string]: FieldValue | Partial&lt;unknown&gt; | undefined;
 };
 &nbsp;
-export class TodoService {
-  private collectionName = 'todos';
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >export class T</span></span>odoService {
+  private <span class="cstat-no" title="statement not covered" >collectionName = 'todos';</span>
 &nbsp;
 <span class="fstat-no" title="function not covered" >  async </span>createTodo(userId: string, todoData: NewTodo): Promise&lt;Todo&gt; {
     const todoCollection = <span class="cstat-no" title="statement not covered" >collection(db, this.collectionName);</span>
@@ -1145,7 +1145,7 @@ export class TodoService {
   }
 }
 &nbsp;
-export default new TodoService();
+<span class="cstat-no" title="statement not covered" >export default new TodoService();</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1153,7 +1153,7 @@ export default new TodoService();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-14T17:49:02.684Z
+                at 2025-07-18T05:35:31.209Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
