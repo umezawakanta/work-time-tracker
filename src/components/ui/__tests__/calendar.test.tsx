@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef, useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -295,7 +295,7 @@ describe('Calendar', () => {
 
   describe('ForwardRef', () => {
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
 
       // @ts-ignore - Test ref forwarding doesn't need strict typing
       render(<Calendar ref={ref} data-testid="calendar" />);
@@ -305,7 +305,7 @@ describe('Calendar', () => {
     });
 
     it('allows accessing DOM methods through ref', () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
 
       // @ts-ignore - Test ref forwarding doesn't need strict typing
       render(<Calendar ref={ref} />);
@@ -353,7 +353,7 @@ describe('Calendar', () => {
     it('works with controlled state', async () => {
       const user = userEvent.setup();
       const TestCalendar = () => {
-        const [selected, setSelected] = React.useState<Date | undefined>(undefined);
+        const [selected, setSelected] = useState<Date | undefined>(undefined);
 
         return (
           <div>
@@ -377,7 +377,7 @@ describe('Calendar', () => {
 
     it('works with form integration', () => {
       const TestForm = () => {
-        const [date, setDate] = React.useState<Date | undefined>(undefined);
+        const [date, setDate] = useState<Date | undefined>(undefined);
 
         return (
           <form data-testid="calendar-form">

@@ -645,37 +645,35 @@ jest.mock('@radix-ui/react-popper', () => ({
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
   const mockComponent = (displayName: string, element = 'div') => {
-    const Component = (global.React || React).forwardRef(
-      ({ children, ...props }: any, ref: any) => {
-        let roleProps: any = {};
+    const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
+      let roleProps: any = {};
 
-        if (displayName === 'SelectTrigger') {
-          roleProps = {
-            role: 'combobox',
-            'aria-expanded': 'false', // Keep simple for tests
-          };
-        } else if (displayName === 'SelectContent') {
-          roleProps = {
-            role: 'listbox',
-          };
-        } else if (displayName === 'SelectItem') {
-          roleProps = {
-            role: 'option',
-          };
-        }
-
-        return (global.React || React).createElement(
-          element,
-          {
-            ref,
-            'data-testid': displayName.toLowerCase(),
-            ...roleProps,
-            ...props,
-          },
-          children
-        );
+      if (displayName === 'SelectTrigger') {
+        roleProps = {
+          role: 'combobox',
+          'aria-expanded': 'false', // Keep simple for tests
+        };
+      } else if (displayName === 'SelectContent') {
+        roleProps = {
+          role: 'listbox',
+        };
+      } else if (displayName === 'SelectItem') {
+        roleProps = {
+          role: 'option',
+        };
       }
-    );
+
+      return React.createElement(
+        element,
+        {
+          ref,
+          'data-testid': displayName.toLowerCase(),
+          ...roleProps,
+          ...props,
+        },
+        children
+      );
+    });
     Component.displayName = displayName;
     return Component;
   };

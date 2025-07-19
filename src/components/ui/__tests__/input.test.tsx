@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -289,7 +289,7 @@ describe('Input', () => {
 
   describe('ForwardRef', () => {
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLInputElement>();
+      const ref = createRef<HTMLInputElement>();
 
       render(<Input ref={ref} data-testid="input" />);
 
@@ -298,7 +298,7 @@ describe('Input', () => {
     });
 
     it('allows calling focus through ref', () => {
-      const ref = React.createRef<HTMLInputElement>();
+      const ref = createRef<HTMLInputElement>();
 
       render(<Input ref={ref} data-testid="input" />);
 
@@ -310,7 +310,7 @@ describe('Input', () => {
 
     it('allows getting value through ref', async () => {
       const user = userEvent.setup();
-      const ref = React.createRef<HTMLInputElement>();
+      const ref = createRef<HTMLInputElement>();
 
       render(<Input ref={ref} data-testid="input" />);
 

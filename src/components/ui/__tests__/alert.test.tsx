@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
@@ -59,7 +59,7 @@ describe('Alert Components', () => {
     });
 
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
 
       render(
         <Alert ref={ref} data-testid="alert">
@@ -94,7 +94,7 @@ describe('Alert Components', () => {
     });
 
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLParagraphElement>();
+      const ref = createRef<HTMLParagraphElement>();
 
       render(
         <AlertTitle ref={ref} data-testid="alert-title">
@@ -131,7 +131,7 @@ describe('Alert Components', () => {
     });
 
     it('forwards ref correctly', () => {
-      const ref = React.createRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
 
       render(
         <AlertDescription ref={ref} data-testid="alert-description">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cloneElement, useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -38,7 +38,7 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
   ),
   Trigger: ({ children, asChild, ...props }: any) =>
     asChild ? (
-      React.cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
+      cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
     ) : (
       <button {...props} data-testid="dropdown-trigger">
         {children}
@@ -74,7 +74,7 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
   RadioGroup: ({ children, value, onValueChange, ...props }: any) => (
     <div data-testid="dropdown-radio-group" data-value={value} {...props}>
       {React.Children.map(children, (child) =>
-        React.cloneElement(child, { groupValue: value, onGroupValueChange: onValueChange })
+        cloneElement(child, { groupValue: value, onGroupValueChange: onValueChange })
       )}
     </div>
   ),
@@ -144,7 +144,7 @@ const TestDropdownMenu: React.FC<{
 );
 
 const TestCheckboxDropdown: React.FC = () => {
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
 
   return (
     <DropdownMenu>
@@ -161,7 +161,7 @@ const TestCheckboxDropdown: React.FC = () => {
 };
 
 const TestRadioDropdown: React.FC = () => {
-  const [value, setValue] = React.useState('light');
+  const [value, setValue] = useState('light');
 
   return (
     <DropdownMenu>
