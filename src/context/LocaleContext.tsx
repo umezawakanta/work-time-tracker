@@ -28,6 +28,9 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
+// Export the context for direct usage in hooks
+export { LocaleContext };
+
 // Define supported locales and their properties
 const SUPPORTED_LOCALES: Record<Locale, { name: string; direction: Direction }> = {
   ja: { name: '日本語', direction: 'ltr' },
