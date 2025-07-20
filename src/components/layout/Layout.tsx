@@ -54,6 +54,8 @@ import {
   Trophy,
   AlertTriangle,
   Gauge,
+  Droplets,
+  Scissors,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -565,6 +567,35 @@ export default function Layout({ children }: LayoutProps) {
                 {t('sidebar.other_features')}
               </h3>
             </div>
+
+            {/* 習慣管理セクション */}
+            <div className="pt-2 pb-2">
+              <h4 className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider px-4 flex items-center gap-2">
+                <Target className="h-3 w-3" />
+                習慣管理
+              </h4>
+            </div>
+            {/* 入浴習慣 */}
+            {renderMenuItem({
+              icon: <Droplets className="h-5 w-5" />,
+              label: '入浴習慣',
+              path: '/bathing-habit',
+              description: '毎日の入浴習慣を管理',
+              badge: 'NEW',
+              gradient: 'from-blue-500 via-cyan-500 to-teal-500',
+              accentColor: 'blue',
+            })}
+            {/* 髭剃り習慣 */}
+            {renderMenuItem({
+              icon: <Scissors className="h-5 w-5" />,
+              label: '髭剃り習慣',
+              path: '/shaving-habit',
+              description: '毎日の髭剃り習慣を管理',
+              badge: 'NEW',
+              gradient: 'from-orange-500 via-red-500 to-pink-500',
+              accentColor: 'orange',
+            })}
+
             {/* 本棚ページ */}
             {renderMenuItem({
               icon: <BookOpen className="h-5 w-5" />,

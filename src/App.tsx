@@ -255,6 +255,7 @@ import { ImpulseControlDashboard } from './components/adhd/ImpulseControlDashboa
 
 // 🛁 Habit tracking pages
 const BathingHabitPage = lazy(() => import('./pages/BathingHabitPage'));
+const ShavingHabitPage = lazy(() => import('./pages/ShavingHabitPage'));
 
 export default function App() {
   const [chatbotState, setChatbotState] = useState({
@@ -1092,6 +1093,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <BathingHabitPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/shaving-habit"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ShavingHabitPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
