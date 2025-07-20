@@ -41,6 +41,8 @@ import {
   Barrier,
 } from '@/services/habits/BathingHabitService';
 import BathingHabitVisualization from './BathingHabitVisualization';
+import BathingHabitOnboarding from './BathingHabitOnboarding';
+import BathingHabitHelp from './BathingHabitHelp';
 
 export const BathingHabitTracker: React.FC = () => {
   const [todayRecord, setTodayRecord] = useState<BathingRecord | null>(null);
@@ -55,6 +57,9 @@ export const BathingHabitTracker: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [records, setRecords] = useState<BathingRecord[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
 
   // フォームステート
   const [bathingType, setBathingType] = useState<BathingRecord['bathingType']>('shower');
@@ -93,6 +98,17 @@ export const BathingHabitTracker: React.FC = () => {
       bathingHabitService.off('bathingCompleted', handleBathingCompleted);
       bathingHabitService.off('bathingSkipped', handleBathingSkipped);
     };
+  }, []);
+
+  useEffect(() => {
+    // 初回訪問チェック
+    const hasVisited = localStorage.getItem('bathing_habit_visited');
+    if (!hasVisited) {
+      setIsFirstVisit(true);
+      setShowOnboarding(true);
+    } else {
+      setIsFirstVisit(false);
+    }
   }, []);
 
   const loadRecords = async () => {
@@ -215,6 +231,18 @@ export const BathingHabitTracker: React.FC = () => {
     }
   };
 
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('bathing_habit_visited', 'true');
+    setShowOnboarding(false);
+    setIsFirstVisit(false);
+  };
+
+  const handleOnboardingSkip = () => {
+    localStorage.setItem('bathing_habit_visited', 'true');
+    setShowOnboarding(false);
+    setIsFirstVisit(false);
+  };
+
   // ローディング状態
   if (isLoading) {
     return (
@@ -275,6 +303,17 @@ export const BathingHabitTracker: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto p-4">
+      {/* オンボーディング */}
+      {showOnboarding && (
+        <BathingHabitOnboarding
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      )}
+
+      {/* ヘルプモーダル */}
+      {showHelp && <BathingHabitHelp onClose={() => setShowHelp(false)} />}
+
       {/* ヘッダーと使い方ガイドボタン */}
       <Card className="border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50">
         <CardHeader>
@@ -285,24 +324,77 @@ export const BathingHabitTracker: React.FC = () => {
               <Badge variant="outline" className="bg-blue-100 text-blue-700">
                 習慣化支援
               </Badge>
+              {isFirstVisit && <Badge className="bg-green-500 text-white animate-pulse">NEW</Badge>}
             </CardTitle>
-            <Button
-              onClick={() => setShowUsageGuide(true)}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <HelpCircle className="w-4 h-4" />
-              使い方ガイド
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowOnboarding(true)}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Play className="w-4 h-4" />
+                使い方ガイド
+              </Button>
+              <Button
+                onClick={() => setShowHelp(true)}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />
+                ヘルプ
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600">
-            毎日の入浴習慣を確実に実現するための包括的支援システム
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              毎日の入浴習慣を確実に実現するための包括的支援システム
+            </p>
+            {isFirstVisit && (
+              <Button
+                onClick={() => setShowOnboarding(true)}
+                size="sm"
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                ✨ 始める
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
+
+      {/* クイックアクションガイド */}
+      {!isFirstVisit && (
+        <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Lightbulb className="w-5 h-5 text-yellow-600" />
+                <div>
+                  <h3 className="font-medium text-yellow-800">今日やること</h3>
+                  <p className="text-sm text-yellow-700">
+                    入浴後に「入浴完了を記録」ボタンをクリックしましょう
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setShowHelp(true)}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white border-yellow-300 text-yellow-700"
+                >
+                  <HelpCircle className="w-4 h-4 mr-1" />
+                  ヘルプ
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* エラー表示 */}
       {error && (
@@ -392,153 +484,191 @@ export const BathingHabitTracker: React.FC = () => {
         </Card>
       )}
 
-      {/* 今日のアクション */}
+      {/* 今日のアクション - 改善版 */}
       <Card>
         <CardHeader>
-          <CardTitle>今日の入浴</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-blue-600" />
+            今日の入浴記録
+            {todayRecord?.completed && <Badge className="bg-green-500 text-white">✅ 完了</Badge>}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {/* 簡単記録ボタン */}
-            <Button
-              onClick={handleSimpleRecord}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3"
-              disabled={isLoading}
-            >
-              {isLoading ? '記録中...' : '✅ 入浴完了を記録（簡単）'}
-            </Button>
-
-            {/* 詳細記録ボタン */}
-            <Button
-              onClick={() => setShowRecordForm(!showRecordForm)}
-              variant="outline"
-              className="w-full"
-            >
-              📝 詳細記録 {showRecordForm ? '（閉じる）' : '（開く）'}
-            </Button>
-
-            {/* 詳細記録フォーム */}
-            {showRecordForm && (
-              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-                <div className="grid grid-cols-2 gap-4">
+          {!todayRecord?.completed ? (
+            <div className="space-y-4">
+              {/* メイン記録ボタン */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                    1
+                  </div>
                   <div>
-                    <label className="text-sm font-medium">入浴タイプ</label>
-                    <div className="grid grid-cols-2 gap-2 mt-1">
-                      {(['full_bath', 'shower', 'quick_rinse', 'body_wipe'] as const).map(
-                        (type) => (
+                    <h4 className="font-semibold text-blue-900">入浴を記録しよう</h4>
+                    <p className="text-sm text-blue-700">入浴後にボタンをクリックして記録</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleSimpleRecord}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3"
+                  disabled={isLoading}
+                >
+                  {isLoading ? '記録中...' : '🛁 入浴完了を記録'}
+                </Button>
+              </div>
+
+              {/* 詳細記録・緊急モード */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Button
+                  onClick={() => setShowRecordForm(!showRecordForm)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  詳細記録 {showRecordForm ? '（閉じる）' : '（開く）'}
+                </Button>
+
+                <Button
+                  onClick={handleEmergencyMode}
+                  variant="outline"
+                  className="bg-red-50 text-red-700 hover:bg-red-100 flex items-center gap-2"
+                >
+                  <Zap className="w-4 h-4" />
+                  🚨 緊急モード
+                </Button>
+              </div>
+
+              {/* ヘルプリンク */}
+              <div className="text-center">
+                <Button
+                  onClick={() => setShowHelp(true)}
+                  variant="link"
+                  size="sm"
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <HelpCircle className="w-4 h-4 mr-1" />
+                  使い方が分からない場合はこちら
+                </Button>
+              </div>
+
+              {/* 詳細記録フォーム */}
+              {showRecordForm && (
+                <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">入浴タイプ</label>
+                      <div className="grid grid-cols-2 gap-2 mt-1">
+                        {(['full_bath', 'shower', 'quick_rinse', 'body_wipe'] as const).map(
+                          (type) => (
+                            <Button
+                              key={type}
+                              variant={bathingType === type ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setBathingType(type)}
+                              className="text-xs"
+                            >
+                              {type === 'full_bath' && '🛁 湯船'}
+                              {type === 'shower' && '🚿 シャワー'}
+                              {type === 'quick_rinse' && '⚡ 時短'}
+                              {type === 'body_wipe' && '🧽 拭き取り'}
+                            </Button>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">所要時間（分）</label>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(Number(e.target.value))}
+                        min="1"
+                        max="120"
+                        className="w-full mt-1 p-2 border rounded-md"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">水温</label>
+                      <div className="flex gap-1 mt-1">
+                        {(['hot', 'warm', 'lukewarm', 'cool'] as const).map((temp) => (
                           <Button
-                            key={type}
-                            variant={bathingType === type ? 'default' : 'outline'}
+                            key={temp}
+                            variant={temperature === temp ? 'default' : 'outline'}
                             size="sm"
-                            onClick={() => setBathingType(type)}
-                            className="text-xs"
+                            onClick={() => setTemperature(temp)}
+                            className="flex-1 text-xs"
                           >
-                            {type === 'full_bath' && '🛁 湯船'}
-                            {type === 'shower' && '🚿 シャワー'}
-                            {type === 'quick_rinse' && '⚡ 時短'}
-                            {type === 'body_wipe' && '🧽 拭き取り'}
+                            {temp === 'hot' && '🔥 熱め'}
+                            {temp === 'warm' && '♨️ 温かい'}
+                            {temp === 'lukewarm' && '🌊 ぬるい'}
+                            {temp === 'cool' && '❄️ 冷たい'}
                           </Button>
-                        )
-                      )}
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium">気分</label>
+                      <div className="flex gap-1 mt-1">
+                        {(['excellent', 'good', 'neutral', 'reluctant'] as const).map(
+                          (moodType) => (
+                            <Button
+                              key={moodType}
+                              variant={mood === moodType ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setMood(moodType)}
+                              className="flex-1 text-xs"
+                            >
+                              {moodType === 'excellent' && '🌟'}
+                              {moodType === 'good' && '😊'}
+                              {moodType === 'neutral' && '😐'}
+                              {moodType === 'reluctant' && '😔'}
+                            </Button>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">所要時間（分）</label>
+                    <label className="text-sm font-medium">メモ（任意）</label>
                     <input
-                      type="number"
-                      value={duration}
-                      onChange={(e) => setDuration(Number(e.target.value))}
-                      min="1"
-                      max="120"
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="今日の入浴について何かあれば..."
                       className="w-full mt-1 p-2 border rounded-md"
                     />
                   </div>
+
+                  <Button
+                    onClick={handleRecordBathing}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? '保存中...' : '💾 詳細記録を保存'}
+                  </Button>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium">水温</label>
-                    <div className="flex gap-1 mt-1">
-                      {(['hot', 'warm', 'lukewarm', 'cool'] as const).map((temp) => (
-                        <Button
-                          key={temp}
-                          variant={temperature === temp ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setTemperature(temp)}
-                          className="flex-1 text-xs"
-                        >
-                          {temp === 'hot' && '🔥 熱め'}
-                          {temp === 'warm' && '♨️ 温かい'}
-                          {temp === 'lukewarm' && '🌊 ぬるい'}
-                          {temp === 'cool' && '❄️ 冷たい'}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium">気分</label>
-                    <div className="flex gap-1 mt-1">
-                      {(['excellent', 'good', 'neutral', 'reluctant'] as const).map((moodType) => (
-                        <Button
-                          key={moodType}
-                          variant={mood === moodType ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setMood(moodType)}
-                          className="flex-1 text-xs"
-                        >
-                          {moodType === 'excellent' && '🌟'}
-                          {moodType === 'good' && '😊'}
-                          {moodType === 'neutral' && '😐'}
-                          {moodType === 'reluctant' && '😔'}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">メモ（任意）</label>
-                  <input
-                    type="text"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="今日の入浴について何かあれば..."
-                    className="w-full mt-1 p-2 border rounded-md"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleRecordBathing}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                  disabled={isLoading}
-                >
-                  {isLoading ? '保存中...' : '💾 詳細記録を保存'}
-                </Button>
-              </div>
-            )}
-
-            <div className="flex gap-2">
+              )}
+            </div>
+          ) : (
+            <div className="text-center p-6">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-green-800 mb-2">今日の入浴完了！</h3>
+              <p className="text-green-600">{stats.currentStreak}日連続記録中です 🎉</p>
               <Button
-                onClick={handleEmergencyMode}
+                onClick={() => setShowHelp(true)}
                 variant="outline"
                 size="sm"
-                className="flex-1 bg-red-50 text-red-700 hover:bg-red-100"
+                className="mt-3"
               >
-                🚨 緊急モード
-              </Button>
-              <Button
-                onClick={() => setShowUsageGuide(true)}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1"
-              >
-                <HelpCircle className="w-4 h-4" />
-                ヘルプ
+                他の機能を見る
               </Button>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -574,45 +704,6 @@ export const BathingHabitTracker: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* 使い方ガイドモーダル */}
-      {showUsageGuide && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">使い方ガイド</h2>
-                <Button onClick={() => setShowUsageGuide(false)} variant="outline" size="sm">
-                  ✕ 閉じる
-                </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                <h3 className="font-bold">基本的な使い方</h3>
-                <ol className="space-y-2 text-sm">
-                  <li>
-                    1. <strong>「入浴完了を記録（簡単）」</strong>をクリックして簡単記録
-                  </li>
-                  <li>
-                    2. または <strong>「詳細記録」</strong>で入浴タイプ、時間、気分を記録
-                  </li>
-                  <li>3. 毎日継続してストリークを伸ばしましょう</li>
-                  <li>
-                    4. <strong>「緊急モード」</strong>で入浴が困難な時の対処法を確認
-                  </li>
-                </ol>
-                <h3 className="font-bold">トラブルシューティング</h3>
-                <ul className="space-y-1 text-sm">
-                  <li>• ボタンが反応しない場合は、ページを再読み込みしてください</li>
-                  <li>• エラーが表示された場合は、「再試行」ボタンをクリック</li>
-                  <li>• データが保存されない場合は、ブラウザの設定を確認</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
