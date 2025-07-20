@@ -77,4 +77,4 @@ module.exports = {
   tokenManager: mockTokenManager,
   __mockTokenManager: mockTokenManager, // For direct access in tests
   __resetToUnauthenticatedState: resetToUnauthenticatedState, // For test utilities
-}; 
+};
