@@ -253,6 +253,9 @@ import { DragonQuestChatbot } from '@/components/assetQuest/DragonQuestChatbot';
 import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
 import { ImpulseControlDashboard } from './components/adhd/ImpulseControlDashboard';
 
+// 🛁 Habit tracking pages
+const BathingHabitPage = lazy(() => import('./pages/BathingHabitPage'));
+
 export default function App() {
   const [chatbotState, setChatbotState] = useState({
     isOpen: false,
@@ -1079,6 +1082,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ImpulseControlDashboard />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/bathing-habit"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <BathingHabitPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
