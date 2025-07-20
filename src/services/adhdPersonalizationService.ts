@@ -657,7 +657,7 @@ class ADHDPersonalizationService extends EventEmitter {
     if (!profile) return;
 
     const insights = this.analyzeUserPatterns();
-    let updates: Partial<UserProfile> = {};
+    const updates: Partial<UserProfile> = {};
 
     // 高信頼度のインサイトに基づくプロファイル自動更新
     insights.forEach((insight) => {

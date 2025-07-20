@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
@@ -59,6 +59,26 @@ interface CalendarEvent {
   type: 'meeting' | 'deadline' | 'reminder';
 }
 
+interface GamificationStats {
+  level: number;
+  currentXP: number;
+  xpToNextLevel: number;
+  totalXP: number;
+  streakDays: number;
+  todayTasksCompleted: number;
+  todayTasksTotal: number;
+  weeklyXP: number;
+  unlockedBadges: number;
+  totalBadges: number;
+}
+
+interface AlertData {
+  type: 'error' | 'warning';
+  title: string;
+  message: string;
+  action: () => void;
+}
+
 const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -71,12 +91,7 @@ const Home: React.FC = () => {
 
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [isLoadingCalendar, setIsLoadingCalendar] = useState(false);
-
-  // Ensure todos is always an array for safety
-  const safeTodos = Array.isArray(todos) ? todos : [];
-
-  // ゲーミフィケーション統計の取得
-  const [gamificationStats, setGamificationStats] = useState({
+  const [gamificationStats, setGamificationStats] = useState<GamificationStats>({
     level: 1,
     currentXP: 0,
     xpToNextLevel: 100,
@@ -91,49 +106,60 @@ const Home: React.FC = () => {
 
   const { isMobile } = useResponsive();
 
-  // ToDoデータの初期化
-  useEffect(() => {
-    if (isAuthenticated && isUserLoggedIn) {
-      dispatch(fetchTodoItems());
-      loadCalendarData();
-      loadGamificationStats();
+  // Ensure todos is always an array for safety
+  const safeTodos = useMemo(() => (Array.isArray(todos) ? todos : []), [todos]);
+
+  // データ初期化の最適化
+  const initializeData = useCallback(async () => {
+    if (!isAuthenticated || !isUserLoggedIn) return;
+
+    try {
+      await Promise.all([dispatch(fetchTodoItems()), loadCalendarData(), loadGamificationStats()]);
+    } catch (error) {
+      console.error('Failed to initialize data:', error);
+      toast.error('データの読み込みに失敗しました');
     }
   }, [isAuthenticated, isUserLoggedIn, dispatch]);
 
-  // ゲーミフィケーション統計の定期更新
   useEffect(() => {
+    initializeData();
+  }, [initializeData]);
+
+  // ゲーミフィケーション統計の定期更新を最適化
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     const interval = setInterval(() => {
       loadGamificationStats();
-    }, 30000); // 30秒ごとに更新
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isAuthenticated]);
 
-  // カレンダーデータの読み込み
-  const loadCalendarData = async () => {
+  // カレンダーデータの読み込みを型安全に
+  const loadCalendarData = useCallback(async (): Promise<void> => {
     setIsLoadingCalendar(true);
     try {
       // 実際の実装では、カレンダーAPIからデータを取得
-      // 現在はモックデータを使用
       const mockEvents: CalendarEvent[] = [
         {
           id: '1',
           title: 'プロジェクトレビュー',
-          start: new Date(Date.now() + 24 * 60 * 60 * 1000), // 明日
-          end: new Date(Date.now() + 24 * 60 * 60 * 1000 + 60 * 60 * 1000), // 明日+1時間
+          start: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          end: new Date(Date.now() + 24 * 60 * 60 * 1000 + 60 * 60 * 1000),
           type: 'meeting',
         },
         {
           id: '2',
           title: '月次報告会',
-          start: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5日後
-          end: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000), // 5日後+2時間
+          start: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+          end: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
           type: 'meeting',
         },
         {
           id: '3',
           title: 'タスクA期限',
-          start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3日後
+          start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
           end: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
           type: 'deadline',
         },
@@ -145,12 +171,11 @@ const Home: React.FC = () => {
     } finally {
       setIsLoadingCalendar(false);
     }
-  };
+  }, []);
 
-  // ゲーミフィケーション統計の読み込み
-  const loadGamificationStats = () => {
+  // ゲーミフィケーション統計の読み込みを型安全に
+  const loadGamificationStats = useCallback((): void => {
     try {
-      // ローカルストレージからゲーミフィケーションデータを読み込み
       const savedPlayerStats = localStorage.getItem('playerStats');
       const savedTasks = localStorage.getItem('dailyTasks');
       const savedAchievements = localStorage.getItem('achievements');
@@ -158,7 +183,6 @@ const Home: React.FC = () => {
       if (savedPlayerStats) {
         const playerStats = JSON.parse(savedPlayerStats);
 
-        // 今日のタスク統計を計算
         let todayTasksCompleted = 0;
         let todayTasksTotal = 0;
 
@@ -179,7 +203,6 @@ const Home: React.FC = () => {
           });
         }
 
-        // バッジ統計を計算
         let unlockedBadges = 0;
         let totalBadges = 0;
 
@@ -200,20 +223,20 @@ const Home: React.FC = () => {
           totalXP: playerStats.totalXP || 0,
           streakDays: playerStats.streakDays || 0,
           todayTasksCompleted,
-          todayTasksTotal: Math.max(todayTasksTotal, 10), // 最低10タスクを表示
+          todayTasksTotal: Math.max(todayTasksTotal, 10),
           weeklyXP: playerStats.weeklyXP || 0,
           unlockedBadges,
-          totalBadges: Math.max(totalBadges, 20), // 最低20バッジを表示
+          totalBadges: Math.max(totalBadges, 20),
         });
       }
     } catch (error) {
       console.error('Failed to load gamification stats:', error);
+      toast.error('ゲーミフィケーション統計の読み込みに失敗しました');
     }
-  };
+  }, []);
 
-  // 連続記録の計算
-  const calculateStreakDays = (): number => {
-    // 簡易実装：実際にはより複雑なロジックが必要
+  // 連続記録の計算を最適化
+  const calculateStreakDays = useCallback((): number => {
     const completedDates = safeTodos
       .filter((todo) => todo.completed && todo.completedDate)
       .map((todo) => new Date(todo.completedDate!).toDateString())
@@ -237,14 +260,13 @@ const Home: React.FC = () => {
     }
 
     return streak;
-  };
+  }, [safeTodos]);
 
-  // 統合統計データの計算
+  // 統合統計データの計算を最適化
   const calculateIntegratedStats = useMemo(() => {
     const today = new Date();
     const todayStr = today.toDateString();
 
-    // ToDo統計
     const todayTasks = safeTodos.filter((todo) => {
       const createdDate = todo.createdAt ? new Date(todo.createdAt).toDateString() : todayStr;
       return createdDate === todayStr;
@@ -254,13 +276,6 @@ const Home: React.FC = () => {
     const totalToday = todayTasks.length;
     const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 0;
 
-    // 期限切れタスク
-    const overdueTasks = safeTodos.filter((todo) => {
-      if (!todo.deadline || todo.completed) return false;
-      return new Date(todo.deadline) < today;
-    }).length;
-
-    // 今週のイベント
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - today.getDay());
     const weekEnd = new Date(weekStart);
@@ -269,14 +284,6 @@ const Home: React.FC = () => {
     const thisWeekEvents = calendarEvents.filter(
       (event) => event.start >= weekStart && event.start <= weekEnd
     ).length;
-
-    // 高優先度タスク
-    const highPriorityTasks = safeTodos.filter(
-      (todo) => !todo.completed && (todo.isPrioritized || (todo.priority && todo.priority > 3))
-    ).length;
-
-    // 連続記録の計算（簡易版）
-    const streakDays = calculateStreakDays();
 
     return [
       {
@@ -344,13 +351,43 @@ const Home: React.FC = () => {
         change: { value: 5, period: '今月平均' },
       },
     ];
-  }, [safeTodos, calendarEvents, gamificationStats]);
+  }, [safeTodos, calendarEvents, gamificationStats, t]);
 
-  // 統合アクティビティの取得
-  const getIntegratedActivities = (): ActivityData[] => {
+  // 時間表示ユーティリティ関数を最適化
+  const getTimeAgo = useCallback((date: Date): string => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return `${diffDays}日前`;
+    } else if (diffHours > 0) {
+      return `${diffHours}時間前`;
+    } else {
+      return '1時間未満前';
+    }
+  }, []);
+
+  const getTimeUntil = useCallback((date: Date): string => {
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return `${diffDays}日後`;
+    } else if (diffHours > 0) {
+      return `${diffHours}時間後`;
+    } else {
+      return '間もなく';
+    }
+  }, []);
+
+  // 統合アクティビティの取得を最適化
+  const getIntegratedActivities = useCallback((): ActivityData[] => {
     const activities: ActivityData[] = [];
 
-    // 最近完了したToDo
     const recentTodos = safeTodos
       .filter((todo) => todo.completed && todo.completedDate)
       .sort((a, b) => {
@@ -368,7 +405,6 @@ const Home: React.FC = () => {
 
     activities.push(...recentTodos);
 
-    // 近日中のカレンダーイベント
     const upcomingEvents = calendarEvents
       .filter((event) => event.start > new Date())
       .sort((a, b) => a.start.getTime() - b.start.getTime())
@@ -383,52 +419,28 @@ const Home: React.FC = () => {
     activities.push(...upcomingEvents);
 
     return activities.slice(0, 5);
-  };
+  }, [safeTodos, calendarEvents, getTimeAgo, getTimeUntil]);
 
-  const getTimeAgo = (date: Date): string => {
+  // ナビゲーション関数を最適化
+  const handleTaskSelect = useCallback(
+    (taskId: string) => {
+      if (taskId && taskId !== 'default-task') {
+        navigate(`/todos?highlight=${taskId}`);
+      } else {
+        navigate('/todos');
+      }
+    },
+    [navigate]
+  );
+
+  // 緊急アラートの取得を最適化
+  const getUrgentAlerts = useCallback((): AlertData[] => {
+    const alerts: AlertData[] = [];
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffDays > 0) {
-      return `${diffDays}日前`;
-    } else if (diffHours > 0) {
-      return `${diffHours}時間前`;
-    } else {
-      return '1時間未満前';
-    }
-  };
-
-  const getTimeUntil = (date: Date): string => {
-    const now = new Date();
-    const diffMs = date.getTime() - now.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffDays > 0) {
-      return `${diffDays}日後`;
-    } else if (diffHours > 0) {
-      return `${diffHours}時間後`;
-    } else {
-      return '間もなく';
-    }
-  };
-
-  const handleTaskSelect = (taskId: string) => {
-    if (taskId && taskId !== 'default-task') {
-      navigate(`/todos?highlight=${taskId}`);
-    } else {
-      navigate('/todos');
-    }
-  };
-
-  // 緊急度の高いアラートを表示
-  const getUrgentAlerts = () => {
-    const alerts = [];
     const overdueTasks = safeTodos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
-      return new Date(todo.deadline) < new Date();
+      return new Date(todo.deadline) < now;
     });
 
     if (overdueTasks.length > 0) {
@@ -443,8 +455,7 @@ const Home: React.FC = () => {
     const todayDeadlines = safeTodos.filter((todo) => {
       if (!todo.deadline || todo.completed) return false;
       const deadline = new Date(todo.deadline);
-      const today = new Date();
-      return deadline.toDateString() === today.toDateString();
+      return deadline.toDateString() === now.toDateString();
     });
 
     if (todayDeadlines.length > 0) {
@@ -457,38 +468,45 @@ const Home: React.FC = () => {
     }
 
     return alerts;
-  };
+  }, [safeTodos, navigate]);
+
+  // カスタムイベントハンドラーを最適化
+  const handleLifeSupportAction = useCallback((action: string) => {
+    const event = new CustomEvent('openLifeSupportBot', {
+      detail: { action },
+    });
+    window.dispatchEvent(event);
+  }, []);
+
+  // データ更新を最適化
+  const handleRefresh = useCallback(async (): Promise<void> => {
+    try {
+      await Promise.all([dispatch(fetchTodoItems()), loadCalendarData(), loadGamificationStats()]);
+      toast.success('データを更新しました');
+    } catch (error) {
+      console.error('Refresh failed:', error);
+      toast.error('更新に失敗しました');
+    }
+  }, [dispatch, loadCalendarData, loadGamificationStats]);
 
   const stats = calculateIntegratedStats;
   const activities = getIntegratedActivities();
   const alerts = getUrgentAlerts();
 
-  // 📱 モバイルファースト: プルツーリフレッシュで全データ更新
-  const handleRefresh = async () => {
-    try {
-      // ダッシュボードデータを再取得
-      await Promise.all([
-        // TodoListの更新（既存のrefresh関数があれば使用）
-        dispatch(fetchTodoItems() as any),
-        // その他のデータ更新
-        new Promise((resolve) => setTimeout(resolve, 1000)), // 更新シミュレーション
-      ]);
-    } catch (error) {
-      console.error('Refresh failed:', error);
-    }
-  };
+  // 早期リターンでパフォーマンス向上
+  if (!isAuthenticated) {
+    return (
+      <PageLayout title="ログインが必要です" subtitle="アクセスするにはログインしてください">
+        <div className="text-center py-8">
+          <Button onClick={() => navigate('/login')}>ログイン</Button>
+        </div>
+      </PageLayout>
+    );
+  }
 
-  return (
-    <PageLayout
-      title={`${t('home.greeting')}, ${user?.name || t('common.user')}!`}
-      subtitle={t('home.subtitle')}
-      badge={{
-        text: hasActiveSubscription ? t('home.premium') : t('home.free'),
-        variant: hasActiveSubscription ? 'default' : 'secondary',
-      }}
-      headerGradient
-    >
-      {/* 🤗 ライフサポート - クイックアクセス */}
+  const renderContent = () => (
+    <>
+      {/* ライフサポート - クイックアクセス */}
       <div className="mb-6">
         <Card className="border-0 shadow-lg bg-gradient-to-r from-pink-50 via-yellow-50 to-orange-50">
           <CardContent className="p-4">
@@ -502,7 +520,7 @@ const Home: React.FC = () => {
                     今、何をすべきか迷っていませんか？
                   </h3>
                   <p className="text-sm text-gray-600">
-                    誰でも幸せな人生を送れるようAIがサポートします
+                    誰でも幸せな人生を送れるよう、AIが最適なサポートを提供します
                   </p>
                 </div>
               </div>
@@ -510,13 +528,7 @@ const Home: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    // チャットボットを開く（実装は後でDragonQuestChatbotで）
-                    const event = new CustomEvent('openLifeSupportBot', {
-                      detail: { action: 'life-support' },
-                    });
-                    window.dispatchEvent(event);
-                  }}
+                  onClick={() => handleLifeSupportAction('life-support')}
                   className="bg-white border-pink-300 hover:bg-pink-50 text-pink-800"
                 >
                   🤗 相談する
@@ -524,12 +536,7 @@ const Home: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    const event = new CustomEvent('openLifeSupportBot', {
-                      detail: { action: 'daily-plan' },
-                    });
-                    window.dispatchEvent(event);
-                  }}
+                  onClick={() => handleLifeSupportAction('daily-plan')}
                   className="bg-white border-orange-300 hover:bg-orange-50 text-orange-800"
                 >
                   🌅 今日の計画
@@ -537,12 +544,7 @@ const Home: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    const event = new CustomEvent('openLifeSupportBot', {
-                      detail: { action: 'emergency-help' },
-                    });
-                    window.dispatchEvent(event);
-                  }}
+                  onClick={() => handleLifeSupportAction('emergency-help')}
                   className="bg-white border-red-300 hover:bg-red-50 text-red-800"
                 >
                   🚨 緊急時
@@ -553,7 +555,7 @@ const Home: React.FC = () => {
         </Card>
       </div>
 
-      {/* 🌍 Language Test Links - Quick Access */}
+      {/* Language Test Links */}
       <div className="mb-4 flex gap-2">
         <Button
           variant="outline"
@@ -612,7 +614,7 @@ const Home: React.FC = () => {
       {/* 統計セクション */}
       <StatsGrid stats={stats} className="mb-8" />
 
-      {/* 🏰 資産形成クエスト - 特別セクション */}
+      {/* 資産形成クエスト */}
       <div className="mb-8">
         <Card
           className="border-0 shadow-lg bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 hover:shadow-xl transition-all duration-300 cursor-pointer"
@@ -931,7 +933,7 @@ const Home: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {calendarEvents.length > 0 ? (
-                calendarEvents.slice(0, 3).map((event, index) => (
+                calendarEvents.slice(0, 3).map((event) => (
                   <div key={event.id} className="flex items-center gap-3 p-2 rounded">
                     <div
                       className={cn(
@@ -1086,16 +1088,25 @@ const Home: React.FC = () => {
           </CardContent>
         </Card>
       )}
+    </>
+  );
 
+  return (
+    <PageLayout
+      title={`${t('home.greeting')}, ${user?.name || t('common.user')}!`}
+      subtitle={t('home.subtitle')}
+      badge={{
+        text: hasActiveSubscription ? t('home.premium') : t('home.free'),
+        variant: hasActiveSubscription ? 'default' : 'secondary',
+      }}
+      headerGradient
+    >
       {isMobile ? (
-        // 📱 モバイル: プルツーリフレッシュ対応
         <PullToRefresh onRefresh={handleRefresh} className="min-h-screen">
-          {/* 既存のコンテンツ */}
-          <div className="container mx-auto px-4 py-8">{/* ... existing home content ... */}</div>
+          <div className="container mx-auto px-4 py-8">{renderContent()}</div>
         </PullToRefresh>
       ) : (
-        // デスクトップ: 通常レイアウト
-        <div className="container mx-auto px-4 py-8">{/* ... existing home content ... */}</div>
+        <div className="container mx-auto px-4 py-8">{renderContent()}</div>
       )}
     </PageLayout>
   );
