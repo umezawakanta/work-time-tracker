@@ -10,6 +10,7 @@ import { EnhancedCard } from '@/components/common/EnhancedCard';
 import { StatsGrid } from '@/components/common/StatsGrid';
 import { NextTaskSuggestionComponent } from '@/components/ai/NextTaskSuggestion';
 import { DailyMotivationGamification } from '@/components/gamification/DailyMotivationGamification';
+import { DashboardGuide } from '@/components/dashboard/DashboardGuide';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -36,6 +37,7 @@ import {
   Gamepad2,
   Activity,
   Shield,
+  HelpCircle,
 } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -106,6 +108,8 @@ const Home: React.FC = () => {
     unlockedBadges: 0,
     totalBadges: 0,
   });
+  const [showGuide, setShowGuide] = useState(false);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
 
   const { isMobile } = useResponsive();
 
@@ -126,6 +130,14 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     initializeData();
+
+    // 初回訪問の判定
+    const hasVisitedBefore = localStorage.getItem('lifesync-visited');
+    if (!hasVisitedBefore) {
+      setIsFirstVisit(true);
+      setShowGuide(true);
+      localStorage.setItem('lifesync-visited', 'true');
+    }
   }, [initializeData]);
 
   // ゲーミフィケーション統計の定期更新を最適化
@@ -558,8 +570,30 @@ const Home: React.FC = () => {
         </Card>
       </div>
 
-      {/* Language Test Links */}
-      <div className="mb-4 flex gap-2">
+      {/* 使い方ガイド - 初回訪問または手動表示 */}
+      {(showGuide || isFirstVisit) && (
+        <div className="mb-6">
+          <DashboardGuide
+            onClose={() => {
+              setShowGuide(false);
+              setIsFirstVisit(false);
+            }}
+            className="max-w-4xl mx-auto"
+          />
+        </div>
+      )}
+
+      {/* 使い方ガイドトリガー + Language Test Links */}
+      <div className="mb-4 flex gap-2 flex-wrap">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowGuide(true)}
+          className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100 flex items-center gap-2"
+        >
+          <HelpCircle className="h-4 w-4" />
+          📖 使い方ガイド
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -1051,6 +1085,13 @@ const Home: React.FC = () => {
             path: '/impulse-control',
             gradient: 'from-blue-500 to-indigo-600',
           },
+          {
+            icon: <HelpCircle className="h-6 w-6" />,
+            title: '📖 使い方ガイド',
+            description: 'LifeSyncの機能を詳しく学ぶ',
+            path: '#',
+            gradient: 'from-gray-500 to-slate-600',
+          },
         ].map((action, index) => (
           <EnhancedCard
             key={index}
@@ -1059,8 +1100,14 @@ const Home: React.FC = () => {
             icon={action.icon}
             gradient={action.gradient}
             action={{
-              text: '開く',
-              onClick: () => navigate(action.path),
+              text: action.title.includes('使い方ガイド') ? '表示' : '開く',
+              onClick: () => {
+                if (action.path === '#') {
+                  setShowGuide(true);
+                } else {
+                  navigate(action.path);
+                }
+              },
             }}
           />
         ))}
