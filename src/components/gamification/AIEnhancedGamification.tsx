@@ -868,37 +868,94 @@ export const AIEnhancedGamification: React.FC = () => {
                 </div>
 
                 {generatedTasks && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-medium mb-2">生成されたタスク</h4>
-                    <div className="space-y-2">
-                      {generatedTasks.tasks.map((task, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between bg-blue-100 p-2 rounded-md"
-                        >
-                          <span>{task.title}</span>
-                          <Badge variant="outline">{task.priority}</Badge>
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="font-medium text-lg">🤖 AI生成タスク</h4>
+                        <Badge variant="secondary">
+                          {generatedTasks.tasks.length}個のタスク / 合計
+                          {generatedTasks.totalEstimatedTime}分
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                        {generatedTasks.tasks.map((task, index) => (
+                          <Card key={index} className="border-l-4 border-l-blue-500">
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between mb-2">
+                                <h5 className="font-medium text-sm">{task.title}</h5>
+                                <Badge variant="outline" className="text-xs">
+                                  優先度: {task.priority}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-gray-600 mb-2">{task.description}</p>
+                              <div className="flex items-center justify-between text-xs text-gray-500">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />約{task.estimatedMinutes}分
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Brain className="w-3 h-3" />
+                                  信頼度{Math.round(task.aiConfidence * 100)}%
+                                </span>
+                              </div>
+                              <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
+                                💡 {task.reasoningBehind}
+                              </div>
+                              {task.tags && task.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {task.tags.slice(0, 3).map((tag, tagIndex) => (
+                                    <Badge key={tagIndex} variant="secondary" className="text-xs">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+
+                      <div className="bg-white p-3 rounded border">
+                        <h5 className="font-medium text-sm mb-2">📊 AI分析レポート</h5>
+                        <p className="text-xs text-gray-600 mb-2">{generatedTasks.reasoning}</p>
+                        <div className="text-xs text-gray-500">
+                          <span className="font-medium">難易度バランス:</span>{' '}
+                          {generatedTasks.difficultyBalance}
                         </div>
-                      ))}
+                        {generatedTasks.optimizationTips.length > 0 && (
+                          <div className="mt-2">
+                            <span className="font-medium text-xs">💡 最適化のヒント:</span>
+                            <ul className="text-xs text-gray-600 mt-1 space-y-1">
+                              {generatedTasks.optimizationTips.map((tip, tipIndex) => (
+                                <li key={tipIndex} className="flex items-start gap-1">
+                                  <span>•</span>
+                                  <span>{tip}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      <Button
+                        onClick={() => addGeneratedTasksToTodo(generatedTasks.tasks)}
+                        disabled={addingTasksToTodo}
+                        className="w-full mt-4"
+                        size="lg"
+                      >
+                        {addingTasksToTodo ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            タスクを追加中...
+                          </>
+                        ) : (
+                          <>
+                            <ListPlus className="w-4 h-4 mr-2" />
+                            すべてのタスクをTodoリストに追加 ({generatedTasks.tasks.length}個)
+                          </>
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      onClick={() => addGeneratedTasksToTodo(generatedTasks.tasks)}
-                      disabled={addingTasksToTodo}
-                      className="w-full mt-3"
-                      size="sm"
-                    >
-                      {addingTasksToTodo ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                          タスクを追加中...
-                        </>
-                      ) : (
-                        <>
-                          <ListPlus className="w-4 h-4 mr-2" />
-                          生成されたタスクをTodoリストに追加
-                        </>
-                      )}
-                    </Button>
                   </div>
                 )}
               </div>
