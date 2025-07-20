@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, CircularProgress } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
 
 import { AuthProvider } from './context/AuthContext';
@@ -249,8 +249,32 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   <Layout>{children}</Layout>
 );
 
+import { DragonQuestChatbot } from '@/components/assetQuest/DragonQuestChatbot';
+
 export default function App() {
-  // 🐛 エラーエリミネーター: エラー回復サービス初期化
+  const [chatbotState, setChatbotState] = useState({
+    isOpen: false,
+    triggeredAction: null as string | null,
+  });
+
+  // グローバルライフサポートイベントリスナー
+  useEffect(() => {
+    const handleLifeSupportEvent = (event: CustomEvent) => {
+      console.log('🤗 ライフサポートイベント受信:', event.detail);
+      setChatbotState({
+        isOpen: true,
+        triggeredAction: event.detail.action,
+      });
+    };
+
+    window.addEventListener('openLifeSupportBot', handleLifeSupportEvent as EventListener);
+
+    return () => {
+      window.removeEventListener('openLifeSupportBot', handleLifeSupportEvent as EventListener);
+    };
+  }, []);
+
+  // エラー回復サービス初期化
   useEffect(() => {
     const errorRecoveryService = ErrorRecoveryService.getInstance();
     console.log('🐛 エラー回復システム初期化完了');
@@ -276,6 +300,21 @@ export default function App() {
             {/* ADHD緊急サポートボタン - 全ページで利用可能 */}
             <LazyWrapper>
               <ADHDFloatingButton />
+            </LazyWrapper>
+
+            {/* グローバルライフサポートチャットボット */}
+            <LazyWrapper>
+              <DragonQuestChatbot
+                currentLevel={1}
+                totalAssets={0}
+                savingsRate={0}
+                questCompleted={false}
+                streakDays={0}
+                isGlobalMode={true}
+                isOpen={chatbotState.isOpen}
+                triggeredAction={chatbotState.triggeredAction}
+                onClose={() => setChatbotState({ isOpen: false, triggeredAction: null })}
+              />
             </LazyWrapper>
 
             <Routes>

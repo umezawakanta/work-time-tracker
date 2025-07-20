@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -27,6 +27,22 @@ import {
 } from '@/services/assetQuest/DragonQuestAIService';
 import { developmentTaskService } from '@/services/assetQuest/DevelopmentTaskService';
 import { soundManager } from '@/utils/soundManager';
+import { cn } from '@/lib/utils';
+import {
+  AuthProvider,
+  InternationalizationProvider,
+  ThemeProvider,
+  CssBaseline,
+  Toaster,
+  toasterConfig,
+  LazyWrapper,
+  ADHDFloatingButton,
+  PomodoroProvider,
+  PomodoroManager,
+} from '@/components/providers';
+import { Routes } from '@/components/Routes';
+import { theme } from '@/lib/theme';
+import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
 
 interface ChatMessage {
   id: string;
@@ -68,6 +84,10 @@ interface DragonQuestChatbotProps {
   savingsRate: number;
   questCompleted: boolean;
   streakDays: number;
+  isGlobalMode?: boolean;
+  isOpen?: boolean;
+  triggeredAction?: string | null;
+  onClose?: () => void;
 }
 
 export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
@@ -76,8 +96,12 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   savingsRate,
   questCompleted,
   streakDays,
+  isGlobalMode = false,
+  isOpen: externalIsOpen,
+  triggeredAction,
+  onClose,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(externalIsOpen ?? false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState<ChatMessage | null>(null);
   const [isTyping, setIsTyping] = useState(false);
@@ -89,6 +113,18 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastSoundTime = useRef<number>(0);
   const [loading, setLoading] = useState(false);
+
+  // グローバルモード時の外部制御
+  useEffect(() => {
+    if (isGlobalMode && externalIsOpen !== undefined) {
+      setIsOpen(externalIsOpen);
+
+      // 特定のアクションが指定されている場合、そのアクションを実行
+      if (externalIsOpen && triggeredAction) {
+        handleLifeSupportAction(triggeredAction);
+      }
+    }
+  }, [externalIsOpen, triggeredAction, isGlobalMode]);
 
   useEffect(() => {
     initializeBot();
@@ -527,7 +563,20 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
     }
   };
 
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    if (isGlobalMode && onClose) {
+      onClose();
+    }
+  }, [isGlobalMode, onClose]);
+
   if (!isOpen) {
+    // グローバルモードでは非表示時はnullを返す
+    if (isGlobalMode) {
+      return null;
+    }
+
+    // 通常モード（Asset Quest専用）では元の浮動ボタンを表示
     return (
       <div className="fixed bottom-6 right-32 z-50">
         <Button
@@ -570,14 +619,21 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
   }
 
   return (
-    <div className="fixed bottom-6 right-32 z-50 w-96 max-w-sm">
+    <div
+      className={cn(
+        'fixed z-50 w-96 max-w-sm',
+        isGlobalMode ? 'bottom-6 right-6' : 'bottom-6 right-32'
+      )}
+    >
       <Card className="bg-gradient-to-b from-blue-50 to-indigo-100 border-4 border-blue-800 shadow-2xl">
         {/* ヘッダー */}
         <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 rounded-t-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Crown className="w-6 h-6 text-yellow-400" />
-              <h3 className="font-bold text-lg">🏰 王国の案内</h3>
+              <h3 className="font-bold text-lg">
+                {isGlobalMode ? '🤗 人生サポート案内' : '🏰 王国の案内'}
+              </h3>
             </div>
             <div className="flex items-center gap-1">
               {/* 開発者モード切り替えボタン */}
@@ -613,10 +669,7 @@ export const DragonQuestChatbot: React.FC<DragonQuestChatbotProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  soundManager.playButtonSound();
-                  setIsOpen(false);
-                }}
+                onClick={handleClose}
                 className="text-white hover:bg-blue-600 p-1"
               >
                 <X className="w-5 h-5" />
