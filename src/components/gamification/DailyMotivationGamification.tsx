@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { addTodoItem, updateTodoItem } from '@/store/todoSlice';
@@ -95,18 +95,21 @@ export const DailyMotivationGamification: React.FC = () => {
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedTab, setSelectedTab] = useState<'tasks' | 'stats'>('tasks');
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // 初期化時にローカルストレージから復元
-  useEffect(() => {
-    loadFromLocalStorage();
-  }, []);
+  // データ保存を最適化
+  const saveToLocalStorage = useCallback(() => {
+    if (!isInitialized) return; // 初期化完了後のみ保存
 
-  // データ保存
-  useEffect(() => {
-    saveToLocalStorage();
-  }, [playerStats, tasks]);
+    try {
+      localStorage.setItem('gamification_player_stats', JSON.stringify(playerStats));
+      localStorage.setItem('gamification_tasks', JSON.stringify(tasks));
+    } catch (error) {
+      console.error('ローカルストレージへの保存エラー:', error);
+    }
+  }, [playerStats, tasks, isInitialized]);
 
-  const loadFromLocalStorage = () => {
+  const loadFromLocalStorage = useCallback(() => {
     try {
       const savedStats = localStorage.getItem('gamification_player_stats');
       const savedTasks = localStorage.getItem('gamification_tasks');
@@ -118,19 +121,29 @@ export const DailyMotivationGamification: React.FC = () => {
       if (savedTasks) {
         setTasks(JSON.parse(savedTasks));
       }
+
+      setIsInitialized(true); // 初期化完了をマーク
     } catch (error) {
       console.error('ローカルストレージからの読み込みエラー:', error);
+      setIsInitialized(true); // エラーでも初期化完了とする
     }
-  };
+  }, []);
 
-  const saveToLocalStorage = () => {
-    try {
-      localStorage.setItem('gamification_player_stats', JSON.stringify(playerStats));
-      localStorage.setItem('gamification_tasks', JSON.stringify(tasks));
-    } catch (error) {
-      console.error('ローカルストレージへの保存エラー:', error);
-    }
-  };
+  // 初期化時にローカルストレージから復元
+  useEffect(() => {
+    loadFromLocalStorage();
+  }, [loadFromLocalStorage]);
+
+  // データ保存をデバウンス（初期化後のみ）
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const timeout = setTimeout(() => {
+      saveToLocalStorage();
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [saveToLocalStorage, isInitialized]);
 
   const completeTask = (taskId: string) => {
     setTasks((prev) =>
