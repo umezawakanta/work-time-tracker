@@ -276,6 +276,15 @@ const toolsMenuItems: MenuItem[] = [
     gradient: 'from-blue-500 via-purple-500 to-pink-500',
     accentColor: 'blue',
   },
+  {
+    icon: <Crown className="h-5 w-5" />,
+    label: '🎮 統合ゲーミフィケーション',
+    path: '/integrated-gamification',
+    description: 'AI・ゲーミフィケーション・タスク管理の完全統合',
+    badge: 'NEW',
+    gradient: 'from-purple-600 via-violet-600 to-indigo-600',
+    accentColor: 'purple',
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {
