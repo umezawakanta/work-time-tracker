@@ -40,6 +40,7 @@ import {
   HabitStats,
   Barrier,
 } from '@/services/habits/BathingHabitService';
+import BathingHabitVisualization from './BathingHabitVisualization';
 
 export const BathingHabitTracker: React.FC = () => {
   const [todayRecord, setTodayRecord] = useState<BathingRecord | null>(null);
@@ -53,6 +54,7 @@ export const BathingHabitTracker: React.FC = () => {
   >('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [records, setRecords] = useState<BathingRecord[]>([]);
 
   // フォームステート
   const [bathingType, setBathingType] = useState<BathingRecord['bathingType']>('shower');
@@ -74,12 +76,14 @@ export const BathingHabitTracker: React.FC = () => {
       setShowRecordForm(false);
       loadStats();
       loadMotivationalMessage();
+      loadRecords(); // 記録データも更新
     };
 
     const handleBathingSkipped = () => {
       console.log('⏭️ 入浴スキップイベント受信');
       loadStats();
       loadMotivationalMessage();
+      loadRecords(); // 記録データも更新
     };
 
     bathingHabitService.on('bathingCompleted', handleBathingCompleted);
@@ -91,6 +95,16 @@ export const BathingHabitTracker: React.FC = () => {
     };
   }, []);
 
+  const loadRecords = async () => {
+    try {
+      // bathingHabitServiceからrecordsを取得する方法を追加
+      const allRecords = await bathingHabitService.getAllRecords();
+      setRecords(allRecords);
+    } catch (err) {
+      console.error('❌ 記録データ読み込みエラー:', err);
+    }
+  };
+
   const loadInitialData = async () => {
     try {
       setIsLoading(true);
@@ -99,6 +113,7 @@ export const BathingHabitTracker: React.FC = () => {
 
       await loadStats();
       await loadMotivationalMessage();
+      await loadRecords();
 
       console.log('✅ 初期データ読み込み完了');
     } catch (err) {
@@ -153,6 +168,7 @@ export const BathingHabitTracker: React.FC = () => {
       setTodayRecord(record);
       await loadStats();
       await loadMotivationalMessage();
+      await loadRecords(); // 記録データも更新
 
       // フォームリセット
       setBathingType('shower');
@@ -178,6 +194,7 @@ export const BathingHabitTracker: React.FC = () => {
       setTodayRecord(record);
       await loadStats();
       await loadMotivationalMessage();
+      await loadRecords(); // 記録データも更新
     } catch (err) {
       console.error('❌ 簡単記録エラー:', err);
       setError('入浴記録の保存に失敗しました');
@@ -257,7 +274,7 @@ export const BathingHabitTracker: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto p-4">
+    <div className="space-y-6 max-w-6xl mx-auto p-4">
       {/* ヘッダーと使い方ガイドボタン */}
       <Card className="border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50">
         <CardHeader>
@@ -524,6 +541,9 @@ export const BathingHabitTracker: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* 可視化セクションを統計表示の後に追加 */}
+      {stats && records.length > 0 && <BathingHabitVisualization stats={stats} records={records} />}
 
       {/* デバッグ情報（開発時のみ） */}
       {process.env.NODE_ENV === 'development' && (

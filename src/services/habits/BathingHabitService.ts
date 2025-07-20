@@ -367,6 +367,20 @@ class BathingHabitService extends EventEmitter {
     };
   }
 
+  /**
+   * 全ての入浴記録を取得
+   */
+  public async getAllRecords(): Promise<BathingRecord[]> {
+    return this.getAllBathingRecords();
+  }
+
+  /**
+   * 今日の記録を取得
+   */
+  public getTodaysRecord(): BathingRecord | null {
+    return this.getTodayRecord();
+  }
+
   // プライベートメソッド
 
   private setupDailyCheck(): void {
