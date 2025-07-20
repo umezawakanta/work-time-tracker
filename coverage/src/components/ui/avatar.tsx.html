@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>12/15</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>10/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -112,24 +112,12 @@
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -139,32 +127,44 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import * as React from 'react';</span>
-<span class="cstat-no" title="statement not covered" >import * as AvatarPrimitive from '@radix-ui/react-avatar';</span>
+import * as React from 'react';
+import * as AvatarPrimitive from '@radix-ui/react-avatar';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import { cn } from '@/lib/utils';</span>
+import { cn } from '@/lib/utils';
 &nbsp;
-const Avatar = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;</span>
+const Avatar = React.forwardRef&lt;
   React.ElementRef&lt;typeof AvatarPrimitive.Root&gt;,
   React.ComponentPropsWithoutRef&lt;typeof AvatarPrimitive.Root&gt;
 &gt;(<span class="fstat-no" title="function not covered" >({</span> className, ...props }, ref) =&gt; (
@@ -174,9 +174,9 @@ const Avatar = <span class="cstat-no" title="statement not covered" >React.forwa
     {...props}
   /&gt;
 ));
-<span class="cstat-no" title="statement not covered" >Avatar.displayName = AvatarPrimitive.Root.displayName;</span>
+Avatar.displayName = AvatarPrimitive.Root.displayName;
 &nbsp;
-const AvatarImage = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;</span>
+const AvatarImage = React.forwardRef&lt;
   React.ElementRef&lt;typeof AvatarPrimitive.Image&gt;,
   React.ComponentPropsWithoutRef&lt;typeof AvatarPrimitive.Image&gt;
 &gt;(<span class="fstat-no" title="function not covered" >({</span> className, ...props }, ref) =&gt; (
@@ -186,9 +186,9 @@ const AvatarImage = <span class="cstat-no" title="statement not covered" >React.
     {...props}
   /&gt;
 ));
-<span class="cstat-no" title="statement not covered" >AvatarImage.displayName = AvatarPrimitive.Image.displayName;</span>
+AvatarImage.displayName = AvatarPrimitive.Image.displayName;
 &nbsp;
-const AvatarFallback = <span class="cstat-no" title="statement not covered" >React.forwardRef&lt;</span>
+const AvatarFallback = React.forwardRef&lt;
   React.ElementRef&lt;typeof AvatarPrimitive.Fallback&gt;,
   React.ComponentPropsWithoutRef&lt;typeof AvatarPrimitive.Fallback&gt;
 &gt;(<span class="fstat-no" title="function not covered" >({</span> className, ...props }, ref) =&gt; (
@@ -201,9 +201,9 @@ const AvatarFallback = <span class="cstat-no" title="statement not covered" >Rea
     {...props}
   /&gt;
 ));
-<span class="cstat-no" title="statement not covered" >AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;</span>
+AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 &nbsp;
-export { <span class="cstat-no" title="statement not covered" >Avatar,</span> <span class="cstat-no" title="statement not covered" >AvatarImage,</span> <span class="cstat-no" title="statement not covered" >AvatarFallback </span>};
+export { Avatar, AvatarImage, AvatarFallback };
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -211,7 +211,7 @@ export { <span class="cstat-no" title="statement not covered" >Avatar,</span> <s
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-19T13:22:48.289Z
+                at 2025-07-19T14:37:46.785Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

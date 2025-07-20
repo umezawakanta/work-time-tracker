@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ADHDFocusHelper } from '@/components/adhd/ADHDFocusHelper';
+import adhdService, { ADHDProgress, ADHDInsight } from '@/services/adhdService';
 import {
   Brain,
   Target,
@@ -14,26 +15,45 @@ import {
   Heart,
   Shield,
   TrendingUp,
+  BarChart3,
+  Settings,
 } from 'lucide-react';
 
-interface ADHDStats {
-  totalFocusSessions: number;
-  averageSessionLength: number;
-  thoughtsAnalyzed: number;
-  averageRealityScore: number;
-  streakDays: number;
-}
-
 export const ADHDSupportPage: React.FC = () => {
-  const [stats, setStats] = useState<ADHDStats>({
-    totalFocusSessions: 12,
-    averageSessionLength: 25,
-    thoughtsAnalyzed: 89,
-    averageRealityScore: 7.2,
-    streakDays: 5,
-  });
-
+  const [progress, setProgress] = useState<ADHDProgress | null>(null);
+  const [insights, setInsights] = useState<ADHDInsight[]>([]);
   const [showQuickTips, setShowQuickTips] = useState(true);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'daily' | 'weekly' | 'monthly'>(
+    'weekly'
+  );
+
+  // データ読み込み
+  useEffect(() => {
+    const loadData = () => {
+      const progressData = adhdService.getProgress();
+      const insightsData = adhdService.generateInsights();
+
+      setProgress(progressData);
+      setInsights(insightsData);
+    };
+
+    loadData();
+
+    // サービスのイベントリスナー
+    const handleProgressUpdate = (newProgress: ADHDProgress) => {
+      setProgress(newProgress);
+    };
+
+    adhdService.on('progressUpdated', handleProgressUpdate);
+    adhdService.on('sessionCompleted', loadData);
+    adhdService.on('thoughtSaved', loadData);
+
+    return () => {
+      adhdService.off('progressUpdated', handleProgressUpdate);
+      adhdService.off('sessionCompleted', loadData);
+      adhdService.off('thoughtSaved', loadData);
+    };
+  }, []);
 
   // クイックアクション
   const quickActions = [
@@ -122,7 +142,7 @@ export const ADHDSupportPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.totalFocusSessions}</div>
+              <div className="text-2xl font-bold text-blue-600">{progress?.totalSessions || 0}</div>
               <div className="text-sm text-gray-600">集中セッション</div>
             </div>
           </CardContent>
@@ -132,7 +152,7 @@ export const ADHDSupportPage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {stats.averageSessionLength}分
+                {Math.round(progress?.averageSessionLength || 0)}分
               </div>
               <div className="text-sm text-gray-600">平均集中時間</div>
             </div>
@@ -142,7 +162,9 @@ export const ADHDSupportPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.thoughtsAnalyzed}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {progress?.totalThoughtsAnalyzed || 0}
+              </div>
               <div className="text-sm text-gray-600">思考分析回数</div>
             </div>
           </CardContent>
@@ -152,7 +174,7 @@ export const ADHDSupportPage: React.FC = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                {stats.averageRealityScore}/10
+                {(progress?.averageRealityScore || 0).toFixed(1)}/10
               </div>
               <div className="text-sm text-gray-600">現実度スコア</div>
             </div>
@@ -162,12 +184,68 @@ export const ADHDSupportPage: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{stats.streakDays}日</div>
+              <div className="text-2xl font-bold text-red-600">{progress?.streakDays || 0}日</div>
               <div className="text-sm text-gray-600">継続日数</div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* AIインサイト表示 */}
+      {insights.length > 0 && (
+        <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Brain className="h-5 w-5" />
+              AI分析による個人的なインサイト
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {insights.slice(0, 4).map((insight) => (
+                <div
+                  key={insight.id}
+                  className={`p-4 rounded-lg border ${
+                    insight.type === 'warning'
+                      ? 'bg-red-50 border-red-200'
+                      : insight.type === 'achievement'
+                        ? 'bg-green-50 border-green-200'
+                        : insight.type === 'suggestion'
+                          ? 'bg-yellow-50 border-yellow-200'
+                          : 'bg-blue-50 border-blue-200'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="font-semibold text-sm">{insight.title}</h4>
+                    <Badge
+                      variant="outline"
+                      className={`text-xs ${
+                        insight.confidence > 0.8
+                          ? 'bg-green-100 text-green-800'
+                          : insight.confidence > 0.6
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      {Math.round(insight.confidence * 100)}%
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">{insight.description}</p>
+                  {insight.actionable && insight.actions && (
+                    <div className="flex flex-wrap gap-1">
+                      {insight.actions.slice(0, 2).map((action, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {action}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* クイックアクション */}
       <Card className="border-yellow-200 bg-yellow-50">
@@ -236,50 +314,123 @@ export const ADHDSupportPage: React.FC = () => {
 
         <TabsContent value="progress">
           <div className="space-y-6">
+            {/* 期間選択 */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  週間進捗
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    進捗分析
+                  </div>
+                  <div className="flex gap-2">
+                    {(['daily', 'weekly', 'monthly'] as const).map((timeframe) => (
+                      <Button
+                        key={timeframe}
+                        variant={selectedTimeframe === timeframe ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedTimeframe(timeframe)}
+                      >
+                        {timeframe === 'daily' ? '日別' : timeframe === 'weekly' ? '週別' : '月別'}
+                      </Button>
+                    ))}
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">今週の集中時間</span>
-                      <span className="text-sm font-medium">180分 / 300分</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
-                    </div>
-                  </div>
+                  {progress && (
+                    <>
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium">目標達成率</span>
+                          <span className="text-sm font-medium">
+                            {progress.totalSessions} / {progress.weeklyGoal} セッション
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{
+                              width: `${Math.min((progress.totalSessions / progress.weeklyGoal) * 100, 100)}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
 
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">現実思考の割合</span>
-                      <span className="text-sm font-medium">72%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '72%' }}></div>
-                    </div>
-                  </div>
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium">現実度スコア</span>
+                          <span className="text-sm font-medium">
+                            {progress.averageRealityScore.toFixed(1)}/10
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-green-600 h-2 rounded-full"
+                            style={{ width: `${(progress.averageRealityScore / 10) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
 
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">妄想チェック成功率</span>
-                      <span className="text-sm font-medium">85%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-purple-600 h-2 rounded-full"
-                        style={{ width: '85%' }}
-                      ></div>
-                    </div>
-                  </div>
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium">継続ストリーク</span>
+                          <span className="text-sm font-medium">{progress.streakDays}日</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-purple-600 h-2 rounded-full"
+                            style={{ width: `${Math.min((progress.streakDays / 30) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
+
+            {/* 月間トレンド */}
+            {progress?.monthlyTrends && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    月間トレンド
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Object.entries(progress.monthlyTrends)
+                      .slice(0, 3)
+                      .map(([month, data]) => (
+                        <div
+                          key={month}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
+                          <div>
+                            <div className="font-medium text-sm">{month}</div>
+                            <div className="text-xs text-gray-600">
+                              {data.sessions}セッション • {Math.round(data.totalFocusTime)}分
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-medium">
+                              スコア: {data.avgRealityScore.toFixed(1)}
+                            </div>
+                            <div className="w-16 bg-gray-200 rounded-full h-1">
+                              <div
+                                className="bg-blue-600 h-1 rounded-full"
+                                style={{ width: `${(data.avgRealityScore / 10) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>

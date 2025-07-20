@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useADHDNotifications } from '@/hooks/useADHDNotifications';
+import adhdService, { ThoughtEntry, FocusSession, ADHDInsight } from '@/services/adhdService';
 import {
   Brain,
   Target,
@@ -21,24 +22,9 @@ import {
   Play,
   Bell,
   X,
+  TrendingUp,
+  BarChart3,
 } from 'lucide-react';
-
-interface ThoughtEntry {
-  id: string;
-  content: string;
-  timestamp: Date;
-  type: 'reality' | 'fantasy' | 'worry' | 'focus';
-  score: number; // 1-10 現実度スコア
-}
-
-interface FocusSession {
-  id: string;
-  startTime: Date;
-  endTime?: Date;
-  goal: string;
-  thoughtsChecked: number;
-  realityScore: number;
-}
 
 export const ADHDFocusHelper: React.FC = () => {
   const [currentThought, setCurrentThought] = useState('');
@@ -48,6 +34,8 @@ export const ADHDFocusHelper: React.FC = () => {
   const [showRealityCheck, setShowRealityCheck] = useState(false);
   const [mindfulnessTimer, setMindfulnessTimer] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const [insights, setInsights] = useState<ADHDInsight[]>([]);
+  const [showInsights, setShowInsights] = useState(false);
 
   // ADHD通知システム
   const {
@@ -56,6 +44,15 @@ export const ADHDFocusHelper: React.FC = () => {
     triggerEmergencyRealityCheck,
     requestNotificationPermission,
   } = useADHDNotifications();
+
+  // データ読み込み
+  useEffect(() => {
+    const loadedThoughts = adhdService.getThoughts(10);
+    setThoughts(loadedThoughts);
+
+    const loadedInsights = adhdService.generateInsights();
+    setInsights(loadedInsights);
+  }, []);
 
   // 現実チェック用の質問リスト
   const realityQuestions = [
@@ -95,14 +92,7 @@ export const ADHDFocusHelper: React.FC = () => {
   const startFocusSession = () => {
     if (!currentGoal.trim()) return;
 
-    const newSession: FocusSession = {
-      id: Date.now().toString(),
-      startTime: new Date(),
-      goal: currentGoal,
-      thoughtsChecked: 0,
-      realityScore: 0,
-    };
-
+    const newSession = adhdService.startSession(currentGoal);
     setActiveSession(newSession);
     setCurrentGoal('');
     setIsTimerActive(true);
@@ -111,13 +101,12 @@ export const ADHDFocusHelper: React.FC = () => {
   // セッション終了
   const endFocusSession = () => {
     if (activeSession) {
-      const updatedSession = {
-        ...activeSession,
-        endTime: new Date(),
-      };
+      const completedSession = adhdService.endSession(activeSession);
+      console.log('Focus session completed:', completedSession);
 
-      // セッション履歴に保存（実装時はlocalStorageやAPI）
-      console.log('Focus session completed:', updatedSession);
+      // インサイトを更新
+      const newInsights = adhdService.generateInsights();
+      setInsights(newInsights);
 
       setActiveSession(null);
       setIsTimerActive(false);
@@ -129,15 +118,14 @@ export const ADHDFocusHelper: React.FC = () => {
   const recordThought = () => {
     if (!currentThought.trim()) return;
 
-    const thoughtEntry: ThoughtEntry = {
-      id: Date.now().toString(),
+    const thoughtData = {
       content: currentThought,
-      timestamp: new Date(),
-      type: analyzeThoughtType(currentThought),
+      type: analyzeThoughtType(currentThought) as 'reality' | 'fantasy' | 'worry' | 'focus',
       score: calculateRealityScore(currentThought),
     };
 
-    setThoughts((prev) => [thoughtEntry, ...prev.slice(0, 9)]); // 最新10件を保持
+    const savedThought = adhdService.saveThought(thoughtData);
+    setThoughts((prev) => [savedThought, ...prev.slice(0, 9)]);
     setCurrentThought('');
 
     if (activeSession) {
@@ -146,11 +134,15 @@ export const ADHDFocusHelper: React.FC = () => {
           ? {
               ...prev,
               thoughtsChecked: prev.thoughtsChecked + 1,
-              realityScore: calculateAverageRealityScore([...thoughts, thoughtEntry]),
+              realityScore: calculateAverageRealityScore([...thoughts, savedThought]),
             }
           : null
       );
     }
+
+    // インサイトを更新
+    const newInsights = adhdService.generateInsights();
+    setInsights(newInsights);
   };
 
   // 思考タイプの分析
@@ -285,6 +277,74 @@ export const ADHDFocusHelper: React.FC = () => {
 
       {/* 現実チェックプロンプト */}
       {showRealityCheck && <RealityCheckPrompt />}
+
+      {/* インサイト表示 */}
+      {insights.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between text-blue-800">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                AIインサイト
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setShowInsights(!showInsights)}>
+                {showInsights ? '隠す' : '表示'}
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          {showInsights && (
+            <CardContent>
+              <div className="space-y-3">
+                {insights.slice(0, 3).map((insight) => (
+                  <div
+                    key={insight.id}
+                    className={`p-3 rounded-lg border ${
+                      insight.type === 'warning'
+                        ? 'bg-red-50 border-red-200'
+                        : insight.type === 'achievement'
+                          ? 'bg-green-50 border-green-200'
+                          : 'bg-blue-50 border-blue-200'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="font-semibold text-sm">{insight.title}</h4>
+                        <p className="text-xs text-gray-600 mt-1">{insight.description}</p>
+                        {insight.actionable && insight.actions && (
+                          <div className="mt-2">
+                            <div className="text-xs font-medium text-gray-700 mb-1">
+                              推奨アクション:
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {insight.actions.map((action, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {action}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${
+                          insight.confidence > 0.8
+                            ? 'bg-green-100 text-green-800'
+                            : insight.confidence > 0.6
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {Math.round(insight.confidence * 100)}%
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       {/* アクティブセッション表示 */}
       {activeSession && (
