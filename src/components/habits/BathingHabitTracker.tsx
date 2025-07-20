@@ -31,6 +31,7 @@ import {
   Users,
   Bell,
   TrendingDown,
+  Lightbulb,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
