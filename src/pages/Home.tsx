@@ -43,6 +43,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useResponsive } from '@/hooks/useResponsive';
+import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
 
 interface ActivityData {
   task: string;
@@ -1008,10 +1009,10 @@ const Home: React.FC = () => {
           },
           {
             icon: <Target className="h-6 w-6" />,
-            title: 'プロジェクト管理',
-            description: 'WBSとプロジェクト',
-            path: '/integrated-dashboard',
-            gradient: 'from-blue-500 to-indigo-600',
+            title: '🎯 ADHD実行力支援',
+            description: '計画から実行まで細かくサポート',
+            path: '/adhd-execution',
+            gradient: 'from-purple-500 to-pink-600',
           },
           {
             icon: <Clock className="h-6 w-6" />,

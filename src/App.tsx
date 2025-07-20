@@ -250,6 +250,7 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 );
 
 import { DragonQuestChatbot } from '@/components/assetQuest/DragonQuestChatbot';
+import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
 
 export default function App() {
   const [chatbotState, setChatbotState] = useState({
@@ -1058,6 +1059,16 @@ export default function App() {
                           </div>
                         </div>
                       </div>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/adhd-execution"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ADHDExecutionAssistant />
+                      </LazyWrapper>
                     </LayoutWrapper>
                   }
                 />
