@@ -268,6 +268,14 @@ const toolsMenuItems: MenuItem[] = [
     gradient: 'from-pink-500 via-purple-500 to-indigo-500',
     accentColor: 'pink',
   },
+  {
+    icon: <Brain className="h-5 w-5" />,
+    label: 'AI強化ゲーミフィケーション',
+    path: '/ai-gamification',
+    description: 'AIがパーソナライズしたゲーム体験',
+    gradient: 'from-blue-500 via-purple-500 to-pink-500',
+    accentColor: 'blue',
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {

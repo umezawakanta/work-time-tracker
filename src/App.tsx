@@ -114,6 +114,7 @@ const DataVisualizationPage = lazy(() => import('./pages/DataVisualizationPage')
 
 // 🎮 Gamification pages
 const GamificationPage = lazy(() => import('./pages/GamificationPage'));
+const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
 
 // 📱 PWA pages
 const PWAPage = lazy(() => import('./pages/PWAPage'));
@@ -950,6 +951,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <GamificationPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/ai-gamification"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <AIGamificationPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

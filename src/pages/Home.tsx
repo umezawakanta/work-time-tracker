@@ -1030,6 +1030,13 @@ const Home: React.FC = () => {
             gradient: 'from-purple-500 to-pink-500',
           },
           {
+            icon: <Brain className="h-6 w-6" />,
+            title: '🤖 AI強化ゲーミフィケーション',
+            description: 'AIパーソナライズしたゲーム体験',
+            path: '/ai-gamification',
+            gradient: 'from-blue-500 via-purple-500 to-pink-500',
+          },
+          {
             icon: <Trophy className="h-6 w-6" />,
             title: 'バッジコレクション',
             description: 'アチーブメント確認',
