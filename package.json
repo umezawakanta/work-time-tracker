@@ -56,7 +56,8 @@
             "esbuild"
         ],
         "overrides": {
-            "cookie@<0.7.0": ">=0.7.0"
+            "cookie@<0.7.0": ">=0.7.0",
+            "@eslint/plugin-kit@<0.3.3": ">=0.3.3"
         }
     },
     "dependencies": {
@@ -129,7 +130,7 @@
         "mongodb": "^6.15.0",
         "mongoose": "^8.13.2",
         "morgan": "^1.10.0",
-        "multer": "2.0.1",
+        "multer": "2.0.2",
         "next": "^15.3.0",
         "prop-types": "^15.8.1",
         "react": "^19.1.0",
