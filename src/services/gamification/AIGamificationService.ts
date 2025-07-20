@@ -1,7 +1,12 @@
 /**
- * 🤖 AI強化ゲーミフィケーションサービス
- * 個人最適化されたゲーム体験とモチベーション管理
+ * �� AI強化ゲーミフィケーションサービス（進化版）
+ * リアルタイムAI分析・予測・パーソナライゼーションによる次世代ゲーミフィケーション
  */
+
+import { multiAIIntegrationService } from '../ai/MultiAIIntegrationService';
+import { aiServiceManager } from '../ai/AIServiceManager';
+import { unifiedAIService } from '../ai/UnifiedAIService';
+import { aiAutomationService } from '../ai/AIAutomationService';
 
 export interface UserBehaviorPattern {
   preferredTaskTypes: string[];
@@ -63,60 +68,367 @@ export interface AIReward {
   aiRecommendationScore: number;
 }
 
+// 新しいインターフェース
+export interface EmotionalState {
+  mood: 'energetic' | 'focused' | 'stressed' | 'calm' | 'frustrated' | 'motivated';
+  energy: number; // 0-100
+  stress: number; // 0-100
+  motivation: number; // 0-100
+  satisfaction: number; // 0-100
+  detectedAt: string;
+  confidence: number;
+}
+
+export interface PredictiveAnalytics {
+  burnoutRisk: number; // 0-100
+  performanceTrend: 'improving' | 'stable' | 'declining';
+  optimalWorkPattern: {
+    bestTimes: string[];
+    recommendedBreaks: number;
+    idealTaskDuration: number;
+  };
+  nextLevelPrediction: {
+    estimatedDays: number;
+    confidence: number;
+  };
+  motivationalFactors: string[];
+}
+
+export interface SmartCoaching {
+  personalizedTips: string[];
+  workflowOptimization: string;
+  motivationalStrategy: string;
+  interventionTriggers: string[];
+  adaptiveRecommendations: {
+    immediate: string[];
+    shortTerm: string[];
+    longTerm: string[];
+  };
+}
+
+export interface AIGameplayOptimization {
+  difficultyAdjustment: number; // -10 to +10
+  rewardTiming: 'immediate' | 'delayed' | 'variable';
+  challengeTypes: string[];
+  engagementStrategy: string;
+  personalityMatch: number; // 0-100
+}
+
 class AIGamificationService {
   private userBehavior: UserBehaviorPattern | null = null;
   private personalityProfile: AIPersonalityProfile | null = null;
+  private emotionalState: EmotionalState | null = null;
+  private predictiveAnalytics: PredictiveAnalytics | null = null;
+  private smartCoaching: SmartCoaching | null = null;
   private cachedInsights: MotivationalInsight[] = [];
   private lastAnalysisTime: Date | null = null;
+  private aiOptimization: AIGameplayOptimization | null = null;
 
   /**
-   * 🧠 ユーザー行動パターン分析（モック版）
+   * 🧠 リアルタイムAI行動分析（進化版）
    */
   async analyzeUserBehavior(userId: string, historicalData: any[]): Promise<UserBehaviorPattern> {
     try {
-      // TODO: 将来的にAI APIと連携
-      console.log('📊 ユーザー行動パターンを分析中...', {
+      console.log('🧠 AI駆動ユーザー行動分析を実行中...', {
         userId,
         dataCount: historicalData.length,
       });
 
-      // モック分析結果を生成
-      const pattern = this.generateMockBehaviorPattern(historicalData);
-      this.userBehavior = pattern;
+      // 複数AIで行動パターンを分析
+      const analysisRequest = {
+        prompt: `Work Time Trackerのユーザー行動データを分析し、詳細なパターンを抽出してください：
+
+【ユーザーID】${userId}
+【データ期間】${historicalData.length}日分
+
+【分析データ】
+${JSON.stringify(historicalData.slice(0, 10), null, 2)}
+
+以下の観点で分析してください：
+1. 生産性のピークタイムと低下タイム
+2. タスク完了パターンと集中力の変化
+3. 休憩の取り方と効果的なタイミング
+4. モチベーション維持のための最適な報酬タイミング
+5. ストレス兆候と予防策
+
+JSON形式で構造化された分析結果を返してください。`,
+        taskType: 'analysis' as const,
+        priority: 'high' as const,
+        useMultiple: true,
+      };
+
+      const aiResponse = await multiAIIntegrationService.processTask(analysisRequest);
+
+      // AI分析結果をパース
+      const behaviorPattern = this.parseAIBehaviorAnalysis(aiResponse.content, historicalData);
+
+      this.userBehavior = behaviorPattern;
 
       // ローカルストレージに保存
-      localStorage.setItem(`user_behavior_${userId}`, JSON.stringify(pattern));
+      localStorage.setItem(`ai_behavior_${userId}`, JSON.stringify(behaviorPattern));
 
-      return pattern;
+      return behaviorPattern;
     } catch (error) {
-      console.error('行動分析エラー:', error);
-      return this.getDefaultBehaviorPattern();
+      console.error('AI行動分析エラー:', error);
+      return this.generateMockBehaviorPattern(historicalData);
     }
   }
 
   /**
-   * 👤 AIパーソナリティプロファイル生成（モック版）
+   * 💭 感情状態リアルタイム分析
    */
-  async generatePersonalityProfile(
+  async analyzeEmotionalState(
     userId: string,
-    interactionData: any[]
-  ): Promise<AIPersonalityProfile> {
+    recentActivity: any[],
+    textInput?: string
+  ): Promise<EmotionalState> {
     try {
-      console.log('🧬 パーソナリティプロファイルを生成中...', {
-        userId,
-        interactions: interactionData.length,
+      console.log('💭 AI感情分析を実行中...');
+
+      const emotionRequest = {
+        prompt: `ユーザーの感情状態を分析してください：
+
+【最近の活動】
+${JSON.stringify(recentActivity, null, 2)}
+
+${
+  textInput
+    ? `【ユーザーの入力テキスト】
+"${textInput}"`
+    : ''
+}
+
+以下の要素を0-100の数値で評価し、総合的な感情状態を判定してください：
+- energy（エネルギーレベル）
+- stress（ストレスレベル）
+- motivation（モチベーション）
+- satisfaction（満足度）
+
+また、最適なmood（energetic/focused/stressed/calm/frustrated/motivated）を判定してください。
+
+JSON形式で返してください：
+{
+  "mood": "...",
+  "energy": 数値,
+  "stress": 数値,
+  "motivation": 数値,
+  "satisfaction": 数値,
+  "confidence": 数値
+}`,
+        taskType: 'analysis' as const,
+        priority: 'high' as const,
+      };
+
+      const aiResponse = await unifiedAIService.processRequest(emotionRequest);
+
+      const emotionalState = this.parseEmotionalAnalysis(aiResponse.content);
+      this.emotionalState = emotionalState;
+
+      return emotionalState;
+    } catch (error) {
+      console.error('感情分析エラー:', error);
+      return this.generateMockEmotionalState();
+    }
+  }
+
+  /**
+   * 🔮 予測的ゲーミフィケーション分析
+   */
+  async generatePredictiveAnalytics(userId: string): Promise<PredictiveAnalytics> {
+    try {
+      console.log('🔮 予測分析を実行中...');
+
+      const predictionRequest = {
+        prompt: `Work Time Trackerユーザーの予測分析を実行してください：
+
+【ユーザー行動パターン】
+${JSON.stringify(this.userBehavior, null, 2)}
+
+【現在の感情状態】
+${JSON.stringify(this.emotionalState, null, 2)}
+
+以下を予測してください：
+1. burnoutRisk: バーンアウトリスク（0-100）
+2. performanceTrend: パフォーマンス傾向（improving/stable/declining）
+3. optimalWorkPattern: 最適な作業パターン
+4. nextLevelPrediction: 次レベル到達予測
+5. motivationalFactors: 効果的なモチベーション要因
+
+科学的根拠に基づいた予測を行い、JSON形式で返してください。`,
+        taskType: 'analysis' as const,
+        priority: 'high' as const,
+      };
+
+      const aiResponse = await aiServiceManager.processRequest(predictionRequest);
+
+      const predictiveAnalytics = this.parsePredictiveAnalysis(aiResponse.content);
+      this.predictiveAnalytics = predictiveAnalytics;
+
+      return predictiveAnalytics;
+    } catch (error) {
+      console.error('予測分析エラー:', error);
+      return this.generateMockPredictiveAnalytics();
+    }
+  }
+
+  /**
+   * 🎯 AIスマートコーチング
+   */
+  async generateSmartCoaching(userId: string): Promise<SmartCoaching> {
+    try {
+      console.log('🎯 AIスマートコーチングを生成中...');
+
+      const coachingRequest = {
+        prompt: `パーソナライズドコーチングアドバイスを生成してください：
+
+【ユーザー分析】
+行動パターン: ${JSON.stringify(this.userBehavior?.preferredTaskTypes)}
+感情状態: ${this.emotionalState?.mood} (motivation: ${this.emotionalState?.motivation})
+予測分析: バーンアウトリスク ${this.predictiveAnalytics?.burnoutRisk}%
+
+【コーチング要求】
+1. personalizedTips: 個人に最適化された具体的なアドバイス
+2. workflowOptimization: ワークフロー改善提案
+3. motivationalStrategy: モチベーション維持戦略
+4. interventionTriggers: 介入が必要なタイミング
+5. adaptiveRecommendations: 短期・中期・長期の推奨事項
+
+実用的で実行可能なアドバイスをJSON形式で提供してください。`,
+        taskType: 'planning' as const,
+        priority: 'high' as const,
+      };
+
+      const aiResponse = await multiAIIntegrationService.getMultiAIConsensus(coachingRequest);
+
+      const smartCoaching = this.parseCoachingAdvice(aiResponse.consensus);
+      this.smartCoaching = smartCoaching;
+
+      return smartCoaching;
+    } catch (error) {
+      console.error('スマートコーチング生成エラー:', error);
+      return this.generateMockSmartCoaching();
+    }
+  }
+
+  /**
+   * ⚙️ ゲームプレイAI最適化
+   */
+  async optimizeGameplay(userId: string): Promise<AIGameplayOptimization> {
+    try {
+      console.log('⚙️ ゲームプレイAI最適化を実行中...');
+
+      const optimizationRequest = {
+        prompt: `ゲーミフィケーション要素をユーザーに最適化してください：
+
+【現在の分析データ】
+パーソナリティ: ${JSON.stringify(this.personalityProfile)}
+感情状態: ${JSON.stringify(this.emotionalState)}
+行動パターン: ${JSON.stringify(this.userBehavior?.preferredTaskTypes)}
+
+【最適化項目】
+1. difficultyAdjustment: 難易度調整（-10〜+10）
+2. rewardTiming: 報酬タイミング最適化
+3. challengeTypes: 最適なチャレンジタイプ
+4. engagementStrategy: エンゲージメント戦略
+5. personalityMatch: パーソナリティ適合度
+
+心理学とゲーミフィケーション理論に基づいた最適化案をJSON形式で提案してください。`,
+        taskType: 'planning' as const,
+        priority: 'normal' as const,
+      };
+
+      const aiResponse = await unifiedAIService.processRequest(optimizationRequest);
+
+      const optimization = this.parseOptimizationSuggestions(aiResponse.content);
+      this.aiOptimization = optimization;
+
+      return optimization;
+    } catch (error) {
+      console.error('ゲームプレイ最適化エラー:', error);
+      return this.generateMockOptimization();
+    }
+  }
+
+  /**
+   * 🚀 統合AI分析パイプライン
+   */
+  async runFullAIAnalysis(
+    userId: string,
+    fullContext: any
+  ): Promise<{
+    behavior: UserBehaviorPattern;
+    emotion: EmotionalState;
+    prediction: PredictiveAnalytics;
+    coaching: SmartCoaching;
+    optimization: AIGameplayOptimization;
+  }> {
+    try {
+      console.log('🚀 フルAI分析パイプラインを実行中...');
+
+      // 並列でAI分析を実行
+      const [behavior, emotion, prediction, coaching, optimization] = await Promise.all([
+        this.analyzeUserBehavior(userId, fullContext.historicalData),
+        this.analyzeEmotionalState(userId, fullContext.recentActivity, fullContext.textInput),
+        this.generatePredictiveAnalytics(userId),
+        this.generateSmartCoaching(userId),
+        this.optimizeGameplay(userId),
+      ]);
+
+      // 統合レポートをAIで生成
+      await this.generateIntegratedReport(userId, {
+        behavior,
+        emotion,
+        prediction,
+        coaching,
+        optimization,
       });
 
-      // モックプロファイルを生成
-      const profile = this.generateMockPersonalityProfile(interactionData);
-      this.personalityProfile = profile;
-
-      localStorage.setItem(`personality_profile_${userId}`, JSON.stringify(profile));
-
-      return profile;
+      return { behavior, emotion, prediction, coaching, optimization };
     } catch (error) {
-      console.error('プロファイル生成エラー:', error);
-      return this.getDefaultPersonalityProfile();
+      console.error('統合AI分析エラー:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 📊 統合レポート生成
+   */
+  private async generateIntegratedReport(userId: string, analysisResults: any): Promise<string> {
+    try {
+      const reportRequest = {
+        prompt: `包括的なユーザー分析レポートを生成してください：
+
+【分析結果】
+${JSON.stringify(analysisResults, null, 2)}
+
+【レポート要求】
+1. 現状の総合評価
+2. 主要な改善ポイント
+3. 具体的な行動提案
+4. 長期的な成長戦略
+5. 注意すべきリスク要因
+
+専門的かつ理解しやすい日本語でレポートを作成してください。`,
+        taskType: 'analysis' as const,
+        priority: 'normal' as const,
+      };
+
+      const aiResponse = await multiAIIntegrationService.processTask(reportRequest);
+
+      // レポートを保存
+      localStorage.setItem(
+        `ai_report_${userId}`,
+        JSON.stringify({
+          content: aiResponse.content,
+          generatedAt: new Date().toISOString(),
+          analysisResults,
+        })
+      );
+
+      return aiResponse.content;
+    } catch (error) {
+      console.error('統合レポート生成エラー:', error);
+      return '統合レポートの生成中にエラーが発生しました。';
     }
   }
 
@@ -372,18 +684,6 @@ class AIGamificationService {
     ];
   }
 
-  private generateMockPredictiveAnalytics(): any {
-    return {
-      weeklyActivityPrediction: Array.from(
-        { length: 7 },
-        () => Math.floor(Math.random() * 30) + 60
-      ),
-      motivationRisk: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)],
-      optimalTaskTiming: ['09:00', '14:00', '19:00'],
-      achievableGoals: ['習慣継続', '新スキル学習', 'プロジェクト完了'],
-    };
-  }
-
   // ==================== ヘルパーメソッド ====================
 
   private async loadUserProfiles(userId: string): Promise<void> {
@@ -490,6 +790,181 @@ class AIGamificationService {
         aiRecommendationScore: 0.8,
       },
     ];
+  }
+
+  /**
+   * 📊 AI分析結果パーサー
+   */
+  private parseAIBehaviorAnalysis(aiContent: string, historicalData: any[]): UserBehaviorPattern {
+    try {
+      // JSONレスポンスを試行
+      const parsed = JSON.parse(aiContent);
+      return {
+        preferredTaskTypes: parsed.preferredTaskTypes || ['development', 'planning'],
+        activeTimeRanges: parsed.activeTimeRanges || ['09:00-11:00', '14:00-16:00'],
+        completionPatterns: parsed.completionPatterns || {
+          weekday: 75,
+          weekend: 60,
+          morning: 80,
+          afternoon: 70,
+          evening: 65,
+        },
+        motivationTriggers: parsed.motivationTriggers || [
+          'achievement_badges',
+          'progress_visualization',
+        ],
+        burnoutSignals: parsed.burnoutSignals || [
+          'decreased_task_completion',
+          'irregular_break_patterns',
+        ],
+        optimalChallengeLevel: parsed.optimalChallengeLevel || 6,
+      };
+    } catch (error) {
+      console.warn('AI分析結果のパースに失敗、フォールバック使用:', error);
+      return this.generateMockBehaviorPattern(historicalData);
+    }
+  }
+
+  private parseEmotionalAnalysis(aiContent: string): EmotionalState {
+    try {
+      const parsed = JSON.parse(aiContent);
+      return {
+        mood: parsed.mood || 'focused',
+        energy: parsed.energy || 75,
+        stress: parsed.stress || 30,
+        motivation: parsed.motivation || 80,
+        satisfaction: parsed.satisfaction || 70,
+        detectedAt: new Date().toISOString(),
+        confidence: parsed.confidence || 0.8,
+      };
+    } catch (error) {
+      return this.generateMockEmotionalState();
+    }
+  }
+
+  private parsePredictiveAnalysis(aiContent: string): PredictiveAnalytics {
+    try {
+      const parsed = JSON.parse(aiContent);
+      return {
+        burnoutRisk: parsed.burnoutRisk || 25,
+        performanceTrend: parsed.performanceTrend || 'stable',
+        optimalWorkPattern: parsed.optimalWorkPattern || {
+          bestTimes: ['09:00-11:00', '14:00-16:00'],
+          recommendedBreaks: 3,
+          idealTaskDuration: 90,
+        },
+        nextLevelPrediction: parsed.nextLevelPrediction || {
+          estimatedDays: 12,
+          confidence: 0.75,
+        },
+        motivationalFactors: parsed.motivationalFactors || [
+          '進捗の可視化',
+          '達成バッジの獲得',
+          'チーム内競争',
+        ],
+      };
+    } catch (error) {
+      return this.generateMockPredictiveAnalytics();
+    }
+  }
+
+  private parseCoachingAdvice(aiContent: string): SmartCoaching {
+    try {
+      const parsed = JSON.parse(aiContent);
+      return {
+        personalizedTips: parsed.personalizedTips || [
+          '朝の30分を計画立てに使うと効率が向上します',
+          '集中力が低下する午後は軽めのタスクを設定しましょう',
+        ],
+        workflowOptimization:
+          parsed.workflowOptimization || 'ポモドーロテクニックと短い休憩を組み合わせることを推奨',
+        motivationalStrategy: parsed.motivationalStrategy || '小さな達成を積み重ねる戦略が効果的',
+        interventionTriggers: parsed.interventionTriggers || [
+          'ストレスレベル70%超過時',
+          '3日連続でタスク未完了時',
+        ],
+        adaptiveRecommendations: parsed.adaptiveRecommendations || {
+          immediate: ['15分休憩を取る', '深呼吸エクササイズ'],
+          shortTerm: ['作業環境の整理', 'タスクの優先順位見直し'],
+          longTerm: ['スキルアップ計画', 'ワークライフバランス改善'],
+        },
+      };
+    } catch (error) {
+      return this.generateMockSmartCoaching();
+    }
+  }
+
+  private parseOptimizationSuggestions(aiContent: string): AIGameplayOptimization {
+    try {
+      const parsed = JSON.parse(aiContent);
+      return {
+        difficultyAdjustment: parsed.difficultyAdjustment || 2,
+        rewardTiming: parsed.rewardTiming || 'immediate',
+        challengeTypes: parsed.challengeTypes || ['skill_building', 'time_management'],
+        engagementStrategy:
+          parsed.engagementStrategy || 'progressive_challenge_with_social_recognition',
+        personalityMatch: parsed.personalityMatch || 85,
+      };
+    } catch (error) {
+      return this.generateMockOptimization();
+    }
+  }
+
+  // Mock generators for fallback
+  private generateMockEmotionalState(): EmotionalState {
+    return {
+      mood: 'focused',
+      energy: 75,
+      stress: 30,
+      motivation: 80,
+      satisfaction: 70,
+      detectedAt: new Date().toISOString(),
+      confidence: 0.8,
+    };
+  }
+
+  private generateMockPredictiveAnalytics(): PredictiveAnalytics {
+    return {
+      burnoutRisk: 25,
+      performanceTrend: 'stable',
+      optimalWorkPattern: {
+        bestTimes: ['09:00-11:00', '14:00-16:00'],
+        recommendedBreaks: 3,
+        idealTaskDuration: 90,
+      },
+      nextLevelPrediction: {
+        estimatedDays: 12,
+        confidence: 0.75,
+      },
+      motivationalFactors: ['進捗の可視化', '達成バッジの獲得', 'チーム内競争'],
+    };
+  }
+
+  private generateMockSmartCoaching(): SmartCoaching {
+    return {
+      personalizedTips: [
+        '朝の30分を計画立てに使うと効率が向上します',
+        '集中力が低下する午後は軽めのタスクを設定しましょう',
+      ],
+      workflowOptimization: 'ポモドーロテクニックと短い休憩を組み合わせることを推奨',
+      motivationalStrategy: '小さな達成を積み重ねる戦略が効果的',
+      interventionTriggers: ['ストレスレベル70%超過時', '3日連続でタスク未完了時'],
+      adaptiveRecommendations: {
+        immediate: ['15分休憩を取る', '深呼吸エクササイズ'],
+        shortTerm: ['作業環境の整理', 'タスクの優先順位見直し'],
+        longTerm: ['スキルアップ計画', 'ワークライフバランス改善'],
+      },
+    };
+  }
+
+  private generateMockOptimization(): AIGameplayOptimization {
+    return {
+      difficultyAdjustment: 2,
+      rewardTiming: 'immediate',
+      challengeTypes: ['skill_building', 'time_management'],
+      engagementStrategy: 'progressive_challenge_with_social_recognition',
+      personalityMatch: 85,
+    };
   }
 }
 

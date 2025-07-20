@@ -270,9 +270,9 @@ const toolsMenuItems: MenuItem[] = [
   },
   {
     icon: <Brain className="h-5 w-5" />,
-    label: 'AI強化ゲーミフィケーション',
+    label: '🚀 AI強化ゲーミフィケーション（進化版）',
     path: '/ai-gamification',
-    description: 'AIがパーソナライズしたゲーム体験',
+    description: 'リアルタイムAI分析・予測・パーソナライゼーション',
     gradient: 'from-blue-500 via-purple-500 to-pink-500',
     accentColor: 'blue',
   },

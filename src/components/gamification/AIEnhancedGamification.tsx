@@ -1,6 +1,6 @@
 /**
- * 🤖 AI強化ゲーミフィケーションダッシュボード
- * パーソナライズされたゲーム体験とインテリジェントなモチベーション管理
+ * 🤖 AI強化ゲーミフィケーションダッシュボード（進化版）
+ * リアルタイムAI分析・予測・パーソナライゼーションによる次世代ゲーム体験
  */
 
 import React, { useState, useEffect } from 'react';
@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Brain,
   Bot,
@@ -33,6 +35,17 @@ import {
   Settings,
   RefreshCw,
   Eye,
+  Heart,
+  Activity,
+  MessageCircle,
+  Gauge,
+  Shield,
+  Timer,
+  Coffee,
+  Sun,
+  Moon,
+  Sunset,
+  ThermometerSun,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
@@ -43,16 +56,23 @@ import {
   SmartChallenge,
   MotivationalInsight,
   AIReward,
+  EmotionalState,
+  PredictiveAnalytics,
+  SmartCoaching,
+  AIGameplayOptimization,
 } from '@/services/gamification/AIGamificationService';
 
 interface AIGamificationState {
   behaviorPattern: UserBehaviorPattern | null;
   personalityProfile: AIPersonalityProfile | null;
+  emotionalState: EmotionalState | null;
+  predictiveAnalytics: PredictiveAnalytics | null;
+  smartCoaching: SmartCoaching | null;
   smartChallenges: SmartChallenge[];
   motivationalInsights: MotivationalInsight[];
   personalizedRewards: AIReward[];
+  gameplayOptimization: AIGameplayOptimization | null;
   aiRecommendations: string[];
-  predictiveAnalytics: any;
   isAnalyzing: boolean;
   lastUpdateTime: Date | null;
 }
@@ -61,75 +81,111 @@ export const AIEnhancedGamification: React.FC = () => {
   const [state, setState] = useState<AIGamificationState>({
     behaviorPattern: null,
     personalityProfile: null,
+    emotionalState: null,
+    predictiveAnalytics: null,
+    smartCoaching: null,
     smartChallenges: [],
     motivationalInsights: [],
     personalizedRewards: [],
+    gameplayOptimization: null,
     aiRecommendations: [],
-    predictiveAnalytics: null,
     isAnalyzing: false,
     lastUpdateTime: null,
   });
 
   const [selectedTab, setSelectedTab] = useState<
-    'dashboard' | 'challenges' | 'insights' | 'rewards'
+    'dashboard' | 'emotion' | 'prediction' | 'coaching' | 'challenges' | 'optimization'
   >('dashboard');
-  const [userLevel, setUserLevel] = useState(12);
-  const [userXP, setUserXP] = useState(2450);
-  const [nextLevelXP] = useState(3000);
+
+  const [userLevel, setUserLevel] = useState(15);
+  const [userXP, setUserXP] = useState(3850);
+  const [nextLevelXP] = useState(4500);
+
+  // テキスト入力でリアルタイム感情分析
+  const [textInput, setTextInput] = useState('');
+  const [isAnalyzingEmotion, setIsAnalyzingEmotion] = useState(false);
 
   useEffect(() => {
-    initializeAIGamification();
+    initializeFullAIAnalysis();
   }, []);
 
   /**
-   * 🚀 AI ゲーミフィケーション初期化
+   * 🚀 フルAI分析パイプライン実行
    */
-  const initializeAIGamification = async (): Promise<void> => {
+  const initializeFullAIAnalysis = async (): Promise<void> => {
     setState((prev) => ({ ...prev, isAnalyzing: true }));
 
     try {
-      const userId = 'current_user'; // 実際のユーザーIDを取得
+      const userId = 'current_user';
 
-      // モック履歴データ
-      const historicalData = generateMockHistoricalData();
-      const interactionData = generateMockInteractionData();
-      const recentActivity = generateMockRecentActivity();
+      // モックコンテキストデータ生成
+      const fullContext = {
+        historicalData: generateMockHistoricalData(),
+        recentActivity: generateMockRecentActivity(),
+        textInput: textInput || '',
+      };
 
-      // AI分析を並行実行
-      const [
-        behaviorPattern,
-        personalityProfile,
-        smartChallenges,
-        motivationalInsights,
-        personalizedRewards,
-        dashboardData,
-      ] = await Promise.all([
-        aiGamificationService.analyzeUserBehavior(userId, historicalData),
-        aiGamificationService.generatePersonalityProfile(userId, interactionData),
+      // フルAI分析を実行
+      const analysisResults = await aiGamificationService.runFullAIAnalysis(userId, fullContext);
+
+      // 追加でスマートチャレンジとリワードも取得
+      const [smartChallenges, personalizedRewards, insights] = await Promise.all([
         aiGamificationService.generateSmartChallenges(userId, 5),
-        aiGamificationService.analyzeMotivationalState(userId, recentActivity),
         aiGamificationService.generatePersonalizedRewards(userId),
-        aiGamificationService.getAIDashboardData(userId),
+        aiGamificationService.analyzeMotivationalState(userId, fullContext.recentActivity),
       ]);
 
       setState((prev) => ({
         ...prev,
-        behaviorPattern,
-        personalityProfile,
+        behaviorPattern: analysisResults.behavior,
+        emotionalState: analysisResults.emotion,
+        predictiveAnalytics: analysisResults.prediction,
+        smartCoaching: analysisResults.coaching,
+        gameplayOptimization: analysisResults.optimization,
         smartChallenges,
-        motivationalInsights,
         personalizedRewards,
-        aiRecommendations: dashboardData.aiRecommendations,
-        predictiveAnalytics: dashboardData.predictiveAnalytics,
+        motivationalInsights: insights,
+        aiRecommendations: generateAIRecommendations(analysisResults),
         isAnalyzing: false,
         lastUpdateTime: new Date(),
       }));
 
       toast.success('🤖 AI分析が完了しました！パーソナライズされた体験をお楽しみください。');
     } catch (error) {
-      console.error('AI初期化エラー:', error);
+      console.error('フルAI分析エラー:', error);
       setState((prev) => ({ ...prev, isAnalyzing: false }));
       toast.error('AI分析中にエラーが発生しました。');
+    }
+  };
+
+  /**
+   * 💭 リアルタイム感情分析
+   */
+  const analyzeEmotionFromText = async (): Promise<void> => {
+    if (!textInput.trim()) return;
+
+    setIsAnalyzingEmotion(true);
+    try {
+      const userId = 'current_user';
+      const recentActivity = generateMockRecentActivity();
+
+      const emotionalState = await aiGamificationService.analyzeEmotionalState(
+        userId,
+        recentActivity,
+        textInput
+      );
+
+      setState((prev) => ({
+        ...prev,
+        emotionalState,
+      }));
+
+      toast.success('💭 感情状態を更新しました');
+    } catch (error) {
+      console.error('感情分析エラー:', error);
+      toast.error('感情分析に失敗しました');
+    } finally {
+      setIsAnalyzingEmotion(false);
     }
   };
 
@@ -140,7 +196,9 @@ export const AIEnhancedGamification: React.FC = () => {
     try {
       console.log('🎮 チャレンジを受諾:', challenge.title);
 
-      // チャレンジ受諾ロジック
+      // XP獲得
+      setUserXP((prev) => prev + Math.floor(challenge.xpReward * 0.1));
+
       toast.success(`🎯 「${challenge.title}」チャレンジを開始しました！`);
 
       // チャレンジを完了済みにマーク
@@ -166,11 +224,7 @@ export const AIEnhancedGamification: React.FC = () => {
         return;
       }
 
-      console.log('🎁 リワードを購入:', reward.title);
-
-      // XPを消費
       setUserXP((prev) => prev - reward.cost);
-
       toast.success(`🎁 「${reward.title}」を獲得しました！`);
     } catch (error) {
       console.error('リワード購入エラー:', error);
@@ -182,469 +236,557 @@ export const AIEnhancedGamification: React.FC = () => {
    * 🔄 AI分析更新
    */
   const refreshAIAnalysis = (): void => {
-    initializeAIGamification();
+    initializeFullAIAnalysis();
   };
 
-  /**
-   * 📊 モチベーションスコア計算
-   */
-  const calculateMotivationScore = (): number => {
-    if (!state.motivationalInsights.length) return 75;
-
-    const positiveCount = state.motivationalInsights.filter(
-      (insight) => insight.type === 'encouragement' || insight.type === 'celebration'
-    ).length;
-
-    const totalCount = state.motivationalInsights.length;
-    return Math.round((positiveCount / totalCount) * 100);
-  };
-
-  /**
-   * 🎨 パーソナリティスタイル取得
-   */
-  const getPersonalityStyleColor = (style: string): string => {
-    const colors = {
-      achievement: 'text-yellow-600 bg-yellow-50',
-      social: 'text-blue-600 bg-blue-50',
-      mastery: 'text-purple-600 bg-purple-50',
-      purpose: 'text-green-600 bg-green-50',
+  // ヘルパー関数群
+  const getEmotionIcon = (mood: string) => {
+    const icons = {
+      energetic: <Zap className="w-5 h-5 text-yellow-500" />,
+      focused: <Target className="w-5 h-5 text-blue-500" />,
+      stressed: <AlertCircle className="w-5 h-5 text-red-500" />,
+      calm: <Heart className="w-5 h-5 text-green-500" />,
+      frustrated: <ThermometerSun className="w-5 h-5 text-orange-500" />,
+      motivated: <Flame className="w-5 h-5 text-purple-500" />,
     };
-    return colors[style as keyof typeof colors] || 'text-gray-600 bg-gray-50';
+    return icons[mood as keyof typeof icons] || <Activity className="w-5 h-5" />;
   };
 
-  /**
-   * 🏆 難易度カラー取得
-   */
-  const getDifficultyColor = (difficulty: number): string => {
-    if (difficulty <= 3) return 'text-green-600 bg-green-50';
-    if (difficulty <= 6) return 'text-yellow-600 bg-yellow-50';
-    if (difficulty <= 8) return 'text-orange-600 bg-orange-50';
-    return 'text-red-600 bg-red-50';
+  const getTimeIcon = (time: string) => {
+    if (time.includes('09:') || time.includes('10:') || time.includes('11:')) {
+      return <Sun className="w-4 h-4 text-yellow-500" />;
+    } else if (time.includes('14:') || time.includes('15:') || time.includes('16:')) {
+      return <Sunset className="w-4 h-4 text-orange-500" />;
+    } else {
+      return <Moon className="w-4 h-4 text-blue-500" />;
+    }
   };
 
-  /**
-   * ⚡ 緊急度カラー取得
-   */
-  const getUrgencyColor = (urgency: string): string => {
-    const colors = {
-      low: 'text-blue-600 bg-blue-50',
-      medium: 'text-yellow-600 bg-yellow-50',
-      high: 'text-red-600 bg-red-50',
+  const getTrendIcon = (trend: string) => {
+    const icons = {
+      improving: <TrendingUp className="w-4 h-4 text-green-500" />,
+      stable: <Gauge className="w-4 h-4 text-blue-500" />,
+      declining: <AlertCircle className="w-4 h-4 text-red-500" />,
     };
-    return colors[urgency as keyof typeof colors] || 'text-gray-600 bg-gray-50';
+    return icons[trend as keyof typeof icons] || <Activity className="w-4 h-4" />;
   };
-
-  // モックデータ生成
-  const generateMockHistoricalData = () =>
-    Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      category: ['learning', 'health', 'work', 'personal'][Math.floor(Math.random() * 4)],
-      completed: Math.random() > 0.3,
-      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
-    }));
-
-  const generateMockInteractionData = () =>
-    Array.from({ length: 20 }, (_, i) => ({
-      type: 'task_completion',
-      timestamp: new Date(Date.now() - i * 60 * 60 * 1000),
-      value: Math.random(),
-    }));
-
-  const generateMockRecentActivity = () =>
-    Array.from({ length: 10 }, (_, i) => ({
-      action: 'completed_task',
-      timestamp: new Date(Date.now() - i * 30 * 60 * 1000),
-      success: Math.random() > 0.2,
-    }));
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500">
-              <Brain className="h-8 w-8 text-white" />
-            </div>
-            AI強化ゲーミフィケーション
-          </h1>
-          <p className="text-gray-600 mt-2">
-            パーソナライズされたゲーム体験で最高のパフォーマンスを実現
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={refreshAIAnalysis}
-            disabled={state.isAnalyzing}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={cn('h-4 w-4', state.isAnalyzing && 'animate-spin')} />
-            {state.isAnalyzing ? 'AI分析中...' : 'AI分析更新'}
-          </Button>
-          <Badge variant="outline" className="bg-white/50">
-            {state.lastUpdateTime
-              ? `最終更新: ${state.lastUpdateTime.toLocaleTimeString()}`
-              : '未分析'}
-          </Badge>
-        </div>
-      </div>
-
-      {/* AI分析ローディング */}
-      {state.isAnalyzing && (
-        <Alert>
-          <Bot className="h-4 w-4" />
-          <AlertDescription>
-            🤖 AIがあなたの行動パターンとモチベーションを分析中...
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* プレイヤー統計 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-yellow-800">レベル</p>
-                <p className="text-2xl font-bold text-yellow-900">{userLevel}</p>
-                <Progress value={(userXP / nextLevelXP) * 100} className="h-2 mt-1" />
+    <div className="space-y-6 max-w-6xl mx-auto p-4">
+      {/* AIヘッダー */}
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-l-4 border-l-blue-500">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="w-6 h-6 text-blue-600" />
+            🤖 AI強化ゲーミフィケーション（進化版）
+            {state.isAnalyzing && (
+              <div className="flex items-center gap-2 ml-auto">
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span className="text-sm text-gray-600">AI分析中...</span>
               </div>
-              <Crown className="h-8 w-8 text-yellow-600" />
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="text-lg">
+              {state.lastUpdateTime ? (
+                <>
+                  最新AI分析: {state.lastUpdateTime.toLocaleTimeString()} • レベル {userLevel} (
+                  {userXP}/{nextLevelXP} XP)
+                </>
+              ) : (
+                'AI分析を準備中...'
+              )}
             </div>
-          </CardContent>
-        </Card>
+            <Button
+              onClick={refreshAIAnalysis}
+              disabled={state.isAnalyzing}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={cn('w-4 h-4', state.isAnalyzing && 'animate-spin')} />
+              AI再分析
+            </Button>
+          </div>
+          <Progress value={(userXP / nextLevelXP) * 100} className="mt-2" />
+        </CardContent>
+      </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-800">XP</p>
-                <p className="text-2xl font-bold text-blue-900">{userXP.toLocaleString()}</p>
-                <p className="text-xs text-blue-600">次のレベルまであと {nextLevelXP - userXP}</p>
-              </div>
-              <Star className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-800">モチベーション</p>
-                <p className="text-2xl font-bold text-green-900">{calculateMotivationScore()}%</p>
-                <p className="text-xs text-green-600">AI分析スコア</p>
-              </div>
-              <Flame className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-800">AIスコア</p>
-                <p className="text-2xl font-bold text-purple-900">92%</p>
-                <p className="text-xs text-purple-600">パーソナライゼーション精度</p>
-              </div>
-              <Bot className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* メインコンテンツ */}
-      <Tabs value={selectedTab} onValueChange={(value: any) => setSelectedTab(value)}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            ダッシュボード
+      {/* タブナビゲーション */}
+      <Tabs value={selectedTab} onValueChange={setSelectedTab as (value: string) => void}>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="dashboard" className="flex items-center gap-1">
+            <BarChart3 className="w-4 h-4" />
+            <span className="hidden sm:inline">ダッシュボード</span>
           </TabsTrigger>
-          <TabsTrigger value="challenges" className="flex items-center gap-2">
-            <Target className="h-4 w-4" />
-            AIチャレンジ
+          <TabsTrigger value="emotion" className="flex items-center gap-1">
+            <Heart className="w-4 h-4" />
+            <span className="hidden sm:inline">感情分析</span>
           </TabsTrigger>
-          <TabsTrigger value="insights" className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4" />
-            インサイト
+          <TabsTrigger value="prediction" className="flex items-center gap-1">
+            <TrendingUp className="w-4 h-4" />
+            <span className="hidden sm:inline">予測分析</span>
           </TabsTrigger>
-          <TabsTrigger value="rewards" className="flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
-            リワード
+          <TabsTrigger value="coaching" className="flex items-center gap-1">
+            <Lightbulb className="w-4 h-4" />
+            <span className="hidden sm:inline">コーチング</span>
+          </TabsTrigger>
+          <TabsTrigger value="challenges" className="flex items-center gap-1">
+            <Target className="w-4 h-4" />
+            <span className="hidden sm:inline">チャレンジ</span>
+          </TabsTrigger>
+          <TabsTrigger value="optimization" className="flex items-center gap-1">
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">最適化</span>
           </TabsTrigger>
         </TabsList>
 
         {/* ダッシュボードタブ */}
-        <TabsContent value="dashboard" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* パーソナリティプロファイル */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  AIパーソナリティ分析
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {state.personalityProfile ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">モチベーションスタイル</span>
-                      <Badge
-                        className={getPersonalityStyleColor(
-                          state.personalityProfile.motivationStyle
-                        )}
-                      >
-                        {state.personalityProfile.motivationStyle}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">競争性</span>
-                      <div className="flex items-center gap-2">
-                        <Progress
-                          value={state.personalityProfile.competitiveness * 10}
-                          className="w-20 h-2"
-                        />
-                        <span className="text-sm">
-                          {state.personalityProfile.competitiveness}/10
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">学習スタイル</span>
-                      <Badge variant="outline">{state.personalityProfile.learningStyle}</Badge>
-                    </div>
+        <TabsContent value="dashboard" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 現在の感情状態 */}
+            {state.emotionalState && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    {getEmotionIcon(state.emotionalState.mood)}
+                    <span className="font-medium">感情状態</span>
                   </div>
-                ) : (
-                  <p className="text-gray-500">AI分析を実行してください</p>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="text-2xl font-bold">{state.emotionalState.mood}</div>
+                  <div className="text-sm text-gray-600">
+                    モチベーション: {state.emotionalState.motivation}%
+                  </div>
+                  <Progress value={state.emotionalState.motivation} className="mt-2" />
+                </CardContent>
+              </Card>
+            )}
 
-            {/* 行動パターン */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  行動パターン分析
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {state.behaviorPattern ? (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm font-medium mb-2">好みのタスクタイプ</p>
-                      <div className="flex flex-wrap gap-1">
-                        {state.behaviorPattern.preferredTaskTypes.map((type) => (
-                          <Badge key={type} variant="secondary" className="text-xs">
-                            {type}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium mb-2">アクティブ時間帯</p>
-                      <div className="flex flex-wrap gap-1">
-                        {state.behaviorPattern.activeTimeRanges.map((time) => (
-                          <Badge key={time} variant="outline" className="text-xs">
-                            {time}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium mb-2">最適チャレンジレベル</p>
-                      <div className="flex items-center gap-2">
-                        <Progress
-                          value={state.behaviorPattern.optimalChallengeLevel * 10}
-                          className="flex-1 h-2"
-                        />
-                        <span className="text-sm">
-                          {state.behaviorPattern.optimalChallengeLevel}/10
-                        </span>
-                      </div>
-                    </div>
+            {/* バーンアウトリスク */}
+            {state.predictiveAnalytics && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="w-5 h-5 text-red-500" />
+                    <span className="font-medium">バーンアウトリスク</span>
                   </div>
-                ) : (
-                  <p className="text-gray-500">AI分析を実行してください</p>
-                )}
-              </CardContent>
-            </Card>
+                  <div className="text-2xl font-bold">{state.predictiveAnalytics.burnoutRisk}%</div>
+                  <div className="text-sm text-gray-600">
+                    {state.predictiveAnalytics.burnoutRisk < 30
+                      ? '低リスク'
+                      : state.predictiveAnalytics.burnoutRisk < 70
+                        ? '中リスク'
+                        : '高リスク'}
+                  </div>
+                  <Progress value={state.predictiveAnalytics.burnoutRisk} className="mt-2" />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* パフォーマンス傾向 */}
+            {state.predictiveAnalytics && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    {getTrendIcon(state.predictiveAnalytics.performanceTrend)}
+                    <span className="font-medium">パフォーマンス</span>
+                  </div>
+                  <div className="text-2xl font-bold capitalize">
+                    {state.predictiveAnalytics.performanceTrend}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    次レベルまで: {state.predictiveAnalytics.nextLevelPrediction.estimatedDays}日
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* AIマッチ度 */}
+            {state.gameplayOptimization && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="w-5 h-5 text-purple-500" />
+                    <span className="font-medium">AI最適化</span>
+                  </div>
+                  <div className="text-2xl font-bold">
+                    {state.gameplayOptimization.personalityMatch}%
+                  </div>
+                  <div className="text-sm text-gray-600">パーソナリティマッチ</div>
+                  <Progress value={state.gameplayOptimization.personalityMatch} className="mt-2" />
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* AI推奨事項 */}
+          {state.aiRecommendations.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-yellow-500" />
+                  AI推奨事項
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {state.aiRecommendations.map((recommendation, index) => (
+                    <Alert key={index}>
+                      <Lightbulb className="w-4 h-4" />
+                      <AlertDescription>{recommendation}</AlertDescription>
+                    </Alert>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* 感情分析タブ */}
+        <TabsContent value="emotion" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5" />
-                AI推奨事項
+                <MessageCircle className="w-5 h-5" />
+                リアルタイム感情分析
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">現在の気持ちを教えてください：</label>
+                <Textarea
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder="今の気分や状況について自由に入力してください..."
+                  className="mt-1"
+                />
+                <Button
+                  onClick={analyzeEmotionFromText}
+                  disabled={isAnalyzingEmotion || !textInput.trim()}
+                  className="mt-2"
+                >
+                  {isAnalyzingEmotion ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      感情分析中...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="w-4 h-4 mr-2" />
+                      感情を分析
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {state.emotionalState && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {state.emotionalState.energy}%
+                    </div>
+                    <div className="text-sm text-gray-600">エネルギー</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {state.emotionalState.motivation}%
+                    </div>
+                    <div className="text-sm text-gray-600">モチベーション</div>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600">
+                      {state.emotionalState.stress}%
+                    </div>
+                    <div className="text-sm text-gray-600">ストレス</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {state.emotionalState.satisfaction}%
+                    </div>
+                    <div className="text-sm text-gray-600">満足度</div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 予測分析タブ */}
+        <TabsContent value="prediction" className="space-y-4">
+          {state.predictiveAnalytics && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    最適な作業パターン
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <h4 className="font-medium mb-2">最適時間帯</h4>
+                      <div className="space-y-1">
+                        {state.predictiveAnalytics.optimalWorkPattern.bestTimes.map(
+                          (time, index) => (
+                            <div key={index} className="flex items-center gap-2 text-sm">
+                              {getTimeIcon(time)}
+                              {time}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">推奨休憩</h4>
+                      <div className="text-2xl font-bold text-blue-600">
+                        {state.predictiveAnalytics.optimalWorkPattern.recommendedBreaks}回/日
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">理想的作業時間</h4>
+                      <div className="text-2xl font-bold text-green-600">
+                        {state.predictiveAnalytics.optimalWorkPattern.idealTaskDuration}分
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>モチベーション要因</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {state.predictiveAnalytics.motivationalFactors.map((factor, index) => (
+                      <Badge key={index} variant="outline">
+                        {factor}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </TabsContent>
+
+        {/* スマートコーチングタブ */}
+        <TabsContent value="coaching" className="space-y-4">
+          {state.smartCoaching && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5" />
+                    パーソナライズドアドバイス
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {state.smartCoaching.personalizedTips.map((tip, index) => (
+                      <Alert key={index}>
+                        <CheckCircle className="w-4 h-4" />
+                        <AlertDescription>{tip}</AlertDescription>
+                      </Alert>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">即座に実行</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {state.smartCoaching.adaptiveRecommendations.immediate.map((rec, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <PlayCircle className="w-4 h-4 text-green-500" />
+                          {rec}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">短期目標</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {state.smartCoaching.adaptiveRecommendations.shortTerm.map((rec, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <Timer className="w-4 h-4 text-blue-500" />
+                          {rec}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">長期戦略</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {state.smartCoaching.adaptiveRecommendations.longTerm.map((rec, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm">
+                          <Calendar className="w-4 h-4 text-purple-500" />
+                          {rec}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        {/* スマートチャレンジタブ */}
+        <TabsContent value="challenges" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                AIパーソナライズドチャレンジ
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {state.aiRecommendations.map((recommendation, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                    <Lightbulb className="h-5 w-5 text-blue-600 mt-0.5" />
-                    <p className="text-sm text-blue-900">{recommendation}</p>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {state.smartChallenges.map((challenge) => (
+                  <Card key={challenge.id} className="border-l-4 border-l-blue-500">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-medium">{challenge.title}</h4>
+                        <Badge variant="outline">{challenge.xpReward} XP</Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{challenge.description}</p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>難易度: {challenge.difficulty}/10</span>
+                        <span>予想時間: {challenge.estimatedTime}分</span>
+                      </div>
+                      <div className="text-xs text-blue-600 mt-2">
+                        AI理由: {challenge.personalizedReason}
+                      </div>
+                      <Button
+                        onClick={() => acceptChallenge(challenge)}
+                        className="w-full mt-3"
+                        size="sm"
+                      >
+                        チャレンジ開始
+                      </Button>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* チャレンジタブ */}
-        <TabsContent value="challenges" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {state.smartChallenges.map((challenge) => (
-              <Card key={challenge.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{challenge.title}</CardTitle>
-                    <Badge className={getDifficultyColor(challenge.difficulty)}>
-                      難易度 {challenge.difficulty}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-gray-600">{challenge.description}</p>
-
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {challenge.estimatedTime}分
+        {/* ゲームプレイ最適化タブ */}
+        <TabsContent value="optimization" className="space-y-4">
+          {state.gameplayOptimization && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  AI ゲームプレイ最適化
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-3">最適化設定</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">難易度調整</span>
+                        <Badge
+                          variant={
+                            state.gameplayOptimization.difficultyAdjustment > 0
+                              ? 'default'
+                              : 'secondary'
+                          }
+                        >
+                          {state.gameplayOptimization.difficultyAdjustment > 0 ? '+' : ''}
+                          {state.gameplayOptimization.difficultyAdjustment}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">報酬タイミング</span>
+                        <Badge variant="outline">{state.gameplayOptimization.rewardTiming}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">パーソナリティマッチ</span>
+                        <div className="flex items-center gap-2">
+                          <Progress
+                            value={state.gameplayOptimization.personalityMatch}
+                            className="w-20"
+                          />
+                          <span className="text-sm">
+                            {state.gameplayOptimization.personalityMatch}%
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3" />
-                      {challenge.xpReward} XP
-                    </div>
                   </div>
 
-                  <div className="p-2 bg-purple-50 rounded-lg">
-                    <p className="text-xs text-purple-800">
-                      <Bot className="h-3 w-3 inline mr-1" />
-                      {challenge.personalizedReason}
+                  <div>
+                    <h4 className="font-medium mb-3">推奨チャレンジタイプ</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {state.gameplayOptimization.challengeTypes.map((type, index) => (
+                        <Badge key={index} variant="secondary">
+                          {type}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <h4 className="font-medium mb-3 mt-4">エンゲージメント戦略</h4>
+                    <p className="text-sm text-gray-600">
+                      {state.gameplayOptimization.engagementStrategy}
                     </p>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-500">成功予測:</span>
-                      <span className="text-xs font-medium">
-                        {Math.round(challenge.successPrediction * 100)}%
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => acceptChallenge(challenge)}
-                      className="flex items-center gap-1"
-                    >
-                      <PlayCircle className="h-3 w-3" />
-                      開始
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* インサイトタブ */}
-        <TabsContent value="insights" className="space-y-6">
-          <div className="space-y-4">
-            {state.motivationalInsights.map((insight, index) => (
-              <Alert
-                key={index}
-                className={`border-l-4 ${getUrgencyColor(insight.urgency).replace('text-', 'border-l-')}`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-1">
-                    {insight.type === 'encouragement' && (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    )}
-                    {insight.type === 'strategy' && <Lightbulb className="h-4 w-4 text-blue-600" />}
-                    {insight.type === 'warning' && (
-                      <AlertCircle className="h-4 w-4 text-orange-600" />
-                    )}
-                    {insight.type === 'celebration' && (
-                      <Sparkles className="h-4 w-4 text-purple-600" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <AlertDescription className="text-sm">{insight.message}</AlertDescription>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className={getUrgencyColor(insight.urgency)}>
-                        {insight.urgency}
-                      </Badge>
-                      {insight.actionable && (
-                        <Badge variant="secondary" className="text-xs">
-                          実行可能
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
                 </div>
-              </Alert>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* リワードタブ */}
-        <TabsContent value="rewards" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {state.personalizedRewards.map((reward) => (
-              <Card key={reward.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg">{reward.title}</CardTitle>
-                    <Badge
-                      className={
-                        reward.rarityLevel === 'legendary'
-                          ? 'bg-yellow-500 text-white'
-                          : reward.rarityLevel === 'epic'
-                            ? 'bg-purple-500 text-white'
-                            : reward.rarityLevel === 'rare'
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-500 text-white'
-                      }
-                    >
-                      {reward.rarityLevel}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-gray-600">{reward.description}</p>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">コスト:</span>
-                    <span className="font-bold">{reward.cost} XP</span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">AI推奨スコア:</span>
-                    <div className="flex items-center gap-2">
-                      <Progress value={reward.aiRecommendationScore * 100} className="w-16 h-2" />
-                      <span className="text-xs">
-                        {Math.round(reward.aiRecommendationScore * 100)}%
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    disabled={userXP < reward.cost}
-                    onClick={() => purchaseReward(reward)}
-                  >
-                    {userXP < reward.cost ? 'XP不足' : '購入'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>
   );
 };
+
+// ヘルパー関数
+function generateMockHistoricalData() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+    tasksCompleted: Math.floor(Math.random() * 8) + 2,
+    workDuration: Math.floor(Math.random() * 480) + 120,
+    breaksTaken: Math.floor(Math.random() * 5) + 1,
+    stressLevel: Math.floor(Math.random() * 100),
+    productivityScore: Math.floor(Math.random() * 100) + 1,
+  }));
+}
+
+function generateMockRecentActivity() {
+  return Array.from({ length: 10 }, (_, i) => ({
+    timestamp: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
+    action: ['task_completed', 'break_taken', 'focus_session', 'planning'][
+      Math.floor(Math.random() * 4)
+    ],
+    duration: Math.floor(Math.random() * 120) + 5,
+    context: `Activity ${i + 1}`,
+  }));
+}
+
+function generateAIRecommendations(analysisResults: any): string[] {
+  const recommendations = [
+    `${analysisResults.emotion.mood}の状態では、${analysisResults.prediction.optimalWorkPattern.idealTaskDuration}分間のタスクが最適です`,
+    `バーンアウトリスク${analysisResults.prediction.burnoutRisk}%のため、${analysisResults.coaching.interventionTriggers[0]}に注意してください`,
+    `パフォーマンスが${analysisResults.prediction.performanceTrend}傾向のため、${analysisResults.coaching.personalizedTips[0]}`,
+  ];
+  return recommendations.slice(0, 2);
+}

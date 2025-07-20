@@ -38,6 +38,7 @@ import {
   Activity,
   Shield,
   HelpCircle,
+  Lightbulb,
 } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -1031,8 +1032,8 @@ const Home: React.FC = () => {
           },
           {
             icon: <Brain className="h-6 w-6" />,
-            title: '🤖 AI強化ゲーミフィケーション',
-            description: 'AIパーソナライズしたゲーム体験',
+            title: '🚀 AI強化ゲーミフィケーション（進化版）',
+            description: 'リアルタイム感情分析・予測・スマートコーチング',
             path: '/ai-gamification',
             gradient: 'from-blue-500 via-purple-500 to-pink-500',
           },
@@ -1152,6 +1153,60 @@ const Home: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* 新機能ハイライト */}
+      <Card className="border-0 shadow-md bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 mt-8">
+        <CardContent className="p-6">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              🚀 NEW: AI強化ゲーミフィケーション（進化版）
+            </h3>
+            <p className="text-gray-600">次世代のAI技術で、あなたに最適化されたゲーム体験を提供</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Brain className="w-6 h-6 text-blue-600" />
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">リアルタイムAI分析</h4>
+              <p className="text-sm text-gray-600">
+                行動パターン・感情状態・ストレスレベルをAIが常時分析
+              </p>
+            </div>
+
+            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <TrendingUp className="w-6 h-6 text-purple-600" />
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">予測分析</h4>
+              <p className="text-sm text-gray-600">
+                バーンアウトリスク予測・最適作業パターン・パフォーマンス傾向
+              </p>
+            </div>
+
+            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Lightbulb className="w-6 h-6 text-pink-600" />
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">スマートコーチング</h4>
+              <p className="text-sm text-gray-600">
+                パーソナライズされたアドバイス・介入タイミング・成長戦略
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center mt-6">
+            <Button
+              onClick={() => navigate('/ai-gamification')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+            >
+              <Zap className="w-5 h-5" />
+              進化版を体験する
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </>
   );
 
