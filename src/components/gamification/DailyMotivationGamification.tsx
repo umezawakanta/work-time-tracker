@@ -181,7 +181,7 @@ export const DailyMotivationGamification: React.FC = () => {
     );
   };
 
-  const gainXP = (amount: number, taskTitle: string) => {
+  const gainXP = useCallback((amount: number, taskTitle: string) => {
     setPlayerStats((prev) => {
       const newCurrentXP = prev.currentXP + amount;
       const newTotalXP = prev.totalXP + amount;
@@ -190,17 +190,22 @@ export const DailyMotivationGamification: React.FC = () => {
       let newLevel = prev.level;
       let xpForNextLevel = prev.xpToNextLevel;
       let remainingXP = newCurrentXP;
+      let levelUpsCount = 0;
 
       while (remainingXP >= xpForNextLevel) {
         remainingXP -= xpForNextLevel;
         newLevel++;
+        levelUpsCount++;
         xpForNextLevel = Math.floor(100 * Math.pow(1.2, newLevel - 1));
-
-        // レベルアップ通知
-        toast.success(`🎉 レベルアップ! レベル${newLevel}に到達しました！`);
       }
 
-      toast.success(`✨ +${amount} XP獲得! ${taskTitle}を完了しました！`);
+      // 通知をsetTimeoutで遅延実行（レンダリング後に実行）
+      setTimeout(() => {
+        if (levelUpsCount > 0) {
+          toast.success(`🎉 レベルアップ! レベル${newLevel}に到達しました！`);
+        }
+        toast.success(`✨ +${amount} XP獲得! ${taskTitle}を完了しました！`);
+      }, 0);
 
       return {
         ...prev,
@@ -211,7 +216,7 @@ export const DailyMotivationGamification: React.FC = () => {
         totalTasksCompleted: prev.totalTasksCompleted + 1,
       };
     });
-  };
+  }, []);
 
   const addNewTask = () => {
     if (!newTaskTitle.trim()) return;
