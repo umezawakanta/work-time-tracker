@@ -20,6 +20,7 @@ import {
   Lightbulb,
   PieChart,
   Wrench,
+  BarChart3,
 } from 'lucide-react';
 import {
   dragonQuestAIService,

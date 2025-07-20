@@ -337,12 +337,8 @@ export const ADHDExecutionAssistant: React.FC = () => {
                           {step.description}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" size="sm">
-                            {step.estimatedMinutes}分
-                          </Badge>
-                          <Badge variant="outline" size="sm">
-                            難易度 {step.difficulty}/5
-                          </Badge>
+                          <Badge variant="outline">{step.estimatedMinutes}分</Badge>
+                          <Badge variant="outline">難易度 {step.difficulty}/5</Badge>
                         </div>
                       </div>
                     </div>

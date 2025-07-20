@@ -1,6 +1,31 @@
-import { EventEmitter } from 'events';
 import adhdService, { FocusSession, ThoughtEntry, ADHDProgress } from './adhdService';
 import adhdTodoIntegration, { ADHDTask } from './adhdTodoIntegrationService';
+
+class EventEmitter {
+  private events: { [key: string]: ((...args: any[]) => void)[] } = {};
+
+  on(event: string, listener: (...args: any[]) => void): void {
+    if (!this.events[event]) this.events[event] = [];
+    this.events[event].push(listener);
+  }
+
+  off(event: string, listener: (...args: any[]) => void): void {
+    if (!this.events[event]) return;
+    const index = this.events[event].indexOf(listener);
+    if (index > -1) this.events[event].splice(index, 1);
+  }
+
+  emit(event: string, ...args: any[]): void {
+    if (!this.events[event]) return;
+    this.events[event].forEach((listener) => {
+      try {
+        listener(...args);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+}
 
 export interface UserProfile {
   id: string;

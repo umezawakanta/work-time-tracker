@@ -3,7 +3,31 @@
  * 計画立案は可能だが実行が困難な特性に特化した支援システム
  */
 
-import { EventEmitter } from 'events';
+class EventEmitter {
+  private events: { [key: string]: ((...args: any[]) => void)[] } = {};
+
+  on(event: string, listener: (...args: any[]) => void): void {
+    if (!this.events[event]) this.events[event] = [];
+    this.events[event].push(listener);
+  }
+
+  off(event: string, listener: (...args: any[]) => void): void {
+    if (!this.events[event]) return;
+    const index = this.events[event].indexOf(listener);
+    if (index > -1) this.events[event].splice(index, 1);
+  }
+
+  emit(event: string, ...args: any[]): void {
+    if (!this.events[event]) return;
+    this.events[event].forEach((listener) => {
+      try {
+        listener(...args);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+}
 
 export interface ExecutionTask {
   id: string;
@@ -204,7 +228,10 @@ class ADHDExecutionSupportService extends EventEmitter {
     }
 
     const nextStep = this.getNextIncompleteStep();
-    return this.generateResumeGuidance(nextStep, lastInterruption);
+    return this.generateRecoveryGuidance(
+      lastInterruption?.reason || 'external',
+      lastInterruption?.severity || 3
+    );
   }
 
   /**
