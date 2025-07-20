@@ -28,20 +28,6 @@ import {
 import { developmentTaskService } from '@/services/assetQuest/DevelopmentTaskService';
 import { soundManager } from '@/utils/soundManager';
 import { cn } from '@/lib/utils';
-import {
-  AuthProvider,
-  InternationalizationProvider,
-  ThemeProvider,
-  CssBaseline,
-  Toaster,
-  toasterConfig,
-  LazyWrapper,
-  ADHDFloatingButton,
-  PomodoroProvider,
-  PomodoroManager,
-} from '@/components/providers';
-import { Routes } from '@/components/Routes';
-import { theme } from '@/lib/theme';
 import { ErrorRecoveryService } from '@/services/ErrorRecoveryService';
 
 interface ChatMessage {
