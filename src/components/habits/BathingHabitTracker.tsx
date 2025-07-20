@@ -51,6 +51,8 @@ export const BathingHabitTracker: React.FC = () => {
   const [activeGuideTab, setActiveGuideTab] = useState<
     'overview' | 'features' | 'emergency' | 'tips'
   >('overview');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // フォームステート
   const [bathingType, setBathingType] = useState<BathingRecord['bathingType']>('shower');
@@ -61,11 +63,13 @@ export const BathingHabitTracker: React.FC = () => {
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
+    console.log('🛁 BathingHabitTracker: コンポーネント初期化開始');
     // 初期データ読み込み
     loadInitialData();
 
     // イベントリスナーの設定
     const handleBathingCompleted = (record: BathingRecord) => {
+      console.log('🎉 入浴完了イベント受信:', record);
       setTodayRecord(record);
       setShowRecordForm(false);
       loadStats();
@@ -73,6 +77,7 @@ export const BathingHabitTracker: React.FC = () => {
     };
 
     const handleBathingSkipped = () => {
+      console.log('⏭️ 入浴スキップイベント受信');
       loadStats();
       loadMotivationalMessage();
     };
@@ -86,23 +91,169 @@ export const BathingHabitTracker: React.FC = () => {
     };
   }, []);
 
-  const loadInitialData = () => {
-    loadStats();
-    loadMotivationalMessage();
+  const loadInitialData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      console.log('📊 初期データ読み込み開始');
+
+      await loadStats();
+      await loadMotivationalMessage();
+
+      console.log('✅ 初期データ読み込み完了');
+    } catch (err) {
+      console.error('❌ 初期データ読み込みエラー:', err);
+      setError('データの読み込みに失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const loadStats = () => {
-    const habitStats = bathingHabitService.getHabitStats();
-    setStats(habitStats);
+  const loadStats = async () => {
+    try {
+      console.log('📈 統計データ読み込み中...');
+      const habitStats = bathingHabitService.getHabitStats();
+      console.log('📈 取得した統計データ:', habitStats);
+      setStats(habitStats);
+    } catch (err) {
+      console.error('❌ 統計データ読み込みエラー:', err);
+      throw err;
+    }
   };
 
-  const loadMotivationalMessage = () => {
-    const message = bathingHabitService.getMotivationalMessage();
-    setMotivationalMessage(message);
+  const loadMotivationalMessage = async () => {
+    try {
+      console.log('💪 モチベーションメッセージ読み込み中...');
+      const message = bathingHabitService.getMotivationalMessage();
+      console.log('💪 取得したメッセージ:', message);
+      setMotivationalMessage(message);
+    } catch (err) {
+      console.error('❌ モチベーションメッセージ読み込みエラー:', err);
+      throw err;
+    }
   };
+
+  const handleRecordBathing = async () => {
+    try {
+      console.log('🚿 入浴記録開始...');
+      console.log('🚿 記録データ:', { bathingType, duration, temperature, mood, barriers, notes });
+
+      const record = bathingHabitService.recordBathing(
+        bathingType,
+        duration,
+        temperature,
+        mood,
+        barriers,
+        notes
+      );
+
+      console.log('✅ 入浴記録完了:', record);
+
+      // UIを更新
+      setTodayRecord(record);
+      await loadStats();
+      await loadMotivationalMessage();
+
+      // フォームリセット
+      setBathingType('shower');
+      setDuration(15);
+      setTemperature('warm');
+      setMood('good');
+      setBarriers([]);
+      setNotes('');
+    } catch (err) {
+      console.error('❌ 入浴記録エラー:', err);
+      setError('入浴記録の保存に失敗しました');
+    }
+  };
+
+  const handleSimpleRecord = async () => {
+    try {
+      console.log('🚿 簡単記録開始...');
+
+      const record = bathingHabitService.recordBathing('shower', 15, 'warm', 'good');
+      console.log('✅ 簡単記録完了:', record);
+
+      // UIを更新
+      setTodayRecord(record);
+      await loadStats();
+      await loadMotivationalMessage();
+    } catch (err) {
+      console.error('❌ 簡単記録エラー:', err);
+      setError('入浴記録の保存に失敗しました');
+    }
+  };
+
+  const handleEmergencyMode = () => {
+    try {
+      console.log('🚨 緊急モード開始...');
+      const emergency = bathingHabitService.activateEmergencyMode();
+      console.log('🚨 緊急モード:', emergency);
+      alert(
+        `緊急モード: ${emergency.motivationalMessages[0]}\n\n提案: ${emergency.urgentStrategies.join(', ')}`
+      );
+    } catch (err) {
+      console.error('❌ 緊急モードエラー:', err);
+      setError('緊急モードの実行に失敗しました');
+    }
+  };
+
+  // ローディング状態
+  if (isLoading) {
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto p-4">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p>入浴習慣データを読み込み中...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // エラー状態
+  if (error) {
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto p-4">
+        <Card className="border-l-4 border-l-red-500 bg-red-50">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-6 h-6 text-red-600" />
+              <div>
+                <h3 className="font-bold text-red-900">エラーが発生しました</h3>
+                <p className="text-red-800">{error}</p>
+                <Button
+                  onClick={() => {
+                    setError(null);
+                    loadInitialData();
+                  }}
+                  className="mt-3"
+                  size="sm"
+                >
+                  再試行
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!stats) {
-    return <div>読み込み中...</div>;
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto p-4">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p>統計データを読み込めませんでした</p>
+            <Button onClick={loadInitialData} className="mt-3">
+              再読み込み
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -136,424 +287,22 @@ export const BathingHabitTracker: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* 使い方ガイドモーダル */}
-      {showUsageGuide && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
-            <div className="p-6 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
-                  入浴習慣トラッカー 使い方ガイド
-                </h2>
-                <Button onClick={() => setShowUsageGuide(false)} variant="outline" size="sm">
-                  ✕ 閉じる
+      {/* エラー表示 */}
+      {error && (
+        <Card className="border-l-4 border-l-red-500 bg-red-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <div>
+                <p className="font-medium text-red-900">エラー</p>
+                <p className="text-red-800 text-sm">{error}</p>
+                <Button onClick={() => setError(null)} size="sm" variant="outline" className="mt-2">
+                  閉じる
                 </Button>
               </div>
             </div>
-
-            {/* タブナビゲーション */}
-            <div className="flex border-b">
-              {[
-                { id: 'overview', label: '概要', icon: <Info className="w-4 h-4" /> },
-                { id: 'features', label: '機能詳細', icon: <Settings className="w-4 h-4" /> },
-                { id: 'emergency', label: '緊急モード', icon: <AlertCircle className="w-4 h-4" /> },
-                { id: 'tips', label: '成功のコツ', icon: <Target className="w-4 h-4" /> },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveGuideTab(tab.id as any)}
-                  className={cn(
-                    'flex items-center gap-2 px-4 py-3 border-b-2 transition-colors',
-                    activeGuideTab === tab.id
-                      ? 'border-blue-500 text-blue-600 bg-blue-50'
-                      : 'border-transparent text-gray-600 hover:text-gray-800'
-                  )}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* タブコンテンツ */}
-            <div className="p-6 overflow-y-auto max-h-[60vh]">
-              {activeGuideTab === 'overview' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-                      <Target className="w-5 h-5 text-blue-600" />
-                      システムの目的
-                    </h3>
-                    <p className="text-gray-700 mb-4">
-                      毎日の入浴習慣を確実に実現するための包括的サポートシステムです。
-                      完璧主義に陥らず、継続することを最重視したアプローチで、無理なく習慣化を支援します。
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <Play className="w-4 h-4 text-green-600" />
-                      基本的な使い方
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                          1
-                        </div>
-                        <div>
-                          <p className="font-medium">入浴完了を記録</p>
-                          <p className="text-sm text-gray-600">
-                            入浴後に「入浴完了を記録」ボタンをクリック
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                          2
-                        </div>
-                        <div>
-                          <p className="font-medium">詳細情報を入力</p>
-                          <p className="text-sm text-gray-600">
-                            入浴タイプ（湯船/シャワー）、所要時間、気分を記録
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                          3
-                        </div>
-                        <div>
-                          <p className="font-medium">ストリーク更新</p>
-                          <p className="text-sm text-gray-600">
-                            連続記録が自動更新され、モチベーションメッセージが表示
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4 text-purple-600" />
-                      統計と追跡
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="p-3 border rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
-                          <TrendingUp className="w-4 h-4 text-green-600" />
-                          <span className="font-medium text-sm">現在のストリーク</span>
-                        </div>
-                        <p className="text-xs text-gray-600">連続入浴日数を表示</p>
-                      </div>
-                      <div className="p-3 border rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Award className="w-4 h-4 text-purple-600" />
-                          <span className="font-medium text-sm">最長記録</span>
-                        </div>
-                        <p className="text-xs text-gray-600">過去最高の連続記録</p>
-                      </div>
-                      <div className="p-3 border rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
-                          <CheckCircle className="w-4 h-4 text-blue-600" />
-                          <span className="font-medium text-sm">成功率</span>
-                        </div>
-                        <p className="text-xs text-gray-600">過去30日間の達成率</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeGuideTab === 'features' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                      <Settings className="w-5 h-5 text-blue-600" />
-                      主要機能詳細
-                    </h3>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="border-l-4 border-l-blue-500 pl-4">
-                      <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <Bell className="w-4 h-4 text-blue-600" />
-                        自動リマインダーシステム
-                      </h4>
-                      <p className="text-sm text-gray-700 mb-2">
-                        設定した時間に段階的にリマインダーを送信：
-                      </p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>
-                          • <strong>標準リマインダー</strong>: 設定時刻に送信
-                        </li>
-                        <li>
-                          • <strong>緊急リマインダー</strong>: 1時間後に再送信
-                        </li>
-                        <li>
-                          • <strong>最終警告</strong>: さらに30分後に最終通知
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="border-l-4 border-l-green-500 pl-4">
-                      <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <Award className="w-4 h-4 text-green-600" />
-                        マイルストーン達成システム
-                      </h4>
-                      <p className="text-sm text-gray-700 mb-2">継続日数に応じてバッジを獲得：</p>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <span>🌟 7日 - 1週間継続バッジ</span>
-                        <span>💎 14日 - 2週間マスターバッジ</span>
-                        <span>🏅 21日 - 習慣化チャンピオン</span>
-                        <span>👑 30日 - 1ヶ月継続王者</span>
-                        <span>🚀 50日 - ストリークレジェンド</span>
-                        <span>🎯 100日 - グランドマスター</span>
-                      </div>
-                    </div>
-
-                    <div className="border-l-4 border-l-purple-500 pl-4">
-                      <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <BarChart3 className="w-4 h-4 text-purple-600" />
-                        パターン分析機能
-                      </h4>
-                      <p className="text-sm text-gray-700 mb-2">個人の入浴パターンを自動分析：</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• 入浴しやすい時間帯の特定</li>
-                        <li>• よくある障害要因の分析</li>
-                        <li>• 成功した戦略の記録</li>
-                        <li>• 週間パターンの可視化</li>
-                      </ul>
-                    </div>
-
-                    <div className="border-l-4 border-l-orange-500 pl-4">
-                      <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <Users className="w-4 h-4 text-orange-600" />
-                        パーソナライズ機能
-                      </h4>
-                      <p className="text-sm text-gray-700 mb-2">個人に合わせたカスタマイズ：</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• 好みの入浴時間設定</li>
-                        <li>• 最低限の基準設定（シャワーだけでもOKなど）</li>
-                        <li>• 個人的な障害要因の記録</li>
-                        <li>• モチベーションメッセージのカスタマイズ</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeGuideTab === 'emergency' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5 text-red-600" />
-                      緊急モード機能
-                    </h3>
-                    <p className="text-gray-700 mb-4">
-                      入浴を忘れそうな時や、どうしても億劫な時のための支援システムです。
-                      完璧な入浴よりも「何かしらの清潔維持」を優先します。
-                    </p>
-                  </div>
-
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-red-800 mb-3 flex items-center gap-2">
-                      <Zap className="w-4 h-4" />
-                      緊急モードの発動条件
-                    </h4>
-                    <ul className="text-sm text-red-700 space-y-1">
-                      <li>• 設定時刻を大幅に過ぎた場合</li>
-                      <li>• ストリーク途切れの危険がある場合</li>
-                      <li>• ユーザーが手動で緊急モードを選択した場合</li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-orange-600" />
-                      段階的な代替案
-                    </h4>
-                    <div className="space-y-3">
-                      <div className="border rounded-lg p-3">
-                        <div className="font-medium text-green-700 mb-2">🟢 軽度の代替案</div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          <li>• 5分だけの超短時間シャワー</li>
-                          <li>• 洗髪なしでボディだけ洗う</li>
-                          <li>• 朝シャワーへの変更</li>
-                        </ul>
-                      </div>
-                      <div className="border rounded-lg p-3">
-                        <div className="font-medium text-orange-700 mb-2">🟡 中度の代替案</div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          <li>• 濡れタオルでの全身拭き取り</li>
-                          <li>• 足湯だけでもOK</li>
-                          <li>• 制汗剤とドライシャンプー使用</li>
-                        </ul>
-                      </div>
-                      <div className="border rounded-lg p-3">
-                        <div className="font-medium text-red-700 mb-2">🔴 最小限の代替案</div>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          <li>• 顔と手だけ洗う</li>
-                          <li>• 清拭用ウェットティッシュで全身</li>
-                          <li>• 足だけお湯で洗う</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-blue-800 mb-2">💡 重要な考え方</h4>
-                    <p className="text-sm text-blue-700">
-                      「何もしない」よりも「少しでもする」ことを重視します。
-                      完璧を求めすぎると習慣が途切れてしまうため、柔軟性を持たせています。
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {activeGuideTab === 'tips' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                      <Target className="w-5 h-5 text-green-600" />
-                      成功のコツとベストプラクティス
-                    </h3>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        1. 段階的アプローチ
-                      </h4>
-                      <div className="text-sm text-green-700 space-y-2">
-                        <p className="font-medium">優先順位の考え方：</p>
-                        <div className="ml-4 space-y-1">
-                          <p>
-                            🟢 <strong>理想</strong>: 完璧な入浴（湯船 + 洗髪）
-                          </p>
-                          <p>
-                            🟡 <strong>標準</strong>: シャワーだけ
-                          </p>
-                          <p>
-                            🟠 <strong>最低限</strong>: 体を拭く
-                          </p>
-                          <p>
-                            🔴 <strong>緊急時</strong>: 手足だけ洗う
-                          </p>
-                        </div>
-                        <p className="mt-2 italic">「何もしない」より「少しでもする」を重視</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        2. 時間の柔軟性
-                      </h4>
-                      <div className="text-sm text-blue-700 space-y-2">
-                        <ul className="space-y-1">
-                          <li>
-                            • <strong>メインタイム</strong>: 最も入浴しやすい時間を設定
-                          </li>
-                          <li>
-                            • <strong>バックアップタイム</strong>: 代替時間も準備しておく
-                          </li>
-                          <li>
-                            • <strong>朝シャワー</strong>: 夜が難しい場合の切り替え案
-                          </li>
-                          <li>
-                            • <strong>時短ルーティン</strong>: 忙しい日用の5分プラン
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        3. 視覚的モチベーション活用
-                      </h4>
-                      <div className="text-sm text-purple-700 space-y-2">
-                        <ul className="space-y-1">
-                          <li>
-                            • <strong>ストリーク数</strong>: 連続記録を意識する
-                          </li>
-                          <li>
-                            • <strong>週間パターン</strong>: 成功パターンを確認
-                          </li>
-                          <li>
-                            • <strong>マイルストーン</strong>: 7日、14日、21日を目標に
-                          </li>
-                          <li>
-                            • <strong>成功率</strong>: 80%以上を維持目標
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-orange-800 mb-3 flex items-center gap-2">
-                        <Settings className="w-4 h-4" />
-                        4. 環境整備
-                      </h4>
-                      <div className="text-sm text-orange-700 space-y-2">
-                        <ul className="space-y-1">
-                          <li>
-                            • <strong>物理的準備</strong>: タオルや着替えを事前準備
-                          </li>
-                          <li>
-                            • <strong>温度設定</strong>: 季節に応じた快適温度
-                          </li>
-                          <li>
-                            • <strong>時短アイテム</strong>: ドライシャンプー、ボディシートを常備
-                          </li>
-                          <li>
-                            • <strong>リマインダー</strong>: スマホアラームと併用
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                        <Info className="w-4 h-4" />
-                        5. 失敗時の対処法
-                      </h4>
-                      <div className="text-sm text-gray-700 space-y-2">
-                        <ul className="space-y-1">
-                          <li>
-                            • <strong>完璧主義回避</strong>: 1日休んでも問題なし
-                          </li>
-                          <li>
-                            • <strong>即座の復帰</strong>: 翌日すぐに再開
-                          </li>
-                          <li>
-                            • <strong>原因分析</strong>: 何が障害だったかを記録
-                          </li>
-                          <li>
-                            • <strong>戦略調整</strong>: 時間や方法を見直し
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-                      <Award className="w-4 h-4" />
-                      最重要ポイント
-                    </h4>
-                    <p className="text-sm text-yellow-700 font-medium">
-                      100点の入浴を目指すのではなく、毎日何らかの形で体をきれいにする習慣を維持することが目標です。
-                      継続こそが最大の成功です。
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* 統計表示 */}
@@ -595,47 +344,36 @@ export const BathingHabitTracker: React.FC = () => {
         </Card>
       </div>
 
-      {/* クイックアクセス機能説明 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Info className="w-5 h-5" />
-            主要機能
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3 p-3 border rounded-lg">
-              <Bell className="w-5 h-5 text-blue-600 mt-1" />
-              <div>
-                <p className="font-medium text-sm">自動リマインダー</p>
-                <p className="text-xs text-gray-600">設定時刻に段階的通知でサポート</p>
+      {/* モチベーションメッセージ */}
+      {motivationalMessage && (
+        <Card
+          className={cn(
+            'border-l-4',
+            motivationalMessage.type === 'celebration' && 'border-l-green-500 bg-green-50',
+            motivationalMessage.type === 'encouragement' && 'border-l-blue-500 bg-blue-50',
+            motivationalMessage.type === 'streak_protection' && 'border-l-purple-500 bg-purple-50',
+            motivationalMessage.type === 'gentle_push' && 'border-l-orange-500 bg-orange-50'
+          )}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="text-2xl">
+                {motivationalMessage.type === 'celebration'
+                  ? '🎉'
+                  : motivationalMessage.type === 'streak_protection'
+                    ? '⚡'
+                    : motivationalMessage.type === 'encouragement'
+                      ? '🌟'
+                      : '💪'}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-900 mb-1">{motivationalMessage.message}</p>
+                <p className="text-sm text-gray-600">{motivationalMessage.action}</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 border rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-1" />
-              <div>
-                <p className="font-medium text-sm">緊急モード</p>
-                <p className="text-xs text-gray-600">時短・代替案でストリーク維持</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 border rounded-lg">
-              <BarChart3 className="w-5 h-5 text-purple-600 mt-1" />
-              <div>
-                <p className="font-medium text-sm">パターン分析</p>
-                <p className="text-xs text-gray-600">個人の習慣パターンを自動分析</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 border rounded-lg">
-              <Award className="w-5 h-5 text-green-600 mt-1" />
-              <div>
-                <p className="font-medium text-sm">マイルストーン</p>
-                <p className="text-xs text-gray-600">継続記録でバッジ獲得</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 今日のアクション */}
       <Card>
@@ -644,23 +382,132 @@ export const BathingHabitTracker: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
+            {/* 簡単記録ボタン */}
             <Button
-              onClick={() => {
-                bathingHabitService.recordBathing('shower', 15, 'warm', 'good');
-              }}
+              onClick={handleSimpleRecord}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3"
+              disabled={isLoading}
+            >
+              {isLoading ? '記録中...' : '✅ 入浴完了を記録（簡単）'}
+            </Button>
+
+            {/* 詳細記録ボタン */}
+            <Button
+              onClick={() => setShowRecordForm(!showRecordForm)}
+              variant="outline"
               className="w-full"
             >
-              入浴完了を記録
+              📝 詳細記録 {showRecordForm ? '（閉じる）' : '（開く）'}
             </Button>
+
+            {/* 詳細記録フォーム */}
+            {showRecordForm && (
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">入浴タイプ</label>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      {(['full_bath', 'shower', 'quick_rinse', 'body_wipe'] as const).map(
+                        (type) => (
+                          <Button
+                            key={type}
+                            variant={bathingType === type ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setBathingType(type)}
+                            className="text-xs"
+                          >
+                            {type === 'full_bath' && '🛁 湯船'}
+                            {type === 'shower' && '🚿 シャワー'}
+                            {type === 'quick_rinse' && '⚡ 時短'}
+                            {type === 'body_wipe' && '🧽 拭き取り'}
+                          </Button>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium">所要時間（分）</label>
+                    <input
+                      type="number"
+                      value={duration}
+                      onChange={(e) => setDuration(Number(e.target.value))}
+                      min="1"
+                      max="120"
+                      className="w-full mt-1 p-2 border rounded-md"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">水温</label>
+                    <div className="flex gap-1 mt-1">
+                      {(['hot', 'warm', 'lukewarm', 'cool'] as const).map((temp) => (
+                        <Button
+                          key={temp}
+                          variant={temperature === temp ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setTemperature(temp)}
+                          className="flex-1 text-xs"
+                        >
+                          {temp === 'hot' && '🔥 熱め'}
+                          {temp === 'warm' && '♨️ 温かい'}
+                          {temp === 'lukewarm' && '🌊 ぬるい'}
+                          {temp === 'cool' && '❄️ 冷たい'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium">気分</label>
+                    <div className="flex gap-1 mt-1">
+                      {(['excellent', 'good', 'neutral', 'reluctant'] as const).map((moodType) => (
+                        <Button
+                          key={moodType}
+                          variant={mood === moodType ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setMood(moodType)}
+                          className="flex-1 text-xs"
+                        >
+                          {moodType === 'excellent' && '🌟'}
+                          {moodType === 'good' && '😊'}
+                          {moodType === 'neutral' && '😐'}
+                          {moodType === 'reluctant' && '😔'}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">メモ（任意）</label>
+                  <input
+                    type="text"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="今日の入浴について何かあれば..."
+                    className="w-full mt-1 p-2 border rounded-md"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleRecordBathing}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? '保存中...' : '💾 詳細記録を保存'}
+                </Button>
+              </div>
+            )}
+
             <div className="flex gap-2">
               <Button
-                onClick={() => {
-                  const emergency = bathingHabitService.activateEmergencyMode();
-                  console.log('緊急モード:', emergency);
-                }}
+                onClick={handleEmergencyMode}
                 variant="outline"
                 size="sm"
-                className="flex-1 bg-red-50 text-red-700"
+                className="flex-1 bg-red-50 text-red-700 hover:bg-red-100"
               >
                 🚨 緊急モード
               </Button>
@@ -677,6 +524,76 @@ export const BathingHabitTracker: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* デバッグ情報（開発時のみ） */}
+      {process.env.NODE_ENV === 'development' && (
+        <Card className="border-l-4 border-l-gray-500 bg-gray-50">
+          <CardHeader>
+            <CardTitle className="text-sm">🔧 デバッグ情報</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xs space-y-2">
+              <p>
+                <strong>Stats:</strong> {stats ? 'OK' : 'NULL'}
+              </p>
+              <p>
+                <strong>Today Record:</strong> {todayRecord ? 'あり' : 'なし'}
+              </p>
+              <p>
+                <strong>Loading:</strong> {isLoading ? 'true' : 'false'}
+              </p>
+              <p>
+                <strong>Error:</strong> {error || 'なし'}
+              </p>
+              <details>
+                <summary>統計データ詳細</summary>
+                <pre className="text-xs bg-white p-2 rounded mt-2 overflow-auto">
+                  {JSON.stringify(stats, null, 2)}
+                </pre>
+              </details>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 使い方ガイドモーダル */}
+      {showUsageGuide && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">使い方ガイド</h2>
+                <Button onClick={() => setShowUsageGuide(false)} variant="outline" size="sm">
+                  ✕ 閉じる
+                </Button>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <h3 className="font-bold">基本的な使い方</h3>
+                <ol className="space-y-2 text-sm">
+                  <li>
+                    1. <strong>「入浴完了を記録（簡単）」</strong>をクリックして簡単記録
+                  </li>
+                  <li>
+                    2. または <strong>「詳細記録」</strong>で入浴タイプ、時間、気分を記録
+                  </li>
+                  <li>3. 毎日継続してストリークを伸ばしましょう</li>
+                  <li>
+                    4. <strong>「緊急モード」</strong>で入浴が困難な時の対処法を確認
+                  </li>
+                </ol>
+                <h3 className="font-bold">トラブルシューティング</h3>
+                <ul className="space-y-1 text-sm">
+                  <li>• ボタンが反応しない場合は、ページを再読み込みしてください</li>
+                  <li>• エラーが表示された場合は、「再試行」ボタンをクリック</li>
+                  <li>• データが保存されない場合は、ブラウザの設定を確認</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
