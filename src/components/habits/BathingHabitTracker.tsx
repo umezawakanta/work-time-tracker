@@ -578,13 +578,17 @@ export const BathingHabitTracker: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium">所要時間（分）</label>
+                      <label htmlFor="duration-input" className="text-sm font-medium">
+                        所要時間（分）
+                      </label>
                       <input
+                        id="duration-input"
                         type="number"
                         value={duration}
                         onChange={(e) => setDuration(Number(e.target.value))}
                         min="1"
                         max="120"
+                        placeholder="15"
                         className="w-full mt-1 p-2 border rounded-md"
                       />
                     </div>
@@ -635,8 +639,11 @@ export const BathingHabitTracker: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium">メモ（任意）</label>
+                    <label htmlFor="notes-input" className="text-sm font-medium">
+                      メモ（任意）
+                    </label>
                     <input
+                      id="notes-input"
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}

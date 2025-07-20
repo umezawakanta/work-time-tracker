@@ -47,11 +47,19 @@ export const ShavingHabitTracker: React.FC = () => {
   const [showQuickRecord, setShowQuickRecord] = useState(false);
 
   // 記録用のフォーム状態
-  const [shavingType, setShavingType] = useState<'electric' | 'safety_razor' | 'cartridge' | 'disposable'>('electric');
-  const [method, setMethod] = useState<'dry_shave' | 'with_cream' | 'with_gel' | 'with_soap'>('dry_shave');
+  const [shavingType, setShavingType] = useState<
+    'electric' | 'safety_razor' | 'cartridge' | 'disposable'
+  >('electric');
+  const [method, setMethod] = useState<'dry_shave' | 'with_cream' | 'with_gel' | 'with_soap'>(
+    'dry_shave'
+  );
   const [duration, setDuration] = useState(5);
-  const [quality, setQuality] = useState<'perfect' | 'good' | 'adequate' | 'rushed' | 'skipped_areas'>('good');
-  const [skinCondition, setSkinCondition] = useState<'excellent' | 'good' | 'normal' | 'irritated' | 'cuts'>('normal');
+  const [quality, setQuality] = useState<
+    'perfect' | 'good' | 'adequate' | 'rushed' | 'skipped_areas'
+  >('good');
+  const [skinCondition, setSkinCondition] = useState<
+    'excellent' | 'good' | 'normal' | 'irritated' | 'cuts'
+  >('normal');
 
   useEffect(() => {
     loadData();
@@ -170,7 +178,7 @@ export const ShavingHabitTracker: React.FC = () => {
             <Button
               onClick={() => setShowQuickRecord(!showQuickRecord)}
               className="flex items-center gap-2"
-              variant={todayRecord?.completed ? "outline" : "default"}
+              variant={todayRecord?.completed ? 'outline' : 'default'}
             >
               {todayRecord?.completed ? (
                 <>
@@ -213,7 +221,7 @@ export const ShavingHabitTracker: React.FC = () => {
               </div>
               <div>
                 <div className="text-sm text-gray-600">仕上がり</div>
-                <div className={cn("font-medium", getQualityColor(todayRecord.quality))}>
+                <div className={cn('font-medium', getQualityColor(todayRecord.quality))}>
                   {todayRecord.quality}
                 </div>
               </div>
@@ -231,8 +239,11 @@ export const ShavingHabitTracker: React.FC = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">シェーバータイプ</label>
+                <label htmlFor="shaving-type" className="text-sm font-medium">
+                  シェーバータイプ
+                </label>
                 <select
+                  id="shaving-type"
                   value={shavingType}
                   onChange={(e) => setShavingType(e.target.value as any)}
                   className="w-full mt-1 p-2 border rounded-md"
@@ -244,8 +255,11 @@ export const ShavingHabitTracker: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium">方法</label>
+                <label htmlFor="shaving-method" className="text-sm font-medium">
+                  方法
+                </label>
                 <select
+                  id="shaving-method"
                   value={method}
                   onChange={(e) => setMethod(e.target.value as any)}
                   className="w-full mt-1 p-2 border rounded-md"
@@ -260,19 +274,26 @@ export const ShavingHabitTracker: React.FC = () => {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium">所要時間（分）</label>
+                <label htmlFor="shaving-duration" className="text-sm font-medium">
+                  所要時間（分）
+                </label>
                 <input
+                  id="shaving-duration"
                   type="number"
                   value={duration}
                   onChange={(e) => setDuration(Number(e.target.value))}
                   className="w-full mt-1 p-2 border rounded-md"
                   min="1"
                   max="30"
+                  placeholder="5"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">仕上がり</label>
+                <label htmlFor="shaving-quality" className="text-sm font-medium">
+                  仕上がり
+                </label>
                 <select
+                  id="shaving-quality"
                   value={quality}
                   onChange={(e) => setQuality(e.target.value as any)}
                   className="w-full mt-1 p-2 border rounded-md"
@@ -285,8 +306,11 @@ export const ShavingHabitTracker: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium">肌の状態</label>
+                <label htmlFor="skin-condition" className="text-sm font-medium">
+                  肌の状態
+                </label>
                 <select
+                  id="skin-condition"
                   value={skinCondition}
                   onChange={(e) => setSkinCondition(e.target.value as any)}
                   className="w-full mt-1 p-2 border rounded-md"
@@ -374,8 +398,10 @@ export const ShavingHabitTracker: React.FC = () => {
               <div
                 key={milestone.days}
                 className={cn(
-                  "p-3 rounded-lg border",
-                  milestone.unlocked ? "bg-yellow-50 border-yellow-200" : "bg-gray-50 border-gray-200"
+                  'p-3 rounded-lg border',
+                  milestone.unlocked
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : 'bg-gray-50 border-gray-200'
                 )}
               >
                 <div className="flex items-center gap-2 mb-1">
@@ -455,32 +481,3 @@ export const ShavingHabitTracker: React.FC = () => {
     </div>
   );
 };
-```
-
-髭剃り習慣ページも作成します：
-
-```typescript:src/pages/ShavingHabitPage.tsx
-/**
- * 🪒 髭剃り習慣ページ
- */
-
-import React from 'react';
-import { ShavingHabitTracker } from '@/components/habits/ShavingHabitTracker';
-
-const ShavingHabitPage: React.FC = () => {
-  return <ShavingHabitTracker />;
-};
-
-export default ShavingHabitPage;
-```
-
-🪒 **髭剃り習慣トラッカーの機能**：
-
-1. **記録機能**: シェーバータイプ、方法、時間、仕上がりを記録
-2. **統計表示**: 連続日数、成功率、平均時間を可視化
-3. **マイルストーン**: 3日〜100日の段階的な目標設定
-4. **緊急モード**: 時間がない時の簡単髭剃りオプション
-5. **リマインダー**: 設定時間での自動通知
-6. **障害分析**: 髭剃りを阻害する要因の追跡
-
-これで、入浴と髭剃りの両方の習慣を管理できるシステムが完成しました！ 
