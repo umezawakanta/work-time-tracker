@@ -71,7 +71,9 @@ export const ADHDExecutionAssistant: React.FC = () => {
   }, []);
 
   const handleCreateTask = async () => {
-    if (!taskInput.trim()) return;
+    if (!taskInput.trim()) {
+      return;
+    }
 
     const task = adhdExecutionSupport.decomposeTask(taskInput, '家庭作業');
     setCurrentTask(task);
