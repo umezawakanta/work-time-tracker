@@ -246,7 +246,13 @@ class ImpulseControlService extends EventEmitter {
     };
 
     impulse.decision = decision;
-    impulse.status = action === 'proceed' ? 'executed' : action;
+    const statusMap = {
+      proceed: 'executed',
+      delay: 'delayed',
+      substitute: 'substituted',
+      cancel: 'cancelled',
+    } as const;
+    impulse.status = statusMap[action];
 
     this.saveImpulse(impulse);
     this.emit('decisionMade', { impulse, decision });

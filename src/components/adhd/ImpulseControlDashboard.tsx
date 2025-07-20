@@ -213,8 +213,11 @@ export const ImpulseControlDashboard: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium">今やりたいこと</label>
+              <label htmlFor="activity-input" className="text-sm font-medium">
+                今やりたいこと
+              </label>
               <input
+                id="activity-input"
                 type="text"
                 value={activityInput}
                 onChange={(e) => setActivityInput(e.target.value)}
@@ -225,8 +228,11 @@ export const ImpulseControlDashboard: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">予想時間（分）</label>
+                <label htmlFor="duration-input" className="text-sm font-medium">
+                  予想時間（分）
+                </label>
                 <input
+                  id="duration-input"
                   type="number"
                   value={durationInput}
                   onChange={(e) => setDurationInput(Number(e.target.value))}
@@ -236,8 +242,11 @@ export const ImpulseControlDashboard: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">衝動の強さ（1-10）</label>
+                <label htmlFor="urgency-input" className="text-sm font-medium">
+                  衝動の強さ（1-10）
+                </label>
                 <input
+                  id="urgency-input"
                   type="range"
                   value={urgencyLevel}
                   onChange={(e) => setUrgencyLevel(Number(e.target.value))}
@@ -254,8 +263,11 @@ export const ImpulseControlDashboard: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium">明日の予定（カンマ区切り）</label>
+              <label htmlFor="schedule-input" className="text-sm font-medium">
+                明日の予定（カンマ区切り）
+              </label>
               <input
+                id="schedule-input"
                 type="text"
                 value={nextDaySchedule}
                 onChange={(e) => setNextDaySchedule(e.target.value)}
