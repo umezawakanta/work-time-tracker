@@ -1,5 +1,5 @@
 /**
- * �� AI強化ゲーミフィケーションサービス（進化版）
+ * 🤖 AI強化ゲーミフィケーションサービス（進化版）
  * リアルタイムAI分析・予測・パーソナライゼーションによる次世代ゲーミフィケーション
  */
 
@@ -7,6 +7,8 @@ import { multiAIIntegrationService } from '../ai/MultiAIIntegrationService';
 import { aiServiceManager } from '../ai/AIServiceManager';
 import { unifiedAIService } from '../ai/UnifiedAIService';
 import { aiAutomationService } from '../ai/AIAutomationService';
+import { todoApi } from '../api/todoApi';
+import { NewTodo, Todo } from '@/types/todo';
 
 export interface UserBehaviorPattern {
   preferredTaskTypes: string[];
@@ -112,6 +114,49 @@ export interface AIGameplayOptimization {
   challengeTypes: string[];
   engagementStrategy: string;
   personalityMatch: number; // 0-100
+}
+
+export interface AIGeneratedTask {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  priority: number; // 1-5
+  estimatedMinutes: number;
+  aiConfidence: number; // 0-1
+  reasoningBehind: string;
+  suggestedDeadline?: string;
+  tags: string[];
+  relatedGoals: string[];
+  dependencies?: string[];
+  aiProvider: string;
+  generatedAt: string;
+}
+
+export interface TaskGenerationContext {
+  currentTime: string;
+  dayOfWeek: string;
+  userBehaviorPattern: UserBehaviorPattern;
+  recentCompletedTasks: string[];
+  currentWorkload: number; // 1-10
+  stressLevel: number; // 1-10
+  energyLevel: number; // 1-10
+  availableTimeSlots: string[];
+  userGoals: string[];
+  preferences: {
+    taskTypes: string[];
+    difficultylevel: 'easy' | 'medium' | 'hard';
+    focusAreas: string[];
+  };
+}
+
+export interface SmartTaskRecommendation {
+  tasks: AIGeneratedTask[];
+  totalEstimatedTime: number;
+  difficultyBalance: string;
+  reasoning: string;
+  alternativeOptions: AIGeneratedTask[];
+  optimizationTips: string[];
 }
 
 class AIGamificationService {
@@ -964,6 +1009,277 @@ ${JSON.stringify(analysisResults, null, 2)}
       challengeTypes: ['skill_building', 'time_management'],
       engagementStrategy: 'progressive_challenge_with_social_recognition',
       personalityMatch: 85,
+    };
+  }
+
+  /**
+   * 🤖 AIによるスマートタスク生成
+   * ユーザーの状況を分析し、最適なタスクを自動生成
+   */
+  async generateSmartTasks(context: TaskGenerationContext): Promise<SmartTaskRecommendation> {
+    try {
+      const aiPrompt = this.buildTaskGenerationPrompt(context);
+
+      // マルチAIサービスを使用してタスクを生成
+      const response = await multiAIIntegrationService.processTask({
+        prompt: aiPrompt,
+        taskType: 'planning' as const,
+        priority: 'high' as const,
+        context: JSON.stringify({
+          userBehavior: context.userBehaviorPattern,
+          currentState: {
+            workload: context.currentWorkload,
+            stress: context.stressLevel,
+            energy: context.energyLevel,
+          },
+        }),
+      });
+
+      return this.parseTaskGenerationResponse(response.content, context);
+    } catch (error) {
+      console.error('AI task generation failed:', error);
+      return this.generateFallbackTasks(context);
+    }
+  }
+
+  /**
+   * タスク生成用のAIプロンプトを構築
+   */
+  private buildTaskGenerationPrompt(context: TaskGenerationContext): string {
+    return `
+ユーザーの状況を分析して、最適なタスクを提案してください。
+
+現在の状況:
+- 時刻: ${context.currentTime}
+- 曜日: ${context.dayOfWeek}
+- 現在の作業負荷: ${context.currentWorkload}/10
+- ストレスレベル: ${context.stressLevel}/10
+- エネルギーレベル: ${context.energyLevel}/10
+- 利用可能時間: ${context.availableTimeSlots.join(', ')}
+
+ユーザーの行動パターン:
+- 好みのタスクタイプ: ${context.userBehaviorPattern.preferredTaskTypes.join(', ')}
+- アクティブ時間帯: ${context.userBehaviorPattern.activeTimeRanges.join(', ')}
+- モチベーション要因: ${context.userBehaviorPattern.motivationTriggers.join(', ')}
+
+最近完了したタスク:
+${context.recentCompletedTasks.slice(0, 5).join(', ')}
+
+ユーザーの目標:
+${context.userGoals.join(', ')}
+
+以下の形式のJSONで3-5個のタスクを提案してください:
+{
+  "tasks": [
+    {
+      "title": "タスクのタイトル",
+      "description": "詳細な説明",
+      "category": "カテゴリ",
+      "priority": 1-5の数値,
+      "estimatedMinutes": 予想所要時間（分）,
+      "aiConfidence": 0-1の信頼度,
+      "reasoningBehind": "このタスクを提案する理由",
+      "suggestedDeadline": "YYYY-MM-DD形式の推奨期限",
+      "tags": ["タグ1", "タグ2"],
+      "relatedGoals": ["関連する目標"]
+    }
+  ],
+  "totalEstimatedTime": 合計予想時間,
+  "difficultyBalance": "難易度バランスの説明",
+  "reasoning": "全体的な提案理由",
+  "optimizationTips": ["最適化のヒント1", "ヒント2"]
+}
+
+ユーザーの現在のエネルギーレベルとストレス状況を考慮し、実行可能で効果的なタスクを提案してください。
+    `.trim();
+  }
+
+  /**
+   * AIレスポンスをパース
+   */
+  private parseTaskGenerationResponse(
+    response: string,
+    context: TaskGenerationContext
+  ): SmartTaskRecommendation {
+    try {
+      const parsed = JSON.parse(response);
+
+      const tasks: AIGeneratedTask[] = parsed.tasks.map((task: any, index: number) => ({
+        id: `ai-generated-${Date.now()}-${index}`,
+        title: task.title || `AI提案タスク ${index + 1}`,
+        description: task.description || '',
+        category: task.category || 'general',
+        priority: Math.min(Math.max(task.priority || 3, 1), 5),
+        estimatedMinutes: task.estimatedMinutes || 30,
+        aiConfidence: Math.min(Math.max(task.aiConfidence || 0.7, 0), 1),
+        reasoningBehind: task.reasoningBehind || 'AI分析による提案',
+        suggestedDeadline: task.suggestedDeadline,
+        tags: Array.isArray(task.tags) ? task.tags : ['AI提案'],
+        relatedGoals: Array.isArray(task.relatedGoals) ? task.relatedGoals : [],
+        dependencies: Array.isArray(task.dependencies) ? task.dependencies : [],
+        aiProvider: 'multi-ai',
+        generatedAt: new Date().toISOString(),
+      }));
+
+      return {
+        tasks,
+        totalEstimatedTime:
+          parsed.totalEstimatedTime || tasks.reduce((sum, task) => sum + task.estimatedMinutes, 0),
+        difficultyBalance: parsed.difficultyBalance || 'バランス良く調整済み',
+        reasoning: parsed.reasoning || 'ユーザーの現在状況に最適化されたタスク群',
+        alternativeOptions: tasks.slice(0, 2), // 代替オプションとして最初の2つを使用
+        optimizationTips: Array.isArray(parsed.optimizationTips)
+          ? parsed.optimizationTips
+          : [
+              '短い休憩を挟みながら実行することを推奨',
+              'エネルギーレベルに応じてタスクの順序を調整',
+            ],
+      };
+    } catch (error) {
+      console.error('Failed to parse AI task generation response:', error);
+      return this.generateFallbackTasks(context);
+    }
+  }
+
+  /**
+   * AIが利用できない場合のフォールバックタスク生成
+   */
+  private generateFallbackTasks(context: TaskGenerationContext): SmartTaskRecommendation {
+    const fallbackTasks: AIGeneratedTask[] = [
+      {
+        id: `fallback-${Date.now()}-1`,
+        title: '今日の優先タスクの整理',
+        description: '重要なタスクを3つ選んで優先順位を決める',
+        category: 'productivity',
+        priority: 4,
+        estimatedMinutes: 15,
+        aiConfidence: 0.8,
+        reasoningBehind: 'タスク整理は生産性向上の基本',
+        suggestedDeadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        tags: ['整理', '計画'],
+        relatedGoals: context.userGoals.slice(0, 2),
+        aiProvider: 'fallback',
+        generatedAt: new Date().toISOString(),
+      },
+      {
+        id: `fallback-${Date.now()}-2`,
+        title: '5分間の瞑想・リラックス',
+        description: 'ストレス軽減と集中力向上のための短時間瞑想',
+        category: 'wellness',
+        priority: 3,
+        estimatedMinutes: 5,
+        aiConfidence: 0.9,
+        reasoningBehind: 'ストレスレベルが高めなため、リラックスを推奨',
+        tags: ['ウェルネス', 'リラックス'],
+        relatedGoals: ['健康維持'],
+        aiProvider: 'fallback',
+        generatedAt: new Date().toISOString(),
+      },
+    ];
+
+    return {
+      tasks: fallbackTasks,
+      totalEstimatedTime: 20,
+      difficultyBalance: '軽めのタスクで調整',
+      reasoning: 'フォールバックとして基本的なタスクを提案',
+      alternativeOptions: [],
+      optimizationTips: [
+        '小さなタスクから始めて勢いをつけましょう',
+        '完了したタスクを祝うことでモチベーションを維持',
+      ],
+    };
+  }
+
+  /**
+   * AIが生成したタスクを実際のTodoシステムに追加
+   */
+  async addAIGeneratedTasksToTodo(tasks: AIGeneratedTask[]): Promise<Todo[]> {
+    const addedTodos: Todo[] = [];
+
+    for (const task of tasks) {
+      try {
+        const newTodo: NewTodo = {
+          task: task.title,
+          type: 'input' as const,
+          priority: task.priority,
+          deadline: task.suggestedDeadline,
+          note: `${task.description}\n\n[AI生成] ${task.reasoningBehind}\n信頼度: ${Math.round(task.aiConfidence * 100)}%`,
+          tags: [...task.tags, 'AI生成', task.aiProvider],
+        };
+
+        const response = await todoApi.create(
+          newTodo.task,
+          newTodo.priority || 3,
+          false, // isPrioritized
+          newTodo.type,
+          newTodo.deadline
+        );
+
+        if (response.data && response.data.todo) {
+          // TodoItemからTodoへの型変換
+          const todoItem = response.data.todo;
+          const todo: Todo = {
+            _id: todoItem._id,
+            task: todoItem.task,
+            type: (todoItem.type as 'input' | 'output') || 'input',
+            completed: todoItem.completed,
+            priority: todoItem.priority,
+            isPrioritized: todoItem.isPrioritized,
+            createdAt: todoItem.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            completedDate: todoItem.completedDate,
+            deadline: todoItem.deadline,
+            note: todoItem.note,
+            tags: todoItem.tags,
+          };
+          addedTodos.push(todo);
+        }
+      } catch (error) {
+        console.error(`Failed to add AI generated task: ${task.title}`, error);
+      }
+    }
+
+    return addedTodos;
+  }
+
+  /**
+   * ユーザーの現在のコンテキストを自動収集
+   */
+  async getCurrentTaskGenerationContext(): Promise<TaskGenerationContext> {
+    const now = new Date();
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][now.getDay()];
+
+    // ユーザーの行動パターンを生成（デフォルト値を使用）
+    const behaviorPattern: UserBehaviorPattern = {
+      preferredTaskTypes: ['productivity', 'learning', 'wellness'],
+      activeTimeRanges: ['09:00-12:00', '14:00-17:00'],
+      completionPatterns: {
+        weekday: 7,
+        weekend: 3,
+        morning: 5,
+        afternoon: 4,
+        evening: 2,
+      },
+      motivationTriggers: ['達成感', 'ゲーミフィケーション', '可視化'],
+      burnoutSignals: ['連続失敗', '長時間作業', 'ストレス増加'],
+      optimalChallengeLevel: 6,
+    };
+
+    return {
+      currentTime: now.toLocaleTimeString('ja-JP'),
+      dayOfWeek,
+      userBehaviorPattern: behaviorPattern,
+      recentCompletedTasks: [], // 実際の実装では過去の完了タスクを取得
+      currentWorkload: 5, // 実際の実装では現在のアクティブタスク数を分析
+      stressLevel: 4, // 実際の実装では感情状態分析から取得
+      energyLevel: 6, // 実際の実装では時間帯や活動パターンから推定
+      availableTimeSlots: ['30分', '60分'], // 実際の実装ではカレンダー分析
+      userGoals: ['生産性向上', '健康維持', 'スキルアップ'], // 実際の実装では設定から取得
+      preferences: {
+        taskTypes: ['productivity', 'learning', 'wellness'],
+        difficultylevel: 'medium',
+        focusAreas: ['仕事効率化', '自己成長'],
+      },
     };
   }
 }
