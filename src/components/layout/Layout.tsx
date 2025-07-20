@@ -294,6 +294,15 @@ const toolsMenuItems: MenuItem[] = [
     gradient: 'from-indigo-600 via-purple-600 to-pink-600',
     accentColor: 'indigo',
   },
+  {
+    icon: <Settings className="h-5 w-5" />,
+    label: '⚙️ 自動化ルール',
+    path: '/automation-rules',
+    description: 'タスク・ワークフロー・AI機能の完全自動化管理',
+    badge: 'AUTO',
+    gradient: 'from-blue-600 via-cyan-600 to-teal-600',
+    accentColor: 'blue',
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {

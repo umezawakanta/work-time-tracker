@@ -85,6 +85,7 @@ import { toast } from 'react-hot-toast';
 import { IntegratedGamificationDashboard } from '@/components/integrated/IntegratedGamificationDashboard';
 import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
 import { AIEnhancedGamification } from '@/components/gamification/AIEnhancedGamification';
+import { IntegratedAutomationDashboard } from '@/components/automation/IntegratedAutomationDashboard';
 
 interface SuperIntegratedDashboardProps {
   userId?: string;
@@ -455,7 +456,7 @@ export const SuperIntegratedDashboard: React.FC<SuperIntegratedDashboardProps> =
 
       {/* Main Content */}
       <Tabs value={activeView} onValueChange={setActiveView} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Grid3X3 className="w-4 h-4" />
             統合概要
@@ -463,6 +464,10 @@ export const SuperIntegratedDashboard: React.FC<SuperIntegratedDashboardProps> =
           <TabsTrigger value="tasks" className="flex items-center gap-2">
             <CheckSquare className="w-4 h-4" />
             タスク管理
+          </TabsTrigger>
+          <TabsTrigger value="automation" className="flex items-center gap-2">
+            <Cpu className="w-4 h-4" />
+            自動化
           </TabsTrigger>
           <TabsTrigger value="gamification" className="flex items-center gap-2">
             <Trophy className="w-4 h-4" />
@@ -529,6 +534,27 @@ export const SuperIntegratedDashboard: React.FC<SuperIntegratedDashboardProps> =
             </CardHeader>
             <CardContent>
               <DailyTodoReminder isPremium={hasActiveSubscription} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Automation Tab */}
+        <TabsContent value="automation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cpu className="w-6 h-6 text-blue-600" />
+                統合自動化システム
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                タスク管理、ゲーミフィケーション、AI機能を自動化
+              </p>
+            </CardHeader>
+            <CardContent>
+              <IntegratedAutomationDashboard
+                compactMode={compactMode}
+                showAdvancedFeatures={hasActiveSubscription}
+              />
             </CardContent>
           </Card>
         </TabsContent>

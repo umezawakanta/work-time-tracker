@@ -117,6 +117,7 @@ const GamificationPage = lazy(() => import('./pages/GamificationPage'));
 const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
 const IntegratedGamificationPage = lazy(() => import('./pages/IntegratedGamificationPage'));
 const SuperIntegratedDashboardPage = lazy(() => import('./pages/SuperIntegratedDashboardPage'));
+const AutomationRulesPage = lazy(() => import('./pages/AutomationRulesPage'));
 
 // 📱 PWA pages
 const PWAPage = lazy(() => import('./pages/PWAPage'));
@@ -983,6 +984,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <SuperIntegratedDashboardPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/automation-rules"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <AutomationRulesPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
