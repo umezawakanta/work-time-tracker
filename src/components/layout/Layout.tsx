@@ -285,6 +285,15 @@ const toolsMenuItems: MenuItem[] = [
     gradient: 'from-purple-600 via-violet-600 to-indigo-600',
     accentColor: 'purple',
   },
+  {
+    icon: <Sparkles className="h-5 w-5" />,
+    label: '🚀 究極統合ダッシュボード',
+    path: '/super-dashboard',
+    description: 'すべてのシステムが統合された次世代プラットフォーム',
+    badge: 'ULTIMATE',
+    gradient: 'from-indigo-600 via-purple-600 to-pink-600',
+    accentColor: 'indigo',
+  },
 ];
 
 export default function Layout({ children }: LayoutProps) {
