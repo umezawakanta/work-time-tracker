@@ -35,6 +35,7 @@ import {
   Gem,
   Gamepad2,
   Activity,
+  Shield,
 } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -44,6 +45,7 @@ import { toast } from 'react-hot-toast';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useResponsive } from '@/hooks/useResponsive';
 import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
+import { ImpulseControlDashboard } from '@/components/adhd/ImpulseControlDashboard';
 
 interface ActivityData {
   task: string;
@@ -1041,6 +1043,13 @@ const Home: React.FC = () => {
             description: 'テストカバレッジの詳細分析',
             path: '/coverage-report',
             gradient: 'from-indigo-500 to-purple-600',
+          },
+          {
+            icon: <Shield className="h-6 w-6" />,
+            title: '🛡️ 衝動抑制システム',
+            description: '睡眠時間を守り生活バランスを保護',
+            path: '/impulse-control',
+            gradient: 'from-blue-500 to-indigo-600',
           },
         ].map((action, index) => (
           <EnhancedCard

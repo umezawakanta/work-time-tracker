@@ -251,6 +251,7 @@ const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
 import { DragonQuestChatbot } from '@/components/assetQuest/DragonQuestChatbot';
 import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
+import { ImpulseControlDashboard } from './components/adhd/ImpulseControlDashboard';
 
 export default function App() {
   const [chatbotState, setChatbotState] = useState({
@@ -1068,6 +1069,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ADHDExecutionAssistant />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/impulse-control"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ImpulseControlDashboard />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
