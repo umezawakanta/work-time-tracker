@@ -23,11 +23,15 @@ import {
   Rocket,
   Calendar,
   Clock,
+  Gamepad2,
+  RefreshCw,
 } from 'lucide-react';
 import { DevelopmentBadge, DEVELOPMENT_BADGES } from '@/types/development-badges';
 import { useAuth } from '@/hooks/useAuth';
 import { UserOnboardingModal } from '@/components/engagement/UserOnboardingModal';
 import { unifiedBadgeManagementService } from '@/services/badges/UnifiedBadgeManagementService';
+import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
+import { toast } from 'react-hot-toast';
 
 const difficultyColors = {
   bronze: 'bg-amber-100 text-amber-800 border-amber-200',
@@ -77,6 +81,16 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [achievements, setAchievements] = useState<DevelopmentBadge[]>([]);
 
+  // ゲームループシステム統合状態
+  const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
+  const [showGameLoopIntegration, setShowGameLoopIntegration] = useState(false);
+  const [badgeAccelerationData, setBadgeAccelerationData] = useState<{
+    acceleratedBadges: number;
+    timeReduction: number;
+    progressBoost: number;
+    motivationIndex: number;
+  } | null>(null);
+
   useEffect(() => {
     // 統一バッジ管理サービスからバッジデータを取得
     const unifiedBadges = unifiedBadgeManagementService.getBadgeData();
@@ -96,6 +110,9 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
     });
     setAchievements(sortedBadges);
 
+    // ゲームループ統合初期化
+    initializeGameLoopIntegration();
+
     // 統一サービスのイベントリスナー設定
     const handleBadgeUpdate = () => {
       const updatedBadges = unifiedBadgeManagementService.getBadgeData();
@@ -112,6 +129,7 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
         return b.progress - a.progress;
       });
       setAchievements(sortedUpdatedBadges);
+      calculateBadgeAcceleration(updatedBadges); // ゲームループ効果再計算
     };
 
     const handleBadgeUnlocked = (data: any) => {
@@ -131,6 +149,50 @@ export const DevelopmentBadgeShowcasePage: React.FC = () => {
       unifiedBadgeManagementService.off('sync-data-updated', handleBadgeUpdate);
     };
   }, []);
+
+  // ゲームループ統合初期化
+  const initializeGameLoopIntegration = async () => {
+    try {
+      const stats = gameLoopTaskService.getGameLoopStats();
+      setGameLoopStats(stats);
+      setShowGameLoopIntegration(true);
+      calculateBadgeAcceleration(achievements);
+
+      console.log('🎮 Badge Showcase × Game Loop統合完了:', stats);
+    } catch (error) {
+      console.error('Game Loop統合エラー:', error);
+    }
+  };
+
+  // バッジ獲得加速効果計算
+  const calculateBadgeAcceleration = (badges: DevelopmentBadge[]) => {
+    if (!gameLoopStats) return;
+
+    // ゲームループによるバッジ獲得加速効果を計算
+    const completedToday = gameLoopStats.tasksCompletedToday || 0;
+    const streakDays = gameLoopStats.currentStreak || 0;
+    const totalCompleted = gameLoopStats.totalTasksCompleted || 0;
+
+    // 加速されるバッジ数（進行中のバッジの一部）
+    const inProgressBadges = badges.filter((badge) => badge.progress > 0 && badge.progress < 100);
+    const acceleratedBadges = Math.min(Math.floor(completedToday * 0.3), inProgressBadges.length);
+
+    // 時間短縮効果（マイクロタスクによる継続性向上）
+    const timeReduction = Math.min(streakDays * 2, 30); // 最大30%短縮
+
+    // 進捗ブースト（プロシージネーション削減効果）
+    const progressBoost = Math.min(completedToday * 3, 25); // 最大25%向上
+
+    // モチベーション指数（継続性×達成感）
+    const motivationIndex = Math.min(streakDays * 5 + completedToday * 10, 100);
+
+    setBadgeAccelerationData({
+      acceleratedBadges,
+      timeReduction,
+      progressBoost,
+      motivationIndex,
+    });
+  };
 
   const filteredBadges =
     selectedCategory === 'all'

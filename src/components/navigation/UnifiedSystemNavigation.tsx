@@ -34,6 +34,7 @@ import {
   Activity,
   Sparkles,
   Trophy,
+  BookOpen,
 } from 'lucide-react';
 
 interface SystemStatus {
@@ -151,6 +152,30 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       status: 'active',
       description: '開発進捗管理',
       category: 'analysis',
+    },
+    {
+      name: 'バッジ完了予測',
+      path: '/badge-completion',
+      icon: <Target className="w-4 h-4" />,
+      status: 'active',
+      description: 'AI駆動バッジ予測',
+      category: 'analysis',
+    },
+    {
+      name: 'バッジショーケース',
+      path: '/badge-showcase',
+      icon: <Sparkles className="w-4 h-4" />,
+      status: 'active',
+      description: '実績展示・共有',
+      category: 'analysis',
+    },
+    {
+      name: '本棚',
+      path: '/bookshelf',
+      icon: <BookOpen className="w-4 h-4" />,
+      status: 'active',
+      description: '読書習慣管理',
+      category: 'productivity',
     },
   ];
 

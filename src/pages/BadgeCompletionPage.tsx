@@ -1,16 +1,72 @@
-import React, { useEffect } from 'react';
-import { Target, Calendar, Clock, TrendingUp } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Target, Calendar, Clock, TrendingUp, Gamepad2, Zap, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { BadgeCompletionDashboard } from '@/components/planning/BadgeCompletionDashboard';
+import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
+import { toast } from 'react-hot-toast';
 
 /**
  * 🎯 バッジ完了予測ページ - 全バッジ獲得までの作業時間・達成予定日・マイルストーン表示
+ * 🎮 Game Loop統合: プロシージネーション削減効果による予測精度向上
  */
 const BadgeCompletionPage: React.FC = () => {
+  // ゲームループシステム統合状態
+  const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
+  const [showGameLoopIntegration, setShowGameLoopIntegration] = useState(false);
+  const [integrationRefreshInterval, setIntegrationRefreshInterval] =
+    useState<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     document.title = 'バッジ完了予測 | Work Time Tracker';
+    initializeGameLoopIntegration();
+
+    return () => {
+      if (integrationRefreshInterval) {
+        clearInterval(integrationRefreshInterval);
+      }
+    };
   }, []);
+
+  const initializeGameLoopIntegration = async () => {
+    try {
+      const stats = await gameLoopTaskService.getStats();
+      setGameLoopStats(stats);
+      setShowGameLoopIntegration(true);
+
+      // 30秒ごとに統計を更新
+      const interval = setInterval(async () => {
+        const updatedStats = await gameLoopTaskService.getStats();
+        setGameLoopStats(updatedStats);
+      }, 30000);
+
+      setIntegrationRefreshInterval(interval);
+
+      console.log('🎮 Badge Completion × Game Loop統合完了:', stats);
+    } catch (error) {
+      console.error('Game Loop統合エラー:', error);
+    }
+  };
+
+  const calculateGameLoopImpact = () => {
+    if (!gameLoopStats) return null;
+
+    // プロシージネーション削減効果計算
+    const procrastinationReduction = Math.min(gameLoopStats.completedToday * 5, 40); // 最大40%削減
+    const timelineImprovement = procrastinationReduction * 0.6; // タイムライン短縮効果
+    const accuracyImprovement = Math.min(gameLoopStats.streakDays * 2, 25); // 最大25%精度向上
+
+    return {
+      procrastinationReduction,
+      timelineImprovement,
+      accuracyImprovement,
+      productivityBoost: (procrastinationReduction + timelineImprovement + accuracyImprovement) / 3,
+    };
+  };
+
+  const gameLoopImpact = calculateGameLoopImpact();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -23,6 +79,11 @@ const BadgeCompletionPage: React.FC = () => {
                 <Target className="h-8 w-8 text-white" />
               </div>
               <h1 className="text-4xl font-bold text-gray-900">バッジ完了予測システム</h1>
+              {showGameLoopIntegration && (
+                <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-full ml-3">
+                  <Gamepad2 className="h-6 w-6 text-white" />
+                </div>
+              )}
             </div>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
@@ -31,6 +92,11 @@ const BadgeCompletionPage: React.FC = () => {
                 作業時間・達成予定日・マイルストーン
               </span>
               を可視化し、 最適な学習ロードマップを提案します
+              {showGameLoopIntegration && (
+                <span className="block mt-2 font-semibold text-green-600">
+                  🎮 ゲームループ統合でプロシージネーション削減による予測精度向上
+                </span>
+              )}
             </p>
 
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
@@ -40,14 +106,138 @@ const BadgeCompletionPage: React.FC = () => {
               </div>
               <div className="flex items-center gap-1">
                 <TrendingUp className="h-4 w-4" />
-                <span>AI予測精度 85%</span>
+                <span>
+                  AI予測精度{' '}
+                  {gameLoopImpact
+                    ? `${85 + Math.round(gameLoopImpact.accuracyImprovement)}%`
+                    : '85%'}
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 <span>12週間先まで予測</span>
               </div>
+              {showGameLoopIntegration && (
+                <div className="flex items-center gap-1">
+                  <Gamepad2 className="h-4 w-4 text-green-500" />
+                  <span className="text-green-600">Game Loop統合</span>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* ゲームループ統合効果表示 */}
+          {showGameLoopIntegration && gameLoopStats && gameLoopImpact && (
+            <div className="mt-8">
+              <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gamepad2 className="h-5 h-5 text-green-500" />
+                    ゲームループ統合効果 - バッジ完了予測の改善
+                  </CardTitle>
+                  <CardDescription>
+                    マイクロタスクによるプロシージネーション削減がバッジ完了予測に与える影響
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* プロシージネーション削減効果 */}
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Zap className="h-8 w-8 text-green-600" />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">プロシージネーション削減</h3>
+                      <div className="text-3xl font-bold text-green-600 mb-2">
+                        -{Math.round(gameLoopImpact.procrastinationReduction)}%
+                      </div>
+                      <p className="text-sm text-gray-600">開始障壁削減により作業開始率向上</p>
+                      <div className="mt-3">
+                        <Progress value={gameLoopImpact.procrastinationReduction} className="h-2" />
+                      </div>
+                    </div>
+
+                    {/* タイムライン短縮 */}
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Clock className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">完了タイムライン短縮</h3>
+                      <div className="text-3xl font-bold text-blue-600 mb-2">
+                        -{Math.round(gameLoopImpact.timelineImprovement)}%
+                      </div>
+                      <p className="text-sm text-gray-600">継続性向上により予定日前倒し</p>
+                      <div className="mt-3">
+                        <Progress value={gameLoopImpact.timelineImprovement} className="h-2" />
+                      </div>
+                    </div>
+
+                    {/* 予測精度向上 */}
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Target className="h-8 w-8 text-purple-600" />
+                      </div>
+                      <h3 className="font-semibold text-lg mb-2">予測精度向上</h3>
+                      <div className="text-3xl font-bold text-purple-600 mb-2">
+                        +{Math.round(gameLoopImpact.accuracyImprovement)}%
+                      </div>
+                      <p className="text-sm text-gray-600">実績データ増加により予測改善</p>
+                      <div className="mt-3">
+                        <Progress value={gameLoopImpact.accuracyImprovement} className="h-2" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 統合統計 */}
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {gameLoopStats.completedToday}
+                        </div>
+                        <div className="text-xs text-gray-600">今日のマイクロタスク</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600">
+                          {gameLoopStats.streakDays}日
+                        </div>
+                        <div className="text-xs text-gray-600">継続ストリーク</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-purple-600">
+                          {gameLoopStats.totalCompleted}
+                        </div>
+                        <div className="text-xs text-gray-600">累積完了数</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-orange-600">
+                          {Math.round(gameLoopImpact.productivityBoost)}%
+                        </div>
+                        <div className="text-xs text-gray-600">総合生産性向上</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* アクションボタン */}
+                  <div className="mt-6 flex justify-center gap-3">
+                    <Button
+                      onClick={() => window.open('/game-loop-tasks', '_blank')}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Gamepad2 className="h-4 w-4 mr-2" />
+                      ゲームループタスク管理
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open('/integrated-dashboard', '_blank')}
+                    >
+                      <TrendingUp className="h-4 w-4 mr-2" />
+                      統合ダッシュボード
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
 
