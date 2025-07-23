@@ -357,30 +357,8 @@ export default function App() {
                   </LazyWrapper>
                 }
               />
-              <Route
-                path="/election-candidates"
-                element={
-                  <LazyWrapper>
-                    <ElectionCandidatesPage />
-                  </LazyWrapper>
-                }
-              />
-              <Route
-                path="/candidate-registration"
-                element={
-                  <LazyWrapper>
-                    <CandidateRegistrationPage />
-                  </LazyWrapper>
-                }
-              />
-              <Route
-                path="/district/:prefecture/:district"
-                element={
-                  <LazyWrapper>
-                    <DistrictPage />
-                  </LazyWrapper>
-                }
-              />
+              {/* 選挙関連ページは認証が必要なルートに移動 */}
+              {/* 選挙区ページも認証が必要なルートに移動 */}
               {/* 政治トレンドページは認証が必要なルートに移動 */}
               {/* カレンダーページは認証が必要なルートに移動 */}
               {/* ショップページは認証が必要なルートに移動 */}
@@ -565,6 +543,36 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <PoliticalTrends />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/election-candidates"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ElectionCandidatesPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/candidate-registration"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <CandidateRegistrationPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/district/:prefecture/:district"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <DistrictPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
