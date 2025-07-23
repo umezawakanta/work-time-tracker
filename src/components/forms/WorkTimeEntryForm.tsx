@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createWorkTimeEntry, fetchWorkTimeEntries } from '@/store/workTimeSlice';
@@ -91,7 +91,8 @@ export default function WorkTimeEntryForm() {
 
   // Redux
   const dispatch = useDispatch<AppDispatch>();
-  const recentEntries = useSelector((state: RootState) => state.workTime.entries.slice(0, 5));
+  const workTimeEntries = useSelector((state: RootState) => state.workTime.entries);
+  const recentEntries = useMemo(() => workTimeEntries.slice(0, 5), [workTimeEntries]);
 
   // ローカル状態
   const [projectName, setProjectName] = useState('');
@@ -680,9 +681,15 @@ export default function WorkTimeEntryForm() {
                           {formatDuration(entry.duration)}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {isToday(new Date(entry.startTime))
-                            ? format(new Date(entry.startTime), 'HH:mm')
-                            : format(new Date(entry.startTime), 'MM/dd')}
+                          {(() => {
+                            const startDate = new Date(entry.startTime);
+                            if (isNaN(startDate.getTime())) {
+                              return '日時不明';
+                            }
+                            return isToday(startDate)
+                              ? format(startDate, 'HH:mm')
+                              : format(startDate, 'MM/dd');
+                          })()}
                         </div>
                       </div>
                     </div>
