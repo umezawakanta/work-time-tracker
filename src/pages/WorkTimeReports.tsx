@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
-import { useLocale } from '../hooks/useLocale';
+// import { useLocale } from '../hooks/useLocale'; // LocaleProvider issue - using default locale
 import { WorkTimeList } from '@/components/list/WorkTimeList';
 import { WorkTimeCharts } from '@/components/chart/WorkTimeChars';
 import { PomodoroStatsWidget } from '@/components/pomodoro/PomodoroStatsWidget';
@@ -19,7 +19,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function WorkTimeReports() {
   const navigate = useNavigate();
-  const { locale } = useLocale();
+  // const { locale } = useLocale(); // LocaleProvider issue - using default locale
+  const locale = 'ja-JP'; // デフォルトロケール設定
   const workTimeEntries = useSelector((state: RootState) => state.workTime.entries);
   const isLoading = useSelector((state: RootState) => state.workTime.isLoading);
   const error = useSelector((state: RootState) => state.workTime.error);

@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from '@/components/ui/use-toast';
-import { useLocale } from '@/hooks/useLocale';
+// import { useLocale } from '@/hooks/useLocale'; // LocaleProvider issue - using default locale
 import { formatDateAndTime } from '@/utils/dateUtils';
 import { Timer, Hash, Clock } from 'lucide-react';
 
@@ -40,7 +40,8 @@ interface PomodoroWorkTimeEntry extends WorkTimeEntry {
 
 export const WorkTimeList: React.FC<WorkTimeListProps> = ({ workTimeEntries }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { locale } = useLocale();
+  // const { locale } = useLocale(); // LocaleProvider issue - using default locale
+  const locale = 'ja-JP'; // デフォルトロケール設定
   const [selectedEntries, setSelectedEntries] = React.useState<string[]>([]);
 
   const formatDate = (dateString: string | undefined) => {
