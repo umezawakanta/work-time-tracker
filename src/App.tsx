@@ -390,38 +390,8 @@ export default function App() {
                 }
               />
               {/* カレンダーページは認証が必要なルートに移動 */}
-              <Route
-                path="/shop"
-                element={
-                  <LazyWrapper>
-                    <ShopPage />
-                  </LazyWrapper>
-                }
-              />
-              <Route
-                path="/products"
-                element={
-                  <LazyWrapper>
-                    <ProductsPage />
-                  </LazyWrapper>
-                }
-              />
-              <Route
-                path="/products/:id"
-                element={
-                  <LazyWrapper>
-                    <ProductDetailPage />
-                  </LazyWrapper>
-                }
-              />
-              <Route
-                path="/checkout"
-                element={
-                  <LazyWrapper>
-                    <CheckoutPage />
-                  </LazyWrapper>
-                }
-              />
+              {/* ショップページは認証が必要なルートに移動 */}
+              {/* Eコマース関連ページは認証が必要なルートに移動 */}
               <Route
                 path="/site-dev"
                 element={
@@ -552,6 +522,46 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <CalendarPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/shop"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ShopPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/products"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ProductsPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/products/:id"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ProductDetailPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <CheckoutPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
