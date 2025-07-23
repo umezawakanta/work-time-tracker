@@ -33,6 +33,7 @@ import {
   ChevronUp,
   Activity,
   Sparkles,
+  Trophy,
 } from 'lucide-react';
 
 interface SystemStatus {
@@ -142,6 +143,14 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       status: 'available',
       description: 'AI機能統合',
       category: 'automation',
+    },
+    {
+      name: '開発バッジ',
+      path: '/development-badges',
+      icon: <Trophy className="w-4 h-4" />,
+      status: 'active',
+      description: '開発進捗管理',
+      category: 'analysis',
     },
   ];
 
@@ -345,6 +354,7 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
                   '/integrated-dashboard',
                   '/automation-rules',
                   '/work-time-reports',
+                  '/development-badges',
                 ].forEach((path) => {
                   window.open(path, '_blank');
                 });
