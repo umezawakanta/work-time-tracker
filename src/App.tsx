@@ -381,14 +381,7 @@ export default function App() {
                   </LazyWrapper>
                 }
               />
-              <Route
-                path="/political-trends"
-                element={
-                  <LazyWrapper>
-                    <PoliticalTrends />
-                  </LazyWrapper>
-                }
-              />
+              {/* 政治トレンドページは認証が必要なルートに移動 */}
               {/* カレンダーページは認証が必要なルートに移動 */}
               {/* ショップページは認証が必要なルートに移動 */}
               {/* Eコマース関連ページは認証が必要なルートに移動 */}
@@ -562,6 +555,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <CheckoutPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/political-trends"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <PoliticalTrends />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
