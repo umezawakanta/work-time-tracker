@@ -53,7 +53,7 @@ import {
   BarChart3,
   Zap,
   Cpu,
-  Memory,
+  Database,
   HardDrive,
   RefreshCw,
   Calendar,

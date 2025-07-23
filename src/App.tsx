@@ -260,6 +260,9 @@ import { ImpulseControlDashboard } from './components/adhd/ImpulseControlDashboa
 const BathingHabitPage = lazy(() => import('./pages/BathingHabitPage'));
 const ShavingHabitPage = lazy(() => import('./pages/ShavingHabitPage'));
 
+// 🎮 Game Loop Task Management
+const GameLoopTaskPage = lazy(() => import('./pages/GameLoopTaskPage'));
+
 export default function App() {
   const [chatbotState, setChatbotState] = useState({
     isOpen: false,
@@ -1146,6 +1149,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ShavingHabitPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/game-loop-tasks"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <GameLoopTaskPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
