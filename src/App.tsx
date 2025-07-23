@@ -389,14 +389,7 @@ export default function App() {
                   </LazyWrapper>
                 }
               />
-              <Route
-                path="/calendar"
-                element={
-                  <LazyWrapper>
-                    <CalendarPage />
-                  </LazyWrapper>
-                }
-              />
+              {/* カレンダーページは認証が必要なルートに移動 */}
               <Route
                 path="/shop"
                 element={
@@ -549,6 +542,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <AssetLiabilityReportPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/calendar"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <CalendarPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
