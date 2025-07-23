@@ -37,18 +37,28 @@ import { useNavigate } from 'react-router-dom';
 import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/projectHub';
 import { useAuth } from '@/hooks/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
+import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
+import {
+  gameLoopAutomationIntegration,
+  GameLoopAutomationStats,
+} from '@/services/productivity/GameLoopAutomationIntegration';
 
 const IntegratedDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'overview' | 'tasks' | 'timeline' | 'analytics'>(
-    'overview'
-  );
+  const [viewMode, setViewMode] = useState<
+    'overview' | 'tasks' | 'timeline' | 'analytics' | 'gameloop'
+  >('overview');
   const [isLoading, setIsLoading] = useState(false);
 
   // MongoDB用ToDoデータを取得
   const { todos: actualTodos, loading: todosLoading, error: todosError } = useMongoTodos();
+
+  // ゲームループタスクシステムの統計
+  const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
+  const [gameLoopAutomationStats, setGameLoopAutomationStats] =
+    useState<GameLoopAutomationStats | null>(null);
 
   // 本日のToDoフィルタリング関数（MongoDB用に調整）
   const getTodaysTodos = useMemo(() => {
@@ -247,6 +257,33 @@ const IntegratedDashboard: React.FC = () => {
     }
   }, [actualTodos, todosLoading, todosError, user, getTodaysTodos, isAuthenticated]);
 
+  // ゲームループタスクシステムの統計読み込み
+  useEffect(() => {
+    const loadGameLoopStats = () => {
+      try {
+        const stats = gameLoopTaskService.getGameLoopStats();
+        const automationStats = gameLoopAutomationIntegration.getStats();
+
+        setGameLoopStats(stats);
+        setGameLoopAutomationStats(automationStats);
+
+        console.log('[IntegratedDashboard] 🎮 ゲームループ統計読み込み:', {
+          stats,
+          automationStats,
+        });
+      } catch (error) {
+        console.error('Game loop stats loading failed:', error);
+      }
+    };
+
+    loadGameLoopStats();
+
+    // 30秒ごとに統計を更新
+    const statsInterval = setInterval(loadGameLoopStats, 30000);
+
+    return () => clearInterval(statsInterval);
+  }, [isAuthenticated]);
+
   // プロジェクト進捗サマリーの計算（実際データを反映）
   const projectSummary = useMemo(() => {
     console.log('[IntegratedDashboard] 🧮 プロジェクトサマリー計算開始:', {
@@ -434,15 +471,109 @@ const IntegratedDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* ゲームループタスクシステム統計 */}
+      {gameLoopStats && gameLoopAutomationStats && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Play className="w-5 h-5 text-purple-500" />
+            <h2 className="text-lg font-semibold">🎮 ゲームループ・タスク統計</h2>
+            <Badge variant="outline" className="ml-2">
+              プロシージネーション対策
+            </Badge>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-purple-200 bg-purple-50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">今日の完了</CardTitle>
+                <Target className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-800">
+                  {gameLoopStats.tasksCompletedToday}
+                </div>
+                <p className="text-xs text-purple-600">マイクロタスク</p>
+                <Progress
+                  value={Math.min(gameLoopStats.tasksCompletedToday * 10, 100)}
+                  className="mt-2"
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="border-orange-200 bg-orange-50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">連続ストリーク</CardTitle>
+                <RefreshCw className="h-4 w-4 text-orange-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-800">
+                  {gameLoopStats.currentStreak}
+                </div>
+                <p className="text-xs text-orange-600">連続完了</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-green-200 bg-green-50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">フィードバック瓶</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-800">
+                  {gameLoopStats.feedbackJarCount}
+                </div>
+                <p className="text-xs text-green-600">蓄積されたタスク</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-200 bg-blue-50">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">自動化実行</CardTitle>
+                <BarChart3 className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-800">
+                  {gameLoopAutomationStats.todayTriggers}
+                </div>
+                <p className="text-xs text-blue-600">今日の自動化実行</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ゲームループクイックアクセス */}
+          <div className="mt-4 flex items-center gap-3">
+            <Button
+              onClick={() => navigate('/game-loop-tasks')}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              ゲームループダッシュボード
+            </Button>
+
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <span>平均実行時間: {Math.round(gameLoopStats.averageTaskTime)}分</span>
+              <span>朝ルーチン: {gameLoopStats.morningRoutineStreak}日連続</span>
+              <span>自動化ルール: {gameLoopAutomationStats.activeRules}個稼働中</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* メインコンテンツ */}
       <Tabs
         value={viewMode}
-        onValueChange={(v) => setViewMode(v as 'overview' | 'tasks' | 'timeline' | 'analytics')}
+        onValueChange={(v) =>
+          setViewMode(v as 'overview' | 'tasks' | 'timeline' | 'analytics' | 'gameloop')
+        }
         className="space-y-6"
       >
         <TabsList>
           <TabsTrigger value="overview">概要</TabsTrigger>
           <TabsTrigger value="tasks">タスク管理</TabsTrigger>
+          <TabsTrigger value="gameloop" className="flex items-center gap-2">
+            <Play className="w-4 h-4" />
+            ゲームループ
+          </TabsTrigger>
           <TabsTrigger value="timeline">タイムライン</TabsTrigger>
           <TabsTrigger value="analytics">分析</TabsTrigger>
         </TabsList>
@@ -656,6 +787,149 @@ const IntegratedDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">分析機能は実装中です...</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="gameloop" className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* ゲームループ統計詳細 */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Play className="w-5 h-5 text-purple-500" />
+                  🎮 ゲームループ・システム概要
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {gameLoopStats && (
+                  <>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                        <span className="font-medium">総完了タスク数</span>
+                        <Badge variant="secondary">{gameLoopStats.totalTasksCompleted}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                        <span className="font-medium">今日の完了数</span>
+                        <Badge variant="secondary">{gameLoopStats.tasksCompletedToday}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <span className="font-medium">現在のストリーク</span>
+                        <Badge variant="secondary">{gameLoopStats.currentStreak} 連続</Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                        <span className="font-medium">朝ルーチン継続</span>
+                        <Badge variant="secondary">{gameLoopStats.morningRoutineStreak} 日</Badge>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <h4 className="font-medium mb-2">🎯 プロシージネーション対策効果</h4>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>• 平均タスク実行時間: {Math.round(gameLoopStats.averageTaskTime)}分</p>
+                        <p>• フィードバック蓄積: {gameLoopStats.feedbackJarCount}個</p>
+                        <p>• マイクロタスク分解により開始障壁を大幅削減</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* 自動化システム統計 */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-blue-500" />
+                  🤖 自動化システム
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {gameLoopAutomationStats && (
+                  <>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                        <span className="font-medium">アクティブルール</span>
+                        <Badge variant="secondary">{gameLoopAutomationStats.activeRules}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                        <span className="font-medium">今日のトリガー</span>
+                        <Badge variant="secondary">{gameLoopAutomationStats.todayTriggers}</Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                        <span className="font-medium">自動分解実行</span>
+                        <Badge variant="secondary">
+                          {gameLoopAutomationStats.autoBreakdownsCreated}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                        <span className="font-medium">モチベーション支援</span>
+                        <Badge variant="secondary">
+                          {gameLoopAutomationStats.motivationBoostsDelivered}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <h4 className="font-medium mb-2">⚡ 自動化の効果</h4>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>• プロシージネーション警告システム稼働中</p>
+                        <p>• ストリーク達成時の自動祝福機能</p>
+                        <p>• タスク完了時の自動次タスク提案</p>
+                        <p>• 朝ルーチンの自動生成システム</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ゲームループシステムアクション */}
+          <Card>
+            <CardHeader>
+              <CardTitle>🚀 ゲームループ・アクション</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-3">
+                <Button
+                  onClick={() => navigate('/game-loop-tasks')}
+                  className="bg-purple-600 hover:bg-purple-700 h-20 flex-col"
+                >
+                  <Play className="w-8 h-8 mb-2" />
+                  ゲームループダッシュボード
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/automation-rules')}
+                  className="h-20 flex-col"
+                >
+                  <BarChart3 className="w-8 h-8 mb-2" />
+                  自動化ルール管理
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/todos')}
+                  className="h-20 flex-col"
+                >
+                  <ListTodo className="w-8 h-8 mb-2" />
+                  従来タスク管理
+                </Button>
+              </div>
+
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  💡 ゲームループ・コンセプト
+                </h4>
+                <p className="text-sm text-gray-700">
+                  ビデオゲームの中毒性を応用したタスク管理システム。
+                  <strong>「目標 → 実行 → フィードバック」</strong>の高頻度繰り返しにより、
+                  ドーパミン分泌を促進してプロシージネーションを根本的に解決します。
+                </p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

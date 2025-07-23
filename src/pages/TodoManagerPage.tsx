@@ -5,12 +5,42 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { CheckSquare, Plus, Target, TrendingUp, Calendar, BarChart3, Settings } from 'lucide-react';
+import {
+  CheckSquare,
+  Plus,
+  Target,
+  TrendingUp,
+  Calendar,
+  BarChart3,
+  Settings,
+  Play,
+  Zap,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
+import { useState, useEffect } from 'react';
 
 const TodoManagerPage: React.FC = () => {
   const navigate = useNavigate();
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
+
+  // ゲームループシステム連携
+  const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
+  const [showGameLoopIntegration, setShowGameLoopIntegration] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stats = gameLoopTaskService.getGameLoopStats();
+      setGameLoopStats(stats);
+
+      // ゲームループタスクが存在する場合、統合オプションを表示
+      if (stats.totalTasksCompleted > 0) {
+        setShowGameLoopIntegration(true);
+      }
+    } catch (error) {
+      console.error('Failed to load game loop stats:', error);
+    }
+  }, []);
 
   return (
     <PageLayout
@@ -47,6 +77,92 @@ const TodoManagerPage: React.FC = () => {
         <div className="col-span-full">
           <DailyTodoReminder isPremium={hasActiveSubscription} />
         </div>
+
+        {/* ゲームループシステム統合 */}
+        {showGameLoopIntegration && gameLoopStats && (
+          <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500 rounded-lg">
+                  <Play className="w-5 h-5 text-white" />
+                </div>
+                🎮 ゲームループ・タスクシステム連携
+                <div className="ml-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate('/game-loop-tasks')}
+                    className="bg-white hover:bg-purple-50"
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    切り替える
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-lg font-bold text-purple-700">
+                    {gameLoopStats.tasksCompletedToday}
+                  </div>
+                  <div className="text-xs text-purple-600">今日の完了</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-lg font-bold text-orange-700">
+                    {gameLoopStats.currentStreak}
+                  </div>
+                  <div className="text-xs text-orange-600">連続ストリーク</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-lg font-bold text-green-700">
+                    {gameLoopStats.feedbackJarCount}
+                  </div>
+                  <div className="text-xs text-green-600">フィードバック瓶</div>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-lg font-bold text-blue-700">
+                    {Math.round(gameLoopStats.averageTaskTime)}分
+                  </div>
+                  <div className="text-xs text-blue-600">平均実行時間</div>
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <Target className="w-4 h-4 text-purple-600" />
+                  🧠 プロシージネーション対策
+                </h4>
+                <p className="text-sm text-gray-700 mb-3">
+                  通常のToDoリストで先延ばしに悩んでいませんか？
+                  ゲームループシステムはタスクを2-5分のマイクロタスクに分解し、
+                  即座のフィードバックでやる気を維持します。
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => navigate('/game-loop-tasks')}
+                    className="bg-purple-600 hover:bg-purple-700"
+                    size="sm"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    ゲームループを試す
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // 従来ToDoからゲームループへの変換機能
+                      alert('従来ToDoのゲームループ変換機能は開発中です');
+                    }}
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    既存ToDoを変換
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* 追加の機能カード */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

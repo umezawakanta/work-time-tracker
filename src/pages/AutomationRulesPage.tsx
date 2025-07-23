@@ -15,6 +15,10 @@ import { useAutomatedTaskManagement } from '@/hooks/useAutomatedTaskManagement';
 import { IntegratedAutomationDashboard } from '@/components/automation/IntegratedAutomationDashboard';
 import { integratedAutomationService } from '@/services/automation/IntegratedAutomationService';
 import {
+  gameLoopAutomationIntegration,
+  GameLoopAutomationStats,
+} from '@/services/productivity/GameLoopAutomationIntegration';
+import {
   Bot,
   Settings,
   Play,
@@ -42,6 +46,10 @@ const AutomationRulesPage: React.FC = () => {
     executionsToday: 0,
     successRate: 0,
   });
+
+  // ゲームループ自動化統計
+  const [gameLoopAutomationStats, setGameLoopAutomationStats] =
+    useState<GameLoopAutomationStats | null>(null);
 
   // Auth and User Data
   const { user, isAuthenticated } = useAuth();
@@ -74,7 +82,14 @@ const AutomationRulesPage: React.FC = () => {
         successRate: dashboardData.successRate,
       });
 
-      console.log('🤖 Automation rules page initialized');
+      // Get game loop automation stats
+      const gameLoopStats = gameLoopAutomationIntegration.getStats();
+      setGameLoopAutomationStats(gameLoopStats);
+
+      console.log('🤖 Automation rules page initialized', {
+        systemStats: dashboardData,
+        gameLoopStats,
+      });
     } catch (error) {
       console.error('Automation page initialization failed:', error);
     }
@@ -163,6 +178,104 @@ const AutomationRulesPage: React.FC = () => {
       headerGradient
     >
       <div className="space-y-6">
+        {/* ゲームループ自動化統計 */}
+        {gameLoopAutomationStats && (
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500 rounded-lg">
+                  <Play className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">🎮 ゲームループ自動化システム</h3>
+                  <p className="text-sm text-purple-700">プロシージネーション対策の自動化</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open('/game-loop-tasks', '_blank')}
+                className="bg-white hover:bg-purple-50"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                ダッシュボード
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Settings className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium">アクティブルール</span>
+                </div>
+                <div className="text-2xl font-bold text-blue-800">
+                  {gameLoopAutomationStats.activeRules}
+                </div>
+                <div className="text-xs text-blue-600">
+                  / {gameLoopAutomationStats.totalRules} 総ルール
+                </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium">今日のトリガー</span>
+                </div>
+                <div className="text-2xl font-bold text-green-800">
+                  {gameLoopAutomationStats.todayTriggers}
+                </div>
+                <div className="text-xs text-green-600">実行回数</div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Bot className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-medium">自動分解</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-800">
+                  {gameLoopAutomationStats.autoBreakdownsCreated}
+                </div>
+                <div className="text-xs text-purple-600">タスク生成</div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb className="w-4 h-4 text-orange-600" />
+                  <span className="text-sm font-medium">支援実行</span>
+                </div>
+                <div className="text-2xl font-bold text-orange-800">
+                  {gameLoopAutomationStats.motivationBoostsDelivered}
+                </div>
+                <div className="text-xs text-orange-600">モチベーション向上</div>
+              </div>
+            </div>
+
+            <div className="mt-4 p-4 bg-white rounded-lg">
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <Target className="w-4 h-4 text-purple-600" />
+                🧠 自動化ルール詳細
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <strong>プロシージネーション警告</strong>
+                  <p className="text-gray-600">30分未着手タスクへの自動介入</p>
+                </div>
+                <div>
+                  <strong>ストリーク祝福システム</strong>
+                  <p className="text-gray-600">連続完了時の自動ご褒美</p>
+                </div>
+                <div>
+                  <strong>朝ルーチン自動生成</strong>
+                  <p className="text-gray-600">毎朝6時の自動タスク作成</p>
+                </div>
+                <div>
+                  <strong>フロー継続支援</strong>
+                  <p className="text-gray-600">完了時の次タスク自動提案</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* System Status Alert */}
         {!isInitialized && (
           <Alert>
@@ -318,7 +431,5 @@ const AutomationRulesPage: React.FC = () => {
     </PageLayout>
   );
 };
-
-export default AutomationRulesPage;
 
 export default AutomationRulesPage;
