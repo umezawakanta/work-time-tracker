@@ -343,7 +343,8 @@ export default function CalendarPage() {
               </div>
               <h5 className="font-semibold mb-1">時間節約効果</h5>
               <div className="text-2xl font-bold text-green-600 mb-1">
-                +{Math.round(scheduleEffects.procrastinationReduction * 0.3)}時間/週
+                +{scheduleEffects ? Math.round(scheduleEffects.procrastinationReduction * 0.3) : 0}
+                時間/週
               </div>
               <p className="text-xs text-gray-600">プロシージネーション削減効果</p>
             </div>
@@ -354,7 +355,7 @@ export default function CalendarPage() {
               </div>
               <h5 className="font-semibold mb-1">予定達成率</h5>
               <div className="text-2xl font-bold text-blue-600 mb-1">
-                {Math.round(85 + scheduleEffects.scheduleAdherence * 0.2)}%
+                {scheduleEffects ? Math.round(85 + scheduleEffects.scheduleAdherence * 0.2) : 85}%
               </div>
               <p className="text-xs text-gray-600">従来85%から改善</p>
             </div>
@@ -365,7 +366,7 @@ export default function CalendarPage() {
               </div>
               <h5 className="font-semibold mb-1">生産性向上</h5>
               <div className="text-2xl font-bold text-purple-600 mb-1">
-                +{Math.round(scheduleEffects.overallScheduleBoost)}%
+                +{scheduleEffects ? Math.round(scheduleEffects.overallScheduleBoost) : 0}%
               </div>
               <p className="text-xs text-gray-600">総合的な効率向上</p>
             </div>
