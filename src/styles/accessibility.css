@@ -291,3 +291,30 @@ input:invalid:focus {
   composition-mode: auto !important;
   -webkit-composition-mode: auto !important;
 }
+
+/* 検索結果ポップオーバーの強制スタイル */
+.search-results-popover {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.search-results-popover * {
+  color: inherit !important;
+}
+
+.search-results-popover .search-item {
+  background-color: transparent !important;
+  color: #1e293b !important;
+}
+
+.search-results-popover .search-item:hover {
+  background-color: #f8fafc !important;
+}
+
+.search-results-popover .search-category {
+  color: #64748b !important;
+}
+
+.search-results-popover .search-description {
+  color: #64748b !important;
+}

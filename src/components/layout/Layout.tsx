@@ -85,7 +85,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { SearchResults } from './SearchResults';
+import { SearchDropdown } from './SearchDropdown';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 
 interface LayoutProps {
@@ -248,7 +248,6 @@ export default function Layout({ children }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [isComposing, setIsComposing] = useState(false); // IME入力状態を管理
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return (
@@ -274,8 +273,8 @@ export default function Layout({ children }: LayoutProps) {
   // 検索機能のハンドラー
   const handleSearchQueryChange = (value: string) => {
     setSearchQuery(value);
-    // IME入力中は検索結果を表示しない
-    if (!isComposing && value.trim().length > 0) {
+    // シンプルに値がある場合は結果を表示
+    if (value.trim().length > 0) {
       setShowSearchResults(true);
     } else {
       setShowSearchResults(false);
@@ -293,21 +292,6 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleSearchFocus = () => {
     // フォーカス時は検索クエリがある場合のみ結果を表示
-    if (!isComposing && searchQuery.trim().length > 0) {
-      setShowSearchResults(true);
-    }
-  };
-
-  // IME入力の開始
-  const handleCompositionStart = () => {
-    setIsComposing(true);
-    setShowSearchResults(false); // IME入力中は検索結果を非表示
-  };
-
-  // IME入力の終了
-  const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
-    setIsComposing(false);
-    // IME入力終了後に検索結果を表示（値は onChange で既に更新されている）
     if (searchQuery.trim().length > 0) {
       setShowSearchResults(true);
     }
@@ -487,7 +471,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Enhanced Sidebar */}
         <aside
-          className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-10"
+          className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-20"
           role="navigation"
           aria-label="メインナビゲーション"
         >
@@ -805,17 +789,38 @@ export default function Layout({ children }: LayoutProps) {
                   {/* Enhanced Search Bar */}
                   <div className="hidden lg:flex relative group">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200 z-10" />
-                    <Input
+                    <input
+                      type="text"
                       placeholder={t('common.search')}
                       value={searchQuery}
                       onChange={(e) => handleSearchQueryChange(e.target.value)}
-                      onFocus={handleSearchFocus}
-                      onCompositionStart={handleCompositionStart}
-                      onCompositionEnd={handleCompositionEnd}
                       autoComplete="off"
                       spellCheck="false"
-                      inputMode="search"
-                      className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium ime-disabled"
+                      style={{
+                        paddingLeft: '48px',
+                        paddingRight: '48px',
+                        width: '320px',
+                        height: '48px',
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        borderWidth: '1px',
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderRadius: '16px',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        outline: 'none',
+                        transition: 'all 0.3s',
+                        backdropFilter: 'blur(12px)',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = 'rgba(139, 92, 246, 0.5)';
+                        e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.3)';
+                        handleSearchFocus();
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                        e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                      }}
                     />
                     {searchQuery && (
                       <button
@@ -831,15 +836,12 @@ export default function Layout({ children }: LayoutProps) {
                     )}
 
                     {/* 検索結果 */}
-                    <div className="absolute top-full left-0 w-full z-50">
-                      <SearchResults
-                        searchQuery={searchQuery}
-                        isOpen={showSearchResults}
-                        isComposing={isComposing}
-                        onClose={handleCloseSearchResults}
-                        onItemSelect={handleSearchItemSelect}
-                      />
-                    </div>
+                    <SearchDropdown
+                      searchQuery={searchQuery}
+                      isOpen={showSearchResults}
+                      onClose={handleCloseSearchResults}
+                      onItemSelect={handleSearchItemSelect}
+                    />
                   </div>
                 </div>
 

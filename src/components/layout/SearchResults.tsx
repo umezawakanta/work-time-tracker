@@ -42,7 +42,6 @@ interface SearchItem {
 interface SearchResultsProps {
   searchQuery: string;
   isOpen: boolean;
-  isComposing?: boolean;
   onClose: () => void;
   onItemSelect: (item: SearchItem) => void;
 }
@@ -164,7 +163,6 @@ const getTypeLabel = (type: SearchItem['type']) => {
 export const SearchResults: React.FC<SearchResultsProps> = ({
   searchQuery,
   isOpen,
-  isComposing = false,
   onClose,
   onItemSelect,
 }) => {
@@ -262,7 +260,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       clearTimeout(searchTimeoutRef.current);
     }
 
-    if (!searchQuery.trim() || isComposing) {
+    if (!searchQuery.trim()) {
       setSearchResults([]);
       setIsLoading(false);
       return;
@@ -272,9 +270,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
     // デバウンス処理
     searchTimeoutRef.current = setTimeout(() => {
-      if (!isComposing) {
-        performSearch(searchQuery);
-      }
+      performSearch(searchQuery);
     }, 300);
 
     return () => {
@@ -282,7 +278,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery, performSearch, isComposing]);
+  }, [searchQuery, performSearch]);
 
   const handleItemSelect = (item: SearchItem) => {
     onItemSelect(item);
@@ -310,10 +306,16 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         <div />
       </PopoverTrigger>
       <PopoverContent
-        className="w-[500px] p-0 bg-white border border-slate-200 shadow-2xl"
+        className="w-[500px] p-0 border border-slate-200 shadow-2xl search-results-popover"
         align="start"
         side="bottom"
         sideOffset={8}
+        style={
+          {
+            backgroundColor: '#ffffff',
+            color: '#1e293b',
+          } as React.CSSProperties
+        }
       >
         <div className="max-h-96 overflow-auto">
           {isLoading ? (
@@ -331,7 +333,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 <div key={type} className="mb-2">
                   {index > 0 && <div className="border-t border-slate-200 my-2" />}
                   <div className="px-3 py-1">
-                    <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider search-category">
                       {getTypeIcon(type as SearchItem['type'])}
                       {getTypeLabel(type as SearchItem['type'])}
                     </div>
@@ -341,7 +343,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                       <button
                         key={item.id}
                         onClick={() => handleItemSelect(item)}
-                        className="w-full flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors text-left search-item"
                       >
                         <div className="flex items-center justify-center w-8 h-8 bg-slate-100 rounded-lg flex-shrink-0">
                           {item.icon || getTypeIcon(item.type)}
@@ -369,7 +371,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                             )}
                           </div>
                           {item.description && (
-                            <p className="text-sm text-slate-600 truncate">{item.description}</p>
+                            <p className="text-sm text-slate-600 truncate search-description">
+                              {item.description}
+                            </p>
                           )}
                           {item.tags && item.tags.length > 0 && (
                             <div className="flex gap-1 mt-1">
