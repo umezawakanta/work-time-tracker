@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useInternationalization } from '@/hooks/useInternationalization';
 import { AccessibilityProvider, SkipLinks } from '@/components/accessibility';
+import { UnifiedSystemNavigation } from '@/components/navigation/UnifiedSystemNavigation';
 import {
   Home,
   Clock,
@@ -84,6 +85,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { SearchResults } from './SearchResults';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 
 interface LayoutProps {
@@ -101,42 +103,8 @@ interface MenuItem {
   accentColor?: string;
 }
 
-// コアメニューアイテム - 翻訳対応
+// コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
-  {
-    icon: <Home className="h-5 w-5" />,
-    label: t('navigation.dashboard'),
-    path: '/',
-    description: t('navigation.dashboard'),
-    gradient: 'from-blue-500 via-blue-600 to-cyan-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Target className="h-5 w-5" />,
-    label: t('navigation.integrated_dashboard'),
-    path: '/integrated-dashboard',
-    description: t('navigation.integrated_dashboard'),
-    gradient: 'from-purple-500 via-violet-500 to-purple-600',
-    accentColor: 'purple',
-  },
-  {
-    icon: <CheckSquare className="h-5 w-5" />,
-    label: t('navigation.tasks'),
-    path: '/todos',
-    description: t('navigation.tasks'),
-    badge: 'NEW',
-    gradient: 'from-emerald-500 via-green-500 to-teal-500',
-    accentColor: 'emerald',
-  },
-  {
-    icon: <Settings className="h-5 w-5" />,
-    label: t('navigation.automation'),
-    path: '/automation-rules',
-    description: t('navigation.automation'),
-    badge: 'AUTO',
-    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
-    accentColor: 'purple',
-  },
   {
     icon: <Clock className="h-5 w-5" />,
     label: t('navigation.work_time'),
@@ -145,44 +113,11 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     accentColor: 'orange',
   },
-  {
-    icon: <BarChart2 className="h-5 w-5" />,
-    label: t('navigation.reports'),
-    path: '/work-time-reports',
-    description: t('navigation.reports'),
-    gradient: 'from-indigo-500 via-blue-500 to-purple-500',
-    accentColor: 'indigo',
-  },
 ];
 
-// バッジ・実績メニューアイテム
+// バッジ・実績メニューアイテム（UnifiedSystemNavigationで管理されないアイテムのみ）
 const badgeMenuItems: MenuItem[] = [
-  {
-    icon: <Trophy className="h-5 w-5" />,
-    label: '開発バッジダッシュボード',
-    path: '/development-badges',
-    description: '開発進捗バッジとスキル管理',
-    badge: 'HOT',
-    gradient: 'from-yellow-500 via-amber-500 to-orange-500',
-    accentColor: 'yellow',
-  },
-  {
-    icon: <Target className="h-5 w-5" />,
-    label: 'バッジ完了予測',
-    path: '/badge-completion',
-    description: '全バッジ獲得までの作業時間・達成予定日',
-    badge: 'NEW',
-    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Award className="h-5 w-5" />,
-    label: 'バッジショーケース',
-    path: '/badge-showcase',
-    description: '獲得済みバッジの詳細表示',
-    gradient: 'from-purple-500 via-pink-500 to-rose-500',
-    accentColor: 'purple',
-  },
+  // UnifiedSystemNavigationでバッジ関連は管理されるため、ここは空
 ];
 
 // 開発・品質管理メニューアイテム
@@ -312,6 +247,7 @@ export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated, user, setIsAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return (
@@ -333,6 +269,21 @@ export default function Layout({ children }: LayoutProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 検索機能のハンドラー
+  const handleSearchQueryChange = (value: string) => {
+    setSearchQuery(value);
+    setShowSearchResults(value.trim().length > 0);
+  };
+
+  const handleSearchItemSelect = (item: any) => {
+    setSearchQuery('');
+    setShowSearchResults(false);
+  };
+
+  const handleCloseSearchResults = () => {
+    setShowSearchResults(false);
+  };
 
   useEffect(() => {
     localStorage.setItem('darkMode', isDarkMode.toString());
@@ -538,21 +489,34 @@ export default function Layout({ children }: LayoutProps) {
             className="flex-1 p-6 space-y-2 overflow-y-auto scrollbar-hide"
             aria-label="アプリケーションメニュー"
           >
-            {/* コアメニュー */}
+            {/* 統一システムナビゲーション */}
+            <div className="mb-6">
+              <UnifiedSystemNavigation
+                compactMode={true}
+                showStats={false}
+                orientation="horizontal"
+              />
+            </div>
+
+            {/* 追加メニュー（UnifiedSystemNavigationで管理されないアイテム） */}
             {getCoreMenuItems(t).map((item) => (
               <div key={item.path}>{renderMenuItem(item)}</div>
             ))}
 
-            {/* バッジ・実績セクション */}
-            <div className="pt-6 pb-2">
-              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                <Trophy className="h-3 w-3" />
-                {t('sidebar.badges_achievements')}
-              </h3>
-            </div>
-            {badgeMenuItems.map((item) => (
-              <div key={item.path}>{renderMenuItem(item)}</div>
-            ))}
+            {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
+            {badgeMenuItems.length > 0 && (
+              <>
+                <div className="pt-6 pb-2">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
+                    <Trophy className="h-3 w-3" />
+                    {t('sidebar.badges_achievements')}
+                  </h3>
+                </div>
+                {badgeMenuItems.map((item) => (
+                  <div key={item.path}>{renderMenuItem(item)}</div>
+                ))}
+              </>
+            )}
 
             {/* 開発・品質管理セクション */}
             <div className="pt-4 pb-2">
@@ -750,9 +714,7 @@ export default function Layout({ children }: LayoutProps) {
                     {t('sidebar.admin_menu')}
                   </h3>
                 </div>
-                {getCoreMenuItems(t).map((item) => (
-                  <div key={item.path}>{renderMenuItem(item)}</div>
-                ))}
+                {/* 管理者専用機能（UnifiedSystemNavigationで管理されるため削除） */}
               </>
             )}
           </nav>
@@ -814,22 +776,36 @@ export default function Layout({ children }: LayoutProps) {
 
                   {/* Enhanced Search Bar */}
                   <div className="hidden lg:flex relative group">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200 z-10" />
                     <Input
                       placeholder={t('common.search')}
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => handleSearchQueryChange(e.target.value)}
+                      onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
                       className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium"
                     />
                     {searchQuery && (
                       <button
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setShowSearchResults(false);
+                        }}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200 z-10"
                         aria-label="検索をクリア"
                       >
                         <X className="h-5 w-5" />
                       </button>
                     )}
+
+                    {/* 検索結果 */}
+                    <div className="absolute top-full left-0 w-full z-50">
+                      <SearchResults
+                        searchQuery={searchQuery}
+                        isOpen={showSearchResults}
+                        onClose={handleCloseSearchResults}
+                        onItemSelect={handleSearchItemSelect}
+                      />
+                    </div>
                   </div>
                 </div>
 

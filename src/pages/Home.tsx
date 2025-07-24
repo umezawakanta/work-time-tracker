@@ -49,7 +49,6 @@ import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useResponsive } from '@/hooks/useResponsive';
 import ADHDExecutionAssistant from '@/components/adhd/ADHDExecutionAssistant';
 import { ImpulseControlDashboard } from '@/components/adhd/ImpulseControlDashboard';
-import { UnifiedSystemNavigation } from '@/components/navigation/UnifiedSystemNavigation';
 
 interface ActivityData {
   task: string;
@@ -697,10 +696,7 @@ const Home: React.FC = () => {
         </Card>
       </div>
 
-      {/* 統一システムナビゲーション */}
-      <div className="mb-8">
-        <UnifiedSystemNavigation compactMode={false} showStats={true} orientation="horizontal" />
-      </div>
+      {/* 統一システムナビゲーション - Layout.tsxのサイドメニューで管理されるため削除 */}
 
       {/* 統合タスクダッシュボード */}
       <div className="mb-8">
