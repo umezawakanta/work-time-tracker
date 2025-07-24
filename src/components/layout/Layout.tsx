@@ -506,7 +506,7 @@ export default function Layout({ children }: LayoutProps) {
               <UnifiedSystemNavigation
                 compactMode={true}
                 showStats={false}
-                orientation="horizontal"
+                orientation="vertical"
               />
             </div>
 
