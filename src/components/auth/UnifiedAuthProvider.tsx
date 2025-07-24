@@ -153,7 +153,7 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
         },
       });
 
-      toast.info(`${provider}での認証に切り替えています...`);
+      toast(`${provider}での認証に切り替えています...`);
     } catch (error) {
       await authHook.handleError(error, 'provider_switch');
     }
@@ -225,8 +225,8 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
   /**
    * 📊 セキュリティ監視
    */
-  const monitorSecurity = (): void => {
-    if (!enableSecurityMonitoring) return;
+  const monitorSecurity = (): (() => void) => {
+    if (!enableSecurityMonitoring) return () => {};
 
     const interval = setInterval(async () => {
       try {
@@ -249,7 +249,7 @@ export const UnifiedAuthProvider: React.FC<UnifiedAuthProviderProps> = ({
               duration: 10000,
             });
           } else if (newStatus === 'warning') {
-            toast.warning('セキュリティ警告が発生しています');
+            toast('セキュリティ警告が発生しています');
           }
         }
       } catch (error) {

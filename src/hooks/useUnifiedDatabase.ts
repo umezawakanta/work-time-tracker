@@ -155,7 +155,7 @@ export interface BackupInfo {
 export interface OptimizationResult {
   success: boolean;
   improvements: any[];
-  recommendatio: any[];
+  recommendations: any[];
 }
 
 export interface PerformanceMetrics {
@@ -617,7 +617,7 @@ export function useUnifiedDatabase<T extends BaseEntity>(
       return {
         success: false,
         improvements: [],
-        recommendatio: [],
+        recommendations: [],
       };
     }
   }, [enableOptimization, handleError, handleSuccess]);

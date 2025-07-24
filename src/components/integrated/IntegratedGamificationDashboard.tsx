@@ -426,8 +426,9 @@ export const IntegratedGamificationDashboard: React.FC<IntegratedGamificationDas
                       >
                         <div className="flex items-center gap-3">
                           <button
-                            onClick={() => completeTask(todo)}
+                            onClick={() => completeTask(todo as Todo)}
                             disabled={isProcessing}
+                            aria-label={`タスク「${todo.task}」を完了する`}
                             className="w-5 h-5 border rounded border-gray-300 hover:border-green-500 transition-colors"
                           />
                           <div>
