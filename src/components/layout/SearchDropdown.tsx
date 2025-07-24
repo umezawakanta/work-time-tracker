@@ -16,6 +16,7 @@ import {
   Award,
   Globe,
   User,
+  Edit3,
 } from 'lucide-react';
 
 interface SearchItem {
@@ -94,6 +95,22 @@ const appPages: SearchItem[] = [
     type: 'page',
     path: '/work-time-dashboard',
     icon: <BarChart2 className="h-4 w-4" />,
+  },
+  {
+    id: 'work-time-history',
+    title: '勤怠履歴管理',
+    description: '打刻履歴の詳細確認と修正申請 history correction request management',
+    type: 'page',
+    path: '/work-time-history',
+    icon: <Clock className="h-4 w-4" />,
+  },
+  {
+    id: 'work-time-correction',
+    title: '修正申請承認管理',
+    description: '従業員からの打刻修正申請の承認 管理者専用 correction approval admin',
+    type: 'page',
+    path: '/work-time-correction',
+    icon: <Edit3 className="h-4 w-4" />,
   },
   {
     id: 'calendar',
