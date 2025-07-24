@@ -248,6 +248,7 @@ export default function Layout({ children }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isComposing, setIsComposing] = useState(false); // IME入力状態を管理
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return (
@@ -273,8 +274,8 @@ export default function Layout({ children }: LayoutProps) {
   // 検索機能のハンドラー
   const handleSearchQueryChange = (value: string) => {
     setSearchQuery(value);
-    // 検索クエリがある場合のみ結果を表示
-    if (value.trim().length > 0) {
+    // IME入力中は検索結果を表示しない
+    if (!isComposing && value.trim().length > 0) {
       setShowSearchResults(true);
     } else {
       setShowSearchResults(false);
@@ -292,7 +293,24 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleSearchFocus = () => {
     // フォーカス時は検索クエリがある場合のみ結果を表示
-    if (searchQuery.trim().length > 0) {
+    if (!isComposing && searchQuery.trim().length > 0) {
+      setShowSearchResults(true);
+    }
+  };
+
+  // IME入力の開始
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+    setShowSearchResults(false); // IME入力中は検索結果を非表示
+  };
+
+  // IME入力の終了
+  const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
+    setIsComposing(false);
+    const value = e.currentTarget.value;
+    setSearchQuery(value);
+    // IME入力終了後に検索結果を表示
+    if (value.trim().length > 0) {
       setShowSearchResults(true);
     }
   };
@@ -794,7 +812,13 @@ export default function Layout({ children }: LayoutProps) {
                       value={searchQuery}
                       onChange={(e) => handleSearchQueryChange(e.target.value)}
                       onFocus={handleSearchFocus}
-                      className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium"
+                      onCompositionStart={handleCompositionStart}
+                      onCompositionEnd={handleCompositionEnd}
+                      autoComplete="off"
+                      spellCheck="false"
+                      inputMode="search"
+                      style={{ imeMode: 'disabled' }}
+                      className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium ime-disabled"
                     />
                     {searchQuery && (
                       <button
@@ -814,6 +838,7 @@ export default function Layout({ children }: LayoutProps) {
                       <SearchResults
                         searchQuery={searchQuery}
                         isOpen={showSearchResults}
+                        isComposing={isComposing}
                         onClose={handleCloseSearchResults}
                         onItemSelect={handleSearchItemSelect}
                       />

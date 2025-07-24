@@ -42,6 +42,7 @@ interface SearchItem {
 interface SearchResultsProps {
   searchQuery: string;
   isOpen: boolean;
+  isComposing?: boolean;
   onClose: () => void;
   onItemSelect: (item: SearchItem) => void;
 }
@@ -163,6 +164,7 @@ const getTypeLabel = (type: SearchItem['type']) => {
 export const SearchResults: React.FC<SearchResultsProps> = ({
   searchQuery,
   isOpen,
+  isComposing = false,
   onClose,
   onItemSelect,
 }) => {
@@ -260,7 +262,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       clearTimeout(searchTimeoutRef.current);
     }
 
-    if (!searchQuery.trim()) {
+    if (!searchQuery.trim() || isComposing) {
       setSearchResults([]);
       setIsLoading(false);
       return;
@@ -270,7 +272,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
     // デバウンス処理
     searchTimeoutRef.current = setTimeout(() => {
-      performSearch(searchQuery);
+      if (!isComposing) {
+        performSearch(searchQuery);
+      }
     }, 300);
 
     return () => {
@@ -278,7 +282,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [searchQuery, performSearch]);
+  }, [searchQuery, performSearch, isComposing]);
 
   const handleItemSelect = (item: SearchItem) => {
     onItemSelect(item);

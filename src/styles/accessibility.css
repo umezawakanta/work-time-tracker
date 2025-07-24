@@ -281,3 +281,13 @@ input:invalid:focus {
     box-shadow: 0 0 0 4px var(--focus-shadow);
   }
 }
+
+/* IME無効化スタイル */
+.ime-disabled {
+  ime-mode: disabled !important;
+  -webkit-ime-mode: disabled !important;
+  -moz-ime-mode: disabled !important;
+  -ms-ime-mode: disabled !important;
+  composition-mode: auto !important;
+  -webkit-composition-mode: auto !important;
+}
