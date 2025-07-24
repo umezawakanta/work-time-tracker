@@ -169,92 +169,116 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Redux storeからタスクデータを取得
   const todos = useSelector((state: RootState) => state.todo.items);
   const books = useSelector((state: RootState) => state.book?.books || []);
 
+  // 検索処理の関数
+  const performSearch = React.useCallback(
+    async (query: string) => {
+      try {
+        const results: SearchItem[] = [];
+        const searchTerm = query.toLowerCase();
+
+        // ページ検索
+        const pageResults = appPages.filter(
+          (page) =>
+            page.title.toLowerCase().includes(searchTerm) ||
+            page.description?.toLowerCase().includes(searchTerm)
+        );
+        results.push(...pageResults);
+
+        // タスク検索
+        const todoResults = todos
+          .filter(
+            (todo) =>
+              todo.task.toLowerCase().includes(searchTerm) ||
+              todo.note?.toLowerCase().includes(searchTerm) ||
+              todo.tags?.some((tag) => tag.toLowerCase().includes(searchTerm))
+          )
+          .slice(0, 5) // タスクは最大5件
+          .map((todo) => ({
+            id: todo._id,
+            title: todo.task,
+            description: todo.note || undefined,
+            type: 'todo' as const,
+            path: '/todos',
+            priority: (todo.priority >= 4 ? 'high' : todo.priority >= 2 ? 'medium' : 'low') as
+              | 'high'
+              | 'medium'
+              | 'low',
+            completed: todo.completed,
+            tags: todo.tags,
+          }));
+        results.push(...todoResults);
+
+        // 本検索
+        const bookResults = books
+          .filter(
+            (book) =>
+              book.title.toLowerCase().includes(searchTerm) ||
+              book.author.toLowerCase().includes(searchTerm) ||
+              book.category?.toLowerCase().includes(searchTerm)
+          )
+          .slice(0, 3) // 本は最大3件
+          .map((book) => ({
+            id: book._id,
+            title: book.title,
+            description: `著者: ${book.author}`,
+            type: 'book' as const,
+            path: '/books',
+            tags: book.tags || [],
+          }));
+        results.push(...bookResults);
+
+        setSearchResults(results.slice(0, 10)); // 全体で最大10件
+      } catch (error) {
+        console.error('検索エラー:', error);
+        setSearchResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [todos, books]
+  );
+
+  // コンポーネントのクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // 検索処理
   useEffect(() => {
+    // 既存のタイムアウトをクリア
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
 
     // デバウンス処理
-    const timeoutId = setTimeout(() => {
+    searchTimeoutRef.current = setTimeout(() => {
       performSearch(searchQuery);
     }, 300);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-  const performSearch = async (query: string) => {
-    try {
-      const results: SearchItem[] = [];
-      const searchTerm = query.toLowerCase();
-
-      // ページ検索
-      const pageResults = appPages.filter(
-        (page) =>
-          page.title.toLowerCase().includes(searchTerm) ||
-          page.description?.toLowerCase().includes(searchTerm)
-      );
-      results.push(...pageResults);
-
-      // タスク検索
-      const todoResults = todos
-        .filter(
-          (todo) =>
-            todo.task.toLowerCase().includes(searchTerm) ||
-            todo.note?.toLowerCase().includes(searchTerm) ||
-            todo.tags?.some((tag) => tag.toLowerCase().includes(searchTerm))
-        )
-        .slice(0, 5) // タスクは最大5件
-        .map((todo) => ({
-          id: todo._id,
-          title: todo.task,
-          description: todo.note || undefined,
-          type: 'todo' as const,
-          path: '/todos',
-          priority: (todo.priority >= 4 ? 'high' : todo.priority >= 2 ? 'medium' : 'low') as
-            | 'high'
-            | 'medium'
-            | 'low',
-          completed: todo.completed,
-          tags: todo.tags,
-        }));
-      results.push(...todoResults);
-
-      // 本検索
-      const bookResults = books
-        .filter(
-          (book) =>
-            book.title.toLowerCase().includes(searchTerm) ||
-            book.author.toLowerCase().includes(searchTerm) ||
-            book.category?.toLowerCase().includes(searchTerm)
-        )
-        .slice(0, 3) // 本は最大3件
-        .map((book) => ({
-          id: book._id,
-          title: book.title,
-          description: `著者: ${book.author}`,
-          type: 'book' as const,
-          path: '/books',
-          tags: book.tags || [],
-        }));
-      results.push(...bookResults);
-
-      setSearchResults(results.slice(0, 10)); // 全体で最大10件
-    } catch (error) {
-      console.error('検索エラー:', error);
-      setSearchResults([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, performSearch]);
 
   const handleItemSelect = (item: SearchItem) => {
     onItemSelect(item);

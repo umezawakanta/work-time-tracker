@@ -273,7 +273,12 @@ export default function Layout({ children }: LayoutProps) {
   // 検索機能のハンドラー
   const handleSearchQueryChange = (value: string) => {
     setSearchQuery(value);
-    setShowSearchResults(value.trim().length > 0);
+    // 検索クエリがある場合のみ結果を表示
+    if (value.trim().length > 0) {
+      setShowSearchResults(true);
+    } else {
+      setShowSearchResults(false);
+    }
   };
 
   const handleSearchItemSelect = (item: any) => {
@@ -283,6 +288,13 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleCloseSearchResults = () => {
     setShowSearchResults(false);
+  };
+
+  const handleSearchFocus = () => {
+    // フォーカス時は検索クエリがある場合のみ結果を表示
+    if (searchQuery.trim().length > 0) {
+      setShowSearchResults(true);
+    }
   };
 
   useEffect(() => {
@@ -781,7 +793,7 @@ export default function Layout({ children }: LayoutProps) {
                       placeholder={t('common.search')}
                       value={searchQuery}
                       onChange={(e) => handleSearchQueryChange(e.target.value)}
-                      onFocus={() => searchQuery.trim() && setShowSearchResults(true)}
+                      onFocus={handleSearchFocus}
                       className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium"
                     />
                     {searchQuery && (
