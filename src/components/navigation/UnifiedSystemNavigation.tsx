@@ -14,6 +14,7 @@ import {
   gameLoopAutomationIntegration,
   GameLoopAutomationStats,
 } from '@/services/productivity/GameLoopAutomationIntegration';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Play,
   BarChart3,
@@ -35,6 +36,7 @@ import {
   Sparkles,
   Trophy,
   BookOpen,
+  Crown,
 } from 'lucide-react';
 
 interface SystemStatus {
@@ -60,6 +62,7 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(!compactMode);
   const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
   const [automationStats, setAutomationStats] = useState<GameLoopAutomationStats | null>(null);
@@ -179,7 +182,26 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
     },
   ];
 
-  const currentSystem = systems.find((system) => system.path === location.pathname);
+  // 管理者権限のあるユーザーには管理者メニューを追加
+  const adminSystems: SystemStatus[] = user?.isAdmin
+    ? [
+        {
+          name: '管理者ダッシュボード',
+          path: '/admin',
+          icon: <Crown className="w-4 h-4" />,
+          status: 'active',
+          description: 'システム管理・ユーザー管理',
+          category: 'core',
+        },
+      ]
+    : [];
+
+  // 全システムを統合（重複を避ける）
+  const allSystems = [...systems, ...adminSystems].filter(
+    (system, index, arr) => arr.findIndex((s) => s.path === system.path) === index
+  );
+
+  const currentSystem = allSystems.find((system) => system.path === location.pathname);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -224,7 +246,7 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
     }
   };
 
-  const groupedSystems = systems.reduce(
+  const groupedSystems = allSystems.reduce(
     (acc, system) => {
       if (!acc[system.category]) {
         acc[system.category] = [];
