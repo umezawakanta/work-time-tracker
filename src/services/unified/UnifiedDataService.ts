@@ -3,7 +3,7 @@
  * 全ダッシュボードとコンポーネントが使用する中央集権的なデータ管理システム
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { store } from '@/store';
 import {
   initializeUnifiedSystem,

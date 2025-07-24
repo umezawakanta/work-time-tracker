@@ -3,7 +3,7 @@
  * WebSocket/SSE/WebRTCを使用した高性能リアルタイム同期システム
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { unifiedAPIManager } from '@/api/unified/UnifiedAPIManager';
 import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 import type { BaseEntity, SchemaEntity, SyncStatus } from '@/database/schema/UnifiedDatabaseSchema';

@@ -3,7 +3,7 @@
  * 全ての認証方式を統合し、シンプルで安全な認証フローを提供
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { store } from '@/store';
 import { unifiedDataService, type SystemHealthCheck } from '@/services/unified/UnifiedDataService';
 import { addSystemEvent, addNotification, updateConnectionStatus } from '@/store/unifiedDataSlice';

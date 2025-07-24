@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import adhdService, { FocusSession, ADHDSettings } from './adhdService';
 
 export interface ADHDTask {

@@ -3,7 +3,7 @@
  * 全てのデータアクセスを統一されたインターフェースで管理
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 import { unifiedSecurityMiddleware } from '@/services/security/UnifiedSecurityMiddleware';
 import type {

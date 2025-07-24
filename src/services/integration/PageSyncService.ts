@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 
 /**
  * 📡 ページ間データ同期サービス - リアルタイム連携システム

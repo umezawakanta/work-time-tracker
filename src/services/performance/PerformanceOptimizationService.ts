@@ -3,7 +3,7 @@
  * 高性能でスケーラブルなアプリケーション実行環境を提供
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
 
 // =============================================================================
@@ -965,7 +965,10 @@ class PerformanceOptimizationService extends EventEmitter {
   // =============================================================================
 
   private async initializeWorkerPool(): Promise<void> {
-    if (!this.config.workers.enabled) return;
+    if (!this.config.workers.enabled || typeof Worker === 'undefined') {
+      console.warn('Workers disabled or not supported in this environment');
+      return;
+    }
 
     const workerCount = Math.min(
       this.config.workers.maxWorkers,
@@ -975,16 +978,28 @@ class PerformanceOptimizationService extends EventEmitter {
     for (let i = 0; i < workerCount; i++) {
       try {
         const worker = new Worker('/workers/performance-worker.js');
+
         worker.addEventListener('error', (error) => {
           console.error('Worker error:', error);
+          // Remove failed worker from pool
+          const index = this.workers.indexOf(worker);
+          if (index > -1) {
+            this.workers.splice(index, 1);
+          }
         });
+
         this.workers.push(worker);
       } catch (error) {
         console.warn('Failed to create worker:', error);
+        // Continue without this worker
       }
     }
 
-    console.log(`👷‍♂️ Initialized ${this.workers.length} workers`);
+    if (this.workers.length > 0) {
+      console.log(`👷‍♂️ Initialized ${this.workers.length} workers`);
+    } else {
+      console.warn('⚠️ No workers initialized, fallback mode enabled');
+    }
   }
 
   private async initializeCacheSystem(): Promise<void> {
@@ -1243,7 +1258,7 @@ class PerformanceOptimizationService extends EventEmitter {
   private measureTimeToInteractive(): number {
     // Time to Interactive の測定
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    return navigation ? navigation.domInteractive - navigation.navigationStart : 0;
+    return navigation ? navigation.domInteractive - navigation.fetchStart : 0;
   }
 
   private measureFirstContentfulPaint(): number {

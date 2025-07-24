@@ -3,14 +3,11 @@
  * 包括的なデータ保護とディザスタリカバリソリューション
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '@/lib/BrowserEventEmitter';
 import { unifiedAPIManager } from '@/api/unified/UnifiedAPIManager';
 import { unifiedErrorHandler } from '@/services/error/UnifiedErrorHandler';
-import type {
-  BaseEntity,
-  SchemaEntity,
-  SCHEMA_ENTITY_NAMES,
-} from '@/database/schema/UnifiedDatabaseSchema';
+import type { BaseEntity, SchemaEntity } from '@/database/schema/UnifiedDatabaseSchema';
+import { SCHEMA_ENTITY_NAMES } from '@/database/schema/UnifiedDatabaseSchema';
 
 // =============================================================================
 // Types and Interfaces
