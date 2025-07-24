@@ -77,6 +77,13 @@ const ADHDFloatingButton = lazy(() =>
     default: module.ADHDFloatingButton,
   }))
 );
+
+// ⏰ 新しい勤怠管理システム
+const WorkTimePunchPage = lazy(() => import('./pages/WorkTimePunchPage'));
+const WorkTimeApprovalPage = lazy(() => import('./pages/WorkTimeApprovalPage'));
+const WorkTimeRealtimeDashboardPage = lazy(() => import('./pages/WorkTimeRealtimeDashboardPage'));
+const WorkTimeHistoryPage = lazy(() => import('./pages/WorkTimeHistoryPage'));
+const WorkTimeCorrectionApprovalPage = lazy(() => import('./pages/WorkTimeCorrectionApprovalPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -475,6 +482,62 @@ export default function App() {
                         <WorkTimeReports />
                       </LazyWrapper>
                     </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/work-time-punch"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <WorkTimePunchPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/work-time-approval"
+                  element={
+                    <AdminRoute>
+                      <LayoutWrapper>
+                        <LazyWrapper>
+                          <WorkTimeApprovalPage />
+                        </LazyWrapper>
+                      </LayoutWrapper>
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/work-time-dashboard"
+                  element={
+                    <AdminRoute>
+                      <LayoutWrapper>
+                        <LazyWrapper>
+                          <WorkTimeRealtimeDashboardPage />
+                        </LazyWrapper>
+                      </LayoutWrapper>
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/work-time-history"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <WorkTimeHistoryPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/work-time-correction"
+                  element={
+                    <AdminRoute>
+                      <LayoutWrapper>
+                        <LazyWrapper>
+                          <WorkTimeCorrectionApprovalPage />
+                        </LazyWrapper>
+                      </LayoutWrapper>
+                    </AdminRoute>
                   }
                 />
                 <Route

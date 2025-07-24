@@ -57,6 +57,10 @@ import {
   Gauge,
   Droplets,
   Scissors,
+  Timer,
+  CheckCircle,
+  Users,
+  History,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -113,6 +117,55 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     description: t('navigation.work_time'),
     gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     accentColor: 'orange',
+  },
+];
+
+// 新しい勤怠管理メニューアイテム
+const workTimeMenuItems: MenuItem[] = [
+  {
+    icon: <Timer className="h-5 w-5" />,
+    label: '⏰ リアルタイム打刻',
+    path: '/work-time-punch',
+    description: 'GPS位置情報による正確な勤怠打刻',
+    badge: 'NEW',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
+  {
+    icon: <History className="h-5 w-5" />,
+    label: '📊 勤怠履歴管理',
+    path: '/work-time-history',
+    description: '打刻履歴の確認と修正申請',
+    badge: 'NEW',
+    gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
+    accentColor: 'indigo',
+  },
+  {
+    icon: <CheckCircle className="h-5 w-5" />,
+    label: '👨‍💼 勤怠承認管理',
+    path: '/work-time-approval',
+    description: '従業員の勤怠記録承認（管理者専用）',
+    badge: 'ADMIN',
+    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <Edit3 className="h-5 w-5" />,
+    label: '✅ 修正申請承認',
+    path: '/work-time-correction',
+    description: '打刻修正申請の承認（管理者専用）',
+    badge: 'ADMIN',
+    gradient: 'from-orange-500 via-red-500 to-pink-500',
+    accentColor: 'orange',
+  },
+  {
+    icon: <Users className="h-5 w-5" />,
+    label: '📈 リアルタイム監視',
+    path: '/work-time-dashboard',
+    description: '全従業員の勤務状況リアルタイム監視',
+    badge: 'LIVE',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    accentColor: 'purple',
   },
 ];
 
@@ -522,6 +575,25 @@ export default function Layout({ children }: LayoutProps) {
                     ))}
                   </div>
                 )}
+
+                {/* 新しい勤怠管理セクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Timer className="h-3 w-3" />
+                    リアルタイム勤怠管理
+                  </h3>
+                  {workTimeMenuItems.map((item) => {
+                    // 管理者専用メニューの制御
+                    if (
+                      (item.path === '/work-time-approval' ||
+                        item.path === '/work-time-dashboard') &&
+                      !user?.isAdmin
+                    ) {
+                      return null;
+                    }
+                    return <div key={item.path}>{renderMenuItem(item)}</div>;
+                  })}
+                </div>
 
                 {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
                 {badgeMenuItems.length > 0 && (
