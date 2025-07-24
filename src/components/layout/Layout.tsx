@@ -72,6 +72,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Locale } from '@/context/LocaleContext';
@@ -471,7 +472,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Enhanced Sidebar */}
         <aside
-          className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-20"
+          className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-10"
           role="navigation"
           aria-label="メインナビゲーション"
         >
@@ -497,243 +498,248 @@ export default function Layout({ children }: LayoutProps) {
           </div>
 
           {/* Navigation Menu */}
-          <nav
-            className="flex-1 p-6 space-y-2 overflow-y-auto scrollbar-hide"
-            aria-label="アプリケーションメニュー"
-          >
-            {/* 統一システムナビゲーション */}
-            <div className="mb-6">
-              <UnifiedSystemNavigation
-                compactMode={true}
-                showStats={false}
-                orientation="vertical"
-              />
-            </div>
-
-            {/* 追加メニュー（UnifiedSystemNavigationで管理されないアイテム） */}
-            {getCoreMenuItems(t).map((item) => (
-              <div key={item.path}>{renderMenuItem(item)}</div>
-            ))}
-
-            {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
-            {badgeMenuItems.length > 0 && (
-              <>
-                <div className="pt-6 pb-2">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                    <Trophy className="h-3 w-3" />
-                    {t('sidebar.badges_achievements')}
-                  </h3>
+          <nav className="flex-1" aria-label="アプリケーションメニュー">
+            <ScrollArea className="h-full">
+              <div className="px-6 py-4 space-y-2">
+                {/* 統一システムナビゲーション */}
+                <div className="mb-8 pb-6 border-b border-white/10 dark:border-white/5">
+                  <UnifiedSystemNavigation
+                    compactMode={true}
+                    showStats={false}
+                    orientation="vertical"
+                  />
                 </div>
-                {badgeMenuItems.map((item) => (
-                  <div key={item.path}>{renderMenuItem(item)}</div>
-                ))}
-              </>
-            )}
 
-            {/* 開発・品質管理セクション */}
-            <div className="pt-4 pb-2">
-              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                <Shield className="h-3 w-3" />
-                {t('sidebar.development_quality')}
-              </h3>
-            </div>
-            {devQualityMenuItems.map((item) => (
-              <div key={item.path}>{renderMenuItem(item)}</div>
-            ))}
-            {/* データベース・インフラ管理 */}
-            {renderMenuItem({
-              icon: <AlertTriangle className="h-5 w-5" />,
-              label: 'データベースバックアップ',
-              path: '/database-backup',
-              description: 'データベースバックアップ管理',
-              badge: 'DB',
-              gradient: 'from-orange-500 via-red-500 to-pink-500',
-              accentColor: 'orange',
-            })}
-            {renderMenuItem({
-              icon: <Activity className="h-5 w-5" />,
-              label: 'システム監視',
-              path: '/monitoring',
-              description: 'システム監視マスター・SLO追跡',
-              badge: 'SLO',
-              gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
-              accentColor: 'indigo',
-            })}
+                {/* 追加メニュー（UnifiedSystemNavigationで管理されないアイテム） */}
+                {getCoreMenuItems(t).length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                      <Home className="h-3 w-3" />
+                      {t('sidebar.core_functions')}
+                    </h3>
+                    {getCoreMenuItems(t).map((item) => (
+                      <div key={item.path}>{renderMenuItem(item)}</div>
+                    ))}
+                  </div>
+                )}
 
-            {/* ツール・ユーティリティセクション */}
-            <div className="pt-4 pb-2">
-              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                <Sparkles className="h-3 w-3" />
-                {t('sidebar.tools_utilities')}
-              </h3>
-            </div>
-            {toolsMenuItems.map((item) => (
-              <div key={item.path}>{renderMenuItem(item)}</div>
-            ))}
+                {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
+                {badgeMenuItems.length > 0 && (
+                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                      <Trophy className="h-3 w-3" />
+                      {t('sidebar.badges_achievements')}
+                    </h3>
+                    {badgeMenuItems.map((item) => (
+                      <div key={item.path}>{renderMenuItem(item)}</div>
+                    ))}
+                  </div>
+                )}
 
-            {/* その他の機能 */}
-            <div className="pt-4 pb-2">
-              <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                <Globe className="h-3 w-3" />
-                {t('sidebar.other_features')}
-              </h3>
-            </div>
-
-            {/* 習慣管理セクション */}
-            <div className="pt-2 pb-2">
-              <h4 className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider px-4 flex items-center gap-2">
-                <Target className="h-3 w-3" />
-                習慣管理
-              </h4>
-            </div>
-            {/* 入浴習慣 */}
-            {renderMenuItem({
-              icon: <Droplets className="h-5 w-5" />,
-              label: '入浴習慣',
-              path: '/bathing-habit',
-              description: '毎日の入浴習慣を管理',
-              badge: 'NEW',
-              gradient: 'from-blue-500 via-cyan-500 to-teal-500',
-              accentColor: 'blue',
-            })}
-            {/* 髭剃り習慣 */}
-            {renderMenuItem({
-              icon: <Scissors className="h-5 w-5" />,
-              label: '髭剃り習慣',
-              path: '/shaving-habit',
-              description: '毎日の髭剃り習慣を管理',
-              badge: 'NEW',
-              gradient: 'from-orange-500 via-red-500 to-pink-500',
-              accentColor: 'orange',
-            })}
-
-            {/* 本棚ページ */}
-            {renderMenuItem({
-              icon: <BookOpen className="h-5 w-5" />,
-              label: '本棚',
-              path: '/bookshelf',
-              description: '読書管理と本の記録',
-              gradient: 'from-amber-500 via-orange-500 to-red-500',
-              accentColor: 'amber',
-            })}
-            {/* PWA・システム関連 */}
-            {renderMenuItem({
-              icon: <Lightbulb className="h-5 w-5" />,
-              label: '改善計画',
-              path: '/improvement-plan',
-              description: 'サイト改善プランの管理',
-              gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-              accentColor: 'amber',
-            })}
-            {renderMenuItem({
-              icon: <Code className="h-5 w-5" />,
-              label: 'システム設計',
-              path: '/system-design',
-              description: 'システム設計ドキュメント',
-              gradient: 'from-slate-500 via-gray-500 to-zinc-500',
-              accentColor: 'slate',
-            })}
-            {renderMenuItem({
-              icon: <Activity className="h-5 w-5" />,
-              label: 'PWA機能',
-              path: '/pwa',
-              description: 'プログレッシブWebアプリ機能',
-              badge: 'PWA',
-              gradient: 'from-indigo-500 via-blue-500 to-purple-500',
-              accentColor: 'indigo',
-            })}
-            {renderMenuItem({
-              icon: <Brain className="h-5 w-5" />,
-              label: 'ニューロダイバーシティ',
-              path: '/neurodiversity',
-              description: '認知的多様性・アクセシビリティ',
-              badge: 'A11Y',
-              gradient: 'from-purple-500 via-indigo-500 to-blue-500',
-              accentColor: 'purple',
-            })}
-            {renderMenuItem({
-              icon: <Music className="h-5 w-5" />,
-              label: 'ギター練習',
-              path: '/guitar-practice',
-              description: 'ギター練習の記録',
-              gradient: 'from-green-500 via-emerald-500 to-teal-500',
-              accentColor: 'green',
-            })}
-            {/* E-commerce・外部連携 */}
-            {renderMenuItem({
-              icon: <Store className="h-5 w-5" />,
-              label: 'ショップ',
-              path: '/shop',
-              description: 'オンラインショップ',
-              gradient: 'from-purple-500 via-pink-500 to-rose-500',
-              accentColor: 'purple',
-            })}
-            {renderMenuItem({
-              icon: <ShoppingCart className="h-5 w-5" />,
-              label: '商品一覧',
-              path: '/products',
-              description: '商品カタログ',
-              gradient: 'from-teal-500 via-cyan-500 to-blue-500',
-              accentColor: 'teal',
-            })}
-            {renderMenuItem({
-              icon: <Twitter className="h-5 w-5" />,
-              label: 'Twitter',
-              path: '/twitter',
-              description: 'Twitter連携機能',
-              gradient: 'from-sky-500 via-blue-500 to-indigo-500',
-              accentColor: 'sky',
-            })}
-            {renderMenuItem({
-              icon: <BarChart3 className="h-5 w-5" />,
-              label: '政治トレンド',
-              path: '/political-trends',
-              description: '政治動向の分析',
-              gradient: 'from-red-500 via-orange-500 to-yellow-500',
-              accentColor: 'red',
-            })}
-            {renderMenuItem({
-              icon: <Vote className="h-5 w-5" />,
-              label: '選挙候補者',
-              path: '/election-candidates',
-              description: '選挙候補者情報',
-              gradient: 'from-blue-500 via-indigo-500 to-purple-500',
-              accentColor: 'blue',
-            })}
-            {renderMenuItem({
-              icon: <UserPlus className="h-5 w-5" />,
-              label: '候補者登録',
-              path: '/candidate-registration',
-              description: '候補者の新規登録',
-              gradient: 'from-green-500 via-emerald-500 to-teal-500',
-              accentColor: 'green',
-            })}
-            {renderMenuItem({
-              icon: <Activity className="h-5 w-5" />,
-              label: 'カレンダー',
-              path: '/calendar',
-              description: 'イベントカレンダー',
-              gradient: 'from-lime-500 via-green-500 to-emerald-500',
-              accentColor: 'lime',
-            })}
-
-            {/* 管理者専用メニュー */}
-            {user?.isAdmin && (
-              <>
-                <div className="pt-6 pb-2">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
-                    <Crown className="h-3 w-3" />
-                    {t('sidebar.admin_menu')}
+                {/* 開発・品質管理セクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Shield className="h-3 w-3" />
+                    {t('sidebar.development_quality')}
                   </h3>
+                  {devQualityMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
                 </div>
-                {/* 管理者専用機能（UnifiedSystemNavigationで管理されるため削除） */}
-              </>
-            )}
+                {/* データベース・インフラ管理 */}
+                {renderMenuItem({
+                  icon: <AlertTriangle className="h-5 w-5" />,
+                  label: 'データベースバックアップ',
+                  path: '/database-backup',
+                  description: 'データベースバックアップ管理',
+                  badge: 'DB',
+                  gradient: 'from-orange-500 via-red-500 to-pink-500',
+                  accentColor: 'orange',
+                })}
+                {renderMenuItem({
+                  icon: <Activity className="h-5 w-5" />,
+                  label: 'システム監視',
+                  path: '/monitoring',
+                  description: 'システム監視マスター・SLO追跡',
+                  badge: 'SLO',
+                  gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
+                  accentColor: 'indigo',
+                })}
+
+                {/* ツール・ユーティリティセクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Sparkles className="h-3 w-3" />
+                    {t('sidebar.tools_utilities')}
+                  </h3>
+                  {toolsMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* その他の機能 */}
+                <div className="mb-6">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Globe className="h-3 w-3" />
+                    {t('sidebar.other_features')}
+                  </h3>
+
+                  {/* 習慣管理セクション */}
+                  <div className="pt-2 pb-2">
+                    <h4 className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider px-4 flex items-center gap-2">
+                      <Target className="h-3 w-3" />
+                      習慣管理
+                    </h4>
+                  </div>
+                  {/* 入浴習慣 */}
+                  {renderMenuItem({
+                    icon: <Droplets className="h-5 w-5" />,
+                    label: '入浴習慣',
+                    path: '/bathing-habit',
+                    description: '毎日の入浴習慣を管理',
+                    badge: 'NEW',
+                    gradient: 'from-blue-500 via-cyan-500 to-teal-500',
+                    accentColor: 'blue',
+                  })}
+                  {/* 髭剃り習慣 */}
+                  {renderMenuItem({
+                    icon: <Scissors className="h-5 w-5" />,
+                    label: '髭剃り習慣',
+                    path: '/shaving-habit',
+                    description: '毎日の髭剃り習慣を管理',
+                    badge: 'NEW',
+                    gradient: 'from-orange-500 via-red-500 to-pink-500',
+                    accentColor: 'orange',
+                  })}
+
+                  {/* 本棚ページ */}
+                  {renderMenuItem({
+                    icon: <BookOpen className="h-5 w-5" />,
+                    label: '本棚',
+                    path: '/bookshelf',
+                    description: '読書管理と本の記録',
+                    gradient: 'from-amber-500 via-orange-500 to-red-500',
+                    accentColor: 'amber',
+                  })}
+                  {/* PWA・システム関連 */}
+                  {renderMenuItem({
+                    icon: <Lightbulb className="h-5 w-5" />,
+                    label: '改善計画',
+                    path: '/improvement-plan',
+                    description: 'サイト改善プランの管理',
+                    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
+                    accentColor: 'amber',
+                  })}
+                  {renderMenuItem({
+                    icon: <Code className="h-5 w-5" />,
+                    label: 'システム設計',
+                    path: '/system-design',
+                    description: 'システム設計ドキュメント',
+                    gradient: 'from-slate-500 via-gray-500 to-zinc-500',
+                    accentColor: 'slate',
+                  })}
+                  {renderMenuItem({
+                    icon: <Activity className="h-5 w-5" />,
+                    label: 'PWA機能',
+                    path: '/pwa',
+                    description: 'プログレッシブWebアプリ機能',
+                    badge: 'PWA',
+                    gradient: 'from-indigo-500 via-blue-500 to-purple-500',
+                    accentColor: 'indigo',
+                  })}
+                  {renderMenuItem({
+                    icon: <Brain className="h-5 w-5" />,
+                    label: 'ニューロダイバーシティ',
+                    path: '/neurodiversity',
+                    description: '認知的多様性・アクセシビリティ',
+                    badge: 'A11Y',
+                    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+                    accentColor: 'purple',
+                  })}
+                  {renderMenuItem({
+                    icon: <Music className="h-5 w-5" />,
+                    label: 'ギター練習',
+                    path: '/guitar-practice',
+                    description: 'ギター練習の記録',
+                    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+                    accentColor: 'green',
+                  })}
+                  {/* E-commerce・外部連携 */}
+                  {renderMenuItem({
+                    icon: <Store className="h-5 w-5" />,
+                    label: 'ショップ',
+                    path: '/shop',
+                    description: 'オンラインショップ',
+                    gradient: 'from-purple-500 via-pink-500 to-rose-500',
+                    accentColor: 'purple',
+                  })}
+                  {renderMenuItem({
+                    icon: <ShoppingCart className="h-5 w-5" />,
+                    label: '商品一覧',
+                    path: '/products',
+                    description: '商品カタログ',
+                    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
+                    accentColor: 'teal',
+                  })}
+                  {renderMenuItem({
+                    icon: <Twitter className="h-5 w-5" />,
+                    label: 'Twitter',
+                    path: '/twitter',
+                    description: 'Twitter連携機能',
+                    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+                    accentColor: 'sky',
+                  })}
+                  {renderMenuItem({
+                    icon: <BarChart3 className="h-5 w-5" />,
+                    label: '政治トレンド',
+                    path: '/political-trends',
+                    description: '政治動向の分析',
+                    gradient: 'from-red-500 via-orange-500 to-yellow-500',
+                    accentColor: 'red',
+                  })}
+                  {renderMenuItem({
+                    icon: <Vote className="h-5 w-5" />,
+                    label: '選挙候補者',
+                    path: '/election-candidates',
+                    description: '選挙候補者情報',
+                    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+                    accentColor: 'blue',
+                  })}
+                  {renderMenuItem({
+                    icon: <UserPlus className="h-5 w-5" />,
+                    label: '候補者登録',
+                    path: '/candidate-registration',
+                    description: '候補者の新規登録',
+                    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+                    accentColor: 'green',
+                  })}
+                  {renderMenuItem({
+                    icon: <Activity className="h-5 w-5" />,
+                    label: 'カレンダー',
+                    path: '/calendar',
+                    description: 'イベントカレンダー',
+                    gradient: 'from-lime-500 via-green-500 to-emerald-500',
+                    accentColor: 'lime',
+                  })}
+                </div>
+
+                {/* 管理者専用メニュー */}
+                {user?.isAdmin && (
+                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                      <Crown className="h-3 w-3" />
+                      {t('sidebar.admin_menu')}
+                    </h3>
+                    {/* 管理者専用機能（UnifiedSystemNavigationで管理されるため削除） */}
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
           </nav>
 
           {/* Enhanced Profile Section */}
-          <div className="p-6 border-t border-white/20 dark:border-white/10">
-            <div className="flex items-center gap-4 p-4 rounded-3xl bg-gradient-to-r from-white/20 to-white/10 dark:from-white/10 dark:to-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg">
+          <div className="p-6 border-t border-white/20 dark:border-white/10 bg-white/5 dark:bg-white/2">
+            <div className="flex items-center gap-4 p-4 rounded-3xl bg-gradient-to-r from-white/20 to-white/10 dark:from-white/10 dark:to-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
               <Avatar className="h-12 w-12 ring-2 ring-white/30 dark:ring-white/20 shadow-lg">
                 <AvatarImage src={user?.avatar} alt={user?.name} />
                 <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold text-lg">
@@ -989,8 +995,33 @@ export default function Layout({ children }: LayoutProps) {
                       side="left"
                       className="w-80 p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-white/20 dark:border-white/10"
                     >
-                      {/* Enhanced mobile content */}
-                      {/* ... mobile content here ... */}
+                      <ScrollArea className="h-full">
+                        <div className="p-6">
+                          {/* Mobile Logo */}
+                          <div className="flex items-center gap-4 mb-8">
+                            <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                              <Sparkles className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                              <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                                LifeSync
+                              </h1>
+                              <p className="text-sm text-slate-500 dark:text-slate-400">
+                                生産性プラットフォーム
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Mobile Navigation */}
+                          <div className="space-y-2">
+                            <UnifiedSystemNavigation
+                              compactMode={true}
+                              showStats={false}
+                              orientation="vertical"
+                            />
+                          </div>
+                        </div>
+                      </ScrollArea>
                     </SheetContent>
                   </Sheet>
                 </div>
