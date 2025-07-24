@@ -11,6 +11,7 @@ import { StatsGrid } from '@/components/common/StatsGrid';
 import { NextTaskSuggestionComponent } from '@/components/ai/NextTaskSuggestion';
 import { DailyMotivationGamification } from '@/components/gamification/DailyMotivationGamification';
 import { DashboardGuide } from '@/components/dashboard/DashboardGuide';
+import { UnifiedHomeDashboard } from '@/components/dashboard/UnifiedHomeDashboard';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -522,6 +523,11 @@ const Home: React.FC = () => {
 
   const renderContent = () => (
     <>
+      {/* 統一ダッシュボード */}
+      <div className="mb-8">
+        <UnifiedHomeDashboard compactMode={isMobile} showWelcome={true} enableAnimations={true} />
+      </div>
+
       {/* ライフサポート - クイックアクセス */}
       <div className="mb-6">
         <Card className="border-0 shadow-lg bg-gradient-to-r from-pink-50 via-yellow-50 to-orange-50">

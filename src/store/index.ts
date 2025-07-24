@@ -12,6 +12,7 @@ import sleepTrackerReducer from './sleepTrackerSlice';
 import blogReducer from './blogSlice';
 import guitarPracticeReducer from './guitarPracticeSlice';
 import achievementReducer from './achievementSlice';
+import unifiedDataReducer from './unifiedDataSlice';
 
 const rootReducer = combineReducers({
   workTime: workTimeReducer,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   blog: blogReducer,
   guitarPractice: guitarPracticeReducer,
   achievements: achievementReducer,
+  unifiedData: unifiedDataReducer,
 });
 
 export const store = configureStore({
