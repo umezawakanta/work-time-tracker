@@ -22,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import '@/styles/bathing-habit.css';
 
 interface OnboardingStep {
   id: number;
@@ -115,11 +116,17 @@ export const BathingHabitOnboarding: React.FC<BathingHabitOnboardingProps> = ({
 
   if (showQuickStart) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <Card className="max-w-2xl w-full">
-          <CardHeader>
+      <div
+        className="bathing-habit-onboarding fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5) !important' }}
+      >
+        <Card
+          className="max-w-2xl w-full"
+          style={{ backgroundColor: 'white !important', color: 'black !important' }}
+        >
+          <CardHeader style={{ backgroundColor: 'white !important', color: 'black !important' }}>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2" style={{ color: 'black !important' }}>
                 <Target className="w-6 h-6 text-blue-600" />
                 クイックスタートガイド
               </CardTitle>
@@ -128,18 +135,31 @@ export const BathingHabitOnboarding: React.FC<BathingHabitOnboardingProps> = ({
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-gray-600 mb-6">4つのステップで入浴習慣を身につけましょう</p>
+          <CardContent
+            className="space-y-4"
+            style={{ backgroundColor: 'white !important', color: 'black !important' }}
+          >
+            <p className="text-gray-600 mb-6" style={{ color: 'black !important' }}>
+              4つのステップで入浴習慣を身につけましょう
+            </p>
 
             <div className="space-y-4">
               {quickStartGuide.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                  style={{ backgroundColor: '#f9fafb !important' }}
+                >
                   <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
                     {item.step}
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold">{item.title}</h4>
-                    <p className="text-sm text-gray-600">{item.description}</p>
+                    <h4 className="font-semibold" style={{ color: 'black !important' }}>
+                      {item.title}
+                    </h4>
+                    <p className="text-sm text-gray-600" style={{ color: 'black !important' }}>
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -160,11 +180,17 @@ export const BathingHabitOnboarding: React.FC<BathingHabitOnboardingProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-lg w-full">
-        <CardHeader>
+    <div
+      className="bathing-habit-onboarding fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5) !important' }}
+    >
+      <Card
+        className="max-w-lg w-full"
+        style={{ backgroundColor: 'white !important', color: 'black !important' }}
+      >
+        <CardHeader style={{ backgroundColor: 'white !important', color: 'black !important' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2" style={{ color: 'black !important' }}>
               <Play className="w-6 h-6 text-blue-600" />
               使い方ガイド
               <Badge variant="outline" className="bg-blue-100 text-blue-700">
@@ -176,7 +202,10 @@ export const BathingHabitOnboarding: React.FC<BathingHabitOnboardingProps> = ({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent
+          className="space-y-6"
+          style={{ backgroundColor: 'white !important', color: 'black !important' }}
+        >
           {/* 進捗バー */}
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
@@ -190,15 +219,28 @@ export const BathingHabitOnboarding: React.FC<BathingHabitOnboardingProps> = ({
             <div className="flex justify-center">{currentStepData.icon}</div>
 
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{currentStepData.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{currentStepData.description}</p>
+              <h3
+                className="text-xl font-bold text-gray-900 mb-2"
+                style={{ color: 'black !important' }}
+              >
+                {currentStepData.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed" style={{ color: 'black !important' }}>
+                {currentStepData.description}
+              </p>
             </div>
 
             {currentStepData.action && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div
+                className="p-4 bg-blue-50 border border-blue-200 rounded-lg"
+                style={{ backgroundColor: '#eff6ff !important' }}
+              >
                 <div className="flex items-center gap-2 justify-center">
                   <Lightbulb className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">
+                  <span
+                    className="text-sm font-medium text-blue-800"
+                    style={{ color: '#1e40af !important' }}
+                  >
                     {currentStepData.highlight}
                   </span>
                 </div>

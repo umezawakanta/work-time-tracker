@@ -91,3 +91,62 @@
     border: 2px solid black !important;
   }
 }
+
+/* オンボーディング・モーダル専用スタイル */
+.bathing-habit-onboarding {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.bathing-habit-onboarding .card,
+.bathing-habit-onboarding [data-radix-dialog-content],
+.bathing-habit-onboarding [role='dialog'] {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.bathing-habit-onboarding * {
+  color: black !important;
+}
+
+.bathing-habit-onboarding h1,
+.bathing-habit-onboarding h2,
+.bathing-habit-onboarding h3,
+.bathing-habit-onboarding h4,
+.bathing-habit-onboarding h5,
+.bathing-habit-onboarding h6 {
+  color: black !important;
+}
+
+.bathing-habit-onboarding p,
+.bathing-habit-onboarding span,
+.bathing-habit-onboarding div {
+  color: black !important;
+}
+
+/* ボタンのテキスト色は白を保持 */
+.bathing-habit-onboarding button {
+  color: white !important;
+}
+
+/* 進捗バーの背景 */
+.bathing-habit-onboarding .bg-gray-200 {
+  background-color: #e5e7eb !important;
+}
+
+/* Badge要素 */
+.bathing-habit-onboarding .badge {
+  background-color: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+/* カード内のコンテンツエリア */
+.bathing-habit-onboarding .card-content {
+  background-color: white !important;
+  color: black !important;
+}
+
+.bathing-habit-onboarding .card-header {
+  background-color: white !important;
+  color: black !important;
+}
