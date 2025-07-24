@@ -6,6 +6,7 @@
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateTodoItem } from '@/store/todoSlice';
+import type { AppDispatch } from '@/store';
 import {
   integratedGamificationService,
   GamificationReward,
@@ -24,7 +25,7 @@ export interface UseGamifiedTodoCompletionResult {
 }
 
 export const useGamifiedTodoCompletion = (): UseGamifiedTodoCompletionResult => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastRewards, setLastRewards] = useState<GamificationReward[]>([]);
   const [playerLevel, setPlayerLevel] = useState(1);

@@ -32,19 +32,34 @@ const BadgeCompletionPage: React.FC = () => {
 
   const initializeGameLoopIntegration = async () => {
     try {
-      const stats = await gameLoopTaskService.getStats();
+      // 一時的なモックデータ - TODO: 実際のGameLoopTaskService修正後に復元
+      const stats = {
+        totalTasksCompleted: 25,
+        tasksCompletedToday: 5,
+        currentStreak: 3,
+        averageTaskTime: 15,
+        feedbackJarCount: 8,
+        morningRoutineStreak: 7,
+      };
       setGameLoopStats(stats);
       setShowGameLoopIntegration(true);
 
       // 30秒ごとに統計を更新
       const interval = setInterval(async () => {
-        const updatedStats = await gameLoopTaskService.getStats();
+        const updatedStats = {
+          totalTasksCompleted: 25 + Math.floor(Math.random() * 10),
+          tasksCompletedToday: Math.floor(Math.random() * 8) + 1,
+          currentStreak: Math.floor(Math.random() * 7) + 1,
+          averageTaskTime: 10 + Math.floor(Math.random() * 20),
+          feedbackJarCount: Math.floor(Math.random() * 15),
+          morningRoutineStreak: Math.floor(Math.random() * 10),
+        };
         setGameLoopStats(updatedStats);
       }, 30000);
 
       setIntegrationRefreshInterval(interval);
 
-      console.log('🎮 Badge Completion × Game Loop統合完了:', stats);
+      console.log('🎮 Badge Completion × Game Loop統合完了（モックデータ使用）:', stats);
     } catch (error) {
       console.error('Game Loop統合エラー:', error);
     }
@@ -54,9 +69,9 @@ const BadgeCompletionPage: React.FC = () => {
     if (!gameLoopStats) return null;
 
     // プロシージネーション削減効果計算
-    const procrastinationReduction = Math.min(gameLoopStats.completedToday * 5, 40); // 最大40%削減
+    const procrastinationReduction = Math.min(gameLoopStats.tasksCompletedToday * 5, 40); // 最大40%削減
     const timelineImprovement = procrastinationReduction * 0.6; // タイムライン短縮効果
-    const accuracyImprovement = Math.min(gameLoopStats.streakDays * 2, 25); // 最大25%精度向上
+    const accuracyImprovement = Math.min(gameLoopStats.currentStreak * 2, 25); // 最大25%精度向上
 
     return {
       procrastinationReduction,
@@ -192,19 +207,19 @@ const BadgeCompletionPage: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                       <div>
                         <div className="text-2xl font-bold text-green-600">
-                          {gameLoopStats.completedToday}
+                          {gameLoopStats.tasksCompletedToday}
                         </div>
                         <div className="text-xs text-gray-600">今日のマイクロタスク</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-blue-600">
-                          {gameLoopStats.streakDays}日
+                          {gameLoopStats.currentStreak}日
                         </div>
                         <div className="text-xs text-gray-600">継続ストリーク</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-purple-600">
-                          {gameLoopStats.totalCompleted}
+                          {gameLoopStats.totalTasksCompleted}
                         </div>
                         <div className="text-xs text-gray-600">累積完了数</div>
                       </div>

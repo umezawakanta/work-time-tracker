@@ -56,14 +56,23 @@ const AutomationRulesPage: React.FC = () => {
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
 
   // Automated Task Management
-  const {
-    config,
-    stats,
-    isAutomationActive,
-    startAutomation,
-    stopAutomation,
-    triggerAutomatedTaskGeneration,
-  } = useAutomatedTaskManagement();
+  const { config, isAutomationActive, getAutomationStats } = useAutomatedTaskManagement();
+
+  // モック統計データ
+  const stats = getAutomationStats();
+
+  // モック自動化制御関数
+  const startAutomation = () => {
+    console.log('🚀 Automation started (mock)');
+  };
+
+  const stopAutomation = () => {
+    console.log('⏹️ Automation stopped (mock)');
+  };
+
+  const triggerAutomatedTaskGeneration = () => {
+    console.log('⚡ Manual task generation triggered (mock)');
+  };
 
   useEffect(() => {
     initializeAutomationPage();
