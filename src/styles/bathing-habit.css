@@ -1,0 +1,93 @@
+/**
+ * 🛁 入浴習慣ページ専用スタイル
+ * ダークモード設定を強制的に上書きして明るい背景を確保
+ */
+
+/* 入浴習慣ページのルートコンテナ */
+.bathing-habit-container {
+  background-color: white !important;
+  color: black !important;
+  min-height: 100vh !important;
+}
+
+/* 入浴習慣ページ内の全ての要素 */
+.bathing-habit-container * {
+  color: inherit !important;
+}
+
+/* カード要素の背景色を強制 */
+.bathing-habit-container .card,
+.bathing-habit-container [data-radix-dialog-content],
+.bathing-habit-container [role='dialog'] {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* テキスト要素の色を強制 */
+.bathing-habit-container p,
+.bathing-habit-container h1,
+.bathing-habit-container h2,
+.bathing-habit-container h3,
+.bathing-habit-container h4,
+.bathing-habit-container h5,
+.bathing-habit-container h6,
+.bathing-habit-container span,
+.bathing-habit-container div {
+  color: black !important;
+}
+
+/* 特定の色付きテキストは除外 */
+.bathing-habit-container .text-blue-600,
+.bathing-habit-container .text-green-600,
+.bathing-habit-container .text-red-600,
+.bathing-habit-container .text-purple-600,
+.bathing-habit-container .text-yellow-600,
+.bathing-habit-container .text-orange-600 {
+  color: inherit;
+}
+
+/* ボタンの背景色は保持 */
+.bathing-habit-container button {
+  color: white;
+}
+
+/* 入力フィールドの背景色 */
+.bathing-habit-container input,
+.bathing-habit-container textarea {
+  background-color: white !important;
+  color: black !important;
+  border-color: #d1d5db !important;
+}
+
+/* モーダル・ダイアログの背景 */
+.bathing-habit-container [data-radix-dialog-overlay] {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* フォーカス状態の色 */
+.bathing-habit-container *:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* ダークモードの設定を完全に無効化 */
+@media (prefers-color-scheme: dark) {
+  .bathing-habit-container {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .bathing-habit-container * {
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  .bathing-habit-container {
+    background-color: white !important;
+    color: black !important;
+    border: 2px solid black !important;
+  }
+}

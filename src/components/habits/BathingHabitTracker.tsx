@@ -44,6 +44,7 @@ import {
 import BathingHabitVisualization from './BathingHabitVisualization';
 import BathingHabitOnboarding from './BathingHabitOnboarding';
 import BathingHabitHelp from './BathingHabitHelp';
+import '@/styles/bathing-habit.css';
 
 export const BathingHabitTracker: React.FC = () => {
   const [todayRecord, setTodayRecord] = useState<BathingRecord | null>(null);
@@ -247,13 +248,21 @@ export const BathingHabitTracker: React.FC = () => {
   // ローディング状態
   if (isLoading) {
     return (
-      <div className="space-y-6 max-w-4xl mx-auto p-4">
-        <Card>
-          <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p>入浴習慣データを読み込み中...</p>
-          </CardContent>
-        </Card>
+      <div
+        className="bathing-habit-container min-h-screen bg-white text-gray-900"
+        style={{ backgroundColor: 'white !important', color: 'black !important' }}
+      >
+        <div className="space-y-6 max-w-4xl mx-auto p-4">
+          <Card style={{ backgroundColor: 'white', color: 'black' }}>
+            <CardContent
+              className="p-8 text-center"
+              style={{ backgroundColor: 'white', color: 'black' }}
+            >
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p style={{ color: 'black' }}>入浴習慣データを読み込み中...</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -261,49 +270,76 @@ export const BathingHabitTracker: React.FC = () => {
   // エラー状態
   if (error) {
     return (
-      <div className="space-y-6 max-w-4xl mx-auto p-4">
-        <Card className="border-l-4 border-l-red-500 bg-red-50">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-              <div>
-                <h3 className="font-bold text-red-900">エラーが発生しました</h3>
-                <p className="text-red-800">{error}</p>
-                <Button
-                  onClick={() => {
-                    setError(null);
-                    loadInitialData();
-                  }}
-                  className="mt-3"
-                  size="sm"
-                >
-                  再試行
-                </Button>
+      <div
+        className="bathing-habit-container min-h-screen bg-white text-gray-900"
+        style={{ backgroundColor: 'white !important', color: 'black !important' }}
+      >
+        <div className="space-y-6 max-w-4xl mx-auto p-4">
+          <Card
+            className="border-l-4 border-l-red-500 bg-red-50"
+            style={{ backgroundColor: 'white', color: 'black' }}
+          >
+            <CardContent className="p-6" style={{ backgroundColor: 'white', color: 'black' }}>
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-6 h-6 text-red-600" />
+                <div>
+                  <h3 className="font-bold text-red-900" style={{ color: 'red' }}>
+                    エラーが発生しました
+                  </h3>
+                  <p className="text-red-800" style={{ color: 'darkred' }}>
+                    {error}
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setError(null);
+                      loadInitialData();
+                    }}
+                    className="mt-3"
+                    size="sm"
+                  >
+                    再試行
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="space-y-6 max-w-4xl mx-auto p-4">
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p>統計データを読み込めませんでした</p>
-            <Button onClick={loadInitialData} className="mt-3">
-              再読み込み
-            </Button>
-          </CardContent>
-        </Card>
+      <div
+        className="bathing-habit-container min-h-screen bg-white text-gray-900"
+        style={{ backgroundColor: 'white !important', color: 'black !important' }}
+      >
+        <div className="space-y-6 max-w-4xl mx-auto p-4">
+          <Card style={{ backgroundColor: 'white', color: 'black' }}>
+            <CardContent
+              className="p-6 text-center"
+              style={{ backgroundColor: 'white', color: 'black' }}
+            >
+              <p style={{ color: 'black' }}>統計データを読み込めませんでした</p>
+              <Button onClick={loadInitialData} className="mt-3">
+                再読み込み
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-50 text-gray-900 dark:text-gray-800">
+    <div
+      className="bathing-habit-container min-h-screen bg-white dark:bg-gray-50 text-gray-900 dark:text-gray-800"
+      style={{
+        backgroundColor: 'white !important',
+        color: 'black !important',
+        minHeight: '100vh',
+      }}
+    >
       <div className="space-y-6 max-w-6xl mx-auto p-4">
         {/* オンボーディング */}
         {showOnboarding && (
