@@ -307,10 +307,8 @@ export default function Layout({ children }: LayoutProps) {
   // IME入力の終了
   const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
     setIsComposing(false);
-    const value = e.currentTarget.value;
-    setSearchQuery(value);
-    // IME入力終了後に検索結果を表示
-    if (value.trim().length > 0) {
+    // IME入力終了後に検索結果を表示（値は onChange で既に更新されている）
+    if (searchQuery.trim().length > 0) {
       setShowSearchResults(true);
     }
   };
@@ -817,7 +815,6 @@ export default function Layout({ children }: LayoutProps) {
                       autoComplete="off"
                       spellCheck="false"
                       inputMode="search"
-                      style={{ imeMode: 'disabled' }}
                       className="pl-12 pr-12 w-80 xl:w-96 h-12 bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-700/50 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/50 transition-all duration-300 rounded-2xl shadow-lg backdrop-blur-md font-medium ime-disabled"
                     />
                     {searchQuery && (

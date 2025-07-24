@@ -310,7 +310,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         <div />
       </PopoverTrigger>
       <PopoverContent
-        className="w-[500px] p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-white/20 dark:border-white/10 shadow-2xl"
+        className="w-[500px] p-0 bg-white border border-slate-200 shadow-2xl"
         align="start"
         side="bottom"
         sideOffset={8}
@@ -319,21 +319,19 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           {isLoading ? (
             <div className="flex items-center justify-center py-6">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-violet-600" />
-              <span className="ml-2 text-sm text-slate-600 dark:text-slate-400">検索中...</span>
+              <span className="ml-2 text-sm text-slate-600">検索中...</span>
             </div>
           ) : searchResults.length === 0 ? (
-            <div className="py-6 text-center text-sm text-slate-600 dark:text-slate-400">
+            <div className="py-6 text-center text-sm text-slate-600">
               {searchQuery ? '検索結果が見つかりませんでした' : '検索キーワードを入力してください'}
             </div>
           ) : (
             <div className="py-2">
               {Object.entries(groupedResults).map(([type, items], index) => (
                 <div key={type} className="mb-2">
-                  {index > 0 && (
-                    <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
-                  )}
+                  {index > 0 && <div className="border-t border-slate-200 my-2" />}
                   <div className="px-3 py-1">
-                    <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
                       {getTypeIcon(type as SearchItem['type'])}
                       {getTypeLabel(type as SearchItem['type'])}
                     </div>
@@ -343,14 +341,14 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                       <button
                         key={item.id}
                         onClick={() => handleItemSelect(item)}
-                        className="w-full flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-slate-50 rounded-lg transition-colors text-left"
                       >
-                        <div className="flex items-center justify-center w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-lg flex-shrink-0">
+                        <div className="flex items-center justify-center w-8 h-8 bg-slate-100 rounded-lg flex-shrink-0">
                           {item.icon || getTypeIcon(item.type)}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                            <span className="font-medium text-slate-900 truncate">
                               {item.title}
                             </span>
                             {item.completed && (
@@ -371,9 +369,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                             )}
                           </div>
                           {item.description && (
-                            <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                              {item.description}
-                            </p>
+                            <p className="text-sm text-slate-600 truncate">{item.description}</p>
                           )}
                           {item.tags && item.tags.length > 0 && (
                             <div className="flex gap-1 mt-1">
@@ -381,7 +377,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                                 <Badge
                                   key={tag}
                                   variant="outline"
-                                  className="text-xs bg-slate-50 text-slate-600 border-slate-200"
+                                  className="text-xs bg-slate-50 text-slate-700 border-slate-300"
                                 >
                                   {tag}
                                 </Badge>
