@@ -61,6 +61,7 @@ import {
   CheckCircle,
   Users,
   History,
+  Target,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -110,6 +111,15 @@ interface MenuItem {
 
 // コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
+  {
+    icon: <Target className="h-5 w-5" />,
+    label: '🌟 ライフシンク',
+    path: '/life-sync',
+    description: '統合生活管理ダッシュボード',
+    badge: 'メイン',
+    gradient: 'from-blue-500 via-purple-500 to-pink-500',
+    accentColor: 'blue',
+  },
   {
     icon: <Sparkles className="h-5 w-5" />,
     label: '🚀 新機能ダッシュボード',

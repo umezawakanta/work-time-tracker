@@ -113,6 +113,15 @@ const appPages: SearchItem[] = [
     icon: <Edit3 className="h-4 w-4" />,
   },
   {
+    id: 'life-sync',
+    title: 'ライフシンク統合ダッシュボード',
+    description:
+      '生活管理 タスク管理 資産管理 勤怠管理 生産性 統合ダッシュボード life sync productivity',
+    type: 'page',
+    path: '/life-sync',
+    icon: <Target className="h-4 w-4" />,
+  },
+  {
     id: 'feature-discovery',
     title: '新機能ダッシュボード',
     description: '最新機能の発見と活用 新機能 機能紹介 ダッシュボード discovery features new',
