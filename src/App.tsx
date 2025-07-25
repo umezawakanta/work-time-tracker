@@ -86,6 +86,7 @@ const WorkTimeHistoryPage = lazy(() => import('./pages/WorkTimeHistoryPage'));
 const WorkTimeCorrectionApprovalPage = lazy(() => import('./pages/WorkTimeCorrectionApprovalPage'));
 const FeatureDiscoveryPage = lazy(() => import('./pages/FeatureDiscoveryPage'));
 const LifeSyncDashboardPage = lazy(() => import('./pages/LifeSyncDashboardPage'));
+const ADHDLifeSyncPage = lazy(() => import('./pages/ADHDLifeSyncPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -413,7 +414,7 @@ export default function App() {
                   element={
                     <LayoutWrapper>
                       <LazyWrapper>
-                        <LifeSyncDashboardPage />
+                        <ADHDLifeSyncPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
@@ -560,6 +561,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <LifeSyncDashboardPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/adhd-life-sync"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ADHDLifeSyncPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

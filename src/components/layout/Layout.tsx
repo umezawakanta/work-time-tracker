@@ -61,7 +61,6 @@ import {
   CheckCircle,
   Users,
   History,
-  Target,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -112,11 +111,20 @@ interface MenuItem {
 // コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
+    icon: <Brain className="h-5 w-5" />,
+    label: '🧠 ADHD/ASD ライフサポート',
+    path: '/adhd-life-sync',
+    description: 'ADHD/ASD特化型生活支援システム',
+    badge: 'メイン',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
+  },
+  {
     icon: <Target className="h-5 w-5" />,
     label: '🌟 ライフシンク',
     path: '/life-sync',
     description: '統合生活管理ダッシュボード',
-    badge: 'メイン',
+    badge: '一般',
     gradient: 'from-blue-500 via-purple-500 to-pink-500',
     accentColor: 'blue',
   },

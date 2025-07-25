@@ -113,6 +113,15 @@ const appPages: SearchItem[] = [
     icon: <Edit3 className="h-4 w-4" />,
   },
   {
+    id: 'adhd-life-sync',
+    title: 'ADHD/ASD ライフサポート',
+    description:
+      'ADHD ASD 発達障害 ニューロダイバージェント 実行機能 感覚調整 ルーティン管理 エネルギー追跡 神経多様性 支援',
+    type: 'page',
+    path: '/adhd-life-sync',
+    icon: <Target className="h-4 w-4" />,
+  },
+  {
     id: 'life-sync',
     title: 'ライフシンク統合ダッシュボード',
     description:
