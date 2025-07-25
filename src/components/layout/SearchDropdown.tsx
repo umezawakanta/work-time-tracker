@@ -131,6 +131,15 @@ const appPages: SearchItem[] = [
     icon: <Target className="h-4 w-4" />,
   },
   {
+    id: 'adhd-life-management',
+    title: 'ADHD 統合ライフマネジメント',
+    description:
+      'ADHD ASD カレンダー 資産管理 家計簿 スケジュール エネルギー最適化 時間管理 金銭管理 MoneyForward Googleカレンダー',
+    type: 'page',
+    path: '/adhd-life-management',
+    icon: <Calendar className="h-4 w-4" />,
+  },
+  {
     id: 'life-sync',
     title: 'ライフシンク統合ダッシュボード',
     description:

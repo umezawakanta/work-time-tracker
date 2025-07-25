@@ -129,6 +129,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'indigo',
   },
   {
+    icon: <Calendar className="h-5 w-5" />,
+    label: '📅 統合ライフマネジメント',
+    path: '/adhd-life-management',
+    description: 'カレンダー×資産管理の統合システム',
+    badge: '重要',
+    gradient: 'from-blue-500 via-teal-500 to-green-500',
+    accentColor: 'blue',
+  },
+  {
     icon: <Target className="h-5 w-5" />,
     label: '🌟 ライフシンク',
     path: '/life-sync',
