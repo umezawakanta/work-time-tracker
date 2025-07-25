@@ -136,6 +136,15 @@ export default defineConfig({
 
           // Development Tools
           'dev-tools': ['@anthropic-ai/sdk'],
+
+          // 🚀 Performance: Split large components detected in build
+          DailyTodoReminder: ['@/components/dailyToDoReminder/DailyTodoReminder'],
+          WorkTimeComponents: [
+            '@/components/WorkTimePunchSystem',
+            '@/components/WorkTimeApprovalSystem',
+            '@/components/WorkTimeHistoryManager',
+          ],
+          FeatureDiscovery: ['@/components/FeatureDiscoveryDashboard'],
         },
         // 🥷 パフォーマンス忍者: ファイル名とアセット最適化
         chunkFileNames: ({ name }) => {

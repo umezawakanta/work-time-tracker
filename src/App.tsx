@@ -84,6 +84,7 @@ const WorkTimeApprovalPage = lazy(() => import('./pages/WorkTimeApprovalPage'));
 const WorkTimeRealtimeDashboardPage = lazy(() => import('./pages/WorkTimeRealtimeDashboardPage'));
 const WorkTimeHistoryPage = lazy(() => import('./pages/WorkTimeHistoryPage'));
 const WorkTimeCorrectionApprovalPage = lazy(() => import('./pages/WorkTimeCorrectionApprovalPage'));
+const FeatureDiscoveryPage = lazy(() => import('./pages/FeatureDiscoveryPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -538,6 +539,16 @@ export default function App() {
                         </LazyWrapper>
                       </LayoutWrapper>
                     </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/feature-discovery"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <FeatureDiscoveryPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
                   }
                 />
                 <Route

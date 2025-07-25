@@ -111,6 +111,15 @@ interface MenuItem {
 // コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
+    icon: <Sparkles className="h-5 w-5" />,
+    label: '🚀 新機能ダッシュボード',
+    path: '/feature-discovery',
+    description: '最新機能の発見と活用',
+    badge: 'NEW',
+    gradient: 'from-purple-500 via-pink-500 to-red-500',
+    accentColor: 'purple',
+  },
+  {
     icon: <Clock className="h-5 w-5" />,
     label: t('navigation.work_time'),
     path: '/work-time',
