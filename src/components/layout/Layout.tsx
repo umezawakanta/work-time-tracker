@@ -121,6 +121,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   },
   {
     icon: <Target className="h-5 w-5" />,
+    label: '🎯 ADHDタスク管理',
+    path: '/adhd-task-manager',
+    description: 'インテリジェント実行機能サポート',
+    badge: 'コア',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    accentColor: 'indigo',
+  },
+  {
+    icon: <Target className="h-5 w-5" />,
     label: '🌟 ライフシンク',
     path: '/life-sync',
     description: '統合生活管理ダッシュボード',

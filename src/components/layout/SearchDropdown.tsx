@@ -122,6 +122,15 @@ const appPages: SearchItem[] = [
     icon: <Target className="h-4 w-4" />,
   },
   {
+    id: 'adhd-task-manager',
+    title: 'ADHD タスク管理システム',
+    description:
+      'ADHD ASD 実行機能 タスク管理 ポモドーロ エネルギー管理 視覚的 カンバン ドーパミン 細分化',
+    type: 'page',
+    path: '/adhd-task-manager',
+    icon: <Target className="h-4 w-4" />,
+  },
+  {
     id: 'life-sync',
     title: 'ライフシンク統合ダッシュボード',
     description:
