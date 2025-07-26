@@ -102,6 +102,7 @@ const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
 const DailyWorkVisualizationPage = lazy(() => import('./pages/DailyWorkVisualizationPage'));
 const MonthlyTimesheetPage = lazy(() => import('./pages/MonthlyTimesheetPage'));
 const WorkPatternSettingsPage = lazy(() => import('./pages/WorkPatternSettingsPage'));
+const NotificationSettingsPage = lazy(() => import('./pages/NotificationSettingsPage'));
 
 // 📊 Chart-heavy pages
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -1151,6 +1152,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <WorkPatternSettingsPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/notification-settings"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <NotificationSettingsPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

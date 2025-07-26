@@ -180,11 +180,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'alert-notifications',
         title: 'アラート・通知機能',
         description: '出勤打刻忘れアラート、退勤時間のリマインダー、残業時間の警告、労働時間通知',
-        status: 'planned',
+        status: 'completed',
         priority: 'high',
         category: 'feature',
         estimatedDays: 3,
-        progress: 0,
+        progress: 100,
         dependencies: ['work-patterns'],
       },
       {
@@ -717,6 +717,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ 日次勤務状況可視化完成 - グラフ・チャートによる勤務時間分析</li>
                 <li>✅ 月次勤怠集計完成 - 総労働時間・有給管理・CSV/PDFエクスポート</li>
                 <li>✅ 勤務パターン設定完成 - ADHD/ASD特性対応・フレックス・認知最適化</li>
+                <li>✅ アラート・通知機能完成 - 認知特性配慮・適応的頻度・感覚的配慮</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
