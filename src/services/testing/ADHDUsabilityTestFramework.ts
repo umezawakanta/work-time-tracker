@@ -621,7 +621,7 @@ class ADHDUsabilityTestFramework extends EventEmitter {
       } catch (error) {
         auditResults[id] = {
           status: 'ERROR',
-          error: error.message,
+          error: error instanceof Error ? error.message : String(error),
           level: check.level,
           category: check.category,
         };
@@ -669,7 +669,9 @@ class ADHDUsabilityTestFramework extends EventEmitter {
     let hasVisibleFocus = true;
 
     focusableElements.forEach((element) => {
-      element.focus();
+      if ('focus' in element) {
+        (element as HTMLElement).focus();
+      }
       const styles = window.getComputedStyle(element);
       const hasOutline = styles.outline !== 'none' && styles.outline !== '0px';
       const hasBoxShadow = styles.boxShadow !== 'none';

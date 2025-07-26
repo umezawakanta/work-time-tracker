@@ -526,11 +526,21 @@ class PersonalizedWorkflowService extends EventEmitter {
     }
 
     try {
-      const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'lowercase' });
+      const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
       const availableHours = this.getAvailableHours(date);
       const classifiedTasks = tasks.map((task) => this.classifyTask(task));
 
-      const optimizedSlots = [];
+      const optimizedSlots: Array<{
+        startTime: Date;
+        endTime: Date;
+        taskId: string;
+        taskType: string;
+        energyMatch: number;
+        cognitiveLoad: number;
+        bufferTime: number;
+        transitionType: 'break' | 'context-switch' | 'continuation';
+        adhdConsiderations: any;
+      }> = [];
       const adaptationReasons = [];
 
       // エネルギーパターンに基づいてタスクを配置

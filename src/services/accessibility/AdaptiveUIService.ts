@@ -289,7 +289,11 @@ class AdaptiveUIService extends EventEmitter {
         name: '感覚過負荷時の軽減',
         condition: {
           cognitiveState: {
-            sensoryProcessing: { overload: 7 },
+            sensoryProcessing: {
+              overload: 7,
+              sensitivity: 8,
+              preferences: { visual: 'low', auditory: 'quiet', tactile: 'minimal' },
+            },
           },
         },
         adaptation: {
@@ -307,7 +311,7 @@ class AdaptiveUIService extends EventEmitter {
         name: 'ハイパーフォーカス時の最適化',
         condition: {
           cognitiveState: {
-            attention: { level: 9, duration: 60 },
+            attention: { level: 9, duration: 60, stability: 'stable' },
           },
         },
         adaptation: {
