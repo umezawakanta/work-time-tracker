@@ -13,6 +13,7 @@ import debtRoutes from './routes/debtRoutes.js';
 import todoRoutes from './routes/todoRoutes.js';
 import candidateRoutes from './routes/candidateRoutes.js';
 import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
+import qualityRoutes from './routes/qualityRoutes.js';
 import withdrawalRoutes from './routes/withdrawalRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import bookRoutes from './routes/bookRoutes.js';
@@ -269,6 +270,7 @@ app.use('/api/wbs', wbsRoutes); // 追加
 app.use('/api/implementation', implementationRoutes);
 app.use('/api/team', teamRoutes);
 app.use('/api/resources', resourceRoutes);
+app.use('/api/quality', qualityRoutes);
 app.use('/api/abstinence', abstinenceRoutes);
 
 // Not Found middleware
