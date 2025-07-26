@@ -111,11 +111,20 @@ interface MenuItem {
 // コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
+    icon: <Home className="h-5 w-5" />,
+    label: '🏠 スマートホーム',
+    path: '/',
+    description: 'パーソナライズドメイン画面',
+    badge: 'ホーム',
+    gradient: 'from-blue-400 via-purple-500 to-pink-500',
+    accentColor: 'blue',
+  },
+  {
     icon: <Brain className="h-5 w-5" />,
     label: '🧠 ADHD/ASD ライフサポート',
     path: '/adhd-life-sync',
     description: 'ADHD/ASD特化型生活支援システム',
-    badge: 'メイン',
+    badge: 'コア',
     gradient: 'from-purple-500 via-indigo-500 to-blue-500',
     accentColor: 'purple',
   },

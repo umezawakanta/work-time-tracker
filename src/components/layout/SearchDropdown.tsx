@@ -113,6 +113,15 @@ const appPages: SearchItem[] = [
     icon: <Edit3 className="h-4 w-4" />,
   },
   {
+    id: 'adhd-smart-home',
+    title: 'ADHD スマートホーム',
+    description:
+      'ADHD ASD ホーム画面 パーソナライズ 状態管理 エネルギー 推奨アクション 進捗表示 応援メッセージ',
+    type: 'page',
+    path: '/',
+    icon: <Home className="h-4 w-4" />,
+  },
+  {
     id: 'adhd-life-sync',
     title: 'ADHD/ASD ライフサポート',
     description:

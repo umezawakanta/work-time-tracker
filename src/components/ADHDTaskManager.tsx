@@ -519,9 +519,7 @@ export const ADHDTaskManager: React.FC = () => {
 
                         {/* メタ情報 */}
                         <div className="flex items-center gap-2 text-xs">
-                          <Badge className={getPriorityColor(task.priority)} size="sm">
-                            {task.priority}
-                          </Badge>
+                          <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
                           <div className="flex items-center gap-1">
                             {getEnergyIcon(task.energyRequired)}
                             <span className="text-gray-600">{task.estimatedMinutes}分</span>

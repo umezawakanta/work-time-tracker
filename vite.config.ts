@@ -145,6 +145,13 @@ export default defineConfig({
             '@/components/WorkTimeHistoryManager',
           ],
           FeatureDiscovery: ['@/components/FeatureDiscoveryDashboard'],
+          // 🧠 ADHD Core System: Main ADHD/ASD components bundle
+          ADHDCoreSystem: [
+            '@/components/ADHDSmartHome',
+            '@/components/ADHDTaskManager',
+            '@/components/ADHDLifeSyncDashboard',
+            '@/components/ADHDLifeManagementHub',
+          ],
         },
         // 🥷 パフォーマンス忍者: ファイル名とアセット最適化
         chunkFileNames: ({ name }) => {
