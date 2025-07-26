@@ -103,26 +103,44 @@ const CoverageReportPage = () => {
     loadCoverageData();
   }, []);
 
-  const getCoverageColor = (percentage: number): string => {
-    if (percentage >= 90) return 'text-green-600';
-    if (percentage >= 75) return 'text-yellow-600';
+  // 安全なパーセンテージ値の取得
+  const safeGetPercentage = (value: any): number => {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'object' && value !== null && typeof value.pct === 'number') {
+      return value.pct;
+    }
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
+  };
+
+  const getCoverageColor = (percentage: any): string => {
+    const pct = safeGetPercentage(percentage);
+    if (pct >= 90) return 'text-green-600';
+    if (pct >= 75) return 'text-yellow-600';
     return 'text-red-600';
   };
 
-  const getCoverageBadgeVariant = (percentage: number) => {
-    if (percentage >= 90) return 'default'; // 緑
-    if (percentage >= 75) return 'secondary'; // 黄
+  const getCoverageBadgeVariant = (percentage: any) => {
+    const pct = safeGetPercentage(percentage);
+    if (pct >= 90) return 'default'; // 緑
+    if (pct >= 75) return 'secondary'; // 黄
     return 'destructive'; // 赤
   };
 
-  const getCoverageIcon = (percentage: number) => {
-    if (percentage >= 90) return <CheckCircle className="h-4 w-4" />;
-    if (percentage >= 75) return <AlertCircle className="h-4 w-4" />;
+  const getCoverageIcon = (percentage: any) => {
+    const pct = safeGetPercentage(percentage);
+    if (pct >= 90) return <CheckCircle className="h-4 w-4" />;
+    if (pct >= 75) return <AlertCircle className="h-4 w-4" />;
     return <XCircle className="h-4 w-4" />;
   };
 
   const sortedFiles = coverageData
-    ? coverageData.files.sort((a, b) => b.statements.pct - a.statements.pct)
+    ? coverageData.files.sort(
+        (a, b) => safeGetPercentage(b.statements.pct) - safeGetPercentage(a.statements.pct)
+      )
     : [];
 
   if (loading) {
@@ -176,9 +194,12 @@ const CoverageReportPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold mb-2">
-                  {coverageData.summary.total.statements.pct.toFixed(1)}%
+                  {safeGetPercentage(coverageData.summary.total.statements.pct).toFixed(1)}%
                 </div>
-                <Progress value={coverageData.summary.total.statements.pct} className="h-2 mb-2" />
+                <Progress
+                  value={safeGetPercentage(coverageData.summary.total.statements.pct)}
+                  className="h-2 mb-2"
+                />
                 <p className="text-xs text-muted-foreground">
                   {coverageData.summary.total.statements.covered} /{' '}
                   {coverageData.summary.total.statements.total}
@@ -193,9 +214,12 @@ const CoverageReportPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold mb-2">
-                  {coverageData.summary.total.branches.pct.toFixed(1)}%
+                  {safeGetPercentage(coverageData.summary.total.branches.pct).toFixed(1)}%
                 </div>
-                <Progress value={coverageData.summary.total.branches.pct} className="h-2 mb-2" />
+                <Progress
+                  value={safeGetPercentage(coverageData.summary.total.branches.pct)}
+                  className="h-2 mb-2"
+                />
                 <p className="text-xs text-muted-foreground">
                   {coverageData.summary.total.branches.covered} /{' '}
                   {coverageData.summary.total.branches.total}
@@ -210,9 +234,12 @@ const CoverageReportPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold mb-2">
-                  {coverageData.summary.total.functions.pct.toFixed(1)}%
+                  {safeGetPercentage(coverageData.summary.total.functions.pct).toFixed(1)}%
                 </div>
-                <Progress value={coverageData.summary.total.functions.pct} className="h-2 mb-2" />
+                <Progress
+                  value={safeGetPercentage(coverageData.summary.total.functions.pct)}
+                  className="h-2 mb-2"
+                />
                 <p className="text-xs text-muted-foreground">
                   {coverageData.summary.total.functions.covered} /{' '}
                   {coverageData.summary.total.functions.total}
@@ -227,9 +254,12 @@ const CoverageReportPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold mb-2">
-                  {coverageData.summary.total.lines.pct.toFixed(1)}%
+                  {safeGetPercentage(coverageData.summary.total.lines.pct).toFixed(1)}%
                 </div>
-                <Progress value={coverageData.summary.total.lines.pct} className="h-2 mb-2" />
+                <Progress
+                  value={safeGetPercentage(coverageData.summary.total.lines.pct)}
+                  className="h-2 mb-2"
+                />
                 <p className="text-xs text-muted-foreground">
                   {coverageData.summary.total.lines.covered} /{' '}
                   {coverageData.summary.total.lines.total}
@@ -255,7 +285,7 @@ const CoverageReportPage = () => {
                     <h3 className="font-medium text-gray-900">{file.file}</h3>
                     <div className="flex space-x-2">
                       <Badge variant={getCoverageBadgeVariant(file.statements.pct)}>
-                        {file.statements.pct.toFixed(1)}%
+                        {safeGetPercentage(file.statements.pct).toFixed(1)}%
                       </Badge>
                     </div>
                   </div>
@@ -266,7 +296,7 @@ const CoverageReportPage = () => {
                       <div
                         className={`text-sm font-medium ${getCoverageColor(file.statements.pct)}`}
                       >
-                        {file.statements.pct.toFixed(1)}%
+                        {safeGetPercentage(file.statements.pct).toFixed(1)}%
                       </div>
                       <div className="text-xs text-gray-500">
                         {file.statements.covered}/{file.statements.total}
@@ -276,7 +306,7 @@ const CoverageReportPage = () => {
                     <div>
                       <div className="text-xs text-gray-600 mb-1">Branches</div>
                       <div className={`text-sm font-medium ${getCoverageColor(file.branches.pct)}`}>
-                        {file.branches.pct.toFixed(1)}%
+                        {safeGetPercentage(file.branches.pct).toFixed(1)}%
                       </div>
                       <div className="text-xs text-gray-500">
                         {file.branches.covered}/{file.branches.total}
@@ -288,7 +318,7 @@ const CoverageReportPage = () => {
                       <div
                         className={`text-sm font-medium ${getCoverageColor(file.functions.pct)}`}
                       >
-                        {file.functions.pct.toFixed(1)}%
+                        {safeGetPercentage(file.functions.pct).toFixed(1)}%
                       </div>
                       <div className="text-xs text-gray-500">
                         {file.functions.covered}/{file.functions.total}
@@ -298,7 +328,7 @@ const CoverageReportPage = () => {
                     <div>
                       <div className="text-xs text-gray-600 mb-1">Lines</div>
                       <div className={`text-sm font-medium ${getCoverageColor(file.lines.pct)}`}>
-                        {file.lines.pct.toFixed(1)}%
+                        {safeGetPercentage(file.lines.pct).toFixed(1)}%
                       </div>
                       <div className="text-xs text-gray-500">
                         {file.lines.covered}/{file.lines.total}

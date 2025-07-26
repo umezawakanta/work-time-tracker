@@ -310,6 +310,16 @@ const SiteImprovementPlan: React.FC = () => {
         progress: 100,
       },
       {
+        id: 'coverage-report-fix',
+        title: '🔧 カバレッジレポート修正',
+        description: 'pctオブジェクトレンダリングエラー修正と安全な型チェック追加',
+        status: 'completed',
+        priority: 'high',
+        category: 'bug-fix',
+        estimatedDays: 1,
+        progress: 100,
+      },
+      {
         id: 'api-integration',
         title: 'API層の統合',
         description: '分散したAPI呼び出しを統一されたサービス層に集約',
@@ -688,6 +698,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ /api/userSubscription/user/[userId] エンドポイント実装</li>
                 <li>✅ デモユーザーデータとプレミアムプラン機能対応</li>
                 <li>✅ 品質ダッシュボード Reactレンダリングエラー修正</li>
+                <li>✅ カバレッジレポート pctオブジェクトエラー修正</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
