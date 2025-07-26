@@ -17,6 +17,7 @@ import {
   Globe,
   User,
   Edit3,
+  Activity,
 } from 'lucide-react';
 
 interface SearchItem {
@@ -147,6 +148,15 @@ const appPages: SearchItem[] = [
     type: 'page',
     path: '/adhd-life-management',
     icon: <Calendar className="h-4 w-4" />,
+  },
+  {
+    id: 'adhd-integrated-life',
+    title: 'ADHD 統合実働システム',
+    description:
+      'ADHD ASD リアルタイム統合 カレンダー 資産管理 実働版 Googleカレンダー MoneyForward 時間軸 エネルギー最適化 感情トリガー',
+    type: 'page',
+    path: '/adhd-integrated-life',
+    icon: <Activity className="h-4 w-4" />,
   },
   {
     id: 'life-sync',

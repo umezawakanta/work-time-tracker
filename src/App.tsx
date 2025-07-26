@@ -90,6 +90,7 @@ const ADHDLifeSyncPage = lazy(() => import('./pages/ADHDLifeSyncPage'));
 const ADHDTaskManagerPage = lazy(() => import('./pages/ADHDTaskManagerPage'));
 const ADHDLifeManagementPage = lazy(() => import('./pages/ADHDLifeManagementPage'));
 const ADHDSmartHomePage = lazy(() => import('./pages/ADHDSmartHomePage'));
+const ADHDIntegratedLifePage = lazy(() => import('./pages/ADHDIntegratedLifePage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -594,6 +595,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ADHDLifeManagementPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/adhd-integrated-life"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ADHDIntegratedLifePage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

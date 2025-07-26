@@ -151,6 +151,7 @@ export default defineConfig({
             '@/components/ADHDTaskManager',
             '@/components/ADHDLifeSyncDashboard',
             '@/components/ADHDLifeManagementHub',
+            '@/components/ADHDIntegratedLifeSystem',
           ],
         },
         // 🥷 パフォーマンス忍者: ファイル名とアセット最適化

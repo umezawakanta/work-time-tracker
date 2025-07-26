@@ -147,6 +147,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'blue',
   },
   {
+    icon: <Activity className="h-5 w-5" />,
+    label: '🔄 統合実働システム',
+    path: '/adhd-integrated-life',
+    description: 'リアルタイム統合カレンダー・資産管理',
+    badge: '実働版',
+    gradient: 'from-emerald-500 via-blue-500 to-purple-500',
+    accentColor: 'emerald',
+  },
+  {
     icon: <Target className="h-5 w-5" />,
     label: '🌟 ライフシンク',
     path: '/life-sync',
