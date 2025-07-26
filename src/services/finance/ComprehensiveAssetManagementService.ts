@@ -761,7 +761,7 @@ class ComprehensiveAssetManagementService extends EventEmitter {
    * リバランス推奨計算
    */
   private calculateRebalanceRecommendations(portfolio: InvestmentPortfolio): any[] {
-    const recommendations: string[] = [];
+    const recommendations: any[] = [];
     const { targetAllocation, currentAllocation } = portfolio;
 
     Object.entries(targetAllocation).forEach(([asset, target]) => {

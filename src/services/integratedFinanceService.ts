@@ -115,8 +115,9 @@ export class IntegratedFinanceService {
     // カテゴリ別内訳
     const categoryBreakdown = monthlyEntries.reduce(
       (acc, entry) => {
-        acc[entry.category] =
-          (acc[entry.category] || 0) + (entry.type === 'expense' ? -entry.value : entry.value);
+        const category = entry.category || 'その他';
+        acc[category] =
+          (acc[category] || 0) + (entry.type === 'expense' ? -entry.value : entry.value);
         return acc;
       },
       {} as { [category: string]: number }
@@ -257,7 +258,8 @@ export class IntegratedFinanceService {
       })
       .reduce(
         (acc, entry) => {
-          acc[entry.category] = (acc[entry.category] || 0) + entry.value;
+          const category = entry.category || 'その他';
+          acc[category] = (acc[category] || 0) + entry.value;
           return acc;
         },
         {} as { [category: string]: number }
