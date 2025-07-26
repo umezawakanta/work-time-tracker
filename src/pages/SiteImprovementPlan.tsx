@@ -41,6 +41,8 @@ import {
   Plus,
   ExternalLink,
   Activity,
+  CheckCircle2,
+  Brain,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -55,6 +57,25 @@ const SiteImprovementPlan: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<ImprovementItem | null>(null);
   const [currentProjectId, setCurrentProjectId] = useState<string>('site-improvement-2024');
   const [improvementStatuses, setImprovementStatuses] = useState<Record<string, string>>({});
+
+  // 改善項目データ
+
+  // ADHD/ASD特化機能の完成度
+  const adhdAsdFeatures = [
+    { name: '認知評価システム (WEIS相当)', completed: true },
+    { name: '認知統合パーソナライズ', completed: true },
+    { name: '統合ダッシュボード', completed: true },
+    { name: 'タスク管理最適化', completed: false, inProgress: true },
+    { name: '資産管理最適化', completed: false },
+    { name: '適応的UIシステム', completed: false },
+    { name: 'リアルタイム適応', completed: false },
+    { name: 'AIコーチングシステム', completed: false },
+    { name: 'ソーシャルサポート', completed: false },
+  ];
+
+  const adhdAsdProgress = Math.round(
+    (adhdAsdFeatures.filter((f) => f.completed).length / adhdAsdFeatures.length) * 100
+  );
 
   const navigate = useNavigate();
   const {
@@ -86,11 +107,32 @@ const SiteImprovementPlan: React.FC = () => {
   const improvements: Record<string, ImprovementItem[]> = {
     phase0: [
       {
+        id: 'cognitive-integration',
+        title: '🧠 認知統合パーソナライズシステム',
+        description: 'ADHD/ASD認知特性に基づくタスク管理・資産管理・UI最適化の統合システム',
+        status: 'completed',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 7,
+        progress: 100,
+      },
+      {
+        id: 'cognitive-dashboard',
+        title: '🎯 統合認知ダッシュボード',
+        description:
+          'パーソナライズされた総合管理画面、認知状態の可視化、最適化されたワークフロー表示',
+        status: 'completed',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 5,
+        progress: 100,
+      },
+      {
         id: 'realtime-clock',
         title: 'リアルタイム打刻機能',
         description: 'ワンクリック出勤・退勤、現在の勤務状態表示、自動時間計算、休憩時間管理',
         status: 'planned',
-        priority: 'critical',
+        priority: 'high',
         category: 'feature',
         estimatedDays: 5,
         progress: 0,
@@ -152,15 +194,45 @@ const SiteImprovementPlan: React.FC = () => {
     ],
     phase1: [
       {
+        id: 'cognitive-task-optimization',
+        title: '📋 認知特性タスク最適化',
+        description: '個人の認知特性に基づいたタスク分割、スケジューリング、リマインダー機能',
+        status: 'in-progress',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 10,
+        progress: 30,
+      },
+      {
+        id: 'cognitive-finance-optimization',
+        title: '💰 認知特性財務最適化',
+        description: '認知負荷を考慮した資産管理UI、自動化レベル調整、視覚化設定',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 8,
+        progress: 0,
+      },
+      {
+        id: 'adaptive-ui-system',
+        title: '🎨 適応的UIシステム',
+        description: '認知特性に応じたコントラスト、フォントサイズ、レイアウト密度の自動調整',
+        status: 'planned',
+        priority: 'high',
+        category: 'feature',
+        estimatedDays: 12,
+        progress: 0,
+      },
+      {
         id: 'ui-unification',
         title: 'UIライブラリの統一',
         description:
           'Material-UI、Radix UI、shadcn-uiが混在している状態をshadcn-ui + Tailwind CSSに統一',
-        status: 'in-progress',
-        priority: 'high',
+        status: 'planned',
+        priority: 'medium',
         category: 'architecture',
         estimatedDays: 7,
-        progress: 25,
+        progress: 0,
       },
       {
         id: 'remove-deps',
@@ -185,11 +257,33 @@ const SiteImprovementPlan: React.FC = () => {
     ],
     phase2: [
       {
+        id: 'cognitive-data-persistence',
+        title: '🧠 認知データ永続化',
+        description: '認知プロファイル、学習データ、最適化履歴の安全な保存・復元システム',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 8,
+        progress: 0,
+        dependencies: ['cognitive-task-optimization'],
+      },
+      {
+        id: 'real-time-adaptation',
+        title: '⚡ リアルタイム適応システム',
+        description: 'ユーザーの行動パターンから認知状態をリアルタイム推定し、UIを動的調整',
+        status: 'planned',
+        priority: 'high',
+        category: 'feature',
+        estimatedDays: 15,
+        progress: 0,
+        dependencies: ['adaptive-ui-system'],
+      },
+      {
         id: 'folder-restructure',
         title: 'フォルダ構造の再編成',
         description: '機能別モジュール構造への移行と共通コンポーネントの抽出',
         status: 'planned',
-        priority: 'critical',
+        priority: 'medium',
         category: 'architecture',
         estimatedDays: 14,
         progress: 0,
@@ -218,11 +312,33 @@ const SiteImprovementPlan: React.FC = () => {
     ],
     phase3: [
       {
+        id: 'ai-coaching-system',
+        title: '🤖 AI認知コーチングシステム',
+        description: '機械学習による個人最適化提案、行動パターン分析、成長支援',
+        status: 'planned',
+        priority: 'critical',
+        category: 'feature',
+        estimatedDays: 25,
+        progress: 0,
+        dependencies: ['real-time-adaptation', 'cognitive-data-persistence'],
+      },
+      {
+        id: 'social-support-network',
+        title: '🤝 ソーシャルサポートネットワーク',
+        description: 'ADHD/ASDコミュニティ機能、ピアサポート、専門家との連携システム',
+        status: 'planned',
+        priority: 'high',
+        category: 'feature',
+        estimatedDays: 20,
+        progress: 0,
+        dependencies: ['ai-coaching-system'],
+      },
+      {
         id: 'monorepo',
         title: 'モノレポ構造への移行',
         description: '関連する3つのアプリケーションをモノレポで管理',
         status: 'planned',
-        priority: 'critical',
+        priority: 'medium',
         category: 'architecture',
         estimatedDays: 30,
         progress: 0,
@@ -420,6 +536,111 @@ const SiteImprovementPlan: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* ヘッダー部分 */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold text-gray-900">🧠 ADHD/ASD生活支援サイト 完成計画</h1>
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          認知特性に基づくパーソナライズされたタスク管理・資産管理・生活支援システムの開発進捗
+        </p>
+
+        {/* サイト完成予定の表示 */}
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-2xl">
+              <Target className="h-6 w-6 text-green-600" />
+              サイト完成予定
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-600">
+                  {completion.completionDate.toLocaleDateString('ja-JP')}
+                </div>
+                <div className="text-sm text-gray-600">完成予定日</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{completion.remainingDays}日</div>
+                <div className="text-sm text-gray-600">残り開発期間</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600">
+                  {completion.totalProgress}%
+                </div>
+                <div className="text-sm text-gray-600">全体進捗</div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>開発進捗</span>
+                <span>
+                  {completion.completedDays} / {completion.totalEstimatedDays} 人日完了
+                </span>
+              </div>
+              <Progress value={completion.totalProgress} className="h-3" />
+            </div>
+
+            <Alert className="mt-6 bg-green-50 border-green-200">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                <strong>最重要タスク完了！</strong>{' '}
+                認知プロファイルに基づく統合パーソナライズシステムが実装され、
+                ADHD/ASDの方が効果的に使える基盤が完成しました。
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+
+        {/* ADHD/ASD特化機能の進捗 */}
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Brain className="h-6 w-6 text-purple-600" />
+              ADHD/ASD特化機能の完成度
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>特化機能完成度</span>
+                <span>{adhdAsdProgress}%</span>
+              </div>
+              <Progress value={adhdAsdProgress} className="h-3" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {adhdAsdFeatures.map((feature, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {feature.completed ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  ) : feature.inProgress ? (
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                  ) : (
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
+                  )}
+                  <span className={feature.completed ? 'text-green-800' : 'text-gray-600'}>
+                    {feature.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 p-4 bg-purple-50 rounded-lg">
+              <h4 className="font-medium text-purple-800 mb-2">🎯 完成時の効果</h4>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• 個人の認知特性に完全に最適化されたタスク管理</li>
+                <li>• 認知負荷を考慮した直感的な資産管理</li>
+                <li>• AIによる行動パターン学習と成長支援</li>
+                <li>• ピアサポートによる持続的なモチベーション維持</li>
+                <li>• 専門家との連携による包括的な生活支援</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 既存のフェーズ表示 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">サイト改善計画</h1>
         <p className="text-muted-foreground">
