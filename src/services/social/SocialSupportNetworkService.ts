@@ -197,6 +197,7 @@ interface ProfessionalProfile {
     | 'executive_function'
     | 'social_skills'
     | 'family_therapy'
+    | 'crisis_intervention'
   )[];
   type:
     | 'therapist'

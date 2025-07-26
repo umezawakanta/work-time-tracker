@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  Robot,
+  Bot,
   Brain,
   TrendingUp,
   Target,
@@ -44,7 +44,7 @@ const CognitiveAICoachingPage: React.FC = () => {
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center gap-3">
             <div className="p-3 bg-purple-100 rounded-full">
-              <Robot className="h-8 w-8 text-purple-600" />
+              <Bot className="h-8 w-8 text-purple-600" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-gray-900">AI認知コーチングシステム</h1>
@@ -461,7 +461,7 @@ const CognitiveAICoachingPage: React.FC = () => {
         {/* フッター情報 */}
         <div className="text-center text-gray-500 text-sm space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <Robot className="h-4 w-4" />
+            <Bot className="h-4 w-4" />
             <span>AI認知コーチングシステム v1.0</span>
           </div>
           <p>ADHD/ASD認知科学研究に基づく機械学習コーチング</p>

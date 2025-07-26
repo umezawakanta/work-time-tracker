@@ -329,20 +329,7 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-medium">{title}</CardTitle>
-            {threshold &&
-              getMetricIcon(
-                inverse
-                  ? value <= threshold.good
-                    ? 'positive'
-                    : value <= threshold.warning
-                      ? 'warning'
-                      : 'negative'
-                  : value >= threshold.good
-                    ? 'positive'
-                    : value >= threshold.warning
-                      ? 'warning'
-                      : 'negative'
-              )}
+            {threshold && getMetricIcon(title, value, undefined)}
           </div>
         </CardHeader>
         <CardContent>

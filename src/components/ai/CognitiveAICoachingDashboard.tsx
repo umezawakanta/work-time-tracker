@@ -15,7 +15,7 @@ import { useRealtimeAdaptation } from '@/components/realtime/RealtimeAdaptationP
 import CognitiveAICoachingService from '@/services/ai/CognitiveAICoachingService';
 import {
   Brain,
-  Robot,
+  Bot,
   TrendingUp,
   TrendingDown,
   Target,
@@ -149,7 +149,7 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
         energy: adaptationState.cognitiveState.energy,
         stress: adaptationState.cognitiveState.stress,
         flow: adaptationState.cognitiveState.flow || 50,
-        motivation: adaptationState.cognitiveState.motivation || 60,
+        motivation: 60, // デフォルト値
       },
       behavioralMetrics: {
         taskCompletionRate: 75,
@@ -479,7 +479,7 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Robot className="h-8 w-8 text-blue-600" />
+            <Bot className="h-8 w-8 text-blue-600" />
             AI認知コーチング
           </h1>
           <p className="text-gray-600 mt-1">
@@ -614,7 +614,7 @@ export const CognitiveAICoachingDashboard: React.FC = () => {
           {recommendations.length === 0 ? (
             <Card>
               <CardContent className="p-6 text-center">
-                <Robot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">AIが学習中です</h3>
                 <p className="text-gray-600">
                   より多くのデータが蓄積されると、パーソナライズされた推奨事項が表示されます。
