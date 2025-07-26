@@ -66,7 +66,7 @@ const SiteImprovementPlan: React.FC = () => {
     { name: '認知統合パーソナライズ', completed: true },
     { name: '統合ダッシュボード', completed: true },
     { name: 'タスク管理最適化', completed: true },
-    { name: '資産管理最適化', completed: false, inProgress: true },
+    { name: '資産管理最適化', completed: true },
     { name: '適応的UIシステム', completed: true },
     { name: 'リアルタイム適応', completed: true },
     { name: 'AIコーチングシステム', completed: false },
@@ -207,11 +207,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'cognitive-finance-optimization',
         title: '💰 認知特性財務最適化',
         description: '認知負荷を考慮した資産管理UI、自動化レベル調整、視覚化設定',
-        status: 'in-progress',
+        status: 'completed',
         priority: 'critical',
         category: 'feature',
         estimatedDays: 8,
-        progress: 30,
+        progress: 100,
       },
       {
         id: 'adaptive-ui-system',
@@ -700,6 +700,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ 品質ダッシュボード Reactレンダリングエラー修正</li>
                 <li>✅ カバレッジレポート pctオブジェクトエラー修正</li>
                 <li>✅ リアルタイム適応システム完成 - 認知状態監視と自動UI調整</li>
+                <li>✅ 認知最適化資産管理システム完成 - ADHD/ASD特性に基づく財務管理</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
