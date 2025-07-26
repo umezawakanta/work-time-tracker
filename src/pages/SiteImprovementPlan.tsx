@@ -148,11 +148,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'daily-summary',
         title: '日次勤務状況の可視化',
         description: '当日の出勤・退勤時間、実働時間と休憩時間の分離、残業時間の計算',
-        status: 'planned',
+        status: 'completed',
         priority: 'critical',
         category: 'feature',
         estimatedDays: 3,
-        progress: 0,
+        progress: 100,
         dependencies: ['realtime-clock'],
       },
       {
@@ -714,6 +714,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ TypeScriptエラー修正完了 - コンパイルエラー解消</li>
                 <li>✅ プロダクションビルド修正完了 - ブラウザ互換EventEmitter実装</li>
                 <li>✅ Vercelデプロイエラー修正完了 - TypeScriptコンパイル問題解決</li>
+                <li>✅ 日次勤務状況可視化完成 - グラフ・チャートによる勤務時間分析</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
