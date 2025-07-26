@@ -97,6 +97,7 @@ const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAsse
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
 const CognitiveAICoachingPage = lazy(() => import('./pages/CognitiveAICoachingPage'));
+const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetworkPage'));
 
 // 📊 Chart-heavy pages
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -1096,6 +1097,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <CognitiveAICoachingPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/social-support"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <SocialSupportNetworkPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

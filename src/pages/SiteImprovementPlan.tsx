@@ -70,7 +70,7 @@ const SiteImprovementPlan: React.FC = () => {
     { name: '適応的UIシステム', completed: true },
     { name: 'リアルタイム適応', completed: true },
     { name: 'AIコーチングシステム', completed: true },
-    { name: 'ソーシャルサポート', completed: false },
+    { name: 'ソーシャルサポート', completed: true },
   ] as Array<{ name: string; completed: boolean; inProgress?: boolean }>;
 
   const adhdAsdProgress = Math.round(
@@ -356,11 +356,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'social-support-network',
         title: '🤝 ソーシャルサポートネットワーク',
         description: 'ADHD/ASDコミュニティ機能、ピアサポート、専門家との連携システム',
-        status: 'planned',
+        status: 'completed',
         priority: 'high',
         category: 'feature',
         estimatedDays: 20,
-        progress: 0,
+        progress: 100,
         dependencies: ['ai-coaching-system'],
       },
       {
@@ -702,6 +702,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ リアルタイム適応システム完成 - 認知状態監視と自動UI調整</li>
                 <li>✅ 認知最適化資産管理システム完成 - ADHD/ASD特性に基づく財務管理</li>
                 <li>✅ AI認知コーチングシステム完成 - 機械学習による個人最適化支援</li>
+                <li>✅ ソーシャルサポートネットワーク完成 - コミュニティとピアサポート</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
