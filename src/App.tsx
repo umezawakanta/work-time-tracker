@@ -101,6 +101,7 @@ const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetwork
 const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
 const DailyWorkVisualizationPage = lazy(() => import('./pages/DailyWorkVisualizationPage'));
 const MonthlyTimesheetPage = lazy(() => import('./pages/MonthlyTimesheetPage'));
+const WorkPatternSettingsPage = lazy(() => import('./pages/WorkPatternSettingsPage'));
 
 // 📊 Chart-heavy pages
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -1140,6 +1141,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <MonthlyTimesheetPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/work-pattern-settings"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <WorkPatternSettingsPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }

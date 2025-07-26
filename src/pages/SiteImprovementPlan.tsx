@@ -170,11 +170,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'work-patterns',
         title: '勤務パターン設定',
         description: '標準勤務時間の設定、休憩時間の設定、残業の自動計算基準、労働時間上限設定',
-        status: 'planned',
+        status: 'completed',
         priority: 'high',
         category: 'feature',
         estimatedDays: 3,
-        progress: 0,
+        progress: 100,
       },
       {
         id: 'alert-notifications',
@@ -716,6 +716,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ Vercelデプロイエラー修正完了 - TypeScriptコンパイル問題解決</li>
                 <li>✅ 日次勤務状況可視化完成 - グラフ・チャートによる勤務時間分析</li>
                 <li>✅ 月次勤怠集計完成 - 総労働時間・有給管理・CSV/PDFエクスポート</li>
+                <li>✅ 勤務パターン設定完成 - ADHD/ASD特性対応・フレックス・認知最適化</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
