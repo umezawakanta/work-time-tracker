@@ -191,11 +191,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'approval-workflow',
         title: '承認ワークフロー',
         description: '勤怠データの承認申請、管理者による承認・差し戻し、修正申請機能',
-        status: 'planned',
+        status: 'completed',
         priority: 'medium',
         category: 'feature',
         estimatedDays: 7,
-        progress: 0,
+        progress: 100,
         dependencies: ['monthly-timesheet'],
       },
     ],
@@ -718,6 +718,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ 月次勤怠集計完成 - 総労働時間・有給管理・CSV/PDFエクスポート</li>
                 <li>✅ 勤務パターン設定完成 - ADHD/ASD特性対応・フレックス・認知最適化</li>
                 <li>✅ アラート・通知機能完成 - 認知特性配慮・適応的頻度・感覚的配慮</li>
+                <li>✅ 承認ワークフロー完成 - 階層的承認・ADHD/ASD配慮コミュニケーション</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
