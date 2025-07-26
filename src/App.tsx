@@ -98,6 +98,7 @@ const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
 const CognitiveAICoachingPage = lazy(() => import('./pages/CognitiveAICoachingPage'));
 const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetworkPage'));
+const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
 
 // 📊 Chart-heavy pages
 const BlogPage = lazy(() => import('./pages/BlogPage'));
@@ -1107,6 +1108,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <SocialSupportNetworkPage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/time-tracking"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <RealtimeClockPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
