@@ -303,11 +303,21 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'api-integration',
         title: 'API層の統合',
         description: '分散したAPI呼び出しを統一されたサービス層に集約',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'high',
         category: 'architecture',
         estimatedDays: 10,
-        progress: 0,
+        progress: 40,
+      },
+      {
+        id: 'subscription-api-fix',
+        title: '🔧 サブスクリプションAPI修正',
+        description: 'userSubscription API 404エラー修正とエンドポイント実装',
+        status: 'completed',
+        priority: 'critical',
+        category: 'bug-fix',
+        estimatedDays: 1,
+        progress: 100,
       },
     ],
     phase3: [
@@ -658,6 +668,16 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>• AIによる行動パターン学習と成長支援</li>
                 <li>• ピアサポートによる持続的なモチベーション維持</li>
                 <li>• 専門家との連携による包括的な生活支援</li>
+              </ul>
+            </div>
+
+            <div className="mt-6 p-4 bg-green-50 rounded-lg">
+              <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>✅ サブスクリプションAPI 404エラー修正完了</li>
+                <li>✅ /api/userSubscription/user/[userId] エンドポイント実装</li>
+                <li>✅ デモユーザーデータとプレミアムプラン機能対応</li>
+                <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
           </CardContent>
