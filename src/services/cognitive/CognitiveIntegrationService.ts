@@ -162,14 +162,13 @@ export class CognitiveIntegrationService extends EventEmitter {
 
     // UI適応設定
     const uiSettings: AdaptiveUISettings = {
-      colorScheme:
-        personalizedSettings.sensoryProcessing === 'low' ? 'high-contrast' : 'low-contrast',
+      colorScheme: profile.sensoryProcessing < 85 ? 'high-contrast' : 'low-contrast',
       fontSizeMultiplier: profile.processingSpeed < 85 ? 1.2 : 1.0,
       animationLevel: personalizedSettings.distractionSensitivity === 'high' ? 'none' : 'minimal',
       layoutDensity:
         personalizedSettings.visualComplexityLevel === 'low' ? 'spacious' : 'comfortable',
       navigationStyle: profile.workingMemory < 85 ? 'minimal' : 'standard',
-      focusIndicators: personalizedSettings.attentionalControl < 85 ? 'prominent' : 'subtle',
+      focusIndicators: profile.attentionalControl < 85 ? 'prominent' : 'subtle',
     };
 
     return { task: taskSettings, finance: financeSettings, ui: uiSettings };
@@ -505,10 +504,10 @@ export class CognitiveIntegrationService extends EventEmitter {
    * 1日の計画を生成
    */
   private generateDailyPlan(profile: CognitiveProfile, settings: any): any[] {
-    const plan = [];
+    const plan: any[] = [];
     const focusBlocks = settings.task.focusTimeBlocks;
 
-    focusBlocks.forEach((block, index) => {
+    focusBlocks.forEach((block: any, index: number) => {
       plan.push({
         time: block.start,
         activity: index === 0 ? '重要タスク（高集中）' : '中程度タスク',

@@ -658,6 +658,7 @@ export const ADHDTaskManager: React.FC = () => {
                       setNewTask((prev) => ({ ...prev, energyRequired: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="必要エネルギー"
                   >
                     <option value="low">低</option>
                     <option value="medium">中</option>
@@ -689,6 +690,7 @@ export const ADHDTaskManager: React.FC = () => {
                       setNewTask((prev) => ({ ...prev, category: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="カテゴリ"
                   >
                     <option value="work">仕事</option>
                     <option value="personal">個人</option>

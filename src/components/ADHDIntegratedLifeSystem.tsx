@@ -992,6 +992,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                       setNewEvent((prev) => ({ ...prev, type: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="予定の種類"
                   >
                     <option value="task">タスク</option>
                     <option value="appointment">予定</option>
@@ -1007,6 +1008,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                       setNewEvent((prev) => ({ ...prev, priority: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="優先度"
                   >
                     <option value="low">低</option>
                     <option value="medium">中</option>
@@ -1025,6 +1027,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                       setNewEvent((prev) => ({ ...prev, energyRequired: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="必要エネルギー"
                   >
                     <option value="low">低</option>
                     <option value="medium">中</option>
@@ -1105,6 +1108,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                       setNewFinance((prev) => ({ ...prev, category: e.target.value }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="支出カテゴリ"
                   >
                     <option value="食費">食費</option>
                     <option value="交通費">交通費</option>
@@ -1122,6 +1126,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                       setNewFinance((prev) => ({ ...prev, paymentMethod: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="支払方法"
                   >
                     <option value="cash">現金</option>
                     <option value="card">カード</option>
@@ -1139,6 +1144,7 @@ export const ADHDIntegratedLifeSystem: React.FC = () => {
                     setNewFinance((prev) => ({ ...prev, emotionalTrigger: e.target.value as any }))
                   }
                   className="w-full border rounded px-3 py-2"
+                  aria-label="感情トリガー"
                 >
                   <option value="necessity">必要</option>
                   <option value="stress">ストレス</option>
