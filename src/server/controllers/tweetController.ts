@@ -32,7 +32,7 @@ export const createTweet = async (req: MulterRequest, res: Response): Promise<vo
     }
 
     const tweetData: Partial<ITweet> = {
-      user: new mongoose.Types.ObjectId(userId),
+      user: new mongoose.Types.ObjectId(userId || '507f1f77bcf86cd799439011'), // Default ObjectId for development
     };
 
     if (contentStr) {
@@ -64,13 +64,14 @@ export const getTweets = async (req: MulterRequest, res: Response): Promise<void
     const userId = req.user?.id;
     const { search } = req.query;
 
-    if (!userId) {
-      res.status(401).json({ message: 'ユーザーが認証されていません' });
-      return;
-    }
+    // Development: Skip user authentication
+    // if (!userId) {
+    //   res.status(401).json({ message: 'ユーザーが認証されていません' });
+    //   return;
+    // }
 
-    // 基本的なクエリ条件（ユーザーIDでフィルタリング）
-    const baseQuery = { user: userId };
+    // 基本的なクエリ条件（ユーザーIDでフィルタリング） - Return all tweets in development
+    const baseQuery = userId ? { user: userId } : {};
 
     // 検索条件の追加
     const query =
