@@ -572,10 +572,11 @@ class PersonalizedWorkflowService extends EventEmitter {
             energyMatch: this.calculateEnergyMatch(bestTask, energyPattern),
             cognitiveLoad: bestTask.cognitiveLoad,
             bufferTime: this.calculateBufferTime(bestTask),
-            transitionType: this.determineTransitionType(bestTask, optimizedSlots) as
-              | 'break'
-              | 'context-switch'
-              | 'continuation',
+            transitionType:
+              (this.determineTransitionType(bestTask, optimizedSlots) as
+                | 'break'
+                | 'context-switch'
+                | 'continuation') || 'break',
             adhdConsiderations: this.generateADHDConsiderations(bestTask, energyPattern),
           });
 

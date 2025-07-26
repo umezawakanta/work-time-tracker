@@ -760,8 +760,8 @@ class ComprehensiveAssetManagementService extends EventEmitter {
   /**
    * リバランス推奨計算
    */
-  private calculateRebalanceRecommendations(portfolio: InvestmentPortfolio): any[] {
-    const recommendations: any[] = [];
+  private calculateRebalanceRecommendations(portfolio: InvestmentPortfolio): string[] {
+    const recommendations: string[] = [];
     const { targetAllocation, currentAllocation } = portfolio;
 
     Object.entries(targetAllocation).forEach(([asset, target]) => {
@@ -770,12 +770,11 @@ class ComprehensiveAssetManagementService extends EventEmitter {
 
       if (Math.abs(difference) > 5) {
         // 5%以上の差がある場合
-        recommendations.push({
-          asset,
-          action: difference > 0 ? 'buy' : 'sell',
-          amount: Math.abs((difference * portfolio.totalValue) / 100),
-          reason: `目標比率${target}%に対して現在${current.toFixed(1)}%`,
-        });
+        const action = difference > 0 ? '購入' : '売却';
+        const amount = Math.abs((difference * portfolio.totalValue) / 100);
+        recommendations.push(
+          `${asset}: ${action}推奨 ${amount.toLocaleString()}円 (目標比率${target}%に対して現在${current.toFixed(1)}%)`
+        );
       }
     });
 

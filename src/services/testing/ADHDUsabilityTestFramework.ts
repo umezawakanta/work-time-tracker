@@ -822,21 +822,19 @@ class ADHDUsabilityTestFramework extends EventEmitter {
     return JSON.stringify(report, null, 2);
   }
 
-  private generateOverallRecommendations(auditResults: any, testResults: any[]): any[] {
-    const recommendations: any[] = [];
+  private generateOverallRecommendations(auditResults: any, testResults: any[]): string[] {
+    const recommendations: string[] = [];
 
     // 失敗したチェックに基づく推奨
     Object.entries(auditResults).forEach(([checkId, result]: [string, any]) => {
       if (result.status === 'FAIL') {
         const check = this.accessibilityChecks.get(checkId);
         if (check) {
-          recommendations.push({
-            priority: check.level === 'A' ? 'high' : check.level === 'AA' ? 'medium' : 'low',
-            category: check.category,
-            issue: `${check.description}が失敗`,
-            suggestion: `WCAG ${check.level}基準に準拠するよう修正が必要`,
-            estimatedImpact: check.level === 'A' ? 9 : check.level === 'AA' ? 7 : 5,
-          });
+          const priority = check.level === 'A' ? 'high' : check.level === 'AA' ? 'medium' : 'low';
+          const impact = check.level === 'A' ? 9 : check.level === 'AA' ? 7 : 5;
+          recommendations.push(
+            `[${priority}] ${check.category}: ${check.description}が失敗 - WCAG ${check.level}基準に準拠するよう修正が必要 (影響度: ${impact})`
+          );
         }
       }
     });
