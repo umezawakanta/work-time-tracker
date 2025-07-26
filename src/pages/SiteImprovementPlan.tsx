@@ -159,11 +159,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'monthly-timesheet',
         title: '月次勤怠集計',
         description: '月次総労働時間、残業時間集計、有給・欠勤管理、CSV/PDFエクスポート',
-        status: 'planned',
+        status: 'completed',
         priority: 'critical',
         category: 'feature',
         estimatedDays: 4,
-        progress: 0,
+        progress: 100,
         dependencies: ['daily-summary'],
       },
       {
@@ -715,6 +715,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ プロダクションビルド修正完了 - ブラウザ互換EventEmitter実装</li>
                 <li>✅ Vercelデプロイエラー修正完了 - TypeScriptコンパイル問題解決</li>
                 <li>✅ 日次勤務状況可視化完成 - グラフ・チャートによる勤務時間分析</li>
+                <li>✅ 月次勤怠集計完成 - 総労働時間・有給管理・CSV/PDFエクスポート</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>
