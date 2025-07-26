@@ -3,7 +3,7 @@
  * ADHD/ASD特性に基づく機械学習による個人最適化とコーチング
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // AI分析データ型定義
 interface CognitiveData {

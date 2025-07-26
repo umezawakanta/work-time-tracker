@@ -3,7 +3,7 @@
  * 認知評価結果に基づいてタスク管理・資産管理・UI表示を最適化
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // 認知プロファイル型定義
 interface CognitiveProfile {

@@ -3,7 +3,7 @@
  * リアルタイム打刻・勤務時間管理・状態追跡システム
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // 勤怠記録の型定義
 interface TimeRecord {

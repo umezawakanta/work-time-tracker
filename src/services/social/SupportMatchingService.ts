@@ -3,7 +3,7 @@
  * ADHD/ASD特性を考慮した高度なピアサポートマッチングアルゴリズム
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // マッチング用の型定義
 interface UserCharacteristics {

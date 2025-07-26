@@ -3,7 +3,7 @@
  * ADHD/ASD特性に基づく財務管理の自動化と最適化
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // 自動化ルール型定義
 interface AutomationRule {

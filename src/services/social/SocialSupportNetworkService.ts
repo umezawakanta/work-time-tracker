@@ -3,7 +3,7 @@
  * ADHD/ASDコミュニティとピアサポートの統合プラットフォーム
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // ユーザープロファイル型定義
 interface SupportUserProfile {

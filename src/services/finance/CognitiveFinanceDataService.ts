@@ -3,7 +3,7 @@
  * ADHD/ASD特性に基づく財務データの永続化と学習システム
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // データ型定義
 interface CognitiveFinanceData {

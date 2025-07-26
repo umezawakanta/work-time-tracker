@@ -3,7 +3,7 @@
  * ユーザーの操作パターンから認知状態をリアルタイム推定
  */
 
-import { EventEmitter } from 'events';
+import { BrowserEventEmitter as EventEmitter } from '@/lib/BrowserEventEmitter';
 
 // 行動パターンの型定義
 interface UserInteraction {
