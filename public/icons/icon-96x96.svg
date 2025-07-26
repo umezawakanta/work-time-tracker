@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+    <!-- Background Circle -->
+    <circle cx="96" cy="96" r="90" fill="#6366f1" stroke="#4f46e5" stroke-width="4"/>
+
+    <!-- Brain Shape (ADHD/Cognitive Focus) -->
+    <g transform="translate(96, 96)">
+        <!-- Left Brain Hemisphere -->
+        <path d="M-35,-25 C-50,-25 -55,-15 -55,0 C-55,15 -50,25 -35,25 C-25,25 -20,15 -20,0 C-20,-15 -25,-25 -35,-25 Z" fill="#ffffff" opacity="0.9"/>
+
+        <!-- Right Brain Hemisphere -->
+        <path d="M35,-25 C50,-25 55,-15 55,0 C55,15 50,25 35,25 C25,25 20,15 20,0 C20,-15 25,-25 35,-25 Z" fill="#ffffff" opacity="0.9"/>
+
+        <!-- Central Connection -->
+        <rect x="-20" y="-5" width="40" height="10" rx="5" fill="#ffffff" opacity="0.8"/>
+
+        <!-- Neural Network Lines (ADHD Integration Theme) -->
+        <g stroke="#8b5cf6" stroke-width="2" fill="none" opacity="0.7">
+            <!-- Horizontal connections -->
+            <line x1="-40" y1="-10" x2="-25" y2="-5"/>
+            <line x1="-40" y1="10" x2="-25" y2="5"/>
+            <line x1="40" y1="-10" x2="25" y2="-5"/>
+            <line x1="40" y1="10" x2="25" y2="5"/>
+
+            <!-- Vertical connections -->
+            <line x1="-30" y1="-20" x2="-30" y2="-10"/>
+            <line x1="30" y1="-20" x2="30" y2="-10"/>
+            <line x1="-30" y1="10" x2="-30" y2="20"/>
+            <line x1="30" y1="10" x2="30" y2="20"/>
+
+            <!-- Cross connections (Integration) -->
+            <line x1="-15" y1="-10" x2="15" y2="10"/>
+            <line x1="15" y1="-10" x2="-15" y2="10"/>
+        </g>
+
+        <!-- Central Hub (Life Management Integration) -->
+        <circle cx="0" cy="0" r="8" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
+
+        <!-- Four Life Domains (Task, Finance, Health, Growth) -->
+        <!-- Task Management -->
+        <circle cx="-25" cy="-25" r="6" fill="#10b981" opacity="0.8"/>
+        <text x="-25" y="-20" text-anchor="middle" font-family="Arial" font-size="8" fill="#ffffff">T</text>
+
+        <!-- Financial Management -->
+        <circle cx="25" cy="-25" r="6" fill="#3b82f6" opacity="0.8"/>
+        <text x="25" y="-20" text-anchor="middle" font-family="Arial" font-size="8" fill="#ffffff">$</text>
+
+        <!-- Health & Wellbeing -->
+        <circle cx="-25" cy="25" r="6" fill="#ef4444" opacity="0.8"/>
+        <text x="-25" y="30" text-anchor="middle" font-family="Arial" font-size="8" fill="#ffffff">♥</text>
+
+        <!-- Personal Growth -->
+        <circle cx="25" cy="25" r="6" fill="#8b5cf6" opacity="0.8"/>
+        <text x="25" y="30" text-anchor="middle" font-family="Arial" font-size="8" fill="#ffffff">↗</text>
+
+        <!-- Connection Lines to Central Hub -->
+        <g stroke="#fbbf24" stroke-width="1.5" opacity="0.6">
+            <line x1="-19" y1="-19" x2="-6" y2="-6"/>
+            <line x1="19" y1="-19" x2="6" y2="-6"/>
+            <line x1="-19" y1="19" x2="-6" y2="6"/>
+            <line x1="19" y1="19" x2="6" y2="6"/>
+        </g>
+    </g>
+
+    <!-- Outer Ring (Adaptive Framework) -->
+    <circle cx="96" cy="96" r="85" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="10,5" opacity="0.5"/>
+
+    <!-- ADHD Support Indicators -->
+    <g transform="translate(96, 96)">
+        <!-- Focus Support -->
+        <circle cx="0" cy="-70" r="4" fill="#06b6d4"/>
+
+        <!-- Energy Management -->
+        <circle cx="70" cy="0" r="4" fill="#84cc16"/>
+
+        <!-- Impulse Control -->
+        <circle cx="0" cy="70" r="4" fill="#f59e0b"/>
+
+        <!-- Executive Function -->
+        <circle cx="-70" cy="0" r="4" fill="#ec4899"/>
+    </g>
+</svg> 
