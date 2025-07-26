@@ -369,7 +369,37 @@ const SiteImprovementPlan: React.FC = () => {
     ],
   };
 
-  // 現状の問題点
+  // サイト完成予定の計算
+  const calculateCompletionEstimate = (improvements: Record<string, ImprovementItem[]>) => {
+    const allPhases = Object.values(improvements).flat();
+    const totalEstimatedDays = allPhases.reduce(
+      (sum: number, item: ImprovementItem) => sum + (item.estimatedDays || 0),
+      0
+    );
+    const completedDays = allPhases.reduce(
+      (sum: number, item: ImprovementItem) =>
+        sum + ((item.estimatedDays || 0) * (item.progress || 0)) / 100,
+      0
+    );
+    const remainingDays = totalEstimatedDays - completedDays;
+
+    // 並行開発を考慮して実際の開発期間を計算（60%効率）
+    const actualRemainingDays = Math.ceil(remainingDays * 0.6);
+    const completionDate = new Date();
+    completionDate.setDate(completionDate.getDate() + actualRemainingDays);
+
+    return {
+      totalProgress: Math.round((completedDays / totalEstimatedDays) * 100),
+      remainingDays: actualRemainingDays,
+      completionDate,
+      totalEstimatedDays,
+      completedDays: Math.round(completedDays),
+    };
+  };
+
+  const completion = calculateCompletionEstimate(improvements);
+
+  // ADHD/ASD特化機能の完成度
   const currentProblems = [
     {
       icon: <Target className="h-5 w-5" />,

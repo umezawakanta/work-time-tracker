@@ -457,6 +457,7 @@ export const ADHDTaskManager: React.FC = () => {
             value={filter.energy}
             onChange={(e) => setFilter((prev) => ({ ...prev, energy: e.target.value as any }))}
             className="text-sm border rounded px-2 py-1"
+            aria-label="エネルギーフィルター"
           >
             <option value="any">エネルギー: 全て</option>
             <option value="low">低エネルギー</option>
@@ -468,6 +469,7 @@ export const ADHDTaskManager: React.FC = () => {
             value={filter.priority}
             onChange={(e) => setFilter((prev) => ({ ...prev, priority: e.target.value as any }))}
             className="text-sm border rounded px-2 py-1"
+            aria-label="優先度フィルター"
           >
             <option value="any">優先度: 全て</option>
             <option value="urgent">緊急</option>
@@ -639,6 +641,7 @@ export const ADHDTaskManager: React.FC = () => {
                       setNewTask((prev) => ({ ...prev, priority: e.target.value as any }))
                     }
                     className="w-full border rounded px-3 py-2"
+                    aria-label="優先度"
                   >
                     <option value="low">低</option>
                     <option value="medium">中</option>
