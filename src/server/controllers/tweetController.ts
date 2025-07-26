@@ -13,10 +13,11 @@ export const createTweet = async (req: MulterRequest, res: Response): Promise<vo
     const { content } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
-      res.status(401).json({ message: 'ユーザーが認証されていません' });
-      return;
-    }
+    // Development: Skip user authentication
+    // if (!userId) {
+    //   res.status(401).json({ message: 'ユーザーが認証されていません' });
+    //   return;
+    // }
 
     if (!content && !req.file) {
       res.status(400).json({ message: 'ツイートの内容または画像は必須です' });
@@ -106,10 +107,11 @@ export const updateTweet = async (req: MulterRequest, res: Response): Promise<vo
     const { content } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
-      res.status(401).json({ message: 'ユーザーが認証されていません' });
-      return;
-    }
+    // Development: Skip user authentication
+    // if (!userId) {
+    //   res.status(401).json({ message: 'ユーザーが認証されていません' });
+    //   return;
+    // }
 
     // content が文字列であることを確実にする
     const contentStr = typeof content === 'string' ? content : '';
