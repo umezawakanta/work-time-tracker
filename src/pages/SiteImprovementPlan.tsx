@@ -65,13 +65,13 @@ const SiteImprovementPlan: React.FC = () => {
     { name: '認知評価システム (WEIS相当)', completed: true },
     { name: '認知統合パーソナライズ', completed: true },
     { name: '統合ダッシュボード', completed: true },
-    { name: 'タスク管理最適化', completed: false, inProgress: true },
-    { name: '資産管理最適化', completed: false },
+    { name: 'タスク管理最適化', completed: true },
+    { name: '資産管理最適化', completed: false, inProgress: true },
     { name: '適応的UIシステム', completed: false },
     { name: 'リアルタイム適応', completed: false },
     { name: 'AIコーチングシステム', completed: false },
     { name: 'ソーシャルサポート', completed: false },
-  ];
+  ] as Array<{ name: string; completed: boolean; inProgress?: boolean }>;
 
   const adhdAsdProgress = Math.round(
     (adhdAsdFeatures.filter((f) => f.completed).length / adhdAsdFeatures.length) * 100
@@ -197,21 +197,21 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'cognitive-task-optimization',
         title: '📋 認知特性タスク最適化',
         description: '個人の認知特性に基づいたタスク分割、スケジューリング、リマインダー機能',
-        status: 'in-progress',
+        status: 'completed',
         priority: 'critical',
         category: 'feature',
         estimatedDays: 10,
-        progress: 30,
+        progress: 100,
       },
       {
         id: 'cognitive-finance-optimization',
         title: '💰 認知特性財務最適化',
         description: '認知負荷を考慮した資産管理UI、自動化レベル調整、視覚化設定',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'critical',
         category: 'feature',
         estimatedDays: 8,
-        progress: 0,
+        progress: 30,
       },
       {
         id: 'adaptive-ui-system',
