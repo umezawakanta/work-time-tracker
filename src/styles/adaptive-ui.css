@@ -1,439 +1,486 @@
-/* アダプティブUIシステム用CSS */
+/**
+ * 🎨 適応的UIシステム スタイルシート
+ * ADHD/ASD認知特性に対応したCSS変数とクラス定義
+ */
 
-/* CSS カスタムプロパティ（動的に変更される） */
+/* ==========================================================================
+   CSS Variables for Adaptive UI
+   ========================================================================== */
+
 :root {
-  --adaptive-font-size: 16px;
+  /* Color System */
+  --adaptive-primary: #3b82f6;
+  --adaptive-background: #ffffff;
+  --adaptive-text: #1f2937;
+  --adaptive-accent: #10b981;
+  --adaptive-warning: #f59e0b;
+  --adaptive-error: #ef4444;
+  --adaptive-success: #10b981;
+  --adaptive-muted: #6b7280;
+
+  /* Typography */
+  --adaptive-font-size-multiplier: 1;
   --adaptive-line-height: 1.5;
   --adaptive-letter-spacing: 0em;
-  --adaptive-animation-duration: 0.3s;
-  --adaptive-color-filter: none;
-  --adaptive-spacing: 1rem;
+  --adaptive-font-weight-normal: 400;
+  --adaptive-font-weight-medium: 500;
+  --adaptive-font-weight-bold: 700;
 
-  /* ADHD/ASD配慮カラーパレット */
-  --calm-blue: #e3f2fd;
-  --calm-green: #e8f5e8;
-  --calm-purple: #f3e5f5;
-  --stress-red: #ffebee;
-  --focus-yellow: #fffef7;
+  /* Layout */
+  --adaptive-border-radius: 8px;
+  --adaptive-spacing-multiplier: 1;
+  --adaptive-padding-multiplier: 1;
+  --adaptive-margin-multiplier: 1;
 
-  /* 高コントラスト色 */
-  --high-contrast-bg: #ffffff;
-  --high-contrast-text: #000000;
-  --high-contrast-border: #333333;
-  --high-contrast-accent: #0066cc;
+  /* Animation */
+  --adaptive-transition-duration: 200ms;
+  --adaptive-transition-easing: ease-in-out;
 
-  /* 単色系 */
-  --mono-light: #f8f9fa;
-  --mono-medium: #6c757d;
-  --mono-dark: #343a40;
+  /* Focus */
+  --adaptive-focus-ring-width: 2px;
+  --adaptive-focus-ring-color: var(--adaptive-primary);
+  --adaptive-focus-ring-offset: 2px;
+
+  /* Z-Index Scale */
+  --adaptive-z-dropdown: 1000;
+  --adaptive-z-modal: 1050;
+  --adaptive-z-tooltip: 1100;
+  --adaptive-z-toast: 1200;
 }
 
-/* 基本的なアダプティブスタイル */
-.adaptive-ui {
-  font-size: var(--adaptive-font-size);
-  line-height: var(--adaptive-line-height);
-  letter-spacing: var(--adaptive-letter-spacing);
-  filter: var(--adaptive-color-filter);
-  transition: all var(--adaptive-animation-duration) ease;
+/* Dark mode overrides */
+.dark-mode {
+  --adaptive-background: #1f2937;
+  --adaptive-text: #f9fafb;
+  --adaptive-muted: #9ca3af;
 }
 
-/* 情報密度による間隔調整 */
-.adaptive-ui * {
-  margin-bottom: var(--adaptive-spacing);
+/* ==========================================================================
+   Layout Density Classes
+   ========================================================================== */
+
+/* Compact Layout */
+.adaptive-compact {
+  --adaptive-spacing-multiplier: 0.75;
+  --adaptive-padding-multiplier: 0.75;
+  --adaptive-margin-multiplier: 0.75;
 }
 
-/* アニメーション制御 */
-.ui-minimal-motion * {
+.adaptive-compact .card,
+.adaptive-compact .button,
+.adaptive-compact .input {
+  padding: calc(0.5rem * var(--adaptive-padding-multiplier));
+}
+
+.adaptive-compact .space-y-4 > * + * {
+  margin-top: calc(1rem * var(--adaptive-margin-multiplier));
+}
+
+/* Comfortable Layout (Default) */
+.adaptive-comfortable {
+  --adaptive-spacing-multiplier: 1;
+  --adaptive-padding-multiplier: 1;
+  --adaptive-margin-multiplier: 1;
+}
+
+/* Spacious Layout */
+.adaptive-spacious {
+  --adaptive-spacing-multiplier: 1.5;
+  --adaptive-padding-multiplier: 1.5;
+  --adaptive-margin-multiplier: 1.5;
+}
+
+.adaptive-spacious .card,
+.adaptive-spacious .button,
+.adaptive-spacious .input {
+  padding: calc(1.5rem * var(--adaptive-padding-multiplier));
+}
+
+.adaptive-spacious .space-y-4 > * + * {
+  margin-top: calc(1.5rem * var(--adaptive-margin-multiplier));
+}
+
+/* ==========================================================================
+   Animation Level Classes
+   ========================================================================== */
+
+/* No Animations */
+.adaptive-no-animations *,
+.adaptive-no-animations *::before,
+.adaptive-no-animations *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
+  transition-delay: 0ms !important;
 }
 
-.ui-minimal-motion *:before,
-.ui-minimal-motion *:after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
+/* Minimal Animations */
+.adaptive-minimal-animations {
+  --adaptive-transition-duration: 100ms;
 }
 
-/* 高コントラストモード */
-.ui-high-contrast {
-  background-color: var(--high-contrast-bg) !important;
-  color: var(--high-contrast-text) !important;
+.adaptive-minimal-animations .hover\\:scale-105:hover {
+  transform: scale(1.02);
 }
 
-.ui-high-contrast * {
-  background-color: var(--high-contrast-bg) !important;
-  color: var(--high-contrast-text) !important;
-  border-color: var(--high-contrast-border) !important;
+/* Moderate Animations */
+.adaptive-moderate-animations {
+  --adaptive-transition-duration: 200ms;
 }
 
-.ui-high-contrast button,
-.ui-high-contrast .button {
-  background-color: var(--high-contrast-accent) !important;
-  color: white !important;
-  border: 2px solid var(--high-contrast-border) !important;
-  font-weight: bold !important;
+/* Full Animations */
+.adaptive-full-animations {
+  --adaptive-transition-duration: 300ms;
 }
 
-.ui-high-contrast a {
-  color: var(--high-contrast-accent) !important;
-  text-decoration: underline !important;
-  font-weight: bold !important;
+.adaptive-full-animations .hover\\:scale-105:hover {
+  transform: scale(1.05);
 }
 
-/* 落ち着いたモード */
-.ui-calm {
-  background: linear-gradient(135deg, var(--calm-blue), var(--calm-green));
-  filter: saturate(0.7) brightness(1.1);
+/* ==========================================================================
+   Simplified Interface
+   ========================================================================== */
+
+.adaptive-simplified .secondary-actions,
+.adaptive-simplified .optional-content,
+.adaptive-simplified [data-optional='true'] {
+  display: none;
 }
 
-.ui-calm .card,
-.ui-calm .bg-white {
-  background-color: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(200, 220, 240, 0.5);
+.adaptive-simplified .card {
+  border: 2px solid var(--adaptive-primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.ui-calm button {
-  background: linear-gradient(135deg, var(--calm-purple), var(--calm-blue));
-  border: none;
-  color: #4a5568;
-  font-weight: 500;
+.adaptive-simplified .button {
+  font-weight: var(--adaptive-font-weight-bold);
+  min-height: 44px; /* Touch-friendly */
+  font-size: calc(1rem * var(--adaptive-font-size-multiplier));
 }
 
-.ui-calm button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(100, 150, 200, 0.3);
+.adaptive-simplified .input {
+  border: 2px solid var(--adaptive-muted);
+  min-height: 44px;
+  font-size: calc(1rem * var(--adaptive-font-size-multiplier));
 }
 
-/* 単色モード */
-.ui-monochrome {
-  filter: grayscale(1) contrast(1.1);
+.adaptive-simplified .input:focus {
+  border-width: 3px;
+  border-color: var(--adaptive-primary);
 }
 
-.ui-monochrome * {
-  background-color: var(--mono-light) !important;
-  color: var(--mono-dark) !important;
-  border-color: var(--mono-medium) !important;
-}
+/* ==========================================================================
+   Distraction Reduction
+   ========================================================================== */
 
-.ui-monochrome button {
-  background-color: var(--mono-dark) !important;
-  color: var(--mono-light) !important;
-}
-
-/* 感覚軽減モード */
-.ui-sensory-reduced {
-  filter: blur(0.5px) saturate(0.5) brightness(0.9);
-}
-
-.ui-sensory-reduced * {
-  box-shadow: none !important;
-  text-shadow: none !important;
-  border-radius: 4px !important;
-}
-
-.ui-sensory-reduced .gradient {
-  background: var(--mono-light) !important;
-}
-
-.ui-sensory-reduced img,
-.ui-sensory-reduced video {
-  opacity: 0.7;
-  filter: blur(1px);
-}
-
-/* ハイパーフォーカスモード */
-.ui-hyperfocus {
-  background-color: var(--focus-yellow);
-}
-
-.ui-hyperfocus .distraction {
-  display: none !important;
-}
-
-.ui-hyperfocus .notification {
+.adaptive-distraction-reduced .decorative-elements,
+.adaptive-distraction-reduced .non-essential,
+.adaptive-distraction-reduced [data-decorative='true'] {
   opacity: 0.3;
-  pointer-events: none;
+  transition: opacity var(--adaptive-transition-duration) var(--adaptive-transition-easing);
 }
 
-.ui-hyperfocus .main-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-/* 気逸らし最小化モード */
-.ui-distraction-min .sidebar {
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
-}
-
-.ui-distraction-min .sidebar:hover {
+.adaptive-distraction-reduced .decorative-elements:hover,
+.adaptive-distraction-reduced .non-essential:hover {
   opacity: 1;
 }
 
-.ui-distraction-min .notification-badge {
-  display: none !important;
+.adaptive-distraction-reduced .background-pattern,
+.adaptive-distraction-reduced .gradient-bg {
+  background: var(--adaptive-background) !important;
 }
 
-.ui-distraction-min .animated {
+.adaptive-distraction-reduced .animate-pulse,
+.adaptive-distraction-reduced .animate-bounce,
+.adaptive-distraction-reduced .animate-spin {
   animation: none !important;
 }
 
-.ui-distraction-min .auto-playing {
-  display: none !important;
+/* Auto-hide elements */
+.adaptive-distraction-reduced .auto-hide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--adaptive-transition-duration) var(--adaptive-transition-easing);
 }
 
-/* フォーカス支援 */
-.focus-indicator {
-  outline: 3px solid var(--high-contrast-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
+.adaptive-distraction-reduced .auto-hide:hover,
+.adaptive-distraction-reduced .auto-hide:focus-within,
+.adaptive-distraction-reduced .auto-hide.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.focus-trap {
+/* ==========================================================================
+   Focus Indicators
+   ========================================================================== */
+
+/* Subtle focus indicators */
+.focus-subtle *:focus {
+  outline: 1px solid var(--adaptive-focus-ring-color);
+  outline-offset: 1px;
+}
+
+/* Prominent focus indicators */
+.focus-prominent *:focus,
+.adaptive-simplified *:focus {
+  outline: var(--adaptive-focus-ring-width) solid var(--adaptive-focus-ring-color);
+  outline-offset: var(--adaptive-focus-ring-offset);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Interactive element highlighting */
+.highlight-interactive button,
+.highlight-interactive [role='button'],
+.highlight-interactive a,
+.highlight-interactive input,
+.highlight-interactive select {
   position: relative;
 }
 
-.focus-trap::before {
+.highlight-interactive button::before,
+.highlight-interactive [role='button']::before,
+.highlight-interactive a::before {
   content: '';
   position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border: 2px dashed var(--high-contrast-accent);
-  border-radius: 8px;
-  pointer-events: none;
+  inset: -2px;
+  border: 1px dashed var(--adaptive-muted);
+  border-radius: calc(var(--adaptive-border-radius) + 2px);
+  opacity: 0;
+  transition: opacity var(--adaptive-transition-duration) var(--adaptive-transition-easing);
+}
+
+.highlight-interactive button:hover::before,
+.highlight-interactive [role='button']:hover::before,
+.highlight-interactive a:hover::before {
   opacity: 0.5;
 }
 
-/* 認知負荷軽減のためのビジュアル階層 */
-.cognitive-level-1 {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: var(--high-contrast-text);
-  margin-bottom: 1rem;
+/* ==========================================================================
+   Cognitive Load Indicators
+   ========================================================================== */
+
+.cognitive-load-low {
+  border-left: 4px solid var(--adaptive-success);
 }
 
-.cognitive-level-2 {
-  font-size: 1.2em;
-  font-weight: 600;
-  color: var(--mono-dark);
-  margin-bottom: 0.8rem;
+.cognitive-load-medium {
+  border-left: 4px solid var(--adaptive-warning);
 }
 
-.cognitive-level-3 {
-  font-size: 1em;
-  font-weight: normal;
-  color: var(--mono-medium);
-  margin-bottom: 0.5rem;
+.cognitive-load-high {
+  border-left: 4px solid var(--adaptive-error);
+  background: rgba(239, 68, 68, 0.05);
 }
 
-/* 実行機能支援 */
-.executive-support .step {
-  padding: 1rem;
-  margin: 1rem 0;
-  border-left: 4px solid var(--high-contrast-accent);
-  background-color: var(--calm-blue);
-  border-radius: 0 8px 8px 0;
+.cognitive-load-high .card-content {
+  padding: calc(1rem * var(--adaptive-padding-multiplier) * 1.2);
 }
 
-.executive-support .step::before {
-  content: counter(step-counter) '. ';
-  counter-increment: step-counter;
-  font-weight: bold;
-  color: var(--high-contrast-accent);
+/* ==========================================================================
+   Energy State Adaptations
+   ========================================================================== */
+
+.energy-low {
+  filter: brightness(0.95) contrast(1.1);
 }
 
-.executive-support {
-  counter-reset: step-counter;
+.energy-low .button {
+  font-size: calc(1.1rem * var(--adaptive-font-size-multiplier));
+  min-height: 48px;
 }
 
-/* 時間認識支援 */
-.time-awareness {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  font-family: monospace;
-  font-size: 1.2em;
-  z-index: 1000;
+.energy-high {
+  filter: brightness(1.05) contrast(0.95);
 }
 
-.time-progress-bar {
-  width: 100%;
-  height: 4px;
-  background-color: var(--mono-light);
-  border-radius: 2px;
+/* ==========================================================================
+   Time-Based Adaptations
+   ========================================================================== */
+
+.time-evening,
+.time-night {
+  --adaptive-background: #1f2937;
+  --adaptive-text: #f9fafb;
+  --adaptive-muted: #9ca3af;
+}
+
+.time-evening .card,
+.time-night .card {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+/* ==========================================================================
+   Progress and Status Indicators
+   ========================================================================== */
+
+.progress-indicator {
+  position: relative;
   overflow: hidden;
-  margin-top: 0.5rem;
 }
 
-.time-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--calm-green), var(--high-contrast-accent));
-  transition: width 1s ease;
+.progress-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--adaptive-primary);
+  width: var(--progress-width, 0%);
+  transition: width var(--adaptive-transition-duration) var(--adaptive-transition-easing);
 }
 
-/* 緊急モード */
-.emergency-mode {
-  background-color: var(--stress-red) !important;
-  border: 3px solid #dc3545 !important;
-  animation: emergency-pulse 2s infinite;
+/* Completion celebration */
+.completion-celebration {
+  animation: adaptive-celebrate 600ms ease-out;
 }
 
-@keyframes emergency-pulse {
+@keyframes adaptive-celebrate {
   0% {
-    opacity: 1;
+    transform: scale(1);
+    background: var(--adaptive-background);
   }
   50% {
-    opacity: 0.8;
+    transform: scale(1.05);
+    background: rgba(16, 185, 129, 0.1);
   }
+  100% {
+    transform: scale(1);
+    background: var(--adaptive-background);
+  }
+}
+
+/* ==========================================================================
+   Urgency Indicators
+   ========================================================================== */
+
+.urgency-low {
+  border-left: 4px solid var(--adaptive-success);
+}
+
+.urgency-medium {
+  border-left: 4px solid var(--adaptive-warning);
+}
+
+.urgency-high {
+  border-left: 4px solid var(--adaptive-error);
+  animation: adaptive-pulse 2s infinite;
+}
+
+.urgency-critical {
+  border-left: 4px solid var(--adaptive-error);
+  animation: adaptive-urgent-pulse 1s infinite;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes adaptive-pulse {
+  0%,
   100% {
     opacity: 1;
   }
-}
-
-.emergency-mode * {
-  font-size: 1.2em !important;
-  font-weight: bold !important;
-  color: #721c24 !important;
-}
-
-.emergency-mode button {
-  background-color: #dc3545 !important;
-  color: white !important;
-  border: 2px solid #721c24 !important;
-  padding: 1rem 2rem !important;
-}
-
-/* タスク切り替え支援 */
-.context-switch-indicator {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, var(--calm-purple), var(--calm-blue));
-  color: white;
-  padding: 2rem;
-  border-radius: 16px;
-  text-align: center;
-  z-index: 1001;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.context-switch-indicator h2 {
-  margin-bottom: 1rem;
-  font-size: 1.5em;
-}
-
-.context-switch-countdown {
-  font-size: 3em;
-  font-weight: bold;
-  color: var(--focus-yellow);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* 感覚フィードバック強化 */
-.enhanced-feedback button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
-}
-
-.enhanced-feedback button:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.enhanced-feedback input:focus,
-.enhanced-feedback textarea:focus {
-  outline: 3px solid var(--high-contrast-accent);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 6px rgba(0, 102, 204, 0.2);
-}
-
-/* レスポンシブ適応 */
-@media (max-width: 768px) {
-  .adaptive-ui {
-    --adaptive-font-size: 18px;
-    --adaptive-spacing: 1.5rem;
-  }
-
-  .ui-hyperfocus .main-content {
-    padding: 1rem;
-    margin: 1rem;
-  }
-
-  .time-awareness {
-    position: relative;
-    width: 100%;
-    margin-bottom: 1rem;
+  50% {
+    opacity: 0.7;
   }
 }
 
-@media (max-width: 480px) {
-  .adaptive-ui {
-    --adaptive-font-size: 20px;
-    --adaptive-spacing: 2rem;
+@keyframes adaptive-urgent-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
   }
-
-  .executive-support .step {
-    padding: 0.8rem;
-    margin: 0.8rem 0;
-  }
-}
-
-/* 印刷時の適応 */
-@media print {
-  .ui-high-contrast * {
-    background: white !important;
-    color: black !important;
-    box-shadow: none !important;
-  }
-
-  .time-awareness,
-  .context-switch-indicator,
-  .emergency-mode {
-    display: none !important;
-  }
-
-  .focus-trap::before {
-    border-style: solid;
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
   }
 }
 
-/* プリファードカラースキーム対応 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --high-contrast-bg: #000000;
-    --high-contrast-text: #ffffff;
-    --high-contrast-border: #cccccc;
-    --high-contrast-accent: #66b3ff;
-  }
+/* ==========================================================================
+   Responsive Typography
+   ========================================================================== */
+
+.adaptive-text-xs {
+  font-size: calc(0.75rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-sm {
+  font-size: calc(0.875rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-base {
+  font-size: calc(1rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-lg {
+  font-size: calc(1.125rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-xl {
+  font-size: calc(1.25rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-2xl {
+  font-size: calc(1.5rem * var(--adaptive-font-size-multiplier));
+}
+.adaptive-text-3xl {
+  font-size: calc(1.875rem * var(--adaptive-font-size-multiplier));
 }
 
+/* Line height adjustments */
+.adaptive-leading-relaxed {
+  line-height: var(--adaptive-line-height);
+}
+.adaptive-leading-loose {
+  line-height: calc(var(--adaptive-line-height) * 1.2);
+}
+
+/* Letter spacing adjustments */
+.adaptive-tracking-normal {
+  letter-spacing: var(--adaptive-letter-spacing);
+}
+.adaptive-tracking-wide {
+  letter-spacing: calc(var(--adaptive-letter-spacing) + 0.025em);
+}
+
+/* ==========================================================================
+   Accessibility Enhancements
+   ========================================================================== */
+
+/* Reduced motion respect */
 @media (prefers-reduced-motion: reduce) {
-  .adaptive-ui * {
+  .adaptive-full-animations *,
+  .adaptive-moderate-animations *,
+  .adaptive-minimal-animations * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
 
-/* アクセシビリティ強化 */
-.sr-only {
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --adaptive-primary: #0066cc;
+    --adaptive-background: #ffffff;
+    --adaptive-text: #000000;
+    --adaptive-muted: #666666;
+  }
+
+  .card,
+  .button,
+  .input {
+    border: 2px solid var(--adaptive-text) !important;
+  }
+}
+
+/* Large text preference */
+@media (prefers-reduced-data: reduce) {
+  .adaptive-distraction-reduced .background-image,
+  .adaptive-distraction-reduced .decorative-image {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.adaptive-sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -445,37 +492,36 @@
   border: 0;
 }
 
-.skip-to-content {
-  position: absolute;
-  top: -40px;
-  left: 6px;
-  background: var(--high-contrast-accent);
-  color: white;
-  padding: 8px;
-  text-decoration: none;
-  border-radius: 4px;
-  z-index: 1000;
+.adaptive-not-sr-only {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
 }
 
-.skip-to-content:focus {
-  top: 6px;
+/* Focus management */
+.adaptive-focus-within:focus-within {
+  outline: var(--adaptive-focus-ring-width) solid var(--adaptive-focus-ring-color);
+  outline-offset: var(--adaptive-focus-ring-offset);
 }
 
-/* カスタムスクロールバー（感覚過敏対応） */
-.ui-sensory-reduced::-webkit-scrollbar {
-  width: 12px;
+/* Content sectioning for cognitive load */
+.adaptive-section {
+  margin-bottom: calc(2rem * var(--adaptive-spacing-multiplier));
+  padding: calc(1rem * var(--adaptive-padding-multiplier));
+  border-radius: var(--adaptive-border-radius);
 }
 
-.ui-sensory-reduced::-webkit-scrollbar-track {
-  background: var(--mono-light);
+.adaptive-section-primary {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.ui-sensory-reduced::-webkit-scrollbar-thumb {
-  background: var(--mono-medium);
-  border-radius: 6px;
-  border: 2px solid var(--mono-light);
-}
-
-.ui-sensory-reduced::-webkit-scrollbar-thumb:hover {
-  background: var(--mono-dark);
+.adaptive-section-secondary {
+  background: rgba(107, 114, 128, 0.05);
+  border: 1px solid rgba(107, 114, 128, 0.2);
 }
