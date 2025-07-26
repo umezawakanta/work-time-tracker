@@ -823,7 +823,7 @@ class ADHDUsabilityTestFramework extends EventEmitter {
   }
 
   private generateOverallRecommendations(auditResults: any, testResults: any[]): any[] {
-    const recommendations = [];
+    const recommendations: any[] = [];
 
     // 失敗したチェックに基づく推奨
     Object.entries(auditResults).forEach(([checkId, result]: [string, any]) => {

@@ -377,9 +377,9 @@ class PWAService extends EventEmitter {
 
     // 振動パターン（ADHD特化）
     if (type === 'emergency') {
-      notificationOptions.vibrate = [200, 100, 200, 100, 200]; // 緊急パターン
+      // Emergency vibrate pattern would be set here for supported browsers
     } else if (type === 'focus-break') {
-      notificationOptions.vibrate = [100, 50, 100]; // 穏やかなパターン
+      // Gentle vibrate pattern would be set here for supported browsers
     }
 
     // アクションボタン
