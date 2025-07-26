@@ -211,10 +211,11 @@ export const WorkTimeHistoryManager: React.FC = () => {
       case 'yesterday':
         filtered = filtered.filter((record) => isYesterday(record.timestamp));
         break;
-      case 'week':
+      case 'week': {
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         filtered = filtered.filter((record) => record.timestamp >= weekAgo);
         break;
+      }
       case 'month':
         filtered = filtered.filter(
           (record) => record.timestamp >= startOfMonth(now) && record.timestamp <= endOfMonth(now)

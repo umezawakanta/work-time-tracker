@@ -439,10 +439,11 @@ class PersonalizedWorkflowService extends EventEmitter {
           rule.trigger.condition.hour === currentHour
         );
 
-      case 'energy':
+      case 'energy': {
         if (!this.energyPattern) return false;
         const pattern = this.energyPattern.patterns[currentHour];
         return pattern && this.evaluateEnergyCondition(pattern, rule.trigger.condition);
+      }
 
       default:
         return false;
