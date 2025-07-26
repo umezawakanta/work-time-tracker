@@ -11,7 +11,7 @@ export interface ImplementationLog {
 }
 
 class ImplementationService {
-  private baseUrl = '/api/implementation';
+  private baseUrl = 'http://localhost:3001/api/implementation';
 
   // タスク関連
   async getTasks(projectId: string): Promise<Task[]> {
