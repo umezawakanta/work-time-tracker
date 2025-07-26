@@ -253,7 +253,7 @@ class AdaptiveUIService extends EventEmitter {
         name: '高認知負荷時の簡素化',
         condition: {
           cognitiveState: {
-            workingMemory: { load: 8 },
+            workingMemory: { load: 8, capacity: 6, efficiency: 0.75 },
           },
         },
         adaptation: {
@@ -271,7 +271,7 @@ class AdaptiveUIService extends EventEmitter {
         name: '注意力低下時の支援',
         condition: {
           cognitiveState: {
-            attention: { level: 4, stability: 'declining' },
+            attention: { level: 4, duration: 15, stability: 'declining' },
           },
         },
         adaptation: {

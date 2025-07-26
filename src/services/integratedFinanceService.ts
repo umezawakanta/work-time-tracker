@@ -303,7 +303,7 @@ export class IntegratedFinanceService {
           entry.type === 'expense' &&
           entryDate >= weekStart &&
           entryDate <= weekEnd &&
-          impulseCategories.includes(entry.category)
+          impulseCategories.includes(entry.category || 'その他')
         );
       })
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
