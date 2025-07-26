@@ -129,6 +129,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'purple',
   },
   {
+    icon: <TestTube className="h-5 w-5" />,
+    label: '🧪 認知機能評価',
+    path: '/adhd-cognitive-assessment',
+    description: 'WEIS準拠の科学的認知機能測定',
+    badge: '科学的',
+    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
+    accentColor: 'violet',
+  },
+  {
     icon: <Target className="h-5 w-5" />,
     label: '🎯 ADHDタスク管理',
     path: '/adhd-task-manager',

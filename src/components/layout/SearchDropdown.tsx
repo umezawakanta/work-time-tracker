@@ -18,6 +18,7 @@ import {
   User,
   Edit3,
   Activity,
+  TestTube,
 } from 'lucide-react';
 
 interface SearchItem {
@@ -157,6 +158,15 @@ const appPages: SearchItem[] = [
     type: 'page',
     path: '/adhd-integrated-life',
     icon: <Activity className="h-4 w-4" />,
+  },
+  {
+    id: 'adhd-cognitive-assessment',
+    title: 'ADHD 認知機能評価システム',
+    description:
+      'ADHD ASD 認知機能 WEIS 科学的測定 言語理解 知覚推理 ワーキングメモリ 処理速度 実行機能 注意制御 感覚処理 社会認知',
+    type: 'page',
+    path: '/adhd-cognitive-assessment',
+    icon: <TestTube className="h-4 w-4" />,
   },
   {
     id: 'life-sync',

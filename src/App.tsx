@@ -91,6 +91,7 @@ const ADHDTaskManagerPage = lazy(() => import('./pages/ADHDTaskManagerPage'));
 const ADHDLifeManagementPage = lazy(() => import('./pages/ADHDLifeManagementPage'));
 const ADHDSmartHomePage = lazy(() => import('./pages/ADHDSmartHomePage'));
 const ADHDIntegratedLifePage = lazy(() => import('./pages/ADHDIntegratedLifePage'));
+const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 
 // 📊 Chart-heavy pages
@@ -605,6 +606,16 @@ export default function App() {
                     <LayoutWrapper>
                       <LazyWrapper>
                         <ADHDIntegratedLifePage />
+                      </LazyWrapper>
+                    </LayoutWrapper>
+                  }
+                />
+                <Route
+                  path="/adhd-cognitive-assessment"
+                  element={
+                    <LayoutWrapper>
+                      <LazyWrapper>
+                        <ADHDCognitiveAssessmentPage />
                       </LazyWrapper>
                     </LayoutWrapper>
                   }
