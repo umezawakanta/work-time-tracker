@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createTweet, getTweets, updateTweet } from '../controllers/tweetController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+// import { authMiddleware } from '../middleware/authMiddleware.js'; // Disabled for development
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,11 +25,11 @@ const upload = multer({ storage: storage });
 
 router.post(
   '/',
-  authMiddleware,
+  // authMiddleware, // Disabled for development
   upload.single('image') as unknown as express.RequestHandler,
   createTweet as unknown as express.RequestHandler
 );
-router.get('/', authMiddleware, getTweets);
-router.put('/:id', authMiddleware, updateTweet);
+router.get('/', /* authMiddleware, */ getTweets);
+router.put('/:id', /* authMiddleware, */ updateTweet);
 
 export default router;
