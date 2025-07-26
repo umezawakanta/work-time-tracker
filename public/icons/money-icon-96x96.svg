@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
+    <!-- Background -->
+    <circle cx="48" cy="48" r="45" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+
+    <!-- Wallet/Card Holder -->
+    <g transform="translate(48, 48)">
+        <!-- Main Wallet -->
+        <rect x="-25" y="-15" width="50" height="30" rx="4" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+
+        <!-- Wallet Fold -->
+        <rect x="-25" y="-5" width="50" height="2" fill="#374151"/>
+
+        <!-- Credit Cards -->
+        <rect x="-20" y="-20" width="40" height="6" rx="2" fill="#ef4444" opacity="0.9"/>
+        <rect x="-18" y="-22" width="36" height="6" rx="2" fill="#10b981" opacity="0.9"/>
+        <rect x="-16" y="-24" width="32" height="6" rx="2" fill="#f59e0b" opacity="0.9"/>
+
+        <!-- Money Bills -->
+        <rect x="-15" y="5" width="30" height="12" rx="2" fill="#10b981" stroke="#059669" stroke-width="1"/>
+        <rect x="-13" y="7" width="26" height="8" rx="1" fill="#ffffff" opacity="0.3"/>
+
+        <!-- Coin -->
+        <circle cx="20" cy="25" r="8" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
+        <text x="20" y="29" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#ffffff" font-weight="bold">¥</text>
+
+        <!-- Investment Arrow -->
+        <g stroke="#06b6d4" stroke-width="2" fill="#06b6d4" opacity="0.8">
+            <line x1="-30" y1="25" x2="-15" y2="10"/>
+            <polygon points="-15,10 -18,12 -15,15" />
+        </g>
+
+        <!-- Budget Chart -->
+        <g transform="translate(-30, -25)">
+            <!-- Chart Background -->
+            <rect x="0" y="0" width="16" height="12" fill="#ffffff" opacity="0.2" rx="1"/>
+
+            <!-- Chart Bars -->
+            <rect x="2" y="8" width="2" height="3" fill="#10b981"/>
+            <rect x="5" y="6" width="2" height="5" fill="#f59e0b"/>
+            <rect x="8" y="4" width="2" height="7" fill="#ef4444"/>
+            <rect x="11" y="7" width="2" height="4" fill="#8b5cf6"/>
+        </g>
+
+        <!-- Financial Growth Graph -->
+        <g transform="translate(15, -25)">
+            <!-- Graph Background -->
+            <rect x="0" y="0" width="16" height="12" fill="#ffffff" opacity="0.2" rx="1"/>
+
+            <!-- Growth Line -->
+            <polyline points="2,10 5,8 8,6 11,4 14,2" stroke="#10b981" stroke-width="2" fill="none"/>
+
+            <!-- Data Points -->
+            <circle cx="2" cy="10" r="1" fill="#10b981"/>
+            <circle cx="5" cy="8" r="1" fill="#10b981"/>
+            <circle cx="8" cy="6" r="1" fill="#10b981"/>
+            <circle cx="11" cy="4" r="1" fill="#10b981"/>
+            <circle cx="14" cy="2" r="1" fill="#10b981"/>
+        </g>
+
+        <!-- ADHD Financial Support Symbol -->
+        <g transform="translate(0, -35)">
+            <rect x="-12" y="-4" width="24" height="6" rx="3" fill="#8b5cf6" opacity="0.9"/>
+            <text x="0" y="1" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#ffffff" font-weight="bold">衝動制御</text>
+        </g>
+    </g>
+</svg> 

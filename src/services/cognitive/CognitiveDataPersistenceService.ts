@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
-// import { openDB, deleteDB, IDBPDatabase } from 'idb';
-// import CryptoJS from 'crypto-js';
+import { openDB, deleteDB, IDBPDatabase } from 'idb';
+import CryptoJS from 'crypto-js';
 
 // 認知評価プロファイル型（拡張版）
 interface CognitiveProfile {
@@ -144,7 +144,7 @@ interface SyncConfig {
 }
 
 class CognitiveDataPersistenceService extends EventEmitter {
-  private db: IDBDatabase | null = null;
+  private db: IDBPDatabase | null = null;
   private encryptionKey: string;
   private syncConfig: SyncConfig;
   private dbConfig: DatabaseConfig;
@@ -230,12 +230,14 @@ class CognitiveDataPersistenceService extends EventEmitter {
    * データベース初期化
    */
   private async initializeDatabase(): Promise<void> {
-    this.db = await openDB(this.dbConfig.dbName, this.dbConfig.version, {
+    const dbConfig = this.dbConfig; // ローカル変数にコピー
+
+    this.db = await openDB(dbConfig.dbName, dbConfig.version, {
       upgrade(db, oldVersion, newVersion, transaction) {
         console.log(`データベースアップグレード: ${oldVersion} → ${newVersion}`);
 
         // 各ストアの作成
-        Object.entries(this.dbConfig.stores).forEach(([storeName, config]) => {
+        Object.entries(dbConfig.stores).forEach(([storeName, config]) => {
           if (!db.objectStoreNames.contains(storeName)) {
             const store = db.createObjectStore(storeName, { keyPath: config.keyPath });
 
