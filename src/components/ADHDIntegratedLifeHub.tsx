@@ -45,6 +45,7 @@ import {
 import { format, isToday, addDays, startOfWeek, endOfWeek } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { RootState, AppDispatch } from '@/store';
+import { simpleFinanceService } from '@/services/simpleFinanceService';
 
 // 認知評価結果の型定義
 interface CognitiveProfile {
@@ -253,10 +254,16 @@ export const ADHDIntegratedLifeHub: React.FC = () => {
         return estimatedTime <= cognitiveProfile.personalizedSettings.optimalTaskDuration;
       });
 
-      // 財務データの統合
+      // 🏦 統合財務データの計算
       const totalAssets = assetEntries.reduce((sum, entry) => sum + entry.value, 0);
       const totalDebts = debtEntries.reduce((sum, entry) => sum + entry.value, 0);
       const netWorth = totalAssets - totalDebts;
+
+      // 📊 簡易財務サービスを使用して統合データを取得
+      const financialSummary = simpleFinanceService.calculateFinancialSummary(
+        assetEntries,
+        debtEntries
+      );
 
       // 今日のイベント（統合カレンダー）
       const today = new Date();
@@ -296,11 +303,12 @@ export const ADHDIntegratedLifeHub: React.FC = () => {
         },
         finance: {
           totalAssets,
-          monthlyIncome: 0, // TODO: 実装
-          monthlyExpenses: 0, // TODO: 実装
-          savingsRate: 0, // TODO: 実装
-          emergencyFund: totalAssets * 0.1, // 簡易計算
-          weeklyBudget: { spent: 0, remaining: 0 }, // TODO: 実装
+          monthlyIncome: financialSummary.monthlyIncome,
+          monthlyExpenses: financialSummary.monthlyExpenses,
+          savingsRate: financialSummary.savingsRate,
+          emergencyFund: financialSummary.emergencyFundMonths * financialSummary.monthlyExpenses,
+          nextBill: financialSummary.nextBill,
+          weeklyBudget: financialSummary.weeklyBudget,
         },
         calendar: {
           todayEvents,
@@ -317,9 +325,14 @@ export const ADHDIntegratedLifeHub: React.FC = () => {
         },
         wellbeing: {
           energyLevel: 7, // TODO: 実装
-          stressLevel: 4, // TODO: 実装
+          stressLevel:
+            financialSummary.weeklyBudget.spent /
+              (financialSummary.weeklyBudget.spent + financialSummary.weeklyBudget.remaining) >
+            0.8
+              ? 8
+              : 4,
           focusLevel: 6, // TODO: 実装
-          moodScore: 7, // TODO: 実装
+          moodScore: financialSummary.savingsRate > 20 ? 8 : 5,
           sleepQuality: 8, // TODO: 実装
           lastUpdated: new Date(),
         },
@@ -354,9 +367,9 @@ export const ADHDIntegratedLifeHub: React.FC = () => {
 
     const config: AdaptiveUIConfig = {
       fontSize:
-        cognitiveProfile.visualComplexityLevel === 'low'
+        cognitiveProfile.processingSpeed < 85
           ? 'large'
-          : cognitiveProfile.visualComplexityLevel === 'high'
+          : cognitiveProfile.perceptualReasoning > 115
             ? 'small'
             : 'medium',
       colorScheme: cognitiveProfile.sensoryProcessing < 80 ? 'calm' : 'default',
