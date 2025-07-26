@@ -6,6 +6,7 @@ import { store } from './store';
 import App from './App.tsx';
 import './styles/global.css';
 import './styles/accessibility.css';
+import './styles/adaptive-ui.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import { setupGlobalErrorHandling } from './lib/errorHandler';
 import PerformanceOptimizer from './lib/performanceOptimizer';
