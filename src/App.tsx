@@ -8,6 +8,8 @@ import { AuthProvider } from './context/AuthContext';
 import { PomodoroProvider } from './context/PomodoroContext';
 import PrivateRoute from './components/PrivateRoute';
 import { InternationalizationProvider } from '@/hooks/useInternationalization';
+import AdaptiveUIProvider from '@/components/ui/AdaptiveUIProvider';
+import { RealtimeAdaptationProvider } from '@/components/realtime/RealtimeAdaptationProvider';
 import AdminRoute from './components/admin/AdminRoute';
 import { PomodoroManager } from './components/pomodoro/PomodoroManager';
 import { GuitarPracticeErrorBoundary } from './components/ErrorBoundary';
