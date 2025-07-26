@@ -107,7 +107,7 @@ router.put(
 // PUT /api/implementation/tasks/:taskId/checklist/:checklistId - チェックリスト項目を更新
 router.put(
   '/tasks/:taskId/checklist/:checklistId',
-  authMiddleware,
+  // authMiddleware, // Disabled for development
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { taskId, checklistId } = req.params;
