@@ -300,6 +300,16 @@ const SiteImprovementPlan: React.FC = () => {
         progress: 0,
       },
       {
+        id: 'quality-dashboard-fix',
+        title: '🐛 品質ダッシュボード修正',
+        description: 'TypeScriptエラー表示でのReactレンダリングエラー修正',
+        status: 'completed',
+        priority: 'high',
+        category: 'bug-fix',
+        estimatedDays: 0.5,
+        progress: 100,
+      },
+      {
         id: 'api-integration',
         title: 'API層の統合',
         description: '分散したAPI呼び出しを統一されたサービス層に集約',
@@ -677,6 +687,7 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ サブスクリプションAPI 404エラー修正完了</li>
                 <li>✅ /api/userSubscription/user/[userId] エンドポイント実装</li>
                 <li>✅ デモユーザーデータとプレミアムプラン機能対応</li>
+                <li>✅ 品質ダッシュボード Reactレンダリングエラー修正</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
               </ul>
             </div>

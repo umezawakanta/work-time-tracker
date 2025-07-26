@@ -444,7 +444,27 @@ const StaticAnalysisDetail: React.FC<{ staticAnalysis: any }> = ({ staticAnalysi
                     <Badge variant="destructive" className="text-xs">
                       TS{error.code}
                     </Badge>
-                    <div className="text-sm mt-1">{error.messageText}</div>
+                    <div className="text-sm mt-1">
+                      {(() => {
+                        if (typeof error.messageText === 'string') {
+                          return error.messageText;
+                        }
+                        if (
+                          typeof error.messageText === 'object' &&
+                          error.messageText?.messageText
+                        ) {
+                          return error.messageText.messageText;
+                        }
+                        if (error.messageText === null || error.messageText === undefined) {
+                          return 'No error message available';
+                        }
+                        try {
+                          return JSON.stringify(error.messageText);
+                        } catch {
+                          return String(error.messageText);
+                        }
+                      })()}
+                    </div>
                     <div className="text-xs text-gray-500">
                       Line {error.line}:{error.character}
                     </div>
