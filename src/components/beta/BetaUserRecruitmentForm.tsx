@@ -152,13 +152,18 @@ export const BetaUserRecruitmentForm: React.FC<BetaUserRecruitmentFormProps> = (
 
   // フォーム更新
   const updateFormData = (section: string, data: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section as keyof BetaUserProfile],
-        ...data,
-      },
-    }));
+    setFormData((prev) => {
+      const existingSection = prev[section as keyof BetaUserProfile];
+      return {
+        ...prev,
+        [section]: {
+          ...(typeof existingSection === 'object' && existingSection !== null
+            ? existingSection
+            : {}),
+          ...data,
+        },
+      };
+    });
     setErrors({});
   };
 
@@ -257,7 +262,11 @@ export const BetaUserRecruitmentForm: React.FC<BetaUserRecruitmentFormProps> = (
 
       <div className="space-y-4">
         <div className="flex items-center justify-center gap-2">
-          <Checkbox id="save-progress" checked={saveProgress} onCheckedChange={setSaveProgress} />
+          <Checkbox
+            id="save-progress"
+            checked={saveProgress}
+            onCheckedChange={(checked) => setSaveProgress(checked === true)}
+          />
           <Label htmlFor="save-progress" className="text-sm">
             進捗を自動保存する（ADHD配慮機能）
           </Label>

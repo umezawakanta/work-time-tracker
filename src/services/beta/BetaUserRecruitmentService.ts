@@ -318,7 +318,7 @@ class BetaUserRecruitmentService extends EventEmitter {
   private applications: Map<string, BetaUserProfile> = new Map();
   private campaigns: Map<string, RecruitmentCampaign> = new Map();
   private communityPartners: Map<string, CommunityPartner> = new Map();
-  private screeningCriteria: ScreeningCriteria;
+  private screeningCriteria!: ScreeningCriteria;
   private ethicsApproved: boolean = false;
 
   private constructor() {

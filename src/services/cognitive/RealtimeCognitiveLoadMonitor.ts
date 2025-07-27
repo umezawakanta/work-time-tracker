@@ -124,7 +124,7 @@ class RealtimeCognitiveLoadMonitor extends EventEmitter {
   private isMonitoring: boolean = false;
   private interactions: UserInteractionData[] = [];
   private currentMetrics: CognitiveLoadMetrics | null = null;
-  private adaptationConfig: UIAdaptationConfig;
+  private adaptationConfig!: UIAdaptationConfig;
   private monitoringInterval: NodeJS.Timeout | null = null;
   private userId: string = 'demo-user';
 

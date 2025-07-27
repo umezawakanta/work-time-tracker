@@ -20,39 +20,39 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ books }) => {
 
   const metrics: MetricCard[] = [
     {
+      id: 'total-books',
       title: '総本数',
       value: totalBooks.toString(),
       icon: <BookOpen className="h-4 w-4" />,
       color: 'blue',
     },
     {
+      id: 'completed-books',
       title: '読了本数',
-      value: completedBooks.toString(),
-      progress: completionRate,
+      value: `${completedBooks} (${completionRate.toFixed(1)}%)`,
       icon: <Target className="h-4 w-4" />,
       color: 'green',
-      subtitle: `完読率: ${completionRate.toFixed(1)}%`,
     },
     {
+      id: 'total-pages',
       title: '総ページ数',
       value: totalPages.toLocaleString(),
       icon: <BookOpen className="h-4 w-4" />,
       color: 'purple',
     },
     {
+      id: 'read-pages',
       title: '読了ページ数',
-      value: readPages.toLocaleString(),
-      progress: readingProgress,
+      value: `${readPages.toLocaleString()} (${readingProgress.toFixed(1)}%)`,
       icon: <TrendingUp className="h-4 w-4" />,
-      color: 'orange',
-      subtitle: `進捗率: ${readingProgress.toFixed(1)}%`,
+      color: 'red',
     },
     {
+      id: 'average-rating',
       title: '平均評価',
-      value: averageRating.toFixed(1),
+      value: `${averageRating.toFixed(1)} / 5`,
       icon: <Star className="h-4 w-4" />,
       color: 'yellow',
-      subtitle: '5点満点',
     },
   ];
 

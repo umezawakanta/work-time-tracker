@@ -109,7 +109,7 @@ export default defineConfig(({ command, mode }) => {
               open: true,
               gzipSize: true,
               brotliSize: true,
-            }),
+            }) as any,
           ]
         : []),
     ],
@@ -249,6 +249,8 @@ export default defineConfig(({ command, mode }) => {
         '@utils': path.resolve(__dirname, './src/utils'),
         '@types': path.resolve(__dirname, './src/types'),
         '@styles': path.resolve(__dirname, './src/styles'),
+        // Lodash ESM compatibility
+        lodash: 'lodash',
       },
     },
 
@@ -266,6 +268,11 @@ export default defineConfig(({ command, mode }) => {
         'react-dom',
         'react-router-dom',
         'lucide-react',
+        'lodash',
+        'lodash/get',
+        'lodash/set',
+        'lodash/isEmpty',
+        'lodash/isEqual',
         '@radix-ui/react-accordion',
         '@radix-ui/react-alert-dialog',
         '@radix-ui/react-avatar',
