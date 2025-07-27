@@ -304,18 +304,60 @@ console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
 console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'Set' : 'Not set');
 console.log('=== End Environment Check ===');
 
-const PORT = process.env.PORT || 3001;
+const BASE_PORT = process.env.PORT || 3001;
+const PORT = typeof BASE_PORT === 'string' ? parseInt(BASE_PORT, 10) : BASE_PORT;
 
 // Vercel環境の場合はサーバーを起動しない（Functionsとして動作）
 if (process.env.VERCEL) {
   console.log('Running in Vercel Functions mode');
 } else {
-  // app.listen()ではなくserver.listen()を使用
-  server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`WebSocket server is also running on port ${PORT}`);
-    console.log(`Uploads directory: ${uploadsDir}`);
-  });
+  // ポート使用可能性チェック関数
+  const findAvailablePort = (startPort: number): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const tryPort = (port: number) => {
+        const testServer = server.listen(port, () => {
+          testServer.close(() => {
+            resolve(port);
+          });
+        });
+
+        testServer.on('error', (err: any) => {
+          if (err.code === 'EADDRINUSE') {
+            if (port < startPort + 10) {
+              // 最大10ポート試行
+              tryPort(port + 1);
+            } else {
+              reject(new Error(`No available port found after trying ${startPort} to ${port}`));
+            }
+          } else {
+            reject(err);
+          }
+        });
+      };
+
+      tryPort(startPort);
+    });
+  };
+
+  // 利用可能なポートを見つけてサーバー開始
+  findAvailablePort(PORT)
+    .then((availablePort) => {
+      server.listen(availablePort, () => {
+        console.log(`Server is running on port ${availablePort}`);
+        console.log(`WebSocket server is also running on port ${availablePort}`);
+        console.log(`Uploads directory: ${uploadsDir}`);
+
+        if (availablePort !== PORT) {
+          console.log(
+            `Note: Requested port ${PORT} was in use, using port ${availablePort} instead`
+          );
+        }
+      });
+    })
+    .catch((error) => {
+      console.error('Failed to start server:', error);
+      process.exit(1);
+    });
 }
 
 export default app;

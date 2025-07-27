@@ -12,7 +12,7 @@ export interface IAbstinenceLog extends Document {
 const abstinenceLogSchema = new Schema(
   {
     challengeId: { type: String, required: true, index: true },
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
     date: { type: Date, required: true },
     status: {
       type: String,

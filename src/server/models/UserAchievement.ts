@@ -9,7 +9,7 @@ export interface IUserAchievement extends Document {
 
 const userAchievementSchema = new Schema(
   {
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
     achievementId: { type: String, required: true },
     unlockedAt: { type: Date, default: Date.now },
     challengeId: { type: String },

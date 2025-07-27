@@ -19,7 +19,7 @@ export interface INotificationSettings extends mongoose.Document {
 
 const NotificationSettingsSchema = new mongoose.Schema<INotificationSettings>(
   {
-    userId: { type: String, required: true, unique: true, index: true },
+    userId: { type: String, required: true, unique: true },
     email: { type: Boolean, default: true }, // メール通知
     push: { type: Boolean, default: true }, // プッシュ通知
     inApp: { type: Boolean, default: true }, // アプリ内通知

@@ -143,6 +143,15 @@ const adhdSpecializedMenuItems: MenuItem[] = [
     gradient: 'from-green-500 via-emerald-500 to-teal-500',
     accentColor: 'green',
   },
+  {
+    icon: <Users className="h-5 w-5" />,
+    label: '🌟 ベータユーザー募集',
+    path: '/beta-user-recruitment',
+    description: 'ADHD/ASD特化システムの開発参加・フィードバック提供',
+    badge: '募集中',
+    gradient: 'from-purple-500 via-pink-500 to-red-500',
+    accentColor: 'purple',
+  },
 ];
 
 // カレンダー・タスク管理メニューアイテム

@@ -444,6 +444,44 @@ const SiteImprovementPlan: React.FC = () => {
         progress: 100,
         dependencies: ['production-optimization'],
       },
+      {
+        id: 'beta-user-recruitment',
+        title: '🧑‍🤝‍🧑 ベータユーザー募集システム',
+        description:
+          'ADHD/ASDコミュニティ連携、倫理的募集フォーム、スクリーニング機能、個人情報保護、多様性確保システム完成',
+        status: 'completed',
+        priority: 'high',
+        category: 'community',
+        estimatedDays: 18,
+        progress: 100,
+        dependencies: ['cognitive-analytics-expansion', 'mobile-optimization'],
+      },
+    ],
+    phase5: [
+      {
+        id: 'real-user-testing-preparation',
+        title: '🧪 実ユーザーテスト準備',
+        description:
+          'ADHD/ASD当事者向けベータテスト環境構築、認知負荷測定、フィードバック収集、データ分析基盤',
+        status: 'in-progress',
+        priority: 'critical',
+        category: 'testing',
+        estimatedDays: 15,
+        progress: 75,
+        dependencies: ['beta-user-recruitment'],
+      },
+      {
+        id: 'final-accessibility-audit',
+        title: '♿ 最終アクセシビリティ監査',
+        description:
+          'WCAG 2.1 AAA準拠確認、支援技術テスト、多様性配慮完全対応、包括的ユーザビリティ検証',
+        status: 'in-progress',
+        priority: 'high',
+        category: 'accessibility',
+        estimatedDays: 10,
+        progress: 30,
+        dependencies: ['real-user-testing-preparation'],
+      },
     ],
   };
 

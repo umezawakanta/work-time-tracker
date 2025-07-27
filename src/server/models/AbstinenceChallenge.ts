@@ -17,7 +17,7 @@ export interface IAbstinenceChallenge extends Document {
 
 const abstinenceChallengeSchema = new Schema(
   {
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
     type: {
       type: String,
       required: true,

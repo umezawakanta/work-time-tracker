@@ -19,7 +19,7 @@ export interface INotification extends mongoose.Document {
 
 const NotificationSchema = new mongoose.Schema<INotification>(
   {
-    userId: { type: String, required: true, index: true },
+    userId: { type: String, required: true },
     title: { type: String, required: true },
     message: { type: String, required: true },
     type: {

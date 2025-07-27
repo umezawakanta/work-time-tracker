@@ -106,6 +106,7 @@ const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
 const CognitiveAICoachingPage = lazy(() => import('./pages/CognitiveAICoachingPage'));
 const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetworkPage'));
 const RealtimeAdaptationPage = lazy(() => import('./pages/RealtimeAdaptationPage'));
+const BetaUserRecruitmentPage = lazy(() => import('./pages/BetaUserRecruitmentPage'));
 
 // 💰 Finance & Goal Management
 // const AssetQuestManagerPage = lazy(() => import('./pages/AssetQuestManagerPage'));
@@ -416,6 +417,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <CognitiveFinancePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/beta-user-recruitment"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <BetaUserRecruitmentPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
