@@ -219,7 +219,7 @@ export class MonthlyTimesheetService extends EventEmitter {
         efficiency,
       });
 
-      currentDate.setDate(currentDate.getDate() + 7);
+      currentDate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
       weekNumber++;
     }
 

@@ -178,8 +178,7 @@ export const AdaptiveCard = forwardRef<HTMLDivElement, AdaptiveCardProps>(
           ...style,
         }}
         onClick={handleInteraction}
-        role={onInteraction ? 'button' : undefined}
-        tabIndex={onInteraction ? 0 : undefined}
+        {...(onInteraction && { role: 'button', tabIndex: 0 })}
         aria-label={`認知負荷: ${cognitiveLoad}, 緊急度: ${urgency}${isCompleted ? ', 完了済み' : ''}`}
         {...props}
       >

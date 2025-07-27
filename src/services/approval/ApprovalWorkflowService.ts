@@ -157,8 +157,10 @@ interface ApprovalSettings {
   // エスカレーション設定
   escalationRules: {
     timesheet: { days: number; escalateTo: string[] };
-    leaveRequest: { days: number; escalateTo: string[] };
+    leave_request: { days: number; escalateTo: string[] };
     overtime: { days: number; escalateTo: string[] };
+    correction: { days: number; escalateTo: string[] };
+    schedule_change: { days: number; escalateTo: string[] };
   };
 
   // 通知設定
@@ -211,8 +213,10 @@ export class ApprovalWorkflowService extends EventEmitter {
 
       escalationRules: {
         timesheet: { days: 3, escalateTo: ['manager-1', 'hr-1'] },
-        leaveRequest: { days: 2, escalateTo: ['manager-1'] },
+        leave_request: { days: 2, escalateTo: ['manager-1'] },
         overtime: { days: 1, escalateTo: ['manager-1', 'admin-1'] },
+        correction: { days: 2, escalateTo: ['manager-1', 'hr-1'] },
+        schedule_change: { days: 3, escalateTo: ['manager-1'] },
       },
 
       notificationSettings: {
@@ -761,7 +765,7 @@ export class ApprovalWorkflowService extends EventEmitter {
     const escalationRules = this.organizationSettings.escalationRules[request.type];
     if (!escalationRules) return;
 
-    escalationRules.escalateTo.forEach((escalationApproverId) => {
+    escalationRules.escalateTo.forEach((escalationApproverId: string) => {
       const notification: ApprovalNotification = {
         id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         recipientId: escalationApproverId,

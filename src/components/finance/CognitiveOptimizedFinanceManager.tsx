@@ -635,8 +635,9 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>視覚的複雑さ</Label>
+                    <Label htmlFor="visualComplexity">視覚的複雑さ</Label>
                     <select
+                      id="visualComplexity"
                       value={cognitiveSettings.visualComplexity}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({
@@ -653,8 +654,9 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>自動化レベル</Label>
+                    <Label htmlFor="automationLevel">自動化レベル</Label>
                     <select
+                      id="automationLevel"
                       value={cognitiveSettings.automationLevel}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({
@@ -671,8 +673,9 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>更新頻度</Label>
+                    <Label htmlFor="updateFrequency">更新頻度</Label>
                     <select
+                      id="updateFrequency"
                       value={cognitiveSettings.updateFrequency}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({

@@ -72,7 +72,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import NotificationService from '@/services/notifications/NotificationService';
+import { NotificationService } from '@/services/notifications/NotificationService';
 import { toast } from 'react-hot-toast';
 
 // インスタンス作成

@@ -244,15 +244,15 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
   // 承認フローを生成
   const generateApprovalFlow = (type: string) => {
     // 簡略化されたフロー生成
-    const baseFlow = [
+    const baseFlow: any[] = [
       {
         id: 'step-1',
         stepNumber: 1,
-        approverRole: 'supervisor' as const,
+        approverRole: 'supervisor',
         approverIds: ['supervisor-1'],
         requiredApprovals: 1,
         currentApprovals: [],
-        status: 'pending' as const,
+        status: 'pending',
       },
     ];
 
@@ -260,11 +260,11 @@ export const ApprovalDashboard: React.FC<ApprovalDashboardProps> = ({
       baseFlow.push({
         id: 'step-2',
         stepNumber: 2,
-        approverRole: 'hr' as const,
+        approverRole: 'hr',
         approverIds: ['hr-1'],
         requiredApprovals: 1,
         currentApprovals: [],
-        status: 'pending' as const,
+        status: 'pending',
       });
     }
 

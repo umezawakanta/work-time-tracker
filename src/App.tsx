@@ -32,8 +32,8 @@ import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './context/InternationalizationContext';
 
 // Core pages - Always loaded
-import HomePage from './pages/HomePage';
-import DashboardPage from './pages/DashboardPage';
+// import HomePage from './pages/HomePage';
+// import DashboardPage from './pages/DashboardPage';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 import CognitiveDashboard from './pages/CognitiveDashboard';
 import ADHDTaskManager from './components/ADHDTaskManager';
@@ -158,14 +158,14 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/dashboard"
                             element={
                               <LayoutWrapper>
                                 <DashboardPage />
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/integrated-dashboard"
                             element={
