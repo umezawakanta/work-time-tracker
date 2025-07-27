@@ -108,13 +108,13 @@ interface MenuItem {
   accentColor?: string;
 }
 
-// コアメニューアイテム - 翻訳対応（UnifiedSystemNavigationで管理されないアイテムのみ）
+// コアメニューアイテム - 実際のルート設定に合わせて修正
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Home className="h-5 w-5" />,
-    label: '🏠 スマートホーム',
-    path: '/',
-    description: 'パーソナライズドメイン画面',
+    label: '🏠 統合ダッシュボード',
+    path: '/integrated-dashboard',
+    description: 'メインダッシュボード画面',
     badge: 'ホーム',
     gradient: 'from-blue-400 via-purple-500 to-pink-500',
     accentColor: 'blue',
@@ -122,20 +122,11 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Brain className="h-5 w-5" />,
     label: '🧠 ADHD/ASD ライフサポート',
-    path: '/adhd-life-sync',
+    path: '/adhd-integrated-life',
     description: 'ADHD/ASD特化型生活支援システム',
     badge: 'コア',
     gradient: 'from-purple-500 via-indigo-500 to-blue-500',
     accentColor: 'purple',
-  },
-  {
-    icon: <TestTube className="h-5 w-5" />,
-    label: '🧪 認知機能評価',
-    path: '/adhd-cognitive-assessment',
-    description: 'WEIS準拠の科学的認知機能測定',
-    badge: '科学的',
-    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
-    accentColor: 'violet',
   },
   {
     icon: <Target className="h-5 w-5" />,
@@ -145,6 +136,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     badge: 'コア',
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     accentColor: 'indigo',
+  },
+  {
+    icon: <Clock className="h-5 w-5" />,
+    label: '⏰ リアルタイム勤怠',
+    path: '/realtime-clock',
+    description: 'リアルタイム勤怠打刻システム',
+    badge: '勤怠',
+    gradient: 'from-green-500 via-teal-500 to-blue-500',
+    accentColor: 'green',
   },
   {
     icon: <Calendar className="h-5 w-5" />,
