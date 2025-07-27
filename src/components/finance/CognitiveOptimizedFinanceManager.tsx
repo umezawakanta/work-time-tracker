@@ -638,6 +638,7 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
                     <Label htmlFor="visualComplexity">視覚的複雑さ</Label>
                     <select
                       id="visualComplexity"
+                      aria-label="視覚的複雑さ"
                       value={cognitiveSettings.visualComplexity}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({
@@ -657,6 +658,7 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
                     <Label htmlFor="automationLevel">自動化レベル</Label>
                     <select
                       id="automationLevel"
+                      aria-label="自動化レベル"
                       value={cognitiveSettings.automationLevel}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({
@@ -676,6 +678,7 @@ export const CognitiveOptimizedFinanceManager: React.FC = () => {
                     <Label htmlFor="updateFrequency">更新頻度</Label>
                     <select
                       id="updateFrequency"
+                      aria-label="更新頻度"
                       value={cognitiveSettings.updateFrequency}
                       onChange={(e) =>
                         setCognitiveSettings((prev) => ({

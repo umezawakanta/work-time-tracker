@@ -548,29 +548,28 @@ export class NotificationService extends EventEmitter {
    * 音声通知を再生
    */
   private async playSound(settings: NotificationSettings): Promise<void> {
-    if (settings.soundVolume === 0) return;
+    if (settings.audioVisualSettings.soundVolume === 0) return;
 
     const audio = new Audio();
 
-    switch (settings.soundType) {
+    switch (settings.audioVisualSettings.soundType) {
       case 'gentle':
         audio.src =
           'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMFJnfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMF';
         break;
-      case 'chime':
+      case 'standard':
         audio.src =
           'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMFJnfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMF';
         break;
       default:
-        audio.src =
-          'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMFJnfH8N2QQAoUXrTp66hVFApGn+DyvmYeFyiKz/HkdyMF';
+        return;
     }
 
-    audio.volume = settings.soundVolume;
+    audio.volume = settings.audioVisualSettings.soundVolume / 100;
     try {
       await audio.play();
     } catch (error) {
-      console.warn('Failed to play notification sound:', error);
+      console.warn('音声再生に失敗しました:', error);
     }
   }
 
@@ -584,8 +583,8 @@ export class NotificationService extends EventEmitter {
 
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
-    const start = this.timeToMinutes(settings.quietHours.start);
-    const end = this.timeToMinutes(settings.quietHours.end);
+    const start = this.timeToMinutes(settings.quietHours.startTime);
+    const end = this.timeToMinutes(settings.quietHours.endTime);
 
     if (start <= end) {
       return currentTime >= start && currentTime <= end;
@@ -604,15 +603,48 @@ export class NotificationService extends EventEmitter {
     }
 
     const history = this.notificationHistory.get(userId)!;
-    history.push({
-      timestamp: new Date(),
-      action,
-      count: 1,
-    });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // 履歴は最新100件まで保持
-    if (history.length > 100) {
-      history.splice(0, history.length - 100);
+    // Find or create today's history entry
+    let todayHistory = history.find((h) => h.date.getTime() === today.getTime());
+
+    if (!todayHistory) {
+      todayHistory = {
+        userId,
+        date: today,
+        totalSent: 0,
+        acknowledged: 0,
+        snoozed: 0,
+        dismissed: 0,
+        effectiveness: 0,
+        cognitiveState: {
+          averageEnergyLevel: 5,
+          averageStressLevel: 5,
+          focusInterruptions: 0,
+        },
+      };
+      history.push(todayHistory);
+    }
+
+    // Update counts based on action
+    switch (action) {
+      case 'sent':
+        todayHistory.totalSent++;
+        break;
+      case 'read':
+        todayHistory.acknowledged++;
+        break;
+      case 'dismissed':
+        todayHistory.dismissed++;
+        break;
+    }
+
+    // Recalculate effectiveness
+    if (todayHistory.totalSent > 0) {
+      todayHistory.effectiveness = Math.round(
+        (todayHistory.acknowledged / todayHistory.totalSent) * 100
+      );
     }
   }
 
@@ -678,5 +710,43 @@ export class NotificationService extends EventEmitter {
    */
   private checkBreakReminder(): void {
     // 休憩時間のリマインダーロジック
+  }
+
+  /**
+   * 通知履歴を取得
+   */
+  getNotificationHistory(userId: string, days: number = 7): NotificationHistory[] {
+    const userHistory = this.notificationHistory.get(userId) || [];
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    return userHistory.filter((history) => history.date >= cutoffDate);
+  }
+
+  /**
+   * 通知パターンを分析
+   */
+  analyzeNotificationPattern(userId: string): NotificationPattern | null {
+    return this.userPatterns.get(userId) || null;
+  }
+
+  /**
+   * ブラウザ通知の許可をリクエスト
+   */
+  async requestNotificationPermission(): Promise<boolean> {
+    if (!('Notification' in window)) {
+      return false;
+    }
+
+    if (Notification.permission === 'granted') {
+      return true;
+    }
+
+    if (Notification.permission === 'denied') {
+      return false;
+    }
+
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
   }
 }

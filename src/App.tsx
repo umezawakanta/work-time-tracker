@@ -35,10 +35,10 @@ import { InternationalizationProvider } from './context/InternationalizationCont
 // import HomePage from './pages/HomePage';
 // import DashboardPage from './pages/DashboardPage';
 import IntegratedDashboard from './pages/IntegratedDashboard';
-import CognitiveDashboard from './pages/CognitiveDashboard';
-import ADHDTaskManager from './components/ADHDTaskManager';
-import ADHDIntegratedLifeSystem from './components/ADHDIntegratedLifeSystem';
-import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
+// import CognitiveDashboard from './pages/CognitiveDashboard';
+import { ADHDTaskManager } from './components/ADHDTaskManager';
+import { ADHDIntegratedLifeSystem } from './components/ADHDIntegratedLifeSystem';
+// import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
 
 // 🚀 Time Tracking & Work Management - High Priority
 const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
@@ -49,12 +49,12 @@ const NotificationSettingsPage = lazy(() => import('./pages/NotificationSettings
 const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 
 // 📊 Chart-heavy pages
-const TimeTrackingPage = lazy(() => import('./pages/TimeTrackingPage'));
-const HabitsTrackerPage = lazy(() => import('./pages/HabitsTrackerPage'));
-const TodoAnalysisPage = lazy(() => import('./pages/TodoAnalysisPage'));
+// const TimeTrackingPage = lazy(() => import('./pages/TimeTrackingPage'));
+// const HabitsTrackerPage = lazy(() => import('./pages/HabitsTrackerPage'));
+// const TodoAnalysisPage = lazy(() => import('./pages/TodoAnalysisPage'));
 
 // 🧠 ADHD/ASD specialized pages
-const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
+// const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
 const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
 const ADHDIntegratedLifePage = lazy(() => import('./pages/ADHDIntegratedLifePage'));
 const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
@@ -63,16 +63,16 @@ const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetwork
 const RealtimeAdaptationPage = lazy(() => import('./pages/RealtimeAdaptationPage'));
 
 // 💰 Finance & Goal Management
-const AssetQuestManagerPage = lazy(() => import('./pages/AssetQuestManagerPage'));
-const FinanceDashboardPage = lazy(() => import('./pages/FinanceDashboardPage'));
-const GoalManagementPage = lazy(() => import('./pages/GoalManagementPage'));
+// const AssetQuestManagerPage = lazy(() => import('./pages/AssetQuestManagerPage'));
+// const FinanceDashboardPage = lazy(() => import('./pages/FinanceDashboardPage'));
+// const GoalManagementPage = lazy(() => import('./pages/GoalManagementPage'));
 
 // 📝 Content & Communication
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const NewBlogPost = lazy(() => import('./pages/NewBlogPost'));
 const EditBlogPost = lazy(() => import('./pages/EditBlogPost'));
 const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
-const EnhancedNewsPage = lazy(() => import('./pages/EnhancedNewsPage'));
+// const EnhancedNewsPage = lazy(() => import('./pages/EnhancedNewsPage'));
 
 // 🔧 System & Analysis
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
@@ -85,24 +85,24 @@ const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
 const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
 const SleepTrackerPage = lazy(() => import('./pages/SleepTrackerPage'));
 const ImpulseTrackerPage = lazy(() => import('./pages/ImpulseTrackerPage'));
-const LifeEventTimelinePage = lazy(() => import('./pages/LifeEventTimelinePage'));
-const PersonalAnalyticsPage = lazy(() => import('./pages/PersonalAnalyticsPage'));
+// const LifeEventTimelinePage = lazy(() => import('./pages/LifeEventTimelinePage'));
+// const PersonalAnalyticsPage = lazy(() => import('./pages/PersonalAnalyticsPage'));
 
 // 🎸 Hobbies & Learning
 const GuitarPracticePage = lazy(() => import('./pages/GuitarPracticePage'));
 const DiaryPage = lazy(() => import('./pages/DiaryPage'));
 
 // ⚙️ System Management
-const AdminPage = lazy(() => import('./pages/AdminPage'));
-const SubscriptionPage = lazy(() => import('./pages/subscription/SubscriptionPage'));
-const PremiumPage = lazy(() => import('./pages/subscription/PremiumPage'));
+// const AdminPage = lazy(() => import('./pages/AdminPage'));
+// const SubscriptionPage = lazy(() => import('./pages/subscription/SubscriptionPage'));
+// const PremiumPage = lazy(() => import('./pages/subscription/PremiumPage'));
 
 // 🗳️ Social & External Systems
-const ElectionPage = lazy(() => import('./pages/ElectionPage'));
-const TwitterIntegrationPage = lazy(() => import('./pages/TwitterIntegrationPage'));
+// const ElectionPage = lazy(() => import('./pages/ElectionPage'));
+// const TwitterIntegrationPage = lazy(() => import('./pages/TwitterIntegrationPage'));
 
 // 📋 Project & Task Management
-const WBSPage = lazy(() => import('./pages/WBSPage'));
+// const WBSPage = lazy(() => import('./pages/WBSPage'));
 const ImprovementPlanDetail = lazy(() => import('./pages/ImprovementPlanDetail'));
 const ImprovementImplementation = lazy(() => import('./pages/ImprovementImplementation'));
 
@@ -141,23 +141,22 @@ const App: React.FC = () => {
                     <InternationalizationProvider>
                       <div className="min-h-screen bg-gray-50">
                         <Routes>
-                          {/* Core Routes */}
-                          <Route
+                          {/*<Route
                             path="/"
                             element={
                               <LayoutWrapper>
                                 <HomePage />
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/home"
                             element={
                               <LayoutWrapper>
                                 <HomePage />
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           {/*<Route
                             path="/dashboard"
                             element={
@@ -174,14 +173,14 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/cognitive-dashboard"
                             element={
                               <LayoutWrapper>
                                 <CognitiveDashboard />
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/adhd-task-manager"
                             element={
@@ -198,14 +197,14 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/cognitive-integrated-dashboard"
                             element={
                               <LayoutWrapper>
                                 <CognitiveIntegratedDashboard />
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
 
                           {/* 🚀 Time Tracking & Work Management */}
                           <Route
@@ -270,7 +269,7 @@ const App: React.FC = () => {
                           />
 
                           <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
-                          <Route
+                          {/*<Route
                             path="/time-tracking"
                             element={
                               <LayoutWrapper>
@@ -279,8 +278,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/habits-tracker"
                             element={
                               <LayoutWrapper>
@@ -289,8 +288,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/todo-analysis"
                             element={
                               <LayoutWrapper>
@@ -299,8 +298,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/pomodoro"
                             element={
                               <LayoutWrapper>
@@ -309,7 +308,7 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/adhd-cognitive-assessment"
                             element={
@@ -370,7 +369,7 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/asset-quest"
                             element={
                               <LayoutWrapper>
@@ -379,8 +378,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/finance-dashboard"
                             element={
                               <LayoutWrapper>
@@ -389,17 +388,15 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/goal-management"
                             element={
                               <LayoutWrapper>
-                                <LazyWrapper>
-                                  <GoalManagementPage />
-                                </LazyWrapper>
+                                <LazyWrapper><GoalManagementPage /></LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/blog"
                             element={
@@ -440,7 +437,7 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/news"
                             element={
                               <LayoutWrapper>
@@ -449,7 +446,7 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/analytics"
                             element={
@@ -520,7 +517,7 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/life-timeline"
                             element={
                               <LayoutWrapper>
@@ -529,8 +526,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/personal-analytics"
                             element={
                               <LayoutWrapper>
@@ -539,7 +536,7 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/guitar-practice"
                             element={
@@ -560,7 +557,7 @@ const App: React.FC = () => {
                               </LayoutWrapper>
                             }
                           />
-                          <Route
+                          {/*<Route
                             path="/admin"
                             element={
                               <LayoutWrapper>
@@ -569,8 +566,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/subscription"
                             element={
                               <LayoutWrapper>
@@ -579,8 +576,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/premium"
                             element={
                               <LayoutWrapper>
@@ -589,8 +586,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/election"
                             element={
                               <LayoutWrapper>
@@ -599,8 +596,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/twitter"
                             element={
                               <LayoutWrapper>
@@ -609,8 +606,8 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
-                          <Route
+                          />*/}
+                          {/*<Route
                             path="/wbs"
                             element={
                               <LayoutWrapper>
@@ -619,7 +616,7 @@ const App: React.FC = () => {
                                 </LazyWrapper>
                               </LayoutWrapper>
                             }
-                          />
+                          />*/}
                           <Route
                             path="/improvement-plan/:id"
                             element={
