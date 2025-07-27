@@ -546,9 +546,21 @@ export const AccessibilityAudit: React.FC = () => {
     };
   };
 
-  const calculateCategoryScores = (results: AuditResult[]) => {
+  const calculateCategoryScores = (
+    results: AuditResult[]
+  ): {
+    perceivable: number;
+    operable: number;
+    understandable: number;
+    robust: number;
+  } => {
     const categories = ['perceivable', 'operable', 'understandable', 'robust'] as const;
-    const summary: Record<string, number> = {};
+    const summary = {
+      perceivable: 0,
+      operable: 0,
+      understandable: 0,
+      robust: 0,
+    };
 
     categories.forEach((category) => {
       const categoryResults = results.filter((r) => r.category === category);

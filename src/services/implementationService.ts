@@ -2,11 +2,15 @@ import type { Task } from '../types/implementation';
 
 // Log interface for implementation service
 export interface ImplementationLog {
-  id: string;
-  message: string;
-  level: 'info' | 'warning' | 'error';
-  timestamp: string;
+  id?: string;
+  action: string;
+  details?: string;
+  message?: string; // 互換性のため残す
+  level?: 'info' | 'warning' | 'error'; // 互換性のため残す
+  timestamp?: string;
   projectId: string;
+  userId: string;
+  user: string;
   metadata?: Record<string, any>;
 }
 
@@ -263,50 +267,74 @@ class ImplementationService {
     const logs = [
       {
         id: 'log-1',
+        action: 'task_completed',
+        details: 'TypeScriptビルドエラー完全解決',
         message: '✅ TypeScriptビルドエラー完全解決',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'build-system' },
       },
       {
         id: 'log-2',
+        action: 'task_completed',
+        details: 'React 19互換性問題修正完了',
         message: '✅ React 19互換性問題修正完了',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'dependency-management' },
       },
       {
         id: 'log-3',
+        action: 'task_completed',
+        details: 'コンポーネントインポートパス修正完了',
         message: '✅ コンポーネントインポートパス修正完了',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'file-structure' },
       },
       {
         id: 'log-4',
+        action: 'task_completed',
+        details: 'PWA設定最適化完了',
         message: '✅ PWA設定最適化完了',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'pwa' },
       },
       {
         id: 'log-5',
+        action: 'task_completed',
+        details: 'LocaleContext初期化エラー修正完了',
         message: '✅ LocaleContext初期化エラー修正完了',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'localization' },
       },
       {
         id: 'log-6',
+        action: 'task_completed',
+        details: 'Critical CSS MIME type エラー修正完了',
         message: '✅ Critical CSS MIME type エラー修正完了',
         level: 'info' as const,
         timestamp: new Date().toISOString(),
         projectId,
+        userId: 'system',
+        user: 'システム',
         metadata: { component: 'performance' },
       },
     ];
