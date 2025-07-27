@@ -109,7 +109,7 @@ interface MenuItem {
   accentColor?: string;
 }
 
-// コアメニューアイテム - 実際のルート設定に合わせて修正
+// コアメニューアイテム - 実際にアクティブなルートのみ
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Home className="h-5 w-5" />,
@@ -121,15 +121,6 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'blue',
   },
   {
-    icon: <Brain className="h-5 w-5" />,
-    label: '🧠 ADHD/ASD ライフサポート',
-    path: '/adhd-integrated-life',
-    description: 'ADHD/ASD特化型生活支援システム',
-    badge: 'コア',
-    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
-    accentColor: 'purple',
-  },
-  {
     icon: <Target className="h-5 w-5" />,
     label: '🎯 ADHDタスク管理',
     path: '/adhd-task-manager',
@@ -137,6 +128,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     badge: 'コア',
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     accentColor: 'indigo',
+  },
+  {
+    icon: <Brain className="h-5 w-5" />,
+    label: '🧠 ADHD統合ライフ',
+    path: '/adhd-integrated-life',
+    description: 'ADHD/ASD特化型生活支援システム',
+    badge: 'コア',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
   },
   {
     icon: <TestTube className="h-5 w-5" />,
@@ -167,7 +167,7 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   },
 ];
 
-// 勤怠管理メニューアイテム - 実際に存在するページのみ
+// 勤怠管理メニューアイテム - 実際にアクティブなルートのみ
 const workTimeMenuItems: MenuItem[] = [
   {
     icon: <Clock className="h-5 w-5" />,
@@ -225,7 +225,7 @@ const workTimeMenuItems: MenuItem[] = [
   },
 ];
 
-// ブログ・コンテンツメニューアイテム
+// ブログ・コンテンツメニューアイテム - 実際にアクティブなルートのみ
 const blogMenuItems: MenuItem[] = [
   {
     icon: <FileText className="h-5 w-5" />,
@@ -247,7 +247,7 @@ const blogMenuItems: MenuItem[] = [
   },
 ];
 
-// システム・分析メニューアイテム
+// システム・分析メニューアイテム - 実際にアクティブなルートのみ
 const systemMenuItems: MenuItem[] = [
   {
     icon: <Activity className="h-5 w-5" />,
@@ -287,7 +287,7 @@ const systemMenuItems: MenuItem[] = [
   },
 ];
 
-// 個人開発・ライフスタイルメニューアイテム
+// 個人開発・ライフスタイルメニューアイテム - 実際にアクティブなルートのみ
 const personalMenuItems: MenuItem[] = [
   {
     icon: <Bed className="h-5 w-5" />,
@@ -314,6 +314,19 @@ const personalMenuItems: MenuItem[] = [
     description: 'ギター練習の記録と進捗管理',
     badge: '趣味',
     gradient: 'from-amber-500 via-orange-500 to-red-500',
+    accentColor: 'amber',
+  },
+];
+
+// その他の重要ページ
+const additionalMenuItems: MenuItem[] = [
+  {
+    icon: <Lightbulb className="h-5 w-5" />,
+    label: '💡 改善計画',
+    path: '/improvement-plan',
+    description: 'サイト改善プランの管理',
+    badge: '重要',
+    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
     accentColor: 'amber',
   },
 ];
@@ -641,6 +654,17 @@ export default function Layout({ children }: LayoutProps) {
                     個人開発・ライフスタイル
                   </h3>
                   {personalMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* その他の重要ページセクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Lightbulb className="h-3 w-3" />
+                    その他の機能
+                  </h3>
+                  {additionalMenuItems.map((item) => (
                     <div key={item.path}>{renderMenuItem(item)}</div>
                   ))}
                 </div>
