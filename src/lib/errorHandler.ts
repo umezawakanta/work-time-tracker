@@ -79,22 +79,82 @@ export class ErrorHandler {
     try {
       console.error(`🐛 [${errorReport.severity.toUpperCase()}] ${errorReport.type}:`, errorReport);
 
-      // LocalStorageに保存
-      const existingErrors = this.getStoredErrors();
-      existingErrors.push(errorReport);
-
-      // 最新100件のみ保持
-      if (existingErrors.length > 100) {
-        existingErrors.splice(0, existingErrors.length - 100);
-      }
-
-      localStorage.setItem('error_logs', JSON.stringify(existingErrors));
-      this.errorCount = existingErrors.length;
+      // LocalStorageに保存（クォータ管理付き）
+      this.saveErrorWithQuotaManagement(errorReport);
 
       // エラーエリミネーター進捗の更新
       this.updateBadgeProgress();
     } catch (loggingError) {
       console.error('Failed to log error:', loggingError);
+    }
+  }
+
+  private saveErrorWithQuotaManagement(errorReport: ErrorReport): void {
+    const MAX_ERRORS = 50; // 保存する最大エラー数を削減
+    const MIN_ERRORS = 25; // クォータ超過時に削減する目標数
+
+    try {
+      const existingErrors = this.getStoredErrors();
+      existingErrors.push(errorReport);
+
+      // 最大件数制限
+      if (existingErrors.length > MAX_ERRORS) {
+        existingErrors.splice(0, existingErrors.length - MAX_ERRORS);
+      }
+
+      this.tryStoreErrors(existingErrors);
+      this.errorCount = existingErrors.length;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.warn('🧹 LocalStorage quota exceeded, cleaning up old error logs...');
+        this.handleQuotaExceeded(errorReport, MIN_ERRORS);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  private tryStoreErrors(errors: ErrorReport[]): void {
+    const errorData = JSON.stringify(errors);
+
+    // データサイズをチェック（5MB制限の参考値）
+    const dataSize = new Blob([errorData]).size;
+    if (dataSize > 1024 * 1024) {
+      // 1MB以上の場合は警告
+      console.warn(`⚠️ Error log data size is large: ${Math.round(dataSize / 1024)}KB`);
+    }
+
+    localStorage.setItem('error_logs', errorData);
+  }
+
+  private handleQuotaExceeded(newError: ErrorReport, targetCount: number): void {
+    try {
+      // 1. 現在のエラーログを取得
+      const existingErrors = this.getStoredErrors();
+
+      // 2. 最新のerrorのみ残して大幅に削減
+      const recentErrors = existingErrors.slice(-targetCount + 1); // 新しいエラー用に1つ空けておく
+      recentErrors.push(newError);
+
+      // 3. 再度保存を試行
+      this.tryStoreErrors(recentErrors);
+      this.errorCount = recentErrors.length;
+
+      console.info(
+        `✅ Cleaned up error logs: ${existingErrors.length} → ${recentErrors.length} entries`
+      );
+    } catch (retryError) {
+      // 最後の手段: すべてのエラーログをクリアして新しいエラーのみ保存
+      console.warn('🧹 Critical cleanup: clearing all error logs');
+      try {
+        localStorage.removeItem('error_logs');
+        this.tryStoreErrors([newError]);
+        this.errorCount = 1;
+      } catch (finalError) {
+        // LocalStorage完全に利用不可の場合はメモリのみで動作
+        console.error('❌ LocalStorage completely unavailable, operating in memory-only mode');
+        this.errorCount = 1;
+      }
     }
   }
 

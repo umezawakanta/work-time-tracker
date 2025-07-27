@@ -138,6 +138,12 @@ api.interceptors.request.use(
       return config;
     }
 
+    // 開発モードではトークン取得をスキップ
+    if (process.env.NODE_ENV === 'development') {
+      // 開発モードではトークンなしで続行
+      return config;
+    }
+
     // トークンがキャッシュされていなければAPIから取得（重複リクエスト防止）
     if (!tokenCache && !tokenFetchPromise) {
       tokenFetchPromise = fetchTokenFromDB().finally(() => {

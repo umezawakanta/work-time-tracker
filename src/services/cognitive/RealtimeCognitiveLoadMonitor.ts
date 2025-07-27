@@ -687,10 +687,37 @@ class RealtimeCognitiveLoadMonitor extends EventEmitter {
 
   private getElementDescription(element: Element): string {
     if (!element) return 'unknown';
-    const tag = element.tagName.toLowerCase();
-    const id = element.id ? `#${element.id}` : '';
-    const className = element.className ? `.${element.className.split(' ')[0]}` : '';
-    return `${tag}${id}${className}`.slice(0, 50);
+
+    try {
+      const tag = element.tagName?.toLowerCase() || 'unknown';
+      const id = element.id ? `#${element.id}` : '';
+
+      // classNameを安全に文字列として取得
+      let className = '';
+      if (element.className != null) {
+        let classValue: string;
+
+        // classNameの型を安全に確認して文字列に変換
+        if (typeof element.className === 'string') {
+          classValue = element.className;
+        } else if (element.className && typeof (element.className as any).toString === 'function') {
+          classValue = (element.className as any).toString();
+        } else {
+          classValue = String(element.className);
+        }
+
+        if (classValue && classValue.trim()) {
+          const firstClass = classValue.trim().split(' ')[0];
+          className = firstClass ? `.${firstClass}` : '';
+        }
+      }
+
+      return `${tag}${id}${className}`.slice(0, 50);
+    } catch (error) {
+      // フォールバック: エラーが発生した場合は基本情報のみ返す
+      console.warn('getElementDescription error:', error);
+      return element.tagName?.toLowerCase() || 'unknown-element';
+    }
   }
 
   private calculateHesitationTime(): number {

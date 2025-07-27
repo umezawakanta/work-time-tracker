@@ -9,6 +9,13 @@ export interface PerformanceMetrics {
   ttfb: number; // Time to First Byte
 }
 
+interface PreloadResource {
+  href: string;
+  as: string;
+  type?: string;
+  condition?: string;
+}
+
 export class PerformanceOptimizer {
   private static instance: PerformanceOptimizer;
   private metrics: Partial<PerformanceMetrics> = {};
@@ -170,24 +177,90 @@ export class PerformanceOptimizer {
   public preloadCriticalResources(): void {
     if (typeof document === 'undefined') return;
 
-    const criticalResources = [
-      // フォント
-      { href: '/fonts/inter-var.woff2', as: 'font', type: 'font/woff2' },
-      // Critical CSS - removed non-existent file to prevent MIME type error
-      // { href: '/styles/critical.css', as: 'style' },
+    // 実際に使用されるリソースのみpreload
+    const criticalResources: PreloadResource[] = [
+      // 必要最小限のリソースのみ
+      // フォントは実際に使用される場合のみpreload
     ];
 
+    // 条件付きでリソースを追加
+    this.addConditionalPreloads(criticalResources);
+
     criticalResources.forEach((resource) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.href = resource.href;
-      link.as = resource.as;
-      if (resource.type) link.type = resource.type;
-      if (resource.as === 'font') link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
+      // リソース存在確認後にpreload
+      this.preloadIfExists(resource);
     });
 
-    console.log('🥷 Critical resources preloaded');
+    if (criticalResources.length > 0) {
+      console.log(`🥷 Critical resources preloaded: ${criticalResources.length} items`);
+    } else {
+      console.log('🥷 No critical resources to preload (performance optimized)');
+    }
+  }
+
+  private addConditionalPreloads(resources: PreloadResource[]): void {
+    // フォントプリロードは実際にフォントが使用されるページでのみ有効化
+    const isFontHeavyPage = this.checkIfFontHeavyPage();
+
+    if (isFontHeavyPage && this.isLikelyToNeedFont()) {
+      resources.push({
+        href: '/fonts/inter-var.woff2',
+        as: 'font',
+        type: 'font/woff2',
+        condition: 'font-heavy',
+      });
+    }
+  }
+
+  private checkIfFontHeavyPage(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    // フォントを多用するページかチェック
+    const path = window.location.pathname;
+    const fontHeavyPaths = [
+      '/blog',
+      '/improvement-plan',
+      '/accessibility-audit',
+      '/adhd-',
+      '/cognitive-',
+      '/beta-user',
+    ];
+
+    return fontHeavyPaths.some((heavyPath) => path.includes(heavyPath));
+  }
+
+  private isLikelyToNeedFont(): boolean {
+    // ページロード後3秒以内にフォントが必要になる可能性が高いかチェック
+    const hasLargeTextContent = document.querySelector('h1, h2, .text-lg, .text-xl, .text-2xl');
+    const hasFormElements = document.querySelector('input, textarea, select');
+
+    return !!(hasLargeTextContent || hasFormElements);
+  }
+
+  private async preloadIfExists(resource: PreloadResource): Promise<void> {
+    try {
+      // HEAD request でリソースの存在確認（軽量）
+      const response = await fetch(resource.href, { method: 'HEAD' });
+
+      if (response.ok) {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.href = resource.href;
+        link.as = resource.as;
+        if (resource.type) link.type = resource.type;
+        if (resource.as === 'font') link.crossOrigin = 'anonymous';
+
+        // preloadしたリソースが実際に使用されることを保証するための属性
+        link.setAttribute('data-preload-condition', resource.condition || 'general');
+
+        document.head.appendChild(link);
+      } else {
+        console.warn(`⚠️ Skipping preload for non-existent resource: ${resource.href}`);
+      }
+    } catch (error) {
+      console.warn(`⚠️ Failed to verify resource existence: ${resource.href}`, error);
+      // ネットワークエラーの場合はpreloadをスキップ
+    }
   }
 
   // 画像の遅延読み込み設定
