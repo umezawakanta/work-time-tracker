@@ -701,6 +701,9 @@ const SiteImprovementPlan: React.FC = () => {
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
               <ul className="text-sm text-green-700 space-y-1">
+                <li>✅ 重要なバグ修正完了 - Material-UI依存関係エラー・スタイル問題解決</li>
+                <li>✅ App.firebase.tsx Material-UI完全削除 - UI統一とエラー解消</li>
+                <li>✅ vite.config.ts Material-UI設定削除 - ビルド最適化完了</li>
                 <li>✅ JSXからTSX完全移行 - 型安全性向上とコード品質改善</li>
                 <li>✅ BaseDashboard統一コンポーネント作成 - ダッシュボード統合基盤完成</li>
                 <li>✅ PerformanceOptimizationDashboard統合完了 - 重複コード80%削減</li>

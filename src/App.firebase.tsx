@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 import { store } from './store';
@@ -42,38 +41,10 @@ import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePag
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import TaskManagementPage from './pages/TaskManagementPage';
 
-// Material-UI テーマの設定
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-  },
-});
-
 function App() {
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+      <div className="min-h-screen bg-gray-50 text-gray-900">
         <LocaleProvider>
           <FirebaseAuthProvider>
             <div className="App">
@@ -98,94 +69,73 @@ function App() {
                     <Route path="worktime-entry" element={<WorkTimeEntry />} />
                     <Route path="worktime-form" element={<WorkTimeEntryForm />} />
                     <Route path="reports" element={<WorkTimeReports />} />
-                    <Route path="profile" element={<UserProfile />} />
-
-                    {/* ダッシュボード */}
-                    <Route path="dashboard" element={<IntegratedDashboard />} />
-                    {/* <Route path="improvement" element={<ImprovementImplementation />} /> */}
-
-                    {/* 資産管理 */}
-                    <Route path="asset-calendar" element={<AssetCalendarPage />} />
-                    <Route path="asset-liability-report" element={<AssetLiabilityReportPage />} />
-
-                    {/* 選挙・政治 */}
-                    <Route path="election/candidates" element={<ElectionCandidatesPage />} />
-                    <Route path="election/register" element={<CandidateRegistrationPage />} />
-                    <Route path="election/district/:districtId" element={<DistrictPage />} />
-                    <Route path="political-trends" element={<PoliticalTrends />} />
-
-                    {/* サブスクリプション */}
-                    <Route path="subscription" element={<SubscriptionManagementPage />} />
-                    <Route path="subscription/upgrade" element={<SubscriptionUpgradePage />} />
-                    <Route path="subscription/billing" element={<BillingHistoryPage />} />
-
-                    {/* エンターテイメント */}
-                    <Route path="bookshelf" element={<BookShelfPage />} />
-                    <Route path="sleep-tracker" element={<SleepTrackerPage />} />
+                    <Route path="task-management" element={<TaskManagementPage />} />
+                    <Route path="calendar" element={<CalendarPage />} />
+                    <Route path="diary" element={<DiaryPage />} />
                     <Route path="impulse-tracker" element={<ImpulseTrackerPage />} />
                     <Route path="guitar-practice" element={<GuitarPracticePage />} />
-
-                    {/* ブログ */}
+                    <Route path="integrated-dashboard" element={<IntegratedDashboard />} />
+                    {/* <Route
+                      path="improvement-implementation"
+                      element={<ImprovementImplementation />}
+                    /> */}
+                    <Route path="asset-calendar" element={<AssetCalendarPage />} />
+                    <Route path="election-candidates" element={<ElectionCandidatesPage />} />
+                    <Route path="candidate-registration" element={<CandidateRegistrationPage />} />
+                    <Route path="district/:id" element={<DistrictPage />} />
+                    <Route path="subscription" element={<SubscriptionManagementPage />} />
+                    <Route path="subscription-upgrade" element={<SubscriptionUpgradePage />} />
+                    <Route path="billing-history" element={<BillingHistoryPage />} />
+                    <Route path="asset-liability-report" element={<AssetLiabilityReportPage />} />
+                    <Route path="bookshelf" element={<BookShelfPage />} />
+                    <Route path="sleep-tracker" element={<SleepTrackerPage />} />
                     <Route path="blog" element={<BlogPage />} />
                     <Route path="blog/new" element={<NewBlogPost />} />
                     <Route path="blog/:id" element={<BlogPostDetail />} />
                     <Route path="blog/edit/:id" element={<EditBlogPost />} />
-
-                    {/* プロジェクト管理 */}
-                    <Route path="wbs" element={<WBSCreatorPage />} />
-
-                    {/* SNS */}
+                    <Route path="profile" element={<UserProfile />} />
+                    <Route path="wbs-creator" element={<WBSCreatorPage />} />
                     <Route path="twitter" element={<TwitterPage />} />
-
-                    {/* カレンダー */}
-                    <Route path="calendar" element={<CalendarPage />} />
-
-                    {/* 日記 */}
-                    <Route path="diary" element={<DiaryPage />} />
-
-                    {/* 新しいタスク管理ページ */}
-                    <Route path="tasks" element={<TaskManagementPage />} />
+                    <Route path="political-trends" element={<PoliticalTrends />} />
                   </Route>
                 </Route>
 
-                {/* 古いログインルートのリダイレクト */}
-                <Route path="/login" element={<Navigate to="/firebase-login" replace />} />
-
-                {/* 404ページ */}
+                {/* 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-
-              {/* Toast通知 */}
-              <Toaster
-                position="top-right"
-                reverseOrder={false}
-                gutter={8}
-                containerClassName=""
-                containerStyle={{}}
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                  success: {
-                    duration: 3000,
-                    style: {
-                      background: '#10b981',
-                    },
-                  },
-                  error: {
-                    duration: 5000,
-                    style: {
-                      background: '#ef4444',
-                    },
-                  },
-                }}
-              />
             </div>
+
+            {/* Toast notifications */}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#fff',
+                  color: '#333',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  fontSize: '14px',
+                },
+                success: {
+                  style: {
+                    background: '#f0fdf4',
+                    color: '#16a34a',
+                    border: '1px solid #bbf7d0',
+                  },
+                },
+                error: {
+                  style: {
+                    background: '#fef2f2',
+                    color: '#dc2626',
+                    border: '1px solid #fecaca',
+                  },
+                },
+              }}
+            />
           </FirebaseAuthProvider>
         </LocaleProvider>
-      </ThemeProvider>
+      </div>
     </Provider>
   );
 }

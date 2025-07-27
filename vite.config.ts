@@ -62,14 +62,8 @@ export default defineConfig({
           // Routing
           'react-router': ['react-router-dom'],
 
-          // UI Libraries (さらに細分化) - 🥷 パフォーマンス忍者: 最適化
-          'mui-core': ['@mui/material/Container', '@mui/material/Typography', '@mui/material/Box'],
-          'mui-components': [
-            '@mui/material/Button',
-            '@mui/material/Card',
-            '@mui/material/TextField',
-          ],
-          'mui-icons': ['@mui/icons-material/ArrowBack', '@mui/icons-material/Share'],
+          // UI Libraries - shadcn-ui + Tailwind CSS統一
+          'ui-core': ['lucide-react'],
 
           'radix-core': [
             '@radix-ui/react-dialog',
@@ -237,7 +231,6 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      '@mui/material',
       'react-hot-toast',
       'lodash',
       'lodash/get',
@@ -247,6 +240,7 @@ export default defineConfig({
       'prop-types', // ESMエクスポート問題を解決
       'tailwindcss-animate', // Tailwind CSS Animate問題を解決
       'eventemitter3', // EventEmitter3のESMエクスポート問題を解決
+      'lucide-react', // アイコンライブラリ
     ],
     exclude: [
       // 重いライブラリを除外してオンデマンド読み込み
