@@ -109,7 +109,7 @@ interface MenuItem {
   accentColor?: string;
 }
 
-// コアメニューアイテム - 実際にアクティブなルートのみ
+// コアメニューアイテム - App.tsxで実際にアクティブなルートのみ
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Home className="h-5 w-5" />,
@@ -138,6 +138,10 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     gradient: 'from-purple-500 via-indigo-500 to-blue-500',
     accentColor: 'purple',
   },
+];
+
+// ADHD/ASD特化機能メニューアイテム
+const adhdSpecializedMenuItems: MenuItem[] = [
   {
     icon: <TestTube className="h-5 w-5" />,
     label: '🧪 認知機能評価',
@@ -148,7 +152,7 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'violet',
   },
   {
-    icon: <Calendar className="h-5 w-5" />,
+    icon: <Brain className="h-5 w-5" />,
     label: '📅 統合ライフページ',
     path: '/adhd-integrated-life-page',
     description: 'ADHD/ASD総合ライフ管理',
@@ -167,7 +171,7 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   },
 ];
 
-// 勤怠管理メニューアイテム - 実際にアクティブなルートのみ
+// 勤怠管理メニューアイテム
 const workTimeMenuItems: MenuItem[] = [
   {
     icon: <Clock className="h-5 w-5" />,
@@ -225,7 +229,7 @@ const workTimeMenuItems: MenuItem[] = [
   },
 ];
 
-// ブログ・コンテンツメニューアイテム - 実際にアクティブなルートのみ
+// ブログ・コンテンツメニューアイテム
 const blogMenuItems: MenuItem[] = [
   {
     icon: <FileText className="h-5 w-5" />,
@@ -247,7 +251,7 @@ const blogMenuItems: MenuItem[] = [
   },
 ];
 
-// システム・分析メニューアイテム - 実際にアクティブなルートのみ
+// システム・分析メニューアイテム
 const systemMenuItems: MenuItem[] = [
   {
     icon: <Activity className="h-5 w-5" />,
@@ -287,7 +291,7 @@ const systemMenuItems: MenuItem[] = [
   },
 ];
 
-// 個人開発・ライフスタイルメニューアイテム - 実際にアクティブなルートのみ
+// 個人開発・ライフスタイルメニューアイテム
 const personalMenuItems: MenuItem[] = [
   {
     icon: <Bed className="h-5 w-5" />,
@@ -318,8 +322,8 @@ const personalMenuItems: MenuItem[] = [
   },
 ];
 
-// その他の重要ページ
-const additionalMenuItems: MenuItem[] = [
+// プロジェクト管理メニューアイテム
+const projectMenuItems: MenuItem[] = [
   {
     icon: <Lightbulb className="h-5 w-5" />,
     label: '💡 改善計画',
@@ -335,6 +339,7 @@ const additionalMenuItems: MenuItem[] = [
 const badgeMenuItems: MenuItem[] = [];
 const devQualityMenuItems: MenuItem[] = [];
 const toolsMenuItems: MenuItem[] = [];
+const additionalMenuItems: MenuItem[] = [];
 
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
@@ -601,18 +606,27 @@ export default function Layout({ children }: LayoutProps) {
                   <UnifiedSystemNavigation compactMode={true} showStats={false} />
                 </div>
 
-                {/* コアメニューアイテム */}
-                {getCoreMenuItems(t).length > 0 && (
-                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                      <Home className="h-3 w-3" />
-                      コア機能
-                    </h3>
-                    {getCoreMenuItems(t).map((item) => (
-                      <div key={item.path}>{renderMenuItem(item)}</div>
-                    ))}
-                  </div>
-                )}
+                {/* コア機能セクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Home className="h-3 w-3" />
+                    コア機能
+                  </h3>
+                  {getCoreMenuItems(t).map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* ADHD/ASD特化機能セクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Brain className="h-3 w-3" />
+                    ADHD/ASD特化機能
+                  </h3>
+                  {adhdSpecializedMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
 
                 {/* 勤怠管理セクション */}
                 <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
@@ -658,13 +672,13 @@ export default function Layout({ children }: LayoutProps) {
                   ))}
                 </div>
 
-                {/* その他の重要ページセクション */}
+                {/* プロジェクト管理セクション */}
                 <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
                   <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
                     <Lightbulb className="h-3 w-3" />
-                    その他の機能
+                    プロジェクト管理
                   </h3>
-                  {additionalMenuItems.map((item) => (
+                  {projectMenuItems.map((item) => (
                     <div key={item.path}>{renderMenuItem(item)}</div>
                   ))}
                 </div>
