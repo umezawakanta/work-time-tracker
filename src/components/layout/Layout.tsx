@@ -152,6 +152,15 @@ const adhdSpecializedMenuItems: MenuItem[] = [
     gradient: 'from-purple-500 via-pink-500 to-red-500',
     accentColor: 'purple',
   },
+  {
+    icon: <TestTube className="h-5 w-5" />,
+    label: '🧪 実ユーザーテスト',
+    path: '/user-testing',
+    description: 'ユーザビリティテスト・アクセシビリティ監査・品質保証',
+    badge: 'Phase5',
+    gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
+    accentColor: 'indigo',
+  },
 ];
 
 // カレンダー・タスク管理メニューアイテム
