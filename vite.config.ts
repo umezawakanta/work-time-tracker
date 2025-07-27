@@ -252,8 +252,9 @@ export default defineConfig(({ command, mode }) => {
         '@styles': path.resolve(__dirname, './src/styles'),
         // Lodash ESM compatibility
         lodash: 'lodash',
-        // React 19 compatibility - force specific react-is version
+        // React 19 compatibility - force specific versions
         'react-is': 'react-is',
+        'prop-types': 'prop-types',
       },
     },
 
@@ -274,6 +275,7 @@ export default defineConfig(({ command, mode }) => {
         'react-dom',
         'react-router-dom',
         'react-is',
+        'prop-types',
         'lucide-react',
         'lodash',
         'lodash/get',
@@ -283,8 +285,6 @@ export default defineConfig(({ command, mode }) => {
         '@radix-ui/react-accordion',
         '@radix-ui/react-alert-dialog',
         '@radix-ui/react-avatar',
-        '@radix-ui/react-button',
-        '@radix-ui/react-card',
         '@radix-ui/react-dialog',
         '@radix-ui/react-dropdown-menu',
         '@radix-ui/react-label',
@@ -294,7 +294,6 @@ export default defineConfig(({ command, mode }) => {
         '@radix-ui/react-separator',
         '@radix-ui/react-switch',
         '@radix-ui/react-tabs',
-        '@radix-ui/react-textarea',
         '@radix-ui/react-toast',
         '@radix-ui/react-tooltip',
       ],
