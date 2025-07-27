@@ -28,7 +28,7 @@ import { AuthProvider } from './context/AuthContext';
 import { LocaleProvider } from './context/LocaleContext';
 import { TodoProvider } from './context/TodoContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { AdaptiveUIProvider } from './context/AdaptiveUIContext';
+import { AdaptiveUIProvider } from './components/ui/AdaptiveUIProvider';
 import { RealtimeAdaptationProvider } from './components/realtime/RealtimeAdaptationProvider';
 import { PomodoroProvider } from './context/PomodoroContext';
 import { InternationalizationProvider } from './hooks/useInternationalization';
