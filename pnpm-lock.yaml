@@ -7,6 +7,7 @@ settings:
 overrides:
   cookie@<0.7.0: '>=0.7.0'
   '@eslint/plugin-kit@<0.3.3': '>=0.3.3'
+  react-is: 18.3.1
 
 importers:
 
@@ -250,8 +251,8 @@ importers:
         specifier: ^15.4.1
         version: 15.5.3(i18next@25.2.1(typescript@5.8.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
       react-is:
-        specifier: 19.0.0
-        version: 19.0.0
+        specifier: 18.3.1
+        version: 18.3.1
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.1.8)(react@19.1.0)
@@ -7583,17 +7584,8 @@ packages:
       typescript:
         optional: true
 
-  react-is@16.13.1:
-    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
-
-  react-is@17.0.2:
-    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
-
-  react-is@19.0.0:
-    resolution: {integrity: sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==}
 
   react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
@@ -15294,7 +15286,7 @@ snapshots:
 
   hoist-non-react-statics@3.3.2:
     dependencies:
-      react-is: 16.13.1
+      react-is: 18.3.1
 
   html-encoding-sniffer@3.0.0:
     dependencies:
@@ -17516,7 +17508,7 @@ snapshots:
     dependencies:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
-      react-is: 17.0.2
+      react-is: 18.3.1
 
   pretty-format@29.7.0:
     dependencies:
@@ -17555,7 +17547,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react-is: 16.13.1
+      react-is: 18.3.1
 
   property-information@5.6.0:
     dependencies:
@@ -17766,13 +17758,7 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
       typescript: 5.8.3
 
-  react-is@16.13.1: {}
-
-  react-is@17.0.2: {}
-
   react-is@18.3.1: {}
-
-  react-is@19.0.0: {}
 
   react-lifecycles-compat@3.0.4: {}
 

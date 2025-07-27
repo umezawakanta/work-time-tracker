@@ -17,6 +17,7 @@ export default defineConfig(({ command, mode }) => {
         registerType: 'autoUpdate',
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit instead of 2MB
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\./,
@@ -251,6 +252,8 @@ export default defineConfig(({ command, mode }) => {
         '@styles': path.resolve(__dirname, './src/styles'),
         // Lodash ESM compatibility
         lodash: 'lodash',
+        // React 19 compatibility - force specific react-is version
+        'react-is': 'react-is',
       },
     },
 
@@ -259,6 +262,9 @@ export default defineConfig(({ command, mode }) => {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
       __COMMIT_HASH__: JSON.stringify(process.env.VITE_COMMIT_HASH || 'unknown'),
+      // React 19 compatibility
+      'process.env': {},
+      global: 'globalThis',
     },
 
     // 最適化設定
@@ -267,6 +273,7 @@ export default defineConfig(({ command, mode }) => {
         'react',
         'react-dom',
         'react-router-dom',
+        'react-is',
         'lucide-react',
         'lodash',
         'lodash/get',

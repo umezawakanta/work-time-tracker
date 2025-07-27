@@ -64,7 +64,8 @@
         ],
         "overrides": {
             "cookie@<0.7.0": ">=0.7.0",
-            "@eslint/plugin-kit@<0.3.3": ">=0.3.3"
+            "@eslint/plugin-kit@<0.3.3": ">=0.3.3",
+            "react-is": "18.3.1"
         }
     },
     "dependencies": {
@@ -147,7 +148,7 @@
         "react-hook-form": "^7.55.0",
         "react-hot-toast": "^2.5.2",
         "react-i18next": "^15.4.1",
-        "react-is": "19.0.0",
+        "react-is": "18.3.1",
         "react-markdown": "^10.1.0",
         "react-redux": "^9.2.0",
         "react-router-dom": "^7.5.0",
