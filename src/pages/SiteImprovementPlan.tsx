@@ -701,9 +701,14 @@ const SiteImprovementPlan: React.FC = () => {
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
               <ul className="text-sm text-green-700 space-y-1">
-                <li>✅ サイドメニュー完全整理完了 - 実在19ページのみ表示・構造明確化</li>
+                <li>
+                  ✅ 復元ページ追加完了 - カレンダー・タスク管理・本棚・日記・WBS・資産カレンダー
+                </li>
+                <li>✅ アコーディオン式サイドメニュー完成 - 8セクション構造・折りたたみ機能</li>
+                <li>✅ 美しいUI改善完了 - 検索機能・ダークモード・スムーズアニメーション</li>
+                <li>✅ サイドメニュー完全整理完了 - 実在25ページのみ表示・構造明確化</li>
                 <li>✅ 存在しないページリンク完全削除 - カレンダー等の未実装ページ除外</li>
-                <li>✅ メニューカテゴリ再編 - 6セクション構造・ADHD/ASD特化独立化</li>
+                <li>✅ メニューカテゴリ再編 - 8セクション構造・ADHD/ASD特化独立化</li>
                 <li>
                   ✅ ホームページルート修正完了 - ルート・ホームパス統合ダッシュボード自動誘導
                 </li>

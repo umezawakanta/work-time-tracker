@@ -1,112 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { useInternationalization } from '@/hooks/useInternationalization';
-import { AccessibilityProvider, SkipLinks } from '@/components/accessibility';
-import { UnifiedSystemNavigation } from '@/components/navigation/UnifiedSystemNavigation';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { AccessibilityProvider } from '@/components/accessibility/AccessibilityProvider';
+import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'react-hot-toast';
 import {
   Home,
-  Clock,
-  BarChart2,
-  Menu,
-  LogOut,
-  Settings,
-  User,
-  Crown,
-  Target,
-  Sparkles,
   Search,
-  CheckSquare,
-  Calendar,
-  FileText,
-  BookOpen,
-  Globe,
+  Bell,
+  Settings,
+  Menu,
   X,
-  TrendingUp,
-  Sun,
-  Moon,
+  User,
+  Plus,
+  Calendar,
+  Brain,
+  Target,
+  Clock,
+  BarChart3,
+  FileText,
   Activity,
   Shield,
-  Award,
-  Plus,
-  Zap,
-  Edit3,
-  Zap as Lightning,
-  Music,
-  Twitter,
-  Lightbulb,
-  Code,
-  DollarSign,
-  CreditCard,
-  ShoppingCart,
-  Store,
-  Vote,
-  UserPlus,
-  Map,
-  TestTube,
-  BarChart3,
-  Palette,
-  Heart,
-  Brain,
-  Book,
-  Wallet,
-  PieChart,
-  Trophy,
   AlertTriangle,
-  Gauge,
-  Droplets,
-  Scissors,
-  Timer,
-  CheckCircle,
-  Users,
-  History,
-  Bell,
+  BarChart2,
   Bed,
+  Zap,
+  Music,
+  Lightbulb,
+  TestTube,
+  DollarSign,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  BookOpen,
+  PenTool,
+  Clipboard,
+  FolderKanban,
+  MapPin,
+  Layers,
 } from 'lucide-react';
-import { logout } from '@/services/api/authApi';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '@/hooks/useAuth';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { Locale } from '@/context/LocaleContext';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { SearchDropdown } from './SearchDropdown';
-import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
 
 interface MenuItem {
   icon: React.ReactNode;
   label: string;
   path: string;
-  isPremium?: boolean;
-  badge?: string;
   description?: string;
+  badge?: string;
   gradient?: string;
   accentColor?: string;
+}
+
+interface MenuSection {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  items: MenuItem[];
+  defaultExpanded?: boolean;
+}
+
+interface LayoutProps {
+  children: React.ReactNode;
 }
 
 // コアメニューアイテム - App.tsxで実際にアクティブなルートのみ
@@ -168,6 +126,37 @@ const adhdSpecializedMenuItems: MenuItem[] = [
     badge: '財務',
     gradient: 'from-green-500 via-emerald-500 to-teal-500',
     accentColor: 'green',
+  },
+];
+
+// カレンダー・タスク管理メニューアイテム
+const calendarTaskMenuItems: MenuItem[] = [
+  {
+    icon: <Calendar className="h-5 w-5" />,
+    label: '📅 カレンダー',
+    path: '/calendar',
+    description: 'スケジュール管理とイベント計画',
+    badge: 'スケジュール',
+    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <Clipboard className="h-5 w-5" />,
+    label: '📋 タスク管理',
+    path: '/task-management',
+    description: 'プロジェクトとタスクの総合管理',
+    badge: 'タスク',
+    gradient: 'from-green-500 via-teal-500 to-blue-500',
+    accentColor: 'green',
+  },
+  {
+    icon: <PenTool className="h-5 w-5" />,
+    label: '📖 日記',
+    path: '/diary',
+    description: '日々の記録と振り返り',
+    badge: '記録',
+    gradient: 'from-pink-500 via-rose-500 to-red-500',
+    accentColor: 'pink',
   },
 ];
 
@@ -294,6 +283,15 @@ const systemMenuItems: MenuItem[] = [
 // 個人開発・ライフスタイルメニューアイテム
 const personalMenuItems: MenuItem[] = [
   {
+    icon: <BookOpen className="h-5 w-5" />,
+    label: '📚 本棚',
+    path: '/bookshelf',
+    description: '読書記録と本の管理',
+    badge: '読書',
+    gradient: 'from-amber-500 via-orange-500 to-red-500',
+    accentColor: 'amber',
+  },
+  {
     icon: <Bed className="h-5 w-5" />,
     label: '😴 睡眠トラッカー',
     path: '/sleep-tracker',
@@ -320,6 +318,15 @@ const personalMenuItems: MenuItem[] = [
     gradient: 'from-amber-500 via-orange-500 to-red-500',
     accentColor: 'amber',
   },
+  {
+    icon: <MapPin className="h-5 w-5" />,
+    label: '💼 資産カレンダー',
+    path: '/asset-calendar',
+    description: '資産管理とイベント計画',
+    badge: '資産',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
 ];
 
 // プロジェクト管理メニューアイテム
@@ -333,695 +340,316 @@ const projectMenuItems: MenuItem[] = [
     gradient: 'from-amber-500 via-yellow-500 to-orange-500',
     accentColor: 'amber',
   },
+  {
+    icon: <FolderKanban className="h-5 w-5" />,
+    label: '📊 WBSクリエイター',
+    path: '/wbs-creator',
+    description: 'ワークブレイクダウン構造作成',
+    badge: 'プロジェクト',
+    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+    accentColor: 'blue',
+  },
 ];
 
-// 使用しないメニューアイテム（削除）
-const badgeMenuItems: MenuItem[] = [];
-const devQualityMenuItems: MenuItem[] = [];
-const toolsMenuItems: MenuItem[] = [];
-const additionalMenuItems: MenuItem[] = [];
+// メニューセクション定義
+const getMenuSections = (t: (key: string) => string): MenuSection[] => [
+  {
+    id: 'core',
+    title: 'コア機能',
+    icon: <Home className="h-4 w-4" />,
+    items: getCoreMenuItems(t),
+    defaultExpanded: true,
+  },
+  {
+    id: 'adhd-specialized',
+    title: 'ADHD/ASD特化機能',
+    icon: <Brain className="h-4 w-4" />,
+    items: adhdSpecializedMenuItems,
+    defaultExpanded: true,
+  },
+  {
+    id: 'calendar-task',
+    title: 'カレンダー・タスク',
+    icon: <Calendar className="h-4 w-4" />,
+    items: calendarTaskMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'work-time',
+    title: '勤怠管理',
+    icon: <Clock className="h-4 w-4" />,
+    items: workTimeMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'blog-content',
+    title: 'ブログ・コンテンツ',
+    icon: <FileText className="h-4 w-4" />,
+    items: blogMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'system-analysis',
+    title: 'システム・分析',
+    icon: <Activity className="h-4 w-4" />,
+    items: systemMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'personal-lifestyle',
+    title: '個人・ライフスタイル',
+    icon: <Bed className="h-4 w-4" />,
+    items: personalMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'project-management',
+    title: 'プロジェクト管理',
+    icon: <Lightbulb className="h-4 w-4" />,
+    items: projectMenuItems,
+    defaultExpanded: false,
+  },
+];
 
 export default function Layout({ children }: LayoutProps) {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { locale, setLocale, t } = useInternationalization();
-  const { isAuthenticated, user, setIsAuthenticated } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const isDarkMode = theme === 'dark';
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return (
-        localStorage.getItem('darkMode') === 'true' ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-      );
-    }
-    return false;
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    core: true,
+    'adhd-specialized': true,
   });
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const unlockedBadgesCount = 0; // Or implement actual badge counting logic
 
+  // 翻訳関数（簡易版）
+  const t = (key: string) => key;
+
+  const menuSections = getMenuSections(t);
+
+  // セクションの展開状態を切り替え
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
+  // 初期展開状態を設定
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const initialState: Record<string, boolean> = {};
+    menuSections.forEach((section) => {
+      initialState[section.id] = section.defaultExpanded || false;
+    });
+    setExpandedSections(initialState);
   }, []);
 
-  // 検索機能のハンドラー
-  const handleSearchQueryChange = (value: string) => {
-    setSearchQuery(value);
-    // シンプルに値がある場合は結果を表示
-    if (value.trim().length > 0) {
-      setShowSearchResults(true);
-    } else {
-      setShowSearchResults(false);
-    }
-  };
-
-  const handleSearchItemSelect = (item: any) => {
-    setSearchQuery('');
-    setShowSearchResults(false);
-  };
-
-  const handleCloseSearchResults = () => {
-    setShowSearchResults(false);
-  };
-
-  const handleSearchFocus = () => {
-    // フォーカス時は検索クエリがある場合のみ結果を表示
-    if (searchQuery.trim().length > 0) {
-      setShowSearchResults(true);
-    }
-  };
-
-  useEffect(() => {
-    localStorage.setItem('darkMode', isDarkMode.toString());
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const handleLogout = async (): Promise<void> => {
-    try {
-      logout();
-      setIsAuthenticated(false);
-      navigate('/login');
-      toast.success(t('success.saved'));
-      setShowLogoutDialog(false);
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error(t('errors.generic'));
-    }
-  };
-
-  const isActive = (path: string): boolean => location.pathname === path;
-
-  const renderMenuItem = (item: MenuItem, isMobile: boolean = false) => {
-    const isItemActive = isActive(item.path);
+  const renderMenuItem = (item: MenuItem) => {
+    const isActive = location.pathname === item.path;
 
     return (
       <Link
-        key={item.path}
         to={item.path}
-        className={cn(
-          'group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ease-out',
-          'hover:scale-[1.02] active:scale-[0.98]',
-          isItemActive
-            ? 'bg-white/90 dark:bg-white/10 shadow-lg shadow-black/5 dark:shadow-white/5 backdrop-blur-md border border-white/20 dark:border-white/10'
-            : 'hover:bg-white/50 dark:hover:bg-white/5 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-white/5 hover:backdrop-blur-sm',
-          isMobile && 'px-6 py-4'
-        )}
-        onClick={() => isMobile && setIsMenuOpen(false)}
-        role="menuitem"
-        aria-current={isItemActive ? 'page' : undefined}
-        aria-describedby={item.description ? `desc-${item.path}` : undefined}
-        aria-label={`${item.label}${item.badge ? ` - ${item.badge}` : ''}${item.description ? ` - ${item.description}` : ''}`}
+        key={item.path}
+        className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out
+          ${
+            isActive
+              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-l-4 border-blue-500 shadow-sm'
+              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100'
+          }
+          ${isCollapsed ? 'justify-center px-2' : ''}
+        `}
       >
-        {/* Active indicator */}
-        {isItemActive && (
-          <div
-            className={cn(
-              'absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r-full bg-gradient-to-b',
-              item.gradient,
-              'shadow-lg'
-            )}
-          />
-        )}
-
-        {/* Icon container */}
         <div
-          className={cn(
-            'relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-300',
-            'shadow-sm group-hover:shadow-md',
-            isItemActive
-              ? `bg-gradient-to-br ${item.gradient} text-white shadow-lg shadow-${item.accentColor}-500/25`
-              : 'bg-slate-100/80 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 group-hover:bg-slate-200/80 dark:group-hover:bg-slate-700/50'
-          )}
+          className={`transition-colors duration-200 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}
         >
           {item.icon}
-          {/* Shimmer effect for active items */}
-          {isItemActive && (
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-          )}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                'font-semibold text-sm truncate transition-colors duration-200',
-                isItemActive
-                  ? 'text-slate-900 dark:text-white'
-                  : 'text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
-              )}
-            >
-              {item.label}
-            </span>
-            {item.badge && (
-              <Badge
-                className={cn(
-                  'text-xs px-2 py-0.5 font-medium shadow-sm',
-                  item.badge === 'NEW' &&
-                    'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 dark:from-emerald-900/30 dark:to-green-900/30 dark:text-emerald-400',
-                  item.badge === 'HOT' &&
-                    'bg-gradient-to-r from-rose-100 to-pink-100 text-rose-700 dark:from-rose-900/30 dark:to-pink-900/30 dark:text-rose-400',
-                  item.badge === 'AI' &&
-                    'bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 dark:from-violet-900/30 dark:to-purple-900/30 dark:text-violet-400'
+        {!isCollapsed && (
+          <>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm truncate">{item.label}</span>
+                {item.badge && (
+                  <Badge
+                    variant="secondary"
+                    className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                  >
+                    {item.badge}
+                  </Badge>
                 )}
-              >
-                {item.badge}
-              </Badge>
-            )}
-          </div>
-          {isMobile && item.description && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
-              {item.description}
-            </p>
-          )}
-        </div>
-
-        {item.isPremium && <Crown className="h-4 w-4 text-amber-500 flex-shrink-0" />}
+              </div>
+              {item.description && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  {item.description}
+                </p>
+              )}
+            </div>
+          </>
+        )}
       </Link>
     );
   };
 
-  const notifications = [
-    {
-      id: 1,
-      title: '新しいタスクが追加されました',
-      time: '5分前',
-      unread: true,
-      icon: '📋',
-      type: 'info',
-    },
-    {
-      id: 2,
-      title: 'レポートの締切が近づいています',
-      time: '1時間前',
-      unread: true,
-      icon: '⏰',
-      type: 'warning',
-    },
-    {
-      id: 3,
-      title: '目標を達成しました！',
-      time: '3時間前',
-      unread: false,
-      icon: '🎉',
-      type: 'success',
-    },
-  ];
+  const renderSection = (section: MenuSection) => {
+    const isExpanded = expandedSections[section.id];
 
-  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        {children}
+      <div key={section.id} className="mb-4">
+        <button
+          onClick={() => toggleSection(section.id)}
+          className={`w-full flex items-center gap-2 px-3 py-2 text-left rounded-lg transition-all duration-200
+            hover:bg-slate-100 dark:hover:bg-slate-800/50 group
+            ${isCollapsed ? 'justify-center' : ''}
+          `}
+        >
+          <div className="text-slate-500 dark:text-slate-400">{section.icon}</div>
+          {!isCollapsed && (
+            <>
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex-1">
+                {section.title}
+              </span>
+              <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </div>
+            </>
+          )}
+        </button>
+
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="space-y-1 mt-2 pl-2">{section.items.map(renderMenuItem)}</div>
+        </div>
       </div>
     );
-  }
+  };
+
+  // サイドバーの検索機能
+  const filteredSections = menuSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter(
+        (item) =>
+          item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      ),
+    }))
+    .filter((section) => section.items.length > 0);
 
   return (
     <AccessibilityProvider>
-      <div
-        className={cn(
-          'min-h-screen flex transition-all duration-300',
-          isDarkMode
-            ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
-            : 'bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200'
-        )}
-      >
-        {/* スキップリンク */}
-        <SkipLinks />
-
-        {/* アクセシビリティ用のランドマーク要素 */}
-        <div className="sr-only" id="top">
-          Work Time Tracker - ページの最上部
-        </div>
-        {/* Advanced floating background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-400/10 dark:bg-violet-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-400/10 dark:bg-cyan-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000" />
-          <div className="absolute top-40 left-40 w-80 h-80 bg-pink-400/10 dark:bg-pink-400/5 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000" />
-        </div>
-
-        {/* Enhanced Sidebar */}
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+        {/* サイドバー */}
         <aside
-          className="hidden lg:flex flex-col w-80 border-r border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-2xl relative z-10"
-          role="navigation"
-          aria-label="メインナビゲーション"
+          className={`${isCollapsed ? 'w-16' : 'w-72'} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col shadow-lg`}
         >
-          {/* Logo Section */}
-          <div className="p-8 border-b border-white/20 dark:border-white/10">
-            <Link to="/" className="flex items-center gap-4 group">
-              <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
-                  <Sparkles className="h-7 w-7 text-white" />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+          {/* ヘッダー */}
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </button>
+
+              {!isCollapsed && (
+                <div className="flex-1">
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">LifeSync</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">生産性プラットフォーム</p>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse shadow-lg" />
+              )}
+            </div>
+
+            {!isCollapsed && (
+              <div className="mt-4 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="メニューを検索..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-9 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  LifeSync
-                </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                  生産性プラットフォーム
-                </p>
-              </div>
-            </Link>
+            )}
           </div>
 
-          {/* Navigation Menu */}
-          <nav className="flex-1" aria-label="アプリケーションメニュー">
-            <ScrollArea className="h-full">
-              <div className="px-6 py-4 space-y-2">
-                {/* 統一システムナビゲーション */}
-                <div className="mb-8 pb-6 border-b border-white/10 dark:border-white/5">
-                  <UnifiedSystemNavigation compactMode={true} showStats={false} />
-                </div>
+          {/* メニューコンテンツ */}
+          <ScrollArea className="flex-1 px-3 py-4">
+            <nav className="space-y-2">
+              {(searchQuery ? filteredSections : menuSections).map(renderSection)}
+            </nav>
+          </ScrollArea>
 
-                {/* コア機能セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Home className="h-3 w-3" />
-                    コア機能
-                  </h3>
-                  {getCoreMenuItems(t).map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
+          {/* フッター */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            {!isCollapsed && (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
                 </div>
-
-                {/* ADHD/ASD特化機能セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Brain className="h-3 w-3" />
-                    ADHD/ASD特化機能
-                  </h3>
-                  {adhdSpecializedMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {user?.name || 'ゲストユーザー'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {user?.email || 'demo@example.com'}
+                  </p>
                 </div>
-
-                {/* 勤怠管理セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Clock className="h-3 w-3" />
-                    リアルタイム勤怠管理
-                  </h3>
-                  {workTimeMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* ブログ・コンテンツセクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <FileText className="h-3 w-3" />
-                    ブログ・コンテンツ
-                  </h3>
-                  {blogMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* システム・分析セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Activity className="h-3 w-3" />
-                    システム・分析
-                  </h3>
-                  {systemMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* 個人開発・ライフスタイルセクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Bed className="h-3 w-3" />
-                    個人開発・ライフスタイル
-                  </h3>
-                  {personalMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* プロジェクト管理セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Lightbulb className="h-3 w-3" />
-                    プロジェクト管理
-                  </h3>
-                  {projectMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* 管理者専用メニュー */}
-                {user?.isAdmin && (
-                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                      <Crown className="h-3 w-3" />
-                      {t('sidebar.admin_menu')}
-                    </h3>
-                    {/* 管理者専用機能（UnifiedSystemNavigationで管理されるため削除） */}
-                  </div>
-                )}
               </div>
-            </ScrollArea>
-          </nav>
-
-          {/* Enhanced Profile Section */}
-          <div className="p-6 border-t border-white/20 dark:border-white/10 bg-white/5 dark:bg-white/2">
-            <div className="flex items-center gap-4 p-4 rounded-3xl bg-gradient-to-r from-white/20 to-white/10 dark:from-white/10 dark:to-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-300">
-              <Avatar className="h-12 w-12 ring-2 ring-white/30 dark:ring-white/20 shadow-lg">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold text-lg">
-                  {user?.name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm truncate flex items-center gap-2 text-slate-900 dark:text-white">
-                  {user?.name || 'ユーザー'}
-                  {user?.isAdmin && <Crown className="h-4 w-4 text-amber-500" />}
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
-                  {user?.email}
-                </p>
-              </div>
-            </div>
+            )}
           </div>
         </aside>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col relative z-10">
-          {/* Enhanced Header */}
-          <header
-            className={cn(
-              'sticky top-0 z-50 transition-all duration-500',
-              isScrolled
-                ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-white/5'
-                : 'bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl',
-              'border-b border-white/30 dark:border-white/10'
-            )}
-            role="banner"
-            aria-label="ページヘッダー"
-          >
-            <div className="mx-auto px-6 sm:px-8 lg:px-10">
-              <div className="flex justify-between items-center h-20">
-                {/* Logo & Search Section */}
-                <div className="flex items-center gap-10">
-                  {/* Mobile Logo */}
-                  <Link to="/" className="flex items-center gap-4 group lg:hidden">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                        <Sparkles className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full animate-pulse" />
-                    </div>
-                    <div className="hidden sm:block">
-                      <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                        LifeSync
-                      </h1>
-                    </div>
-                  </Link>
+        {/* メインコンテンツ */}
+        <main className="flex-1 flex flex-col min-h-screen">
+          {/* トップナビゲーション */}
+          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  ダッシュボード
+                </h2>
+              </div>
 
-                  {/* Enhanced Search Bar */}
-                  <div className="hidden lg:flex relative group">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200 z-10" />
-                    <input
-                      type="text"
-                      placeholder={t('common.search')}
-                      value={searchQuery}
-                      onChange={(e) => handleSearchQueryChange(e.target.value)}
-                      autoComplete="off"
-                      spellCheck="false"
-                      style={{
-                        paddingLeft: '48px',
-                        paddingRight: '48px',
-                        width: '320px',
-                        height: '48px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                        borderWidth: '1px',
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        borderRadius: '16px',
-                        fontSize: '16px',
-                        fontWeight: '500',
-                        outline: 'none',
-                        transition: 'all 0.3s',
-                        backdropFilter: 'blur(12px)',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = 'rgba(139, 92, 246, 0.5)';
-                        e.target.style.boxShadow = '0 0 0 2px rgba(139, 92, 246, 0.3)';
-                        handleSearchFocus();
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                        e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                      }}
-                    />
-                    {searchQuery && (
-                      <button
-                        onClick={() => {
-                          setSearchQuery('');
-                          setShowSearchResults(false);
-                        }}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors duration-200 z-10"
-                        aria-label="検索をクリア"
-                      >
-                        <X className="h-5 w-5" />
-                      </button>
-                    )}
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="text-gray-600 dark:text-gray-300"
+                >
+                  {isDarkMode ? '☀️' : '🌙'}
+                </Button>
 
-                    {/* 検索結果 */}
-                    <SearchDropdown
-                      searchQuery={searchQuery}
-                      isOpen={showSearchResults}
-                      onClose={handleCloseSearchResults}
-                      onItemSelect={handleSearchItemSelect}
-                    />
-                  </div>
-                </div>
+                <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                  <Bell className="h-4 w-4" />
+                </Button>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-3">
-                  {/* Quick Action Button */}
-                  <div className="hidden md:flex items-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="relative group h-11 px-4 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
-                      onClick={() => navigate('/todos')}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        <span className="text-sm font-medium">{t('home.quick_add')}</span>
-                      </div>
-                    </Button>
-                  </div>
-
-                  {/* Theme Toggle */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsDarkMode(!isDarkMode)}
-                    className="h-11 w-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 group"
-                  >
-                    {isDarkMode ? (
-                      <Sun className="h-5 w-5 text-amber-500 group-hover:rotate-12 transition-transform duration-300" />
-                    ) : (
-                      <Moon className="h-5 w-5 text-slate-600 group-hover:-rotate-12 transition-transform duration-300" />
-                    )}
-                  </Button>
-
-                  {/* Language Switcher */}
-                  <LanguageSwitcher
-                    variant="compact"
-                    className="h-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
-                  />
-
-                  {/* User Menu - Enhanced */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="relative h-11 w-11 rounded-2xl hover:ring-2 hover:ring-violet-500/30 transition-all duration-300 group"
-                      >
-                        <Avatar className="h-11 w-11 border-2 border-white/30 dark:border-white/20 shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105">
-                          <AvatarImage src={user?.avatar} alt={user?.name} />
-                          <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold">
-                            {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900 shadow-lg" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl rounded-3xl p-2"
-                      align="end"
-                    >
-                      {/* Enhanced user profile section */}
-                      <div className="p-6 rounded-2xl bg-gradient-to-br from-violet-50/50 to-purple-50/50 dark:from-violet-900/20 dark:to-purple-900/20 m-2">
-                        <div className="flex items-center gap-4">
-                          <Avatar className="h-16 w-16 border-2 border-white/50 dark:border-white/20 shadow-xl">
-                            <AvatarImage src={user?.avatar} alt={user?.name} />
-                            <AvatarFallback className="bg-gradient-to-br from-violet-600 to-purple-600 text-white text-xl font-bold">
-                              {user?.name?.charAt(0) || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-1">
-                              {user?.name || 'ユーザー'}
-                              {user?.isAdmin && (
-                                <Badge className="text-xs bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-700 dark:text-amber-400 border-0 shadow-md">
-                                  <Crown className="h-3 w-3 mr-1" />
-                                  管理者
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
-                              {user?.email}
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <Badge className="text-xs bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 text-violet-700 dark:text-violet-400 border-0 shadow-sm">
-                                <Crown className="h-3 w-3 mr-1" />
-                                Pro会員
-                              </Badge>
-                              <Badge className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0 shadow-sm">
-                                <TrendingUp className="h-3 w-3 mr-1" />
-                                7日連続
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <DropdownMenuSeparator className="bg-white/20 dark:bg-white/10" />
-
-                      {/* Menu items with enhanced styling */}
-                      <DropdownMenuItem
-                        onClick={() => navigate('/profile')}
-                        className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
-                      >
-                        <User className="mr-3 h-5 w-5" />
-                        <span className="font-medium">プロフィール</span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem
-                        onClick={() => navigate('/settings')}
-                        className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200"
-                      >
-                        <Settings className="mr-3 h-5 w-5" />
-                        <span className="font-medium">設定</span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem className="cursor-pointer py-3 px-4 m-1 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all duration-200">
-                        <Award className="mr-3 h-5 w-5" />
-                        <span className="font-medium">実績・バッジ</span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuSeparator className="bg-white/20 dark:bg-white/10" />
-
-                      <DropdownMenuItem
-                        onClick={() => setShowLogoutDialog(true)}
-                        className="cursor-pointer py-3 px-4 m-1 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-                      >
-                        <LogOut className="mr-3 h-5 w-5" />
-                        <span className="font-medium">ログアウト</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Mobile Menu */}
-                  <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                    <SheetTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="lg:hidden h-11 w-11 rounded-2xl bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/15 backdrop-blur-md border border-white/30 dark:border-white/20 shadow-lg"
-                      >
-                        <Menu className="h-5 w-5" />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent
-                      side="left"
-                      className="w-80 p-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-white/20 dark:border-white/10"
-                    >
-                      <ScrollArea className="h-full">
-                        <div className="p-6">
-                          {/* Mobile Logo */}
-                          <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                              <Sparkles className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                              <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                                LifeSync
-                              </h1>
-                              <p className="text-sm text-slate-500 dark:text-slate-400">
-                                生産性プラットフォーム
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Mobile Navigation */}
-                          <div className="space-y-2">
-                            <UnifiedSystemNavigation
-                              compactMode={true}
-                              showStats={false}
-                              orientation="vertical"
-                            />
-                          </div>
-                        </div>
-                      </ScrollArea>
-                    </SheetContent>
-                  </Sheet>
-                </div>
+                <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                  <Settings className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </header>
 
-          {/* Main Content */}
-          <main
-            className="flex-1 relative z-10"
-            role="main"
-            tabIndex={-1}
-            id="main-content"
-            aria-label="メインコンテンツ"
-          >
-            {children}
-          </main>
-        </div>
-
-        {/* Enhanced Logout Dialog */}
-        <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-          <AlertDialogContent className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl rounded-3xl">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-xl font-bold">ログアウトの確認</AlertDialogTitle>
-              <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
-                本当にログアウトしますか？未保存のデータは失われる可能性があります。
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-xl">キャンセル</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleLogout}
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:ring-red-500 rounded-xl shadow-lg"
-              >
-                ログアウト
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          {/* ページコンテンツ */}
+          <div className="flex-1 p-6">{children}</div>
+        </main>
       </div>
     </AccessibilityProvider>
   );
 }
+
+// 使用しない旧コード（削除）
+const badgeMenuItems: MenuItem[] = [];
+const devQualityMenuItems: MenuItem[] = [];
+const toolsMenuItems: MenuItem[] = [];
+const additionalMenuItems: MenuItem[] = [];

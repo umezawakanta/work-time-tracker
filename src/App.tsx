@@ -55,6 +55,19 @@ const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 // const HabitsTrackerPage = lazy(() => import('./pages/HabitsTrackerPage'));
 // const TodoAnalysisPage = lazy(() => import('./pages/TodoAnalysisPage'));
 
+// 📅 Calendar & Task Management
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
+
+// 📚 Personal & Lifestyle
+const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
+const AssetCalendarPage = lazy(() =>
+  import('./pages/AssetCalendarPage').then((module) => ({ default: module.AssetCalendarPage }))
+);
+
+// 🛠️ Project Management
+const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
+
 // 🧠 ADHD/ASD specialized pages
 // const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
 const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
@@ -360,6 +373,72 @@ const App: React.FC = () => {
                                 </LayoutWrapper>
                               }
                             />*/}
+
+                            {/* 📅 Calendar & Task Management */}
+                            <Route
+                              path="/calendar"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <CalendarPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/task-management"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TaskManagementPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/diary"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <DiaryPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 📚 Personal & Lifestyle */}
+                            <Route
+                              path="/bookshelf"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <BookShelfPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/asset-calendar"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AssetCalendarPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 🛠️ Project Management */}
+                            <Route
+                              path="/wbs-creator"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WBSCreatorPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
 
                             {/* 📝 Content & Communication */}
                             <Route
