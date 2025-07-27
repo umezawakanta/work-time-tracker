@@ -12,14 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+
 import {
   Target,
   Package,
@@ -995,60 +988,62 @@ const SiteImprovementPlan: React.FC = () => {
       </Card>
 
       {/* 実装開始ダイアログ */}
-      <Dialog open={showImplementationDialog} onOpenChange={setShowImplementationDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>実装タスクの作成</DialogTitle>
-            <DialogDescription>
-              改善項目「{selectedItem?.title}」の実装タスクを作成します
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {selectedItem && (
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-semibold">概要</h4>
-                  <p className="text-sm text-muted-foreground">{selectedItem.description}</p>
+      {showImplementationDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">実装タスクの作成</h3>
+              <p className="text-sm text-gray-600">
+                改善項目「{selectedItem?.title}」の実装タスクを作成します
+              </p>
+            </div>
+            <div className="space-y-4 py-4">
+              {selectedItem && (
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-semibold">概要</h4>
+                    <p className="text-sm text-gray-600">{selectedItem.description}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold text-sm">推定期間</h4>
+                      <p className="text-sm">{selectedItem.estimatedDays}日</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">優先度</h4>
+                      <Badge className={getPriorityColor(selectedItem.priority)}>
+                        {selectedItem.priority === 'critical' && '最重要'}
+                        {selectedItem.priority === 'high' && '重要'}
+                        {selectedItem.priority === 'medium' && '中'}
+                        {selectedItem.priority === 'low' && '低'}
+                      </Badge>
+                    </div>
+                  </div>
+                  {selectedItem.dependencies && selectedItem.dependencies.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm">依存関係</h4>
+                      <p className="text-sm text-gray-600">
+                        {selectedItem.dependencies.join(', ')}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-sm">推定期間</h4>
-                    <p className="text-sm">{selectedItem.estimatedDays}日</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm">優先度</h4>
-                    <Badge className={getPriorityColor(selectedItem.priority)}>
-                      {selectedItem.priority === 'critical' && '最重要'}
-                      {selectedItem.priority === 'high' && '重要'}
-                      {selectedItem.priority === 'medium' && '中'}
-                      {selectedItem.priority === 'low' && '低'}
-                    </Badge>
-                  </div>
-                </div>
-                {selectedItem.dependencies && selectedItem.dependencies.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-sm">依存関係</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {selectedItem.dependencies.join(', ')}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </div>
+            <div className="flex gap-2 justify-end pt-4">
+              <Button variant="outline" onClick={() => setShowImplementationDialog(false)}>
+                キャンセル
+              </Button>
+              <Button
+                onClick={() => selectedItem && startImplementation(selectedItem)}
+                disabled={isLoading}
+              >
+                {isLoading ? '作成中...' : '実装タスクを作成'}
+              </Button>
+            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowImplementationDialog(false)}>
-              キャンセル
-            </Button>
-            <Button
-              onClick={() => selectedItem && startImplementation(selectedItem)}
-              disabled={isLoading}
-            >
-              {isLoading ? '作成中...' : '実装タスクを作成'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 };
