@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Spinner } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 // ⚡ Dynamic Import for SyntaxHighlighter (Heavy component)
 const SyntaxHighlighter = lazy(() =>
@@ -16,10 +16,7 @@ interface MarkdownRendererProps {
 }
 
 // ⚡ Lightweight Code Block Component
-const CodeBlock: React.FC<{
-  className?: string;
-  children: React.ReactNode;
-}> = ({ className, children, ...props }) => {
+const CodeBlock: React.FC<any> = ({ className, children, ...props }) => {
   const match = /language-(\w+)/.exec(className || '');
   const isInline = !match;
 
@@ -36,7 +33,7 @@ const CodeBlock: React.FC<{
       <Suspense
         fallback={
           <div className="flex justify-center p-4">
-            <Spinner className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         }
       >
@@ -60,7 +57,7 @@ const CodeBlock: React.FC<{
 };
 
 // ⚡ Custom Components for Markdown Elements
-const markdownComponents = {
+const markdownComponents: any = {
   // Headers
   h1: ({ children }: any) => (
     <h1 className="text-3xl font-bold mb-6 pb-2 border-b border-gray-200">{children}</h1>

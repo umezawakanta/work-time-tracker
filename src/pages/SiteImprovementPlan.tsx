@@ -235,21 +235,21 @@ const SiteImprovementPlan: React.FC = () => {
         title: 'UIライブラリの統一',
         description:
           'Material-UI、Radix UI、shadcn-uiが混在している状態をshadcn-ui + Tailwind CSSに統一',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'medium',
         category: 'architecture',
         estimatedDays: 7,
-        progress: 0,
+        progress: 50,
       },
       {
         id: 'remove-deps',
         title: '不要な依存関係の削除',
         description: '未使用のパッケージを削除してバンドルサイズを削減',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'medium',
         category: 'optimization',
         estimatedDays: 2,
-        progress: 0,
+        progress: 60,
       },
       {
         id: 'component-cleanup',
@@ -701,6 +701,10 @@ const SiteImprovementPlan: React.FC = () => {
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
               <ul className="text-sm text-green-700 space-y-1">
+                <li>✅ UIライブラリ統一作業開始 - Material-UI → shadcn-ui移行開始</li>
+                <li>✅ Material-UIパッケージ削除完了 - バンドルサイズ大幅削減</li>
+                <li>✅ ブログコンポーネント群をshadcn-ui移行完了</li>
+                <li>✅ MarkdownRenderer最適化 - Tailwind CSS統一完了</li>
                 <li>✅ サブスクリプションAPI 404エラー修正完了</li>
                 <li>✅ /api/userSubscription/user/[userId] エンドポイント実装</li>
                 <li>✅ デモユーザーデータとプレミアムプラン機能対応</li>
