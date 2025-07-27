@@ -1,5 +1,5 @@
 import React from 'react';
-import { ADHDIntegratedLifeSystem } from '@/components/ADHDIntegratedLifeSystem';
+import { ADHDIntegratedLifeSystem } from '@/components/cognitive/ADHDIntegratedLifeSystem';
 
 export default function ADHDIntegratedLifePage() {
   return (

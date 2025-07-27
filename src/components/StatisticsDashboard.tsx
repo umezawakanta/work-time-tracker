@@ -1,7 +1,7 @@
 import React from 'react';
 import { Book } from '../store/bookSlice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { BaseDashboard, MetricCard } from '@/components/ui/BaseDashboard';
+import { BookOpen, Target, TrendingUp, Star } from 'lucide-react';
 
 interface StatisticsDashboardProps {
   books: Book[];
@@ -13,53 +13,59 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ books }) => {
   const readPages = books.reduce((sum, book) => sum + book.readPages, 0);
   const completedBooks = books.filter((book) => book.readPages === book.totalPages).length;
 
-  const averageRating = books.reduce((sum, book) => sum + book.rating, 0) / totalBooks;
+  const averageRating =
+    totalBooks > 0 ? books.reduce((sum, book) => sum + book.rating, 0) / totalBooks : 0;
+  const completionRate = totalBooks > 0 ? (completedBooks / totalBooks) * 100 : 0;
+  const readingProgress = totalPages > 0 ? (readPages / totalPages) * 100 : 0;
+
+  const metrics: MetricCard[] = [
+    {
+      title: '総本数',
+      value: totalBooks.toString(),
+      icon: <BookOpen className="h-4 w-4" />,
+      color: 'blue',
+    },
+    {
+      title: '読了本数',
+      value: completedBooks.toString(),
+      progress: completionRate,
+      icon: <Target className="h-4 w-4" />,
+      color: 'green',
+      subtitle: `完読率: ${completionRate.toFixed(1)}%`,
+    },
+    {
+      title: '総ページ数',
+      value: totalPages.toLocaleString(),
+      icon: <BookOpen className="h-4 w-4" />,
+      color: 'purple',
+    },
+    {
+      title: '読了ページ数',
+      value: readPages.toLocaleString(),
+      progress: readingProgress,
+      icon: <TrendingUp className="h-4 w-4" />,
+      color: 'orange',
+      subtitle: `進捗率: ${readingProgress.toFixed(1)}%`,
+    },
+    {
+      title: '平均評価',
+      value: averageRating.toFixed(1),
+      icon: <Star className="h-4 w-4" />,
+      color: 'yellow',
+      subtitle: '5点満点',
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>総本数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-4xl font-bold">{totalBooks}</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>読了本数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-4xl font-bold">{completedBooks}</p>
-          <Progress value={(completedBooks / totalBooks) * 100} className="mt-2" />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>総ページ数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-4xl font-bold">{totalPages}</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>読了ページ数</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-4xl font-bold">{readPages}</p>
-          <Progress value={(readPages / totalPages) * 100} className="mt-2" />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>平均評価</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-4xl font-bold">{averageRating.toFixed(1)}</p>
-        </CardContent>
-      </Card>
-    </div>
+    <BaseDashboard
+      title="読書統計"
+      description="読書の進捗と統計情報"
+      icon={<BookOpen className="h-5 w-5" />}
+      metrics={metrics}
+      isEmpty={totalBooks === 0}
+      emptyMessage="まだ本が登録されていません"
+      compactMode
+    />
   );
 };
 

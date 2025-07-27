@@ -254,12 +254,12 @@ const SiteImprovementPlan: React.FC = () => {
       {
         id: 'component-cleanup',
         title: 'コンポーネントの整理',
-        description: '重複したコンポーネントの統合と命名規則の統一',
+        description: '重複したコンポーネントの統合と命名規則の統一、機能別フォルダ構造への移行',
         status: 'in-progress',
         priority: 'high',
         category: 'architecture',
         estimatedDays: 5,
-        progress: 60,
+        progress: 95,
       },
     ],
     phase2: [

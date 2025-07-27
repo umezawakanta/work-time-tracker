@@ -39,7 +39,7 @@ import { InternationalizationProvider } from './hooks/useInternationalization';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 // import CognitiveDashboard from './pages/CognitiveDashboard';
 import { ADHDTaskManager } from './components/cognitive/ADHDTaskManager';
-import { ADHDIntegratedLifeSystem } from './components/ADHDIntegratedLifeSystem';
+import { ADHDIntegratedLifeSystem } from './components/cognitive/ADHDIntegratedLifeSystem';
 // import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
 
 // 🚀 Time Tracking & Work Management - High Priority

@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkTimeRealtimeDashboard } from '@/components/WorkTimeRealtimeDashboard';
+import { WorkTimeRealtimeDashboard } from '@/components/worktime/WorkTimeRealtimeDashboard';
 
 export default function WorkTimeRealtimeDashboardPage() {
   return (

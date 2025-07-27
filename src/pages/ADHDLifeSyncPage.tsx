@@ -1,5 +1,5 @@
 import React from 'react';
-import { ADHDLifeSyncDashboard } from '@/components/ADHDLifeSyncDashboard';
+import { ADHDLifeSyncDashboard } from '@/components/cognitive/ADHDLifeSyncDashboard';
 
 export default function ADHDLifeSyncPage() {
   return (

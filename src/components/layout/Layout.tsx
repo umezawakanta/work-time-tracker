@@ -844,9 +844,3 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
     </AccessibilityProvider>
   );
 }
-
-// 使用しない旧コード（削除）
-const badgeMenuItems: MenuItem[] = [];
-const devQualityMenuItems: MenuItem[] = [];
-const toolsMenuItems: MenuItem[] = [];
-const additionalMenuItems: MenuItem[] = [];
