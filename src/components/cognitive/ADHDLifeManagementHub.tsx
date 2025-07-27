@@ -868,8 +868,11 @@ export const ADHDLifeManagementHub: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">カテゴリ</label>
+                  <label htmlFor="event-category" className="text-sm font-medium text-gray-700">
+                    カテゴリ
+                  </label>
                   <select
+                    id="event-category"
                     value={newEvent.category || 'personal'}
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, category: e.target.value as any }))
@@ -886,8 +889,11 @@ export const ADHDLifeManagementHub: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">エネルギー</label>
+                  <label htmlFor="event-energy" className="text-sm font-medium text-gray-700">
+                    エネルギー
+                  </label>
                   <select
+                    id="event-energy"
                     value={newEvent.energyRequired || 'medium'}
                     onChange={(e) =>
                       setNewEvent((prev) => ({ ...prev, energyRequired: e.target.value as any }))
@@ -958,8 +964,12 @@ export const ADHDLifeManagementHub: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-700">感情トリガー</label>
+                <label htmlFor="transaction-trigger" className="text-sm font-medium text-gray-700">
+                  感情トリガー
+                </label>
                 <select
+                  id="transaction-trigger"
+                  aria-label="感情トリガー"
                   value={newTransaction.emotionalTrigger || 'necessity'}
                   onChange={(e) =>
                     setNewTransaction((prev) => ({
