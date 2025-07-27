@@ -68,6 +68,36 @@ const AssetCalendarPage = lazy(() =>
 // 🛠️ Project Management
 const WBSCreatorPage = lazy(() => import('./pages/WBSCreatorPage'));
 
+// 🏠 Home & Core Pages
+const HomePage = lazy(() => import('./pages/Home'));
+const WorkTimeEntry = lazy(() => import('./pages/WorkTimeEntry'));
+const WorkTimeEntryForm = lazy(() => import('./components/forms/WorkTimeEntryForm'));
+const WorkTimeReports = lazy(() => import('./pages/WorkTimeReports'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
+
+// 🗳️ Election & Political
+const ElectionCandidatesPage = lazy(() => import('./pages/ElectionCandidatesPage'));
+const CandidateRegistrationPage = lazy(() => import('./pages/CandidateRegistrationPage'));
+const DistrictPage = lazy(() => import('./pages/DistrictPage'));
+const TwitterPage = lazy(() => import('./pages/TwitterPage'));
+const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
+
+// 💳 Subscription & Billing
+const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManagementPage'));
+const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
+const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
+
+// 💰 Finance & Reports
+const AssetLiabilityReportPage = lazy(() => import('./pages/AssetLiabilityReportPage'));
+
+// 🏆 Development & Gamification
+const DevelopmentBadgeShowcasePage = lazy(() =>
+  import('./pages/DevelopmentBadgeShowcasePage').then((module) => ({
+    default: module.DevelopmentBadgeShowcasePage,
+  }))
+);
+const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
+
 // 🧠 ADHD/ASD specialized pages
 // const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
 const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
@@ -157,14 +187,26 @@ const App: React.FC = () => {
                       <Suspense fallback={<LoadingSpinner />}>
                         <div className="min-h-screen bg-gray-50">
                           <Routes>
-                            {/* ルートパスとホームページのリダイレクト */}
+                            {/* ホームページ */}
                             <Route
                               path="/"
-                              element={<Navigate to="/integrated-dashboard" replace />}
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <HomePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
                             />
                             <Route
                               path="/home"
-                              element={<Navigate to="/integrated-dashboard" replace />}
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <HomePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
                             />
 
                             <Route
@@ -209,6 +251,36 @@ const App: React.FC = () => {
                             />*/}
 
                             {/* 🚀 Time Tracking & Work Management */}
+                            <Route
+                              path="/worktime-entry"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WorkTimeEntry />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/worktime-form"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WorkTimeEntryForm />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/reports"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WorkTimeReports />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
                             <Route
                               path="/realtime-clock"
                               element={
@@ -580,58 +652,130 @@ const App: React.FC = () => {
                             />
 
                             {/* ⚙️ System Management */}
-                            {/*<Route
-                              path="/admin"
-                              element={
-                                <LayoutWrapper>
-                                  <LazyWrapper>
-                                    <AdminPage />
-                                  </LazyWrapper>
-                                </LayoutWrapper>
-                              }
-                            />*/}
-                            {/*<Route
+                            <Route
                               path="/subscription"
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <SubscriptionPage />
+                                    <SubscriptionManagementPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
-                            />*/}
-                            {/*<Route
-                              path="/premium"
+                            />
+                            <Route
+                              path="/subscription-upgrade"
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <PremiumPage />
+                                    <SubscriptionUpgradePage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
-                            />*/}
+                            />
+                            <Route
+                              path="/billing-history"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <BillingHistoryPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/asset-liability-report"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AssetLiabilityReportPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/profile"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <UserProfile />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 🏆 Development & Gamification */}
+                            <Route
+                              path="/development-badges"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <DevelopmentBadgeShowcasePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/ai-gamification"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AIGamificationPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
 
                             {/* 🗳️ Social & External Systems */}
-                            {/*<Route
-                              path="/election"
+                            <Route
+                              path="/election-candidates"
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <ElectionPage />
+                                    <ElectionCandidatesPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
-                            />*/}
-                            {/*<Route
+                            />
+                            <Route
+                              path="/candidate-registration"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <CandidateRegistrationPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/district/:id"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <DistrictPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
                               path="/twitter"
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <TwitterIntegrationPage />
+                                    <TwitterPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
-                            />*/}
+                            />
+                            <Route
+                              path="/political-trends"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <PoliticalTrends />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
 
                             {/* 📋 Project & Task Management */}
                             {/*<Route

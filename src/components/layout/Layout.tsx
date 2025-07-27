@@ -9,6 +9,7 @@ import { AccessibilityProvider } from '@/components/accessibility/AccessibilityP
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
 import {
   Home,
   Search,
@@ -43,6 +44,11 @@ import {
   FolderKanban,
   MapPin,
   Layers,
+  Users,
+  Twitter,
+  TrendingUp,
+  CreditCard,
+  Star,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -71,10 +77,19 @@ interface LayoutProps {
 const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
   {
     icon: <Home className="h-5 w-5" />,
+    label: '🏠 ホーム',
+    path: '/',
+    description: 'メインホーム画面',
+    badge: 'ホーム',
+    gradient: 'from-blue-400 via-purple-500 to-pink-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <Home className="h-5 w-5" />,
     label: '🏠 統合ダッシュボード',
     path: '/integrated-dashboard',
     description: 'メインダッシュボード画面',
-    badge: 'ホーム',
+    badge: 'ダッシュボード',
     gradient: 'from-blue-400 via-purple-500 to-pink-500',
     accentColor: 'blue',
   },
@@ -162,6 +177,33 @@ const calendarTaskMenuItems: MenuItem[] = [
 
 // 勤怠管理メニューアイテム
 const workTimeMenuItems: MenuItem[] = [
+  {
+    icon: <Clock className="h-5 w-5" />,
+    label: '⏰ 勤怠入力',
+    path: '/worktime-entry',
+    description: '勤怠時間の記録と入力',
+    badge: '入力',
+    gradient: 'from-blue-500 via-teal-500 to-green-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <PenTool className="h-5 w-5" />,
+    label: '📝 勤怠フォーム',
+    path: '/worktime-form',
+    description: '詳細な勤怠情報入力フォーム',
+    badge: 'フォーム',
+    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
+    accentColor: 'teal',
+  },
+  {
+    icon: <BarChart3 className="h-5 w-5" />,
+    label: '📊 勤怠レポート',
+    path: '/reports',
+    description: '勤怠データの詳細レポート表示',
+    badge: 'レポート',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
   {
     icon: <Clock className="h-5 w-5" />,
     label: '⏰ リアルタイム勤怠',
@@ -329,6 +371,117 @@ const personalMenuItems: MenuItem[] = [
   },
 ];
 
+// 開発・ゲーミフィケーションメニューアイテム
+const developmentMenuItems: MenuItem[] = [
+  {
+    icon: <Lightbulb className="h-5 w-5" />,
+    label: '🏆 開発バッジ',
+    path: '/development-badges',
+    description: '開発実績とバッジの確認',
+    badge: 'バッジ',
+    gradient: 'from-yellow-500 via-orange-500 to-red-500',
+    accentColor: 'yellow',
+  },
+  {
+    icon: <Target className="h-5 w-5" />,
+    label: '🎮 ゲーミフィケーション',
+    path: '/ai-gamification',
+    description: 'AI強化ゲーミフィケーション機能',
+    badge: 'ゲーム',
+    gradient: 'from-purple-500 via-pink-500 to-red-500',
+    accentColor: 'purple',
+  },
+];
+
+// 選挙・政治メニューアイテム
+const electionMenuItems: MenuItem[] = [
+  {
+    icon: <Users className="h-5 w-5" />,
+    label: '🗳️ 選挙候補者',
+    path: '/election-candidates',
+    description: '選挙候補者一覧と情報',
+    badge: '選挙',
+    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <Plus className="h-5 w-5" />,
+    label: '📝 候補者登録',
+    path: '/candidate-registration',
+    description: '新しい候補者の登録',
+    badge: '登録',
+    gradient: 'from-green-500 via-teal-500 to-blue-500',
+    accentColor: 'green',
+  },
+  {
+    icon: <MapPin className="h-5 w-5" />,
+    label: '🏛️ 地区情報',
+    path: '/district/1',
+    description: '地区別の詳細情報',
+    badge: '地区',
+    gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
+    accentColor: 'indigo',
+  },
+  {
+    icon: <Twitter className="h-5 w-5" />,
+    label: '🐦 Twitter',
+    path: '/twitter',
+    description: 'Twitter統合機能',
+    badge: 'SNS',
+    gradient: 'from-blue-400 via-sky-500 to-cyan-500',
+    accentColor: 'sky',
+  },
+  {
+    icon: <TrendingUp className="h-5 w-5" />,
+    label: '📈 政治トレンド',
+    path: '/political-trends',
+    description: '政治動向とトレンド分析',
+    badge: 'トレンド',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    accentColor: 'purple',
+  },
+];
+
+// サブスクリプション・請求メニューアイテム
+const subscriptionMenuItems: MenuItem[] = [
+  {
+    icon: <CreditCard className="h-5 w-5" />,
+    label: '💳 サブスクリプション',
+    path: '/subscription',
+    description: 'サブスクリプション管理',
+    badge: 'サブスク',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
+  {
+    icon: <Star className="h-5 w-5" />,
+    label: '⭐ アップグレード',
+    path: '/subscription-upgrade',
+    description: 'プレミアムプランへのアップグレード',
+    badge: 'プレミアム',
+    gradient: 'from-yellow-500 via-orange-500 to-red-500',
+    accentColor: 'yellow',
+  },
+  {
+    icon: <FileText className="h-5 w-5" />,
+    label: '🧾 請求履歴',
+    path: '/billing-history',
+    description: '過去の請求書と支払い履歴',
+    badge: '請求',
+    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <BarChart2 className="h-5 w-5" />,
+    label: '📊 資産負債レポート',
+    path: '/asset-liability-report',
+    description: '資産と負債の詳細レポート',
+    badge: '資産',
+    gradient: 'from-green-500 via-teal-500 to-cyan-500',
+    accentColor: 'green',
+  },
+];
+
 // プロジェクト管理メニューアイテム
 const projectMenuItems: MenuItem[] = [
   {
@@ -348,6 +501,19 @@ const projectMenuItems: MenuItem[] = [
     badge: 'プロジェクト',
     gradient: 'from-blue-500 via-indigo-500 to-purple-500',
     accentColor: 'blue',
+  },
+];
+
+// ユーザー・設定メニューアイテム
+const userMenuItems: MenuItem[] = [
+  {
+    icon: <User className="h-5 w-5" />,
+    label: '👤 プロフィール',
+    path: '/profile',
+    description: 'ユーザープロフィール設定',
+    badge: 'ユーザー',
+    gradient: 'from-slate-500 via-gray-500 to-zinc-500',
+    accentColor: 'slate',
   },
 ];
 
@@ -403,10 +569,38 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
     defaultExpanded: false,
   },
   {
+    id: 'development-gamification',
+    title: '開発・ゲーミフィケーション',
+    icon: <Target className="h-4 w-4" />,
+    items: developmentMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'election-political',
+    title: '選挙・政治',
+    icon: <Users className="h-4 w-4" />,
+    items: electionMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'subscription-billing',
+    title: 'サブスクリプション・請求',
+    icon: <CreditCard className="h-4 w-4" />,
+    items: subscriptionMenuItems,
+    defaultExpanded: false,
+  },
+  {
     id: 'project-management',
     title: 'プロジェクト管理',
     icon: <Lightbulb className="h-4 w-4" />,
     items: projectMenuItems,
+    defaultExpanded: false,
+  },
+  {
+    id: 'user-settings',
+    title: 'ユーザー・設定',
+    icon: <User className="h-4 w-4" />,
+    items: userMenuItems,
     defaultExpanded: false,
   },
 ];
@@ -620,6 +814,8 @@ export default function Layout({ children }: LayoutProps) {
               </div>
 
               <div className="flex items-center gap-4">
+                <LanguageSwitcher variant="compact" className="text-gray-600 dark:text-gray-300" />
+
                 <Button
                   variant="ghost"
                   size="sm"
