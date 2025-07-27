@@ -47,6 +47,32 @@ const RTL_LOCALES: Set<Locale> = new Set(['ar', 'he', 'fa', 'ur']);
 
 const DEFAULT_LOCALE: Locale = 'ja';
 
+function isValidLocale(value: any): value is Locale {
+  return typeof value === 'string' && value in SUPPORTED_LOCALES;
+}
+
+function getBrowserLocaleStandalone(): Locale {
+  try {
+    const language = navigator.language || navigator.languages?.[0] || '';
+    const baseLanguage = language.split('-')[0].toLowerCase();
+
+    const languageMap: Record<string, Locale> = {
+      ja: 'ja',
+      en: 'en',
+      zh: 'zh',
+      ko: 'ko',
+      ar: 'ar',
+      he: 'he',
+      fa: 'fa',
+      ur: 'ur',
+    };
+
+    return languageMap[baseLanguage] || DEFAULT_LOCALE;
+  } catch (error) {
+    return DEFAULT_LOCALE;
+  }
+}
+
 export const LocaleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Initialize locale from localStorage or browser preference
   const [locale, setLocaleState] = useState<Locale>(() => {
@@ -56,8 +82,8 @@ export const LocaleProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         return saved;
       }
 
-      // Try to detect from browser
-      const browserLocale = getBrowserLocale();
+      // Try to detect from browser using the standalone function
+      const browserLocale = getBrowserLocaleStandalone();
       return browserLocale;
     } catch (error) {
       console.warn('Failed to load locale from storage:', error);
@@ -285,30 +311,3 @@ export const useLocale = (): LocaleContextType => {
   }
   return context;
 };
-
-// Helper function used in initialization
-function isValidLocale(value: any): value is Locale {
-  return typeof value === 'string' && value in SUPPORTED_LOCALES;
-}
-
-function getBrowserLocale(): Locale {
-  try {
-    const language = navigator.language || navigator.languages?.[0] || '';
-    const baseLanguage = language.split('-')[0].toLowerCase();
-
-    const languageMap: Record<string, Locale> = {
-      ja: 'ja',
-      en: 'en',
-      zh: 'zh',
-      ko: 'ko',
-      ar: 'ar',
-      he: 'he',
-      fa: 'fa',
-      ur: 'ur',
-    };
-
-    return languageMap[baseLanguage] || DEFAULT_LOCALE;
-  } catch (error) {
-    return DEFAULT_LOCALE;
-  }
-}

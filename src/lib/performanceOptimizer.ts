@@ -173,8 +173,8 @@ export class PerformanceOptimizer {
     const criticalResources = [
       // フォント
       { href: '/fonts/inter-var.woff2', as: 'font', type: 'font/woff2' },
-      // Critical CSS
-      { href: '/styles/critical.css', as: 'style' },
+      // Critical CSS - removed non-existent file to prevent MIME type error
+      // { href: '/styles/critical.css', as: 'style' },
     ];
 
     criticalResources.forEach((resource) => {
