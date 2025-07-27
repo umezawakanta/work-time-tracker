@@ -12,6 +12,13 @@ import {
 } from '@/services/cognitive/CognitiveDataPersistenceService';
 import type { ADHDTask } from '@/services/cognitive/CognitiveDataPersistenceService';
 import {
+  AdaptiveUIProvider,
+  AdaptiveCard,
+  AdaptiveButton,
+  AdaptiveText,
+} from '@/components/adaptive/AdaptiveUISystem';
+import { CognitiveLoadDashboard } from '@/components/cognitive/CognitiveLoadDashboard';
+import {
   Plus,
   Play,
   Pause,
@@ -483,399 +490,423 @@ export const ADHDTaskManager: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ヘッダー - エネルギー状態とコントロール */}
-      <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
-              <Brain className="h-6 w-6" />
-              ADHD/ASD タスク管理システム
-            </h1>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Battery className="h-4 w-4" />
-                <span className="text-sm">エネルギー: {energyState.current}%</span>
-                <div className={`px-2 py-1 rounded text-xs ${getEnergyColor(energyState.current)}`}>
-                  {energyState.current >= 80
-                    ? '絶好調'
-                    : energyState.current >= 60
-                      ? '良好'
-                      : energyState.current >= 40
-                        ? '普通'
-                        : energyState.current >= 20
-                          ? '疲労'
-                          : '要休憩'}
+    <AdaptiveUIProvider userId={user?.id || 'demo-user'} autoStart={true}>
+      <div className="space-y-6">
+        {/* リアルタイム認知負荷監視とヘッダー */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div className="lg:col-span-3">
+            {/* ヘッダー - エネルギー状態とコントロール */}
+            <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 rounded-xl p-6 text-white">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                    <Brain className="h-6 w-6" />
+                    ADHD/ASD タスク管理システム
+                  </h1>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Battery className="h-4 w-4" />
+                      <span className="text-sm">エネルギー: {energyState.current}%</span>
+                      <div
+                        className={`px-2 py-1 rounded text-xs ${getEnergyColor(energyState.current)}`}
+                      >
+                        {energyState.current >= 80
+                          ? '絶好調'
+                          : energyState.current >= 60
+                            ? '良好'
+                            : energyState.current >= 40
+                              ? '普通'
+                              : energyState.current >= 20
+                                ? '疲労'
+                                : '要休憩'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setSensoryFriendly(!sensoryFriendly)}
+                    className="flex items-center gap-2"
+                  >
+                    {sensoryFriendly ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {sensoryFriendly ? '通常表示' : '感覚配慮'}
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowAddTask(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    新しいタスク
+                  </Button>
+                </div>
+              </div>
+
+              {/* 今日の進捗サマリー */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="text-2xl font-bold">{columns[3].tasks.length}</div>
+                  <div className="text-sm text-blue-100">完了タスク</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="text-2xl font-bold">{columns[2].tasks.length}</div>
+                  <div className="text-sm text-blue-100">実行中</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="text-2xl font-bold">{columns[1].tasks.length}</div>
+                  <div className="text-sm text-blue-100">今日予定</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                  <div className="text-2xl font-bold">
+                    {Math.round(
+                      columns[3].tasks.reduce((sum, task) => sum + task.dopamineReward, 0)
+                    )}
+                  </div>
+                  <div className="text-sm text-blue-100">ドーパミン獲得</div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* 認知負荷ダッシュボード（コンパクト） */}
+          <div className="lg:col-span-1">
+            <CognitiveLoadDashboard
+              userId={user?.id || 'demo-user'}
+              compactMode={true}
+              autoStart={true}
+            />
+          </div>
+        </div>
+
+        {/* フィルター・表示モード */}
+        <div className="flex flex-wrap gap-4 items-center">
           <div className="flex gap-2">
             <Button
-              variant="secondary"
+              variant={visualMode === 'board' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSensoryFriendly(!sensoryFriendly)}
-              className="flex items-center gap-2"
+              onClick={() => setVisualMode('board')}
             >
-              {sensoryFriendly ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              {sensoryFriendly ? '通常表示' : '感覚配慮'}
+              カンバン
             </Button>
-
             <Button
-              variant="secondary"
+              variant={visualMode === 'list' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setShowAddTask(true)}
-              className="flex items-center gap-2"
+              onClick={() => setVisualMode('list')}
             >
-              <Plus className="h-4 w-4" />
-              新しいタスク
+              リスト
             </Button>
           </div>
+
+          <div className="flex gap-2 items-center">
+            <span className="text-sm text-gray-600">フィルター:</span>
+            <select
+              value={filter.energy}
+              onChange={(e) => setFilter((prev) => ({ ...prev, energy: e.target.value as any }))}
+              className="text-sm border rounded px-2 py-1"
+              aria-label="エネルギーフィルター"
+            >
+              <option value="any">エネルギー: 全て</option>
+              <option value="low">低エネルギー</option>
+              <option value="medium">中エネルギー</option>
+              <option value="high">高エネルギー</option>
+            </select>
+
+            <select
+              value={filter.priority}
+              onChange={(e) => setFilter((prev) => ({ ...prev, priority: e.target.value as any }))}
+              className="text-sm border rounded px-2 py-1"
+              aria-label="優先度フィルター"
+            >
+              <option value="any">優先度: 全て</option>
+              <option value="urgent">緊急</option>
+              <option value="high">高</option>
+              <option value="medium">中</option>
+              <option value="low">低</option>
+            </select>
+          </div>
         </div>
 
-        {/* 今日の進捗サマリー */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-2xl font-bold">{columns[3].tasks.length}</div>
-            <div className="text-sm text-blue-100">完了タスク</div>
-          </div>
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-2xl font-bold">{columns[2].tasks.length}</div>
-            <div className="text-sm text-blue-100">実行中</div>
-          </div>
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-2xl font-bold">{columns[1].tasks.length}</div>
-            <div className="text-sm text-blue-100">今日予定</div>
-          </div>
-          <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-            <div className="text-2xl font-bold">
-              {Math.round(columns[3].tasks.reduce((sum, task) => sum + task.dopamineReward, 0))}
-            </div>
-            <div className="text-sm text-blue-100">ドーパミン獲得</div>
-          </div>
-        </div>
-      </div>
+        {/* メインタスクボード */}
+        {visualMode === 'board' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {columns.map((column) => (
+              <Card key={column.id} className="h-fit">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center justify-between">
+                    <span>{column.title}</span>
+                    <Badge variant="outline">{column.tasks.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {column.tasks.map((task) => {
+                    const recommendation = getTaskRecommendation(task);
+                    const progressPercentage = Math.round(
+                      (task.completedSteps / Math.max(task.breakdownSteps.length, 1)) * 100
+                    );
 
-      {/* フィルター・表示モード */}
-      <div className="flex flex-wrap gap-4 items-center">
-        <div className="flex gap-2">
-          <Button
-            variant={visualMode === 'board' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setVisualMode('board')}
-          >
-            カンバン
-          </Button>
-          <Button
-            variant={visualMode === 'list' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setVisualMode('list')}
-          >
-            リスト
-          </Button>
-        </div>
-
-        <div className="flex gap-2 items-center">
-          <span className="text-sm text-gray-600">フィルター:</span>
-          <select
-            value={filter.energy}
-            onChange={(e) => setFilter((prev) => ({ ...prev, energy: e.target.value as any }))}
-            className="text-sm border rounded px-2 py-1"
-            aria-label="エネルギーフィルター"
-          >
-            <option value="any">エネルギー: 全て</option>
-            <option value="low">低エネルギー</option>
-            <option value="medium">中エネルギー</option>
-            <option value="high">高エネルギー</option>
-          </select>
-
-          <select
-            value={filter.priority}
-            onChange={(e) => setFilter((prev) => ({ ...prev, priority: e.target.value as any }))}
-            className="text-sm border rounded px-2 py-1"
-            aria-label="優先度フィルター"
-          >
-            <option value="any">優先度: 全て</option>
-            <option value="urgent">緊急</option>
-            <option value="high">高</option>
-            <option value="medium">中</option>
-            <option value="low">低</option>
-          </select>
-        </div>
-      </div>
-
-      {/* メインタスクボード */}
-      {visualMode === 'board' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {columns.map((column) => (
-            <Card key={column.id} className="h-fit">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center justify-between">
-                  <span>{column.title}</span>
-                  <Badge variant="outline">{column.tasks.length}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {column.tasks.map((task) => {
-                  const recommendation = getTaskRecommendation(task);
-                  const progressPercentage = Math.round(
-                    (task.completedSteps / Math.max(task.breakdownSteps.length, 1)) * 100
-                  );
-
-                  return (
-                    <Card
-                      key={task.id}
-                      className={`p-4 transition-all cursor-pointer ${
-                        sensoryFriendly ? 'shadow-sm' : 'hover:shadow-md'
-                      } ${!recommendation.isRecommended && task.status !== 'done' ? 'opacity-60' : ''}`}
-                    >
-                      <div className="space-y-3">
-                        {/* タスクヘッダー */}
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900 text-sm">{task.title}</h3>
-                            {task.description && (
-                              <p className="text-xs text-gray-600 mt-1">{task.description}</p>
+                    return (
+                      <Card
+                        key={task.id}
+                        className={`p-4 transition-all cursor-pointer ${
+                          sensoryFriendly ? 'shadow-sm' : 'hover:shadow-md'
+                        } ${!recommendation.isRecommended && task.status !== 'done' ? 'opacity-60' : ''}`}
+                      >
+                        <div className="space-y-3">
+                          {/* タスクヘッダー */}
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-medium text-gray-900 text-sm">{task.title}</h3>
+                              {task.description && (
+                                <p className="text-xs text-gray-600 mt-1">{task.description}</p>
+                              )}
+                            </div>
+                            {task.isHyperfocusRisk && (
+                              <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0" />
                             )}
                           </div>
-                          {task.isHyperfocusRisk && (
-                            <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0" />
-                          )}
-                        </div>
 
-                        {/* メタ情報 */}
-                        <div className="flex items-center gap-2 text-xs">
-                          <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
-                          <div className="flex items-center gap-1">
-                            {getEnergyIcon(task.energyRequired)}
-                            <span className="text-gray-600">{task.estimatedMinutes}分</span>
-                          </div>
-                        </div>
-
-                        {/* 進捗バー */}
-                        {task.breakdownSteps.length > 0 && (
-                          <div>
-                            <div className="flex items-center justify-between text-xs mb-1">
-                              <span className="text-gray-600">進捗</span>
-                              <span className="text-gray-600">
-                                {task.completedSteps}/{task.breakdownSteps.length}
-                              </span>
+                          {/* メタ情報 */}
+                          <div className="flex items-center gap-2 text-xs">
+                            <Badge className={getPriorityColor(task.priority)}>
+                              {task.priority}
+                            </Badge>
+                            <div className="flex items-center gap-1">
+                              {getEnergyIcon(task.energyRequired)}
+                              <span className="text-gray-600">{task.estimatedMinutes}分</span>
                             </div>
-                            <Progress value={progressPercentage} className="h-2" />
                           </div>
-                        )}
 
-                        {/* アクションボタン */}
-                        <div className="flex gap-2">
-                          {task.status === 'today' && (
-                            <Button
-                              size="sm"
-                              onClick={() => startTimeBox(task.id, task.estimatedMinutes)}
-                              className="flex items-center gap-1 text-xs"
-                              disabled={!recommendation.isRecommended}
-                            >
-                              <Play className="h-3 w-3" />
-                              開始
-                            </Button>
-                          )}
-
-                          {task.status === 'doing' && (
-                            <Button
-                              size="sm"
-                              onClick={() => completeTask(task.id)}
-                              className="flex items-center gap-1 text-xs"
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              完了
-                            </Button>
-                          )}
-
-                          {task.status === 'ideas' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => moveTask(task.id, 'today')}
-                              className="flex items-center gap-1 text-xs"
-                            >
-                              <ArrowRight className="h-3 w-3" />
-                              今日やる
-                            </Button>
-                          )}
-
-                          {task.status === 'done' && (
-                            <div className="flex items-center gap-1 text-xs text-green-600">
-                              <Star className="h-3 w-3" />+{task.dopamineReward} ドーパミン
+                          {/* 進捗バー */}
+                          {task.breakdownSteps.length > 0 && (
+                            <div>
+                              <div className="flex items-center justify-between text-xs mb-1">
+                                <span className="text-gray-600">進捗</span>
+                                <span className="text-gray-600">
+                                  {task.completedSteps}/{task.breakdownSteps.length}
+                                </span>
+                              </div>
+                              <Progress value={progressPercentage} className="h-2" />
                             </div>
                           )}
-                        </div>
 
-                        {/* 推奨メッセージ */}
-                        {!recommendation.isRecommended && task.status !== 'done' && (
-                          <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                            <p className="text-xs text-yellow-800">{recommendation.reason}</p>
+                          {/* アクションボタン */}
+                          <div className="flex gap-2">
+                            {task.status === 'today' && (
+                              <Button
+                                size="sm"
+                                onClick={() => startTimeBox(task.id, task.estimatedMinutes)}
+                                className="flex items-center gap-1 text-xs"
+                                disabled={!recommendation.isRecommended}
+                              >
+                                <Play className="h-3 w-3" />
+                                開始
+                              </Button>
+                            )}
+
+                            {task.status === 'doing' && (
+                              <Button
+                                size="sm"
+                                onClick={() => completeTask(task.id)}
+                                className="flex items-center gap-1 text-xs"
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                完了
+                              </Button>
+                            )}
+
+                            {task.status === 'ideas' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => moveTask(task.id, 'today')}
+                                className="flex items-center gap-1 text-xs"
+                              >
+                                <ArrowRight className="h-3 w-3" />
+                                今日やる
+                              </Button>
+                            )}
+
+                            {task.status === 'done' && (
+                              <div className="flex items-center gap-1 text-xs text-green-600">
+                                <Star className="h-3 w-3" />+{task.dopamineReward} ドーパミン
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </Card>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
 
-      {/* 新しいタスク追加ダイアログ */}
-      {showAddTask && (
-        <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">新しいタスクを追加</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowAddTask(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+                          {/* 推奨メッセージ */}
+                          {!recommendation.isRecommended && task.status !== 'done' && (
+                            <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                              <p className="text-xs text-yellow-800">{recommendation.reason}</p>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700">タスク名</label>
-                <Input
-                  value={newTask.title || ''}
-                  onChange={(e) => setNewTask((prev) => ({ ...prev, title: e.target.value }))}
-                  placeholder="タスク名を入力..."
-                />
+        {/* 新しいタスク追加ダイアログ */}
+        {showAddTask && (
+          <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">新しいタスクを追加</h2>
+                <Button variant="ghost" size="sm" onClick={() => setShowAddTask(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700">説明（任意）</label>
-                <Textarea
-                  value={newTask.description || ''}
-                  onChange={(e) => setNewTask((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="詳細説明..."
-                  rows={2}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">優先度</label>
-                  <select
-                    value={newTask.priority || 'medium'}
-                    onChange={(e) =>
-                      setNewTask((prev) => ({ ...prev, priority: e.target.value as any }))
-                    }
-                    className="w-full border rounded px-3 py-2"
-                    aria-label="優先度"
-                  >
-                    <option value="low">低</option>
-                    <option value="medium">中</option>
-                    <option value="high">高</option>
-                    <option value="urgent">緊急</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-gray-700">必要エネルギー</label>
-                  <select
-                    value={newTask.energyRequired || 'medium'}
-                    onChange={(e) =>
-                      setNewTask((prev) => ({ ...prev, energyRequired: e.target.value as any }))
-                    }
-                    className="w-full border rounded px-3 py-2"
-                    aria-label="必要エネルギー"
-                  >
-                    <option value="low">低</option>
-                    <option value="medium">中</option>
-                    <option value="high">高</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700">予想時間（分）</label>
+                  <label className="text-sm font-medium text-gray-700">タスク名</label>
                   <Input
-                    type="number"
-                    value={newTask.estimatedMinutes || 30}
-                    onChange={(e) =>
-                      setNewTask((prev) => ({
-                        ...prev,
-                        estimatedMinutes: parseInt(e.target.value),
-                      }))
-                    }
+                    value={newTask.title || ''}
+                    onChange={(e) => setNewTask((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="タスク名を入力..."
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-700">カテゴリ</label>
-                  <select
-                    value={newTask.category || 'personal'}
+                  <label className="text-sm font-medium text-gray-700">説明（任意）</label>
+                  <Textarea
+                    value={newTask.description || ''}
                     onChange={(e) =>
-                      setNewTask((prev) => ({ ...prev, category: e.target.value as any }))
+                      setNewTask((prev) => ({ ...prev, description: e.target.value }))
                     }
-                    className="w-full border rounded px-3 py-2"
-                    aria-label="カテゴリ"
-                  >
-                    <option value="work">仕事</option>
-                    <option value="personal">個人</option>
-                    <option value="health">健康</option>
-                    <option value="creative">クリエイティブ</option>
-                    <option value="admin">事務</option>
-                  </select>
+                    placeholder="詳細説明..."
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">優先度</label>
+                    <select
+                      value={newTask.priority || 'medium'}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({ ...prev, priority: e.target.value as any }))
+                      }
+                      className="w-full border rounded px-3 py-2"
+                      aria-label="優先度"
+                    >
+                      <option value="low">低</option>
+                      <option value="medium">中</option>
+                      <option value="high">高</option>
+                      <option value="urgent">緊急</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">必要エネルギー</label>
+                    <select
+                      value={newTask.energyRequired || 'medium'}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({ ...prev, energyRequired: e.target.value as any }))
+                      }
+                      className="w-full border rounded px-3 py-2"
+                      aria-label="必要エネルギー"
+                    >
+                      <option value="low">低</option>
+                      <option value="medium">中</option>
+                      <option value="high">高</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">予想時間（分）</label>
+                    <Input
+                      type="number"
+                      value={newTask.estimatedMinutes || 30}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          estimatedMinutes: parseInt(e.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">カテゴリ</label>
+                    <select
+                      value={newTask.category || 'personal'}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({ ...prev, category: e.target.value as any }))
+                      }
+                      className="w-full border rounded px-3 py-2"
+                      aria-label="カテゴリ"
+                    >
+                      <option value="work">仕事</option>
+                      <option value="personal">個人</option>
+                      <option value="health">健康</option>
+                      <option value="creative">クリエイティブ</option>
+                      <option value="admin">事務</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button onClick={addTask} className="flex-1">
+                    追加
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowAddTask(false)}>
+                    キャンセル
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* アクティブなタイムボックス表示 */}
+        {activeSession && (
+          <Card className="fixed bottom-4 right-4 w-80 bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-blue-900">集中セッション</h3>
+                <div className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm text-blue-700">
+                    {Math.round(differenceInMinutes(new Date(), activeSession.startTime))}分経過
+                  </span>
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button onClick={addTask} className="flex-1">
-                  追加
+              <div className="text-sm text-blue-800 mb-3">
+                {tasks.find((t) => t.id === activeSession.taskId)?.title}
+              </div>
+
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline">
+                  <Coffee className="h-4 w-4 mr-1" />
+                  休憩
                 </Button>
-                <Button variant="outline" onClick={() => setShowAddTask(false)}>
-                  キャンセル
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    completeTask(activeSession.taskId);
+                    setActiveSession(null);
+                  }}
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
+                  完了
                 </Button>
               </div>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* アクティブなタイムボックス表示 */}
-      {activeSession && (
-        <Card className="fixed bottom-4 right-4 w-80 bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-blue-900">集中セッション</h3>
-              <div className="flex items-center gap-2">
-                <Timer className="h-4 w-4 text-blue-600" />
-                <span className="text-sm text-blue-700">
-                  {Math.round(differenceInMinutes(new Date(), activeSession.startTime))}分経過
-                </span>
-              </div>
-            </div>
-
-            <div className="text-sm text-blue-800 mb-3">
-              {tasks.find((t) => t.id === activeSession.taskId)?.title}
-            </div>
-
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline">
-                <Coffee className="h-4 w-4 mr-1" />
-                休憩
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => {
-                  completeTask(activeSession.taskId);
-                  setActiveSession(null);
-                }}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-1" />
-                完了
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </AdaptiveUIProvider>
   );
 };
