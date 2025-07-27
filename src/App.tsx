@@ -578,6 +578,16 @@ const App: React.FC = () => {
                               }
                             />*/}
                             <Route
+                              path="/improvement-plan"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SiteImprovementPlan />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
                               path="/improvement-plan/:id"
                               element={
                                 <LayoutWrapper>
