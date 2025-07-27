@@ -29,7 +29,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AdaptiveUIProvider } from './context/AdaptiveUIContext';
 import { RealtimeAdaptationProvider } from './components/realtime/RealtimeAdaptationProvider';
 import { PomodoroProvider } from './context/PomodoroContext';
-import { InternationalizationProvider } from './context/InternationalizationContext';
+import { InternationalizationProvider } from './hooks/useInternationalization';
 
 // Core pages - Always loaded
 // import HomePage from './pages/HomePage';
