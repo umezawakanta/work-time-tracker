@@ -605,7 +605,7 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
   },
 ];
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
