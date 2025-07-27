@@ -312,6 +312,15 @@ const systemMenuItems: MenuItem[] = [
     accentColor: 'purple',
   },
   {
+    icon: <Zap className="h-5 w-5" />,
+    label: '🏭 本番環境最適化',
+    path: '/production-optimization',
+    description: 'CDN統合・キャッシュ戦略・監視システム・パフォーマンス最適化',
+    badge: '最新',
+    gradient: 'from-green-500 via-blue-500 to-purple-500',
+    accentColor: 'green',
+  },
+  {
     icon: <AlertTriangle className="h-5 w-5" />,
     label: '⚠️ エラーダッシュボード',
     path: '/error-dashboard',

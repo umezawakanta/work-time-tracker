@@ -128,6 +128,7 @@ const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
 const AdvancedPerformanceMonitoringPage = lazy(
   () => import('./pages/AdvancedPerformanceMonitoringPage')
 );
+const ProductionOptimizationPage = lazy(() => import('./pages/ProductionOptimizationPage'));
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
@@ -594,6 +595,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <AdvancedPerformanceMonitoringPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/production-optimization"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ProductionOptimizationPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
