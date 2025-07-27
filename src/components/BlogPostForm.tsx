@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Chip, Autocomplete } from '@mui/material';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { X } from 'lucide-react';
 
 interface BlogPostFormProps {
   initialValues?: {
@@ -26,64 +32,99 @@ export const BlogPostForm: React.FC<BlogPostFormProps> = ({
   const [content, setContent] = useState(initialValues.content);
   const [category, setCategory] = useState(initialValues.category);
   const [tags, setTags] = useState<string[]>(initialValues.tags);
+  const [tagInput, setTagInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({ title, content, category, tags });
   };
 
+  const handleTagInputKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      e.preventDefault();
+      if (!tags.includes(tagInput.trim())) {
+        setTags([...tags, tagInput.trim()]);
+      }
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
-      <TextField
-        fullWidth
-        label="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        margin="normal"
-        required
-      />
-      <Autocomplete
-        multiple
-        freeSolo
-        options={[]}
-        value={tags}
-        onChange={(_, newValue) => setTags(newValue)}
-        renderTags={(value, getTagProps) =>
-          value.map((option, index) => (
-            <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            label="Tags"
-            placeholder="Press enter to add tags"
-            margin="normal"
-          />
-        )}
-      />
-      <TextField
-        fullWidth
-        label="Content"
-        multiline
-        rows={10}
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        margin="normal"
-        required
-      />
-      <Button type="submit" variant="contained" color="primary">
-        {submitButtonText}
-      </Button>
-    </Box>
+    <Card className="p-6">
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title *</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="Enter blog post title"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <Input
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+              placeholder="Enter category"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags</Label>
+            <Input
+              id="tags"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyPress={handleTagInputKeyPress}
+              placeholder="Press enter to add tags"
+            />
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {tags.map((tag, index) => (
+                  <Badge key={index} variant="outline" className="pr-1">
+                    {tag}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 ml-1"
+                      onClick={() => removeTag(tag)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="content">Content *</Label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+              rows={10}
+              placeholder="Enter blog post content"
+            />
+          </div>
+
+          <Button type="submit" className="w-full">
+            {submitButtonText}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 };

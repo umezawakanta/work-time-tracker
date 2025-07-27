@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppDispatch, RootState } from '@/store';
 import { selectBlogPostById, updateBlogPost, addBlogPost, BlogPost } from '@/store/blogSlice';
-import { Container, Typography, Box } from '@mui/material';
 import { BlogPostForm } from '@/components/BlogPostForm';
 
 const BlogPostEditor: React.FC = () => {
@@ -36,21 +35,21 @@ const BlogPostEditor: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom>
+    <div className="container mx-auto max-w-4xl px-4 py-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">
         {id ? 'Edit Blog Post' : 'Create New Blog Post'}
-      </Typography>
+      </h1>
       <BlogPostForm
         initialValues={existingPost}
         onSubmit={handleSubmit}
         submitButtonText={id ? 'Update' : 'Publish'}
       />
       {!id && (
-        <Box mt={2}>
-          <Typography variant="body2">Your changes are automatically saved as a draft.</Typography>
-        </Box>
+        <div className="mt-4">
+          <p className="text-sm text-gray-600">Your changes are automatically saved as a draft.</p>
+        </div>
       )}
-    </Container>
+    </div>
   );
 };
 

@@ -1,19 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import ReactMarkdown from 'react-markdown';
-import {
-  Typography,
-  Box,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Link,
-  CircularProgress,
-} from '@mui/material';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Spinner } from 'lucide-react';
 
 // ⚡ Dynamic Import for SyntaxHighlighter (Heavy component)
 const SyntaxHighlighter = lazy(() =>
@@ -36,29 +25,19 @@ const CodeBlock: React.FC<{
 
   if (isInline) {
     return (
-      <Box
-        component="code"
-        sx={{
-          backgroundColor: 'grey.100',
-          padding: '2px 6px',
-          borderRadius: 1,
-          fontFamily: 'monospace',
-          fontSize: '0.9em',
-        }}
-        {...props}
-      >
+      <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono" {...props}>
         {children}
-      </Box>
+      </code>
     );
   }
 
   return (
-    <Box sx={{ my: 2 }}>
+    <div className="my-4">
       <Suspense
         fallback={
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-            <CircularProgress size={20} />
-          </Box>
+          <div className="flex justify-center p-4">
+            <Spinner className="h-5 w-5 animate-spin" />
+          </div>
         }
       >
         <SyntaxHighlighter
@@ -76,120 +55,91 @@ const CodeBlock: React.FC<{
           {String(children).replace(/\n$/, '')}
         </SyntaxHighlighter>
       </Suspense>
-    </Box>
+    </div>
   );
+};
+
+// ⚡ Custom Components for Markdown Elements
+const markdownComponents = {
+  // Headers
+  h1: ({ children }: any) => (
+    <h1 className="text-3xl font-bold mb-6 pb-2 border-b border-gray-200">{children}</h1>
+  ),
+  h2: ({ children }: any) => <h2 className="text-2xl font-semibold mb-4 mt-8">{children}</h2>,
+  h3: ({ children }: any) => <h3 className="text-xl font-semibold mb-3 mt-6">{children}</h3>,
+  h4: ({ children }: any) => <h4 className="text-lg font-semibold mb-2 mt-4">{children}</h4>,
+  h5: ({ children }: any) => <h5 className="text-base font-semibold mb-2 mt-3">{children}</h5>,
+  h6: ({ children }: any) => <h6 className="text-sm font-semibold mb-2 mt-2">{children}</h6>,
+
+  // Paragraphs and text
+  p: ({ children }: any) => <p className="mb-4 leading-relaxed text-gray-700">{children}</p>,
+
+  // Lists
+  ul: ({ children }: any) => <ul className="list-disc pl-6 mb-4 space-y-1">{children}</ul>,
+  ol: ({ children }: any) => <ol className="list-decimal pl-6 mb-4 space-y-1">{children}</ol>,
+  li: ({ children }: any) => <li className="text-gray-700">{children}</li>,
+
+  // Links
+  a: ({ href, children }: any) => (
+    <a
+      href={href}
+      className="text-blue-600 hover:text-blue-800 underline"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+    </a>
+  ),
+
+  // Code
+  code: CodeBlock,
+
+  // Emphasis
+  strong: ({ children }: any) => <strong className="font-semibold">{children}</strong>,
+  em: ({ children }: any) => <em className="italic">{children}</em>,
+
+  // Blockquotes
+  blockquote: ({ children }: any) => (
+    <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-600">
+      {children}
+    </blockquote>
+  ),
+
+  // Horizontal Rule
+  hr: () => <Separator className="my-8" />,
+
+  // Tables
+  table: ({ children }: any) => (
+    <div className="overflow-auto my-6">
+      <table className="min-w-full border border-gray-200 rounded-lg">{children}</table>
+    </div>
+  ),
+  thead: ({ children }: any) => <thead className="bg-gray-50">{children}</thead>,
+  tbody: ({ children }: any) => <tbody className="divide-y divide-gray-200">{children}</tbody>,
+  tr: ({ children }: any) => <tr className="hover:bg-gray-50">{children}</tr>,
+  th: ({ children }: any) => (
+    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
+      {children}
+    </th>
+  ),
+  td: ({ children }: any) => <td className="px-4 py-3 text-sm text-gray-700">{children}</td>,
+
+  // Images
+  img: ({ src, alt }: any) => (
+    <img
+      src={src}
+      alt={alt}
+      className="max-w-full h-auto rounded-lg shadow-md my-4"
+      loading="lazy"
+    />
+  ),
 };
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
-    <ReactMarkdown
-      components={{
-        // 見出し
-        h1: ({ children }) => (
-          <Typography variant="h3" component="h1" gutterBottom sx={{ mt: 4, mb: 2 }}>
-            {children}
-          </Typography>
-        ),
-        h2: ({ children }) => (
-          <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 3, mb: 2 }}>
-            {children}
-          </Typography>
-        ),
-        h3: ({ children }) => (
-          <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 2, mb: 1 }}>
-            {children}
-          </Typography>
-        ),
-        h4: ({ children }) => (
-          <Typography variant="h6" component="h4" gutterBottom sx={{ mt: 2, mb: 1 }}>
-            {children}
-          </Typography>
-        ),
-
-        // 段落
-        p: ({ children }) => (
-          <Typography variant="body1" paragraph sx={{ lineHeight: 1.8 }}>
-            {children}
-          </Typography>
-        ),
-
-        // ⚡ Optimized Code Block
-        code: CodeBlock as any,
-
-        // リスト
-        ul: ({ children }) => (
-          <Box component="ul" sx={{ pl: 3, my: 1 }}>
-            {children}
-          </Box>
-        ),
-        ol: ({ children }) => (
-          <Box component="ol" sx={{ pl: 3, my: 1 }}>
-            {children}
-          </Box>
-        ),
-        li: ({ children }) => (
-          <Typography component="li" variant="body1" sx={{ mb: 0.5 }}>
-            {children}
-          </Typography>
-        ),
-
-        // 引用
-        blockquote: ({ children }) => (
-          <Box
-            sx={{
-              borderLeft: 4,
-              borderColor: 'primary.main',
-              pl: 2,
-              my: 2,
-              backgroundColor: 'grey.50',
-              py: 1,
-            }}
-          >
-            {children}
-          </Box>
-        ),
-
-        // 水平線
-        hr: () => <Divider sx={{ my: 3 }} />,
-
-        // リンク
-        a: ({ href, children }) => (
-          <Link href={href} target="_blank" rel="noopener noreferrer">
-            {children}
-          </Link>
-        ),
-
-        // テーブル
-        table: ({ children }) => (
-          <TableContainer component={Paper} sx={{ my: 2 }}>
-            <Table size="small">{children}</Table>
-          </TableContainer>
-        ),
-        thead: ({ children }) => <TableHead>{children}</TableHead>,
-        tbody: ({ children }) => <TableBody>{children}</TableBody>,
-        tr: ({ children }) => <TableRow>{children}</TableRow>,
-        th: ({ children }) => (
-          <TableCell component="th" sx={{ fontWeight: 'bold' }}>
-            {children}
-          </TableCell>
-        ),
-        td: ({ children }) => <TableCell>{children}</TableCell>,
-
-        // 強調
-        strong: ({ children }) => (
-          <Typography component="strong" sx={{ fontWeight: 'bold' }}>
-            {children}
-          </Typography>
-        ),
-        em: ({ children }) => (
-          <Typography component="em" sx={{ fontStyle: 'italic' }}>
-            {children}
-          </Typography>
-        ),
-      }}
-    >
-      {content}
-    </ReactMarkdown>
+    <div className="prose prose-gray max-w-none">
+      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+    </div>
   );
 };
 
