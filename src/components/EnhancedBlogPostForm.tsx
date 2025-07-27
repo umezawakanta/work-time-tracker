@@ -89,11 +89,11 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
 
     setIsAnalyzing(true);
     try {
-      const analysis = await BlogAiService.analyzeBlogContent(content, title);
+      const analysis = await BlogAiService.analyzeBlogPost(title, content, category);
       setAiAnalysis(analysis);
-      logger.info('AI analysis completed', analysis);
+      logger.info('AI analysis completed', '');
     } catch (error) {
-      logger.error('AI analysis failed', error);
+      logger.error('AI analysis failed', String(error));
       setAiAnalysis({
         suggestedTags: [],
         contentSuggestions: ['AI analysis temporarily unavailable. Please try again later.'],
@@ -257,25 +257,25 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
-                      {aiAnalysis.analysis.readability}%
+                      {aiAnalysis.readabilityScore}%
                     </div>
                     <div className="text-sm text-gray-600">Readability</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-600">
-                      {aiAnalysis.analysis.engagement}%
+                      {Math.round(aiAnalysis.confidence * 100)}%
                     </div>
-                    <div className="text-sm text-gray-600">Engagement</div>
+                    <div className="text-sm text-gray-600">Confidence</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-600">
-                      {aiAnalysis.analysis.seoOptimization}%
+                      {aiAnalysis.seoRecommendations.length}
                     </div>
-                    <div className="text-sm text-gray-600">SEO Score</div>
+                    <div className="text-sm text-gray-600">SEO Tips</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-orange-600">
-                      {aiAnalysis.analysis.estimatedReadingTime}
+                      {Math.ceil(content.length / 200)}
                     </div>
                     <div className="text-sm text-gray-600">Min Read</div>
                   </div>
@@ -286,11 +286,11 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
                 <Accordion type="single" collapsible>
                   <AccordionItem value="suggestions">
                     <AccordionTrigger>
-                      AI Suggestions ({aiAnalysis.suggestions.length})
+                      AI Suggestions ({aiAnalysis.contentSuggestions.length})
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-2">
-                        {aiAnalysis.suggestions.map((suggestion, index) => (
+                        {aiAnalysis.contentSuggestions.map((suggestion: string, index: number) => (
                           <Alert key={index}>
                             <AlertDescription>{suggestion}</AlertDescription>
                           </Alert>
@@ -299,14 +299,14 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
                     </AccordionContent>
                   </AccordionItem>
 
-                  {aiAnalysis.analysis.suggestedTags.length > 0 && (
+                  {aiAnalysis.suggestedTags.length > 0 && (
                     <AccordionItem value="tags">
                       <AccordionTrigger>
-                        Suggested Tags ({aiAnalysis.analysis.suggestedTags.length})
+                        Suggested Tags ({aiAnalysis.suggestedTags.length})
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="flex flex-wrap gap-2">
-                          {aiAnalysis.analysis.suggestedTags.map((tag, index) => (
+                          {aiAnalysis.suggestedTags.map((tag: string, index: number) => (
                             <Badge
                               key={index}
                               variant="outline"

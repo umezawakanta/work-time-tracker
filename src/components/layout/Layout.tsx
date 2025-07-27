@@ -605,7 +605,7 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
   },
 ];
 
-export default function Layout({ children }: LayoutProps): JSX.Element {
+export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
@@ -695,7 +695,7 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
       <div key={section.id} className="mb-4">
         <button
           onClick={() => toggleSection(section.id)}
-          className="w-full flex items-center gap-2 px-3 py-2 text-left rounded-lg transition-all duration-200
+          className={`w-full flex items-center gap-2 px-3 py-2 text-left rounded-lg transition-all duration-200
             hover:bg-slate-100 dark:hover:bg-slate-800/50 group
             ${isCollapsed ? 'justify-center' : ''}
           `}
@@ -749,7 +749,7 @@ export default function Layout({ children }: LayoutProps): JSX.Element {
               <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                aria-label={isCollapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+                aria-label={isCollapsed ? 'サイドバーを展開' : 'サイドバーを折りたたむ'}
               >
                 <Menu className="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </button>
