@@ -70,10 +70,10 @@ export interface InstallationGuide {
 
 class PWAEnhancementService extends EventEmitter {
   private static instance: PWAEnhancementService | null = null;
-  private state: PWAState;
-  private pushSettings: PushNotificationSettings;
-  private syncSettings: BackgroundSyncSettings;
-  private offlineData: OfflineData;
+  private state!: PWAState;
+  private pushSettings!: PushNotificationSettings;
+  private syncSettings!: BackgroundSyncSettings;
+  private offlineData!: OfflineData;
   private serviceWorker: ServiceWorkerRegistration | null = null;
   private installPromptEvent: any = null;
 
@@ -415,7 +415,6 @@ class PWAEnhancementService extends EventEmitter {
         icon: options.icon,
         badge: options.badge,
         tag: options.type,
-        renotify: false,
       });
     }
   }

@@ -424,12 +424,12 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'cognitive-analytics-expansion',
         title: '🧠 認知分析機能拡張',
         description:
-          '学習データ分析、認知負荷測定、最適化レコメンドエンジン、認知パターン認識、リアルタイム監視、モバイル最適化統合',
-        status: 'in-progress',
+          '学習分析エンジン、認知パターン機械学習、個人最適化アルゴリズム、専門家連携システム、統合ダッシュボード完成',
+        status: 'completed',
         priority: 'medium',
         category: 'feature',
         estimatedDays: 20,
-        progress: 95,
+        progress: 100,
         dependencies: ['cognitive-data-persistence'],
       },
       {

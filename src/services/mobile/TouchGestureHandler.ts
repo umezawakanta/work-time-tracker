@@ -88,8 +88,8 @@ class TouchGestureHandler extends EventEmitter {
   private static instance: TouchGestureHandler | null = null;
   private isActive: boolean = false;
   private element: HTMLElement | null = null;
-  private adhdSettings: ADHDTouchSettings;
-  private swipeNavigation: SwipeNavigation;
+  private adhdSettings!: ADHDTouchSettings;
+  private swipeNavigation!: SwipeNavigation;
 
   // タッチ状態
   private touches: Map<number, TouchEventData> = new Map();
