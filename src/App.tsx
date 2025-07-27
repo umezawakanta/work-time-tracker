@@ -125,6 +125,9 @@ const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
 const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
 const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
 const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
+const AdvancedPerformanceMonitoringPage = lazy(
+  () => import('./pages/AdvancedPerformanceMonitoringPage')
+);
 
 // 🎯 Personal Development & Life Management
 const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
@@ -581,6 +584,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <QualityDashboardPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/advanced-performance-monitoring"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AdvancedPerformanceMonitoringPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }

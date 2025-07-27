@@ -303,6 +303,15 @@ const systemMenuItems: MenuItem[] = [
     accentColor: 'blue',
   },
   {
+    icon: <BarChart3 className="h-5 w-5" />,
+    label: '🚀 高度パフォーマンス監視',
+    path: '/advanced-performance-monitoring',
+    description: 'Lighthouse自動監視・リアルタイム性能分析・ADHD配慮UI最適化',
+    badge: '最新',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
+  },
+  {
     icon: <AlertTriangle className="h-5 w-5" />,
     label: '⚠️ エラーダッシュボード',
     path: '/error-dashboard',

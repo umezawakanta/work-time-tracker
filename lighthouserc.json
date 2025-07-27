@@ -2,9 +2,13 @@
   "ci": {
     "collect": {
       "url": [
-        "http://localhost:4173"
+        "http://localhost:4173",
+        "http://localhost:4173/adhd-task-manager",
+        "http://localhost:4173/integrated-dashboard",
+        "http://localhost:4173/improvement-plan",
+        "http://localhost:4173/blog"
       ],
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "headful": false,
       "settings": {
         "onlyAudits": [
@@ -13,40 +17,175 @@
           "first-input-delay",
           "cumulative-layout-shift",
           "speed-index",
-          "interactive"
-        ]
+          "interactive",
+          "total-blocking-time",
+          "max-potential-fid",
+          "server-response-time",
+          "mainthread-work-breakdown",
+          "uses-responsive-images",
+          "uses-webp-images",
+          "efficient-animated-content",
+          "unused-css-rules",
+          "unused-javascript",
+          "modern-image-formats",
+          "preload-lcp-image",
+          "render-blocking-resources",
+          "unminified-css",
+          "unminified-javascript",
+          "font-display",
+          "uses-rel-preconnect",
+          "critical-request-chains",
+          "uses-text-compression"
+        ],
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1,
+          "requestLatencyMs": 0,
+          "downloadThroughputKbps": 0,
+          "uploadThroughputKbps": 0
+        },
+        "emulatedFormFactor": "mobile",
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 375,
+          "height": 667,
+          "deviceScaleFactor": 2,
+          "disabled": false
+        }
       }
     },
     "assert": {
+      "preset": "lighthouse:recommended",
       "assertions": {
         "categories:performance": [
           "error",
           {
-            "minScore": 0.8
+            "minScore": 0.85,
+            "aggregationMethod": "median"
           }
         ],
         "categories:accessibility": [
           "error",
           {
-            "minScore": 0.9
+            "minScore": 0.95,
+            "aggregationMethod": "median"
           }
         ],
         "categories:best-practices": [
-          "warn",
+          "error",
           {
-            "minScore": 0.8
+            "minScore": 0.90,
+            "aggregationMethod": "median"
           }
         ],
         "categories:seo": [
           "warn",
           {
-            "minScore": 0.8
+            "minScore": 0.85,
+            "aggregationMethod": "median"
+          }
+        ],
+        "first-contentful-paint": [
+          "error",
+          {
+            "maxNumericValue": 2000,
+            "aggregationMethod": "median"
+          }
+        ],
+        "largest-contentful-paint": [
+          "error",
+          {
+            "maxNumericValue": 2500,
+            "aggregationMethod": "median"
+          }
+        ],
+        "cumulative-layout-shift": [
+          "error",
+          {
+            "maxNumericValue": 0.1,
+            "aggregationMethod": "median"
+          }
+        ],
+        "first-input-delay": [
+          "error",
+          {
+            "maxNumericValue": 100,
+            "aggregationMethod": "median"
+          }
+        ],
+        "speed-index": [
+          "warn",
+          {
+            "maxNumericValue": 3000,
+            "aggregationMethod": "median"
+          }
+        ],
+        "interactive": [
+          "warn",
+          {
+            "maxNumericValue": 3800,
+            "aggregationMethod": "median"
+          }
+        ],
+        "total-blocking-time": [
+          "warn",
+          {
+            "maxNumericValue": 300,
+            "aggregationMethod": "median"
           }
         ]
       }
     },
     "upload": {
-      "target": "temporary-public-storage"
+      "target": "temporary-public-storage",
+      "urlReplacementPatterns": [
+        "s/localhost:[0-9]+/example.com/g"
+      ]
     }
+  },
+  "reporting": {
+    "budgets": [
+      {
+        "path": "/*",
+        "timings": [
+          {
+            "metric": "first-contentful-paint",
+            "budget": 2000
+          },
+          {
+            "metric": "largest-contentful-paint",
+            "budget": 2500
+          },
+          {
+            "metric": "speed-index",
+            "budget": 3000
+          },
+          {
+            "metric": "interactive",
+            "budget": 3800
+          }
+        ],
+        "resourceSizes": [
+          {
+            "resourceType": "script",
+            "budget": 300
+          },
+          {
+            "resourceType": "stylesheet",
+            "budget": 100
+          },
+          {
+            "resourceType": "image",
+            "budget": 500
+          },
+          {
+            "resourceType": "total",
+            "budget": 1000
+          }
+        ]
+      }
+    ]
   }
 }
