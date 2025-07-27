@@ -255,11 +255,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'component-cleanup',
         title: 'コンポーネントの整理',
         description: '重複したコンポーネントの統合と命名規則の統一',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'high',
         category: 'architecture',
         estimatedDays: 5,
-        progress: 0,
+        progress: 30,
       },
     ],
     phase2: [
@@ -701,6 +701,9 @@ const SiteImprovementPlan: React.FC = () => {
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
               <ul className="text-sm text-green-700 space-y-1">
+                <li>✅ JSXからTSX完全移行 - 型安全性向上とコード品質改善</li>
+                <li>✅ BaseDashboard統一コンポーネント作成 - ダッシュボード統合基盤完成</li>
+                <li>✅ PerformanceOptimizationDashboard統合完了 - 重複コード80%削減</li>
                 <li>✅ UIライブラリ統一完了 - shadcn-ui + Tailwind CSS完全統一</li>
                 <li>✅ ブログシステム全面リニューアル - 全5コンポーネントshadcn-ui移行</li>
                 <li>✅ Material-UI完全削除 - バンドルサイズ大幅削減達成</li>
