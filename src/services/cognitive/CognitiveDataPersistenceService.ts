@@ -120,9 +120,15 @@ export class CognitiveDataPersistenceService extends EventEmitter {
   private async initializeStorage(): Promise<void> {
     try {
       if (this.options.storage === 'indexedDB') {
-        await this.initializeIndexedDB();
+        try {
+          await this.initializeIndexedDB();
+          console.log('🧠 IndexedDB初期化完了');
+        } catch (indexedDBError) {
+          console.warn('IndexedDB初期化エラー、localStorageにフォールバック:', indexedDBError);
+          this.options.storage = 'localStorage';
+        }
       }
-      console.log('🧠 認知データ永続化サービス初期化完了');
+      console.log('🧠 認知データ永続化サービス初期化完了 (ストレージ:', this.options.storage + ')');
       this.emit('initialized');
     } catch (error) {
       console.error('認知データストレージ初期化エラー:', error);

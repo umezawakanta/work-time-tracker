@@ -122,12 +122,21 @@ export const ADHDTaskManager: React.FC = () => {
 
   // 永続化サービスの初期化とデータロード
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     const initializePersistence = async () => {
       try {
         setIsLoading(true);
+
+        // 10秒のタイムアウトを設定
+        timeoutId = setTimeout(() => {
+          console.warn('認知データサービス初期化タイムアウト');
+          setIsLoading(false);
+        }, 10000);
+
         const userId = user?.id || 'demo-user';
         const service = createCognitiveDataService(userId, {
-          storage: 'localStorage', // 一旦localStorage、後でindexedDBに
+          storage: 'indexedDB', // IndexedDBを試してlocalStorageにフォールバック
           encryption: false,
           syncInterval: 5,
           backupEnabled: true,
@@ -137,75 +146,82 @@ export const ADHDTaskManager: React.FC = () => {
 
         // サービス初期化イベントリスナー
         service.on('initialized', async () => {
+          clearTimeout(timeoutId);
           console.log('🧠 認知データサービス初期化完了');
 
-          // 既存タスクの読み込み
-          const savedTasks = await service.loadTasks();
+          try {
+            // 既存タスクの読み込み
+            const savedTasks = await service.loadTasks();
 
-          // 初回起動時はデモデータを作成
-          if (savedTasks.length === 0) {
-            const demoTasks: ADHDTask[] = [
-              {
-                id: '1',
-                title: '朝のルーティン完了',
-                status: 'done',
-                priority: 'high',
-                energyRequired: 'low',
-                estimatedMinutes: 30,
-                actualMinutes: 25,
-                breakdownSteps: ['歯磨き', '薬服用', '朝食', '身支度'],
-                completedSteps: 4,
-                category: 'health',
-                sensoryLoad: 'low',
-                dopamineReward: 7,
-                executiveDifficulty: 'easy',
-                createdAt: new Date(),
-                completedAt: new Date(),
-                isHyperfocusRisk: false,
-              },
-              {
-                id: '2',
-                title: 'プロジェクトレポート作成',
-                status: 'today',
-                priority: 'high',
-                energyRequired: 'high',
-                estimatedMinutes: 120,
-                breakdownSteps: ['資料収集', '構成案作成', '本文執筆', '見直し'],
-                completedSteps: 1,
-                category: 'work',
-                sensoryLoad: 'medium',
-                dopamineReward: 9,
-                executiveDifficulty: 'hard',
-                createdAt: new Date(),
-                isHyperfocusRisk: true,
-              },
-              {
-                id: '3',
-                title: '部屋の片付け',
-                status: 'ideas',
-                priority: 'medium',
-                energyRequired: 'medium',
-                estimatedMinutes: 60,
-                breakdownSteps: ['机の上整理', '床の片付け', '掃除機かけ'],
-                completedSteps: 0,
-                category: 'personal',
-                sensoryLoad: 'high',
-                dopamineReward: 6,
-                executiveDifficulty: 'medium',
-                createdAt: new Date(),
-                isHyperfocusRisk: false,
-              },
-            ];
-            await service.saveTasks(demoTasks);
-            setTasks(demoTasks);
-          } else {
-            setTasks(savedTasks);
+            // 初回起動時はデモデータを作成
+            if (savedTasks.length === 0) {
+              const demoTasks: ADHDTask[] = [
+                {
+                  id: '1',
+                  title: '朝のルーティン完了',
+                  status: 'done',
+                  priority: 'high',
+                  energyRequired: 'low',
+                  estimatedMinutes: 30,
+                  actualMinutes: 25,
+                  breakdownSteps: ['歯磨き', '薬服用', '朝食', '身支度'],
+                  completedSteps: 4,
+                  category: 'health',
+                  sensoryLoad: 'low',
+                  dopamineReward: 7,
+                  executiveDifficulty: 'easy',
+                  createdAt: new Date(),
+                  completedAt: new Date(),
+                  isHyperfocusRisk: false,
+                },
+                {
+                  id: '2',
+                  title: 'プロジェクトレポート作成',
+                  status: 'today',
+                  priority: 'high',
+                  energyRequired: 'high',
+                  estimatedMinutes: 120,
+                  breakdownSteps: ['資料収集', '構成案作成', '本文執筆', '見直し'],
+                  completedSteps: 1,
+                  category: 'work',
+                  sensoryLoad: 'medium',
+                  dopamineReward: 9,
+                  executiveDifficulty: 'hard',
+                  createdAt: new Date(),
+                  isHyperfocusRisk: true,
+                },
+                {
+                  id: '3',
+                  title: '部屋の片付け',
+                  status: 'ideas',
+                  priority: 'medium',
+                  energyRequired: 'medium',
+                  estimatedMinutes: 60,
+                  breakdownSteps: ['机の上整理', '床の片付け', '掃除機かけ'],
+                  completedSteps: 0,
+                  category: 'personal',
+                  sensoryLoad: 'high',
+                  dopamineReward: 6,
+                  executiveDifficulty: 'medium',
+                  createdAt: new Date(),
+                  isHyperfocusRisk: false,
+                },
+              ];
+              await service.saveTasks(demoTasks);
+              setTasks(demoTasks);
+            } else {
+              setTasks(savedTasks);
+            }
+
+            setIsLoading(false);
+          } catch (taskLoadError) {
+            console.error('タスク読み込みエラー:', taskLoadError);
+            setIsLoading(false);
           }
-
-          setIsLoading(false);
         });
 
         service.on('error', (error) => {
+          clearTimeout(timeoutId);
           console.error('認知データサービスエラー:', error);
           setIsLoading(false);
         });
@@ -219,6 +235,9 @@ export const ADHDTaskManager: React.FC = () => {
 
     // クリーンアップ
     return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       if (persistenceService) {
         persistenceService.dispose();
       }
