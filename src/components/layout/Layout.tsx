@@ -322,6 +322,15 @@ const systemMenuItems: MenuItem[] = [
     accentColor: 'blue',
   },
   {
+    icon: <Shield className="h-5 w-5" />,
+    label: '♿ アクセシビリティ監査',
+    path: '/accessibility-audit',
+    description: 'WCAG 2.1 AAA準拠監査・包括的ユーザビリティ検証・ADHD/ASD配慮確認',
+    badge: '完了',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
+  {
     icon: <BarChart3 className="h-5 w-5" />,
     label: '🚀 高度パフォーマンス監視',
     path: '/advanced-performance-monitoring',

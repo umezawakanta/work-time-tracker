@@ -1,11 +1,11 @@
 // ESM用のCommonJSモジュールのインポート
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const express = require('express');
-import { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http'; // HTTPサーバーを使用
+import net from 'net'; // ポート競合チェック用
 import { connectDB } from './config/database.js';
 import workTimeRoutes from './routes/workTimeRoutes.js';
 import assetRoutes from './routes/assetRoutes.js';
@@ -311,11 +311,14 @@ const PORT = typeof BASE_PORT === 'string' ? parseInt(BASE_PORT, 10) : BASE_PORT
 if (process.env.VERCEL) {
   console.log('Running in Vercel Functions mode');
 } else {
-  // ポート使用可能性チェック関数
+  // ポート使用可能性チェック関数（改良版）
   const findAvailablePort = (startPort: number): Promise<number> => {
     return new Promise((resolve, reject) => {
       const tryPort = (port: number) => {
-        const testServer = server.listen(port, () => {
+        // 独立したテスト用サーバーを作成
+        const testServer = net.createServer();
+
+        testServer.listen(port, () => {
           testServer.close(() => {
             resolve(port);
           });
@@ -323,6 +326,7 @@ if (process.env.VERCEL) {
 
         testServer.on('error', (err: any) => {
           if (err.code === 'EADDRINUSE') {
+            console.log(`Port ${port} is in use, trying ${port + 1}...`);
             if (port < startPort + 10) {
               // 最大10ポート試行
               tryPort(port + 1);
@@ -342,20 +346,21 @@ if (process.env.VERCEL) {
   // 利用可能なポートを見つけてサーバー開始
   findAvailablePort(PORT)
     .then((availablePort) => {
+      // メインサーバーを指定ポートで開始
       server.listen(availablePort, () => {
-        console.log(`Server is running on port ${availablePort}`);
-        console.log(`WebSocket server is also running on port ${availablePort}`);
-        console.log(`Uploads directory: ${uploadsDir}`);
+        console.log(`✅ Server is running on port ${availablePort}`);
+        console.log(`✅ WebSocket server is also running on port ${availablePort}`);
+        console.log(`📁 Uploads directory: ${uploadsDir}`);
 
         if (availablePort !== PORT) {
           console.log(
-            `Note: Requested port ${PORT} was in use, using port ${availablePort} instead`
+            `⚠️  Note: Requested port ${PORT} was in use, using port ${availablePort} instead`
           );
         }
       });
     })
     .catch((error) => {
-      console.error('Failed to start server:', error);
+      console.error('❌ Failed to start server:', error);
       process.exit(1);
     });
 }

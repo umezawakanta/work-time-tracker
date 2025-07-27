@@ -103,11 +103,13 @@ const AIGamificationPage = lazy(() => import('./pages/AIGamificationPage'));
 const ADHDCognitiveAssessmentPage = lazy(() => import('./pages/ADHDCognitiveAssessmentPage'));
 const ADHDIntegratedLifePage = lazy(() => import('./pages/ADHDIntegratedLifePage'));
 const CognitiveFinancePage = lazy(() => import('./pages/CognitiveFinancePage'));
-const CognitiveAICoachingPage = lazy(() => import('./pages/CognitiveAICoachingPage'));
-const SocialSupportNetworkPage = lazy(() => import('./pages/SocialSupportNetworkPage'));
-const RealtimeAdaptationPage = lazy(() => import('./pages/RealtimeAdaptationPage'));
 const BetaUserRecruitmentPage = lazy(() => import('./pages/BetaUserRecruitmentPage'));
 const UserTestingPage = lazy(() => import('./pages/UserTestingPage'));
+const AccessibilityAuditPage = lazy(() =>
+  import('./pages/AccessibilityAuditPage').then((module) => ({
+    default: module.AccessibilityAuditPage,
+  }))
+);
 
 // 💰 Finance & Goal Management
 // const AssetQuestManagerPage = lazy(() => import('./pages/AssetQuestManagerPage'));
@@ -438,6 +440,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <UserTestingPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/accessibility-audit"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AccessibilityAuditPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
