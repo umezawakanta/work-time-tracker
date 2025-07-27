@@ -701,6 +701,11 @@ const SiteImprovementPlan: React.FC = () => {
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
               <ul className="text-sm text-green-700 space-y-1">
+                <li>
+                  ✅ ホームページルート修正完了 - ルート・ホームパス統合ダッシュボード自動誘導
+                </li>
+                <li>✅ URL直接アクセス対応 - localhost:3000/,/home完全対応</li>
+                <li>✅ ナビゲーション体験向上 - 全エントリーポイント統合</li>
                 <li>✅ AdaptiveUIProvider統一完了 - プロバイダー重複エラー解消</li>
                 <li>✅ CognitiveOptimizedFinanceManager修正 - コンテキストエラー完全解決</li>
                 <li>✅ 認知最適化財務ページ正常化 - AdaptiveCard動作復旧</li>

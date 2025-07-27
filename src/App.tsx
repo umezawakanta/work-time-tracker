@@ -144,30 +144,16 @@ const App: React.FC = () => {
                       <Suspense fallback={<LoadingSpinner />}>
                         <div className="min-h-screen bg-gray-50">
                           <Routes>
-                            {/*<Route
+                            {/* ルートパスとホームページのリダイレクト */}
+                            <Route
                               path="/"
-                              element={
-                                <LayoutWrapper>
-                                  <HomePage />
-                                </LayoutWrapper>
-                              }
-                            />*/}
-                            {/*<Route
+                              element={<Navigate to="/integrated-dashboard" replace />}
+                            />
+                            <Route
                               path="/home"
-                              element={
-                                <LayoutWrapper>
-                                  <HomePage />
-                                </LayoutWrapper>
-                              }
-                            />*/}
-                            {/*<Route
-                              path="/dashboard"
-                              element={
-                                <LayoutWrapper>
-                                  <DashboardPage />
-                                </LayoutWrapper>
-                              }
-                            />*/}
+                              element={<Navigate to="/integrated-dashboard" replace />}
+                            />
+
                             <Route
                               path="/integrated-dashboard"
                               element={
