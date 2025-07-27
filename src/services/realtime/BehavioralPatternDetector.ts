@@ -175,7 +175,7 @@ export class BehavioralPatternDetector extends EventEmitter {
     if (!element) return 'unknown';
 
     const id = element.id ? `#${element.id}` : '';
-    const className = element.className ? `.${element.className.split(' ').join('.')}` : '';
+    const className = element.className ? `.${String(element.className).split(' ').join('.')}` : '';
     const tagName = element.tagName.toLowerCase();
 
     return `${tagName}${id}${className}`.slice(0, 100); // 長すぎる場合は切り詰め

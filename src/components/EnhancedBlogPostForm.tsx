@@ -77,18 +77,12 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
   const performAiAnalysis = async () => {
     if (!content.trim() || content.length < 100) {
       setAiAnalysis({
-        score: 0,
-        suggestions: ['Please write at least 100 characters to get AI analysis.'],
-        analysis: {
-          readability: 0,
-          engagement: 0,
-          seoOptimization: 0,
-          tone: 'neutral',
-          estimatedReadingTime: 1,
-          keyTopics: [],
-          suggestedTags: [],
-          improvementAreas: ['Content too short for analysis'],
-        },
+        suggestedTags: [],
+        contentSuggestions: ['Please write at least 100 characters to get AI analysis.'],
+        seoRecommendations: [],
+        readabilityScore: 0,
+        categoryRecommendation: '',
+        confidence: 0,
       });
       return;
     }
@@ -101,18 +95,12 @@ export const EnhancedBlogPostForm: React.FC<EnhancedBlogPostFormProps> = ({
     } catch (error) {
       logger.error('AI analysis failed', error);
       setAiAnalysis({
-        score: 0,
-        suggestions: ['AI analysis temporarily unavailable. Please try again later.'],
-        analysis: {
-          readability: 0,
-          engagement: 0,
-          seoOptimization: 0,
-          tone: 'neutral',
-          estimatedReadingTime: Math.ceil(content.length / 200),
-          keyTopics: [],
-          suggestedTags: [],
-          improvementAreas: ['AI analysis unavailable'],
-        },
+        suggestedTags: [],
+        contentSuggestions: ['AI analysis temporarily unavailable. Please try again later.'],
+        seoRecommendations: [],
+        readabilityScore: 0,
+        categoryRecommendation: '',
+        confidence: 0,
       });
     } finally {
       setIsAnalyzing(false);
