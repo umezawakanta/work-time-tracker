@@ -49,6 +49,7 @@ import {
   TrendingUp,
   CreditCard,
   Star,
+  Smartphone,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -319,6 +320,15 @@ const systemMenuItems: MenuItem[] = [
     badge: '最新',
     gradient: 'from-green-500 via-blue-500 to-purple-500',
     accentColor: 'green',
+  },
+  {
+    icon: <Smartphone className="h-5 w-5" />,
+    label: '📱 モバイル最適化',
+    path: '/mobile-optimization',
+    description: 'PWA機能・タッチ操作・プッシュ通知・ADHD/ASD特化モバイル最適化',
+    badge: '最新',
+    gradient: 'from-blue-500 via-purple-500 to-pink-500',
+    accentColor: 'blue',
   },
   {
     icon: <AlertTriangle className="h-5 w-5" />,

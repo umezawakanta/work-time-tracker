@@ -45,8 +45,6 @@
         "quality:check": "pnpm run lint && pnpm run type-check && pnpm run test:ci",
         "quality:full": "pnpm run quality:check && pnpm run test:coverage && pnpm run format:check",
         "quality:fix": "pnpm run lint:fix && pnpm run format && pnpm run test:coverage",
-        "lighthouse:collect": "lhci collect --config=lighthouserc.json",
-        "lighthouse:ci-build": "pnpm run build && pnpm run preview & sleep 5 && pnpm run lighthouse:collect",
         "ci:quality": "pnpm run quality:full && pnpm run lighthouse:ci",
         "test:auth": "jest --config jest.auth.config.js",
         "test:auth:watch": "jest --config jest.auth.config.js --watch",
