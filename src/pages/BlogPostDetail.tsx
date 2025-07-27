@@ -13,30 +13,17 @@ import { useAuth } from '@/hooks/useAuth';
 // ⚡ Dynamic Import for Heavy Components
 const MarkdownRenderer = lazy(() => import('@/components/MarkdownRenderer'));
 
-// ⚡ Selective MUI Imports - Only what we need
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-
-// ⚡ Selective Material Icons
-// 🥷 パフォーマンス忍者: 個別インポートでバンドルサイズを最適化
-import ArrowBack from '@mui/icons-material/ArrowBack';
-import Share from '@mui/icons-material/Share';
-import Edit from '@mui/icons-material/Edit';
-import Delete from '@mui/icons-material/Delete';
-import MoreVert from '@mui/icons-material/MoreVert';
-import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,6 +34,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
+// Icons from lucide-react
+import {
+  ArrowLeft,
+  Share,
+  Edit,
+  Trash2,
+  MoreVertical,
+  Shield,
+  Loader2,
+  Calendar,
+  User,
+  Clock,
+  Tag,
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const BlogPostDetail: React.FC = () => {
@@ -55,357 +57,269 @@ const BlogPostDetail: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
 
-  // Redux storeからデータを取得
   const post = useSelector((state: RootState) => selectBlogPostById(state, id));
   const allPosts = useSelector(selectBlogPosts);
 
-  // 状態管理
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  // 関連記事を取得（同じカテゴリの他の記事）
-  const relatedPosts = allPosts
-    .filter((p) => p._id !== id && p.category === post?.category)
-    .slice(0, 3);
-
-  // 投稿の権限チェック（作成者または管理者のみ編集・削除可能）
-  const canModifyPost =
-    post && user && (post.author === user.email || post.author === user.name || user.isAdmin);
-
-  // 管理者権限の確認
-  const isAdmin = user?.isAdmin === true;
-
-  // 自分の投稿かチェック
-  const isMyPost = post && user && (post.author === user.email || post.author === user.name);
-
-  // 管理者権限で他人の投稿を操作しているかチェック
-  const isAdminAction = isAdmin && !isMyPost;
 
   useEffect(() => {
     if (id && !post) {
-      // 投稿がstoreにない場合は個別に取得
-      dispatch(fetchBlogPost(id));
+      setLoading(true);
+      dispatch(fetchBlogPost(id)).finally(() => setLoading(false));
     }
   }, [id, post, dispatch]);
 
-  const handleShare = async () => {
-    if (!post) return;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: post.title,
-          text: post.content.substring(0, 100) + '...',
-          url: window.location.href,
-        });
-      } else {
-        // フォールバック: URLをクリップボードにコピー
-        await navigator.clipboard.writeText(window.location.href);
-        toast.success('URLをクリップボードにコピーしました');
-      }
-    } catch (error) {
-      console.error('共有に失敗しました:', error);
-      toast.error('共有に失敗しました');
-    }
+  const handleBack = () => {
+    navigate('/blog');
   };
 
   const handleEdit = () => {
-    if (post) {
-      navigate(`/blog/edit/${post._id}`);
-    }
-    setAnchorEl(null);
+    navigate(`/blog/edit/${id}`);
   };
 
-  const handleDeleteClick = () => {
-    setShowDeleteDialog(true);
-    setAnchorEl(null);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!post || !id) return;
+  const handleDelete = async () => {
+    if (!id) return;
 
     setIsDeleting(true);
     try {
-      await dispatch(deleteBlogPost(id)).unwrap();
-
-      if (isAdminAction) {
-        toast.success('管理者権限でブログ記事を削除しました');
-      } else {
-        toast.success('ブログ記事を削除しました');
-      }
+      await dispatch(deleteBlogPost(id));
+      toast.success('Blog post deleted successfully');
       navigate('/blog');
     } catch (error) {
-      console.error('削除に失敗しました:', error);
-      toast.error('削除に失敗しました');
+      toast.error('Failed to delete blog post');
     } finally {
       setIsDeleting(false);
-      setShowDeleteDialog(false);
+      setDeleteDialogOpen(false);
     }
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: post?.title,
+        text: post?.content.substring(0, 100) + '...',
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard');
+    }
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const canModifyPost = () => {
+    if (!user || !post) return false;
+    return user.isAdmin || post.author === user.email || post.author === user.name;
   };
 
-  if (!id) {
+  if (loading) {
     return (
-      <Container maxWidth="md">
-        <Box sx={{ py: 4 }}>
-          <Alert severity="error">無効なブログIDです</Alert>
-          <Button startIcon={<ArrowBack />} onClick={() => navigate('/blog')} sx={{ mt: 2 }}>
-            ブログ一覧に戻る
-          </Button>
-        </Box>
-      </Container>
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading blog post...</span>
+        </div>
+      </div>
     );
   }
 
   if (!post) {
     return (
-      <Container maxWidth="md">
-        <Box sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <CircularProgress sx={{ mb: 2 }} />
-          <Typography variant="body1">記事を読み込み中...</Typography>
-        </Box>
-      </Container>
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <Alert variant="destructive">
+          <AlertDescription>Blog post not found.</AlertDescription>
+        </Alert>
+        <Button onClick={handleBack} className="mt-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Blog
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
-        {/* 管理者権限の表示 */}
-        {isAdminAction && (
-          <Alert severity="warning" icon={<AdminPanelSettings />} sx={{ mb: 3 }}>
-            <Typography variant="body2">
-              <strong>管理者モード:</strong> 他のユーザー（{post.author}）の投稿を表示しています
-            </Typography>
-          </Alert>
-        )}
+    <div className="container mx-auto max-w-4xl px-4 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <Button variant="outline" onClick={handleBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Blog
+        </Button>
 
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-              startIcon={<ArrowBack />}
-              onClick={() => navigate('/blog')}
-              variant="outlined"
-              size="small"
-            >
-              戻る
-            </Button>
-            <Button startIcon={<Share />} onClick={handleShare} variant="outlined" size="small">
-              共有
-            </Button>
-          </Box>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleShare}>
+            <Share className="h-4 w-4 mr-2" />
+            Share
+          </Button>
 
-          {/* 編集・削除メニュー */}
-          {canModifyPost && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {isAdminAction && (
-                <Chip
-                  label="管理者操作"
-                  color="warning"
-                  size="small"
-                  icon={<AdminPanelSettings />}
-                />
-              )}
-              <IconButton onClick={handleMenuOpen} size="small">
-                <MoreVert />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-              >
-                <MenuItem onClick={handleEdit}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Edit sx={{ mr: 1, fontSize: '1rem' }} />
-                      編集
-                    </Box>
-                    {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
-                  </Box>
-                </MenuItem>
-                <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Delete sx={{ mr: 1, fontSize: '1rem' }} />
-                      削除
-                    </Box>
-                    {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
-                  </Box>
-                </MenuItem>
-              </Menu>
-            </Box>
+          {canModifyPost() && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleEdit}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
-        </Box>
+        </div>
+      </div>
 
-        <Typography variant="h3" component="h1" gutterBottom>
-          {post.title}
-        </Typography>
+      {/* Admin Notice */}
+      {user?.isAdmin && post.author !== user.email && post.author !== user.name && (
+        <Alert className="mb-6">
+          <Shield className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Admin Mode:</strong> You can edit/delete this post created by {post.author}
+          </AlertDescription>
+        </Alert>
+      )}
 
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <Typography variant="body2" color="text.secondary" component="div">
-            {post.author}
-            {isAdminAction && (
-              <Chip
-                label="他ユーザー投稿"
-                color="warning"
-                size="small"
-                variant="outlined"
-                sx={{ ml: 1 }}
-              />
-            )}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {new Date(post.createdAt).toLocaleDateString('ja-JP', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            更新: {new Date(post.updatedAt).toLocaleDateString('ja-JP')}
-          </Typography>
-        </Box>
+      {/* Article */}
+      <article>
+        <Card>
+          <CardHeader>
+            <div className="space-y-4">
+              <h1 className="text-3xl font-bold text-gray-900">{post.title}</h1>
 
-        <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-          <Chip label={post.category} color="primary" size="small" />
-          {post.tags.map((tag) => (
-            <Chip key={tag} label={tag} size="small" variant="outlined" />
-          ))}
-        </Box>
+              {/* Meta Information */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center gap-1">
+                  <User className="h-4 w-4" />
+                  {post.author}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  {Math.ceil(post.content.length / 200)} min read
+                </div>
+              </div>
 
-        <Divider sx={{ mb: 4 }} />
+              {/* Tags and Category */}
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="default">{post.category}</Badge>
+                {post.tags.map((tag, index) => (
+                  <Badge key={index} variant="outline">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </CardHeader>
 
-        {/* Markdownコンテンツのレンダリング */}
-        <Box sx={{ mb: 4 }}>
-          <Suspense fallback={<CircularProgress />}>
-            <MarkdownRenderer content={post.content} />
-          </Suspense>
-        </Box>
+          <Separator />
 
-        <Divider sx={{ mb: 4 }} />
-
-        {/* いいね・コメント機能（将来的に実装） */}
-        <Box sx={{ mb: 4, display: 'flex', gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            いいね: {post.likes?.length || 0}件
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            コメント: {post.comments?.length || 0}件
-          </Typography>
-        </Box>
-
-        {relatedPosts.length > 0 && (
-          <Box>
-            <Typography variant="h5" component="h2" gutterBottom>
-              関連記事
-            </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(280px, 1fr))' },
-                gap: 2,
-              }}
+          <CardContent className="pt-6">
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <span className="ml-2">Loading content...</span>
+                </div>
+              }
             >
-              {relatedPosts.map((relatedPost) => (
-                <Card key={relatedPost._id} sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6" component="h3" gutterBottom>
-                      {relatedPost.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      {relatedPost.content.substring(0, 100)}...
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
-                      <Chip label={relatedPost.category} color="primary" size="small" />
-                    </Box>
-                    <Button
-                      size="small"
-                      onClick={() => navigate(`/blog/${relatedPost._id}`)}
-                      variant="outlined"
-                    >
-                      続きを読む
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-          </Box>
-        )}
-      </Box>
+              <MarkdownRenderer content={post.content} />
+            </Suspense>
+          </CardContent>
+        </Card>
+      </article>
 
-      {/* 削除確認ダイアログ */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      {/* Related Posts */}
+      {allPosts.length > 1 && (
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Related Posts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              {allPosts
+                .filter((p) => p._id !== post._id && p.category === post.category)
+                .slice(0, 4)
+                .map((relatedPost) => (
+                  <Card
+                    key={relatedPost._id}
+                    className="hover:shadow-md transition-shadow cursor-pointer"
+                  >
+                    <CardContent
+                      className="p-4"
+                      onClick={() => navigate(`/blog/${relatedPost._id}`)}
+                    >
+                      <h3 className="font-semibold text-sm mb-2 line-clamp-2">
+                        {relatedPost.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 line-clamp-2">
+                        {relatedPost.content.substring(0, 100)}...
+                      </p>
+                      <div className="flex items-center justify-between mt-3">
+                        <Badge variant="outline" className="text-xs">
+                          {relatedPost.category}
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          {new Date(relatedPost.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+
+            {allPosts.filter((p) => p._id !== post._id && p.category === post.category).length ===
+              0 && <p className="text-gray-500 text-center py-4">No related posts found.</p>}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <Delete className="h-5 w-5 text-red-600" />
-              ブログ記事を削除
-              {isAdminAction && <Chip label="管理者権限" color="warning" size="small" />}
-            </AlertDialogTitle>
+            <AlertDialogTitle>Delete Blog Post</AlertDialogTitle>
             <AlertDialogDescription>
-              <strong>「{post.title}」</strong>を削除しますか？
-              <br />
-              {isAdminAction && (
-                <>
-                  <strong>作成者:</strong> {post.author}
-                  <br />
-                  <em>※ 管理者権限で他のユーザーの投稿を削除します</em>
-                  <br />
-                </>
+              Are you sure you want to delete "{post.title}"? This action cannot be undone.
+              {user?.isAdmin && post.author !== user.email && post.author !== user.name && (
+                <div className="mt-2 text-orange-600">
+                  <strong>Note:</strong> You are deleting another user's post with admin privileges.
+                </div>
               )}
-              この操作は取り消すことができません。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>キャンセル</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDeleteConfirm}
+              onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-500"
+              className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting ? (
                 <>
-                  <CircularProgress size={16} sx={{ mr: 1, color: 'white' }} />
-                  削除中...
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
                 </>
               ) : (
-                '削除する'
+                'Delete'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Container>
+    </div>
   );
 };
 
