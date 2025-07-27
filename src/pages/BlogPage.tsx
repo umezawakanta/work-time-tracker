@@ -10,26 +10,34 @@ import {
   deleteBlogPost,
 } from '@/store/blogSlice';
 import { useAuth } from '@/hooks/useAuth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
+  Container,
+  Typography,
+  Box,
+  Tab,
+  Tabs,
+  Card,
+  CardContent,
+  Chip,
+  Button,
+  FormControl,
+  InputLabel,
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  MenuItem,
+  TextField,
+  CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem as MenuItemComponent,
+  Badge,
+  Alert,
+} from '@mui/material';
+// 🥷 パフォーマンス忍者: 個別インポートでバンドルサイズを最適化
+import Add from '@mui/icons-material/Add';
+import MoreVert from '@mui/icons-material/MoreVert';
+import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
+import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
 import {
   AlertDialog,
   AlertDialogAction,
