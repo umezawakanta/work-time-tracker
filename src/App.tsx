@@ -130,553 +130,491 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
-      <AuthProvider>
-        <LocaleProvider>
-          <TodoProvider>
-            <ThemeProvider>
-              <AdaptiveUIProvider>
-                <RealtimeAdaptationProvider>
-                  <PomodoroProvider>
-                    <InternationalizationProvider>
-                      <div className="min-h-screen bg-gray-50">
-                        <Routes>
-                          {/*<Route
-                            path="/"
-                            element={
-                              <LayoutWrapper>
-                                <HomePage />
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/home"
-                            element={
-                              <LayoutWrapper>
-                                <HomePage />
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <DashboardPage />
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/integrated-dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <IntegratedDashboard />
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/cognitive-dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <CognitiveDashboard />
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/adhd-task-manager"
-                            element={
-                              <LayoutWrapper>
-                                <ADHDTaskManager />
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/adhd-integrated-life"
-                            element={
-                              <LayoutWrapper>
-                                <ADHDIntegratedLifeSystem />
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/cognitive-integrated-dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <CognitiveIntegratedDashboard />
-                              </LayoutWrapper>
-                            }
-                          />*/}
+    <AuthProvider>
+      <LocaleProvider>
+        <TodoProvider>
+          <ThemeProvider>
+            <AdaptiveUIProvider>
+              <RealtimeAdaptationProvider>
+                <PomodoroProvider>
+                  <InternationalizationProvider>
+                    <div className="App">
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <div className="min-h-screen bg-gray-50">
+                          <Routes>
+                            {/*<Route
+                              path="/"
+                              element={
+                                <LayoutWrapper>
+                                  <HomePage />
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/home"
+                              element={
+                                <LayoutWrapper>
+                                  <HomePage />
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <DashboardPage />
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            <Route
+                              path="/integrated-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <IntegratedDashboard />
+                                </LayoutWrapper>
+                              }
+                            />
+                            {/*<Route
+                              path="/cognitive-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <CognitiveDashboard />
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            <Route
+                              path="/adhd-task-manager"
+                              element={
+                                <LayoutWrapper>
+                                  <ADHDTaskManager />
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/adhd-integrated-life"
+                              element={
+                                <LayoutWrapper>
+                                  <ADHDIntegratedLifeSystem />
+                                </LayoutWrapper>
+                              }
+                            />
+                            {/*<Route
+                              path="/cognitive-integrated-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <CognitiveIntegratedDashboard />
+                                </LayoutWrapper>
+                              }
+                            />*/}
 
-                          {/* 🚀 Time Tracking & Work Management */}
-                          <Route
-                            path="/realtime-clock"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <RealtimeClockPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/daily-work-visualization"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <DailyWorkVisualizationPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/monthly-timesheet"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <MonthlyTimesheetPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/work-pattern-settings"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <WorkPatternSettingsPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/notification-settings"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <NotificationSettingsPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/approval-workflow"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ApprovalWorkflowPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
+                            {/* 🚀 Time Tracking & Work Management */}
+                            <Route
+                              path="/realtime-clock"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <RealtimeClockPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/daily-work-visualization"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <DailyWorkVisualizationPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/monthly-timesheet"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <MonthlyTimesheetPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/work-pattern-settings"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WorkPatternSettingsPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/notification-settings"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <NotificationSettingsPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/approval-workflow"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ApprovalWorkflowPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
 
-                          <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
-                          {/*<Route
-                            path="/time-tracking"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <TimeTrackingPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/habits-tracker"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <HabitsTrackerPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/todo-analysis"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <TodoAnalysisPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/pomodoro"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <PomodoroPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/adhd-cognitive-assessment"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ADHDCognitiveAssessmentPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/adhd-integrated-life-page"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ADHDIntegratedLifePage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/cognitive-finance"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <CognitiveFinancePage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/cognitive-ai-coaching"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <CognitiveAICoachingPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/social-support-network"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <SocialSupportNetworkPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/realtime-adaptation"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <RealtimeAdaptationPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/asset-quest"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <AssetQuestManagerPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/finance-dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <FinanceDashboardPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/goal-management"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper><GoalManagementPage /></LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/blog"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <BlogPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/blog/new"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <NewBlogPost />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/blog/:id/edit"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <EditBlogPost />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/blog/:id"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <BlogPostDetail />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/news"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <EnhancedNewsPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/analytics"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <AnalyticsPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/quality-dashboard"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <QualityDashboardPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/site-improvement-plan"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <SiteImprovementPlan />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/coverage-report"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <CoverageReportPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/abstinence"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <AbstinenceManager />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/sleep-tracker"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <SleepTrackerPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/impulse-tracker"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ImpulseTrackerPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/life-timeline"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <LifeEventTimelinePage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/personal-analytics"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <PersonalAnalyticsPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/guitar-practice"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <GuitarPracticePage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/diary"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <DiaryPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          {/*<Route
-                            path="/admin"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <AdminPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/subscription"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <SubscriptionPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/premium"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <PremiumPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/election"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ElectionPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/twitter"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <TwitterIntegrationPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          {/*<Route
-                            path="/wbs"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <WBSPage />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />*/}
-                          <Route
-                            path="/improvement-plan/:id"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ImprovementPlanDetail />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
-                          <Route
-                            path="/improvement-implementation/:projectId"
-                            element={
-                              <LayoutWrapper>
-                                <LazyWrapper>
-                                  <ImprovementImplementation />
-                                </LazyWrapper>
-                              </LayoutWrapper>
-                            }
-                          />
+                            {/* 📊 Chart-heavy pages */}
+                            {/*<Route
+                              path="/time-tracking"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TimeTrackingPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/habits-tracker"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <HabitsTrackerPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/todo-analysis"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TodoAnalysisPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
 
-                          {/* Fallback */}
-                          <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
+                            {/* 🧠 ADHD/ASD specialized pages */}
+                            {/*<Route
+                              path="/pomodoro"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <PomodoroPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            <Route
+                              path="/adhd-cognitive-assessment"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ADHDCognitiveAssessmentPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/adhd-integrated-life-page"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ADHDIntegratedLifePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/cognitive-finance"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <CognitiveFinancePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
 
-                        {/* Global Toaster */}
-                        <Toaster
-                          position="top-right"
-                          toastOptions={{
-                            duration: 4000,
-                            style: {
-                              background: '#363636',
-                              color: '#fff',
-                            },
-                            success: {
-                              duration: 3000,
-                              iconTheme: {
-                                primary: '#4ade80',
-                                secondary: '#fff',
-                              },
-                            },
-                            error: {
-                              duration: 5000,
-                              iconTheme: {
-                                primary: '#ef4444',
-                                secondary: '#fff',
-                              },
-                            },
-                          }}
-                        />
-                      </div>
-                    </InternationalizationProvider>
-                  </PomodoroProvider>
-                </RealtimeAdaptationProvider>
-              </AdaptiveUIProvider>
-            </ThemeProvider>
-          </TodoProvider>
-        </LocaleProvider>
-      </AuthProvider>
-    </Router>
+                            {/* 💰 Finance & Goal Management */}
+                            {/*<Route
+                              path="/asset-quest"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AssetQuestManagerPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/finance-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <FinanceDashboardPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/goal-management"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper><GoalManagementPage /></LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+
+                            {/* 📝 Content & Communication */}
+                            <Route
+                              path="/blog"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <BlogPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/blog/new"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <EditBlogPost />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/blog/:id"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <BlogPostDetail />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/blog/edit/:id"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <EditBlogPost />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            {/*<Route
+                              path="/news"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <EnhancedNewsPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+
+                            {/* 🔧 System & Analysis */}
+                            <Route
+                              path="/analytics"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AnalyticsPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/quality-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <QualityDashboardPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
+                            <Route
+                              path="/coverage-report"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <CoverageReportPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 🧘 Personal Development */}
+                            <Route
+                              path="/sleep-tracker"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SleepTrackerPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/impulse-tracker"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ImpulseTrackerPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            {/*<Route
+                              path="/life-timeline"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <LifeEventTimelinePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/personal-analytics"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <PersonalAnalyticsPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+
+                            {/* 🎸 Hobbies & Learning */}
+                            <Route
+                              path="/guitar-practice"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <GuitarPracticePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* ⚙️ System Management */}
+                            {/*<Route
+                              path="/admin"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AdminPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/subscription"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SubscriptionPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/premium"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <PremiumPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+
+                            {/* 🗳️ Social & External Systems */}
+                            {/*<Route
+                              path="/election"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ElectionPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            {/*<Route
+                              path="/twitter"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TwitterIntegrationPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+
+                            {/* 📋 Project & Task Management */}
+                            {/*<Route
+                              path="/wbs"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <WBSPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />*/}
+                            <Route
+                              path="/improvement-plan/:id"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ImprovementPlanDetail />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/improvement-implementation/:projectId"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <ImprovementImplementation />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* Catch-all route */}
+                            <Route
+                              path="/*"
+                              element={<Navigate to="/integrated-dashboard" replace />}
+                            />
+                          </Routes>
+                        </div>
+                      </Suspense>
+                    </div>
+                  </InternationalizationProvider>
+                </PomodoroProvider>
+              </RealtimeAdaptationProvider>
+            </AdaptiveUIProvider>
+          </ThemeProvider>
+        </TodoProvider>
+      </LocaleProvider>
+    </AuthProvider>
   );
 };
 

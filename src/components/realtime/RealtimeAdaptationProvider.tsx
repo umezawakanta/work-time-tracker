@@ -92,8 +92,16 @@ export const RealtimeAdaptationProvider: React.FC<RealtimeAdaptationProviderProp
   const sessionStartTime = useRef<Date>(new Date());
   const adaptationThresholdRef = useRef(adaptationThreshold);
 
-  // 適応的UIシステムとの連携
-  const { updateCognitiveState, updateSettings } = useAdaptiveUI();
+  // 適応的UIシステムとの連携 - 一時的に無効化（コンテキストエラー修正）
+  // TODO: AdaptiveUIProvider のコンテキスト問題を解決後に再有効化
+  const updateCognitiveState = (state: any) => {
+    // プレースホルダー関数 - 引数を受け取るが何もしない
+    console.log('updateCognitiveState called with:', state);
+  };
+  const updateSettings = (settings: any) => {
+    // プレースホルダー関数 - 引数を受け取るが何もしない
+    console.log('updateSettings called with:', settings);
+  };
 
   // 行動パターン検出器の初期化
   useEffect(() => {
