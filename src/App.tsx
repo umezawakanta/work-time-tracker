@@ -17,8 +17,10 @@ const LazyWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 // Layout wrapper for consistent styling
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="min-h-screen bg-gray-50">
-    <Layout>{children}</Layout>
+  <div className="min-h-screen bg-gray-50 text-gray-900">
+    <Layout>
+      <div className="text-gray-900 bg-white min-h-full">{children}</div>
+    </Layout>
   </div>
 );
 

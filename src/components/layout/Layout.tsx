@@ -61,6 +61,7 @@ import {
   CheckCircle,
   Users,
   History,
+  Bell,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -138,6 +139,37 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'indigo',
   },
   {
+    icon: <TestTube className="h-5 w-5" />,
+    label: '🧪 認知機能評価',
+    path: '/adhd-cognitive-assessment',
+    description: 'WEIS準拠の科学的認知機能測定',
+    badge: '科学的',
+    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
+    accentColor: 'violet',
+  },
+  {
+    icon: <Calendar className="h-5 w-5" />,
+    label: '📅 統合ライフページ',
+    path: '/adhd-integrated-life-page',
+    description: 'ADHD/ASD総合ライフ管理',
+    badge: '重要',
+    gradient: 'from-blue-500 via-teal-500 to-green-500',
+    accentColor: 'blue',
+  },
+  {
+    icon: <DollarSign className="h-5 w-5" />,
+    label: '💰 認知最適化財務管理',
+    path: '/cognitive-finance',
+    description: 'ADHD/ASD特性に配慮した資産管理',
+    badge: '財務',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    accentColor: 'green',
+  },
+];
+
+// 勤怠管理メニューアイテム - 実際に存在するページのみ
+const workTimeMenuItems: MenuItem[] = [
+  {
     icon: <Clock className="h-5 w-5" />,
     label: '⏰ リアルタイム勤怠',
     path: '/realtime-clock',
@@ -147,110 +179,88 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     accentColor: 'green',
   },
   {
-    icon: <Calendar className="h-5 w-5" />,
-    label: '📅 統合ライフマネジメント',
-    path: '/adhd-life-management',
-    description: 'カレンダー×資産管理の統合システム',
-    badge: '重要',
-    gradient: 'from-blue-500 via-teal-500 to-green-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Activity className="h-5 w-5" />,
-    label: '🔄 統合実働システム',
-    path: '/adhd-integrated-life',
-    description: 'リアルタイム統合カレンダー・資産管理',
-    badge: '実働版',
-    gradient: 'from-emerald-500 via-blue-500 to-purple-500',
-    accentColor: 'emerald',
-  },
-  {
-    icon: <Target className="h-5 w-5" />,
-    label: '🌟 ライフシンク',
-    path: '/life-sync',
-    description: '統合生活管理ダッシュボード',
-    badge: '一般',
-    gradient: 'from-blue-500 via-purple-500 to-pink-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Sparkles className="h-5 w-5" />,
-    label: '🚀 新機能ダッシュボード',
-    path: '/feature-discovery',
-    description: '最新機能の発見と活用',
-    badge: 'NEW',
-    gradient: 'from-purple-500 via-pink-500 to-red-500',
-    accentColor: 'purple',
-  },
-  {
-    icon: <Clock className="h-5 w-5" />,
-    label: t('navigation.work_time'),
-    path: '/work-time',
-    description: t('navigation.work_time'),
-    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
-    accentColor: 'orange',
-  },
-];
-
-// 新しい勤怠管理メニューアイテム
-const workTimeMenuItems: MenuItem[] = [
-  {
-    icon: <Timer className="h-5 w-5" />,
-    label: '⏰ リアルタイム打刻',
-    path: '/work-time-punch',
-    description: 'GPS位置情報による正確な勤怠打刻',
-    badge: 'NEW',
-    gradient: 'from-green-500 via-emerald-500 to-teal-500',
-    accentColor: 'green',
-  },
-  {
-    icon: <History className="h-5 w-5" />,
-    label: '📊 勤怠履歴管理',
-    path: '/work-time-history',
-    description: '打刻履歴の確認と修正申請',
-    badge: 'NEW',
-    gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
-    accentColor: 'indigo',
-  },
-  {
-    icon: <CheckCircle className="h-5 w-5" />,
-    label: '👨‍💼 勤怠承認管理',
-    path: '/work-time-approval',
-    description: '従業員の勤怠記録承認（管理者専用）',
-    badge: 'ADMIN',
+    icon: <BarChart3 className="h-5 w-5" />,
+    label: '📊 日次勤務可視化',
+    path: '/daily-work-visualization',
+    description: '日次勤務状況の詳細分析',
+    badge: '分析',
     gradient: 'from-blue-500 via-indigo-500 to-purple-500',
     accentColor: 'blue',
   },
   {
-    icon: <Edit3 className="h-5 w-5" />,
-    label: '✅ 修正申請承認',
-    path: '/work-time-correction',
-    description: '打刻修正申請の承認（管理者専用）',
-    badge: 'ADMIN',
-    gradient: 'from-orange-500 via-red-500 to-pink-500',
+    icon: <Calendar className="h-5 w-5" />,
+    label: '📅 月次勤怠集計',
+    path: '/monthly-timesheet',
+    description: '月次勤怠データの集計と管理',
+    badge: '集計',
+    gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
+    accentColor: 'indigo',
+  },
+  {
+    icon: <Settings className="h-5 w-5" />,
+    label: '⚙️ 勤務パターン設定',
+    path: '/work-pattern-settings',
+    description: '個人の勤務パターン設定',
+    badge: '設定',
+    gradient: 'from-gray-500 via-slate-500 to-zinc-500',
+    accentColor: 'gray',
+  },
+  {
+    icon: <Bell className="h-5 w-5" />,
+    label: '🔔 通知設定',
+    path: '/notification-settings',
+    description: 'アラート・通知の詳細設定',
+    badge: '通知',
+    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     accentColor: 'orange',
   },
   {
-    icon: <Users className="h-5 w-5" />,
-    label: '📈 リアルタイム監視',
-    path: '/work-time-dashboard',
-    description: '全従業員の勤務状況リアルタイム監視',
-    badge: 'LIVE',
-    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
-    accentColor: 'purple',
+    icon: <CheckCircle className="h-5 w-5" />,
+    label: '✅ 承認ワークフロー',
+    path: '/approval-workflow',
+    description: '勤怠承認・申請管理',
+    badge: '承認',
+    gradient: 'from-emerald-500 via-green-500 to-teal-500',
+    accentColor: 'emerald',
   },
 ];
 
-// バッジ・実績メニューアイテム（UnifiedSystemNavigationで管理されないアイテムのみ）
-const badgeMenuItems: MenuItem[] = [
-  // UnifiedSystemNavigationでバッジ関連は管理されるため、ここは空
+// ブログ・コンテンツメニューアイテム
+const blogMenuItems: MenuItem[] = [
+  {
+    icon: <FileText className="h-5 w-5" />,
+    label: '📝 ブログ',
+    path: '/blog',
+    description: 'ブログ記事の管理と閲覧',
+    badge: 'コンテンツ',
+    gradient: 'from-pink-500 via-rose-500 to-red-500',
+    accentColor: 'pink',
+  },
+  {
+    icon: <Plus className="h-5 w-5" />,
+    label: '✏️ 新規ブログ投稿',
+    path: '/blog/new',
+    description: '新しいブログ記事を作成',
+    badge: '作成',
+    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
+    accentColor: 'violet',
+  },
 ];
 
-// 開発・品質管理メニューアイテム
-const devQualityMenuItems: MenuItem[] = [
+// システム・分析メニューアイテム
+const systemMenuItems: MenuItem[] = [
+  {
+    icon: <Activity className="h-5 w-5" />,
+    label: '📈 アナリティクス',
+    path: '/analytics',
+    description: 'サイト分析とメトリクス',
+    badge: '分析',
+    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    accentColor: 'cyan',
+  },
   {
     icon: <Shield className="h-5 w-5" />,
-    label: '品質ダッシュボード',
+    label: '🛡️ 品質ダッシュボード',
     path: '/quality-dashboard',
     description: '品質メトリクス・テスト・パフォーマンス',
     badge: 'QA',
@@ -259,112 +269,59 @@ const devQualityMenuItems: MenuItem[] = [
   },
   {
     icon: <AlertTriangle className="h-5 w-5" />,
-    label: 'エラー監視',
-    path: '/error-monitor',
-    description: 'エラーエリミネーター・リアルタイム監視',
-    badge: 'HOT',
+    label: '⚠️ エラーダッシュボード',
+    path: '/error-dashboard',
+    description: 'エラー監視とデバッグ情報',
+    badge: 'エラー',
     gradient: 'from-red-500 via-orange-500 to-red-600',
     accentColor: 'red',
   },
   {
-    icon: <Gauge className="h-5 w-5" />,
-    label: 'パフォーマンス監視',
-    path: '/performance-monitor',
-    description: 'パフォーマンス忍者・Core Web Vitals',
-    badge: '🥷',
-    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
-    accentColor: 'purple',
-  },
-  {
-    icon: <TestTube className="h-5 w-5" />,
-    label: 'クロスブラウザテスト',
-    path: '/cross-browser-test',
-    description: 'ブラウザ互換性テスト',
-    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
-    accentColor: 'cyan',
-  },
-  {
-    icon: <Activity className="h-5 w-5" />,
-    label: 'パフォーマンス最適化',
-    path: '/performance-optimization',
-    description: 'サイト最適化と高速化',
+    icon: <BarChart2 className="h-5 w-5" />,
+    label: '📊 カバレッジレポート',
+    path: '/coverage-report',
+    description: 'テストカバレッジレポート',
+    badge: 'テスト',
     gradient: 'from-green-500 via-emerald-500 to-teal-500',
     accentColor: 'green',
   },
 ];
 
-// ツール・ユーティリティメニューアイテム
-const toolsMenuItems: MenuItem[] = [
+// 個人開発・ライフスタイルメニューアイテム
+const personalMenuItems: MenuItem[] = [
   {
-    icon: <Award className="h-5 w-5" />,
-    label: 'WBS作成',
-    path: '/wbs',
-    description: 'プロジェクトのWBS管理',
-    badge: 'HOT',
-    gradient: 'from-rose-500 via-pink-500 to-rose-600',
-    accentColor: 'rose',
-  },
-  {
-    icon: <Zap className="h-5 w-5" />,
-    label: 'AI WBS生成',
-    path: '/wbs-generator',
-    description: 'AIによる自動WBS生成',
-    badge: 'AI',
-    gradient: 'from-violet-500 via-purple-500 to-indigo-500',
-    accentColor: 'violet',
-  },
-  {
-    icon: <BarChart3 className="h-5 w-5" />,
-    label: 'データ可視化',
-    path: '/data-visualization',
-    description: 'チャートとグラフ作成',
-    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
-    accentColor: 'teal',
-  },
-  {
-    icon: <Sparkles className="h-5 w-5" />,
-    label: 'ゲーミフィケーション',
-    path: '/gamification',
-    description: 'ゲーム要素とモチベーション',
-    gradient: 'from-pink-500 via-purple-500 to-indigo-500',
-    accentColor: 'pink',
-  },
-  {
-    icon: <Brain className="h-5 w-5" />,
-    label: '🚀 AI強化ゲーミフィケーション（進化版）',
-    path: '/ai-gamification',
-    description: 'リアルタイムAI分析・予測・パーソナライゼーション',
-    gradient: 'from-blue-500 via-purple-500 to-pink-500',
-    accentColor: 'blue',
-  },
-  {
-    icon: <Crown className="h-5 w-5" />,
-    label: '🎮 統合ゲーミフィケーション',
-    path: '/integrated-gamification',
-    description: 'AI・ゲーミフィケーション・タスク管理の完全統合',
-    badge: 'NEW',
-    gradient: 'from-purple-600 via-violet-600 to-indigo-600',
-    accentColor: 'purple',
-  },
-  {
-    icon: <Sparkles className="h-5 w-5" />,
-    label: '🚀 究極統合ダッシュボード',
-    path: '/super-dashboard',
-    description: 'すべてのシステムが統合された次世代プラットフォーム',
-    badge: 'ULTIMATE',
-    gradient: 'from-indigo-600 via-purple-600 to-pink-600',
+    icon: <Bed className="h-5 w-5" />,
+    label: '😴 睡眠トラッカー',
+    path: '/sleep-tracker',
+    description: '睡眠パターンの記録と分析',
+    badge: '健康',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     accentColor: 'indigo',
   },
   {
-    icon: <Settings className="h-5 w-5" />,
-    label: '⚙️ 自動化ルール',
-    path: '/automation-rules',
-    description: 'タスク・ワークフロー・AI機能の完全自動化管理',
-    badge: 'AUTO',
-    gradient: 'from-blue-600 via-cyan-600 to-teal-600',
-    accentColor: 'blue',
+    icon: <Zap className="h-5 w-5" />,
+    label: '⚡ 衝動トラッカー',
+    path: '/impulse-tracker',
+    description: 'ADHD衝動性の記録と管理',
+    badge: 'ADHD',
+    gradient: 'from-yellow-500 via-orange-500 to-red-500',
+    accentColor: 'yellow',
+  },
+  {
+    icon: <Music className="h-5 w-5" />,
+    label: '🎸 ギター練習',
+    path: '/guitar-practice',
+    description: 'ギター練習の記録と進捗管理',
+    badge: '趣味',
+    gradient: 'from-amber-500 via-orange-500 to-red-500',
+    accentColor: 'amber',
   },
 ];
+
+// 使用しないメニューアイテム（削除）
+const badgeMenuItems: MenuItem[] = [];
+const devQualityMenuItems: MenuItem[] = [];
+const toolsMenuItems: MenuItem[] = [];
 
 export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
@@ -648,123 +605,52 @@ export default function Layout({ children }: LayoutProps) {
                   </div>
                 )}
 
-                {/* 新しい勤怠管理セクション */}
+                {/* 勤怠管理セクション */}
                 <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
                   <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Timer className="h-3 w-3" />
+                    <Clock className="h-3 w-3" />
                     リアルタイム勤怠管理
                   </h3>
-                  {workTimeMenuItems.map((item) => {
-                    // 管理者専用メニューの制御
-                    if (
-                      (item.path === '/work-time-approval' ||
-                        item.path === '/work-time-dashboard') &&
-                      !user?.isAdmin
-                    ) {
-                      return null;
-                    }
-                    return <div key={item.path}>{renderMenuItem(item)}</div>;
-                  })}
+                  {workTimeMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* ブログ・コンテンツセクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <FileText className="h-3 w-3" />
+                    ブログ・コンテンツ
+                  </h3>
+                  {blogMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* システム・分析セクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Activity className="h-3 w-3" />
+                    システム・分析
+                  </h3>
+                  {systemMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
+                </div>
+
+                {/* 個人開発・ライフスタイルセクション */}
+                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
+                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
+                    <Bed className="h-3 w-3" />
+                    個人開発・ライフスタイル
+                  </h3>
+                  {personalMenuItems.map((item) => (
+                    <div key={item.path}>{renderMenuItem(item)}</div>
+                  ))}
                 </div>
 
                 {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
-                {badgeMenuItems.length > 0 && (
-                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                      <Trophy className="h-3 w-3" />
-                      {t('sidebar.badges_achievements')}
-                    </h3>
-                    {badgeMenuItems.map((item) => (
-                      <div key={item.path}>{renderMenuItem(item)}</div>
-                    ))}
-                  </div>
-                )}
 
-                {/* 開発・品質管理セクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Shield className="h-3 w-3" />
-                    {t('sidebar.development_quality')}
-                  </h3>
-                  {devQualityMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-                {/* データベース・インフラ管理 */}
-                {renderMenuItem({
-                  icon: <AlertTriangle className="h-5 w-5" />,
-                  label: 'データベースバックアップ',
-                  path: '/database-backup',
-                  description: 'データベースバックアップ管理',
-                  badge: 'DB',
-                  gradient: 'from-orange-500 via-red-500 to-pink-500',
-                  accentColor: 'orange',
-                })}
-                {renderMenuItem({
-                  icon: <Activity className="h-5 w-5" />,
-                  label: 'システム監視',
-                  path: '/monitoring',
-                  description: 'システム監視マスター・SLO追跡',
-                  badge: 'SLO',
-                  gradient: 'from-indigo-500 via-blue-500 to-cyan-500',
-                  accentColor: 'indigo',
-                })}
-
-                {/* ツール・ユーティリティセクション */}
-                <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Sparkles className="h-3 w-3" />
-                    {t('sidebar.tools_utilities')}
-                  </h3>
-                  {toolsMenuItems.map((item) => (
-                    <div key={item.path}>{renderMenuItem(item)}</div>
-                  ))}
-                </div>
-
-                {/* その他の機能 */}
-                <div className="mb-6">
-                  <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
-                    <Globe className="h-3 w-3" />
-                    {t('sidebar.other_features')}
-                  </h3>
-
-                  {/* 習慣管理セクション */}
-                  <div className="pt-2 pb-2">
-                    <h4 className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider px-4 flex items-center gap-2">
-                      <Target className="h-3 w-3" />
-                      習慣管理
-                    </h4>
-                  </div>
-                  {/* 入浴習慣 */}
-                  {renderMenuItem({
-                    icon: <Droplets className="h-5 w-5" />,
-                    label: '入浴習慣',
-                    path: '/bathing-habit',
-                    description: '毎日の入浴習慣を管理',
-                    badge: 'NEW',
-                    gradient: 'from-blue-500 via-cyan-500 to-teal-500',
-                    accentColor: 'blue',
-                  })}
-                  {/* 髭剃り習慣 */}
-                  {renderMenuItem({
-                    icon: <Scissors className="h-5 w-5" />,
-                    label: '髭剃り習慣',
-                    path: '/shaving-habit',
-                    description: '毎日の髭剃り習慣を管理',
-                    badge: 'NEW',
-                    gradient: 'from-orange-500 via-red-500 to-pink-500',
-                    accentColor: 'orange',
-                  })}
-
-                  {/* 本棚ページ */}
-                  {renderMenuItem({
-                    icon: <BookOpen className="h-5 w-5" />,
-                    label: '本棚',
-                    path: '/bookshelf',
-                    description: '読書管理と本の記録',
-                    gradient: 'from-amber-500 via-orange-500 to-red-500',
-                    accentColor: 'amber',
-                  })}
                   {/* PWA・システム関連 */}
                   {renderMenuItem({
                     icon: <Lightbulb className="h-5 w-5" />,
