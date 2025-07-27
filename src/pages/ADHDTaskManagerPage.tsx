@@ -1,5 +1,5 @@
 import React from 'react';
-import { ADHDTaskManager } from '@/components/ADHDTaskManager';
+import { ADHDTaskManager } from '@/components/cognitive/ADHDTaskManager';
 
 export default function ADHDTaskManagerPage() {
   return (

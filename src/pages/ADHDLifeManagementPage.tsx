@@ -1,5 +1,5 @@
 import React from 'react';
-import { ADHDLifeManagementHub } from '@/components/ADHDLifeManagementHub';
+import { ADHDLifeManagementHub } from '@/components/cognitive/ADHDLifeManagementHub';
 
 export default function ADHDLifeManagementPage() {
   return (

@@ -38,7 +38,7 @@ import { InternationalizationProvider } from './hooks/useInternationalization';
 // import DashboardPage from './pages/DashboardPage';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 // import CognitiveDashboard from './pages/CognitiveDashboard';
-import { ADHDTaskManager } from './components/ADHDTaskManager';
+import { ADHDTaskManager } from './components/cognitive/ADHDTaskManager';
 import { ADHDIntegratedLifeSystem } from './components/ADHDIntegratedLifeSystem';
 // import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
 

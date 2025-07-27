@@ -259,7 +259,7 @@ const SiteImprovementPlan: React.FC = () => {
         priority: 'high',
         category: 'architecture',
         estimatedDays: 5,
-        progress: 30,
+        progress: 60,
       },
     ],
     phase2: [
@@ -289,11 +289,11 @@ const SiteImprovementPlan: React.FC = () => {
         id: 'folder-restructure',
         title: 'フォルダ構造の再編成',
         description: '機能別モジュール構造への移行と共通コンポーネントの抽出',
-        status: 'planned',
+        status: 'in-progress',
         priority: 'medium',
         category: 'architecture',
         estimatedDays: 14,
-        progress: 0,
+        progress: 30,
         dependencies: ['component-cleanup'],
       },
       {
@@ -764,6 +764,17 @@ const SiteImprovementPlan: React.FC = () => {
                 <li>✅ アラート・通知機能完成 - 認知特性配慮・適応的頻度・感覚的配慮</li>
                 <li>✅ 承認ワークフロー完成 - 階層的承認・ADHD/ASD配慮コミュニケーション</li>
                 <li>⚡ APIレスポンス時間改善と安定性向上</li>
+                <li>
+                  ✅ 重複コンポーネント削除完了 -
+                  OptimizedADHDTaskManager、OptimizedFinanceManager削除
+                </li>
+                <li>✅ コンポーネント整理進捗60%達成 - 未使用コンポーネント除去・構造最適化</li>
+                <li>✅ pnpm使用環境最適化 - 開発環境統一・依存関係管理改善</li>
+                <li>✅ フォルダ構造再編成開始 - 機能別モジュール構造cognitive/worktime導入</li>
+                <li>
+                  ✅ ADHD関連コンポーネント統合完了 - cognitive/配下に集約・インポートパス最適化
+                </li>
+                <li>✅ 勤怠管理コンポーネント移動完了 - worktime/配下に構造化</li>
               </ul>
             </div>
           </CardContent>

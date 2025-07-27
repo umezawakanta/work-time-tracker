@@ -1,5 +1,5 @@
 import React from 'react';
-import { ADHDCognitiveAssessment } from '@/components/ADHDCognitiveAssessment';
+import { ADHDCognitiveAssessment } from '@/components/cognitive/ADHDCognitiveAssessment';
 
 export default function ADHDCognitiveAssessmentPage() {
   return (
