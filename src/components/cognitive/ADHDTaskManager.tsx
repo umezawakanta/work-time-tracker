@@ -7,6 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import {
+  createCognitiveDataService,
+  CognitiveDataPersistenceService,
+} from '@/services/cognitive/CognitiveDataPersistenceService';
+import type { ADHDTask } from '@/services/cognitive/CognitiveDataPersistenceService';
+import {
   Plus,
   Play,
   Pause,
@@ -58,36 +63,12 @@ import {
   ChevronUp,
   HelpCircle,
   Settings,
+  RefreshCw,
 } from 'lucide-react';
 import { format, addMinutes, differenceInMinutes } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
-// ADHD/ASD特化型タスク管理の型定義
-interface ADHDTask {
-  id: string;
-  title: string;
-  description?: string;
-  status: 'ideas' | 'today' | 'doing' | 'done';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  energyRequired: 'low' | 'medium' | 'high'; // エネルギー必要量
-  estimatedMinutes: number;
-  actualMinutes?: number;
-  breakdownSteps: string[];
-  completedSteps: number;
-  category: 'work' | 'personal' | 'health' | 'creative' | 'admin';
-  dueDate?: Date;
-  timeBox?: {
-    start: Date;
-    duration: number; // minutes
-    isActive: boolean;
-  };
-  sensoryLoad: 'low' | 'medium' | 'high'; // 感覚負荷
-  dopamineReward: number; // 1-10 (完了時の報酬レベル)
-  executiveDifficulty: 'easy' | 'medium' | 'hard'; // 実行機能への負荷
-  createdAt: Date;
-  completedAt?: Date;
-  isHyperfocusRisk: boolean; // 過集中リスク
-}
+// ADHD/ASD特化型タスク管理の型定義は CognitiveDataPersistenceService からインポート
 
 interface EnergyState {
   current: number; // 0-100
@@ -116,58 +97,10 @@ export const ADHDTaskManager: React.FC = () => {
   const { user } = useAuth();
 
   // State Management
-  const [tasks, setTasks] = useState<ADHDTask[]>([
-    {
-      id: '1',
-      title: '朝のルーティン完了',
-      status: 'done',
-      priority: 'high',
-      energyRequired: 'low',
-      estimatedMinutes: 30,
-      actualMinutes: 25,
-      breakdownSteps: ['歯磨き', '薬服用', '朝食', '身支度'],
-      completedSteps: 4,
-      category: 'health',
-      sensoryLoad: 'low',
-      dopamineReward: 7,
-      executiveDifficulty: 'easy',
-      createdAt: new Date(),
-      completedAt: new Date(),
-      isHyperfocusRisk: false,
-    },
-    {
-      id: '2',
-      title: 'プロジェクトレポート作成',
-      status: 'today',
-      priority: 'high',
-      energyRequired: 'high',
-      estimatedMinutes: 120,
-      breakdownSteps: ['資料収集', '構成案作成', '本文執筆', '見直し'],
-      completedSteps: 1,
-      category: 'work',
-      sensoryLoad: 'medium',
-      dopamineReward: 9,
-      executiveDifficulty: 'hard',
-      createdAt: new Date(),
-      isHyperfocusRisk: true,
-    },
-    {
-      id: '3',
-      title: '部屋の片付け',
-      status: 'ideas',
-      priority: 'medium',
-      energyRequired: 'medium',
-      estimatedMinutes: 60,
-      breakdownSteps: ['机の上整理', '床の片付け', '掃除機かけ'],
-      completedSteps: 0,
-      category: 'personal',
-      sensoryLoad: 'high',
-      dopamineReward: 6,
-      executiveDifficulty: 'medium',
-      createdAt: new Date(),
-      isHyperfocusRisk: false,
-    },
-  ]);
+  const [tasks, setTasks] = useState<ADHDTask[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [persistenceService, setPersistenceService] =
+    useState<CognitiveDataPersistenceService | null>(null);
 
   const [energyState, setEnergyState] = useState<EnergyState>({
     current: 75,
@@ -186,6 +119,111 @@ export const ADHDTaskManager: React.FC = () => {
   });
   const [visualMode, setVisualMode] = useState<'board' | 'list' | 'timeline'>('board');
   const [sensoryFriendly, setSensoryFriendly] = useState(false);
+
+  // 永続化サービスの初期化とデータロード
+  useEffect(() => {
+    const initializePersistence = async () => {
+      try {
+        setIsLoading(true);
+        const userId = user?.id || 'demo-user';
+        const service = createCognitiveDataService(userId, {
+          storage: 'localStorage', // 一旦localStorage、後でindexedDBに
+          encryption: false,
+          syncInterval: 5,
+          backupEnabled: true,
+        });
+
+        setPersistenceService(service);
+
+        // サービス初期化イベントリスナー
+        service.on('initialized', async () => {
+          console.log('🧠 認知データサービス初期化完了');
+
+          // 既存タスクの読み込み
+          const savedTasks = await service.loadTasks();
+
+          // 初回起動時はデモデータを作成
+          if (savedTasks.length === 0) {
+            const demoTasks: ADHDTask[] = [
+              {
+                id: '1',
+                title: '朝のルーティン完了',
+                status: 'done',
+                priority: 'high',
+                energyRequired: 'low',
+                estimatedMinutes: 30,
+                actualMinutes: 25,
+                breakdownSteps: ['歯磨き', '薬服用', '朝食', '身支度'],
+                completedSteps: 4,
+                category: 'health',
+                sensoryLoad: 'low',
+                dopamineReward: 7,
+                executiveDifficulty: 'easy',
+                createdAt: new Date(),
+                completedAt: new Date(),
+                isHyperfocusRisk: false,
+              },
+              {
+                id: '2',
+                title: 'プロジェクトレポート作成',
+                status: 'today',
+                priority: 'high',
+                energyRequired: 'high',
+                estimatedMinutes: 120,
+                breakdownSteps: ['資料収集', '構成案作成', '本文執筆', '見直し'],
+                completedSteps: 1,
+                category: 'work',
+                sensoryLoad: 'medium',
+                dopamineReward: 9,
+                executiveDifficulty: 'hard',
+                createdAt: new Date(),
+                isHyperfocusRisk: true,
+              },
+              {
+                id: '3',
+                title: '部屋の片付け',
+                status: 'ideas',
+                priority: 'medium',
+                energyRequired: 'medium',
+                estimatedMinutes: 60,
+                breakdownSteps: ['机の上整理', '床の片付け', '掃除機かけ'],
+                completedSteps: 0,
+                category: 'personal',
+                sensoryLoad: 'high',
+                dopamineReward: 6,
+                executiveDifficulty: 'medium',
+                createdAt: new Date(),
+                isHyperfocusRisk: false,
+              },
+            ];
+            await service.saveTasks(demoTasks);
+            setTasks(demoTasks);
+          } else {
+            setTasks(savedTasks);
+          }
+
+          setIsLoading(false);
+        });
+
+        service.on('error', (error) => {
+          console.error('認知データサービスエラー:', error);
+          setIsLoading(false);
+        });
+      } catch (error) {
+        console.error('永続化サービス初期化エラー:', error);
+        setIsLoading(false);
+      }
+    };
+
+    initializePersistence();
+
+    // クリーンアップ
+    return () => {
+      if (persistenceService) {
+        persistenceService.dispose();
+      }
+    };
+  }, [user]);
 
   // Utility Functions
   const getEnergyColor = (energy: number) => {
@@ -225,8 +263,8 @@ export const ADHDTaskManager: React.FC = () => {
   };
 
   // Task Management Functions
-  const addTask = useCallback(() => {
-    if (!newTask.title) return;
+  const addTask = useCallback(async () => {
+    if (!newTask.title || !persistenceService) return;
 
     const task: ADHDTask = {
       id: Date.now().toString(),
@@ -246,24 +284,49 @@ export const ADHDTaskManager: React.FC = () => {
       isHyperfocusRisk: newTask.executiveDifficulty === 'hard' && newTask.estimatedMinutes! > 60,
     };
 
-    setTasks((prev) => [...prev, task]);
-    setNewTask({});
-    setShowAddTask(false);
-  }, [newTask]);
+    try {
+      // 永続化サービスに保存
+      await persistenceService.saveTask(task);
 
-  const moveTask = useCallback((taskId: string, newStatus: ADHDTask['status']) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              status: newStatus,
-              completedAt: newStatus === 'done' ? new Date() : undefined,
-            }
-          : task
-      )
-    );
-  }, []);
+      // UI状態を更新
+      setTasks((prev) => [...prev, task]);
+      setNewTask({});
+      setShowAddTask(false);
+
+      console.log('✅ 新しいタスクを追加・保存しました:', task.title);
+    } catch (error) {
+      console.error('タスク追加エラー:', error);
+    }
+  }, [newTask, persistenceService]);
+
+  const moveTask = useCallback(
+    async (taskId: string, newStatus: ADHDTask['status']) => {
+      if (!persistenceService) return;
+
+      try {
+        const updatedTasks = tasks.map((task) =>
+          task.id === taskId
+            ? {
+                ...task,
+                status: newStatus,
+                completedAt: newStatus === 'done' ? new Date() : undefined,
+              }
+            : task
+        );
+
+        // 永続化サービスに保存
+        await persistenceService.saveTasks(updatedTasks);
+
+        // UI状態を更新
+        setTasks(updatedTasks);
+
+        console.log(`✅ タスク状態を変更・保存しました: ${taskId} → ${newStatus}`);
+      } catch (error) {
+        console.error('タスク移動エラー:', error);
+      }
+    },
+    [tasks, persistenceService]
+  );
 
   const startTimeBox = useCallback(
     (taskId: string, duration: number) => {
@@ -300,25 +363,53 @@ export const ADHDTaskManager: React.FC = () => {
   );
 
   const completeTask = useCallback(
-    (taskId: string) => {
+    async (taskId: string) => {
       const task = tasks.find((t) => t.id === taskId);
-      if (!task) return;
+      if (!task || !persistenceService) return;
 
       // ドーパミン報酬の視覚的フィードバック
       const celebration = task.dopamineReward >= 7 ? '🎉' : task.dopamineReward >= 5 ? '✨' : '👍';
 
-      moveTask(taskId, 'done');
+      try {
+        // 学習データの記録
+        await persistenceService.recordLearningData({
+          taskId,
+          completionTime: task.actualMinutes || task.estimatedMinutes,
+          energyBefore: energyState.current,
+          energyAfter: Math.min(100, energyState.current + task.dopamineReward),
+          difficultyRating:
+            task.executiveDifficulty === 'hard' ? 8 : task.executiveDifficulty === 'medium' ? 5 : 3,
+          satisfactionRating: task.dopamineReward,
+          cognitiveLoad: task.sensoryLoad === 'high' ? 8 : task.sensoryLoad === 'medium' ? 5 : 3,
+          distractionEvents: Math.floor(Math.random() * 3), // 仮の値
+          breaksTaken: Math.floor(task.estimatedMinutes / 25), // ポモドーロ基準
+          timestamp: new Date(),
+        });
 
-      // エネルギー更新（完了による回復）
-      setEnergyState((prev) => ({
-        ...prev,
-        current: Math.min(100, prev.current + task.dopamineReward),
-      }));
+        // タスクの完了処理
+        await moveTask(taskId, 'done');
 
-      // 成功フィードバック表示（実装時にtoastなど）
-      console.log(`${celebration} タスク完了！ドーパミン+${task.dopamineReward}`);
+        // エネルギー更新（完了による回復）
+        const newEnergyLevel = Math.min(100, energyState.current + task.dopamineReward);
+        setEnergyState((prev) => ({
+          ...prev,
+          current: newEnergyLevel,
+        }));
+
+        // エネルギー状態の保存
+        await persistenceService.saveEnergyState({
+          current: newEnergyLevel,
+          optimal: energyState.optimal,
+          trend: newEnergyLevel > energyState.current ? 'rising' : 'stable',
+        });
+
+        // 成功フィードバック表示
+        console.log(`${celebration} タスク完了！ドーパミン+${task.dopamineReward}`);
+      } catch (error) {
+        console.error('タスク完了処理エラー:', error);
+      }
     },
-    [tasks, moveTask]
+    [tasks, moveTask, energyState, persistenceService]
   );
 
   // タスクのエネルギー適合性チェック
@@ -356,6 +447,21 @@ export const ADHDTaskManager: React.FC = () => {
     { id: 'doing', title: '🚀 実行中', tasks: filteredTasks.filter((t) => t.status === 'doing') },
     { id: 'done', title: '✅ 完了', tasks: filteredTasks.filter((t) => t.status === 'done') },
   ];
+
+  // ローディング状態の表示
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
+          <p className="text-lg font-medium mb-2">🧠 認知タスク管理システム初期化中...</p>
+          <p className="text-sm text-gray-600">
+            データの読み込みと永続化サービスの設定を行っています
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

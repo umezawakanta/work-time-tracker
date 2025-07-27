@@ -1,16 +1,43 @@
-import { EventEmitter } from 'events';
-import { openDB, deleteDB, IDBPDatabase } from 'idb';
-import CryptoJS from 'crypto-js';
+/**
+ * 🧠 認知データ永続化サービス
+ * ADHD/ASD認知特性データの安全な保存・復元システム
+ */
 
-// 認知評価プロファイル型（拡張版）
-interface CognitiveProfile {
+import { EventEmitter } from 'eventemitter3';
+
+// タスク管理データ型
+export interface ADHDTask {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'ideas' | 'today' | 'doing' | 'done';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  energyRequired: 'low' | 'medium' | 'high';
+  estimatedMinutes: number;
+  actualMinutes?: number;
+  breakdownSteps: string[];
+  completedSteps: number;
+  category: 'work' | 'personal' | 'health' | 'creative' | 'admin';
+  dueDate?: Date;
+  timeBox?: {
+    start: Date;
+    duration: number;
+    isActive: boolean;
+  };
+  sensoryLoad: 'low' | 'medium' | 'high';
+  dopamineReward: number;
+  executiveDifficulty: 'easy' | 'medium' | 'hard';
+  createdAt: Date;
+  completedAt?: Date;
+  isHyperfocusRisk: boolean;
+  userId?: string;
+}
+
+// 認知プロファイルデータ
+export interface CognitiveProfile {
   id: string;
   userId: string;
-  version: number;
-  timestamp: Date;
-  lastModified: Date;
-
-  // 基本認知スコア
+  date: Date;
   verbalComprehension: number;
   perceptualReasoning: number;
   workingMemory: number;
@@ -19,21 +46,6 @@ interface CognitiveProfile {
   attentionalControl: number;
   sensoryProcessing: number;
   socialCognition: number;
-  fullScaleIQ: number;
-  adhdOptimizedScore: number;
-
-  // 詳細サブテスト結果
-  subtestResults: {
-    [key: string]: {
-      rawScore: number;
-      scaledScore: number;
-      percentile: number;
-      confidence: number;
-      attemptTime: number;
-    };
-  };
-
-  // 個人設定
   personalizedSettings: {
     optimalTaskDuration: number;
     preferredBreakFrequency: number;
@@ -41,706 +53,434 @@ interface CognitiveProfile {
     auditoryProcessingPreference: 'minimal' | 'moderate' | 'enhanced';
     multitaskingCapacity: 'single' | 'dual' | 'multiple';
     timeStructureNeed: 'rigid' | 'flexible' | 'adaptive';
-    sensoryPreferences: {
-      lighting: 'dim' | 'natural' | 'bright';
-      sound: 'quiet' | 'ambient' | 'active';
-      temperature: 'cool' | 'neutral' | 'warm';
-      movement: 'static' | 'fidget' | 'active';
-    };
+    cognitiveLoadThreshold: number;
+    distractionSensitivity: 'low' | 'medium' | 'high';
   };
-
-  // 分析結果
   strengths: string[];
   challenges: string[];
   recommendations: string[];
-  adaptiveStrategies: string[];
-
-  // 進捗データ
-  progressTracking: {
-    assessmentDate: Date;
-    retestRecommendation: Date;
-    improvementAreas: string[];
-    currentGoals: string[];
-    achievedMilestones: string[];
-  };
-
-  // メタデータ
-  metadata: {
-    assessmentDuration: number; // minutes
-    testEnvironment: 'quiet' | 'normal' | 'distracting';
-    deviceType: 'desktop' | 'tablet' | 'mobile';
-    completionRate: number; // 0-1
-    reliability: number; // 0-1
-    validationStatus: 'valid' | 'questionable' | 'invalid';
-  };
-
-  // 同期情報
-  syncStatus: {
-    lastSyncedAt?: Date;
-    syncVersion: number;
-    cloudBackupStatus: 'pending' | 'synced' | 'error';
-    conflictStatus?: 'none' | 'resolved' | 'pending';
-  };
 }
 
-// エネルギーパターンデータ型
-interface EnergyPatternData {
+// 学習データ
+export interface LearningData {
   id: string;
   userId: string;
+  taskId: string;
+  completionTime: number;
+  energyBefore: number;
+  energyAfter: number;
+  difficultyRating: number;
+  satisfactionRating: number;
+  cognitiveLoad: number;
+  distractionEvents: number;
+  breaksTaken: number;
   timestamp: Date;
-  patterns: {
-    [hour: number]: {
-      energyLevel: number;
-      focusCapacity: number;
-      creativityLevel: number;
-      executiveFunction: number;
-      socialEnergy: number;
-      confidence: number; // データの信頼度
-      sampleSize: number; // データポイント数
-    };
-  };
-  weeklyTrends: {
-    [day: string]: {
-      morning: number;
-      afternoon: number;
-      evening: number;
-    };
-  };
-  adaptiveLearning: {
-    learningRate: number;
-    adaptationCount: number;
-    lastAdaptation: Date;
-    accuracyScore: number;
-  };
-  environmentalFactors: {
-    weather: { [condition: string]: number };
-    season: { [season: string]: number };
-    socialContext: { [context: string]: number };
-    workload: { [level: string]: number };
-  };
 }
 
-// データベース設定
-interface DatabaseConfig {
-  dbName: string;
-  version: number;
-  stores: {
-    [storeName: string]: {
-      keyPath: string;
-      indexes?: { [indexName: string]: string };
-    };
-  };
+// エネルギー状態
+export interface EnergyState {
+  current: number;
+  optimal: number;
+  trend: 'rising' | 'stable' | 'falling';
+  timestamp: Date;
 }
 
-// 同期設定
-interface SyncConfig {
-  autoSync: boolean;
+// 永続化オプション
+export interface PersistenceOptions {
+  storage: 'localStorage' | 'indexedDB' | 'api';
+  encryption: boolean;
   syncInterval: number; // minutes
-  batchSize: number;
-  retryAttempts: number;
-  encryptionEnabled: boolean;
-  compressionEnabled: boolean;
-  offlineStorageLimit: number; // MB
+  backupEnabled: boolean;
 }
 
-class CognitiveDataPersistenceService extends EventEmitter {
-  private db: IDBPDatabase | null = null;
-  private encryptionKey: string;
-  private syncConfig: SyncConfig;
-  private dbConfig: DatabaseConfig;
-  private syncInterval: NodeJS.Timeout | null = null;
-  private isOnline: boolean = navigator.onLine;
+export class CognitiveDataPersistenceService extends EventEmitter {
+  private dbName = 'CognitiveDataDB';
+  private version = 1;
+  private db: IDBDatabase | null = null;
+  private userId: string;
+  private options: PersistenceOptions;
 
-  constructor() {
+  constructor(userId: string, options: Partial<PersistenceOptions> = {}) {
     super();
-
-    this.dbConfig = {
-      dbName: 'ADHDLifeHub_CognitiveData',
-      version: 1,
-      stores: {
-        cognitiveProfiles: {
-          keyPath: 'id',
-          indexes: {
-            'by-user': 'userId',
-            'by-timestamp': 'timestamp',
-            'by-version': 'version',
-          },
-        },
-        energyPatterns: {
-          keyPath: 'id',
-          indexes: {
-            'by-user': 'userId',
-            'by-timestamp': 'timestamp',
-          },
-        },
-        syncQueue: {
-          keyPath: 'id',
-          indexes: {
-            'by-priority': 'priority',
-            'by-timestamp': 'timestamp',
-          },
-        },
-        userSettings: {
-          keyPath: 'userId',
-        },
-        backupHistory: {
-          keyPath: 'id',
-          indexes: {
-            'by-date': 'backupDate',
-          },
-        },
-      },
+    this.userId = userId;
+    this.options = {
+      storage: 'indexedDB',
+      encryption: false,
+      syncInterval: 5,
+      backupEnabled: true,
+      ...options,
     };
 
-    this.syncConfig = {
-      autoSync: true,
-      syncInterval: 30, // 30分
-      batchSize: 10,
-      retryAttempts: 3,
-      encryptionEnabled: true,
-      compressionEnabled: true,
-      offlineStorageLimit: 50, // 50MB
-    };
-
-    this.encryptionKey = this.getOrCreateEncryptionKey();
-    this.initializeService();
+    this.initializeStorage();
   }
 
   /**
-   * サービス初期化
+   * ストレージの初期化
    */
-  private async initializeService(): Promise<void> {
+  private async initializeStorage(): Promise<void> {
     try {
-      await this.initializeDatabase();
-      this.setupNetworkListeners();
-
-      if (this.syncConfig.autoSync) {
-        this.startAutoSync();
+      if (this.options.storage === 'indexedDB') {
+        await this.initializeIndexedDB();
       }
-
       console.log('🧠 認知データ永続化サービス初期化完了');
-      this.emit('service-initialized');
+      this.emit('initialized');
     } catch (error) {
-      console.error('認知データサービス初期化エラー:', error);
-      this.emit('initialization-error', error);
+      console.error('認知データストレージ初期化エラー:', error);
+      this.emit('error', error);
     }
   }
 
   /**
-   * データベース初期化
+   * IndexedDBの初期化
    */
-  private async initializeDatabase(): Promise<void> {
-    const dbConfig = this.dbConfig; // ローカル変数にコピー
+  private initializeIndexedDB(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName, this.version);
 
-    this.db = await openDB(dbConfig.dbName, dbConfig.version, {
-      upgrade(db, oldVersion, newVersion, transaction) {
-        console.log(`データベースアップグレード: ${oldVersion} → ${newVersion}`);
-
-        // 各ストアの作成
-        Object.entries(dbConfig.stores).forEach(([storeName, config]) => {
-          if (!db.objectStoreNames.contains(storeName)) {
-            const store = db.createObjectStore(storeName, { keyPath: config.keyPath });
-
-            // インデックス作成
-            if (config.indexes) {
-              Object.entries(config.indexes).forEach(([indexName, keyPath]) => {
-                store.createIndex(indexName, keyPath);
-              });
-            }
-          }
-        });
-      },
-    });
-  }
-
-  /**
-   * ネットワーク監視設定
-   */
-  private setupNetworkListeners(): void {
-    window.addEventListener('online', () => {
-      this.isOnline = true;
-      this.processSyncQueue();
-      this.emit('network-status-changed', { online: true });
-    });
-
-    window.addEventListener('offline', () => {
-      this.isOnline = false;
-      this.emit('network-status-changed', { online: false });
-    });
-  }
-
-  /**
-   * 暗号化キー生成/取得
-   */
-  private getOrCreateEncryptionKey(): string {
-    let key = localStorage.getItem('cognitive-encryption-key');
-    if (!key) {
-      key = CryptoJS.lib.WordArray.random(256 / 8).toString();
-      localStorage.setItem('cognitive-encryption-key', key);
-    }
-    return key;
-  }
-
-  /**
-   * データ暗号化
-   */
-  private encryptData(data: any): string {
-    if (!this.syncConfig.encryptionEnabled) return JSON.stringify(data);
-
-    const jsonString = JSON.stringify(data);
-    return CryptoJS.AES.encrypt(jsonString, this.encryptionKey).toString();
-  }
-
-  /**
-   * データ復号化
-   */
-  private decryptData(encryptedData: string): any {
-    if (!this.syncConfig.encryptionEnabled) return JSON.parse(encryptedData);
-
-    try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, this.encryptionKey);
-      const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
-      return JSON.parse(decryptedString);
-    } catch (error) {
-      console.error('データ復号化エラー:', error);
-      throw new Error('データの復号化に失敗しました');
-    }
-  }
-
-  /**
-   * 認知プロファイル保存
-   */
-  public async saveCognitiveProfile(
-    profile: Partial<CognitiveProfile>,
-    userId: string
-  ): Promise<string> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
-    try {
-      const now = new Date();
-      const profileId = profile.id || `cognitive_${userId}_${now.getTime()}`;
-
-      const fullProfile: CognitiveProfile = {
-        id: profileId,
-        userId,
-        version: 1,
-        timestamp: now,
-        lastModified: now,
-        verbalComprehension: 100,
-        perceptualReasoning: 100,
-        workingMemory: 100,
-        processingSpeed: 100,
-        executiveFunction: 100,
-        attentionalControl: 100,
-        sensoryProcessing: 100,
-        socialCognition: 100,
-        fullScaleIQ: 100,
-        adhdOptimizedScore: 100,
-        subtestResults: {},
-        personalizedSettings: {
-          optimalTaskDuration: 25,
-          preferredBreakFrequency: 15,
-          visualComplexityLevel: 'medium',
-          auditoryProcessingPreference: 'moderate',
-          multitaskingCapacity: 'dual',
-          timeStructureNeed: 'flexible',
-          sensoryPreferences: {
-            lighting: 'natural',
-            sound: 'ambient',
-            temperature: 'neutral',
-            movement: 'fidget',
-          },
-        },
-        strengths: [],
-        challenges: [],
-        recommendations: [],
-        adaptiveStrategies: [],
-        progressTracking: {
-          assessmentDate: now,
-          retestRecommendation: new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000), // 6ヶ月後
-          improvementAreas: [],
-          currentGoals: [],
-          achievedMilestones: [],
-        },
-        metadata: {
-          assessmentDuration: 0,
-          testEnvironment: 'normal',
-          deviceType: 'desktop',
-          completionRate: 1,
-          reliability: 1,
-          validationStatus: 'valid',
-        },
-        syncStatus: {
-          syncVersion: 1,
-          cloudBackupStatus: 'pending',
-        },
-        ...profile,
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        this.db = request.result;
+        resolve();
       };
 
-      // ローカル保存
-      await this.db.put('cognitiveProfiles', fullProfile);
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
 
-      // 同期キューに追加
-      await this.addToSyncQueue('cognitive-profile', fullProfile);
+        // タスクストア
+        if (!db.objectStoreNames.contains('tasks')) {
+          const taskStore = db.createObjectStore('tasks', { keyPath: 'id' });
+          taskStore.createIndex('userId', 'userId', { unique: false });
+          taskStore.createIndex('status', 'status', { unique: false });
+          taskStore.createIndex('createdAt', 'createdAt', { unique: false });
+        }
 
-      console.log('認知プロファイル保存完了:', profileId);
-      this.emit('profile-saved', { profileId, profile: fullProfile });
+        // 認知プロファイルストア
+        if (!db.objectStoreNames.contains('profiles')) {
+          const profileStore = db.createObjectStore('profiles', { keyPath: 'id' });
+          profileStore.createIndex('userId', 'userId', { unique: false });
+          profileStore.createIndex('date', 'date', { unique: false });
+        }
 
-      return profileId;
+        // 学習データストア
+        if (!db.objectStoreNames.contains('learning')) {
+          const learningStore = db.createObjectStore('learning', { keyPath: 'id' });
+          learningStore.createIndex('userId', 'userId', { unique: false });
+          learningStore.createIndex('taskId', 'taskId', { unique: false });
+          learningStore.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+
+        // エネルギー状態ストア
+        if (!db.objectStoreNames.contains('energy')) {
+          const energyStore = db.createObjectStore('energy', { keyPath: 'timestamp' });
+          energyStore.createIndex('userId', 'userId', { unique: false });
+        }
+      };
+    });
+  }
+
+  /**
+   * タスクの保存
+   */
+  async saveTasks(tasks: ADHDTask[]): Promise<void> {
+    try {
+      if (this.options.storage === 'localStorage') {
+        const tasksWithUserId = tasks.map((task) => ({ ...task, userId: this.userId }));
+        localStorage.setItem(`cognitive_tasks_${this.userId}`, JSON.stringify(tasksWithUserId));
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        const transaction = this.db.transaction(['tasks'], 'readwrite');
+        const store = transaction.objectStore('tasks');
+
+        for (const task of tasks) {
+          const taskWithUserId = { ...task, userId: this.userId };
+          await store.put(taskWithUserId);
+        }
+      }
+
+      console.log(`💾 ${tasks.length}個のタスクを保存しました`);
+      this.emit('tasksSaved', tasks);
+    } catch (error) {
+      console.error('タスク保存エラー:', error);
+      this.emit('error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * タスクの読み込み
+   */
+  async loadTasks(): Promise<ADHDTask[]> {
+    try {
+      let tasks: ADHDTask[] = [];
+
+      if (this.options.storage === 'localStorage') {
+        const stored = localStorage.getItem(`cognitive_tasks_${this.userId}`);
+        if (stored) {
+          tasks = JSON.parse(stored);
+        }
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        tasks = await this.getTasksFromIndexedDB();
+      }
+
+      // Date オブジェクトの復元
+      tasks = tasks.map((task) => ({
+        ...task,
+        createdAt: new Date(task.createdAt),
+        completedAt: task.completedAt ? new Date(task.completedAt) : undefined,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+        timeBox: task.timeBox
+          ? {
+              ...task.timeBox,
+              start: new Date(task.timeBox.start),
+            }
+          : undefined,
+      }));
+
+      console.log(`📖 ${tasks.length}個のタスクを読み込みました`);
+      this.emit('tasksLoaded', tasks);
+
+      return tasks;
+    } catch (error) {
+      console.error('タスク読み込みエラー:', error);
+      this.emit('error', error);
+      return [];
+    }
+  }
+
+  /**
+   * IndexedDBからタスクを取得
+   */
+  private getTasksFromIndexedDB(): Promise<ADHDTask[]> {
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('Database not initialized'));
+        return;
+      }
+
+      const transaction = this.db.transaction(['tasks'], 'readonly');
+      const store = transaction.objectStore('tasks');
+      const index = store.index('userId');
+      const request = index.getAll(this.userId);
+
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * 単一タスクの保存
+   */
+  async saveTask(task: ADHDTask): Promise<void> {
+    const currentTasks = await this.loadTasks();
+    const existingIndex = currentTasks.findIndex((t) => t.id === task.id);
+
+    if (existingIndex >= 0) {
+      currentTasks[existingIndex] = { ...task, userId: this.userId };
+    } else {
+      currentTasks.push({ ...task, userId: this.userId });
+    }
+
+    await this.saveTasks(currentTasks);
+  }
+
+  /**
+   * タスクの削除
+   */
+  async deleteTask(taskId: string): Promise<void> {
+    try {
+      const currentTasks = await this.loadTasks();
+      const filteredTasks = currentTasks.filter((task) => task.id !== taskId);
+      await this.saveTasks(filteredTasks);
+
+      console.log(`🗑️ タスク ${taskId} を削除しました`);
+      this.emit('taskDeleted', taskId);
+    } catch (error) {
+      console.error('タスク削除エラー:', error);
+      this.emit('error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 認知プロファイルの保存
+   */
+  async saveCognitiveProfile(profile: CognitiveProfile): Promise<void> {
+    try {
+      const profileWithUserId = { ...profile, userId: this.userId };
+
+      if (this.options.storage === 'localStorage') {
+        localStorage.setItem(`cognitive_profile_${this.userId}`, JSON.stringify(profileWithUserId));
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        const transaction = this.db.transaction(['profiles'], 'readwrite');
+        const store = transaction.objectStore('profiles');
+        await store.put(profileWithUserId);
+      }
+
+      console.log('🧠 認知プロファイルを保存しました');
+      this.emit('profileSaved', profile);
     } catch (error) {
       console.error('認知プロファイル保存エラー:', error);
+      this.emit('error', error);
       throw error;
     }
   }
 
   /**
-   * 認知プロファイル取得
+   * 学習データの記録
    */
-  public async getCognitiveProfile(userId: string): Promise<CognitiveProfile | null> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
+  async recordLearningData(data: Omit<LearningData, 'id' | 'userId'>): Promise<void> {
     try {
-      const profiles = await this.db.getAllFromIndex('cognitiveProfiles', 'by-user', userId);
-
-      if (profiles.length === 0) return null;
-
-      // 最新のプロファイルを返す
-      const latestProfile = profiles.sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      )[0];
-
-      console.log('認知プロファイル取得:', latestProfile.id);
-      return latestProfile;
-    } catch (error) {
-      console.error('認知プロファイル取得エラー:', error);
-      return null;
-    }
-  }
-
-  /**
-   * エネルギーパターン保存
-   */
-  public async saveEnergyPattern(
-    pattern: Partial<EnergyPatternData>,
-    userId: string
-  ): Promise<string> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
-    try {
-      const now = new Date();
-      const patternId = pattern.id || `energy_${userId}_${now.getTime()}`;
-
-      const fullPattern: EnergyPatternData = {
-        id: patternId,
-        userId,
-        timestamp: now,
-        patterns: {},
-        weeklyTrends: {},
-        adaptiveLearning: {
-          learningRate: 0.1,
-          adaptationCount: 0,
-          lastAdaptation: now,
-          accuracyScore: 0.5,
-        },
-        environmentalFactors: {
-          weather: {},
-          season: {},
-          socialContext: {},
-          workload: {},
-        },
-        ...pattern,
+      const learningData: LearningData = {
+        ...data,
+        id: `learning_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId: this.userId,
       };
 
-      await this.db.put('energyPatterns', fullPattern);
-      await this.addToSyncQueue('energy-pattern', fullPattern);
-
-      console.log('エネルギーパターン保存完了:', patternId);
-      this.emit('energy-pattern-saved', { patternId, pattern: fullPattern });
-
-      return patternId;
-    } catch (error) {
-      console.error('エネルギーパターン保存エラー:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * エネルギーパターン取得
-   */
-  public async getEnergyPattern(userId: string): Promise<EnergyPatternData | null> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
-    try {
-      const patterns = await this.db.getAllFromIndex('energyPatterns', 'by-user', userId);
-
-      if (patterns.length === 0) return null;
-
-      // 最新のパターンを返す
-      const latestPattern = patterns.sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      )[0];
-
-      console.log('エネルギーパターン取得:', latestPattern.id);
-      return latestPattern;
-    } catch (error) {
-      console.error('エネルギーパターン取得エラー:', error);
-      return null;
-    }
-  }
-
-  /**
-   * 同期キューに追加
-   */
-  private async addToSyncQueue(type: string, data: any): Promise<void> {
-    if (!this.db) return;
-
-    const queueItem = {
-      id: `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type,
-      data: this.encryptData(data),
-      timestamp: new Date(),
-      priority: type === 'cognitive-profile' ? 'high' : 'normal',
-      attempts: 0,
-      status: 'pending',
-    };
-
-    await this.db.put('syncQueue', queueItem);
-
-    if (this.isOnline) {
-      this.processSyncQueue();
-    }
-  }
-
-  /**
-   * 同期キュー処理
-   */
-  private async processSyncQueue(): Promise<void> {
-    if (!this.db || !this.isOnline) return;
-
-    try {
-      const queueItems = await this.db.getAllFromIndex('syncQueue', 'by-priority');
-      const pendingItems = queueItems.filter((item) => item.status === 'pending');
-
-      for (const item of pendingItems.slice(0, this.syncConfig.batchSize)) {
-        try {
-          await this.syncItemToCloud(item);
-
-          // 成功したアイテムを削除
-          await this.db.delete('syncQueue', item.id);
-
-          this.emit('sync-success', { itemId: item.id, type: item.type });
-        } catch (error) {
-          console.error('同期エラー:', error);
-
-          // リトライ回数を増やす
-          item.attempts++;
-
-          if (item.attempts >= this.syncConfig.retryAttempts) {
-            item.status = 'failed';
-            this.emit('sync-failed', { itemId: item.id, error });
-          }
-
-          await this.db.put('syncQueue', item);
-        }
+      if (this.options.storage === 'localStorage') {
+        const existing = localStorage.getItem(`learning_data_${this.userId}`);
+        const allData = existing ? JSON.parse(existing) : [];
+        allData.push(learningData);
+        localStorage.setItem(`learning_data_${this.userId}`, JSON.stringify(allData));
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        const transaction = this.db.transaction(['learning'], 'readwrite');
+        const store = transaction.objectStore('learning');
+        await store.put(learningData);
       }
+
+      console.log('📊 学習データを記録しました');
+      this.emit('learningDataRecorded', learningData);
     } catch (error) {
-      console.error('同期キュー処理エラー:', error);
+      console.error('学習データ記録エラー:', error);
+      this.emit('error', error);
+      throw error;
     }
   }
 
   /**
-   * クラウド同期（Firebase連携）
+   * エネルギー状態の保存
    */
-  private async syncItemToCloud(item: any): Promise<void> {
-    // Firebase Firestoreとの同期実装
-    // 実際の実装では、Firebase SDKを使用してデータを同期します
-
-    console.log('クラウド同期中:', item.type, item.id);
-
-    // 模擬的な同期処理
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // 実際の実装例:
-    /*
-    const firestore = getFirestore();
-    const decryptedData = this.decryptData(item.data);
-    
-    await setDoc(doc(firestore, 'users', decryptedData.userId, item.type, decryptedData.id), {
-      ...decryptedData,
-      serverTimestamp: serverTimestamp(),
-    });
-    */
-  }
-
-  /**
-   * 自動同期開始
-   */
-  private startAutoSync(): void {
-    this.syncInterval = setInterval(
-      () => {
-        if (this.isOnline) {
-          this.processSyncQueue();
-        }
-      },
-      this.syncConfig.syncInterval * 60 * 1000
-    );
-  }
-
-  /**
-   * バックアップ作成
-   */
-  public async createBackup(userId: string): Promise<string> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
+  async saveEnergyState(energy: Omit<EnergyState, 'timestamp'>): Promise<void> {
     try {
-      const cognitive = await this.getCognitiveProfile(userId);
-      const energy = await this.getEnergyPattern(userId);
-
-      const backupData = {
-        userId,
+      const energyData: EnergyState = {
+        ...energy,
         timestamp: new Date(),
-        version: '1.0',
-        data: {
-          cognitiveProfile: cognitive,
-          energyPattern: energy,
-        },
       };
 
-      const backupId = `backup_${userId}_${Date.now()}`;
-      const encryptedBackup = this.encryptData(backupData);
+      if (this.options.storage === 'localStorage') {
+        localStorage.setItem(`energy_state_${this.userId}`, JSON.stringify(energyData));
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        const transaction = this.db.transaction(['energy'], 'readwrite');
+        const store = transaction.objectStore('energy');
+        await store.put({ ...energyData, userId: this.userId });
+      }
 
-      await this.db.put('backupHistory', {
-        id: backupId,
-        userId,
-        backupDate: new Date(),
-        size: encryptedBackup.length,
-        encrypted: this.syncConfig.encryptionEnabled,
-        data: encryptedBackup,
-      });
+      console.log('⚡ エネルギー状態を保存しました');
+      this.emit('energySaved', energyData);
+    } catch (error) {
+      console.error('エネルギー状態保存エラー:', error);
+      this.emit('error', error);
+      throw error;
+    }
+  }
 
-      console.log('バックアップ作成完了:', backupId);
-      this.emit('backup-created', { backupId, size: encryptedBackup.length });
+  /**
+   * 全データのバックアップ作成
+   */
+  async createBackup(): Promise<string> {
+    try {
+      const tasks = await this.loadTasks();
+      const profileData = localStorage.getItem(`cognitive_profile_${this.userId}`);
+      const learningData = localStorage.getItem(`learning_data_${this.userId}`);
+      const energyData = localStorage.getItem(`energy_state_${this.userId}`);
 
-      return backupId;
+      const backup = {
+        timestamp: new Date().toISOString(),
+        userId: this.userId,
+        tasks,
+        profile: profileData ? JSON.parse(profileData) : null,
+        learning: learningData ? JSON.parse(learningData) : [],
+        energy: energyData ? JSON.parse(energyData) : null,
+      };
+
+      const backupString = JSON.stringify(backup, null, 2);
+      console.log('💾 データバックアップを作成しました');
+      this.emit('backupCreated', backup);
+
+      return backupString;
     } catch (error) {
       console.error('バックアップ作成エラー:', error);
+      this.emit('error', error);
       throw error;
     }
   }
 
   /**
-   * バックアップから復元
+   * バックアップからの復元
    */
-  public async restoreFromBackup(backupId: string): Promise<void> {
-    if (!this.db) throw new Error('データベースが初期化されていません');
-
+  async restoreFromBackup(backupString: string): Promise<void> {
     try {
-      const backup = await this.db.get('backupHistory', backupId);
-      if (!backup) throw new Error('バックアップが見つかりません');
+      const backup = JSON.parse(backupString);
 
-      const backupData = this.decryptData(backup.data);
-
-      if (backupData.data.cognitiveProfile) {
-        await this.saveCognitiveProfile(backupData.data.cognitiveProfile, backupData.userId);
+      if (backup.tasks) {
+        await this.saveTasks(backup.tasks);
       }
 
-      if (backupData.data.energyPattern) {
-        await this.saveEnergyPattern(backupData.data.energyPattern, backupData.userId);
+      if (backup.profile) {
+        await this.saveCognitiveProfile(backup.profile);
       }
 
-      console.log('バックアップ復元完了:', backupId);
-      this.emit('backup-restored', { backupId });
+      console.log('🔄 バックアップからデータを復元しました');
+      this.emit('backupRestored', backup);
     } catch (error) {
       console.error('バックアップ復元エラー:', error);
+      this.emit('error', error);
       throw error;
     }
   }
 
   /**
-   * データエクスポート
+   * データのクリア
    */
-  public async exportUserData(userId: string): Promise<string> {
-    const cognitive = await this.getCognitiveProfile(userId);
-    const energy = await this.getEnergyPattern(userId);
-
-    const exportData = {
-      exportDate: new Date(),
-      userId,
-      cognitiveProfile: cognitive,
-      energyPattern: energy,
-    };
-
-    return JSON.stringify(exportData, null, 2);
-  }
-
-  /**
-   * ストレージ使用量取得
-   */
-  public async getStorageUsage(): Promise<{ used: number; total: number; percentage: number }> {
-    if (!this.db) return { used: 0, total: 0, percentage: 0 };
-
+  async clearAllData(): Promise<void> {
     try {
-      const estimate = await navigator.storage.estimate();
-      const used = estimate.usage || 0;
-      const total = estimate.quota || 0;
-      const percentage = total > 0 ? (used / total) * 100 : 0;
-
-      return { used, total, percentage };
-    } catch (error) {
-      console.error('ストレージ使用量取得エラー:', error);
-      return { used: 0, total: 0, percentage: 0 };
-    }
-  }
-
-  /**
-   * データクリーンアップ
-   */
-  public async cleanupOldData(retentionDays: number = 90): Promise<void> {
-    if (!this.db) return;
-
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
-
-    try {
-      // 古いバックアップを削除
-      const oldBackups = await this.db.getAllFromIndex('backupHistory', 'by-date');
-      const backupsToDelete = oldBackups.filter(
-        (backup) => new Date(backup.backupDate) < cutoffDate
-      );
-
-      for (const backup of backupsToDelete) {
-        await this.db.delete('backupHistory', backup.id);
+      if (this.options.storage === 'localStorage') {
+        localStorage.removeItem(`cognitive_tasks_${this.userId}`);
+        localStorage.removeItem(`cognitive_profile_${this.userId}`);
+        localStorage.removeItem(`learning_data_${this.userId}`);
+        localStorage.removeItem(`energy_state_${this.userId}`);
+      } else if (this.options.storage === 'indexedDB' && this.db) {
+        const stores = ['tasks', 'profiles', 'learning', 'energy'];
+        for (const storeName of stores) {
+          const transaction = this.db.transaction([storeName], 'readwrite');
+          const store = transaction.objectStore('tasks');
+          await store.clear();
+        }
       }
 
-      console.log(`${backupsToDelete.length}個の古いバックアップを削除しました`);
-      this.emit('cleanup-completed', { deletedBackups: backupsToDelete.length });
+      console.log('🗑️ 全認知データをクリアしました');
+      this.emit('dataCleared');
     } catch (error) {
-      console.error('データクリーンアップエラー:', error);
+      console.error('データクリアエラー:', error);
+      this.emit('error', error);
+      throw error;
     }
   }
 
   /**
-   * サービス停止
+   * サービスの破棄
    */
-  public stop(): void {
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
-      this.syncInterval = null;
-    }
-
+  dispose(): void {
     if (this.db) {
       this.db.close();
       this.db = null;
     }
-
     this.removeAllListeners();
-    console.log('🛑 認知データ永続化サービス停止');
   }
 }
 
-// シングルトンインスタンス
-const cognitiveDataPersistenceService = new CognitiveDataPersistenceService();
-
-export default cognitiveDataPersistenceService;
-export { CognitiveDataPersistenceService };
-export type { CognitiveProfile, EnergyPatternData, DatabaseConfig, SyncConfig };
+// シングルトンインスタンスの作成
+export const createCognitiveDataService = (
+  userId: string,
+  options?: Partial<PersistenceOptions>
+) => {
+  return new CognitiveDataPersistenceService(userId, options);
+};
