@@ -64,8 +64,28 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
     setError(null);
 
     try {
-      const wsUrl = process.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001';
-      const ws = new WebSocket(`${wsUrl}/analytics`);
+      // 動的ポート検出
+      const getWebSocketUrl = () => {
+        if (process.env.VITE_WEBSOCKET_URL) {
+          return process.env.VITE_WEBSOCKET_URL;
+        }
+
+        // 開発環境では現在のホストとポートを使用
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          const currentPort = window.location.port;
+          // フロントエンドポートから推測（フロントエンドが3003なら、バックエンドは3004）
+          const backendPort = currentPort ? parseInt(currentPort) + 1 : 3001;
+          return `ws://${window.location.hostname}:${backendPort}`;
+        }
+
+        // 本番環境では現在のホストを使用
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return `${protocol}//${window.location.host}`;
+      };
+
+      const wsUrl = getWebSocketUrl();
+      // サーバーが提供している /notifications パスを使用
+      const ws = new WebSocket(`${wsUrl}/notifications`);
 
       ws.onopen = () => {
         console.log('📊 Real-time analytics connected');
@@ -144,6 +164,15 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
   const handleMessage = useCallback(
     (message: any) => {
       switch (message.type) {
+        case 'analytics_data':
+          console.log('📊 Received analytics data:', message.data);
+          setData((prev) => ({
+            ...prev,
+            ...message.data,
+            realtimeEvents: prev.realtimeEvents, // 既存のイベントを保持
+          }));
+          break;
+
         case 'analytics_update':
           setData((prev) => ({
             ...prev,
@@ -181,6 +210,10 @@ export const useRealtimeAnalytics = (options: UseRealtimeAnalyticsOptions = {}) 
             ...prev,
             activeUsers: message.count,
           }));
+          break;
+
+        case 'subscribe_success':
+          console.log('📊 Successfully subscribed to channels:', message.channels);
           break;
 
         case 'pong':

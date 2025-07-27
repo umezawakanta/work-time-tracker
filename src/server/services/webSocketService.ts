@@ -99,6 +99,73 @@ export const setupWebSocketServer = (server: HttpServer): WebSocketService => {
             ws.send(JSON.stringify({ type: 'error', message: '無効なトークンです' }));
           }
         }
+
+        // サブスクリプション処理
+        else if (data.type === 'subscribe') {
+          console.log('📊 Analytics subscription request:', data.channels);
+
+          // サブスクリプション成功のレスポンス
+          ws.send(
+            JSON.stringify({
+              type: 'subscribe_success',
+              channels: data.channels || ['analytics'],
+            })
+          );
+
+          // モックanalyticsデータを定期的に送信
+          if (data.channels?.includes('analytics')) {
+            const sendAnalyticsData = () => {
+              if (ws.readyState === WebSocket.OPEN) {
+                const mockAnalytics = {
+                  type: 'analytics_data',
+                  data: {
+                    activeUsers: Math.floor(Math.random() * 100) + 1,
+                    completionRate: Math.floor(Math.random() * 100),
+                    avgTaskTime: Math.floor(Math.random() * 120) + 10,
+                    todaysTasks: Math.floor(Math.random() * 50) + 5,
+                    weeklyTrend: Math.floor(Math.random() * 40) - 20,
+                    timestamp: new Date().toISOString(),
+                  },
+                };
+                ws.send(JSON.stringify(mockAnalytics));
+              }
+            };
+
+            // 初回データ送信
+            sendAnalyticsData();
+
+            // 5秒ごとにデータ更新
+            const analyticsInterval = setInterval(sendAnalyticsData, 5000);
+
+            // 接続切断時にインターバルをクリア
+            ws.on('close', () => {
+              clearInterval(analyticsInterval);
+            });
+          }
+        }
+
+        // ピング処理
+        else if (data.type === 'ping') {
+          ws.send(JSON.stringify({ type: 'pong' }));
+        }
+
+        // リフレッシュ要求
+        else if (data.type === 'refresh') {
+          console.log('📊 Analytics refresh request');
+          ws.send(
+            JSON.stringify({
+              type: 'analytics_data',
+              data: {
+                activeUsers: Math.floor(Math.random() * 100) + 1,
+                completionRate: Math.floor(Math.random() * 100),
+                avgTaskTime: Math.floor(Math.random() * 120) + 10,
+                todaysTasks: Math.floor(Math.random() * 50) + 5,
+                weeklyTrend: Math.floor(Math.random() * 40) - 20,
+                timestamp: new Date().toISOString(),
+              },
+            })
+          );
+        }
       } catch (error) {
         console.error('WebSocketメッセージ処理エラー:', error);
       }

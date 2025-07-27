@@ -80,20 +80,40 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
   // 📊 データウィザード: WebSocket接続でリアルタイムデータ
   const connectWebSocket = () => {
     try {
-      const wsUrl = process.env.VITE_WEBSOCKET_URL || 'ws://localhost:3001';
-      const ws = new WebSocket(`${wsUrl}/analytics`);
+      // 動的ポート検出
+      const getWebSocketUrl = () => {
+        if (process.env.VITE_WEBSOCKET_URL) {
+          return process.env.VITE_WEBSOCKET_URL;
+        }
+
+        // 開発環境では現在のホストとポートを使用
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          const currentPort = window.location.port;
+          // フロントエンドポートから推測（フロントエンドが3003なら、バックエンドは3004）
+          const backendPort = currentPort ? parseInt(currentPort) + 1 : 3001;
+          return `ws://${window.location.hostname}:${backendPort}`;
+        }
+
+        // 本番環境では現在のホストを使用
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return `${protocol}//${window.location.host}`;
+      };
+
+      const wsUrl = getWebSocketUrl();
+      // サーバーが提供している /notifications パスを使用
+      const ws = new WebSocket(`${wsUrl}/notifications`);
 
       ws.onopen = () => {
         console.log('📊 Analytics WebSocket connected');
         setIsConnected(true);
 
-        // 認証とサブスクリプション
+        // 認証とサブスクリプション（analytics channelを指定）
         ws.send(
           JSON.stringify({
             type: 'subscribe',
             userId,
             teamId,
-            channels: ['metrics', 'activity', 'tasks'],
+            channels: ['analytics', 'metrics', 'activity', 'tasks'],
           })
         );
       };
@@ -131,6 +151,16 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
     setLastUpdate(new Date());
 
     switch (data.type) {
+      case 'analytics_data':
+        console.log('📊 Received analytics data:', data.data);
+        setMetrics((prev) => ({
+          ...prev,
+          ...data.data,
+          realtimeActivity: prev.realtimeActivity, // 既存のアクティビティを保持
+        }));
+        setIsLoading(false);
+        break;
+
       case 'metrics_update':
         setMetrics((prev) => ({
           ...prev,
@@ -154,6 +184,10 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
           todaysTasks: prev.todaysTasks + 1,
           completionRate: Math.min(prev.completionRate + 0.5, 100),
         }));
+        break;
+
+      case 'subscribe_success':
+        console.log('📊 Successfully subscribed to channels:', data.channels);
         break;
 
       default:
