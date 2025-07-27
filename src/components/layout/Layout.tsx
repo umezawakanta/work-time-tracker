@@ -33,7 +33,6 @@ import {
   Edit3,
   Zap as Lightning,
   Music,
-  Bed,
   Twitter,
   Lightbulb,
   Code,
@@ -62,6 +61,7 @@ import {
   Users,
   History,
   Bell,
+  Bed,
 } from 'lucide-react';
 import { logout } from '@/services/api/authApi';
 import { toast } from 'react-hot-toast';
@@ -585,19 +585,15 @@ export default function Layout({ children }: LayoutProps) {
               <div className="px-6 py-4 space-y-2">
                 {/* 統一システムナビゲーション */}
                 <div className="mb-8 pb-6 border-b border-white/10 dark:border-white/5">
-                  <UnifiedSystemNavigation
-                    compactMode={true}
-                    showStats={false}
-                    orientation="vertical"
-                  />
+                  <UnifiedSystemNavigation compactMode={true} showStats={false} />
                 </div>
 
-                {/* 追加メニュー（UnifiedSystemNavigationで管理されないアイテム） */}
+                {/* コアメニューアイテム */}
                 {getCoreMenuItems(t).length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-6 pb-6 border-b border-white/10 dark:border-white/5">
                     <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 mb-3 flex items-center gap-2">
                       <Home className="h-3 w-3" />
-                      {t('sidebar.core_functions')}
+                      コア機能
                     </h3>
                     {getCoreMenuItems(t).map((item) => (
                       <div key={item.path}>{renderMenuItem(item)}</div>
@@ -647,110 +643,6 @@ export default function Layout({ children }: LayoutProps) {
                   {personalMenuItems.map((item) => (
                     <div key={item.path}>{renderMenuItem(item)}</div>
                   ))}
-                </div>
-
-                {/* バッジ・実績セクション（UnifiedSystemNavigationで管理されるため非表示） */}
-
-                  {/* PWA・システム関連 */}
-                  {renderMenuItem({
-                    icon: <Lightbulb className="h-5 w-5" />,
-                    label: '改善計画',
-                    path: '/improvement-plan',
-                    description: 'サイト改善プランの管理',
-                    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-                    accentColor: 'amber',
-                  })}
-                  {renderMenuItem({
-                    icon: <Code className="h-5 w-5" />,
-                    label: 'システム設計',
-                    path: '/system-design',
-                    description: 'システム設計ドキュメント',
-                    gradient: 'from-slate-500 via-gray-500 to-zinc-500',
-                    accentColor: 'slate',
-                  })}
-                  {renderMenuItem({
-                    icon: <Activity className="h-5 w-5" />,
-                    label: 'PWA機能',
-                    path: '/pwa',
-                    description: 'プログレッシブWebアプリ機能',
-                    badge: 'PWA',
-                    gradient: 'from-indigo-500 via-blue-500 to-purple-500',
-                    accentColor: 'indigo',
-                  })}
-                  {renderMenuItem({
-                    icon: <Brain className="h-5 w-5" />,
-                    label: 'ニューロダイバーシティ',
-                    path: '/neurodiversity',
-                    description: '認知的多様性・アクセシビリティ',
-                    badge: 'A11Y',
-                    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
-                    accentColor: 'purple',
-                  })}
-                  {renderMenuItem({
-                    icon: <Music className="h-5 w-5" />,
-                    label: 'ギター練習',
-                    path: '/guitar-practice',
-                    description: 'ギター練習の記録',
-                    gradient: 'from-green-500 via-emerald-500 to-teal-500',
-                    accentColor: 'green',
-                  })}
-                  {/* E-commerce・外部連携 */}
-                  {renderMenuItem({
-                    icon: <Store className="h-5 w-5" />,
-                    label: 'ショップ',
-                    path: '/shop',
-                    description: 'オンラインショップ',
-                    gradient: 'from-purple-500 via-pink-500 to-rose-500',
-                    accentColor: 'purple',
-                  })}
-                  {renderMenuItem({
-                    icon: <ShoppingCart className="h-5 w-5" />,
-                    label: '商品一覧',
-                    path: '/products',
-                    description: '商品カタログ',
-                    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
-                    accentColor: 'teal',
-                  })}
-                  {renderMenuItem({
-                    icon: <Twitter className="h-5 w-5" />,
-                    label: 'Twitter',
-                    path: '/twitter',
-                    description: 'Twitter連携機能',
-                    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
-                    accentColor: 'sky',
-                  })}
-                  {renderMenuItem({
-                    icon: <BarChart3 className="h-5 w-5" />,
-                    label: '政治トレンド',
-                    path: '/political-trends',
-                    description: '政治動向の分析',
-                    gradient: 'from-red-500 via-orange-500 to-yellow-500',
-                    accentColor: 'red',
-                  })}
-                  {renderMenuItem({
-                    icon: <Vote className="h-5 w-5" />,
-                    label: '選挙候補者',
-                    path: '/election-candidates',
-                    description: '選挙候補者情報',
-                    gradient: 'from-blue-500 via-indigo-500 to-purple-500',
-                    accentColor: 'blue',
-                  })}
-                  {renderMenuItem({
-                    icon: <UserPlus className="h-5 w-5" />,
-                    label: '候補者登録',
-                    path: '/candidate-registration',
-                    description: '候補者の新規登録',
-                    gradient: 'from-green-500 via-emerald-500 to-teal-500',
-                    accentColor: 'green',
-                  })}
-                  {renderMenuItem({
-                    icon: <Activity className="h-5 w-5" />,
-                    label: 'カレンダー',
-                    path: '/calendar',
-                    description: 'イベントカレンダー',
-                    gradient: 'from-lime-500 via-green-500 to-emerald-500',
-                    accentColor: 'lime',
-                  })}
                 </div>
 
                 {/* 管理者専用メニュー */}
