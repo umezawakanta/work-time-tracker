@@ -15,6 +15,9 @@ export interface SubscriptionDocument extends Document {
   status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'unpaid' | 'incomplete';
   limits?: any; // Add missing limits property
   trialEndDate?: string; // Add missing trialEndDate property
+  amount?: number; // Add missing amount property
+  cancelledAt?: string; // Add missing cancelledAt property
+  stripeSubscriptionId?: string; // Add missing stripeSubscriptionId property
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +28,11 @@ export interface SubscriptionPlanDocument extends Document {
   description: string;
   price: number;
   isActive: boolean;
+  trialDays?: number; // Add missing trialDays property
+  limits?: any; // Add missing limits property
+  target?: string; // Add missing target property
+  currency?: string; // Add missing currency property
+  stripePriceId?: string; // Add missing stripePriceId property
   createdAt: Date;
   updatedAt: Date;
 }
