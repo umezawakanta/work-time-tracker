@@ -314,7 +314,8 @@ const SiteImprovementPlan: React.FC = () => {
       {
         id: 'typescript-badge-error-fix',
         title: '🐛 TypeScriptバッジエラー修正',
-        description: 'TimelineBadge・TimelineEvent型定義不足エラー解消・型安全性向上',
+        description:
+          'TimelineBadge・TimelineEvent・MonthlyOverviewData型定義不足エラー解消・型安全性向上',
         status: 'completed',
         priority: 'high',
         category: 'bug-fix',
