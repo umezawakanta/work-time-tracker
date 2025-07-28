@@ -62,11 +62,11 @@ interface GoalTrackingProps {
 type FilterType = 'all' | 'active' | 'completed' | 'paused';
 type SortType = 'progress' | 'priority' | 'date' | 'title';
 
-export const GoalTracking: React.FC<GoalTrackingProps> = ({ 
-  goals = [], 
-  onAddGoal, 
-  onEditGoal, 
-  onDeleteGoal 
+export const GoalTracking: React.FC<GoalTrackingProps> = ({
+  goals = [],
+  onAddGoal,
+  onEditGoal,
+  onDeleteGoal,
 }) => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
@@ -81,8 +81,9 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
   // 目標のフィルタリング
   const filteredGoals = goals.filter((goal: Goal) => {
     const matchesFilter = activeFilter === 'all' || goal.status === activeFilter;
-    const matchesSearch = goal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         goal.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      goal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      goal.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -91,9 +92,10 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
     switch (sortOrder) {
       case 'progress':
         return b.progress - a.progress;
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
       case 'date':
         return new Date(b.targetDate).getTime() - new Date(a.targetDate).getTime();
       case 'title':
@@ -108,9 +110,10 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
     total: goals.length,
     active: goals.filter((g: Goal) => g.status === 'active').length,
     completed: goals.filter((g: Goal) => g.status === 'completed').length,
-    avgProgress: goals.length > 0 
-      ? Math.round(goals.reduce((sum: number, g: Goal) => sum + g.progress, 0) / goals.length)
-      : 0,
+    avgProgress:
+      goals.length > 0
+        ? Math.round(goals.reduce((sum: number, g: Goal) => sum + g.progress, 0) / goals.length)
+        : 0,
   };
 
   const handleAddGoal = (goalData: Omit<Goal, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -260,7 +263,10 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
               <Label htmlFor="filter" className="text-sm font-medium">
                 フィルター:
               </Label>
-              <Select value={activeFilter} onValueChange={(value: FilterType) => setActiveFilter(value)}>
+              <Select
+                value={activeFilter}
+                onValueChange={(value: FilterType) => setActiveFilter(value)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -312,7 +318,9 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
           <CardContent className="p-8 text-center">
             <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {searchQuery || activeFilter !== 'all' ? '該当する目標が見つかりません' : '目標がありません'}
+              {searchQuery || activeFilter !== 'all'
+                ? '該当する目標が見つかりません'
+                : '目標がありません'}
             </h3>
             <p className="text-gray-600 mb-4">
               {searchQuery || activeFilter !== 'all'
@@ -334,14 +342,9 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>新しい目標を追加</DialogTitle>
-            <DialogDescription>
-              目標の詳細を入力してください。
-            </DialogDescription>
+            <DialogDescription>目標の詳細を入力してください。</DialogDescription>
           </DialogHeader>
-          <GoalForm
-            onSubmit={handleAddGoal}
-            onCancel={() => setIsFormOpen(false)}
-          />
+          <GoalForm onSubmit={handleAddGoal} onCancel={() => setIsFormOpen(false)} />
         </DialogContent>
       </Dialog>
 
@@ -350,9 +353,7 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>目標を編集</DialogTitle>
-            <DialogDescription>
-              目標の詳細を変更できます。
-            </DialogDescription>
+            <DialogDescription>目標の詳細を変更できます。</DialogDescription>
           </DialogHeader>
           {selectedGoal && (
             <GoalForm
@@ -382,16 +383,10 @@ export const GoalTracking: React.FC<GoalTrackingProps> = ({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteConfirmOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>
               キャンセル
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteGoal}
-            >
+            <Button variant="destructive" onClick={handleDeleteGoal}>
               削除
             </Button>
           </DialogFooter>
