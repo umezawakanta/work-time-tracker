@@ -323,6 +323,16 @@ const SiteImprovementPlan: React.FC = () => {
         progress: 100,
       },
       {
+        id: 'jsx-config-error-fix',
+        title: '🛠️ JSX設定エラー修正',
+        description: 'api/tsconfig.json JSX設定不足エラー解消・AIEnhancedGamificationビルド正常化',
+        status: 'completed',
+        priority: 'critical',
+        category: 'bug-fix',
+        estimatedDays: 0.5,
+        progress: 100,
+      },
+      {
         id: 'add-tests',
         title: 'テストカバレッジの向上',
         description: '主要コンポーネントのユニットテストとE2Eテストの追加',
