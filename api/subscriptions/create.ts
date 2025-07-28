@@ -93,7 +93,9 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         amount: 0,
         currency: 'jpy',
         startDate: new Date().toISOString(),
-        trialEndDate: new Date(Date.now() + plan.trialDays * 24 * 60 * 60 * 1000).toISOString(),
+        trialEndDate: new Date(
+          Date.now() + (plan.trialDays ?? 30) * 24 * 60 * 60 * 1000
+        ).toISOString(),
         status: 'trialing',
         paymentStatus: 'paid',
         usage: {
@@ -145,10 +147,10 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
         currency: plan.currency,
         startDate: new Date().toISOString(),
         trialEndDate:
-          plan.trialDays > 0
-            ? new Date(Date.now() + plan.trialDays * 24 * 60 * 60 * 1000).toISOString()
+          (plan.trialDays ?? 0) > 0
+            ? new Date(Date.now() + (plan.trialDays ?? 0) * 24 * 60 * 60 * 1000).toISOString()
             : undefined,
-        status: plan.trialDays > 0 ? 'trialing' : 'active',
+        status: (plan.trialDays ?? 0) > 0 ? 'trialing' : 'active',
         paymentStatus: 'paid',
         usage: {
           period: new Date().toISOString().slice(0, 7),
@@ -198,9 +200,9 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
     // Get appropriate price ID based on billing cycle
     const priceId =
-      billingCycle === 'yearly' && plan.stripePriceId.includes('monthly')
+      billingCycle === 'yearly' && plan.stripePriceId?.includes('monthly')
         ? plan.stripePriceId.replace('monthly', 'yearly')
-        : plan.stripePriceId;
+        : (plan.stripePriceId ?? '');
 
     // Create Stripe subscription
     const stripeSubscription = await stripe.subscriptions.create({
@@ -209,7 +211,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription' },
       expand: ['latest_invoice.payment_intent'],
-      trial_period_days: plan.trialDays > 0 ? plan.trialDays : undefined,
+      trial_period_days: (plan.trialDays ?? 0) > 0 ? plan.trialDays : undefined,
       metadata: {
         userId: user.id,
         planId: plan.id,
@@ -252,9 +254,12 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     await subscription.save();
 
     // Cancel existing subscription if exists
-    if (existingSubscription && existingSubscription.stripeSubscriptionId.startsWith('sub_')) {
+    if (existingSubscription && existingSubscription.stripeSubscriptionId?.startsWith('sub_')) {
       try {
-        await stripe.subscriptions.cancel(existingSubscription.stripeSubscriptionId);
+        const subscriptionId = existingSubscription.stripeSubscriptionId;
+        if (subscriptionId) {
+          await stripe.subscriptions.cancel(subscriptionId);
+        }
         existingSubscription.status = 'cancelled';
         existingSubscription.cancelledAt = new Date().toISOString();
         await existingSubscription.save();
