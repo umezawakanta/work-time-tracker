@@ -1,15 +1,55 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { connectDB } from '../../../src/server/config/database';
+import { withAuth, AuthenticatedRequest } from '../../../src/middleware/auth';
 
-// Mock data for implementation tasks
-const getMockTasks = (projectId: string) => {
+// Task interfaces
+interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  phase: string;
+  status: 'todo' | 'in-progress' | 'completed' | 'cancelled';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  assignee: string;
+  checklist: ChecklistItem[];
+  startDate: string;
+  endDate?: string;
+  completedDate?: string;
+  estimatedHours: number;
+  actualHours: number;
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  tags: string[];
+  dependencies: string[];
+  notes?: string;
+}
+
+interface ChecklistItem {
+  id: string;
+  label: string;
+  completed: boolean;
+  createdAt: string;
+}
+
+// In-memory storage for development (replace with actual database later)
+const tasks: Record<string, Task[]> = {};
+
+const createEntityId = (prefix: string = 'task'): string => {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Get mock tasks for development
+const getMockTasks = (projectId: string): Task[] => {
   const now = new Date().toISOString();
   return [
     {
       id: 'task-1',
-      title: 'Vercel デプロイメント問題修正',
+      title: 'Vercel デプロイメント問題修正完了',
       description: 'MIME type エラーとAPI接続問題を解決',
       phase: '本番環境修正',
-      status: 'in-progress',
+      status: 'completed',
       priority: 'high',
       assignee: 'AI Assistant',
       checklist: [
@@ -18,6 +58,7 @@ const getMockTasks = (projectId: string) => {
         { id: 'c3', label: '環境別URL設定修正', completed: true, createdAt: now },
       ],
       startDate: now,
+      completedDate: now,
       estimatedHours: 3,
       actualHours: 2,
       projectId,
@@ -30,15 +71,42 @@ const getMockTasks = (projectId: string) => {
     },
     {
       id: 'task-2',
-      title: 'JavaScript module MIME type エラー修正',
+      title: '本番認証システム実装',
+      description: 'JWT認証、ユーザー登録、データベース統合を完了',
+      phase: '本番環境実装',
+      status: 'in-progress',
+      priority: 'critical',
+      assignee: 'AI Assistant',
+      checklist: [
+        { id: 'c4', label: 'MongoDB データベース設計', completed: true, createdAt: now },
+        { id: 'c5', label: 'ユーザー登録API実装', completed: true, createdAt: now },
+        { id: 'c6', label: 'ログインAPI実装', completed: true, createdAt: now },
+        { id: 'c7', label: '認証ミドルウェア実装', completed: true, createdAt: now },
+        { id: 'c8', label: 'Stripe課金システム統合', completed: false, createdAt: now },
+        { id: 'c9', label: 'モックAPI本番化', completed: false, createdAt: now },
+      ],
+      startDate: now,
+      estimatedHours: 8,
+      actualHours: 6,
+      projectId,
+      createdAt: now,
+      updatedAt: now,
+      createdBy: 'system',
+      tags: ['authentication', 'database', 'stripe', 'production'],
+      dependencies: [],
+      notes: 'モック部分をすべて本番用に修正中',
+    },
+    {
+      id: 'task-3',
+      title: 'JavaScript module MIME type エラー修正完了',
       description: 'Vercel でのJavaScriptファイル配信問題を解決',
       phase: '本番環境修正',
       status: 'completed',
       priority: 'critical',
       assignee: 'AI Assistant',
       checklist: [
-        { id: 'c4', label: 'vercel.json rewrite ルール更新', completed: true, createdAt: now },
-        { id: 'c5', label: 'static asset ヘッダー設定', completed: true, createdAt: now },
+        { id: 'c10', label: 'vercel.json rewrite ルール更新', completed: true, createdAt: now },
+        { id: 'c11', label: 'static asset ヘッダー設定', completed: true, createdAt: now },
       ],
       startDate: now,
       completedDate: now,
@@ -55,27 +123,12 @@ const getMockTasks = (projectId: string) => {
   ];
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS設定
-  const origin = req.headers.origin;
-  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
-
-  const isVercelPreview =
-    origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
-  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
-
-  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
+const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<void> => {
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+    });
     return;
   }
 
@@ -83,14 +136,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { projectId } = req.query;
 
     if (!projectId || typeof projectId !== 'string') {
-      res.status(400).json({ error: 'Project ID is required' });
+      res.status(400).json({
+        success: false,
+        error: 'Project ID is required',
+      });
       return;
     }
 
-    const tasks = getMockTasks(projectId);
-    res.status(200).json(tasks);
+    // Connect to database
+    await connectDB();
+
+    // TODO: Replace with actual database query
+    // const tasks = await TaskModel.find({ projectId, createdBy: req.user?.userId });
+
+    // For now, use mock data but include user context
+    const projectTasks = getMockTasks(projectId);
+
+    // Filter tasks based on user permissions if needed
+    // const filteredTasks = req.user?.role === 'admin'
+    //   ? projectTasks
+    //   : projectTasks.filter(task => task.createdBy === req.user?.userId);
+
+    console.log('✅ Tasks retrieved for project:', {
+      projectId,
+      userId: req.user?.userId,
+      userRole: req.user?.role,
+      taskCount: projectTasks.length,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: projectTasks,
+      total: projectTasks.length,
+      message: 'タスクを取得しました',
+    });
   } catch (error) {
     console.error('Error fetching implementation tasks:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'タスクの取得に失敗しました',
+    });
   }
-}
+};
+
+// Export with authentication
+export default withAuth(handler, {
+  requireAuth: true,
+  requireVerified: false, // Allow unverified users for development
+});

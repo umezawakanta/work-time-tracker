@@ -1,4 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { connectDB } from '../../src/server/config/database';
+import { User } from '../../src/server/models/User';
+import { SubscriptionModel } from '../../src/server/models/Subscription';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -118,7 +121,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await connectDB();
 
     // 既存ユーザーの確認
-    const existingUser = await User.findByEmail(email);
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -133,27 +136,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ユーザーIDとタイムスタンプの生成
     const userId = createEntityId('user');
     const now = createTimestamp();
-
-    // Stripe顧客の作成（Stripeが利用可能な場合）
-    let stripeCustomerId: string | undefined;
-    if (stripe) {
-      try {
-        const customer = await stripe.customers.create({
-          email: email,
-          name: displayName,
-          metadata: {
-            userId: userId,
-            source: 'work-time-tracker-registration',
-            referralCode: referralCode || '',
-          },
-        });
-        stripeCustomerId = customer.id;
-        console.log('✅ Stripe customer created:', customer.id);
-      } catch (stripeError) {
-        console.warn('⚠️ Stripe customer creation failed:', stripeError);
-        // Stripe エラーでも登録は続行
-      }
-    }
 
     // 新しいユーザーの作成
     const newUser = new User({
@@ -260,76 +242,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         referralCode: referralCode || null,
         acceptedTermsAt: now,
         subscribedNewsletter: subscribeNewsletter,
-        stripeCustomerId: stripeCustomerId,
+        hashedPassword: hashedPassword, // Store securely
       },
     });
-
-    // パスワードを別途保存（実際の実装では認証システムに依存）
-    // TODO: セキュアなパスワード管理システムの実装
-    newUser.metadata.hashedPassword = hashedPassword;
 
     // ユーザーの保存
     const savedUser = await newUser.save();
 
     // 無料プランのサブスクリプション作成
-    if (stripeCustomerId) {
-      try {
-        const freeSubscription = new SubscriptionModel({
-          userId: savedUser.id,
-          planId: 'free-plan',
-          stripeCustomerId: stripeCustomerId,
-          stripeSubscriptionId: `local_free_${Date.now()}`, // ローカル無料プラン
-          planName: 'フリープラン',
-          planType: 'free',
-          billingCycle: 'monthly',
-          amount: 0,
-          currency: 'jpy',
-          startDate: now,
-          trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30日間トライアル
-          status: 'trialing',
-          paymentStatus: 'paid',
-          usage: {
-            period: new Date().toISOString().slice(0, 7), // YYYY-MM
-            workHours: 0,
-            projects: 0,
-            tasks: 0,
-            reports: 0,
-            apiCalls: 0,
-            storage: 0,
-            teamMembers: 0,
-            integrations: 0,
-          },
-          limits: {
-            workHours: 100, // 月100時間まで
-            projects: 3,
-            tasks: 50,
-            reports: 5,
-            apiCalls: 1000,
-            storage: 1024 * 1024 * 100, // 100MB
-            teamMembers: 1,
-            integrations: 2,
-            advancedFeatures: false,
-            prioritySupport: false,
-            customBranding: false,
-          },
-          addOns: [],
-        });
+    const freeSubscription = new SubscriptionModel({
+      userId: savedUser.id,
+      planId: 'free-plan',
+      stripeCustomerId: `local_customer_${savedUser.id}`,
+      stripeSubscriptionId: `local_sub_${Date.now()}`,
+      planName: 'フリープラン',
+      planType: 'free',
+      billingCycle: 'monthly',
+      amount: 0,
+      currency: 'jpy',
+      startDate: now,
+      trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30日間トライアル
+      status: 'trialing',
+      paymentStatus: 'paid',
+      usage: {
+        period: new Date().toISOString().slice(0, 7), // YYYY-MM
+        workHours: 0,
+        projects: 0,
+        tasks: 0,
+        reports: 0,
+        apiCalls: 0,
+        storage: 0,
+        teamMembers: 0,
+        integrations: 0,
+      },
+      limits: {
+        workHours: 100, // 月100時間まで
+        projects: 3,
+        tasks: 50,
+        reports: 5,
+        apiCalls: 1000,
+        storage: 1024 * 1024 * 100, // 100MB
+        teamMembers: 1,
+        integrations: 2,
+        advancedFeatures: false,
+        prioritySupport: false,
+        customBranding: false,
+      },
+      addOns: [],
+    });
 
-        await freeSubscription.save();
-        console.log('✅ Free subscription created for user:', savedUser.id);
-      } catch (subscriptionError) {
-        console.warn('⚠️ Failed to create free subscription:', subscriptionError);
-        // サブスクリプション作成失敗でもユーザー登録は成功とする
-      }
-    }
+    await freeSubscription.save();
 
     // JWTトークンの生成
     const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
     const token = jwt.sign(
       {
-        userId: mockUser.id,
-        email: mockUser.email,
-        role: mockUser.role,
+        userId: savedUser.id,
+        email: savedUser.email,
+        role: savedUser.role,
       },
       jwtSecret,
       {
@@ -342,27 +312,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // レスポンス
     const response: RegisterResponse = {
       success: true,
-      message: 'ユーザー登録が完了しました。本番環境ではメールアドレスの認証が必要です。',
+      message: 'ユーザー登録が完了しました。',
       user: {
-        id: mockUser.id,
-        email: mockUser.email,
-        displayName: mockUser.displayName,
-        role: mockUser.role,
-        isVerified: mockUser.isVerified,
+        id: savedUser.id,
+        email: savedUser.email,
+        displayName: savedUser.displayName,
+        role: savedUser.role,
+        isVerified: savedUser.isVerified,
       },
       token: token,
       subscription: {
-        id: `sub_free_${Date.now()}`,
-        planType: 'free',
-        status: 'trialing',
-        trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        id: freeSubscription.id,
+        planType: freeSubscription.planType,
+        status: freeSubscription.status,
+        trialEndDate: freeSubscription.trialEndDate,
       },
     };
 
-    console.log('✅ User registration completed (mock):', {
-      userId: mockUser.id,
-      email: mockUser.email,
-      timestamp: now,
+    console.log('✅ User registration completed:', {
+      userId: savedUser.id,
+      email: savedUser.email,
+      subscription: freeSubscription.id,
     });
 
     res.status(201).json(response);
