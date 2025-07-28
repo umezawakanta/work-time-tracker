@@ -15,9 +15,36 @@ export default defineConfig(({ command, mode }) => {
       // PWA機能強化 - オフライン対応・プッシュ通知・背景同期
       VitePWA({
         registerType: 'autoUpdate',
+        injectRegister: 'auto',
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+        manifest: {
+          name: 'ADHD統合ライフハブ - Work Time Tracker',
+          short_name: 'ADHDライフハブ',
+          description: 'ADHD/ASD特化型生活支援システム - 時間管理・財務管理・認知支援を統合',
+          theme_color: '#667eea',
+          background_color: '#ffffff',
+          display: 'standalone',
+          orientation: 'portrait',
+          scope: '/',
+          start_url: '/',
+          icons: [
+            {
+              src: 'icons/icon-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+            },
+            {
+              src: 'icons/icon-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+            },
+          ],
+        },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit instead of 2MB
+          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit
+          skipWaiting: true,
+          clientsClaim: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/api\./,
@@ -31,10 +58,11 @@ export default defineConfig(({ command, mode }) => {
                 cacheableResponse: {
                   statuses: [0, 200],
                 },
+                networkTimeoutSeconds: 10,
               },
             },
             {
-              urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
+              urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'images-cache',
@@ -45,7 +73,7 @@ export default defineConfig(({ command, mode }) => {
               },
             },
             {
-              urlPattern: /\.(?:woff|woff2|eot|ttf|otf)$/,
+              urlPattern: /^https:\/\/.*\.(?:woff|woff2|eot|ttf|otf)$/,
               handler: 'CacheFirst',
               options: {
                 cacheName: 'fonts-cache',
@@ -55,45 +83,20 @@ export default defineConfig(({ command, mode }) => {
                 },
               },
             },
-          ],
-        },
-        manifest: {
-          name: 'ADHD/ASD LifeSync - 認知最適化生産性プラットフォーム',
-          short_name: 'LifeSync',
-          description: 'ADHD/ASD特性に最適化された統合生活管理システム',
-          theme_color: '#3B82F6',
-          background_color: '#FFFFFF',
-          display: 'standalone',
-          orientation: 'portrait',
-          scope: '/',
-          start_url: '/',
-          icons: [
             {
-              src: '/icons/icon-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any maskable',
-            },
-            {
-              src: '/icons/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable',
-            },
-          ],
-          categories: ['productivity', 'lifestyle', 'health'],
-          screenshots: [
-            {
-              src: '/screenshots/dashboard-wide.png',
-              sizes: '1280x720',
-              type: 'image/png',
-              form_factor: 'wide',
-            },
-            {
-              src: '/screenshots/dashboard-narrow.png',
-              sizes: '375x667',
-              type: 'image/png',
-              form_factor: 'narrow',
+              urlPattern: /\/api\/.*$/,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'local-api-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 5, // 5分
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+                networkTimeoutSeconds: 5,
+              },
             },
           ],
         },
