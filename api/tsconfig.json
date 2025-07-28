@@ -15,20 +15,19 @@
     "isolatedModules": true,
     "declaration": false,
     "outDir": "./dist",
-    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "../src/*"
+      "@/types/*": [
+        "../src/types/*"
       ]
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "./**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "../src/**/*"
   ]
 }
