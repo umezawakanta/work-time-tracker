@@ -13,6 +13,7 @@ export interface SubscriptionDocument extends Document {
   planName: string;
   planType: 'free' | 'basic' | 'premium' | 'enterprise';
   status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'unpaid' | 'incomplete';
+  limits?: any; // Add missing limits property
   createdAt: Date;
   updatedAt: Date;
 }
