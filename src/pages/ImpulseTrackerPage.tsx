@@ -100,6 +100,15 @@ const ImpulseTrackerPage: React.FC = () => {
       }
 
       try {
+        if (!user?.id) {
+          console.warn('User not authenticated, falling back to localStorage');
+          const stored = localStorage.getItem('impulseActions');
+          if (stored) {
+            setActions(JSON.parse(stored));
+          }
+          return;
+        }
+
         setIsLoading(true);
 
         // 本番環境でのAPI呼び出し
@@ -128,7 +137,14 @@ const ImpulseTrackerPage: React.FC = () => {
           }
         }
 
-        // ユーザーのプレミアムステータスを確認
+        // Check subscription status
+        if (!user?.id) {
+          // Fallback: check if user email looks like premium
+          const isPremiumEmail = user?.email?.includes('premium') || user?.email?.includes('pro');
+          setIsPremium(!!isPremiumEmail);
+          return;
+        }
+
         const premiumResponse = await fetch(`/api/user/subscription?userId=${user.id}`, {
           method: 'GET',
           headers: {

@@ -1,27 +1,36 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import {
-  UserProfile,
-  UserPreferences,
-  UserSettings,
-  UserStats,
-  EmployeeInfo,
-} from '@/database/schema/UnifiedDatabaseSchema';
+import type { UserProfile, BaseDocument } from '../../types/database';
 
-// Base document interface
-interface BaseDocument extends Document {
-  createdAt: Date;
-  updatedAt: Date;
+// User document interface
+export interface UserDocument extends Document {
+  uid: string;
+  email: string;
+  username?: string;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  provider: 'jwt' | 'firebase' | 'google' | 'github' | 'demo';
+  isVerified: boolean;
+  role: 'user' | 'admin' | 'manager' | 'guest';
+  permissions: string[];
+  preferences: any;
+  settings: any;
+  stats: any;
+  employeeInfo?: any;
+  status: 'active' | 'inactive' | 'suspended';
+  lastLoginAt?: Date;
+  lastActivityAt?: Date;
   version: number;
   syncStatus: 'synced' | 'pending' | 'conflict' | 'error';
   lastSyncAt?: Date;
-  metadata?: Record<string, any>;
-}
+  metadata: any;
+  createdAt: Date;
+  updatedAt: Date;
 
-// User document interface
-export interface UserDocument
-  extends BaseDocument,
-    Omit<UserProfile, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
+  // Instance methods
+  updateLastActivity(): Promise<UserDocument>;
+  updateStats(updates: any): Promise<UserDocument>;
 }
 
 // Subdocument schemas
@@ -303,7 +312,7 @@ UserSchema.methods.updateLastActivity = function () {
   return this.save();
 };
 
-UserSchema.methods.updateStats = function (updates: Partial<UserStats>) {
+UserSchema.methods.updateStats = function (updates: any) {
   this.stats = { ...this.stats, ...updates };
   return this.save();
 };

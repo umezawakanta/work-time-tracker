@@ -68,12 +68,26 @@ export interface ImprovementItem {
   id: string;
   title: string;
   description: string;
-  status: 'planned' | 'in-progress' | 'completed' | 'deferred';
-  priority: 'low' | 'medium' | 'high' | 'critical';
   category: string;
-  estimatedDays?: number;
-  progress?: number;
-  dependencies?: string[];
+  priority: 'high' | 'medium' | 'low' | 'critical';
+  difficulty: 'high' | 'medium' | 'low';
+  estimatedDays: number;
+  actualDays?: number; // 実際にかかった日数
+  progress?: number; // 進捗率 (0-100)
+  status: 'planned' | 'in-progress' | 'completed' | 'deferred' | 'not-started';
+  acceptance?: string; // 完了基準
+  technicalDetails?: string; // 技術詳細
+  blockingIssues?: string[]; // ブロッキング課題
+  implementationNotes?: string; // 実装メモ
+  tags?: string[]; // タグ
+  dependencies?: string[]; // 依存関係
+  relatedItems?: string[]; // 関連項目
+  assignee?: string;
+  startDate?: string;
+  endDate?: string;
+  completedDate?: string;
+  phase: number;
+  outcomes?: string[];
 }
 
 export interface PhaseData {

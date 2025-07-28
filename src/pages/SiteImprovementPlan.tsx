@@ -476,6 +476,30 @@ const SiteImprovementPlan: React.FC = () => {
     }
   };
 
+  // 現在の問題点とリスク
+  const currentProblems = [
+    {
+      id: 'performance-bottleneck',
+      title: 'Service Worker Response Clone エラー',
+      severity: 'high' as const,
+      description: 'Workboxキャッシュ戦略の競合によりResponse.clone()エラーが発生',
+      impact: 'PWA機能の動作不良、キャッシュエラー',
+      solution: 'VitePWA設定の最適化とキャッシュ戦略の統一',
+      status: 'in-progress' as const,
+      assignee: 'Development Team',
+    },
+    {
+      id: 'type-safety',
+      title: 'TypeScript型定義の不整合',
+      severity: 'medium' as const,
+      description: 'ImprovementItem型とModel型に不整合があり、ビルドエラーが発生',
+      impact: 'ビルド失敗、開発効率の低下',
+      solution: '型定義の統一とインターフェース修正',
+      status: 'in-progress' as const,
+      assignee: 'Development Team',
+    },
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* ヘッダー部分 */}
