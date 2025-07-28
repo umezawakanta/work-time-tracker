@@ -38,24 +38,24 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     // Calculate usage percentage for limits
     const usagePercentages = {
       workHours:
-        subscription.limits.workHours > 0
-          ? Math.round((subscription.usage.workHours / subscription.limits.workHours) * 100)
+        subscription.limits?.workHours > 0
+          ? Math.round(((subscription.usage?.workHours ?? 0) / subscription.limits.workHours) * 100)
           : 0,
       projects:
-        subscription.limits.projects > 0
-          ? Math.round((subscription.usage.projects / subscription.limits.projects) * 100)
+        subscription.limits?.projects > 0
+          ? Math.round(((subscription.usage?.projects ?? 0) / subscription.limits.projects) * 100)
           : 0,
       tasks:
-        subscription.limits.tasks > 0
-          ? Math.round((subscription.usage.tasks / subscription.limits.tasks) * 100)
+        subscription.limits?.tasks > 0
+          ? Math.round(((subscription.usage?.tasks ?? 0) / subscription.limits.tasks) * 100)
           : 0,
       reports:
-        subscription.limits.reports > 0
-          ? Math.round((subscription.usage.reports / subscription.limits.reports) * 100)
+        subscription.limits?.reports > 0
+          ? Math.round(((subscription.usage?.reports ?? 0) / subscription.limits.reports) * 100)
           : 0,
       storage:
-        subscription.limits.storage > 0
-          ? Math.round((subscription.usage.storage / subscription.limits.storage) * 100)
+        subscription.limits?.storage > 0
+          ? Math.round(((subscription.usage?.storage ?? 0) / subscription.limits.storage) * 100)
           : 0,
     };
 
@@ -83,8 +83,8 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       data: {
         subscription,
         usage: {
-          current: subscription.usage,
-          limits: subscription.limits,
+          current: subscription.usage ?? {},
+          limits: subscription.limits ?? {},
           percentages: usagePercentages,
         },
         alerts: {

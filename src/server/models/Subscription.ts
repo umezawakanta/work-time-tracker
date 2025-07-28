@@ -18,6 +18,7 @@ export interface SubscriptionDocument extends Document {
   amount?: number; // Add missing amount property
   cancelledAt?: string; // Add missing cancelledAt property
   stripeSubscriptionId?: string; // Add missing stripeSubscriptionId property
+  usage?: any; // Add missing usage property
   createdAt: Date;
   updatedAt: Date;
 }
