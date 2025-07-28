@@ -24,6 +24,238 @@ export interface BaseEntity {
 }
 
 // =============================================================================
+// Subscription & Billing Schema
+// =============================================================================
+
+export interface Subscription extends BaseEntity {
+  // 基本情報
+  userId: string;
+  planId: string;
+  stripeCustomerId: string;
+  stripeSubscriptionId: string;
+
+  // プラン詳細
+  planName: string;
+  planType: 'free' | 'basic' | 'premium' | 'enterprise';
+  billingCycle: 'monthly' | 'yearly' | 'one-time';
+  amount: number;
+  currency: string;
+
+  // 期間
+  startDate: string;
+  endDate?: string;
+  trialEndDate?: string;
+  cancelledAt?: string;
+  cancelAtPeriodEnd: boolean;
+
+  // 状態
+  status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'unpaid' | 'incomplete';
+  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
+
+  // 使用量
+  usage: SubscriptionUsage;
+  limits: SubscriptionLimits;
+
+  // メタデータ
+  discount?: DiscountInfo;
+  addOns: AddOn[];
+  metadata?: Record<string, any>;
+}
+
+export interface SubscriptionPlan extends BaseEntity {
+  // 基本情報
+  name: string;
+  description: string;
+  stripePriceId: string;
+  stripeProductId: string;
+
+  // 価格
+  price: number;
+  currency: string;
+  billingCycle: 'monthly' | 'yearly' | 'one-time';
+
+  // 制限
+  limits: SubscriptionLimits;
+  features: PlanFeature[];
+
+  // 設定
+  isActive: boolean;
+  isPopular: boolean;
+  sortOrder: number;
+  trialDays: number;
+
+  // 対象
+  target: 'individual' | 'team' | 'enterprise';
+  maxUsers: number;
+}
+
+export interface SubscriptionUsage {
+  period: string; // YYYY-MM
+  workHours: number;
+  projects: number;
+  tasks: number;
+  reports: number;
+  apiCalls: number;
+  storage: number; // bytes
+  teamMembers: number;
+  integrations: number;
+}
+
+export interface SubscriptionLimits {
+  workHours: number; // -1 for unlimited
+  projects: number;
+  tasks: number;
+  reports: number;
+  apiCalls: number;
+  storage: number; // bytes
+  teamMembers: number;
+  integrations: number;
+  advancedFeatures: boolean;
+  prioritySupport: boolean;
+  customBranding: boolean;
+}
+
+export interface PlanFeature {
+  name: string;
+  description: string;
+  included: boolean;
+  limit?: number;
+  category: 'core' | 'advanced' | 'integration' | 'support';
+}
+
+export interface AddOn {
+  id: string;
+  name: string;
+  description: string;
+  stripePriceId: string;
+  price: number;
+  currency: string;
+  quantity: number;
+  isActive: boolean;
+}
+
+export interface DiscountInfo {
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  validUntil?: string;
+  appliedAt: string;
+}
+
+export interface Payment extends BaseEntity {
+  // 基本情報
+  userId: string;
+  subscriptionId?: string;
+  stripePaymentIntentId: string;
+  stripeChargeId?: string;
+
+  // 金額
+  amount: number;
+  currency: string;
+  amountReceived: number;
+
+  // 状態
+  status: 'pending' | 'succeeded' | 'failed' | 'cancelled' | 'refunded';
+  paymentMethod: PaymentMethod;
+
+  // 期間
+  paidAt?: string;
+  refundedAt?: string;
+  failedAt?: string;
+
+  // 詳細
+  description?: string;
+  invoiceId?: string;
+  receiptUrl?: string;
+  failureReason?: string;
+
+  // メタデータ
+  metadata?: Record<string, any>;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: 'card' | 'bank_transfer' | 'paypal' | 'other';
+  card?: {
+    brand: string;
+    last4: string;
+    expMonth: number;
+    expYear: number;
+  };
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface Invoice extends BaseEntity {
+  // 基本情報
+  userId: string;
+  subscriptionId?: string;
+  stripeInvoiceId: string;
+  invoiceNumber: string;
+
+  // 金額
+  subtotal: number;
+  tax: number;
+  total: number;
+  amountPaid: number;
+  amountDue: number;
+  currency: string;
+
+  // 期間
+  periodStart: string;
+  periodEnd: string;
+  dueDate: string;
+  paidAt?: string;
+
+  // 状態
+  status: 'draft' | 'open' | 'paid' | 'void' | 'uncollectible';
+
+  // ファイル
+  pdfUrl?: string;
+  hostedInvoiceUrl?: string;
+
+  // 項目
+  lineItems: InvoiceLineItem[];
+
+  // メタデータ
+  metadata?: Record<string, any>;
+}
+
+export interface InvoiceLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unitAmount: number;
+  amount: number;
+  period?: {
+    start: string;
+    end: string;
+  };
+  proration: boolean;
+}
+
+export interface BillingAddress extends BaseEntity {
+  userId: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state?: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+}
+
+export interface TaxRate extends BaseEntity {
+  displayName: string;
+  percentage: number;
+  country: string;
+  state?: string;
+  jurisdiction: string;
+  stripeTaxRateId: string;
+  isActive: boolean;
+}
+
+// =============================================================================
 // User Management Schema
 // =============================================================================
 

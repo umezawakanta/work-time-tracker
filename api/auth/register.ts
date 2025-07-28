@@ -1,155 +1,383 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
+// Helper functions (simplified for API route)
+const createEntityId = (prefix: string = 'entity'): string => {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+const createTimestamp = (): string => {
+  return new Date().toISOString();
+};
+
+// Registration request interface
 interface RegisterRequest {
-  name: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  acceptTerms: boolean;
+  subscribeNewsletter?: boolean;
+  referralCode?: string;
 }
 
+// Registration response interface
 interface RegisterResponse {
-  token: string;
-  user: {
-    id: string;
-    _id: string;
-    name: string;
-    username: string;
-    email: string;
-    isAdmin: boolean;
-    avatar: string;
-  };
+  success: boolean;
   message: string;
+  user?: {
+    id: string;
+    email: string;
+    displayName: string;
+    role: string;
+    isVerified: boolean;
+  };
+  token?: string;
+  subscription?: {
+    id: string;
+    planType: string;
+    status: string;
+    trialEndDate?: string;
+  };
+  error?: string;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS設定
+  const origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+
+  const isVercelPreview =
+    origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+    } as RegisterResponse);
+    return;
+  }
+
   try {
-    // Enhanced CORS設定
-    const origin = req.headers.origin;
-    const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+    console.log('🔐 User registration started');
 
-    // Allow all Vercel preview deployments
-    const isVercelPreview =
-      origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
-    const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
+    // リクエストボディの検証
+    const {
+      email,
+      password,
+      displayName,
+      firstName,
+      lastName,
+      acceptTerms,
+      subscribeNewsletter = false,
+      referralCode,
+    }: RegisterRequest = req.body;
 
-    res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      console.log('*** REGISTER PREFLIGHT REQUEST ***');
-      console.log('Origin:', origin);
-      console.log('Method:', req.headers['access-control-request-method']);
-      console.log('Headers:', req.headers['access-control-request-headers']);
-      res.status(200).end();
-      return;
+    // 必須フィールドの検証
+    if (!email || !password || !displayName || !acceptTerms) {
+      return res.status(400).json({
+        success: false,
+        message: '必須フィールドが不足しています',
+        error: 'Missing required fields: email, password, displayName, acceptTerms',
+      } as RegisterResponse);
     }
 
-    if (req.method !== 'POST') {
-      res.status(405).json({ error: 'Method not allowed' });
-      return;
+    // パスワード強度の検証
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'パスワードは8文字以上である必要があります',
+        error: 'Password must be at least 8 characters long',
+      } as RegisterResponse);
     }
 
-    console.log('*** AUTH REGISTER ENDPOINT HIT ***');
-    console.log('Origin:', origin);
-    console.log('Request body:', req.body);
-
-    const { name, email, password, confirmPassword }: RegisterRequest = req.body;
-
-    // Validation
-    if (!name || !email || !password || !confirmPassword) {
-      res.status(400).json({
-        error: 'All fields are required',
-        message: 'すべてのフィールドは必須です',
-      });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      res.status(400).json({
-        error: 'Passwords do not match',
-        message: 'パスワードが一致しません',
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      res.status(400).json({
-        error: 'Password too short',
-        message: 'パスワードは6文字以上である必要があります',
-      });
-      return;
-    }
-
-    // Email validation
+    // メールアドレスの形式検証
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      res.status(400).json({
+      return res.status(400).json({
+        success: false,
+        message: '有効なメールアドレスを入力してください',
         error: 'Invalid email format',
-        message: 'メールアドレスの形式が正しくありません',
-      });
-      return;
+      } as RegisterResponse);
     }
 
-    // Check against existing predefined users (same as login.ts)
-    const existingUsers = [
-      'admin@example.com',
-      'demo@example.com',
-      'test@example.com',
-      'user@example.com',
-      'developer@example.com',
-    ];
+    // データベース接続
+    await connectDB();
 
-    if (existingUsers.includes(email.toLowerCase())) {
-      res.status(409).json({
-        error: 'User already exists',
-        message: 'このメールアドレスは既に登録されています',
-        hint: '既存のアカウントでログインしてください',
-      });
-      return;
+    // 既存ユーザーの確認
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'このメールアドレスは既に使用されています',
+        error: 'Email already exists',
+      } as RegisterResponse);
     }
 
-    // For demo purposes, we'll simulate successful registration
-    // In a real app, you would save to database
-    const userId = `user_${Date.now()}`;
-    const token = `auth_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // パスワードのハッシュ化
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = {
-      id: userId,
-      _id: userId,
-      name: name,
-      username: email.split('@')[0],
-      email: email,
-      isAdmin: false,
-      avatar: '',
-    };
+    // ユーザーIDとタイムスタンプの生成
+    const userId = createEntityId('user');
+    const now = createTimestamp();
 
-    // Log the registration for tracking (in real app, save to database)
-    console.log('✅ New user registered:', {
-      email,
-      name,
-      userId,
-      timestamp: new Date().toISOString(),
+    // Stripe顧客の作成（Stripeが利用可能な場合）
+    let stripeCustomerId: string | undefined;
+    if (stripe) {
+      try {
+        const customer = await stripe.customers.create({
+          email: email,
+          name: displayName,
+          metadata: {
+            userId: userId,
+            source: 'work-time-tracker-registration',
+            referralCode: referralCode || '',
+          },
+        });
+        stripeCustomerId = customer.id;
+        console.log('✅ Stripe customer created:', customer.id);
+      } catch (stripeError) {
+        console.warn('⚠️ Stripe customer creation failed:', stripeError);
+        // Stripe エラーでも登録は続行
+      }
+    }
+
+    // 新しいユーザーの作成
+    const newUser = new User({
+      uid: userId,
+      email: email.toLowerCase(),
+      displayName,
+      firstName: firstName || '',
+      lastName: lastName || '',
+      provider: 'jwt',
+      role: 'user',
+      isVerified: false, // メール認証が必要
+      permissions: ['read:own_data', 'write:own_data'],
+
+      // 初期設定
+      preferences: {
+        theme: 'auto',
+        language: 'ja',
+        timezone: 'Asia/Tokyo',
+        dateFormat: 'YYYY-MM-DD',
+        timeFormat: '24h',
+        currency: 'JPY',
+        notifications: {
+          email: true,
+          push: true,
+          sms: false,
+          inApp: true,
+          digest: 'daily',
+          quietHours: {
+            enabled: false,
+            start: '22:00',
+            end: '08:00',
+          },
+        },
+        dashboard: {
+          layout: 'comfortable',
+          defaultView: 'dashboard',
+          widgets: [],
+          refreshInterval: 30000,
+          showWelcome: true,
+        },
+        productivity: {
+          pomodoroEnabled: false,
+          pomodoroMinutes: 25,
+          breakMinutes: 5,
+          longBreakMinutes: 15,
+          autoStartBreaks: false,
+          focusMode: false,
+          distractionBlocking: false,
+          goalSetting: true,
+        },
+      },
+
+      settings: {
+        privacy: {
+          profileVisibility: 'team',
+          activityVisibility: 'team',
+          allowDataSharing: false,
+          allowAnalytics: true,
+          allowMarketing: subscribeNewsletter,
+        },
+        security: {
+          twoFactorEnabled: false,
+          sessionTimeout: 86400000, // 24 hours
+          allowMultipleSessions: true,
+          ipWhitelist: [],
+          deviceTrust: false,
+          loginNotifications: true,
+        },
+        integrations: {
+          enabledProviders: [],
+          autoSync: true,
+          syncFrequency: 300000, // 5 minutes
+          dataMapping: {},
+          conflictResolution: 'manual',
+        },
+        features: {
+          betaFeatures: false,
+          experimentalFeatures: false,
+          aiFeatures: true,
+          advancedAnalytics: false,
+          teamFeatures: false,
+        },
+      },
+
+      stats: {
+        totalWorkHours: 0,
+        totalProjects: 0,
+        totalTasks: 0,
+        completedTasks: 0,
+        achievementCount: 0,
+        badgeCount: 0,
+        streakDays: 0,
+        averageProductivity: 0,
+        joinDate: now,
+        lastWeekHours: 0,
+        lastMonthHours: 0,
+      },
+
+      status: 'active',
+      metadata: {
+        registrationSource: 'web',
+        userAgent: req.headers['user-agent'] || '',
+        ipAddress: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
+        referralCode: referralCode || null,
+        acceptedTermsAt: now,
+        subscribedNewsletter: subscribeNewsletter,
+        stripeCustomerId: stripeCustomerId,
+      },
     });
 
+    // パスワードを別途保存（実際の実装では認証システムに依存）
+    // TODO: セキュアなパスワード管理システムの実装
+    newUser.metadata.hashedPassword = hashedPassword;
+
+    // ユーザーの保存
+    const savedUser = await newUser.save();
+
+    // 無料プランのサブスクリプション作成
+    if (stripeCustomerId) {
+      try {
+        const freeSubscription = new SubscriptionModel({
+          userId: savedUser.id,
+          planId: 'free-plan',
+          stripeCustomerId: stripeCustomerId,
+          stripeSubscriptionId: `local_free_${Date.now()}`, // ローカル無料プラン
+          planName: 'フリープラン',
+          planType: 'free',
+          billingCycle: 'monthly',
+          amount: 0,
+          currency: 'jpy',
+          startDate: now,
+          trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30日間トライアル
+          status: 'trialing',
+          paymentStatus: 'paid',
+          usage: {
+            period: new Date().toISOString().slice(0, 7), // YYYY-MM
+            workHours: 0,
+            projects: 0,
+            tasks: 0,
+            reports: 0,
+            apiCalls: 0,
+            storage: 0,
+            teamMembers: 0,
+            integrations: 0,
+          },
+          limits: {
+            workHours: 100, // 月100時間まで
+            projects: 3,
+            tasks: 50,
+            reports: 5,
+            apiCalls: 1000,
+            storage: 1024 * 1024 * 100, // 100MB
+            teamMembers: 1,
+            integrations: 2,
+            advancedFeatures: false,
+            prioritySupport: false,
+            customBranding: false,
+          },
+          addOns: [],
+        });
+
+        await freeSubscription.save();
+        console.log('✅ Free subscription created for user:', savedUser.id);
+      } catch (subscriptionError) {
+        console.warn('⚠️ Failed to create free subscription:', subscriptionError);
+        // サブスクリプション作成失敗でもユーザー登録は成功とする
+      }
+    }
+
+    // JWTトークンの生成
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+    const token = jwt.sign(
+      {
+        userId: mockUser.id,
+        email: mockUser.email,
+        role: mockUser.role,
+      },
+      jwtSecret,
+      {
+        expiresIn: '7d',
+        issuer: 'work-time-tracker',
+        audience: 'work-time-tracker-users',
+      }
+    );
+
+    // レスポンス
     const response: RegisterResponse = {
-      token,
-      user,
-      message:
-        'ユーザー登録が完了しました。デモ環境のため、ログイン時は事前定義されたアカウントをご利用ください。',
+      success: true,
+      message: 'ユーザー登録が完了しました。本番環境ではメールアドレスの認証が必要です。',
+      user: {
+        id: mockUser.id,
+        email: mockUser.email,
+        displayName: mockUser.displayName,
+        role: mockUser.role,
+        isVerified: mockUser.isVerified,
+      },
+      token: token,
+      subscription: {
+        id: `sub_free_${Date.now()}`,
+        planType: 'free',
+        status: 'trialing',
+        trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      },
     };
 
-    console.log('Registration successful for:', email);
+    console.log('✅ User registration completed (mock):', {
+      userId: mockUser.id,
+      email: mockUser.email,
+      timestamp: now,
+    });
+
     res.status(201).json(response);
   } catch (error) {
-    console.error('❌ Register error:', error);
+    console.error('❌ User registration error:', error);
+
     res.status(500).json({
-      error: 'Internal server error',
-      message: 'サーバーエラーが発生しました',
-      details: error instanceof Error ? error.message : 'Unknown error',
-    });
+      success: false,
+      message: 'ユーザー登録中にエラーが発生しました',
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : 'Internal server error',
+    } as RegisterResponse);
   }
 }
