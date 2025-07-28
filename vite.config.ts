@@ -138,8 +138,12 @@ export default defineConfig(({ command, mode }) => {
           ],
         },
         devOptions: {
-          enabled: false, // 開発環境でService Workerを無効化
+          enabled: false, // 開発環境でService Workerを完全無効化
+          type: 'module',
+          navigateFallback: 'index.html',
         },
+        // 開発環境では登録しない
+        disable: mode === 'development',
       }),
 
       // Bundle解析ツール
@@ -154,6 +158,29 @@ export default defineConfig(({ command, mode }) => {
           ]
         : []),
     ],
+
+    // Development server settings to fix WebSocket issues
+    server: {
+      port: 3000,
+      host: 'localhost',
+      hmr: {
+        port: 3001,
+        host: 'localhost',
+      },
+      watch: {
+        usePolling: false,
+        interval: 100,
+      },
+      fs: {
+        strict: false,
+      },
+    },
+
+    // Preview server settings
+    preview: {
+      port: 3000,
+      host: 'localhost',
+    },
 
     // CDN統合のためのビルド設定
     build: {
@@ -241,42 +268,6 @@ export default defineConfig(({ command, mode }) => {
       // 圧縮設定
       cssCodeSplit: true,
       cssMinify: true,
-    },
-
-    // 開発サーバー設定
-    server: {
-      port: 3000,
-      host: true,
-      cors: true,
-      headers: {
-        // セキュリティヘッダー
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-        // キャッシュヘッダー（開発時）
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    },
-
-    // プレビューサーバー設定（本番相当）
-    preview: {
-      port: 4173,
-      host: true,
-      cors: true,
-      headers: {
-        // 本番環境用セキュリティヘッダー
-        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-        'Content-Security-Policy':
-          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:",
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-
-        // パフォーマンス・キャッシュヘッダー
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        ETag: 'strong',
-      },
     },
 
     // エイリアス設定
