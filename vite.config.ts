@@ -46,14 +46,15 @@ export default defineConfig(({ command, mode }) => {
           skipWaiting: true,
           clientsClaim: true,
           runtimeCaching: [
+            // External API calls (避免与内部API冲突)
             {
-              urlPattern: /^https:\/\/api\./,
+              urlPattern: /^https:\/\/external-api\./,
               handler: 'NetworkFirst',
               options: {
-                cacheName: 'api-cache',
+                cacheName: 'external-api-cache',
                 expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24, // 24時間
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 12, // 12時間
                 },
                 cacheableResponse: {
                   statuses: [0, 200],
@@ -61,6 +62,44 @@ export default defineConfig(({ command, mode }) => {
                 networkTimeoutSeconds: 10,
               },
             },
+            // 内部API用の設定 (統一設定で競合を避ける)
+            {
+              urlPattern: ({ url }) => {
+                return url.pathname.startsWith('/api/') && url.origin === self.location.origin;
+              },
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'internal-api-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 10, // 10分 (短めで最新データを確保)
+                },
+                cacheableResponse: {
+                  statuses: [200],
+                },
+                networkTimeoutSeconds: 8,
+                // Response clone エラーを回避するためのプラグイン
+                plugins: [
+                  {
+                    cacheKeyWillBeUsed: async ({ request }) => {
+                      return `${request.url}?t=${Math.floor(Date.now() / (1000 * 60 * 5))}`; // 5分毎にキャッシュ更新
+                    },
+                    requestWillFetch: async ({ request }) => {
+                      // リクエストを新しいインスタンスとして複製
+                      return new Request(request);
+                    },
+                    fetchDidSucceed: async ({ response }) => {
+                      // レスポンスをクローンする前に確認
+                      if (response.bodyUsed) {
+                        return response;
+                      }
+                      return response.clone();
+                    },
+                  },
+                ],
+              },
+            },
+            // 画像キャッシュ
             {
               urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
               handler: 'CacheFirst',
@@ -72,6 +111,7 @@ export default defineConfig(({ command, mode }) => {
                 },
               },
             },
+            // フォントキャッシュ
             {
               urlPattern: /^https:\/\/.*\.(?:woff|woff2|eot|ttf|otf)$/,
               handler: 'CacheFirst',
@@ -83,19 +123,16 @@ export default defineConfig(({ command, mode }) => {
                 },
               },
             },
+            // 静的リソースキャッシュ
             {
-              urlPattern: /\/api\/.*$/,
-              handler: 'NetworkFirst',
+              urlPattern: /^https:\/\/.*\.(?:js|css)$/,
+              handler: 'CacheFirst',
               options: {
-                cacheName: 'local-api-cache',
+                cacheName: 'static-resources-cache',
                 expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 5, // 5分
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 7, // 1週間
                 },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-                networkTimeoutSeconds: 5,
               },
             },
           ],
