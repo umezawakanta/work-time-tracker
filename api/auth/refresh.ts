@@ -1,142 +1,171 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import jwt from 'jsonwebtoken';
+import { connectDB } from '../../src/server/config/database';
+import { User } from '../../src/server/models/User';
 
-interface RefreshRequest {
+interface RefreshTokenRequest {
   refreshToken: string;
 }
 
 interface RefreshResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    id: string;
-    _id: string;
-    name: string;
-    username: string;
-    email: string;
-    isAdmin: boolean;
-    avatar: string;
-  };
-  expiresIn: number;
-  refreshExpiresIn: number;
+  success: boolean;
+  accessToken?: string;
+  refreshToken?: string;
+  user?: any;
+  expiresIn?: number;
+  refreshExpiresIn?: number;
   message: string;
+  error?: string;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // CORS設定
+  const origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+
+  const isVercelPreview =
+    origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
+  const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
+
+  res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    res.status(405).json({
+      success: false,
+      error: 'Method not allowed',
+      message: 'POSTメソッドのみ許可されています',
+    });
+    return;
+  }
+
   try {
-    // Enhanced CORS設定
-    const origin = req.headers.origin;
-    const allowedOrigins = ['http://localhost:3000', 'https://work-time-tracker-5d9q.vercel.app'];
+    const { refreshToken }: RefreshTokenRequest = req.body;
 
-    // Allow all Vercel preview deployments
-    const isVercelPreview =
-      origin && origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/);
-    const isAllowedOrigin = origin && (allowedOrigins.includes(origin) || isVercelPreview);
-
-    res.setHeader('Access-Control-Allow-Origin', isAllowedOrigin ? origin : '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      console.log('*** PREFLIGHT REQUEST ***');
-      console.log('Origin:', origin);
-      res.status(200).end();
-      return;
-    }
-
-    if (req.method !== 'POST') {
-      res.status(405).json({ error: 'Method not allowed' });
-      return;
-    }
-
-    console.log('*** AUTH REFRESH ENDPOINT HIT ***');
-    console.log('Origin:', origin);
-
-    const { refreshToken }: RefreshRequest = req.body;
-
-    if (!refreshToken || typeof refreshToken !== 'string') {
-      console.log('❌ Missing or invalid refresh token');
+    if (!refreshToken) {
       res.status(400).json({
-        error: 'Valid refresh token is required',
-        message: '有効なリフレッシュトークンが必要です',
-      });
-      return;
-    }
-
-    // Simple token validation - check if it's a valid refresh token format
-    if (!refreshToken.startsWith('refresh_')) {
-      console.log('❌ Invalid refresh token format');
-      res.status(401).json({
-        error: 'Invalid refresh token',
-        message: '無効なリフレッシュトークンです',
+        success: false,
+        error: 'Refresh token is required',
+        message: 'リフレッシュトークンが必要です',
       });
       return;
     }
 
     console.log('🔄 Refreshing tokens...');
 
-    // Extract user info from token (simplified approach)
-    // In a real app, you'd validate against a database and decode JWT
-    const tokenParts = refreshToken.split('_');
-    if (tokenParts.length < 3) {
-      console.log('❌ Malformed refresh token');
+    // Connect to database
+    await connectDB();
+
+    // Verify refresh token
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret-for-development';
+
+    let decodedToken: any;
+    try {
+      decodedToken = jwt.verify(refreshToken, jwtSecret, {
+        issuer: 'work-time-tracker',
+        audience: 'work-time-tracker-users',
+      });
+    } catch (jwtError) {
+      console.log('❌ Invalid refresh token:', jwtError);
       res.status(401).json({
+        success: false,
         error: 'Invalid refresh token',
         message: '無効なリフレッシュトークンです',
       });
       return;
     }
 
-    // For demo purposes, create a mock user based on the token
-    // In production, you'd fetch the user from the database
-    const mockUser = {
-      id: 'refresh_user_' + Date.now(),
-      email: 'demo@example.com',
-      name: 'Demo User',
-      username: 'demo',
-      isAdmin: false,
-    };
+    // Get user from database
+    const user = await User.findOne({
+      $or: [{ _id: decodedToken.userId }, { id: decodedToken.userId }],
+    });
+
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        error: 'User not found',
+        message: 'ユーザーが見つかりません',
+      });
+      return;
+    }
+
+    // Check user status
+    if (user.status !== 'active') {
+      res.status(401).json({
+        success: false,
+        error: 'Account inactive',
+        message: 'アカウントが無効です',
+      });
+      return;
+    }
 
     // Generate new tokens
-    const timestamp = Date.now();
-    const randomPart = Math.random().toString(36).substr(2, 9);
+    const accessToken = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+      },
+      jwtSecret,
+      {
+        expiresIn: '1h',
+        issuer: 'work-time-tracker',
+        audience: 'work-time-tracker-users',
+      }
+    );
 
-    const accessToken = `access_${timestamp}_${randomPart}`;
-    const newRefreshToken = `refresh_${timestamp}_${randomPart}`;
+    const newRefreshToken = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        type: 'refresh',
+      },
+      jwtSecret,
+      {
+        expiresIn: '7d',
+        issuer: 'work-time-tracker',
+        audience: 'work-time-tracker-users',
+      }
+    );
 
-    // Token expiration times
-    const expiresIn = 3600; // 1 hour for access token
-    const refreshExpiresIn = 604800; // 7 days for refresh token
-
-    const authenticatedUser = {
-      id: mockUser.id,
-      _id: mockUser.id,
-      name: mockUser.name,
-      username: mockUser.username,
-      email: mockUser.email,
-      isAdmin: mockUser.isAdmin,
-      avatar: '',
-    };
+    // Update last activity
+    user.lastActivityAt = new Date();
+    await user.save();
 
     const response: RefreshResponse = {
+      success: true,
       accessToken,
       refreshToken: newRefreshToken,
-      user: authenticatedUser,
-      expiresIn,
-      refreshExpiresIn,
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        role: user.role,
+        isVerified: user.isVerified,
+        avatar: user.avatar,
+      },
+      expiresIn: 3600, // 1 hour
+      refreshExpiresIn: 604800, // 7 days
       message: 'トークンを更新しました',
     };
 
-    console.log('✅ Token refresh successful');
+    console.log('✅ Token refresh successful for user:', user.email);
     res.status(200).json(response);
   } catch (error) {
     console.error('❌ Token refresh error:', error);
     res.status(500).json({
+      success: false,
       error: 'Internal server error',
-      message: 'サーバーエラーが発生しました',
-      details: error instanceof Error ? error.message : 'Unknown error',
+      message: 'トークン更新中にエラーが発生しました',
     });
   }
 }
