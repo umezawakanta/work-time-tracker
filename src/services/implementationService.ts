@@ -15,8 +15,29 @@ export interface ImplementationLog {
 }
 
 class ImplementationService {
-  private baseUrl = 'http://localhost:3001/api/implementation';
+  private baseUrl: string;
   private isServerAvailable = true;
+
+  constructor() {
+    // 環境に応じたAPIベースURLの設定
+    const hostname = window.location.hostname;
+
+    if (hostname === 'work-time-tracker-5d9q.vercel.app') {
+      // 本番環境
+      this.baseUrl = 'https://work-time-tracker-5d9q.vercel.app/api/implementation';
+    } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+      // プレビュー環境
+      this.baseUrl = 'https://work-time-tracker-5d9q.vercel.app/api/implementation';
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      // ローカル開発環境
+      this.baseUrl = 'http://localhost:3001/api/implementation';
+    } else {
+      // フォールバック
+      this.baseUrl = `${window.location.protocol}//${window.location.hostname}/api/implementation`;
+    }
+
+    console.log('🔗 Implementation API Base URL:', this.baseUrl);
+  }
 
   // タスク関連
   async getTasks(projectId: string): Promise<Task[]> {
