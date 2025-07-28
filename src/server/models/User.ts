@@ -278,9 +278,8 @@ UserSchema.virtual('id').get(function () {
 UserSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
-    delete ret._id;
-    delete ret.__v;
-    return ret;
+    const { _id, __v, ...cleanRet } = ret;
+    return cleanRet;
   },
 });
 
