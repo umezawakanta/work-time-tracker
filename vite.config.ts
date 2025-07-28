@@ -162,7 +162,8 @@ export default defineConfig(({ command, mode }) => {
     // Development server settings to fix WebSocket issues
     server: {
       port: 3000,
-      host: 'localhost',
+      host: '0.0.0.0',
+      strictPort: true,
       hmr: {
         port: 3001,
         host: 'localhost',
@@ -173,13 +174,18 @@ export default defineConfig(({ command, mode }) => {
       },
       fs: {
         strict: false,
+        allow: ['..'],
       },
+      cors: true,
+      open: false,
     },
 
     // Preview server settings
     preview: {
-      port: 3000,
-      host: 'localhost',
+      port: 4173,
+      host: '0.0.0.0',
+      strictPort: true,
+      cors: true,
     },
 
     // CDN統合のためのビルド設定
