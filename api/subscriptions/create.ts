@@ -76,7 +76,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
     // If free plan, create directly without Stripe
     if (plan.price === 0) {
       // Cancel existing subscription if upgrading from paid to free
-      if (existingSubscription && existingSubscription.amount > 0) {
+      if (existingSubscription && (existingSubscription.amount ?? 0) > 0) {
         existingSubscription.status = 'cancelled';
         existingSubscription.cancelledAt = new Date().toISOString();
         await existingSubscription.save();
