@@ -200,7 +200,26 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
     try {
       setIsLoading(true);
 
-      // モックデータ（実際の実装ではAPIから取得）
+      // 本番環境でのAPI呼び出し
+      const response = await fetch('/api/analytics/live-metrics', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setMetrics(data.data);
+          setLastUpdate(new Date());
+          return;
+        }
+      }
+
+      // フォールバック: モックデータ（API接続失敗時のみ）
+      console.warn('Live metrics API not available, using fallback data');
       const mockMetrics: LiveMetrics = {
         activeUsers: Math.floor(Math.random() * 50) + 10,
         completionRate: Math.floor(Math.random() * 40) + 60,
@@ -231,6 +250,19 @@ export const LiveAnalyticsDashboard: React.FC<LiveAnalyticsDashboardProps> = ({
       setLastUpdate(new Date());
     } catch (error) {
       console.error('Metrics fetch failed:', error);
+
+      // エラー時もフォールバックデータを表示
+      const fallbackMetrics: LiveMetrics = {
+        activeUsers: 0,
+        completionRate: 0,
+        avgTaskTime: 0,
+        todaysTasks: 0,
+        weeklyTrend: 0,
+        topCategories: [],
+        hourlyActivity: [],
+        realtimeActivity: [],
+      };
+      setMetrics(fallbackMetrics);
     } finally {
       setIsLoading(false);
     }

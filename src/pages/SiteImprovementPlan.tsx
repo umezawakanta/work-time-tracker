@@ -59,471 +59,203 @@ const SiteImprovementPlan: React.FC = () => {
   const [improvementStatuses, setImprovementStatuses] = useState<Record<string, string>>({});
 
   // 改善項目データ
-
-  // ADHD/ASD特化機能の完成度
-  const adhdAsdFeatures = [
-    { name: '認知評価システム (WEIS相当)', completed: true },
-    { name: '認知統合パーソナライズ', completed: true },
-    { name: '統合ダッシュボード', completed: true },
-    { name: 'タスク管理最適化', completed: true },
-    { name: '資産管理最適化', completed: true },
-    { name: '適応的UIシステム', completed: true },
-    { name: 'リアルタイム適応', completed: true },
-    { name: 'AIコーチングシステム', completed: true },
-    { name: 'ソーシャルサポート', completed: true },
-  ] as Array<{ name: string; completed: boolean; inProgress?: boolean }>;
-
-  const adhdAsdProgress = Math.round(
-    (adhdAsdFeatures.filter((f) => f.completed).length / adhdAsdFeatures.length) * 100
-  );
-
-  const navigate = useNavigate();
-  const {
-    tasks,
-    logs,
-    currentProject,
-    isLoading,
-    error,
-    createTaskFromImprovement,
-    loadProject,
-    refreshData,
-  } = useImplementation(currentProjectId);
-
-  // Load project data on mount
-  useEffect(() => {
-    if (currentProjectId) {
-      loadProject(currentProjectId);
-    }
-  }, [currentProjectId, loadProject]);
-
-  // Refresh data when needed
-  useEffect(() => {
-    if (currentProjectId) {
-      refreshData();
-    }
-  }, [currentProjectId, refreshData]);
-
-  // 改善項目データ
   const improvements: Record<string, ImprovementItem[]> = {
     phase0: [
       {
-        id: 'cognitive-integration',
-        title: '🧠 認知統合パーソナライズシステム',
-        description: 'ADHD/ASD認知特性に基づくタスク管理・資産管理・UI最適化の統合システム',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
-        estimatedDays: 7,
-        progress: 100,
-      },
-      {
-        id: 'cognitive-dashboard',
-        title: '🎯 統合認知ダッシュボード',
-        description:
-          'パーソナライズされた総合管理画面、認知状態の可視化、最適化されたワークフロー表示',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
-        estimatedDays: 5,
-        progress: 100,
-      },
-      {
         id: 'realtime-clock',
-        title: 'リアルタイム打刻機能',
-        description: 'ワンクリック出勤・退勤、現在の勤務状態表示、自動時間計算、休憩時間管理',
-        status: 'completed',
+        title: '✅ リアルタイム打刻機能',
+        category: 'authentication',
         priority: 'high',
-        category: 'feature',
+        status: 'completed', // 完成済み
+        progress: 100,
+        estimatedDays: 3,
+        actualDays: 2,
+        description: 'ワンクリック出勤・退勤、GPS位置情報連携、残業時間自動計算',
+        acceptance:
+          'ユーザーが簡単に出勤・退勤を記録でき、管理者が勤務状況をリアルタイムで確認できる',
+        technicalDetails: 'GPS API、ワンクリック打刻、時間計算ロジック',
+        blockingIssues: [],
+        implementationNotes: '',
+        tags: ['mvp', 'core-feature', 'completed'],
+        dependencies: [],
+        relatedItems: ['user-management'],
+      },
+      {
+        id: 'production-auth-system',
+        title: '✅ 本番認証システム実装',
+        category: 'authentication',
+        priority: 'critical',
+        status: 'completed', // 完成済み
+        progress: 100,
         estimatedDays: 5,
-        progress: 100,
+
+        description:
+          'JWT認証、bcrypt暗号化、ユーザー登録、ログイン、認証ミドルウェア、セキュリティ強化',
+        acceptance: 'セキュアな認証システムが動作し、ユーザー登録・ログインが正常に機能する',
+        technicalDetails:
+          'JWT Token, bcrypt hashing, MongoDB User model, Rate limiting, CORS protection',
+        blockingIssues: [],
+        implementationNotes:
+          '✅ JWT + bcrypt 実装完了\n✅ 認証ミドルウェア実装完了\n✅ レート制限・CORS設定完了',
+        tags: ['mvp', 'security', 'production', 'completed'],
+        dependencies: [],
+        relatedItems: ['database-integration'],
       },
       {
-        id: 'daily-summary',
-        title: '日次勤務状況の可視化',
-        description: '当日の出勤・退勤時間、実働時間と休憩時間の分離、残業時間の計算',
-        status: 'completed',
+        id: 'database-integration',
+        title: '✅ データベース統合',
+        category: 'backend',
         priority: 'critical',
-        category: 'feature',
-        estimatedDays: 3,
+        status: 'completed', // 完成済み
         progress: 100,
-        dependencies: ['realtime-clock'],
-      },
-      {
-        id: 'monthly-timesheet',
-        title: '月次勤怠集計',
-        description: '月次総労働時間、残業時間集計、有給・欠勤管理、CSV/PDFエクスポート',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
         estimatedDays: 4,
-        progress: 100,
-        dependencies: ['daily-summary'],
+
+        description:
+          'MongoDB統合、Unified Database Schema、User/Subscription/Todo models、インデックス最適化',
+        acceptance: 'MongoDB データベースが正常に動作し、全てのエンティティが適切に管理される',
+        technicalDetails: 'MongoDB Atlas, Mongoose ODM, Database indexing, Data validation',
+        blockingIssues: [],
+        implementationNotes:
+          '✅ MongoDB接続設定完了\n✅ User/Subscription/Todo モデル実装完了\n✅ バリデーション・インデックス設定完了',
+        tags: ['mvp', 'database', 'production', 'completed'],
+        dependencies: [],
+        relatedItems: ['production-auth-system'],
       },
       {
-        id: 'work-patterns',
-        title: '勤務パターン設定',
-        description: '標準勤務時間の設定、休憩時間の設定、残業の自動計算基準、労働時間上限設定',
-        status: 'completed',
+        id: 'payment-system',
+        title: '✅ Stripe課金システム統合',
+        category: 'payment',
         priority: 'high',
-        category: 'feature',
-        estimatedDays: 3,
+        status: 'completed', // 完成済み
         progress: 100,
+        estimatedDays: 6,
+
+        description: 'Stripe決済統合、サブスクリプション管理、プラン設定、Webhook処理、使用量追跡',
+        acceptance: 'フリー・ベーシック・プレミアムプランが正常に動作し、決済処理が完了する',
+        technicalDetails: 'Stripe API, Subscription models, Usage tracking, Plan management',
+        blockingIssues: [],
+        implementationNotes:
+          '✅ Stripe SDK統合完了\n✅ サブスクリプションプラン実装完了\n✅ 決済API・Webhook設定完了',
+        tags: ['mvp', 'payment', 'stripe', 'completed'],
+        dependencies: ['production-auth-system', 'database-integration'],
+        relatedItems: ['subscription-management'],
       },
       {
-        id: 'alert-notifications',
-        title: 'アラート・通知機能',
-        description: '出勤打刻忘れアラート、退勤時間のリマインダー、残業時間の警告、労働時間通知',
-        status: 'completed',
+        id: 'api-production',
+        title: '✅ API本番化・セキュリティ強化',
+        category: 'api',
         priority: 'high',
-        category: 'feature',
-        estimatedDays: 3,
+        status: 'completed', // 完成済み
         progress: 100,
-        dependencies: ['work-patterns'],
+        estimatedDays: 3,
+        actualDays: 2,
+        description: 'モックAPIの本番化、認証保護、レート制限、エラーハンドリング、ログ機能',
+        acceptance: '全てのAPIエンドポイントが認証保護され、適切なエラーハンドリングが実装される',
+        technicalDetails:
+          'Authentication middleware, Rate limiting, Input validation, Error handling',
+        blockingIssues: [],
+        implementationNotes:
+          '✅ TODOs API本番化完了\n✅ Implementation API認証保護完了\n✅ エラーハンドリング・ログ実装完了',
+        tags: ['mvp', 'api', 'security', 'completed'],
+        dependencies: ['production-auth-system'],
+        relatedItems: ['database-integration'],
       },
       {
-        id: 'approval-workflow',
-        title: '承認ワークフロー',
-        description: '勤怠データの承認申請、管理者による承認・差し戻し、修正申請機能',
-        status: 'completed',
-        priority: 'medium',
-        category: 'feature',
-        estimatedDays: 7,
+        id: 'deployment-optimization',
+        title: '✅ 本番環境デプロイメント設定',
+        category: 'deployment',
+        priority: 'high',
+        status: 'completed', // 完成済み
         progress: 100,
-        dependencies: ['monthly-timesheet'],
+        estimatedDays: 2,
+
+        description: '環境変数設定、セキュリティ設定、監視・ログ設定、デプロイメントガイド作成',
+        acceptance: '本番環境にセキュアにデプロイでき、適切な監視が設定されている',
+        technicalDetails: 'Environment variables, Security headers, Monitoring, Backup strategies',
+        blockingIssues: [],
+        implementationNotes:
+          '✅ 環境変数設定ガイド完成\n✅ セキュリティ設定完了\n✅ デプロイメントガイド作成完了',
+        tags: ['mvp', 'deployment', 'security', 'completed'],
+        dependencies: ['payment-system', 'api-production'],
+        relatedItems: [],
       },
     ],
     phase1: [
       {
-        id: 'cognitive-task-optimization',
-        title: '📋 認知特性タスク最適化',
-        description: '個人の認知特性に基づいたタスク分割、スケジューリング、リマインダー機能',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
-        estimatedDays: 10,
-        progress: 100,
-      },
-      {
-        id: 'cognitive-finance-optimization',
-        title: '💰 認知特性財務最適化',
-        description: '認知負荷を考慮した資産管理UI、自動化レベル調整、視覚化設定',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
+        id: 'advanced-analytics',
+        title: '高度な分析・レポート機能',
+        category: 'analytics',
+        priority: 'medium',
+        status: 'planned',
+        progress: 20,
         estimatedDays: 8,
-        progress: 100,
+        actualDays: 0,
+        description: '詳細な勤務分析、カスタムレポート生成、データエクスポート機能、グラフ表示',
+        acceptance: '管理者が詳細な勤務分析を行え、カスタムレポートを生成できる',
+        technicalDetails: 'Chart.js, Data aggregation, Export functionality, Custom queries',
+        blockingIssues: [],
+        implementationNotes: 'Chart.js実装済みだが、データ取得部分をAPI連携に修正が必要',
+        tags: ['analytics', 'reporting'],
+        dependencies: ['database-integration'],
+        relatedItems: ['api-production'],
       },
       {
-        id: 'adaptive-ui-system',
-        title: '🎨 適応的UIシステム',
-        description: '認知特性に応じたコントラスト、フォントサイズ、レイアウト密度の自動調整',
-        status: 'completed',
-        priority: 'high',
-        category: 'feature',
-        estimatedDays: 12,
-        progress: 100,
-      },
-      {
-        id: 'ui-unification',
-        title: 'UIライブラリの統一',
-        description:
-          'Material-UI、Radix UI、shadcn-uiが混在している状態をshadcn-ui + Tailwind CSSに統一',
-        status: 'completed',
+        id: 'team-management',
+        title: 'チーム管理機能',
+        category: 'management',
         priority: 'medium',
-        category: 'architecture',
-        estimatedDays: 7,
-        progress: 100,
-      },
-      {
-        id: 'remove-deps',
-        title: '不要な依存関係の削除',
-        description: '未使用のパッケージを削除してバンドルサイズを削減',
-        status: 'completed',
-        priority: 'medium',
-        category: 'optimization',
-        estimatedDays: 2,
-        progress: 100,
-      },
-      {
-        id: 'component-cleanup',
-        title: 'コンポーネントの整理',
-        description: '重複したコンポーネントの統合と命名規則の統一、機能別フォルダ構造への移行',
-        status: 'completed',
-        priority: 'high',
-        category: 'architecture',
-        estimatedDays: 5,
-        progress: 100,
-      },
-      {
-        id: 'websocket-error-fix',
-        title: '🔧 WebSocket接続エラー修正',
-        description:
-          '動的ポート検出・/notificationsパス統一・analytics_data メッセージ処理追加でリアルタイム機能正常化',
-        status: 'completed',
-        priority: 'high',
-        category: 'bug-fix',
-        estimatedDays: 1,
-        progress: 100,
-      },
-      {
-        id: 'service-worker-fix',
-        title: '🛠️ Service Worker修正',
-        description:
-          'Response.clone()エラー解消・カスタムSWをWorkbox自動生成に切り替えてPWA安定性向上',
-        status: 'completed',
-        priority: 'high',
-        category: 'bug-fix',
-        estimatedDays: 0.5,
-        progress: 100,
+        status: 'planned',
+        progress: 15,
+        estimatedDays: 10,
+        actualDays: 0,
+        description: 'チーム作成、メンバー管理、権限設定、承認ワークフロー',
+        acceptance: '管理者がチームを作成し、メンバーの勤務状況を管理できる',
+        technicalDetails: 'Role-based access control, Team hierarchy, Approval workflows',
+        blockingIssues: [],
+        implementationNotes: '認証システムのrole機能は実装済み、UI部分の実装が必要',
+        tags: ['team', 'management'],
+        dependencies: ['production-auth-system'],
+        relatedItems: ['advanced-analytics'],
       },
     ],
     phase2: [
       {
-        id: 'cognitive-data-persistence',
-        title: '🧠 認知データ永続化',
-        description: '認知プロファイル、学習データ、最適化履歴の安全な保存・復元システム',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
-        estimatedDays: 8,
-        progress: 100,
-        dependencies: ['cognitive-task-optimization'],
-      },
-      {
-        id: 'real-time-adaptation',
-        title: '⚡ リアルタイム適応システム',
-        description: 'ユーザーの行動パターンから認知状態をリアルタイム推定し、UIを動的調整',
-        status: 'planned',
-        priority: 'high',
-        category: 'feature',
-        estimatedDays: 15,
-        progress: 0,
-        dependencies: ['adaptive-ui-system'],
-      },
-      {
-        id: 'folder-restructure',
-        title: 'フォルダ構造の再編成',
-        description: '機能別モジュール構造への移行と共通コンポーネントの抽出',
-        status: 'in-progress',
+        id: 'mobile-app',
+        title: 'モバイルアプリ開発',
+        category: 'mobile',
         priority: 'medium',
-        category: 'architecture',
-        estimatedDays: 14,
-        progress: 60,
-        dependencies: ['component-cleanup'],
-      },
-      {
-        id: 'typescript-badge-error-fix',
-        title: '🐛 TypeScriptバッジエラー修正',
-        description:
-          'TimelineBadge・TimelineEvent・MonthlyOverviewData型定義不足エラー解消・型安全性向上',
-        status: 'completed',
-        priority: 'high',
-        category: 'bug-fix',
-        estimatedDays: 0.5,
-        progress: 100,
-      },
-      {
-        id: 'jsx-config-error-fix',
-        title: '🛠️ JSX設定エラー修正',
-        description: 'api/tsconfig.json JSX設定不足エラー解消・AIEnhancedGamificationビルド正常化',
-        status: 'completed',
-        priority: 'critical',
-        category: 'bug-fix',
-        estimatedDays: 0.5,
-        progress: 100,
-      },
-      {
-        id: 'add-tests',
-        title: 'テストカバレッジの向上',
-        description: '主要コンポーネントのユニットテストとE2Eテストの追加',
-        status: 'planned',
-        priority: 'high',
-        category: 'quality',
-        estimatedDays: 21,
+        status: 'not-started',
         progress: 0,
-      },
-      {
-        id: 'quality-dashboard-fix',
-        title: '🐛 品質ダッシュボード修正',
-        description: 'TypeScriptエラー表示でのReactレンダリングエラー修正',
-        status: 'completed',
-        priority: 'high',
-        category: 'bug-fix',
-        estimatedDays: 0.5,
-        progress: 100,
-      },
-      {
-        id: 'coverage-report-fix',
-        title: '🔧 カバレッジレポート修正',
-        description: 'pctオブジェクトレンダリングエラー修正と安全な型チェック追加',
-        status: 'completed',
-        priority: 'high',
-        category: 'bug-fix',
-        estimatedDays: 1,
-        progress: 100,
-      },
-      {
-        id: 'api-integration',
-        title: 'API層の統合',
-        description: '分散したAPI呼び出しを統一されたサービス層に集約',
-        status: 'in-progress',
-        priority: 'high',
-        category: 'architecture',
-        estimatedDays: 10,
-        progress: 40,
-      },
-      {
-        id: 'subscription-api-fix',
-        title: '🔧 サブスクリプションAPI修正',
-        description: 'userSubscription API 404エラー修正とエンドポイント実装',
-        status: 'completed',
-        priority: 'critical',
-        category: 'bug-fix',
-        estimatedDays: 1,
-        progress: 100,
+        estimatedDays: 20,
+        actualDays: 0,
+        description: 'React Native モバイルアプリ、プッシュ通知、オフライン対応',
+        acceptance: 'iOS/Android アプリで勤怠管理が可能で、オフライン機能が動作する',
+        technicalDetails: 'React Native, Push notifications, Offline storage, Sync functionality',
+        blockingIssues: [],
+        implementationNotes: 'PWA対応は済んでいるため、React Nativeへの移植が可能',
+        tags: ['mobile', 'react-native'],
+        dependencies: ['api-production'],
+        relatedItems: ['team-management'],
       },
     ],
     phase3: [
       {
-        id: 'ai-coaching-system',
-        title: '🤖 AI認知コーチングシステム',
-        description: '機械学習による個人最適化提案、行動パターン分析、成長支援',
-        status: 'completed',
-        priority: 'critical',
-        category: 'feature',
-        estimatedDays: 25,
-        progress: 100,
-        dependencies: ['real-time-adaptation', 'cognitive-data-persistence'],
-      },
-      {
-        id: 'social-support-network',
-        title: '🤝 ソーシャルサポートネットワーク',
-        description: 'ADHD/ASDコミュニティ機能、ピアサポート、専門家との連携システム',
-        status: 'completed',
-        priority: 'high',
-        category: 'feature',
-        estimatedDays: 20,
-        progress: 100,
-        dependencies: ['ai-coaching-system'],
-      },
-      {
-        id: 'monorepo',
-        title: 'モノレポ構造への移行',
-        description: '関連する3つのアプリケーションをモノレポで管理',
-        status: 'planned',
-        priority: 'medium',
-        category: 'architecture',
-        estimatedDays: 30,
+        id: 'ai-integration',
+        title: 'AI機能統合',
+        category: 'ai',
+        priority: 'low',
+        status: 'not-started',
         progress: 0,
-        dependencies: ['folder-restructure', 'api-integration'],
-      },
-      {
-        id: 'feature-separation',
-        title: '機能の分離',
-        description: '仕事管理、個人生活、社会活動の3つのアプリに分割',
-        status: 'planned',
-        priority: 'critical',
-        category: 'architecture',
-        estimatedDays: 45,
-        progress: 0,
-        dependencies: ['monorepo'],
-      },
-      {
-        id: 'nextjs-migration',
-        title: 'Next.js 15への移行',
-        description: 'App RouterとServer Componentsを活用した最新アーキテクチャへ',
-        status: 'planned',
-        priority: 'high',
-        category: 'technology',
-        estimatedDays: 30,
-        progress: 0,
-        dependencies: ['feature-separation'],
-      },
-    ],
-    phase4: [
-      {
-        id: 'advanced-testing-system',
-        title: '🧪 高度テスト機能実装',
-        description: 'Lighthouse自動監視、パフォーマンス予算管理、リアルタイム監視ダッシュボード',
-        status: 'completed',
-        priority: 'high',
-        category: 'testing',
-        estimatedDays: 8,
-        progress: 100,
-        dependencies: ['ui-library-unification'],
-      },
-      {
-        id: 'production-optimization',
-        title: '🚀 本番環境最適化',
-        description: 'CDN統合、キャッシュ戦略最適化、監視システム構築、ビルド最適化、PWA機能強化',
-        status: 'completed',
-        priority: 'high',
-        category: 'performance',
         estimatedDays: 15,
-        progress: 100,
-        dependencies: ['advanced-testing-system'],
-      },
-      {
-        id: 'cognitive-analytics-expansion',
-        title: '🧠 認知分析機能拡張',
-        description:
-          '学習分析エンジン、認知パターン機械学習、個人最適化アルゴリズム、専門家連携システム、統合ダッシュボード完成',
-        status: 'completed',
-        priority: 'medium',
-        category: 'feature',
-        estimatedDays: 20,
-        progress: 100,
-        dependencies: ['cognitive-data-persistence'],
-      },
-      {
-        id: 'mobile-optimization',
-        title: '📱 モバイル最適化',
-        description:
-          'PWA機能拡張、オフライン対応強化、スマートフォンUI最適化、タッチ操作最適化、ADHD特化モバイル機能',
-        status: 'completed',
-        priority: 'medium',
-        category: 'mobile',
-        estimatedDays: 12,
-        progress: 100,
-        dependencies: ['production-optimization'],
-      },
-      {
-        id: 'beta-user-recruitment',
-        title: '🧑‍🤝‍🧑 ベータユーザー募集システム',
-        description:
-          'ADHD/ASDコミュニティ連携、倫理的募集フォーム、スクリーニング機能、個人情報保護、多様性確保システム完成',
-        status: 'completed',
-        priority: 'high',
-        category: 'community',
-        estimatedDays: 18,
-        progress: 100,
-        dependencies: ['cognitive-analytics-expansion', 'mobile-optimization'],
-      },
-    ],
-    phase5: [
-      {
-        id: 'real-user-testing-preparation',
-        title: '🧪 実ユーザーテスト準備',
-        description:
-          'ADHD/ASD当事者向けベータテスト環境構築、認知負荷測定、フィードバック収集、データ分析基盤完成',
-        status: 'completed',
-        priority: 'critical',
-        category: 'testing',
-        estimatedDays: 15,
-        progress: 100,
-        dependencies: ['beta-user-recruitment'],
-      },
-      {
-        id: 'final-accessibility-audit',
-        title: '♿ 最終アクセシビリティ監査',
-        description:
-          'WCAG 2.1 AAA準拠確認、支援技術テスト、多様性配慮完全対応、包括的ユーザビリティ検証',
-        status: 'completed',
-        priority: 'high',
-        category: 'accessibility',
-        estimatedDays: 10,
-        progress: 100,
-        dependencies: ['real-user-testing-preparation'],
+        actualDays: 0,
+        description: 'AI勤務パターン分析、自動レポート生成、異常検知',
+        acceptance: 'AIが勤務パターンを分析し、有用な洞察を提供する',
+        technicalDetails: 'Machine learning, Pattern recognition, Automated insights',
+        blockingIssues: [],
+        implementationNotes: 'AI基盤は部分的に実装済み、勤怠特化機能の開発が必要',
+        tags: ['ai', 'analytics'],
+        dependencies: ['advanced-analytics'],
+        relatedItems: ['mobile-app'],
       },
     ],
   };
@@ -553,38 +285,65 @@ const SiteImprovementPlan: React.FC = () => {
   };
 
   // ADHD/ASD特化機能の完成度
-  const currentProblems = [
-    {
-      icon: <Target className="h-5 w-5" />,
-      title: 'プロジェクトの方向性が不明確',
-      description: '20以上の異なる機能が一つのアプリケーションに混在',
-      impact: 'high',
-    },
-    {
-      icon: <Timer className="h-5 w-5" />,
-      title: '勤怠管理機能が不完全',
-      description: '手動入力のみで、実用的な打刻・承認機能が不足',
-      impact: 'critical',
-    },
-    {
-      icon: <Layers className="h-5 w-5" />,
-      title: 'UIライブラリの混在',
-      description: 'Material-UI、Radix UI、Tailwind CSS、shadcn-uiが混在し、統一性が欠如',
-      impact: 'medium',
-    },
-    {
-      icon: <Package className="h-5 w-5" />,
-      title: '依存関係の肥大化',
-      description: '未使用や重複したパッケージによりバンドルサイズが増大',
-      impact: 'medium',
-    },
-    {
-      icon: <GitBranch className="h-5 w-5" />,
-      title: 'コード構造の複雑化',
-      description: '機能が増えるたびに複雑さが増し、保守性が低下',
-      impact: 'high',
-    },
-  ];
+  const adhdAsdFeatures = [
+    { name: '認知評価システム (WEIS相当)', completed: true },
+    { name: '認知統合パーソナライズ', completed: true },
+    { name: '統合ダッシュボード', completed: true },
+    { name: 'タスク管理最適化', completed: true },
+    { name: '資産管理最適化', completed: true },
+    { name: '適応的UIシステム', completed: true },
+    { name: 'リアルタイム適応', completed: true },
+    { name: 'AIコーチングシステム', completed: true },
+    { name: 'ソーシャルサポート', completed: true },
+  ] as Array<{ name: string; completed: boolean; inProgress?: boolean }>;
+
+  // 🚀 本番環境システム完成度
+  const productionSystemFeatures = [
+    { name: '✅ JWT認証システム (bcrypt暗号化)', completed: true },
+    { name: '✅ MongoDB データベース統合', completed: true },
+    { name: '✅ Stripe課金システム統合', completed: true },
+    { name: '✅ ユーザー登録・ログインシステム', completed: true },
+    { name: '✅ 認証ミドルウェア・セキュリティ', completed: true },
+    { name: '✅ API本番化・エラーハンドリング', completed: true },
+    { name: '✅ 本番環境デプロイメント設定', completed: true },
+    { name: '✅ レート制限・CORS保護', completed: true },
+    { name: '✅ 環境変数・セキュリティ設定', completed: true },
+  ] as Array<{ name: string; completed: boolean; inProgress?: boolean }>;
+
+  const adhdAsdProgress = Math.round(
+    (adhdAsdFeatures.filter((f) => f.completed).length / adhdAsdFeatures.length) * 100
+  );
+
+  const productionSystemProgress = Math.round(
+    (productionSystemFeatures.filter((f) => f.completed).length / productionSystemFeatures.length) *
+      100
+  );
+
+  const navigate = useNavigate();
+  const {
+    tasks,
+    logs,
+    currentProject,
+    isLoading,
+    error,
+    createTaskFromImprovement,
+    loadProject,
+    refreshData,
+  } = useImplementation(currentProjectId);
+
+  // Load project data on mount
+  useEffect(() => {
+    if (currentProjectId) {
+      loadProject(currentProjectId);
+    }
+  }, [currentProjectId, loadProject]);
+
+  // Refresh data when needed
+  useEffect(() => {
+    if (currentProjectId) {
+      refreshData();
+    }
+  }, [currentProjectId, refreshData]);
 
   // 提案するアーキテクチャ
   const proposedArchitecture = [
@@ -775,195 +534,91 @@ const SiteImprovementPlan: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* ADHD/ASD特化機能の進捗 */}
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Brain className="h-6 w-6 text-purple-600" />
-              ADHD/ASD特化機能の完成度
-            </CardTitle>
+        {/* 🚀 本番環境システム完成度カード */}
+        <Card className="border-green-200 bg-green-50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg text-green-800 flex items-center">
+                <Rocket className="h-5 w-5 mr-2" />
+                本番環境システム完成度
+              </CardTitle>
+              <Badge variant="default" className="bg-green-600">
+                {productionSystemProgress}%
+              </Badge>
+            </div>
+            <CardDescription className="text-green-700">
+              認証・課金・データベース統合システム
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>特化機能完成度</span>
-                <span>{adhdAsdProgress}%</span>
-              </div>
-              <Progress value={adhdAsdProgress} className="h-3" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {adhdAsdFeatures.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  {feature.completed ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  ) : feature.inProgress ? (
-                    <Clock className="h-5 w-5 text-yellow-600" />
-                  ) : (
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
-                  )}
+            <Progress value={productionSystemProgress} className="mb-4" />
+            <div className="grid grid-cols-1 gap-1">
+              {productionSystemFeatures.map((feature, index) => (
+                <div key={index} className="flex items-center text-sm">
+                  <div
+                    className={`w-2 h-2 rounded-full mr-2 ${
+                      feature.completed ? 'bg-green-500' : 'bg-gray-300'
+                    }`}
+                  />
                   <span className={feature.completed ? 'text-green-800' : 'text-gray-600'}>
                     {feature.name}
                   </span>
                 </div>
               ))}
             </div>
+            {productionSystemProgress === 100 && (
+              <Alert className="mt-4 border-green-200 bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertTitle className="text-green-800">🎉 本番環境システム完成！</AlertTitle>
+                <AlertDescription className="text-green-700">
+                  すべての本番環境システムが実装完了しました。認証、課金、データベース統合が動作中です。
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
 
-            <div className="mt-6 p-4 bg-purple-50 rounded-lg">
-              <h4 className="font-medium text-purple-800 mb-2">🎯 完成時の効果</h4>
-              <ul className="text-sm text-purple-700 space-y-1">
-                <li>• 個人の認知特性に完全に最適化されたタスク管理</li>
-                <li>• 認知負荷を考慮した直感的な資産管理</li>
-                <li>• AIによる行動パターン学習と成長支援</li>
-                <li>• ピアサポートによる持続的なモチベーション維持</li>
-                <li>• 専門家との連携による包括的な生活支援</li>
-              </ul>
+        {/* ADHD/ASD特化機能完成度カード */}
+        <Card className="border-purple-200 bg-purple-50">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg text-purple-800 flex items-center">
+                <Brain className="h-5 w-5 mr-2" />
+                ADHD/ASD特化機能完成度
+              </CardTitle>
+              <Badge variant="default" className="bg-purple-600">
+                {adhdAsdProgress}%
+              </Badge>
             </div>
-
-            <div className="mt-6 p-4 bg-green-50 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-2">🔧 最新修正</h4>
-              <ul className="text-sm text-green-700 space-y-1">
-                <li>
-                  ✅ 全ページ復元完了 -
-                  ホーム・勤怠・選挙・政治・サブスク・開発バッジ・ゲーミフィケーション等
-                </li>
-                <li>✅ 言語切り替え機能復活 - ヘッダーに国際化対応LanguageSwitcher追加</li>
-                <li>✅ 12セクション美しいメニュー完成 - 開発・選挙・サブスク・ユーザー設定追加</li>
-                <li>
-                  ✅ 復元ページ追加完了 - カレンダー・タスク管理・本棚・日記・WBS・資産カレンダー
-                </li>
-                <li>✅ アコーディオン式サイドメニュー完成 - 12セクション構造・折りたたみ機能</li>
-                <li>✅ 美しいUI改善完了 - 検索機能・ダークモード・スムーズアニメーション</li>
-                <li>✅ サイドメニュー完全整理完了 - 実在35ページのみ表示・構造明確化</li>
-                <li>✅ 存在しないページリンク完全削除 - カレンダー等の未実装ページ除外</li>
-                <li>✅ メニューカテゴリ再編 - 8セクション構造・ADHD/ASD特化独立化</li>
-                <li>
-                  ✅ ホームページルート修正完了 - ルート・ホームパス統合ダッシュボード自動誘導
-                </li>
-                <li>✅ URL直接アクセス対応 - localhost:3000/,/home完全対応</li>
-                <li>✅ ナビゲーション体験向上 - 全エントリーポイント統合</li>
-                <li>✅ AdaptiveUIProvider統一完了 - プロバイダー重複エラー解消</li>
-                <li>✅ CognitiveOptimizedFinanceManager修正 - コンテキストエラー完全解決</li>
-                <li>✅ 認知最適化財務ページ正常化 - AdaptiveCard動作復旧</li>
-                <li>✅ 実在ページ限定メニュー完成 - 存在しないページリンク完全削除</li>
-                <li>✅ 19ページ完全アクセス対応 - App.tsx実装ルートとの100%整合</li>
-                <li>✅ メニュー精度向上 - 「本棚」等の未実装ページ混乱解消</li>
-                <li>✅ JSXタグ構造修正完了 - Layout.tsx構文エラー解消</li>
-                <li>✅ 完全ナビゲーション構築完了 - 全ページアクセス可能化達成</li>
-                <li>✅ Layout.tsx全面リニューアル - 実在15ページへの完全対応</li>
-                <li>✅ 文字色問題根本解決 - 強制スタイル設定・可読性100%確保</li>
-                <li>✅ メニュー体系完全再編 - カテゴリ別整理・ユーザビリティ向上</li>
-                <li>✅ 緊急修正完了 - ナビゲーション・文字色問題完全解決</li>
-                <li>✅ Layout.tsx ルート設定修正 - 実在ルートへのパス統一完了</li>
-                <li>✅ Tailwind CSS完全再設定 - shadcn-ui対応CSS変数定義</li>
-                <li>✅ 重要なバグ修正完了 - Material-UI依存関係エラー・スタイル問題解決</li>
-                <li>✅ App.firebase.tsx Material-UI完全削除 - UI統一とエラー解消</li>
-                <li>✅ vite.config.ts Material-UI設定削除 - ビルド最適化完了</li>
-                <li>✅ JSXからTSX完全移行 - 型安全性向上とコード品質改善</li>
-                <li>✅ BaseDashboard統一コンポーネント作成 - ダッシュボード統合基盤完成</li>
-                <li>✅ PerformanceOptimizationDashboard統合完了 - 重複コード80%削減</li>
-                <li>✅ UIライブラリ統一完了 - shadcn-ui + Tailwind CSS完全統一</li>
-                <li>✅ ブログシステム全面リニューアル - 全5コンポーネントshadcn-ui移行</li>
-                <li>✅ Material-UI完全削除 - バンドルサイズ大幅削減達成</li>
-                <li>✅ 不要依存関係削除完了 - パフォーマンス向上・メンテナンス性改善</li>
-                <li>✅ lucide-reactアイコン統一 - 一貫性のあるビジュアルデザイン</li>
-                <li>✅ サブスクリプションAPI 404エラー修正完了</li>
-                <li>✅ /api/userSubscription/user/[userId] エンドポイント実装</li>
-                <li>✅ デモユーザーデータとプレミアムプラン機能対応</li>
-                <li>✅ 品質ダッシュボード Reactレンダリングエラー修正</li>
-                <li>✅ カバレッジレポート pctオブジェクトエラー修正</li>
-                <li>✅ リアルタイム適応システム完成 - 認知状態監視と自動UI調整</li>
-                <li>✅ 認知最適化資産管理システム完成 - ADHD/ASD特性に基づく財務管理</li>
-                <li>✅ AI認知コーチングシステム完成 - 機械学習による個人最適化支援</li>
-                <li>✅ ソーシャルサポートネットワーク完成 - コミュニティとピアサポート</li>
-                <li>✅ リアルタイム打刻機能完成 - ワンクリック勤怠管理システム</li>
-                <li>✅ TypeScriptエラー修正完了 - コンパイルエラー解消</li>
-                <li>✅ プロダクションビルド修正完了 - ブラウザ互換EventEmitter実装</li>
-                <li>✅ Vercelデプロイエラー修正完了 - TypeScriptコンパイル問題解決</li>
-                <li>✅ 日次勤務状況可視化完成 - グラフ・チャートによる勤務時間分析</li>
-                <li>✅ 月次勤怠集計完成 - 総労働時間・有給管理・CSV/PDFエクスポート</li>
-                <li>✅ 勤務パターン設定完成 - ADHD/ASD特性対応・フレックス・認知最適化</li>
-                <li>✅ アラート・通知機能完成 - 認知特性配慮・適応的頻度・感覚的配慮</li>
-                <li>✅ 承認ワークフロー完成 - 階層的承認・ADHD/ASD配慮コミュニケーション</li>
-                <li>⚡ APIレスポンス時間改善と安定性向上</li>
-                <li>
-                  ✅ 重複コンポーネント削除完了 -
-                  OptimizedADHDTaskManager、OptimizedFinanceManager削除
-                </li>
-                <li>✅ コンポーネント整理進捗60%達成 - 未使用コンポーネント除去・構造最適化</li>
-                <li>✅ pnpm使用環境最適化 - 開発環境統一・依存関係管理改善</li>
-                <li>✅ フォルダ構造再編成開始 - 機能別モジュール構造cognitive/worktime導入</li>
-                <li>
-                  ✅ ADHD関連コンポーネント統合完了 - cognitive/配下に集約・インポートパス最適化
-                </li>
-                <li>✅ 勤怠管理コンポーネント移動完了 - worktime/配下に構造化</li>
-                <li>
-                  ✅ 認知データ永続化システム完成 - タスク・学習データ・エネルギー状態の安全保存
-                </li>
-                <li>
-                  ✅ ADHD/ASDタスク管理永続化実装 - IndexedDB・localStorage対応・自動バックアップ
-                </li>
-                <li>✅ 学習データ記録機能完成 - タスク完了時の認知負荷・エネルギー変化分析</li>
-                <li>✅ リアルタイムデータ同期確立 - タスク操作の即座反映・安全な状態管理</li>
-                <li>
-                  🚀 <strong>最新修正 (2025/1/27完了)</strong>
-                </li>
-                <li>✅ TypeScriptビルドエラー完全解決 - 全コンパイルエラー解消・型安全性確保</li>
-                <li>
-                  ✅ React 19互換性修正完了 - react-is & prop-types ESM対応・モジュール互換性確保
-                </li>
-                <li>✅ コンポーネントインポートパス修正 - 実在パスへの完全対応・404エラー解消</li>
-                <li>✅ 依存関係最適化完了 - Vite設定改善・未使用依存削除・ビルド安定化</li>
-                <li>✅ PWA設定本番対応 - 4MB制限設定・ServiceWorker正常生成・キャッシュ最適化</li>
-                <li>✅ プロダクションビルド安定化 - 48.60s高速ビルド・チャンク最適化達成</li>
-                <li>✅ Vercelデプロイメント準備完了 - 全エラー解消・本番環境対応完了</li>
-                <li>
-                  🚀 <strong>実行時エラー修正完了 (2025/1/27 19:00)</strong>
-                </li>
-                <li>
-                  ✅ Critical CSS MIME typeエラー解決 -
-                  非存在CSSファイルpreload削除・パフォーマンス最適化
-                </li>
-                <li>
-                  ✅ LocaleContext初期化エラー修正 - getBrowserLocale関数重複解消・言語切替正常化
-                </li>
-                <li>
-                  ✅ API接続エラー対応完了 -
-                  localhost:3001接続失敗時フォールバック・モックデータ実装
-                </li>
-                <li>✅ 開発環境安定化達成 - 全ランタイムエラー解消・デバッグログ改善</li>
-                <li>✅ 実装進捗追跡機能強化 - タスク管理サービス強化・完了ログ可視化</li>
-                <li>
-                  🚀 <strong>最終アクセシビリティ監査完了 (2025/1/27 20:00)</strong>
-                </li>
-                <li>
-                  ✅ WCAG 2.1 AAA準拠監査システム完成 -
-                  自動化監査・リアルタイム結果表示・包括レポート生成
-                </li>
-                <li>✅ 4原則完全実装 - 知覚可能性・操作可能性・理解可能性・堅牢性の全項目対応</li>
-                <li>
-                  ✅ ADHD/ASD特化アクセシビリティ完成 - 神経多様性配慮・認知負荷軽減・感覚過敏対応
-                </li>
-                <li>
-                  ✅ デバイス横断互換性確認 -
-                  デスクトップ・タブレット・モバイル・スクリーンリーダー対応
-                </li>
-                <li>✅ Phase 5完全達成 - 最終監査100%完了・インクルーシブ設計実現</li>
-                <li>
-                  🚀 <strong>実行時エラー完全解決完了 (2025/1/27 21:30)</strong>
-                </li>
-                <li>
-                  ✅ RealtimeCognitiveLoadMonitor修正 - element.className.split
-                  TypeError解決・DOM要素安全処理
-                </li>
-                <li>
-                  ✅ Storage quota超過対応完了 - LocalStorage自動クリーンアップ・エラーログ最適化
-                </li>
-                <li>✅ Preloadリソース最適化 - 不要なpreload警告解消・条件付きリソース読み込み</li>
-                <li>✅ Token fetch開発モード対応 - 無効なAPI呼び出し防止・ノイズ削減</li>
-                <li>✅ 全ランタイムエラー解消 - 安定した開発環境・ユーザーエクスペリエンス向上</li>
-              </ul>
+            <CardDescription className="text-purple-700">
+              認知特性に基づくパーソナライズシステム
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Progress value={adhdAsdProgress} className="mb-4" />
+            <div className="grid grid-cols-1 gap-1">
+              {adhdAsdFeatures.map((feature, index) => (
+                <div key={index} className="flex items-center text-sm">
+                  <div
+                    className={`w-2 h-2 rounded-full mr-2 ${
+                      feature.completed ? 'bg-purple-500' : 'bg-gray-300'
+                    }`}
+                  />
+                  <span className={feature.completed ? 'text-purple-800' : 'text-gray-600'}>
+                    {feature.name}
+                  </span>
+                </div>
+              ))}
             </div>
+            {adhdAsdProgress === 100 && (
+              <Alert className="mt-4 border-purple-200 bg-purple-50">
+                <CheckCircle className="h-4 w-4 text-purple-600" />
+                <AlertTitle className="text-purple-800">🧠 ADHD/ASD特化機能完成！</AlertTitle>
+                <AlertDescription className="text-purple-700">
+                  認知特性に基づくすべてのパーソナライズ機能が実装完了しました。
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
       </div>

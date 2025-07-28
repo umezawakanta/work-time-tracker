@@ -79,12 +79,30 @@ export const WorkTimeRealtimeDashboard: React.FC = () => {
     }
   }, [isAdmin]);
 
-  // 従業員状況の読み込み（模擬データ）
+  // 従業員状況の読み込み（本番API対応）
   const loadEmployeeStatuses = async () => {
     try {
       setIsLoading(true);
 
-      // 実際の実装ではAPIから取得
+      // 本番環境でのAPI呼び出し
+      const response = await fetch('/api/worktime/employee-status', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEmployees(data.data);
+          return;
+        }
+      }
+
+      // フォールバック: デモデータ（API接続失敗時またはデモモード）
+      console.warn('Employee status API not available, using demo data');
       const mockEmployees: EmployeeStatus[] = [
         {
           id: 'emp_1',
@@ -141,30 +159,9 @@ export const WorkTimeRealtimeDashboard: React.FC = () => {
       ];
 
       setEmployees(mockEmployees);
-
-      // 統計計算
-      const totalEmployees = mockEmployees.length;
-      const working = mockEmployees.filter((emp) => emp.status === 'working').length;
-      const onBreak = mockEmployees.filter((emp) => emp.status === 'on_break').length;
-      const notStarted = mockEmployees.filter((emp) => emp.status === 'not_started').length;
-      const finished = mockEmployees.filter((emp) => emp.status === 'finished').length;
-      const pendingApprovals = mockEmployees.reduce((sum, emp) => sum + emp.pendingApprovals, 0);
-      const averageWorkTime =
-        mockEmployees.reduce((sum, emp) => sum + emp.workDuration, 0) / totalEmployees;
-
-      setStats({
-        totalEmployees,
-        working,
-        onBreak,
-        notStarted,
-        finished,
-        pendingApprovals,
-        averageWorkTime,
-      });
-
-      setLastUpdate(new Date());
     } catch (error) {
-      console.error('従業員状況の読み込みに失敗:', error);
+      console.error('Failed to load employee statuses:', error);
+      setEmployees([]); // エラー時は空配列
     } finally {
       setIsLoading(false);
     }

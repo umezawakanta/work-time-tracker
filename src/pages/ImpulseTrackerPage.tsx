@@ -84,7 +84,7 @@ const ImpulseTrackerPage: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>('');
   const [statsData, setStatsData] = useState<ImpulseStats | null>(null);
 
-  // データ読み込み
+  // データ読み込み（本番API対応）
   useEffect(() => {
     const loadData = async () => {
       if (!isAuthenticated) {
@@ -100,16 +100,58 @@ const ImpulseTrackerPage: React.FC = () => {
       }
 
       try {
-        // 認証済みの場合はAPIからデータを取得
         setIsLoading(true);
-        // TODO: 本番環境では実際のAPIエンドポイントを使用
-        // const response = await fetch(`/api/impulse-actions?userId=${user.id}`);
-        // if (!response.ok) throw new Error('データの取得に失敗しました');
-        // const data = await response.json();
-        // setActions(data);
-        // setFilteredActions(data);
 
-        // モック実装
+        // 本番環境でのAPI呼び出し
+        const response = await fetch(`/api/impulse-actions?userId=${user.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setActions(data.data);
+            setFilteredActions(data.data);
+          }
+        } else {
+          // API失敗時はローカルストレージから読み込み
+          console.warn('Impulse actions API not available, using local storage');
+          const storedActions = localStorage.getItem(`impulseActions_${user?.id}`);
+          if (storedActions) {
+            const parsedActions = JSON.parse(storedActions) as ImpulseAction[];
+            setActions(parsedActions);
+            setFilteredActions(parsedActions);
+          }
+        }
+
+        // ユーザーのプレミアムステータスを確認
+        const premiumResponse = await fetch(`/api/user/subscription?userId=${user.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          },
+        });
+
+        if (premiumResponse.ok) {
+          const subscriptionData = await premiumResponse.json();
+          if (subscriptionData.success) {
+            const isPremium = subscriptionData.data?.subscription?.planType !== 'free';
+            setIsPremium(isPremium);
+          }
+        } else {
+          // フォールバック: メールアドレスベースの判定
+          console.warn('Subscription API not available, using fallback detection');
+          setIsPremium(user?.email?.includes('premium') || false);
+        }
+      } catch (error) {
+        console.error('Failed to load impulse data:', error);
+
+        // エラー時はローカルストレージから読み込み
         const storedActions = localStorage.getItem(`impulseActions_${user?.id}`);
         if (storedActions) {
           const parsedActions = JSON.parse(storedActions) as ImpulseAction[];
@@ -117,23 +159,8 @@ const ImpulseTrackerPage: React.FC = () => {
           setFilteredActions(parsedActions);
         }
 
-        // ユーザーのプレミアムステータスを確認
-        // TODO: 本番環境では実際のAPIエンドポイントを使用
-        // const premiumResponse = await fetch(`/api/user/subscription?userId=${user.id}`);
-        // if (premiumResponse.ok) {
-        //   const { isPremium } = await premiumResponse.json();
-        //   setIsPremium(isPremium);
-        // }
-
-        // モック実装
-        setIsPremium(user?.email?.includes('premium') || false);
-      } catch (error) {
-        console.error('データ取得エラー:', error);
-        toast({
-          title: 'エラー',
-          description: 'データの取得に失敗しました。',
-          variant: 'destructive',
-        });
+        // デフォルトでプレミアムは無効
+        setIsPremium(false);
       } finally {
         setIsLoading(false);
       }
