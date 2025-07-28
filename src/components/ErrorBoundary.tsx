@@ -32,31 +32,64 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     this.reportErrorToBadgeSystem(error, errorInfo);
   }
 
-  private reportErrorToBadgeSystem(error: Error, errorInfo: ErrorInfo) {
-    // 🐛 エラーエリミネーター: エラー統計の更新
+  private reportErrorToBadgeSystem = (error: Error, errorInfo: ErrorInfo) => {
     try {
-      const errorReport = {
-        type: 'react_error',
-        message: error.message,
-        component: errorInfo.componentStack,
+      const errorData = {
+        error: error.message,
+        stack: error.stack || 'No stack trace',
+        componentStack: errorInfo.componentStack,
         timestamp: new Date().toISOString(),
       };
 
-      // LocalStorageにエラーログを保存
-      const existingErrors = JSON.parse(localStorage.getItem('error_logs') || '[]');
-      existingErrors.push(errorReport);
+      console.error('❌ Uncaught error:', errorData);
 
-      // 最新100件のエラーのみ保持
-      if (existingErrors.length > 100) {
-        existingErrors.splice(0, existingErrors.length - 100);
+      // LocalStorage容量制限でエラーログを制限
+      try {
+        const existingLogs = localStorage.getItem('error_logs');
+        let logs: any[] = [];
+
+        if (existingLogs) {
+          logs = JSON.parse(existingLogs);
+        }
+
+        // 最新10件のみ保持
+        logs.push(errorData);
+        if (logs.length > 10) {
+          logs = logs.slice(-10);
+        }
+
+        localStorage.setItem('error_logs', JSON.stringify(logs));
+      } catch (storageError) {
+        // LocalStorage容量超過の場合は古いログをクリア
+        console.warn('LocalStorage full, clearing error logs');
+        try {
+          localStorage.removeItem('error_logs');
+          localStorage.setItem('error_logs', JSON.stringify([errorData]));
+        } catch (clearError) {
+          // 完全に失敗した場合はログをスキップ
+          console.warn('Cannot store error logs:', clearError);
+        }
       }
 
-      localStorage.setItem('error_logs', JSON.stringify(existingErrors));
-      console.log('🐛 Error reported to badge system');
-    } catch (loggingError) {
-      console.error('Failed to log error:', loggingError);
+      // バッジシステムに通知（開発環境のみ）
+      if (process.env.NODE_ENV === 'development') {
+        // 開発環境でのエラー通知
+        setTimeout(() => {
+          if (window.postMessage) {
+            window.postMessage(
+              {
+                type: 'ERROR_BOUNDARY_TRIGGERED',
+                payload: errorData,
+              },
+              '*'
+            );
+          }
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Failed to log error:', error);
     }
-  }
+  };
 
   render() {
     if (this.state.hasError) {

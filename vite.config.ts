@@ -138,7 +138,7 @@ export default defineConfig(({ command, mode }) => {
           ],
         },
         devOptions: {
-          enabled: false,
+          enabled: false, // 開発環境でService Workerを無効化
         },
       }),
 
