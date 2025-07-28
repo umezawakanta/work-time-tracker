@@ -29,23 +29,18 @@ export const updateUserProfile = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { name, email } = req.body;
-
-    // nameとemailが文字列であることを確認
-    const nameStr = typeof name === 'string' ? name : '';
-    const emailStr = typeof email === 'string' ? email : '';
-
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // 文字列に変換した値を使用
-    if (nameStr) user.name = nameStr;
-    if (emailStr) user.email = emailStr;
+    // Update fields if provided
+    const { name: displayName, email }: { name?: string; email?: string } = req.body;
+    if (displayName && typeof displayName === 'string') user.displayName = displayName;
+    if (email && typeof email === 'string') user.email = email;
 
     await user.save();
-    res.json({ name: user.name, email: user.email });
+    res.json({ displayName: user.displayName, email: user.email });
   } catch (error) {
     console.error('Update user profile error:', error);
     res.status(500).json({ message: 'Server error' });

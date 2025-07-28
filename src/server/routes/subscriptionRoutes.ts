@@ -1,8 +1,8 @@
 // 一般サブスクリプション（外部サービス）用のルーター
-import * as express from 'express';
+import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { Subscription, ISubscription } from '../models/Subscription.js';
+import { SubscriptionModel } from '../models/Subscription.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
       query = { userId };
     }
 
-    const subscriptions = await Subscription.find(query).sort({ name: 1 });
+    const subscriptions = await SubscriptionModel.find(query).sort({ name: 1 });
     res.json(subscriptions);
   } catch (error) {
     next(error);
@@ -41,7 +41,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
 // 特定のサブスクリプション情報を取得
 router.get('/:id', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const subscription = await Subscription.findById(req.params.id);
+    const subscription = await SubscriptionModel.findById(req.params.id);
 
     if (!subscription) {
       res.status(404).json({ message: '指定されたサブスクリプション情報が見つかりません' });
@@ -66,7 +66,7 @@ router.post(
     }
 
     try {
-      const subscriptionData: ISubscription = new Subscription({
+      const subscriptionData = new SubscriptionModel({
         name: req.body.name,
         billingDate: req.body.billingDate,
         type: req.body.type,
@@ -106,9 +106,13 @@ router.put(
         updatedAt: new Date(),
       };
 
-      const updatedSubscription = await Subscription.findByIdAndUpdate(req.params.id, updateData, {
-        new: true,
-      });
+      const updatedSubscription = await SubscriptionModel.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        {
+          new: true,
+        }
+      );
 
       if (!updatedSubscription) {
         res.status(404).json({ message: '指定されたサブスクリプション情報が見つかりません' });
@@ -128,7 +132,7 @@ router.put(
 // サブスクリプション削除
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const deletedSubscription = await Subscription.findByIdAndDelete(req.params.id);
+    const deletedSubscription = await SubscriptionModel.findByIdAndDelete(req.params.id);
 
     if (!deletedSubscription) {
       res.status(404).json({ message: '指定されたサブスクリプション情報が見つかりません' });
@@ -153,7 +157,7 @@ router.get(
   async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // この実装は簡易的なものです。実際には日付の比較ロジックが必要になります
-      const subscriptions = await Subscription.find({
+      const subscriptions = await SubscriptionModel.find({
         // billingDateから年月を抽出して比較するロジックが必要
       });
       res.json(subscriptions);
@@ -168,7 +172,7 @@ router.get(
   '/type/:type',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const subscriptions = await Subscription.find({ type: req.params.type });
+      const subscriptions = await SubscriptionModel.find({ type: req.params.type });
       res.json(subscriptions);
     } catch (error) {
       next(error);
@@ -181,7 +185,7 @@ router.get(
   '/payment-method/:method',
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const subscriptions = await Subscription.find({
+      const subscriptions = await SubscriptionModel.find({
         'paymentMethod.type': req.params.method,
       });
       res.json(subscriptions);
@@ -196,7 +200,7 @@ router.get(
   '/total-amount',
   async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const result = await Subscription.aggregate([
+      const result = await SubscriptionModel.aggregate([
         { $group: { _id: null, totalAmount: { $sum: '$amount' } } },
       ]);
 
@@ -240,29 +244,27 @@ router.patch(
     }
 
     try {
-      const { month, checked } = req.body;
-
-      const subscription = await Subscription.findById(req.params.id);
+      const subscription = await SubscriptionModel.findById(req.params.id);
       if (!subscription) {
         res.status(404).json({ message: '指定されたサブスクリプション情報が見つかりません' });
         return;
       }
 
-      // checkStatusesフィールドがない場合は初期化
-      if (!subscription.checkStatuses) {
-        subscription.checkStatuses = {};
+      // Initialize checkStatuses if it doesn't exist
+      if (!(subscription as any).checkStatuses) {
+        (subscription as any).checkStatuses = {};
       }
 
-      // 月ごとのチェックステータスを更新
-      if (typeof month === 'string' && typeof checked === 'boolean') {
-        (subscription.checkStatuses as Record<string, boolean>)[month] = checked;
-      }
+      // Record the check
+      const month = String(req.body.month || new Date().toISOString().slice(0, 7));
+      const checked = req.body.checked === true;
+      ((subscription as any).checkStatuses as Record<string, boolean>)[month] = checked;
       subscription.updatedAt = new Date();
 
       await subscription.save();
 
       res.json({
-        message: `チェックステータスが更新されました`,
+        message: 'チェックステータスが更新されました',
         subscription,
       });
     } catch (error) {

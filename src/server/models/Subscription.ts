@@ -4,46 +4,43 @@ import {
   SubscriptionPlan,
   Payment,
   Invoice,
-  SubscriptionUsage,
-  SubscriptionLimits,
-  PaymentMethod,
-  InvoiceLineItem,
-  AddOn,
-  DiscountInfo,
 } from '@/database/schema/UnifiedDatabaseSchema';
 
-// Document interfaces
-interface BaseDocument extends Document {
+// Simplified document interfaces to avoid conflicts
+export interface SubscriptionDocument extends Document {
+  userId: string;
+  planId: string;
+  planName: string;
+  planType: 'free' | 'basic' | 'premium' | 'enterprise';
+  status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'unpaid' | 'incomplete';
   createdAt: Date;
   updatedAt: Date;
-  version: number;
-  syncStatus: 'synced' | 'pending' | 'conflict' | 'error';
-  lastSyncAt?: Date;
-  metadata?: Record<string, any>;
 }
 
-export interface SubscriptionDocument
-  extends BaseDocument,
-    Omit<Subscription, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
+export interface SubscriptionPlanDocument extends Document {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface SubscriptionPlanDocument
-  extends BaseDocument,
-    Omit<SubscriptionPlan, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
+export interface PaymentDocument extends Document {
+  id: string;
+  amount: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface PaymentDocument
-  extends BaseDocument,
-    Omit<Payment, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
-}
-
-export interface InvoiceDocument
-  extends BaseDocument,
-    Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
+export interface InvoiceDocument extends Document {
+  id: string;
+  amount: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Subdocument schemas
@@ -389,41 +386,28 @@ InvoiceSchema.index({ dueDate: 1 });
 InvoiceSchema.index({ createdAt: -1 });
 
 // Virtuals
-const addVirtuals = (schema: Schema) => {
-  schema.virtual('id').get(function () {
-    return this._id.toHexString();
-  });
+// Virtual for id field
+SubscriptionSchema.virtual('id').get(function () {
+  return (this._id as mongoose.Types.ObjectId).toHexString();
+});
 
-  schema.set('toJSON', {
-    virtuals: true,
-    transform: function (doc, ret) {
-      delete ret._id;
-      delete ret.__v;
-      return ret;
-    },
-  });
-};
-
-addVirtuals(SubscriptionSchema);
-addVirtuals(SubscriptionPlanSchema);
-addVirtuals(PaymentSchema);
-addVirtuals(InvoiceSchema);
+// Ensure virtual fields are serialized
+SubscriptionSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc, ret) {
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  },
+});
 
 // Pre-save middleware
-const addPreSave = (schema: Schema) => {
-  schema.pre('save', function (next) {
-    if (this.isModified() && !this.isNew) {
-      this.version += 1;
-      this.syncStatus = 'pending';
-    }
-    next();
-  });
-};
-
-addPreSave(SubscriptionSchema);
-addPreSave(SubscriptionPlanSchema);
-addPreSave(PaymentSchema);
-addPreSave(InvoiceSchema);
+SubscriptionSchema.pre('save', function (next) {
+  if (this.isModified()) {
+    (this as any).version += 1;
+  }
+  next();
+});
 
 // Static methods
 SubscriptionSchema.statics.findByUserId = function (userId: string) {

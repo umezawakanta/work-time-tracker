@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import type { UserProfile, BaseDocument } from '../../types/database';
 
 // User document interface
 export interface UserDocument extends Document {
@@ -10,6 +9,7 @@ export interface UserDocument extends Document {
   firstName?: string;
   lastName?: string;
   avatar?: string;
+  password: string; // Add password property
   provider: 'jwt' | 'firebase' | 'google' | 'github' | 'demo';
   isVerified: boolean;
   role: 'user' | 'admin' | 'manager' | 'guest';

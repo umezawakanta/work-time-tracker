@@ -1,19 +1,31 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Todo, RecurringPattern } from '@/database/schema/UnifiedDatabaseSchema';
+import { Todo } from '@/database/schema/UnifiedDatabaseSchema';
 
-// Base document interface
-interface BaseDocument extends Document {
+// Simplified TodoDocument interface
+export interface TodoDocument extends Document {
+  title: string;
+  description?: string;
+  category: 'personal' | 'work' | 'project' | 'learning' | 'health';
+  type: 'task' | 'reminder' | 'goal' | 'habit';
+  completed: boolean;
+  completedAt?: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  dueDate?: string;
+  reminderDate?: string;
+  userId: string;
+  projectId?: string;
+  taskId?: string;
+  parentTodoId?: string;
+  subtodos: string[];
+  tags: string[];
+  estimatedMinutes?: number;
+  actualMinutes?: number;
+  location?: string;
+  context: string[];
+  source: 'manual' | 'imported' | 'generated' | 'ai_suggested';
+  sourceId?: string;
   createdAt: Date;
   updatedAt: Date;
-  version: number;
-  syncStatus: 'synced' | 'pending' | 'conflict' | 'error';
-  lastSyncAt?: Date;
-  metadata?: Record<string, any>;
-}
-
-// Todo document interface
-export interface TodoDocument extends BaseDocument, Omit<Todo, 'id' | 'createdAt' | 'updatedAt'> {
-  _id: string;
 }
 
 // Subdocument schemas

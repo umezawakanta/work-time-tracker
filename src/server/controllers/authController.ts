@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User, IUser } from '../models/User.js';
+import { User, UserDocument } from '../models/User.js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -68,7 +69,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const passwordStr = String(password);
 
     console.log('🔍 Looking up user with email:', email);
-    const user = (await User.findOne({ email })) as IUser | null;
+    const user = (await User.findOne({ email })) as UserDocument | null;
     console.log('👤 User found:', user ? 'Yes' : 'No');
 
     if (!user) {
@@ -78,8 +79,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     console.log('🔐 Comparing password...');
-    const isMatch = await user.comparePassword(passwordStr);
-    console.log('🔑 Password match:', isMatch);
+    // パスワードの比較
+    const isMatch = await bcrypt.compare(passwordStr, user.password);
+    console.log('🔑 Password match:', isMatch ? 'Yes' : 'No');
 
     if (!isMatch) {
       console.error('❌ Login error: Invalid password');
@@ -99,9 +101,9 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       refreshToken: tokens.refreshToken,
       user: {
         id: userId,
-        name: user.name,
+        displayName: user.displayName,
         email: user.email,
-        isAdmin: user.isAdmin || false,
+        isAdmin: user.role === 'admin',
       },
       expiresIn: tokens.expiresIn,
       refreshExpiresIn: tokens.refreshExpiresIn,
@@ -157,7 +159,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     console.log('Checking if user already exists with email:', email);
-    let user = (await User.findOne({ email })) as IUser | null;
+    let user = (await User.findOne({ email })) as UserDocument | null;
 
     if (user) {
       console.log('Registration failed: User already exists with email:', email);
@@ -173,7 +175,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       email,
       passwordLength: typeof password === 'string' ? password.length : 'unknown',
     });
-    user = new User({ name, email, password }) as IUser;
+    user = new User({ displayName: name, email, password }) as UserDocument;
 
     console.log('Attempting to save user to database...');
     await user.save();
@@ -190,9 +192,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       refreshToken: tokens.refreshToken,
       user: {
         id: userId,
-        name: user.name,
+        displayName: user.displayName,
         email: user.email,
-        isAdmin: user.isAdmin || false,
+        isAdmin: user.role === 'admin',
       },
       expiresIn: tokens.expiresIn,
       refreshExpiresIn: tokens.refreshExpiresIn,
@@ -272,7 +274,7 @@ export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> 
       isAuthenticated: true,
       user: {
         id: user._id,
-        name: user.name,
+        displayName: user.displayName,
         email: user.email,
       },
     });
@@ -299,11 +301,13 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     );
 
     if (!updatedUser) {
-      res.status(404).json({ message: 'ユーザーが見つかりません' });
+      res.status(404).json({ message: 'ユーザーが見つかりました' });
       return; // return文を修正
     }
 
-    res.json({ user: { id: updatedUser._id, name: updatedUser.name, email: updatedUser.email } });
+    res.json({
+      user: { id: updatedUser._id, displayName: updatedUser.displayName, email: updatedUser.email },
+    });
   } catch (error) {
     console.error('Update profile error:', error);
     res.status(500).json({ message: 'プロフィールの更新中にエラーが発生しました' });
@@ -326,7 +330,7 @@ export const getUserData = async (req: AuthRequest, res: Response): Promise<void
         user: {
           id: 'demo-user',
           _id: 'demo-user',
-          name: 'Demo User',
+          displayName: 'Demo User',
           email: 'demo@example.com',
           isAdmin: false,
         },
@@ -339,9 +343,9 @@ export const getUserData = async (req: AuthRequest, res: Response): Promise<void
       user: {
         id: user._id,
         _id: user._id,
-        name: user.name,
+        displayName: user.displayName,
         email: user.email,
-        isAdmin: user.isAdmin || false,
+        isAdmin: user.role === 'admin',
       },
     });
   } catch (error) {
@@ -395,9 +399,9 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
         refreshToken: tokens.refreshToken,
         user: {
           id: user._id,
-          name: user.name,
+          displayName: user.displayName,
           email: user.email,
-          isAdmin: user.isAdmin || false,
+          isAdmin: user.role === 'admin',
         },
         expiresIn: tokens.expiresIn,
         refreshExpiresIn: tokens.refreshExpiresIn,
