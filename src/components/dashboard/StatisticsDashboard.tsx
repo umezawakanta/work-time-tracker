@@ -1,5 +1,6 @@
 import React from 'react';
-import { Book } from '../store/bookSlice';
+import { Book } from '../../store/bookSlice';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BaseDashboard, MetricCard } from '@/components/ui/BaseDashboard';
 import { BookOpen, Target, TrendingUp, Star } from 'lucide-react';
 

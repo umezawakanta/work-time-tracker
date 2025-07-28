@@ -39,7 +39,7 @@ import { InternationalizationProvider } from './hooks/useInternationalization';
 import IntegratedDashboard from './pages/IntegratedDashboard';
 // import CognitiveDashboard from './pages/CognitiveDashboard';
 import { ADHDTaskManager } from './components/cognitive/ADHDTaskManager';
-import { ADHDIntegratedLifeSystem } from './components/cognitive/ADHDIntegratedLifeSystem';
+import { ADHDLifeManagementHub } from './components/cognitive/ADHDLifeManagementHub';
 // import CognitiveIntegratedDashboard from './components/cognitive/CognitiveIntegratedDashboard';
 
 // 🚀 Time Tracking & Work Management - High Priority
@@ -246,7 +246,7 @@ const App: React.FC = () => {
                               path="/adhd-integrated-life"
                               element={
                                 <LayoutWrapper>
-                                  <ADHDIntegratedLifeSystem />
+                                  <ADHDLifeManagementHub />
                                 </LayoutWrapper>
                               }
                             />

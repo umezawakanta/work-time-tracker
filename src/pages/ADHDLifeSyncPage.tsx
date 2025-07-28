@@ -1,12 +1,12 @@
 import React from 'react';
-import { ADHDLifeSyncDashboard } from '@/components/cognitive/ADHDLifeSyncDashboard';
+import { ADHDLifeManagementHub } from '@/components/cognitive/ADHDLifeManagementHub';
 
-export default function ADHDLifeSyncPage() {
+const ADHDLifeSyncPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-6">
-        <ADHDLifeSyncDashboard />
-      </div>
+    <div>
+      <ADHDLifeManagementHub />
     </div>
   );
-}
+};
+
+export default ADHDLifeSyncPage;

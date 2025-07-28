@@ -1,5 +1,5 @@
 import React from 'react';
-import { FeatureDiscoveryDashboard } from '@/components/FeatureDiscoveryDashboard';
+import { FeatureDiscoveryDashboard } from '@/components/dashboard/FeatureDiscoveryDashboard';
 
 export default function FeatureDiscoveryPage() {
   return (

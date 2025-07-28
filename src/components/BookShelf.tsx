@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import StatisticsDashboard from './StatisticsDashboard';
+import StatisticsDashboard from './dashboard/StatisticsDashboard';
 import ReadingChallenge from './ReadingChallenge';
 import BookRecommendations from './BookRecommendations';
 import { toast } from '@/components/ui/use-toast';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LifeSyncDashboard } from '@/components/LifeSyncDashboard';
+import { LifeSyncDashboard } from '@/components/dashboard/LifeSyncDashboard';
 
 export default function LifeSyncDashboardPage() {
   return (

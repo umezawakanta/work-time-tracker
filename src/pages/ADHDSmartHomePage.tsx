@@ -1,6 +1,8 @@
 import React from 'react';
-import { ADHDIntegratedLifeHub } from '@/components/cognitive/ADHDIntegratedLifeHub';
+import { ADHDLifeManagementHub } from '@/components/cognitive/ADHDLifeManagementHub';
 
-export default function ADHDSmartHomePage() {
-  return <ADHDIntegratedLifeHub />;
-}
+const ADHDSmartHomePage: React.FC = () => {
+  return <ADHDLifeManagementHub />;
+};
+
+export default ADHDSmartHomePage;
