@@ -14,6 +14,7 @@ export interface SubscriptionDocument extends Document {
   planType: 'free' | 'basic' | 'premium' | 'enterprise';
   status: 'active' | 'trialing' | 'past_due' | 'cancelled' | 'unpaid' | 'incomplete';
   limits?: any; // Add missing limits property
+  trialEndDate?: string; // Add missing trialEndDate property
   createdAt: Date;
   updatedAt: Date;
 }
