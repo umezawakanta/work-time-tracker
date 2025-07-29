@@ -12,137 +12,141 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       react(),
 
-      // PWA機能強化 - オフライン対応・プッシュ通知・背景同期
-      VitePWA({
-        registerType: 'autoUpdate',
-        injectRegister: 'auto',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-        manifest: {
-          name: 'ADHD統合ライフハブ - Work Time Tracker',
-          short_name: 'ADHDライフハブ',
-          description: 'ADHD/ASD特化型生活支援システム - 時間管理・財務管理・認知支援を統合',
-          theme_color: '#667eea',
-          background_color: '#ffffff',
-          display: 'standalone',
-          orientation: 'portrait',
-          scope: '/',
-          start_url: '/',
-          icons: [
-            {
-              src: 'icons/icon-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-            },
-            {
-              src: 'icons/icon-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-            },
-          ],
-        },
-        workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit
-          skipWaiting: true,
-          clientsClaim: true,
-          runtimeCaching: [
-            // External API calls (避免与内部API冲突)
-            {
-              urlPattern: /^https:\/\/external-api\./,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'external-api-cache',
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 12, // 12時間
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-                networkTimeoutSeconds: 10,
-              },
-            },
-            // 内部API用の設定 (統一設定で競合を避ける)
-            {
-              urlPattern: ({ url }) => {
-                return url.pathname.startsWith('/api/') && url.origin === self.location.origin;
-              },
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'internal-api-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 10, // 10分 (短めで最新データを確保)
-                },
-                cacheableResponse: {
-                  statuses: [200],
-                },
-                networkTimeoutSeconds: 8,
-                // Response clone エラーを回避するためのプラグイン
-                plugins: [
+      // PWA機能強化 - オフライン対応・プッシュ通知・背景同期 (本番環境のみ)
+      ...(mode === 'production'
+        ? [
+            VitePWA({
+              registerType: 'autoUpdate',
+              injectRegister: 'auto',
+              includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+              manifest: {
+                name: 'ADHD統合ライフハブ - Work Time Tracker',
+                short_name: 'ADHDライフハブ',
+                description: 'ADHD/ASD特化型生活支援システム - 時間管理・財務管理・認知支援を統合',
+                theme_color: '#667eea',
+                background_color: '#ffffff',
+                display: 'standalone',
+                orientation: 'portrait',
+                scope: '/',
+                start_url: '/',
+                icons: [
                   {
-                    cacheKeyWillBeUsed: async ({ request }) => {
-                      return `${request.url}?t=${Math.floor(Date.now() / (1000 * 60 * 5))}`; // 5分毎にキャッシュ更新
+                    src: 'icons/icon-192x192.png',
+                    sizes: '192x192',
+                    type: 'image/png',
+                  },
+                  {
+                    src: 'icons/icon-512x512.png',
+                    sizes: '512x512',
+                    type: 'image/png',
+                  },
+                ],
+              },
+              workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB limit
+                skipWaiting: true,
+                clientsClaim: true,
+                runtimeCaching: [
+                  // External API calls (避免与内部API冲突)
+                  {
+                    urlPattern: /^https:\/\/external-api\./,
+                    handler: 'NetworkFirst',
+                    options: {
+                      cacheName: 'external-api-cache',
+                      expiration: {
+                        maxEntries: 50,
+                        maxAgeSeconds: 60 * 60 * 12, // 12時間
+                      },
+                      cacheableResponse: {
+                        statuses: [0, 200],
+                      },
+                      networkTimeoutSeconds: 10,
                     },
-                    requestWillFetch: async ({ request }) => {
-                      // リクエストを新しいインスタンスとして複製
-                      return new Request(request);
+                  },
+                  // 内部API用の設定 (統一設定で競合を避ける)
+                  {
+                    urlPattern: ({ url }) => {
+                      return (
+                        url.pathname.startsWith('/api/') && url.origin === self.location.origin
+                      );
                     },
-                    fetchDidSucceed: async ({ response }) => {
-                      // レスポンスをクローンする前に確認
-                      if (response.bodyUsed) {
-                        return response;
-                      }
-                      return response.clone();
+                    handler: 'NetworkFirst',
+                    options: {
+                      cacheName: 'internal-api-cache',
+                      expiration: {
+                        maxEntries: 100,
+                        maxAgeSeconds: 60 * 10, // 10分 (短めで最新データを確保)
+                      },
+                      cacheableResponse: {
+                        statuses: [200],
+                      },
+                      networkTimeoutSeconds: 8,
+                      // Response clone エラーを回避するためのプラグイン
+                      plugins: [
+                        {
+                          cacheKeyWillBeUsed: async ({ request }) => {
+                            return `${request.url}?t=${Math.floor(Date.now() / (1000 * 60 * 5))}`; // 5分毎にキャッシュ更新
+                          },
+                          requestWillFetch: async ({ request }) => {
+                            // リクエストを新しいインスタンスとして複製
+                            return new Request(request);
+                          },
+                          fetchDidSucceed: async ({ response }) => {
+                            // レスポンスをクローンする前に確認
+                            if (response.bodyUsed) {
+                              return response;
+                            }
+                            return response.clone();
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  // 画像キャッシュ
+                  {
+                    urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
+                    handler: 'CacheFirst',
+                    options: {
+                      cacheName: 'images-cache',
+                      expiration: {
+                        maxEntries: 200,
+                        maxAgeSeconds: 60 * 60 * 24 * 30, // 30日
+                      },
+                    },
+                  },
+                  // フォントキャッシュ
+                  {
+                    urlPattern: /^https:\/\/.*\.(?:woff|woff2|eot|ttf|otf)$/,
+                    handler: 'CacheFirst',
+                    options: {
+                      cacheName: 'fonts-cache',
+                      expiration: {
+                        maxEntries: 30,
+                        maxAgeSeconds: 60 * 60 * 24 * 365, // 1年
+                      },
+                    },
+                  },
+                  // 静的リソースキャッシュ
+                  {
+                    urlPattern: /^https:\/\/.*\.(?:js|css)$/,
+                    handler: 'CacheFirst',
+                    options: {
+                      cacheName: 'static-resources-cache',
+                      expiration: {
+                        maxEntries: 100,
+                        maxAgeSeconds: 60 * 60 * 24 * 7, // 1週間
+                      },
                     },
                   },
                 ],
               },
-            },
-            // 画像キャッシュ
-            {
-              urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'images-cache',
-                expiration: {
-                  maxEntries: 200,
-                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30日
-                },
+              devOptions: {
+                enabled: false,
               },
-            },
-            // フォントキャッシュ
-            {
-              urlPattern: /^https:\/\/.*\.(?:woff|woff2|eot|ttf|otf)$/,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'fonts-cache',
-                expiration: {
-                  maxEntries: 30,
-                  maxAgeSeconds: 60 * 60 * 24 * 365, // 1年
-                },
-              },
-            },
-            // 静的リソースキャッシュ
-            {
-              urlPattern: /^https:\/\/.*\.(?:js|css)$/,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'static-resources-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 7, // 1週間
-                },
-              },
-            },
-          ],
-        },
-        devOptions: {
-          enabled: false, // 開発環境でService Workerを完全無効化
-        },
-        // 開発環境では登録しない
-        disable: mode === 'development',
-      }),
+            }),
+          ]
+        : []),
 
       // Bundle解析ツール
       ...(mode === 'analyze'
@@ -307,7 +311,9 @@ export default defineConfig(({ command, mode }) => {
         '@styles': path.resolve(__dirname, './src/styles'),
         // Lodash ESM compatibility
         lodash: 'lodash',
-        // React 19 compatibility - force specific versions
+        // React 19 compatibility - force specific versions and prevent duplicates
+        react: path.resolve(__dirname, './node_modules/react'),
+        'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
         'react-is': 'react-is',
         'prop-types': 'prop-types',
       },
