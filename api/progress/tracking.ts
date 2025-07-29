@@ -49,7 +49,8 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   const { method, query, body } = req;
@@ -72,20 +73,22 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
             const task = await progressService.getTask(id as string);
 
             if (!task) {
-              return res.status(404).json({
+              res.status(404).json({
                 success: false,
                 error: 'Task not found',
                 message: '指定されたタスクが見つかりません',
                 operationId,
               });
+              return;
             }
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: task,
               message: 'タスク情報を取得しました',
               operationId,
             });
+            return;
           } else {
             // フィルタリング対応
             const { phase, status, assignee, category, tags } = query;
@@ -102,7 +105,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
             console.log(`📋 [${operationId}] Fetching tasks with filters:`, filters);
             const tasks = await progressService.getTasks(filters);
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: tasks,
               message: 'タスク一覧を取得しました',
@@ -110,6 +113,7 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
               filters,
               operationId,
             });
+            return;
           }
         } else if (type === 'projects') {
           // プロジェクト一覧または特定プロジェクトの取得
@@ -118,43 +122,47 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
             const project = await progressService.getProject(id as string);
 
             if (!project) {
-              return res.status(404).json({
+              res.status(404).json({
                 success: false,
                 error: 'Project not found',
                 message: '指定されたプロジェクトが見つかりません',
                 operationId,
               });
+              return;
             }
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: project,
               message: 'プロジェクト情報を取得しました',
               operationId,
             });
+            return;
           } else {
             console.log(`📁 [${operationId}] Fetching all projects`);
             const projects = await progressService.getProjects();
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: projects,
               message: 'プロジェクト一覧を取得しました',
               total: projects.length,
               operationId,
             });
+            return;
           }
         } else if (type === 'metrics') {
           // メトリクス集計
           console.log(`📊 [${operationId}] Fetching metrics`);
           const metrics = await progressService.getMetrics();
 
-          return res.status(200).json({
+          res.status(200).json({
             success: true,
             data: metrics,
             message: 'メトリクスを取得しました',
             operationId,
           });
+          return;
         }
         break;
 
@@ -176,12 +184,13 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
             // タスク更新
             const existingTask = await progressService.getTask(taskId);
             if (!existingTask) {
-              return res.status(404).json({
+              res.status(404).json({
                 success: false,
                 error: 'Task not found',
                 message: '指定されたタスクが見つかりません',
                 operationId,
               });
+              return;
             }
 
             const updatePayload: any = {
@@ -206,44 +215,53 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
             console.log(`✅ [${operationId}] Task updated successfully: ${taskId}`);
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: updatedTask,
               message: 'タスクの進捗を更新しました',
               operationId,
             });
+            return;
           }
 
           if (projectId) {
             // プロジェクト更新
             const existingProject = await progressService.getProject(projectId);
             if (!existingProject) {
-              return res.status(404).json({
+              res.status(404).json({
                 success: false,
                 error: 'Project not found',
                 message: '指定されたプロジェクトが見つかりません',
                 operationId,
               });
+              return;
             }
 
-            const updatedProject = await progressService.updateProject(projectId, updates);
+            // プロジェクト更新（タスクとプロジェクトで構造が異なるため、対応するプロパティのみ更新）
+            const projectUpdates: any = {};
+            if (updates.progress !== undefined) {
+              projectUpdates.overallProgress = updates.progress;
+            }
+            const updatedProject = await progressService.updateProject(projectId, projectUpdates);
 
             console.log(`✅ [${operationId}] Project updated successfully: ${projectId}`);
 
-            return res.status(200).json({
+            res.status(200).json({
               success: true,
               data: updatedProject,
               message: 'プロジェクトの進捗を更新しました',
               operationId,
             });
+            return;
           }
 
-          return res.status(400).json({
+          res.status(400).json({
             success: false,
             error: 'Missing target',
             message: 'taskIdまたはprojectIdが必要です',
             operationId,
           });
+          return;
         } else if (type === 'task') {
           // 新しいタスクの作成
           console.log(`➕ [${operationId}] Creating new task`);
@@ -258,12 +276,13 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
           console.log(`✅ [${operationId}] Task created successfully: ${newTask.id}`);
 
-          return res.status(201).json({
+          res.status(201).json({
             success: true,
             data: newTask,
             message: 'タスクを作成しました',
             operationId,
           });
+          return;
         } else if (type === 'project') {
           // 新しいプロジェクトの作成
           console.log(`➕ [${operationId}] Creating new project`);
@@ -277,12 +296,13 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
           console.log(`✅ [${operationId}] Project created successfully: ${newProject.id}`);
 
-          return res.status(201).json({
+          res.status(201).json({
             success: true,
             data: newProject,
             message: 'プロジェクトを作成しました',
             operationId,
           });
+          return;
         }
         break;
 
@@ -299,12 +319,13 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
             mergedPRs: syncResult.mergedPRs,
           });
 
-          return res.status(200).json({
+          res.status(200).json({
             success: true,
             data: syncResult,
             message: 'GitHubとの同期が完了しました',
             operationId,
           });
+          return;
         } else if (type === 'migrate') {
           // モックデータの移行（初期化時のみ使用）
           console.log(`🔄 [${operationId}] Mock data migration initiated`);
@@ -314,11 +335,12 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
 
           console.log(`✅ [${operationId}] Mock data migration completed`);
 
-          return res.status(200).json({
+          res.status(200).json({
             success: true,
             message: 'モックデータの移行が完了しました',
             operationId,
           });
+          return;
         }
         break;
 
@@ -330,21 +352,23 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
           const deleted = await progressService.deleteTask(id as string);
 
           if (!deleted) {
-            return res.status(404).json({
+            res.status(404).json({
               success: false,
               error: 'Task not found',
               message: '削除対象のタスクが見つかりません',
               operationId,
             });
+            return;
           }
 
           console.log(`✅ [${operationId}] Task deleted successfully: ${id}`);
 
-          return res.status(200).json({
+          res.status(200).json({
             success: true,
             message: 'タスクを削除しました',
             operationId,
           });
+          return;
         } else if (type === 'project' && id) {
           // プロジェクトの削除
           console.log(`🗑️ [${operationId}] Deleting project: ${id}`);
@@ -352,39 +376,43 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
           const deleted = await progressService.deleteProject(id as string);
 
           if (!deleted) {
-            return res.status(404).json({
+            res.status(404).json({
               success: false,
               error: 'Project not found',
               message: '削除対象のプロジェクトが見つかりません',
               operationId,
             });
+            return;
           }
 
           console.log(`✅ [${operationId}] Project deleted successfully: ${id}`);
 
-          return res.status(200).json({
+          res.status(200).json({
             success: true,
             message: 'プロジェクトを削除しました',
             operationId,
           });
+          return;
         }
         break;
 
       default:
-        return res.status(405).json({
+        res.status(405).json({
           success: false,
           error: 'Method not allowed',
           message: 'このメソッドは許可されていません',
           operationId,
         });
+        return;
     }
 
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Invalid request',
       message: '不正なリクエストです',
       operationId,
     });
+    return;
   } catch (error: any) {
     console.error(`💥 [${operationId}] Progress tracking error:`, {
       error: error.message,
@@ -394,13 +422,14 @@ const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<
       id,
     });
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: 'Internal server error',
       message: '進捗追跡中にエラーが発生しました',
       operationId,
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
+    return;
   }
 };
 
