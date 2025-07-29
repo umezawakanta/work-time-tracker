@@ -408,82 +408,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (isTokenValid) {
           console.log('✅ トークン有効 - サーバー認証確認中...');
 
-          // 開発環境での認証スキップオプション
-          const isExplicitMockMode = window.__VITE_USE_MOCK_DATA__ === 'true';
-          const isDevelopmentSkip = isDev() && !isTestEnvironment && isSkipAuth();
-
-          if (isExplicitMockMode || isDevelopmentSkip) {
-            console.log('🎭 モックモード/開発モード有効 - 認証をスキップします');
+          // 実際のサーバー認証確認
+          try {
+            const userData = await fetchUserData();
             if (isMounted) {
-              // ダミーユーザーデータを設定
-              setUser({
-                id: 'demo-user',
-                _id: 'demo-user-id',
-                name: 'デモユーザー',
-                username: 'demouser',
-                email: 'demo@example.com',
-                isAdmin: true,
-                avatar: '',
-              });
+              setUser(userData);
               setIsAuthenticated(true);
               updateActivity();
-              console.log('✅ デモ認証成功');
+              console.log('✅ サーバー認証確認完了:', userData.email);
             }
-          } else {
-            try {
-              // タイムアウトを設定してcheckAuthStatusを実行
-              const authCheckPromise = checkAuthStatus();
-              const timeoutPromise = new Promise<boolean>((_, reject) => {
-                setTimeout(() => reject(new Error('Init auth timeout')), 5000); // 5秒タイムアウト
-              });
-
-              const isValid = await Promise.race([authCheckPromise, timeoutPromise]);
-
-              if (isValid && isMounted) {
-                try {
-                  await fetchUser();
-                  setIsAuthenticated(true);
-                  updateActivity();
-                  console.log('✅ 認証復元成功');
-                  logger.info('Auth', 'Authentication restored from storage');
-                } catch (userFetchError) {
-                  console.log('⚠️ User fetch failed but auth valid:', userFetchError);
-                  // ユーザー情報の取得に失敗しても認証状態は維持
-                  setIsAuthenticated(true);
-                }
-              } else if (isMounted) {
-                console.log('❌ サーバー認証失敗');
-                // サーバー認証失敗時も状態をクリア
-                setIsAuthenticated(false);
-                setUser(null);
-              }
-            } catch (error) {
-              console.log('⚠️ Auth check timeout or error:', error);
-
-              if (isMounted) {
-                // サーバーエラーでもローカルトークンが有効なら認証状態を維持
-                if (tokenManager.isAuthenticated()) {
-                  console.log('🔄 Offline mode - maintaining auth from local token');
-                  setIsAuthenticated(true);
-
-                  // ユーザーデータを設定（デモデータ）
-                  console.log('⚠️ Setting demo user data for offline mode');
-                  setUser({
-                    id: 'demo-user',
-                    _id: 'demo-user-id',
-                    name: 'Demo User (Offline)',
-                    username: 'demouser',
-                    email: 'demo@example.com',
-                    isAdmin: true,
-                    avatar: '',
-                  });
-                  updateActivity();
-                } else {
-                  console.log('🔒 Token invalid after timeout - clearing auth');
-                  setIsAuthenticated(false);
-                  setUser(null);
-                }
-              }
+          } catch (error) {
+            console.error('❌ サーバー認証確認失敗:', error);
+            // トークンが無効の場合はクリア
+            tokenManager.clearTokens();
+            if (isMounted) {
+              setUser(null);
+              setIsAuthenticated(false);
             }
           }
         } else {

@@ -1,6 +1,12 @@
 // src/config/firebase.ts
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported } from 'firebase/analytics';
@@ -98,8 +104,13 @@ if (isFirebaseConfigValid) {
   analytics = Promise.resolve(null);
 }
 
-export { auth, db, storage, analytics };
-export default app;
-
-// Firebase設定状態をエクスポート
-export const isFirebaseEnabled = isFirebaseConfigValid;
+// 設定とサービスをエクスポート
+export { app, auth, db, storage, analytics };
+export {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+};
+export { isFirebaseConfigValid as isFirebaseEnabled };
+export { firebaseConfig };

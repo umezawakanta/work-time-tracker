@@ -101,72 +101,6 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // 本番環境でのダミーログイン
-  const handleDemoLogin = async () => {
-    setIsSubmitting(true);
-    setErrors({});
-
-    try {
-      // ダミートークンを設定してモックモードを有効化
-      localStorage.setItem('token', 'demo-token-12345');
-      window.__VITE_USE_MOCK_DATA__ = 'true';
-
-      toast.success('デモモードでログインしました');
-
-      // AuthContextの認証状態を強制的に更新
-      await refreshAuth();
-      setIsAuthenticated(true);
-
-      // ログイン成功後、元のページまたはホームページにリダイレクト
-      navigate(from, { replace: true });
-    } catch (error) {
-      console.error('デモログインエラー:', error);
-      setErrors({ general: 'デモログインに失敗しました' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // クイックログイン機能
-  const handleQuickLogin = async (email: string, password: string, accountType: string) => {
-    setIsSubmitting(true);
-    setErrors({});
-
-    const loadingToast = toast.loading(`${accountType}アカウントでログイン中...`);
-
-    try {
-      // フォームデータを設定
-      setFormData({ email, password });
-
-      const _loginResponse = await login(email, password, rememberMe);
-
-      if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
-      } else {
-        localStorage.removeItem('rememberedEmail');
-      }
-
-      toast.success(`${accountType}アカウントでログインしました`, { id: loadingToast });
-
-      await refreshAuth();
-      setIsAuthenticated(true);
-      navigate(from, { replace: true });
-    } catch (error) {
-      console.error('クイックログインエラー:', error);
-
-      toast.error('ログインに失敗しました', { id: loadingToast });
-
-      if (error instanceof AxiosError) {
-        const errorMessage = error.response?.data?.message;
-        setErrors({ general: errorMessage || 'ログインに失敗しました' });
-      } else {
-        setErrors({ general: 'ログインに失敗しました' });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -427,7 +361,11 @@ export default function Login() {
                   type="button"
                   variant="outline"
                   className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
-                  onClick={handleDemoLogin}
+                  onClick={() => {
+                    toast.error(
+                      'デモログインは削除されました。実際のアカウントでログインしてください。'
+                    );
+                  }}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -454,54 +392,6 @@ export default function Login() {
                 こちらから登録
               </Link>
             </div>
-
-            {/* デモアカウント情報 */}
-            <Alert className="border-blue-200 bg-blue-50">
-              <AlertCircle className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-700 text-sm">
-                <div className="font-medium mb-3">デモアカウント (お試し用):</div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs">
-                      <div className="font-mono">admin@example.com</div>
-                      <div className="text-blue-600">admin123</div>
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className="text-xs px-2 py-1 h-auto"
-                      onClick={() => handleQuickLogin('admin@example.com', 'admin123', '管理者')}
-                      disabled={isSubmitting}
-                    >
-                      管理者ログイン
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs">
-                      <div className="font-mono">demo@example.com</div>
-                      <div className="text-blue-600">demo123</div>
-                    </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      className="text-xs px-2 py-1 h-auto"
-                      onClick={() => handleQuickLogin('demo@example.com', 'demo123', 'デモ')}
-                      disabled={isSubmitting}
-                    >
-                      デモログイン
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1 text-xs">
-                  <div>💡 または任意のメールアドレス + パスワード「demo123」</div>
-                  <div className="text-green-600 font-medium">
-                    🚀 Gmailユーザー: あなたのメール + パスワード「demo123」でログイン可能
-                  </div>
-                </div>
-              </AlertDescription>
-            </Alert>
 
             {/* セキュリティ情報 */}
             <div className="text-center">

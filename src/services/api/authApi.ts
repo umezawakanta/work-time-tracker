@@ -285,20 +285,6 @@ export const updateUserProfile = async (userData: {
 
 export const fetchUserData = async (): Promise<User> => {
   try {
-    // モックモードの場合はダミーユーザーデータを返す
-    if (USE_MOCK_DATA || window.__VITE_USE_MOCK_DATA__ === 'true') {
-      console.log('🎭 Mock mode: Returning demo user data');
-      return {
-        id: 'demo-user',
-        _id: 'demo-user-id',
-        name: 'デモユーザー',
-        username: 'demouser',
-        email: 'demo@example.com',
-        isAdmin: true,
-        avatar: '',
-      };
-    }
-
     console.log('🔄 Fetching user data from server...');
     const response = await api.get<{ user: User }>('/auth/user');
     console.log('✅ User data retrieved:', response.data.user?.email);

@@ -389,17 +389,82 @@ class UnifiedAuthManager extends EventEmitter {
    * 🔥 Firebase認証の実装
    */
   private async loginWithFirebase(credentials: any): Promise<any> {
-    // Firebase認証のロジック（簡略化）
-    console.log('🔥 Firebase auth not fully implemented yet');
+    try {
+      // Firebase Authのimport
+      const { signInWithEmailAndPassword } = await import('firebase/auth');
+      const { auth } = await import('@/config/firebase');
 
-    // デモ用のモック実装
-    return {
-      success: true,
-      user: this.createMockUser('firebase'),
-      accessToken: 'firebase_token_' + Date.now(),
-      refreshToken: 'firebase_refresh_' + Date.now(),
-      expiresAt: Date.now() + 60 * 60 * 1000, // 1時間
-    };
+      console.log('🔥 Firebase authentication starting...');
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
+
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      // Firebase ユーザー情報を統一フォーマットに変換
+      const unifiedUser = {
+        id: user.uid,
+        _id: user.uid,
+        email: user.email || '',
+        name: user.displayName || user.email?.split('@')[0] || 'User',
+        username: user.email?.split('@')[0] || 'user',
+        isAdmin: false, // 管理者権限は別途設定
+        avatar: user.photoURL || '',
+        emailVerified: user.emailVerified,
+        createdAt: user.metadata.creationTime,
+        lastLoginAt: user.metadata.lastSignInTime,
+        provider: 'firebase',
+        roles: ['user'],
+        permissions: ['read', 'write'],
+        subscriptionStatus: 'free' as const,
+        preferences: {
+          theme: 'light' as const,
+          language: 'ja' as const,
+          timezone: 'Asia/Tokyo',
+          notifications: {
+            email: true,
+            push: true,
+            daily: true,
+            weekly: true,
+          },
+        },
+      };
+
+      console.log('✅ Firebase authentication successful:', user.email);
+
+      return {
+        success: true,
+        user: unifiedUser,
+        accessToken: idToken,
+        refreshToken: user.refreshToken,
+        expiresAt: Date.now() + 60 * 60 * 1000, // 1時間
+        provider: 'firebase',
+      };
+    } catch (error: any) {
+      console.error('❌ Firebase authentication failed:', error.message);
+
+      // Firebase エラーを統一フォーマットに変換
+      let errorMessage = 'ログインに失敗しました';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'ユーザーが見つかりません';
+      } else if (error.code === 'auth/wrong-password') {
+        errorMessage = 'パスワードが正しくありません';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'メールアドレスの形式が正しくありません';
+      } else if (error.code === 'auth/user-disabled') {
+        errorMessage = 'このアカウントは無効化されています';
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
+        code: error.code,
+      };
+    }
   }
 
   /**

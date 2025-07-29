@@ -448,8 +448,10 @@ async function syncWithGitHub(): Promise<{
 }> {
   const progressService = ProgressDatabaseService.getInstance();
 
-  // 実際のGitHub API統合実装
-  // ここでは基本的な同期ロジックを実装
+  // GitHub API統合実装
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const GITHUB_REPO = process.env.GITHUB_REPO || 'work-time-tracker';
+  const GITHUB_OWNER = process.env.GITHUB_OWNER || 'user';
 
   const changes = [];
   let syncedTasks = 0;
@@ -460,88 +462,220 @@ async function syncWithGitHub(): Promise<{
     // すべてのタスクを取得
     const tasks = await progressService.getTasks();
 
-    // GitHub APIから最新のコミット情報を取得（模擬）
-    // 実際の実装では GitHub API を使用
-    const mockGitHubData = {
-      commits: [
-        {
-          sha: `commit_${Date.now()}`,
-          message: 'Enhanced progress tracking system',
-          author: 'system',
-          date: new Date().toISOString(),
-          filesChanged: 3,
-          linesAdded: 150,
-          linesDeleted: 25,
-        },
-      ],
-      pullRequests: [
-        {
-          number: Math.floor(Math.random() * 1000),
-          title: 'Real-time progress tracking implementation',
-          state: 'merged' as const,
-          author: 'system',
-          createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-          mergedAt: new Date().toISOString(),
-          additions: 150,
-          deletions: 25,
-        },
-      ],
-    };
+    if (!GITHUB_TOKEN) {
+      console.warn('⚠️ GitHub Token not configured, using mock data for development');
 
-    // コミット情報をタスクに関連付け
-    for (const task of tasks) {
-      if (task.status === 'in-progress' && Math.random() > 0.7) {
-        // 30%の確率で進行中のタスクに新しいコミットを追加
-        await progressService.addCommitToTask(task.id, mockGitHubData.commits[0]);
-
-        // 進捗を5%向上
-        const newProgress = Math.min(100, task.progress + 5);
-        await progressService.updateTask(task.id, {
-          progress: newProgress,
-          metadata: {
-            source: 'github',
-            reason: 'New commit detected',
-            confidence: 90,
+      // 開発環境用のモックデータ（GitHub Token未設定時のみ）
+      const mockGitHubData = {
+        commits: [
+          {
+            sha: `commit_${Date.now()}`,
+            message: 'Enhanced progress tracking system',
+            author: 'system',
+            date: new Date().toISOString(),
+            filesChanged: 3,
+            linesAdded: 150,
+            linesDeleted: 25,
           },
-        });
+        ],
+        pullRequests: [
+          {
+            number: Math.floor(Math.random() * 1000),
+            title: 'Real-time progress tracking implementation',
+            state: 'merged' as const,
+            author: 'system',
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+            mergedAt: new Date().toISOString(),
+            additions: 150,
+            deletions: 25,
+          },
+        ],
+      };
 
-        changes.push({
-          type: 'commit',
-          taskId: task.id,
-          description: `New commit: ${mockGitHubData.commits[0].message}`,
-          impact: `+5% progress (${task.progress}% → ${newProgress}%)`,
-        });
+      // モックデータでの処理
+      for (const task of tasks) {
+        if (task.status === 'in-progress' && Math.random() > 0.7) {
+          await progressService.addCommitToTask(task.id, mockGitHubData.commits[0]);
+          const newProgress = Math.min(100, task.progress + 5);
+          await progressService.updateTask(task.id, {
+            progress: newProgress,
+            metadata: {
+              source: 'github',
+              reason: 'New commit detected (mock)',
+              confidence: 70,
+            },
+          });
 
-        syncedTasks++;
-        newCommits++;
+          changes.push({
+            type: 'commit',
+            taskId: task.id,
+            description: `Mock commit: ${mockGitHubData.commits[0].message}`,
+            impact: `+5% progress (${task.progress}% → ${newProgress}%)`,
+          });
+
+          syncedTasks++;
+          newCommits++;
+        }
       }
-    }
+    } else {
+      console.log('🚀 Fetching real GitHub data...');
 
-    // マージされたPRの処理
-    for (const task of tasks) {
-      if (task.status === 'in-progress' && Math.random() > 0.9) {
-        // 10%の確率でタスクが完了
-        await progressService.addPullRequestToTask(task.id, mockGitHubData.pullRequests[0]);
-        await progressService.updateTask(task.id, {
-          status: 'completed',
-          progress: 100,
-          completedDate: new Date().toISOString(),
-          metadata: {
-            source: 'github',
-            reason: 'PR merged - task completed',
-            confidence: 100,
-          },
+      // 実際のGitHub API呼び出し
+      const headers = {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+        'User-Agent': 'work-time-tracker',
+      };
+
+      // 最近のコミットを取得
+      const commitsResponse = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/commits?per_page=10`,
+        { headers }
+      );
+
+      if (!commitsResponse.ok) {
+        throw new Error(`GitHub API error: ${commitsResponse.status}`);
+      }
+
+      const githubCommits = (await commitsResponse.json()) as any[];
+
+      // 最近のPRを取得
+      const prsResponse = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls?state=closed&sort=updated&direction=desc&per_page=10`,
+        { headers }
+      );
+
+      if (!prsResponse.ok) {
+        throw new Error(`GitHub PR API error: ${prsResponse.status}`);
+      }
+
+      const githubPRs = (await prsResponse.json()) as any[];
+
+      // コミット情報をタスクに関連付け
+      for (const commit of githubCommits.slice(0, 5)) {
+        // 最新5件
+        // タスクとの関連付けロジック（コミットメッセージでタスクIDを検索）
+        const relatedTasks = tasks.filter((task) => {
+          const commitMessage = (commit as any)?.commit?.message || '';
+          return (
+            commitMessage.toLowerCase().includes(task.title.toLowerCase()) ||
+            commitMessage.includes(task.id)
+          );
         });
 
-        changes.push({
-          type: 'pr_merged',
-          taskId: task.id,
-          description: `PR #${mockGitHubData.pullRequests[0].number} merged`,
-          impact: 'Task completed (100%)',
+        for (const task of relatedTasks) {
+          if (task.status === 'in-progress') {
+            const commitObj = commit as any;
+            const commitData = {
+              sha: commitObj.sha || 'unknown',
+              message: commitObj.commit?.message || 'No message',
+              author: commitObj.commit?.author?.name || 'Unknown',
+              date: commitObj.commit?.author?.date || new Date().toISOString(),
+              filesChanged: commitObj.files?.length || 0,
+              linesAdded: commitObj.stats?.additions || 0,
+              linesDeleted: commitObj.stats?.deletions || 0,
+            };
+
+            await progressService.addCommitToTask(task.id, commitData);
+
+            // 進捗を更新（コミットサイズに基づく）
+            const progressIncrease = Math.min(15, Math.max(2, commitData.linesAdded / 10));
+            const newProgress = Math.min(100, task.progress + progressIncrease);
+
+            await progressService.updateTask(task.id, {
+              progress: newProgress,
+              metadata: {
+                source: 'github',
+                reason: `New commit: ${commitData.sha.substring(0, 7)}`,
+                confidence: 95,
+              },
+            });
+
+            changes.push({
+              type: 'commit',
+              taskId: task.id,
+              description: `Commit: ${commitData.message}`,
+              impact: `+${progressIncrease.toFixed(1)}% progress`,
+            });
+
+            syncedTasks++;
+            newCommits++;
+          }
+        }
+      }
+
+      // マージされたPRの処理
+      const mergedPRsFiltered = (githubPRs as any[]).filter((pr: any) => pr.merged_at);
+      for (const pr of mergedPRsFiltered.slice(0, 3)) {
+        // 最新3件
+        const relatedTasks = tasks.filter((task) => {
+          const prTitle = pr?.title || '';
+          const prBody = pr?.body || '';
+          return (
+            prTitle.toLowerCase().includes(task.title.toLowerCase()) || prBody.includes(task.id)
+          );
         });
 
-        syncedTasks++;
-        mergedPRs++;
+        for (const task of relatedTasks) {
+          if (task.status === 'in-progress') {
+            const prData = {
+              number: pr.number || 0,
+              title: pr.title || 'No title',
+              state: 'merged' as const,
+              author: pr.user?.login || 'Unknown',
+              createdAt: pr.created_at || new Date().toISOString(),
+              mergedAt: pr.merged_at || new Date().toISOString(),
+              additions: pr.additions || 0,
+              deletions: pr.deletions || 0,
+            };
+
+            await progressService.addPullRequestToTask(task.id, prData);
+
+            // 大きなPRの場合はタスクを完了にする
+            if (prData.additions > 100) {
+              await progressService.updateTask(task.id, {
+                status: 'completed',
+                progress: 100,
+                completedDate: new Date().toISOString(),
+                metadata: {
+                  source: 'github',
+                  reason: `Large PR merged: #${prData.number}`,
+                  confidence: 100,
+                },
+              });
+
+              changes.push({
+                type: 'pr_merged',
+                taskId: task.id,
+                description: `PR #${prData.number} merged: ${prData.title}`,
+                impact: 'Task completed (100%)',
+              });
+            } else {
+              // 小さなPRの場合は進捗を増加
+              const progressIncrease = Math.min(25, Math.max(5, prData.additions / 5));
+              const newProgress = Math.min(100, task.progress + progressIncrease);
+
+              await progressService.updateTask(task.id, {
+                progress: newProgress,
+                metadata: {
+                  source: 'github',
+                  reason: `PR merged: #${prData.number}`,
+                  confidence: 100,
+                },
+              });
+
+              changes.push({
+                type: 'pr_merged',
+                taskId: task.id,
+                description: `PR #${prData.number} merged: ${prData.title}`,
+                impact: `+${progressIncrease.toFixed(1)}% progress`,
+              });
+            }
+
+            syncedTasks++;
+            mergedPRs++;
+          }
+        }
       }
     }
 
@@ -551,8 +685,16 @@ async function syncWithGitHub(): Promise<{
       mergedPRs,
       changesCount: changes.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ GitHub sync error:', error);
+
+    // エラー時も部分的な結果を返す
+    changes.push({
+      type: 'error',
+      taskId: 'system',
+      description: `GitHub sync error: ${error?.message || 'Unknown error'}`,
+      impact: 'Sync failed, will retry next time',
+    });
   }
 
   return {

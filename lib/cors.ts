@@ -1,11 +1,26 @@
-import { NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export function setCors(res: NextApiResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,DELETE,OPTIONS');
+export async function cors(req: VercelRequest, res: VercelResponse) {
+  // 許可するオリジンを設定
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://work-time-tracker.vercel.app',
+    process.env.CORS_ALLOWED_ORIGINS || '',
+  ].filter(Boolean);
+
+  const origin = req.headers.origin;
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control'
+    'Content-Type, Authorization, X-Requested-With, stripe-signature'
   );
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
