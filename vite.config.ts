@@ -168,6 +168,22 @@ export default defineConfig(({ command, mode }) => {
         port: 3001,
         host: 'localhost',
       },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false,
+          ws: true,
+          configure: (proxy, options) => {
+            proxy.on('error', (err, req, res) => {
+              console.log('Proxy error:', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('Proxying request:', req.method, req.url);
+            });
+          },
+        },
+      },
       watch: {
         usePolling: false,
         interval: 100,

@@ -116,6 +116,16 @@ interface ProjectProgress {
   lastUpdated: string;
 }
 
+interface ActivityItem {
+  type: 'commit' | 'pullrequest' | 'task_completed';
+  date: string;
+  description: string;
+  taskTitle: string;
+  taskId: string;
+  icon: any;
+  color: 'blue' | 'green' | 'orange' | 'gray';
+}
+
 interface LiveImprovementPlanTrackerProps {
   refreshInterval?: number; // ミリ秒
   enableAutoSync?: boolean;
@@ -307,7 +317,7 @@ const LiveImprovementPlanTracker: React.FC<LiveImprovementPlanTrackerProps> = ({
 
   // 最近のアクティビティ
   const recentActivity = useMemo(() => {
-    const activities = [];
+    const activities: ActivityItem[] = [];
 
     // コミット活動
     tasks.forEach((task) => {

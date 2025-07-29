@@ -34,6 +34,7 @@ import wbsRoutes from './routes/wbsRoutes.js';
 import implementationRoutes from './routes/implementationRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import resourceRoutes from './routes/resourceRoutes.js';
+import progressRoutes from './routes/progressRoutes.js';
 import abstinenceRoutes from './routes/abstinenceRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -265,6 +266,7 @@ app.use('/api/surveys', surveyRoutes);
 app.use('/api/parties', partyRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/progress', progressRoutes);
 app.use('/api/notifications', notificationRoutes); // 通知APIルートを追加
 app.use('/api/wbs', wbsRoutes); // 追加
 app.use('/api/implementation', implementationRoutes);
