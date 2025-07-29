@@ -11,7 +11,6 @@ import RoleDashboardSelector from '@/components/ui/RoleDashboardSelector';
 // その他の既存ページインポート
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
-import IntegratedDashboard from '@/pages/IntegratedDashboard';
 import SiteImprovementPlan from '@/pages/SiteImprovementPlan';
 
 const AppRoutes: React.FC = () => {
@@ -20,7 +19,7 @@ const AppRoutes: React.FC = () => {
       {/* 基本ルート */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<IntegratedDashboard />} />
+      <Route path="/dashboard" element={<RoleDashboardSelector />} />
       <Route path="/improvement-plan" element={<SiteImprovementPlan />} />
 
       {/* 役割別ダッシュボード選択 */}
@@ -35,7 +34,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/legal-dashboard" element={<LegalDashboard />} />
 
       {/* デフォルトルート */}
-      <Route path="/" element={<IntegratedDashboard />} />
+      <Route path="/" element={<RoleDashboardSelector />} />
     </Routes>
   );
 };
