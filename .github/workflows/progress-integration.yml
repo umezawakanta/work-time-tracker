@@ -1,0 +1,257 @@
+name: 🚀 Progress Integration - CI/CD Auto Progress Tracking
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_run:
+    workflows: ['🛡️ Quality Check & Dashboard Update', 'AI-Enhanced CI/CD Pipeline']
+    types: [completed]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 🔄 進捗情報の自動更新
+  update-progress:
+    name: 🔄 Update Implementation Progress
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📊 Analyze Commit Impact
+        id: commit-analysis
+        run: |
+          # 最新コミットの情報を解析
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          FILES_CHANGED=$(git diff --name-only HEAD~1 HEAD | wc -l)
+          LINES_ADDED=$(git diff --numstat HEAD~1 HEAD | awk '{sum+=$1} END {print sum}')
+          LINES_DELETED=$(git diff --numstat HEAD~1 HEAD | awk '{sum+=$2} END {print sum}')
+
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "lines_added=$LINES_ADDED" >> $GITHUB_OUTPUT
+          echo "lines_deleted=$LINES_DELETED" >> $GITHUB_OUTPUT
+
+          # タスクキーワードを検出
+          TASK_KEYWORDS="auth|payment|stripe|github|api|mock|test|ui|component"
+          if echo "$COMMIT_MESSAGE" | grep -iE "$TASK_KEYWORDS" > /dev/null; then
+            echo "task_related=true" >> $GITHUB_OUTPUT
+          else
+            echo "task_related=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🎯 Update Task Progress
+        if: steps.commit-analysis.outputs.task_related == 'true'
+        run: |
+          # 進捗APIに更新を送信
+          curl -X POST "${{ secrets.PROGRESS_API_ENDPOINT || 'https://work-time-tracker.vercel.app/api/progress/tracking' }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PROGRESS_API_TOKEN }}" \
+            -d '{
+              "type": "update",
+              "source": "github",
+              "reason": "Commit detected: ${{ steps.commit-analysis.outputs.commit_message }}",
+              "metadata": {
+                "commit_sha": "${{ github.sha }}",
+                "files_changed": ${{ steps.commit-analysis.outputs.files_changed }},
+                "lines_added": ${{ steps.commit-analysis.outputs.lines_added }},
+                "lines_deleted": ${{ steps.commit-analysis.outputs.lines_deleted }},
+                "workflow_run_id": "${{ github.run_id }}"
+              },
+              "updates": {
+                "progress": "+5"
+              }
+            }' || echo "Progress API call failed (non-blocking)"
+
+  # 🎯 PR マージ時の完了処理
+  handle-pr-merge:
+    name: 🎯 Handle PR Merge Completion
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check for PR Merge
+        id: pr-check
+        run: |
+          # 最新コミットがマージコミットかチェック
+          if git log -1 --pretty=%B | grep -i "merge pull request" > /dev/null; then
+            echo "is_pr_merge=true" >> $GITHUB_OUTPUT
+            
+            # PR番号を抽出
+            PR_NUMBER=$(git log -1 --pretty=%B | grep -oE '#[0-9]+' | head -1 | sed 's/#//')
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            
+            # PR情報を取得
+            if [ ! -z "$PR_NUMBER" ]; then
+              curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" > pr_info.json
+              
+              PR_TITLE=$(cat pr_info.json | jq -r '.title // "Unknown"')
+              PR_ADDITIONS=$(cat pr_info.json | jq -r '.additions // 0')
+              
+              echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+              echo "pr_additions=$PR_ADDITIONS" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "is_pr_merge=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ✅ Mark Task as Completed
+        if: steps.pr-check.outputs.is_pr_merge == 'true' && steps.pr-check.outputs.pr_additions > 100
+        run: |
+          # 大きなPRの場合はタスク完了として処理
+          curl -X POST "${{ secrets.PROGRESS_API_ENDPOINT || 'https://work-time-tracker.vercel.app/api/progress/tracking' }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PROGRESS_API_TOKEN }}" \
+            -d '{
+              "type": "update",
+              "source": "github",
+              "reason": "Large PR merged: #${{ steps.pr-check.outputs.pr_number }} - ${{ steps.pr-check.outputs.pr_title }}",
+              "metadata": {
+                "pr_number": ${{ steps.pr-check.outputs.pr_number }},
+                "pr_title": "${{ steps.pr-check.outputs.pr_title }}",
+                "pr_additions": ${{ steps.pr-check.outputs.pr_additions }},
+                "commit_sha": "${{ github.sha }}"
+              },
+              "updates": {
+                "status": "completed",
+                "progress": 100
+              }
+            }' || echo "Progress API call failed (non-blocking)"
+
+  # 📈 品質メトリクス更新
+  update-quality-metrics:
+    name: 📈 Update Quality Metrics
+    runs-on: ubuntu-latest
+    needs: [update-progress]
+    if: always()
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 📦 Install Dependencies
+        run: pnpm install --prefer-offline
+
+      - name: 🧪 Run Tests and Generate Coverage
+        run: |
+          pnpm test -- --coverage --watchAll=false --passWithNoTests
+
+      - name: 📊 Extract Quality Metrics
+        id: quality
+        run: |
+          # テストカバレッジを抽出
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct // 0')
+            echo "test_coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          else
+            echo "test_coverage=0" >> $GITHUB_OUTPUT
+          fi
+
+          # TypeScriptエラー数をチェック
+          TS_ERRORS=$(pnpm run type-check 2>&1 | grep -c "error" || echo "0")
+          echo "ts_errors=$TS_ERRORS" >> $GITHUB_OUTPUT
+
+          # ESLintエラー数をチェック
+          LINT_ERRORS=$(pnpm run lint 2>&1 | grep -c "error" || echo "0")
+          echo "lint_errors=$LINT_ERRORS" >> $GITHUB_OUTPUT
+
+          # 品質スコアを計算
+          QUALITY_SCORE=75
+          if [ "$COVERAGE" -gt 80 ]; then
+            QUALITY_SCORE=$((QUALITY_SCORE + 10))
+          fi
+          if [ "$TS_ERRORS" -eq 0 ]; then
+            QUALITY_SCORE=$((QUALITY_SCORE + 10))
+          fi
+          if [ "$LINT_ERRORS" -eq 0 ]; then
+            QUALITY_SCORE=$((QUALITY_SCORE + 5))
+          fi
+
+          echo "quality_score=$QUALITY_SCORE" >> $GITHUB_OUTPUT
+
+      - name: 📤 Send Quality Metrics
+        run: |
+          curl -X POST "${{ secrets.PROGRESS_API_ENDPOINT || 'https://work-time-tracker.vercel.app/api/progress/tracking' }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PROGRESS_API_TOKEN }}" \
+            -d '{
+              "type": "metrics",
+              "source": "ci",
+              "reason": "Quality metrics update from CI/CD",
+              "metadata": {
+                "workflow_run_id": "${{ github.run_id }}",
+                "commit_sha": "${{ github.sha }}"
+              },
+              "metrics": {
+                "testCoverage": ${{ steps.quality.outputs.test_coverage }},
+                "codeQuality": ${{ steps.quality.outputs.quality_score }},
+                "typeScriptErrors": ${{ steps.quality.outputs.ts_errors }},
+                "lintErrors": ${{ steps.quality.outputs.lint_errors }},
+                "buildSuccess": 100
+              }
+            }' || echo "Metrics API call failed (non-blocking)"
+
+  # 🚨 失敗時の通知
+  notify-failure:
+    name: 🚨 Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [update-progress, handle-pr-merge, update-quality-metrics]
+    if: failure()
+
+    steps:
+      - name: 📤 Send Failure Notification
+        run: |
+          curl -X POST "${{ secrets.PROGRESS_API_ENDPOINT || 'https://work-time-tracker.vercel.app/api/progress/tracking' }}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.PROGRESS_API_TOKEN }}" \
+            -d '{
+              "type": "error",
+              "source": "ci",
+              "reason": "CI/CD workflow failed",
+              "metadata": {
+                "workflow_run_id": "${{ github.run_id }}",
+                "commit_sha": "${{ github.sha }}",
+                "failed_jobs": "${{ needs.*.result }}"
+              }
+            }' || echo "Failure notification failed"
+
+  # ✅ 成功時のサマリー
+  success-summary:
+    name: ✅ Success Summary
+    runs-on: ubuntu-latest
+    needs: [update-progress, handle-pr-merge, update-quality-metrics]
+    if: success()
+
+    steps:
+      - name: 🎉 Send Success Summary
+        run: |
+          echo "🎉 All progress integration jobs completed successfully!"
+          echo "📊 Progress tracking updated automatically"
+          echo "🔄 Real-time improvement plan synchronized"

@@ -31,6 +31,7 @@ import {
   FileText,
   MessageSquare,
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 interface Impediment {
   id: string;
@@ -91,182 +92,48 @@ export const ImpedimentRemovalDashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     initializeImpediments();
   }, []);
 
-  const initializeImpediments = () => {
-    const mockImpediments: Impediment[] = [
-      {
-        id: 'imp-001',
-        title: 'API応答時間の遅延',
-        description: 'ユーザー認証APIの応答時間が3秒を超えており、UXに悪影響を与えている',
-        type: 'technical',
-        severity: 'high',
-        status: 'in_progress',
-        priority: 4,
-        reportedBy: '田中太郎',
-        assignedTo: '佐藤花子',
-        affectedTeam: 'フロントエンドチーム',
-        affectedSprint: 'Sprint 23',
-        reportedDate: '2024-03-01',
-        estimatedEffort: 16,
-        actualEffort: 8,
-        impact: 'major',
-        tags: ['api', 'performance', 'authentication'],
-        relatedStories: ['US-456', 'US-789'],
-        comments: [
-          {
-            id: 'comment-1',
-            author: '佐藤花子',
-            content: 'データベースクエリの最適化を実施中',
-            timestamp: '2024-03-02T10:30:00Z',
-            type: 'update',
-          },
-          {
-            id: 'comment-2',
-            author: '田中太郎',
-            content: '修正後のテスト結果を確認済み',
-            timestamp: '2024-03-03T14:15:00Z',
-            type: 'update',
-          },
-        ],
-      },
-      {
-        id: 'imp-002',
-        title: 'テスト環境のセットアップ遅延',
-        description: 'CI/CDパイプラインでテスト環境のプロビジョニングに時間がかかりすぎる',
-        type: 'process',
-        severity: 'medium',
-        status: 'resolved',
-        priority: 3,
-        reportedBy: '山田次郎',
-        assignedTo: '鈴木三郎',
-        affectedTeam: 'DevOpsチーム',
-        affectedSprint: 'Sprint 22',
-        reportedDate: '2024-02-15',
-        resolvedDate: '2024-02-28',
-        estimatedEffort: 12,
-        actualEffort: 15,
-        impact: 'minor',
-        tags: ['ci/cd', 'testing', 'infrastructure'],
-        relatedStories: ['US-123', 'US-234'],
-        comments: [
-          {
-            id: 'comment-3',
-            author: '鈴木三郎',
-            content: 'Dockerコンテナ化により解決',
-            timestamp: '2024-02-28T16:00:00Z',
-            type: 'solution',
-          },
-        ],
-        resolution: {
-          solution: 'テスト環境をDockerコンテナ化し、並列実行を可能にした',
-          preventiveMeasures: [
-            'インフラのコード化',
-            '環境テンプレートの標準化',
-            '監視アラートの設定',
-          ],
-          lessonsLearned: ['インフラ自動化の重要性', 'コンテナ技術の活用効果'],
-          resolvedBy: '鈴木三郎',
-          category: 'fixed',
+  const initializeImpediments = async () => {
+    try {
+      setIsLoading(true);
+
+      // 実際のAPI呼び出し
+      const response = await fetch('/api/scrum/impediments', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
         },
-      },
-      {
-        id: 'imp-003',
-        title: 'ステークホルダーとの要件調整',
-        description: '顧客からの要件変更が頻繁で、スプリント計画が不安定になっている',
-        type: 'communication',
-        severity: 'high',
-        status: 'open',
-        priority: 5,
-        reportedBy: '高橋四郎',
-        affectedTeam: 'プロダクトチーム',
-        affectedSprint: 'Sprint 24',
-        reportedDate: '2024-03-05',
-        estimatedEffort: 8,
-        impact: 'blocker',
-        tags: ['requirements', 'stakeholder', 'planning'],
-        relatedStories: ['US-901', 'US-902'],
-        comments: [
-          {
-            id: 'comment-4',
-            author: '高橋四郎',
-            content: 'Product Ownerとの調整会議を設定',
-            timestamp: '2024-03-06T09:00:00Z',
-            type: 'escalation',
-          },
-        ],
-      },
-      {
-        id: 'imp-004',
-        title: 'チームメンバーのスキル不足',
-        description: '新しい技術スタックに対するチームの理解が不足している',
-        type: 'skill',
-        severity: 'medium',
-        status: 'in_progress',
-        priority: 3,
-        reportedBy: '伊藤五郎',
-        assignedTo: '渡辺六子',
-        affectedTeam: 'フロントエンドチーム',
-        reportedDate: '2024-02-20',
-        estimatedEffort: 40,
-        actualEffort: 20,
-        impact: 'major',
-        tags: ['training', 'skill', 'technology'],
-        relatedStories: ['US-567', 'US-678'],
-        comments: [
-          {
-            id: 'comment-5',
-            author: '渡辺六子',
-            content: 'トレーニングプログラムを開始',
-            timestamp: '2024-02-25T11:00:00Z',
-            type: 'update',
-          },
-        ],
-      },
-    ];
+      });
 
-    // 追加で100件の障害を生成（解決済みを含む）
-    const additionalImpediments = Array.from({ length: 96 }, (_, index) => ({
-      id: `imp-${String(index + 5).padStart(3, '0')}`,
-      title: `障害 #${index + 5}`,
-      description: `システム障害の詳細説明 ${index + 5}`,
-      type: ['technical', 'process', 'resource', 'external', 'communication', 'skill'][
-        Math.floor(Math.random() * 6)
-      ] as Impediment['type'],
-      severity: ['critical', 'high', 'medium', 'low'][
-        Math.floor(Math.random() * 4)
-      ] as Impediment['severity'],
-      status: ['open', 'in_progress', 'resolved', 'blocked'][
-        Math.floor(Math.random() * 4)
-      ] as Impediment['status'],
-      priority: Math.floor(Math.random() * 5) + 1,
-      reportedBy: `ユーザー${index + 5}`,
-      assignedTo: Math.random() > 0.3 ? `担当者${Math.floor(Math.random() * 10) + 1}` : undefined,
-      affectedTeam: ['フロントエンドチーム', 'バックエンドチーム', 'DevOpsチーム', 'QAチーム'][
-        Math.floor(Math.random() * 4)
-      ],
-      affectedSprint:
-        Math.random() > 0.2 ? `Sprint ${Math.floor(Math.random() * 25) + 1}` : undefined,
-      reportedDate: `2024-${String(Math.floor(Math.random() * 3) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-      resolvedDate:
-        Math.random() > 0.4
-          ? `2024-${String(Math.floor(Math.random() * 3) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`
-          : undefined,
-      estimatedEffort: Math.floor(Math.random() * 40) + 4,
-      actualEffort: Math.random() > 0.5 ? Math.floor(Math.random() * 40) + 4 : undefined,
-      impact: ['blocker', 'major', 'minor', 'suggestion'][
-        Math.floor(Math.random() * 4)
-      ] as Impediment['impact'],
-      tags: ['bug', 'feature', 'improvement', 'technical', 'process'],
-      relatedStories: [`US-${Math.floor(Math.random() * 1000) + 1}`],
-      comments: [],
-    }));
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setImpediments(data.data);
+          return;
+        }
+      }
 
-    setImpediments([...mockImpediments, ...additionalImpediments]);
-    setSelectedImpediment(mockImpediments[0]);
+      // API接続失敗時は空の配列を設定
+      console.warn('Impediments API not available');
+      setImpediments([]);
+
+      throw new Error('Impediments API is not available in production');
+    } catch (error) {
+      console.error('Failed to load impediments:', error);
+      setImpediments([]);
+      // エラー通知を表示
+      if (typeof toast !== 'undefined') {
+        toast.error('障害データの取得に失敗しました。管理者にお問い合わせください。');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const calculateMetrics = (): ImpedimentMetrics => {

@@ -494,6 +494,278 @@ class MultiAIIntegrationService {
       'AI Studio': ['analysis', 'creative', 'planning'],
     };
   }
+
+  /**
+   * AI解析の実行（実際のAPI統合版）
+   */
+  async performAIAnalysis(data: any, type: string): Promise<any> {
+    try {
+      console.log(`🤖 Performing AI analysis for type: ${type}`);
+
+      // 環境変数からAPIキーを取得
+      const openaiKey = process.env.VITE_OPENAI_API_KEY || import.meta.env?.VITE_OPENAI_API_KEY;
+      const anthropicKey =
+        process.env.VITE_ANTHROPIC_API_KEY || import.meta.env?.VITE_ANTHROPIC_API_KEY;
+
+      if (!openaiKey && !anthropicKey) {
+        console.warn('⚠️ No AI API keys configured, using enhanced heuristic analysis');
+        return this.performHeuristicAnalysis(data, type);
+      }
+
+      // プライマリ：OpenAI GPT-4を使用
+      if (openaiKey) {
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${openaiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are an expert ${type} analyst. Analyze the provided data and return structured insights.`,
+                },
+                {
+                  role: 'user',
+                  content: `Analyze this ${type} data: ${JSON.stringify(data)}`,
+                },
+              ],
+              max_tokens: 1000,
+              temperature: 0.3,
+            }),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            const content = result.choices[0]?.message?.content;
+
+            return {
+              success: true,
+              provider: 'openai',
+              analysis: content,
+              confidence: 95,
+              timestamp: new Date().toISOString(),
+            };
+          }
+        } catch (error) {
+          console.error('OpenAI API error:', error);
+        }
+      }
+
+      // フォールバック：Anthropic Claude
+      if (anthropicKey) {
+        try {
+          const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'x-api-key': anthropicKey,
+              'Content-Type': 'application/json',
+              'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+              model: 'claude-3-sonnet-20240229',
+              max_tokens: 1000,
+              messages: [
+                {
+                  role: 'user',
+                  content: `Analyze this ${type} data and provide structured insights: ${JSON.stringify(data)}`,
+                },
+              ],
+            }),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            const content = result.content[0]?.text;
+
+            return {
+              success: true,
+              provider: 'anthropic',
+              analysis: content,
+              confidence: 90,
+              timestamp: new Date().toISOString(),
+            };
+          }
+        } catch (error) {
+          console.error('Anthropic API error:', error);
+        }
+      }
+
+      // すべてのAI APIが失敗した場合は高度なヒューリスティック分析
+      console.warn('All AI APIs failed, using enhanced heuristic analysis');
+      return this.performHeuristicAnalysis(data, type);
+    } catch (error) {
+      console.error('AI analysis failed:', error);
+      return this.performHeuristicAnalysis(data, type);
+    }
+  }
+
+  /**
+   * 高度なヒューリスティック分析（AI API が利用できない場合のフォールバック）
+   */
+  private performHeuristicAnalysis(data: any, type: string): any {
+    const timestamp = new Date().toISOString();
+
+    switch (type) {
+      case 'productivity':
+        return this.analyzeProductivityHeuristic(data, timestamp);
+      case 'task-optimization':
+        return this.analyzeTaskOptimizationHeuristic(data, timestamp);
+      case 'time-management':
+        return this.analyzeTimeManagementHeuristic(data, timestamp);
+      default:
+        return {
+          success: true,
+          provider: 'heuristic',
+          analysis: this.generateDefaultAnalysis(data, type),
+          confidence: 75,
+          timestamp,
+        };
+    }
+  }
+
+  private analyzeProductivityHeuristic(data: any, timestamp: string): any {
+    // 実際のデータに基づく生産性分析
+    const workHours = data.workHours || 0;
+    const completedTasks = data.completedTasks || 0;
+    const totalTasks = data.totalTasks || 1;
+
+    const completionRate = (completedTasks / totalTasks) * 100;
+    const hourlyProductivity = completedTasks / (workHours || 1);
+
+    const insights = [];
+    if (completionRate > 80) {
+      insights.push('優秀な完了率を維持しています');
+    } else if (completionRate < 50) {
+      insights.push('タスク完了率の改善が必要です');
+    }
+
+    if (hourlyProductivity > 1.5) {
+      insights.push('時間あたりの生産性が高いです');
+    }
+
+    return {
+      success: true,
+      provider: 'heuristic',
+      analysis: {
+        completionRate: Math.round(completionRate),
+        hourlyProductivity: Math.round(hourlyProductivity * 100) / 100,
+        insights,
+        recommendations: this.generateProductivityRecommendations(
+          completionRate,
+          hourlyProductivity
+        ),
+      },
+      confidence: 85,
+      timestamp,
+    };
+  }
+
+  private analyzeTaskOptimizationHeuristic(data: any, timestamp: string): any {
+    const tasks = data.tasks || [];
+    const priorities = tasks.map((t: any) => t.priority || 'medium');
+    const durations = tasks.map((t: any) => t.estimatedDuration || 0);
+
+    const avgDuration =
+      durations.reduce((a: number, b: number) => a + b, 0) / durations.length || 0;
+    const highPriorityCount = priorities.filter((p: string) => p === 'high').length;
+
+    return {
+      success: true,
+      provider: 'heuristic',
+      analysis: {
+        averageTaskDuration: Math.round(avgDuration * 100) / 100,
+        highPriorityRatio: Math.round((highPriorityCount / tasks.length) * 100),
+        suggestions: this.generateTaskOptimizationSuggestions(
+          avgDuration,
+          highPriorityCount,
+          tasks.length
+        ),
+      },
+      confidence: 80,
+      timestamp,
+    };
+  }
+
+  private analyzeTimeManagementHeuristic(data: any, timestamp: string): any {
+    const timeBlocks = data.timeBlocks || [];
+    const interruptions = data.interruptions || 0;
+    const focusTime = timeBlocks.reduce(
+      (acc: number, block: any) => acc + (block.duration || 0),
+      0
+    );
+
+    return {
+      success: true,
+      provider: 'heuristic',
+      analysis: {
+        totalFocusTime: focusTime,
+        interruptionRate: interruptions,
+        efficiency: Math.max(0, 100 - interruptions * 5),
+        timeManagementTips: this.generateTimeManagementTips(focusTime, interruptions),
+      },
+      confidence: 85,
+      timestamp,
+    };
+  }
+
+  private generateProductivityRecommendations(
+    completionRate: number,
+    hourlyProductivity: number
+  ): string[] {
+    const recommendations = [];
+
+    if (completionRate < 70) {
+      recommendations.push('タスクの優先順位付けを見直してください');
+      recommendations.push('1日のタスク数を減らして質を重視してください');
+    }
+
+    if (hourlyProductivity < 1) {
+      recommendations.push('ポモドーロ・テクニックの導入を検討してください');
+      recommendations.push('作業環境の改善が生産性向上に寄与します');
+    }
+
+    return recommendations;
+  }
+
+  private generateTaskOptimizationSuggestions(
+    avgDuration: number,
+    highPriorityCount: number,
+    totalTasks: number
+  ): string[] {
+    const suggestions = [];
+
+    if (avgDuration > 3) {
+      suggestions.push('長時間のタスクを小さな単位に分割することを推奨します');
+    }
+
+    if (highPriorityCount / totalTasks > 0.7) {
+      suggestions.push('高優先度タスクが多すぎます。優先順位の見直しが必要です');
+    }
+
+    return suggestions;
+  }
+
+  private generateTimeManagementTips(focusTime: number, interruptions: number): string[] {
+    const tips = [];
+
+    if (interruptions > 5) {
+      tips.push('通知をオフにして集中時間を確保してください');
+    }
+
+    if (focusTime < 4) {
+      tips.push('連続した作業時間を増やすことを目標にしてください');
+    }
+
+    return tips;
+  }
+
+  private generateDefaultAnalysis(data: any, type: string): string {
+    return `${type}の分析が完了しました。提供されたデータに基づく基本的な洞察を生成しました。`;
+  }
 }
 
 export const multiAIIntegrationService = MultiAIIntegrationService.getInstance();

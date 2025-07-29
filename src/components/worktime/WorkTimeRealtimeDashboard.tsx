@@ -61,6 +61,7 @@ export const WorkTimeRealtimeDashboard: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [error, setError] = useState<string | null>(null);
 
   // 管理者権限チェック
   const isAdmin = user?.isAdmin || false;
@@ -101,67 +102,15 @@ export const WorkTimeRealtimeDashboard: React.FC = () => {
         }
       }
 
-      // フォールバック: デモデータ（API接続失敗時またはデモモード）
-      console.warn('Employee status API not available, using demo data');
-      const mockEmployees: EmployeeStatus[] = [
-        {
-          id: 'emp_1',
-          name: '田中太郎',
-          department: '営業部',
-          status: 'working',
-          clockInTime: new Date(2024, 0, 15, 9, 0, 0),
-          workDuration: 8 * 3600 + 30 * 60, // 8時間30分
-          breakDuration: 45 * 60, // 45分
-          currentLocation: {
-            address: '東京都千代田区丸の内1-1-1',
-            isWithinWorkArea: true,
-          },
-          pendingApprovals: 0,
-        },
-        {
-          id: 'emp_2',
-          name: '佐藤花子',
-          department: '開発部',
-          status: 'on_break',
-          clockInTime: new Date(2024, 0, 15, 8, 45, 0),
-          breakStartTime: new Date(2024, 0, 15, 12, 0, 0),
-          workDuration: 7 * 3600 + 15 * 60, // 7時間15分
-          breakDuration: 30 * 60, // 30分
-          currentLocation: {
-            address: '東京都港区赤坂2-2-2',
-            isWithinWorkArea: false,
-          },
-          pendingApprovals: 1,
-        },
-        {
-          id: 'emp_3',
-          name: '山田次郎',
-          department: '総務部',
-          status: 'finished',
-          clockInTime: new Date(2024, 0, 15, 8, 30, 0),
-          workDuration: 8 * 3600, // 8時間
-          breakDuration: 60 * 60, // 1時間
-          currentLocation: {
-            address: '東京都新宿区西新宿1-1-1',
-            isWithinWorkArea: true,
-          },
-          pendingApprovals: 0,
-        },
-        {
-          id: 'emp_4',
-          name: '鈴木美穂',
-          department: '人事部',
-          status: 'not_started',
-          workDuration: 0,
-          breakDuration: 0,
-          pendingApprovals: 0,
-        },
-      ];
+      // API接続失敗時は空の配列を設定
+      console.warn('Employee status API not available');
+      setEmployees([]);
 
-      setEmployees(mockEmployees);
+      throw new Error('Employee status API is not available in production');
     } catch (error) {
       console.error('Failed to load employee statuses:', error);
-      setEmployees([]); // エラー時は空配列
+      setEmployees([]);
+      setError('従業員状況データの取得に失敗しました。管理者にお問い合わせください。');
     } finally {
       setIsLoading(false);
     }
