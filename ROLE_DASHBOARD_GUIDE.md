@@ -116,17 +116,80 @@ Work Time Tracker では、各担当者の役割に応じて最適化された�
 
 ---
 
+### 🟢 経理ダッシュボード (`/finance-dashboard`)
+
+**対象者**: 経理担当者、会計士
+
+#### 📊 主要メトリクス
+
+- **売上分析**: 月次売上、成長率、継続売上
+- **経費管理**: 月次経費、予算差分、カテゴリ分析
+- **請求管理**: 未回収債権、期限超過、処理状況
+- **現金管理**: 残高、キャッシュフロー、予測
+
+#### ✅ 次にすべきアクション
+
+- 法人税四半期予定納税（¥450,000）
+- 期限超過請求書の回収（XYZ商事 ¥120,000）
+- マーケティング経費承認（¥180,000）
+- 月次財務レポート作成
+
+#### 🛠️ 主な機能
+
+- 請求書管理とステータス更新
+- 経費承認・支払い処理
+- 税務申告管理
+- 財務レポート生成
+
+---
+
+### 🟦 法務ダッシュボード (`/legal-dashboard`)
+
+**対象者**: 法務担当者、コンプライアンス担当者
+
+#### 📊 主要メトリクス
+
+- **契約管理**: アクティブ契約、期限切迫、更新予定
+- **コンプライアンス**: スコア、リスク数、違反件数
+- **プライバシー**: GDPR準拠率、データ要求、侵害件数
+- **知的財産**: 商標・特許数、争議件数
+
+#### ✅ 次にすべきアクション
+
+- セキュリティポリシー更新（期限超過・緊急）
+- GDPR年次監査実施（期限: 2025-03-31）
+- 業務委託契約レビュー（フリーランス開発者）
+- プライバシーリスク対策強化
+
+#### 🛠️ 主な機能
+
+- 契約ライフサイクル管理
+- コンプライアンスタスク管理
+- リーガルリスク評価
+- 法務レポート生成
+
+---
+
 ## 🔐 アクセス制御
 
 ### 役割ベースアクセス制御 (RBAC)
 
 ```typescript
 interface DashboardAccess {
-  admin: ['admin-dashboard', 'operations-dashboard', 'developer-dashboard', 'sales-dashboard'];
-  manager: ['admin-dashboard', 'sales-dashboard'];
+  admin: [
+    'admin-dashboard',
+    'operations-dashboard',
+    'developer-dashboard',
+    'sales-dashboard',
+    'finance-dashboard',
+    'legal-dashboard',
+  ];
+  manager: ['admin-dashboard', 'sales-dashboard', 'finance-dashboard'];
   operations: ['operations-dashboard'];
   developer: ['developer-dashboard'];
   sales: ['sales-dashboard'];
+  finance: ['finance-dashboard'];
+  legal: ['legal-dashboard'];
   user: [];
 }
 ```
@@ -159,6 +222,8 @@ interface DashboardAccess {
 - `/operations-dashboard`
 - `/developer-dashboard`
 - `/sales-dashboard`
+- `/finance-dashboard`
+- `/legal-dashboard`
 
 ### 3. 自動更新機能
 
@@ -166,6 +231,8 @@ interface DashboardAccess {
 - **運用**: 10秒間隔
 - **開発**: 15秒間隔
 - **営業**: 20秒間隔
+- **経理**: 30秒間隔
+- **法務**: 30秒間隔
 
 ---
 
@@ -252,6 +319,18 @@ const newAction: PriorityAction = {
 2. **今日中**: ABC株式会社のフォローアップ
 3. **今週中**: 新規リード3件の初回面談設定
 
+#### 🟢 経理担当者
+
+1. **今すぐ**: 法人税四半期予定納税準備（¥450,000）
+2. **今日中**: XYZ商事未払い請求書回収（¥120,000）
+3. **今週中**: マーケティング経費¥180,000の承認審査
+
+#### 🟦 法務担当者
+
+1. **今すぐ**: セキュリティポリシー更新（期限超過・緊急対応）
+2. **今日中**: 業務委託契約レビュー完了
+3. **今週中**: GDPR年次監査準備とチェックリスト作成
+
 ---
 
 ## 📊 成功指標
@@ -262,6 +341,8 @@ const newAction: PriorityAction = {
 - **運用**: システム稼働率、応答時間、インシデント解決時間
 - **開発**: デプロイ頻度、バグ修正時間、テストカバレッジ
 - **営業**: 売上目標達成率、リードコンバージョン率、顧客満足度
+- **経理**: 売上成長率、利益率、回収率、予算達成率
+- **法務**: 契約レビュー効率、コンプライアンス達成率、リスク軽減率
 
 ### 目標設定
 

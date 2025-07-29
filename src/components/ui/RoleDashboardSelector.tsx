@@ -81,6 +81,32 @@ const RoleDashboardSelector: React.FC = () => {
       roles: ['sales', 'marketing', 'admin'],
       features: ['リード管理', '商談追跡', '売上分析', '顧客管理', 'パフォーマンス分析'],
     },
+    {
+      id: 'finance',
+      title: '経理ダッシュボード',
+      description: '財務管理、請求書処理、税務申告、経費管理',
+      icon: <DollarSign className="w-8 h-8 text-emerald-600" />,
+      path: '/finance-dashboard',
+      color: 'border-emerald-200 hover:border-emerald-300',
+      roles: ['finance', 'accounting', 'admin'],
+      features: ['財務分析', '請求書管理', '税務処理', '経費承認', '予算管理'],
+    },
+    {
+      id: 'legal',
+      title: '法務ダッシュボード',
+      description: '契約管理、コンプライアンス、リーガルリスク管理',
+      icon: <GitBranch className="w-8 h-8 text-indigo-600" />,
+      path: '/legal-dashboard',
+      color: 'border-indigo-200 hover:border-indigo-300',
+      roles: ['legal', 'compliance', 'admin'],
+      features: [
+        '契約管理',
+        'コンプライアンス監視',
+        'リスク評価',
+        'プライバシー対応',
+        '知的財産管理',
+      ],
+    },
   ];
 
   // ユーザーの役割に基づいてアクセス可能なダッシュボードをフィルタリング
