@@ -12,6 +12,15 @@ router.get('/tracking', async (req: Request, res: Response) => {
 
   try {
     const { type, id, phase, status, assignee, category, tags } = req.query;
+    console.log('📝 Extracted query params:', {
+      type,
+      id,
+      phase,
+      status,
+      assignee,
+      category,
+      tags,
+    });
 
     // Mock data for development
     if (type === 'tasks') {
@@ -62,6 +71,7 @@ router.get('/tracking', async (req: Request, res: Response) => {
         });
       }
 
+      console.log('✅ Returning tasks response:', mockTasks.length, 'tasks');
       return res.json({
         success: true,
         data: mockTasks,
@@ -101,6 +111,7 @@ router.get('/tracking', async (req: Request, res: Response) => {
         });
       }
 
+      console.log('✅ Returning projects response:', mockProjects.length, 'projects');
       return res.json({
         success: true,
         data: mockProjects,
@@ -127,13 +138,15 @@ router.get('/tracking', async (req: Request, res: Response) => {
       });
     }
 
+    console.log('❌ Invalid type parameter:', type);
     res.status(400).json({
       success: false,
       error: 'Invalid type parameter',
       message: '無効なtypeパラメータです',
     });
   } catch (error: any) {
-    console.error('Progress tracking error:', error);
+    console.error('💥 Progress tracking error:', error);
+    console.error('💥 Error stack:', error.stack);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
