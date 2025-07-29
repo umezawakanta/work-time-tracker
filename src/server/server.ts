@@ -33,7 +33,7 @@ import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルー
 import wbsRoutes from './routes/wbsRoutes.js';
 import implementationRoutes from './routes/implementationRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
-import resourceRoutes from './routes/resourceRoutes.js';
+// import resourceRoutes from './routes/resourceRoutes.js'; // 一時的に無効化
 import progressRoutes from './routes/progressRoutes.js';
 import abstinenceRoutes from './routes/abstinenceRoutes.js';
 
@@ -284,12 +284,12 @@ app.use('/api/surveys', surveyRoutes);
 app.use('/api/parties', partyRoutes);
 app.use('/api/habits', habitRoutes);
 app.use('/api/projects', projectRoutes);
-app.use('/api/progress', progressRoutes);
+// app.use('/api/progress', progressRoutes); // 一時的に無効化
 app.use('/api/notifications', notificationRoutes); // 通知APIルートを追加
 app.use('/api/wbs', wbsRoutes); // 追加
 app.use('/api/implementation', implementationRoutes);
 app.use('/api/team', teamRoutes);
-app.use('/api/resources', resourceRoutes);
+// app.use('/api/resources', resourceRoutes); // 一時的に無効化
 app.use('/api/quality', qualityRoutes);
 app.use('/api/abstinence', abstinenceRoutes);
 
