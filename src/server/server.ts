@@ -87,6 +87,7 @@ const corsOrigin = (
   callback(new Error('Not allowed by CORS'));
 };
 
+// 基本的なCORS設定を有効化
 app.use(
   cors({
     origin: corsOrigin,
@@ -98,47 +99,47 @@ app.use(
   })
 );
 
-// Handle explicit OPTIONS requests
-app.options('*', (req, res) => {
-  console.log(`OPTIONS request for: ${req.path}`);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.sendStatus(200);
-});
-
-// 詳細ログを追加
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log('\n=== INCOMING REQUEST ===');
-  console.log('Time:', new Date().toISOString());
-  console.log('Method:', req.method);
-  console.log('URL:', req.url);
-  console.log('Full URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
-  console.log('Origin:', req.get('Origin') || 'No origin');
-  console.log('User-Agent:', req.get('User-Agent'));
-  console.log('Content-Type:', req.get('Content-Type') || 'No content-type');
-  console.log('Body:', JSON.stringify(req.body, null, 2));
-  console.log('=== END REQUEST LOG ===\n');
-  next();
-});
+// Handle explicit OPTIONS requests - 一時的に無効化
+// app.options('*', (req, res) => {
+//   console.log(`OPTIONS request for: ${req.path}`);
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+//   res.sendStatus(200);
+// });
 
 app.use(express.json({ limit: '10mb' }));
+// 詳細ログを一時的に無効化
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   console.log('\n=== INCOMING REQUEST ===');
+//   console.log('Time:', new Date().toISOString());
+//   console.log('Method:', req.method);
+//   console.log('URL:', req.url);
+//   console.log('Full URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
+//   console.log('Origin:', req.get('Origin') || 'No origin');
+//   console.log('User-Agent:', req.get('User-Agent'));
+//   console.log('Content-Type:', req.get('Content-Type') || 'No content-type');
+//   console.log('Body:', JSON.stringify(req.body, null, 2));
+//   console.log('=== END REQUEST LOG ===\n');
+//   next();
+// });
+
 // helmet を一時的に無効化
 // app.use(helmet());
-app.use(morgan('combined'));
+// app.use(morgan('combined')); // 一時的に無効化
 
-// Connect to MongoDB
-console.log('Attempting to connect to MongoDB...');
-connectDB();
+// Connect to MongoDB - 一時的に無効化
+// console.log('Attempting to connect to MongoDB...');
+// connectDB();
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Create uploads directory if it doesn't exist - 一時的に無効化
+// const uploadsDir = path.join(__dirname, '../../uploads');
+// if (!fs.existsSync(uploadsDir)) {
+//   fs.mkdirSync(uploadsDir, { recursive: true });
+// }
 
-// 静的ファイルの提供
-app.use('/uploads', express.static(uploadsDir));
+// 静的ファイルの提供 - 一時的に無効化
+// app.use('/uploads', express.static(uploadsDir));
 
 // WebSocketサーバーのセットアップ（開発環境では無効化）
 if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
@@ -267,54 +268,54 @@ app.get('/test', (req: Request, res: Response) => {
 
 // Routes
 console.log('Setting up API routes...');
-app.use('/api/auth', authRoutes);
-app.use('/api/worktime', workTimeRoutes);
-app.use('/api/asset', assetRoutes);
-app.use('/api/debt', debtRoutes);
-app.use('/api/todos', todoRoutes);
-app.use('/api/candidates', candidateRoutes);
-app.use('/api/subscription', subscriptionRoutes);
-app.use('/api/userSubscription', userSubscriptionRoutes);
-app.use('/api/withdrawal', withdrawalRoutes);
-app.use('/api/books', bookRoutes);
-app.use('/api/sleep-records', sleepTrackerRoutes);
-app.use('/api/blog', blogRoutes);
-app.use('/api/tweets', tweetRoutes);
-app.use('/api/surveys', surveyRoutes);
-app.use('/api/parties', partyRoutes);
-app.use('/api/habits', habitRoutes);
-app.use('/api/projects', projectRoutes);
-// app.use('/api/progress', progressRoutes); // 一時的に無効化
-app.use('/api/notifications', notificationRoutes); // 通知APIルートを追加
-app.use('/api/wbs', wbsRoutes); // 追加
-app.use('/api/implementation', implementationRoutes);
-app.use('/api/team', teamRoutes);
+// app.use('/api/auth', authRoutes);
+// app.use('/api/worktime', workTimeRoutes);
+// app.use('/api/asset', assetRoutes);
+// app.use('/api/debt', debtRoutes);
+// app.use('/api/todos', todoRoutes);
+// app.use('/api/candidates', candidateRoutes);
+// app.use('/api/subscription', subscriptionRoutes);
+// app.use('/api/userSubscription', userSubscriptionRoutes);
+// app.use('/api/withdrawal', withdrawalRoutes);
+// app.use('/api/books', bookRoutes);
+// app.use('/api/sleep-records', sleepTrackerRoutes);
+// app.use('/api/blog', blogRoutes);
+// app.use('/api/tweets', tweetRoutes);
+// app.use('/api/surveys', surveyRoutes);
+// app.use('/api/parties', partyRoutes);
+// app.use('/api/habits', habitRoutes);
+// app.use('/api/projects', projectRoutes);
+app.use('/api/progress', progressRoutes);
+// app.use('/api/notifications', notificationRoutes);
+// app.use('/api/wbs', wbsRoutes);
+// app.use('/api/implementation', implementationRoutes);
+// app.use('/api/team', teamRoutes);
 // app.use('/api/resources', resourceRoutes); // 一時的に無効化
-app.use('/api/quality', qualityRoutes);
-app.use('/api/abstinence', abstinenceRoutes);
+// app.use('/api/quality', qualityRoutes);
+// app.use('/api/abstinence', abstinenceRoutes);
 
-// Not Found middleware
-app.use((_req: Request, res: Response): void => {
-  res.status(404).json({ message: 'Resource not found' });
-});
+// Not Found middleware - 一時的に無効化
+// app.use((_req: Request, res: Response): void => {
+//   res.status(404).json({ message: 'Resource not found' });
+// });
 
-// Error handling middleware
-app.use((err: Error, _req: Request, res: Response): void => {
-  console.error('=== Global Error Handler ===');
-  console.error('Error type:', err.constructor.name);
-  console.error('Error message:', err.message);
-  console.error('Error stack:', err.stack);
-  console.error('Request URL:', _req.url);
-  console.error('Request method:', _req.method);
-  console.error('Request body:', JSON.stringify(_req.body, null, 2));
-  console.error('=== End Global Error Handler ===');
+// Error handling middleware - 一時的に無効化
+// app.use((err: Error, _req: Request, res: Response): void => {
+//   console.error('=== Global Error Handler ===');
+//   console.error('Error type:', err.constructor.name);
+//   console.error('Error message:', err.message);
+//   console.error('Error stack:', err.stack);
+//   console.error('Request URL:', _req.url);
+//   console.error('Request method:', _req.method);
+//   console.error('Request body:', JSON.stringify(_req.body, null, 2));
+//   console.error('=== End Global Error Handler ===');
 
-  res.status(500).json({
-    message: 'Something went wrong!',
-    error: err.message,
-    errorType: err.constructor.name,
-  });
-});
+//   res.status(500).json({
+//     message: 'Something went wrong!',
+//     error: err.message,
+//     errorType: err.constructor.name,
+//   });
+// });
 
 // 環境変数の確認
 console.log('=== Environment Check ===');
@@ -369,8 +370,8 @@ if (process.env.VERCEL) {
       // メインサーバーを指定ポートで開始
       server.listen(availablePort, () => {
         console.log(`✅ Server is running on port ${availablePort}`);
-        console.log(`✅ WebSocket server is also running on port ${availablePort}`);
-        console.log(`📁 Uploads directory: ${uploadsDir}`);
+        // console.log(`✅ WebSocket server is also running on port ${availablePort}`); // 一時的に無効化
+        // console.log(`📁 Uploads directory: ${uploadsDir}`); // 一時的に無効化
 
         if (availablePort !== PORT) {
           console.log(
