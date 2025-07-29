@@ -4,13 +4,14 @@
   "framework": null,
   "installCommand": "pnpm install",
   "devCommand": "pnpm run dev",
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/((?!assets|icons|images|fonts|favicon|manifest|sw\\.js|robots\\.txt|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|avif|json|xml)).*)",
+      "source": "/((?!api|assets|icons|images|fonts|favicon|manifest|sw\\.js|robots\\.txt|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|webp|avif|json|xml)).*)",
       "destination": "/index.html"
     }
   ],
