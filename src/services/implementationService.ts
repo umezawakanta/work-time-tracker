@@ -39,29 +39,25 @@ class ImplementationService {
     console.log('🔗 Implementation API Base URL:', this.baseUrl);
   }
 
-  // タスク関連
+  // 📊 実装タスクの取得（API実装）
   async getTasks(projectId: string): Promise<Task[]> {
-    // サーバーが利用できない場合はモックデータを返す
-    if (!this.isServerAvailable) {
-      return this.getMockTasks(projectId);
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/tasks/${projectId}`, {
-        credentials: 'include',
+      const response = await fetch(`${this.baseUrl}/api/implementation/tasks/${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
+        throw new Error(`Failed to fetch tasks: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data.tasks || [];
     } catch (error) {
-      console.error('Get tasks error:', error);
-      // サーバー接続失敗をマーク
-      this.isServerAvailable = false;
-      // フォールバックとしてモックデータを返す
-      return this.getMockTasks(projectId);
+      console.error('❌ Failed to fetch implementation tasks:', error);
+      throw error;
     }
   }
 
@@ -153,33 +149,25 @@ class ImplementationService {
     }
   }
 
-  // ログ関連
-  async getLogs(projectId: string, limit?: number): Promise<ImplementationLog[]> {
-    // サーバーが利用できない場合はモックデータを返す
-    if (!this.isServerAvailable) {
-      return this.getMockLogs(projectId, limit);
-    }
-
+  // 📈 実装ログの取得（API実装）
+  async getLogs(projectId: string): Promise<ImplementationLog[]> {
     try {
-      const url = limit
-        ? `${this.baseUrl}/logs/${projectId}?limit=${limit}`
-        : `${this.baseUrl}/logs/${projectId}`;
-
-      const response = await fetch(url, {
-        credentials: 'include',
+      const response = await fetch(`${this.baseUrl}/api/implementation/logs/${projectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch logs');
+        throw new Error(`Failed to fetch logs: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return data.logs || [];
     } catch (error) {
-      console.error('Get logs error:', error);
-      // サーバー接続失敗をマーク
-      this.isServerAvailable = false;
-      // フォールバックとしてモックデータを返す
-      return this.getMockLogs(projectId, limit);
+      console.error('❌ Failed to fetch implementation logs:', error);
+      throw error;
     }
   }
 
@@ -205,66 +193,8 @@ class ImplementationService {
     }
   }
 
-  // モックデータ生成
-  private getMockTasks(projectId: string): Task[] {
-    const now = new Date().toISOString();
-    return [
-      {
-        id: 'task-1',
-        title: 'TypeScript build errors 修正',
-        description: 'vite.config.ts の型エラーとビルドの問題を解決',
-        phase: '基盤設定',
-        status: 'completed',
-        priority: 'high',
-        assignee: 'AI Assistant',
-        checklist: [
-          { id: 'c1', label: 'vite.config.ts型エラー修正', completed: true, createdAt: now },
-          { id: 'c2', label: 'プラグイン互換性確認', completed: true, createdAt: now },
-        ],
-        startDate: now,
-        completedDate: now,
-        estimatedHours: 2,
-        actualHours: 1.5,
-        projectId,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'system',
-        tags: ['build', 'typescript'],
-        dependencies: [],
-        notes: 'visualizer プラグインの型アサーション追加で解決',
-      },
-      {
-        id: 'task-2',
-        title: 'React 19 compatibility 修正',
-        description: 'react-is と prop-types の互換性問題を解決',
-        phase: '基盤設定',
-        status: 'completed',
-        priority: 'high',
-        assignee: 'AI Assistant',
-        checklist: [
-          { id: 'c3', label: 'react-is downgrade', completed: true, createdAt: now },
-          { id: 'c4', label: 'pnpm.overrides設定', completed: true, createdAt: now },
-        ],
-        startDate: now,
-        completedDate: now,
-        estimatedHours: 3,
-        actualHours: 2,
-        projectId,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'system',
-        tags: ['react', 'compatibility'],
-        dependencies: [],
-        notes: 'react-is を 18.3.1 にダウングレードして解決',
-      },
-      {
-        id: 'task-3',
-        title: 'Component import paths 修正',
-        description: 'ADHD/勤怠管理コンポーネントのインポートパスを修正',
-        phase: 'リファクタリング',
-        status: 'completed',
-        priority: 'medium',
-        assignee: 'AI Assistant',
+  // 🚫 モックデータ機能は本番環境では使用禁止
+  // 実際のデータベースからのデータ取得のみを許可
         checklist: [
           { id: 'c5', label: 'cognitive/ 配下パス修正', completed: true, createdAt: now },
           { id: 'c6', label: 'worktime/ 配下パス修正', completed: true, createdAt: now },

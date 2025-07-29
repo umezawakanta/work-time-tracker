@@ -58,28 +58,38 @@ export const useAutomatedTaskManagement = (): UseAutomatedTaskManagementResult =
   const createTask = useCallback(
     async (taskData: any, enableAutomation = true): Promise<Todo | null> => {
       try {
-        console.log('🤖 Creating task with automation (mock):', taskData);
+        console.log('🤖 Creating task with automation:', taskData);
 
-        // 一時的なモック実装
-        const mockTask: Todo = {
-          _id: `task_${Date.now()}`,
-          task: taskData.task || '新しいタスク',
-          priority: taskData.priority || 3,
-          isPrioritized: false,
-          completed: false,
-          type: taskData.type || 'input',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          deadline: taskData.deadline,
-          completedDate: null,
-          tags: taskData.tags || [],
-        };
+        // 実際のAPI呼び出し
+        const response = await fetch('/api/todos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          },
+          body: JSON.stringify({
+            task: taskData.task || '新しいタスク',
+            priority: taskData.priority || 3,
+            type: taskData.type || 'input',
+            deadline: taskData.deadline,
+            tags: taskData.tags || [],
+            automation: enableAutomation && isAutomationActive,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Task creation failed: ${response.status}`);
+        }
+
+        const newTask = await response.json();
 
         if (enableAutomation && isAutomationActive) {
           console.log('🎮 Automation triggered for task creation');
+          // 自動化ルールの適用（実際のAI分析）
+          await triggerAutomationAnalysis(newTask);
         }
 
-        return mockTask;
+        return newTask;
       } catch (error) {
         console.error('❌ Failed to create automated task:', error);
         return null;
@@ -91,27 +101,34 @@ export const useAutomatedTaskManagement = (): UseAutomatedTaskManagementResult =
   const updateTask = useCallback(
     async (taskId: string, updates: any, enableAutomation = true): Promise<Todo | null> => {
       try {
-        console.log('🤖 Updating task with automation (mock):', taskId, updates);
+        console.log('🔄 Updating task with automation:', taskId, updates);
 
-        const mockUpdatedTask: Todo = {
-          _id: taskId,
-          task: updates.task || '更新されたタスク',
-          priority: updates.priority || 3,
-          isPrioritized: false,
-          completed: updates.completed || false,
-          type: updates.type || 'input',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          deadline: updates.deadline,
-          completedDate: updates.completedDate,
-          tags: updates.tags || [],
-        };
+        // 実際のAPI呼び出し
+        const response = await fetch(`/api/todos/${taskId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          },
+          body: JSON.stringify({
+            ...updates,
+            automation: enableAutomation && isAutomationActive,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Task update failed: ${response.status}`);
+        }
+
+        const updatedTask = await response.json();
 
         if (enableAutomation && isAutomationActive) {
           console.log('🎮 Automation triggered for task update');
+          // タスク更新時の自動化処理
+          await triggerAutomationAnalysis(updatedTask);
         }
 
-        return mockUpdatedTask;
+        return updatedTask;
       } catch (error) {
         console.error('❌ Failed to update automated task:', error);
         return null;
@@ -156,6 +173,36 @@ export const useAutomatedTaskManagement = (): UseAutomatedTaskManagementResult =
       averageResponseTime: 120,
     };
   }, []);
+
+  // 自動化分析をトリガー
+  const triggerAutomationAnalysis = async (task: Todo) => {
+    try {
+      // AI分析の実行
+      const response = await fetch('/api/ai/task-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+        body: JSON.stringify({
+          taskId: task._id,
+          taskText: task.task,
+          context: {
+            priority: task.priority,
+            tags: task.tags,
+            type: task.type,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const analysis = await response.json();
+        console.log('🧠 AI analysis completed:', analysis);
+      }
+    } catch (error) {
+      console.error('❌ AI analysis failed:', error);
+    }
+  };
 
   return {
     createTask,

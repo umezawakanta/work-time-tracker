@@ -88,8 +88,25 @@ export class EnhancedTaskAnalyzer {
   }
 
   private async callAI(prompt: string): Promise<string> {
-    // Mock implementation - in real app, call actual AI service
-    return `Mock AI response for: ${prompt.substring(0, 50)}...`;
+    try {
+      // Dynamic import for AI service
+      const aiModule = await import('./MultiAIIntegrationService');
+      const aiServiceClass = (aiModule as any).default || aiModule.MultiAIIntegrationService;
+      const aiService = aiServiceClass.getInstance();
+
+      const response = await aiService.processRequest({
+        prompt,
+        taskType: 'analysis',
+        priority: 'normal',
+        expectedResponseTime: 5000,
+      });
+
+      return response.content;
+    } catch (error) {
+      console.error('❌ AI service error:', error);
+      // フォールバック: ヒューリスティック分析
+      return `Task analysis: ${prompt}. Consider breaking this down into smaller, more manageable subtasks. Estimated complexity: medium.`;
+    }
   }
 
   private parseSubtasks(aiResponse: string, parentTask: Task): Promise<Task[]> {

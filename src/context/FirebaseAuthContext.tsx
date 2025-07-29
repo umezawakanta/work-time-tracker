@@ -104,60 +104,29 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
 
   // Firebase有効性チェック
   useEffect(() => {
-    // In test environment, always use Firebase (mocked)
+    // 本番環境では必ずFirebaseを使用
+    if (!isFirebaseEnabled && !isTestEnvironment) {
+      console.error(
+        '🚨 Firebase is required in production environment. Please configure Firebase properly.'
+      );
+      setError('Firebase configuration is missing. Authentication unavailable.');
+      setLoading(false);
+      return;
+    }
+
+    // テスト環境のみ例外を許可
     const shouldUseFirebase = isFirebaseEnabled || isTestEnvironment;
 
     if (!shouldUseFirebase) {
-      console.warn('🚧 Firebase is not enabled. Using mock authentication for development.');
-
-      // Skip auto dev user creation in test environment
-      if (!isTestEnvironment) {
-        // 開発環境用のダミーユーザー
-        const isDev =
-          process.env.NODE_ENV === 'development' ||
-          process.env.DEV === 'true' ||
-          (typeof window !== 'undefined' && window.location.hostname === 'localhost');
-
-        if (isDev) {
-          setUser({
-            uid: 'dev-user',
-            email: 'dev@example.com',
-            displayName: 'Development User',
-            photoURL: null,
-            emailVerified: true,
-            isPremium: false,
-            createdAt: new Date().toISOString(),
-            _id: 'dev-user',
-            id: 'dev-user',
-            name: 'Development User',
-            username: 'dev',
-            isAdmin: true,
-            permissions: ['read', 'write', 'admin'],
-            roles: ['admin'],
-            lastActivityAt: new Date(),
-            subscriptionStatus: 'free' as const,
-            preferences: {
-              theme: 'light' as const,
-              language: 'ja' as const,
-              timezone: 'Asia/Tokyo',
-              notifications: {
-                email: true,
-                push: true,
-                daily: true,
-                weekly: true,
-              },
-            },
-          });
-          setIsAuthenticated(true);
-        }
-      }
+      console.warn('🧪 Test environment: Firebase mocked for testing');
       setLoading(false);
       return;
     }
 
     // Firebase認証状態のリスナー設定（Firebase有効時のみ）
     if (!auth) {
-      console.warn('Firebase auth not available');
+      console.error('🚨 Firebase auth not available - please check configuration');
+      setError('Firebase authentication service is unavailable');
       setLoading(false);
       return;
     }
@@ -169,16 +138,13 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       setSessionExpired(false);
       setLoading(false);
 
-      if (authUser) {
-        logger.info('Auth', 'User authenticated via Firebase', {
-          userId: authUser.uid,
-          email: authUser.email,
-        });
-      }
+      console.log('🔐 Firebase auth state changed:', !!authUser);
     });
 
-    return unsubscribe;
-  }, [convertFirebaseUser, isTestEnvironment]);
+    return () => {
+      unsubscribe();
+    };
+  }, [convertFirebaseUser, isFirebaseEnabled, isTestEnvironment]);
 
   // 認証メソッドの実装
   // Clear error helper - use useCallback for stability

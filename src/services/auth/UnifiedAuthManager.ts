@@ -9,7 +9,7 @@ import { unifiedDataService, type SystemHealthCheck } from '@/services/unified/U
 import { addSystemEvent, addNotification, updateConnectionStatus } from '@/store/unifiedDataSlice';
 
 // 認証プロバイダーの種類
-export type AuthProvider = 'jwt' | 'firebase' | 'supabase' | 'demo' | 'anonymous';
+export type AuthProvider = 'jwt' | 'firebase';
 
 // ユーザー情報の統一インターフェース
 export interface UnifiedUser {
@@ -180,14 +180,10 @@ class UnifiedAuthManager extends EventEmitter {
         case 'firebase':
           authResult = await this.loginWithFirebase(credentials);
           break;
-        case 'demo':
-          authResult = await this.loginWithDemo(credentials);
-          break;
-        case 'anonymous':
-          authResult = await this.loginAnonymous();
-          break;
         default:
-          throw new Error(`Unsupported auth provider: ${provider}`);
+          throw new Error(
+            `Authentication provider "${provider}" is not supported in production. Only JWT and Firebase are allowed.`
+          );
       }
 
       if (!authResult.success) {
@@ -467,36 +463,8 @@ class UnifiedAuthManager extends EventEmitter {
     }
   }
 
-  /**
-   * 🎭 デモ認証の実装
-   */
-  private async loginWithDemo(credentials: any): Promise<any> {
-    // デモ用認証
-    console.log('🎭 Demo authentication');
-
-    return {
-      success: true,
-      user: this.createMockUser('demo'),
-      accessToken: 'demo_token_' + Date.now(),
-      refreshToken: 'demo_refresh_' + Date.now(),
-      expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24時間
-    };
-  }
-
-  /**
-   * 👻 匿名認証の実装
-   */
-  private async loginAnonymous(): Promise<any> {
-    console.log('👻 Anonymous authentication');
-
-    return {
-      success: true,
-      user: this.createMockUser('anonymous'),
-      accessToken: 'anon_token_' + Date.now(),
-      refreshToken: null,
-      expiresAt: Date.now() + 60 * 60 * 1000, // 1時間
-    };
-  }
+  // 🚫 デモ・匿名認証機能は本番環境では使用禁止
+  // セキュリティとデータ整合性のため、実際の認証のみを許可
 
   /**
    * 🏢 セッション確立
