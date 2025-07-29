@@ -136,6 +136,8 @@ const SiteImprovementPlan: React.FC = () => {
           if (projectsData.success) setProjects(projectsData.data);
 
           setLastSync(new Date());
+        } else {
+          console.error('Failed to fetch progress data - Response not OK');
         }
       } catch (error) {
         console.error('Failed to fetch progress data:', error);

@@ -12,15 +12,6 @@ router.get('/tracking', async (req: Request, res: Response) => {
 
   try {
     const { type, id, phase, status, assignee, category, tags } = req.query;
-    console.log('📝 Extracted query params:', {
-      type,
-      id,
-      phase,
-      status,
-      assignee,
-      category,
-      tags,
-    });
 
     // Mock data for development
     if (type === 'tasks') {
@@ -34,10 +25,35 @@ router.get('/tracking', async (req: Request, res: Response) => {
           priority: 'high',
           category: 'development',
           phase: 'implementation',
+          assignee: 'developer',
           estimatedHours: 40,
           actualHours: 30,
           lastUpdated: new Date().toISOString(),
           tags: ['frontend', 'backend', 'integration'],
+          commits: [
+            {
+              sha: 'abc123',
+              message: 'Initial implementation',
+              author: 'developer',
+              date: new Date().toISOString(),
+              filesChanged: 5,
+              linesAdded: 150,
+              linesDeleted: 20,
+            },
+          ],
+          pullRequests: [],
+          metrics: {
+            codeQuality: 85,
+            testCoverage: 75,
+            performance: 90,
+            security: 80,
+            accessibility: 70,
+          },
+          metadata: {
+            source: 'manual',
+            reason: 'Initial task creation',
+            confidence: 100,
+          },
         },
         {
           id: 'task-2',
@@ -48,10 +64,47 @@ router.get('/tracking', async (req: Request, res: Response) => {
           priority: 'critical',
           category: 'api',
           phase: 'deployment',
+          assignee: 'developer',
           estimatedHours: 20,
           actualHours: 18,
           lastUpdated: new Date().toISOString(),
           tags: ['api', 'vercel'],
+          completedDate: new Date().toISOString(),
+          commits: [
+            {
+              sha: 'def456',
+              message: 'API routes completed',
+              author: 'developer',
+              date: new Date().toISOString(),
+              filesChanged: 3,
+              linesAdded: 100,
+              linesDeleted: 10,
+            },
+          ],
+          pullRequests: [
+            {
+              number: 1,
+              title: 'Complete API integration',
+              state: 'merged',
+              author: 'developer',
+              createdAt: new Date(Date.now() - 3600000).toISOString(),
+              mergedAt: new Date().toISOString(),
+              additions: 100,
+              deletions: 10,
+            },
+          ],
+          metrics: {
+            codeQuality: 95,
+            testCoverage: 90,
+            performance: 85,
+            security: 90,
+            accessibility: 80,
+          },
+          metadata: {
+            source: 'github',
+            reason: 'PR merged',
+            confidence: 95,
+          },
         },
       ];
 
@@ -72,7 +125,7 @@ router.get('/tracking', async (req: Request, res: Response) => {
       }
 
       console.log('✅ Returning tasks response:', mockTasks.length, 'tasks');
-      return res.json({
+      return res.status(200).json({
         success: true,
         data: mockTasks,
         message: 'タスク一覧を取得しました',
@@ -92,6 +145,44 @@ router.get('/tracking', async (req: Request, res: Response) => {
           blockedTasks: 1,
           overallProgress: 60,
           lastUpdated: new Date().toISOString(),
+          phases: [
+            {
+              id: 'phase-1',
+              name: 'Foundation',
+              progress: 80,
+              status: 'in-progress',
+              startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+              endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              tasks: ['task-1', 'task-2'],
+            },
+          ],
+          milestones: [
+            {
+              id: 'milestone-1',
+              title: 'Core Features Complete',
+              description: 'Basic functionality implemented',
+              dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+              status: 'in-progress',
+              progress: 60,
+              tasks: ['task-1', 'task-2'],
+            },
+          ],
+          metrics: {
+            velocity: 1.2,
+            burndownRate: 0.8,
+            qualityScore: 85,
+            teamEfficiency: 0.9,
+            riskLevel: 'low',
+          },
+          timeline: [
+            {
+              date: new Date().toISOString(),
+              event: 'Project Started',
+              description: 'Initial project setup',
+              type: 'milestone',
+              metadata: { progress: 0 },
+            },
+          ],
         },
       ];
 
@@ -112,7 +203,7 @@ router.get('/tracking', async (req: Request, res: Response) => {
       }
 
       console.log('✅ Returning projects response:', mockProjects.length, 'projects');
-      return res.json({
+      return res.status(200).json({
         success: true,
         data: mockProjects,
         message: 'プロジェクト一覧を取得しました',
@@ -145,8 +236,7 @@ router.get('/tracking', async (req: Request, res: Response) => {
       message: '無効なtypeパラメータです',
     });
   } catch (error: any) {
-    console.error('💥 Progress tracking error:', error);
-    console.error('💥 Error stack:', error.stack);
+    console.error('💥 Progress tracking error:', error.message);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
