@@ -16,6 +16,7 @@
     "declaration": false,
     "outDir": "./dist",
     "baseUrl": ".",
+    "types": [],
     "paths": {
       "@/types/*": [
         "../src/types/*"

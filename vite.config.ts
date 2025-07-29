@@ -139,8 +139,6 @@ export default defineConfig(({ command, mode }) => {
         },
         devOptions: {
           enabled: false, // 開発環境でService Workerを完全無効化
-          type: 'module',
-          navigateFallback: 'index.html',
         },
         // 開発環境では登録しない
         disable: mode === 'development',
@@ -173,10 +171,14 @@ export default defineConfig(({ command, mode }) => {
           target: 'http://localhost:3001',
           changeOrigin: true,
           secure: false,
-          ws: true,
+          ws: false,
           configure: (proxy, options) => {
             proxy.on('error', (err, req, res) => {
               console.log('Proxy error:', err);
+              if (!res.headersSent) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Proxy error', message: err.message }));
+              }
             });
             proxy.on('proxyReq', (proxyReq, req, res) => {
               console.log('Proxying request:', req.method, req.url);
