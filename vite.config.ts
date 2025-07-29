@@ -171,23 +171,12 @@ export default defineConfig(({ command, mode }) => {
         host: 'localhost',
       },
       proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
+        '^/api/.*': {
+          target: 'http://127.0.0.1:3001',
           changeOrigin: true,
           secure: false,
           ws: false,
-          configure: (proxy, options) => {
-            proxy.on('error', (err, req, res) => {
-              console.log('Proxy error:', err);
-              if (!res.headersSent) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Proxy error', message: err.message }));
-              }
-            });
-            proxy.on('proxyReq', (proxyReq, req, res) => {
-              console.log('Proxying request:', req.method, req.url);
-            });
-          },
+          logLevel: 'debug',
         },
       },
       watch: {

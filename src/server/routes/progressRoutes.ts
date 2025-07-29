@@ -4,6 +4,12 @@ const router = Router();
 
 // Mock progress tracking API for development
 router.get('/tracking', async (req: Request, res: Response) => {
+  console.log('🔍 Progress tracking GET request received:', {
+    url: req.url,
+    query: req.query,
+    headers: req.headers,
+  });
+
   try {
     const { type, id, phase, status, assignee, category, tags } = req.query;
 

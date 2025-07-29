@@ -29,7 +29,7 @@ import habitRoutes from './routes/habitRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルートをインポート
-import { setupWebSocketServer } from './services/webSocketService.js'; // WebSocketサービスをインポート
+// import { setupWebSocketServer } from './services/webSocketService.js'; // 開発環境では無効化
 import wbsRoutes from './routes/wbsRoutes.js';
 import implementationRoutes from './routes/implementationRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
@@ -57,21 +57,29 @@ const corsOrigin = (
   origin: string | undefined,
   callback: (err: Error | null, allow?: boolean) => void
 ) => {
-  // Allow requests with no origin (like mobile apps or curl requests)
-  if (!origin) return callback(null, true);
+  console.log(`CORS: Checking origin: ${origin || 'undefined'}`);
+
+  // Allow requests with no origin (like mobile apps, curl requests, or proxy requests)
+  if (!origin) {
+    console.log('CORS: Allowing request with no origin');
+    return callback(null, true);
+  }
 
   // Check if origin is in allowed list
   if (allowedOrigins.includes(origin)) {
+    console.log(`CORS: Allowing from allowed origins: ${origin}`);
     return callback(null, true);
   }
 
   // Allow all Vercel preview deployments for work-time-tracker
   if (origin.match(/^https:\/\/work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+    console.log(`CORS: Allowing Vercel preview: ${origin}`);
     return callback(null, true);
   }
 
-  // Allow localhost with any port for development
-  if (origin.match(/^http:\/\/localhost:\d+$/)) {
+  // Allow localhost with any port for development (including proxy requests)
+  if (origin.match(/^http:\/\/localhost:\d+$/) || origin.match(/^http:\/\/127\.0\.0\.1:\d+$/)) {
+    console.log(`CORS: Allowing localhost: ${origin}`);
     return callback(null, true);
   }
 
@@ -85,8 +93,19 @@ app.use(
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
   })
 );
+
+// Handle explicit OPTIONS requests
+app.options('*', (req, res) => {
+  console.log(`OPTIONS request for: ${req.path}`);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.sendStatus(200);
+});
 
 // 詳細ログを追加
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -121,14 +140,13 @@ if (!fs.existsSync(uploadsDir)) {
 // 静的ファイルの提供
 app.use('/uploads', express.static(uploadsDir));
 
-// WebSocketサーバーのセットアップ（Vercel以外の環境でのみ）
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  const wsService = setupWebSocketServer(server);
-  // グローバルに利用できるようにする（通知サービスなどから利用可能に）
-  app.set('wsService', wsService);
-  console.log('WebSocket server initialized');
+// WebSocketサーバーのセットアップ（開発環境では無効化）
+if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+  // const wsService = setupWebSocketServer(server);
+  // app.set('wsService', wsService);
+  console.log('WebSocket server skipped (Development environment)');
 } else {
-  console.log('WebSocket server skipped (Vercel environment)');
+  console.log('WebSocket server skipped (Development environment)');
 }
 
 // Routes の前に追加
