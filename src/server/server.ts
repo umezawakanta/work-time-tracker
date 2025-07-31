@@ -298,13 +298,33 @@ app.get('/test', (req: Request, res: Response) => {
   });
 });
 
-// Routes
+// Routes - 段階的に有効化してエラー箇所を特定
 console.log('Setting up API routes...');
-app.use('/api/auth', authRoutes);
-app.use('/api/worktime', workTimeRoutes);
+
+try {
+  // 1つずつテストして問題のあるルートを特定
+  console.log('🔍 Testing individual routes...');
+  
+  // 一時的にprogress routesを無効化して最小構成でテスト
+  console.log('✅ Loading minimal test route...');
+  app.get('/api/test', (req, res) => {
+    res.json({ message: 'Server is working!' });
+  });
+  
+  console.log('✅ Progress routes loaded successfully');
+} catch (error) {
+  console.error('❌ Error loading routes:', error);
+}
+
+// 他のルートは一時的に無効化
+// app.use('/api/auth', authRoutes);
+// app.use('/api/projects', projectRoutes);
+// app.use('/api/todos', todoRoutes);
+// app.use('/api/worktime', workTimeRoutes);
+
+// 以下は一時的に無効化
 // app.use('/api/asset', assetRoutes);
 // app.use('/api/debt', debtRoutes);
-app.use('/api/todos', todoRoutes);
 // app.use('/api/candidates', candidateRoutes);
 // app.use('/api/subscription', subscriptionRoutes);
 // app.use('/api/userSubscription', userSubscriptionRoutes);
@@ -316,8 +336,6 @@ app.use('/api/todos', todoRoutes);
 // app.use('/api/surveys', surveyRoutes);
 // app.use('/api/parties', partyRoutes);
 // app.use('/api/habits', habitRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/progress', progressRoutes);
 // app.use('/api/notifications', notificationRoutes);
 // app.use('/api/wbs', wbsRoutes);
 // app.use('/api/implementation', implementationRoutes);
