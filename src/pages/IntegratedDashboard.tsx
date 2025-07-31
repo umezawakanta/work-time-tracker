@@ -697,7 +697,7 @@ const IntegratedDashboard: React.FC = () => {
 
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                           <span>期限: {new Date(project.endDate).toLocaleDateString('ja-JP')}</span>
-                          <span>{project.assignees.length}名アサイン</span>
+                          <span>{(project.assignees || []).length}名アサイン</span>
                         </div>
                       </div>
                     </Card>
