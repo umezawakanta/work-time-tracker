@@ -14,16 +14,8 @@ declare global {
 export const USE_MOCK_DATA =
   getBooleanEnv('VITE_USE_MOCK_DATA') ||
   (typeof window !== 'undefined' && window.__VITE_USE_MOCK_DATA__ === 'true') ||
-  // 開発環境では認証エラーを回避するためモックデータを優先使用
-  (isDev() &&
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ||
-  // 本番環境でAPIが存在しない場合は自動的にモックモードを有効化
-  (typeof window !== 'undefined' &&
-    window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &&
-    !getEnv('VITE_API_BASE_URL')?.includes('herokuapp') &&
-    !getEnv('VITE_API_BASE_URL')?.includes('railway') &&
-    !getEnv('VITE_API_BASE_URL')?.includes('render'));
+  // Mock data only enabled with explicit flag - allow real API in development
+  false;
 
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');
