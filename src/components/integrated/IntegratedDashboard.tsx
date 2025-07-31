@@ -705,7 +705,7 @@ export const IntegratedDashboard: React.FC = () => {
         title: 'カテゴリ別進捗',
         type: 'chart',
         data: {
-          categories: stats.topCategories,
+          categories: stats.topCategories || [],
           type: 'horizontal-bar',
         },
         size: 'lg',
@@ -716,7 +716,7 @@ export const IntegratedDashboard: React.FC = () => {
         title: '最近の達成',
         type: 'list',
         data: {
-          items: stats.recentAchievements.slice(0, 5),
+          items: (stats.recentAchievements || []).slice(0, 5),
           type: 'badges',
         },
         size: 'md',
@@ -930,7 +930,7 @@ export const IntegratedDashboard: React.FC = () => {
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-red-600">ブロッカー:</p>
                       <ul className="text-xs space-y-1">
-                        {widget.data.blockers.map((blocker: string, index: number) => (
+                        {(widget.data.blockers || []).map((blocker: string, index: number) => (
                           <li key={index} className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-red-600 rounded-full" />
                             {blocker}
@@ -1132,7 +1132,7 @@ export const IntegratedDashboard: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {detailedBadgeProgress.recentAchievements.map((achievement) => (
+              {(detailedBadgeProgress.recentAchievements || []).map((achievement) => (
                 <div key={achievement.id} className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-sm">{achievement.name}</p>
@@ -1157,7 +1157,7 @@ export const IntegratedDashboard: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {detailedBadgeProgress.upcomingMilestones.map((milestone) => (
+              {(detailedBadgeProgress.upcomingMilestones || []).map((milestone) => (
                 <div key={milestone.id} className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="font-medium">{milestone.name}</span>
@@ -1184,7 +1184,7 @@ export const IntegratedDashboard: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {detailedBadgeProgress.weeklyProgress.map((week) => (
+            {(detailedBadgeProgress.weeklyProgress || []).map((week) => (
               <div key={week.week} className="text-center p-4 bg-muted/50 rounded-lg">
                 <p className="text-sm text-muted-foreground">{week.week}</p>
                 <p className="text-2xl font-bold text-primary">{week.completed}</p>
