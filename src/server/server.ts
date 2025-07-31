@@ -284,7 +284,7 @@ console.log('Setting up API routes...');
 // app.use('/api/surveys', surveyRoutes);
 // app.use('/api/parties', partyRoutes);
 // app.use('/api/habits', habitRoutes);
-// app.use('/api/projects', projectRoutes);
+app.use('/api/projects', projectRoutes);
 app.use('/api/progress', progressRoutes);
 // app.use('/api/notifications', notificationRoutes);
 // app.use('/api/wbs', wbsRoutes);
