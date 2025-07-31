@@ -89,26 +89,56 @@ const corsOrigin = (
   callback(new Error('Not allowed by CORS'));
 };
 
-// 基本的なCORS設定を有効化
+// 強化されたCORS設定を有効化 - すべてのオリジンを許可
 app.use(
   cors({
-    origin: corsOrigin,
+    origin: true, // 開発環境では全オリジン許可
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Cache-Control',
+      'X-File-Name',
+    ],
+    exposedHeaders: ['X-Total-Count'],
     preflightContinue: false,
     optionsSuccessStatus: 200,
   })
 );
 
-// Handle explicit OPTIONS requests - 一時的に無効化
-// app.options('*', (req, res) => {
-//   console.log(`OPTIONS request for: ${req.path}`);
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-//   res.sendStatus(200);
-// });
+// 追加のCORSヘッダー設定（フォールバック）
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cache-Control, X-File-Name'
+  );
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+// Handle explicit OPTIONS requests - 有効化
+app.options('*', (req, res) => {
+  console.log(`✅ OPTIONS request for: ${req.path}`);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cache-Control, X-File-Name'
+  );
+  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.sendStatus(200);
+});
 
 app.use(express.json({ limit: '10mb' }));
 // 詳細ログを一時的に無効化
