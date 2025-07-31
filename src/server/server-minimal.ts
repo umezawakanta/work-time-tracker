@@ -102,6 +102,47 @@ app.get('/api/projects', (req, res) => {
   });
 });
 
+// Mock blog endpoint
+app.get('/api/blog', (req, res) => {
+  console.log('✅ GET /api/blog called');
+  res.json([
+    {
+      id: 'blog-1',
+      title: 'ADHD/ASD特化の生産性向上術',
+      excerpt: 'ADHD・ASDの特性を活かした効率的な作業方法について解説します。',
+      content: 'ADHDやASDの方々が直面する課題を理解し、それらを強みに変える方法を紹介します...',
+      author: 'Work Time Tracker Team',
+      publishedAt: '2025-01-30T10:00:00Z',
+      tags: ['ADHD', 'ASD', '生産性', 'ライフハック'],
+      category: 'productivity',
+      status: 'published',
+    },
+    {
+      id: 'blog-2',
+      title: 'タスク管理の基本とコツ',
+      excerpt: '効果的なタスク管理でより良い日常を送るためのテクニック集です。',
+      content:
+        'タスクを適切に分割し、優先順位をつけることで、ストレスを減らしながら生産性を向上させる方法...',
+      author: 'Work Time Tracker Team',
+      publishedAt: '2025-01-29T14:30:00Z',
+      tags: ['タスク管理', '時間管理', '効率化'],
+      category: 'task-management',
+      status: 'published',
+    },
+    {
+      id: 'blog-3',
+      title: 'リモートワークでの集中力維持法',
+      excerpt: '在宅勤務やリモートワークで集中力を保つための実践的なアドバイス。',
+      content: '自宅での作業環境を整え、集中力を持続させるための具体的な方法をご紹介します...',
+      author: 'Work Time Tracker Team',
+      publishedAt: '2025-01-28T09:15:00Z',
+      tags: ['リモートワーク', '集中力', '環境整備'],
+      category: 'remote-work',
+      status: 'published',
+    },
+  ]);
+});
+
 // Mock auth endpoints
 app.post('/api/auth/login', (req, res) => {
   console.log('✅ POST /api/auth/login called');
@@ -161,6 +202,7 @@ server.listen(PORT, () => {
   console.log(`✅ Health check: http://localhost:${PORT}/api/health`);
   console.log(`✅ Todos API: http://localhost:${PORT}/api/todos`);
   console.log(`✅ Projects API: http://localhost:${PORT}/api/projects`);
+  console.log(`✅ Blog API: http://localhost:${PORT}/api/blog`);
   console.log(`✅ Auth API: http://localhost:${PORT}/api/auth/check`);
   console.log('🚀 ================================');
   console.log('🎊 All APIs ready for frontend!');

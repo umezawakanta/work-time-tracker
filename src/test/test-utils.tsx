@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
+import { AuthProvider } from '../context/AuthContext';
 
 // Re-export testing utilities
 export * from '@testing-library/react';
@@ -50,12 +51,18 @@ function TestWrapper({ children, initialState, disableRouter = false }: TestWrap
   const testStore = createTestStore(initialState);
 
   if (disableRouter) {
-    return <Provider store={testStore}>{children}</Provider>;
+    return (
+      <Provider store={testStore}>
+        <AuthProvider>{children}</AuthProvider>
+      </Provider>
+    );
   }
 
   return (
     <Provider store={testStore}>
-      <BrowserRouter>{children}</BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>{children}</AuthProvider>
+      </BrowserRouter>
     </Provider>
   );
 }
