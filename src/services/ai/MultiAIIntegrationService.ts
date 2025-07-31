@@ -318,100 +318,97 @@ class MultiAIIntegrationService {
   }
 
   /**
-   * Gemini実行
+   * Gemini実行（Google AI Studio API実装）
    */
   private async executeGemini(request: AITaskRequest): Promise<AITaskResponse> {
-    console.log('✨ Gemini でタスク処理中...');
+    try {
+      const apiKey = process.env.VITE_GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
 
-    // TODO: 実際のGoogle AI API実装に置き換え予定
-    // 決定論的な処理時間（モック）
-    const mockProcessingTime = 900; // Geminiの平均応答時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
+      if (!apiKey) {
+        throw new Error('Google AI API key not configured');
+      }
 
-    return {
-      content: `Gemini応答: ${request.prompt}について創造的で革新的な視点から回答します。マルチモーダル処理が強みです。`,
-      provider: 'Gemini',
-      model: 'gemini-pro',
-      confidence: 85,
-      tokens: 120,
-      cost: 0.001,
-      processingTime: 0,
-    };
+      console.log('✨ Google Gemini processing...');
+      const startTime = Date.now();
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: request.prompt,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              maxOutputTokens: 1000,
+              temperature: 0.7,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Google AI API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const processingTime = Date.now() - startTime;
+
+      return {
+        content: data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated',
+        provider: 'Gemini',
+        model: 'gemini-pro',
+        confidence: 85,
+        cost: this.calculateGeminiCost(data.usageMetadata?.totalTokenCount || 0),
+        processingTime,
+        metadata: {
+          usage: data.usageMetadata,
+          finishReason: data.candidates?.[0]?.finishReason,
+        },
+      };
+    } catch (error: any) {
+      console.error('❌ Gemini API error:', error);
+      return this.executeHeuristicAnalysis(request);
+    }
   }
 
   /**
-   * Notion実行
+   * Notion AI実行（公式API未提供）
    */
   private async executeNotion(request: AITaskRequest): Promise<AITaskResponse> {
-    console.log('📝 Notion AI でタスク処理中...');
-
-    // TODO: 実際のNotion API実装に置き換え予定
-    // 決定論的な処理時間（モック）
-    const mockProcessingTime = 1100; // NotionAIの平均応答時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
-
-    return {
-      content: `Notion AI応答: ${request.prompt}をもとに構造化されたコンテンツを作成しました。ドキュメント作成に最適化されています。`,
-      provider: 'Notion',
-      model: 'notion-ai',
-      confidence: 82,
-      processingTime: 0,
-      metadata: {
-        pageId: `notion-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-      },
-    };
+    // Notion AIは現在公開APIを提供していない
+    throw new Error(
+      'Notion AI does not currently provide a public API. Please use the Notion app directly or alternative AI services.'
+    );
   }
 
   /**
-   * Manus実行
+   * Manus手書き認識（専用アプリ）
    */
   private async executeManus(request: AITaskRequest): Promise<AITaskResponse> {
-    console.log('✍️ Manus で手書き認識処理中...');
-
-    // TODO: 実際のManus API実装に置き換え予定
-    // 決定論的な処理時間（モック）
-    const mockProcessingTime = 1800; // 手書き認識の平均処理時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
-
-    return {
-      content: `Manus認識結果: 手書きテキスト「${request.prompt}」を高精度で認識・デジタル化しました。`,
-      provider: 'Manus',
-      model: 'manus-v2',
-      confidence: 92,
-      processingTime: 0,
-      metadata: {
-        recognitionAccuracy: 0.92,
-        language: 'ja',
-        isHandwritten: true,
-      },
-    };
+    // Manusは専用デスクトップアプリケーションのため、Web API形式では利用不可
+    throw new Error(
+      'Manus is a desktop application for handwriting recognition and does not provide a web API. Please use the Manus app directly or alternative OCR services.'
+    );
   }
 
   /**
-   * SuperWhisper実行
+   * SuperWhisper音声認識（サードパーティAPI）
    */
   private async executeSuperWhisper(request: AITaskRequest): Promise<AITaskResponse> {
-    console.log('🎤 SuperWhisper で音声認識中...');
-
-    // TODO: 実際のSuperWhisper API実装に置き換え予定
-    // 決定論的な処理時間（モック）
-    const mockProcessingTime = 600; // 高速音声認識の平均処理時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
-
-    return {
-      content: `SuperWhisper認識結果: 音声「${request.prompt}」をリアルタイムで正確に文字起こししました。`,
-      provider: 'SuperWhisper',
-      model: 'whisper-turbo',
-      confidence: 96,
-      processingTime: 0,
-      metadata: {
-        audioLength: 30,
-        language: 'ja',
-        speakerCount: 1,
-        realtime: true,
-      },
-    };
+    // SuperWhisperは専用ソフトウェアのため、Web API形式では利用不可
+    throw new Error(
+      'SuperWhisper is a desktop application and does not provide a web API. Please use OpenAI Whisper API or other web-based speech recognition services.'
+    );
   }
 
   /**
@@ -431,46 +428,15 @@ class MultiAIIntegrationService {
     // NotebookLMは現在API形式では提供されていないため、代替として Google AI Studio Gemini を使用
     throw new Error(
       'NotebookLM API is not currently available. Please use Google AI Studio Gemini or upload documents manually to NotebookLM web interface.'
-    ); // 文書分析の平均処理時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
-
-    return {
-      content: `NotebookLM分析: ${request.prompt}に関する詳細な文書分析と洞察を提供します。複数の文書から関連情報を抽出・統合しました。`,
-      provider: 'NotebookLM',
-      model: 'notebooklm-v1',
-      confidence: 88,
-      cost: 0,
-      processingTime: 0,
-      metadata: {
-        documentsAnalyzed: 5,
-        keyInsights: 3,
-        isFree: true,
-      },
-    };
+    );
   }
 
   /**
-   * AI Studio実行
+   * AI Studio実行（Google AI Studio API実装）
    */
   private async executeAIStudio(request: AITaskRequest): Promise<AITaskResponse> {
-    console.log('🎨 AI Studio でタスク処理中...');
-
-    // TODO: 実際のAI Studio API実装に置き換え予定
-    // 決定論的な処理時間（モック）
-    const mockProcessingTime = 1700; // 実験的AI機能の平均処理時間
-    await new Promise((resolve) => setTimeout(resolve, mockProcessingTime));
-
-    return {
-      content: `AI Studio応答: ${request.prompt}について実験的で先進的なAI機能を活用した回答を提供します。`,
-      provider: 'AI Studio',
-      model: 'studio-experimental',
-      confidence: 83,
-      processingTime: 0,
-      metadata: {
-        experimental: true,
-        version: 'beta',
-      },
-    };
+    // AI Studioは Google Gemini の別名なので、Geminiエンドポイントを使用
+    return this.executeGemini(request);
   }
 
   /**
@@ -897,6 +863,14 @@ class MultiAIIntegrationService {
   private calculateAnthropicCost(inputTokens: number, outputTokens: number): number {
     // Claude-3 Sonnet料金: $3/1M input tokens, $15/1M output tokens
     return (inputTokens / 1000000) * 3 + (outputTokens / 1000000) * 15;
+  }
+
+  /**
+   * Gemini料金計算
+   */
+  private calculateGeminiCost(tokens: number): number {
+    // Gemini Pro料金: Free up to 60 requests/minute, then $0.0005/1K tokens
+    return (tokens / 1000) * 0.0005;
   }
 }
 

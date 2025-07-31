@@ -50,32 +50,93 @@ export interface TaskPrediction {
 }
 
 class TaskSuggestionService {
-  private isAIEnabled = false; // Phase 2で有効化
+  private isAIEnabled = true; // 実際のAI実装完了
 
   /**
    * タスクの優先度を分析し、AI提案を生成
-   * Phase 2: 実際のAIモデル（OpenAI GPT-4, Claude等）を使用
+   * 実際のAIモデル（OpenAI GPT-4, Claude等）を使用
    */
   async analyzePriority(tasks: TodoItem[]): Promise<TaskSuggestion[]> {
-    // Phase 2実装予定: AI分析
-    // - タスクの内容、期限、カテゴリを分析
-    // - ユーザーの過去の行動パターンを学習
-    // - 緊急度・重要度マトリックスでの最適配置提案
+    try {
+      // 実際のAI分析の実行
+      const { MultiAIIntegrationService } = await import('./MultiAIIntegrationService');
+      const aiService = MultiAIIntegrationService.getInstance();
 
-    return this.generateMockPrioritySuggestions(tasks);
+      const taskAnalysisPrompt = `
+Task Priority Analysis Request:
+
+Tasks to analyze:
+${tasks.map((task) => `- ${task.task} (Priority: ${task.priority}, Deadline: ${task.deadline || 'None'})`).join('\n')}
+
+Please analyze these tasks and provide priority suggestions based on:
+1. Urgency vs Importance matrix
+2. Dependencies between tasks  
+3. Resource requirements
+4. Business impact
+
+Respond with actionable priority recommendations.
+`;
+
+      const response = await aiService.processRequest({
+        prompt: taskAnalysisPrompt,
+        taskType: 'analysis',
+        priority: 'normal',
+        expectedResponseTime: 5000,
+      });
+
+      // AI応答を解析してTaskSuggestion形式に変換
+      return this.parseAIResponseToSuggestions(response.content, tasks);
+    } catch (error) {
+      console.error('❌ AI priority analysis failed:', error);
+      // フォールバック: ヒューリスティック分析
+      return this.generateHeuristicPrioritySuggestions(tasks);
+    }
   }
 
   /**
-   * タスクの完了時間を予測
-   * Phase 2: 機械学習モデルで予測精度向上
+   * タスクの完了時間を予測（実際のAI実装）
    */
-  async predictTaskDuration(task: TodoItem): Promise<TaskPrediction> {
-    // Phase 2実装予定:
-    // - 過去の類似タスクデータから学習
-    // - テキスト分析で複雑さを評価
-    // - ユーザーの作業効率パターンを考慮
+  async predictCompletionTime(tasks: TodoItem[]): Promise<TaskPrediction[]> {
+    try {
+      const { MultiAIIntegrationService } = await import('./MultiAIIntegrationService');
+      const aiService = MultiAIIntegrationService.getInstance();
 
-    return this.generateMockPrediction(task);
+      const predictions: TaskPrediction[] = [];
+
+      for (const task of tasks) {
+        const predictionPrompt = `
+Task Completion Time Prediction:
+
+Task: ${task.task}
+Priority: ${task.priority}
+Type: ${task.type}
+Tags: ${task.tags?.join(', ') || 'None'}
+
+Based on this task description, estimate:
+1. Expected completion time in minutes
+2. Confidence level (0-100)
+3. Complexity factors
+4. Potential blockers
+
+Provide a realistic time estimate.
+`;
+
+        const response = await aiService.processRequest({
+          prompt: predictionPrompt,
+          taskType: 'prediction',
+          priority: 'normal',
+          expectedResponseTime: 3000,
+        });
+
+        predictions.push(this.parseAIResponseToPrediction(response.content, task));
+      }
+
+      return predictions;
+    } catch (error) {
+      console.error('❌ AI prediction failed:', error);
+      // フォールバック: ヒューリスティック予測
+      return this.generateHeuristicPredictions(tasks);
+    }
   }
 
   /**
@@ -381,6 +442,141 @@ class TaskSuggestionService {
     const next30Days = 30;
     const tasksWithDeadlines = tasks.filter((t) => t.deadline && !t.completed);
     return Math.round((tasksWithDeadlines.length / next30Days) * 10) / 10;
+  }
+
+  /**
+   * AI応答をTaskSuggestion形式に解析
+   */
+  private parseAIResponseToSuggestions(aiResponse: string, tasks: TodoItem[]): TaskSuggestion[] {
+    // AI応答の解析とフォーマット
+    const suggestions: TaskSuggestion[] = [];
+
+    tasks.forEach((task, index) => {
+      suggestions.push({
+        id: `ai_suggestion_${Date.now()}_${index}`,
+        taskId: task._id,
+        type: 'priority_adjustment',
+        title: `AI Priority Suggestion for: ${task.task}`,
+        description: this.extractSuggestionFromAI(aiResponse, task.task),
+        confidence: 85,
+        impact: 'medium',
+        effort: 'low',
+        aiGenerated: true,
+        metadata: {
+          source: 'ai_analysis',
+          timestamp: new Date().toISOString(),
+        },
+      });
+    });
+
+    return suggestions;
+  }
+
+  /**
+   * AI応答をTaskPrediction形式に解析
+   */
+  private parseAIResponseToPrediction(aiResponse: string, task: TodoItem): TaskPrediction {
+    // AI応答から時間予測を抽出
+    const timeMatch = aiResponse.match(/(\d+)\s*(minutes?|hours?)/i);
+    const estimatedMinutes = timeMatch
+      ? parseInt(timeMatch[1]) * (timeMatch[2].includes('hour') ? 60 : 1)
+      : 60;
+
+    return {
+      taskId: task._id,
+      estimatedMinutes,
+      confidence: this.extractConfidenceFromAI(aiResponse),
+      factors: this.extractFactorsFromAI(aiResponse),
+      aiGenerated: true,
+    };
+  }
+
+  /**
+   * ヒューリスティック優先度提案（AI不可時のフォールバック）
+   */
+  private generateHeuristicPrioritySuggestions(tasks: TodoItem[]): TaskSuggestion[] {
+    return tasks.map((task, index) => {
+      let suggestionText = '';
+      let impact: 'low' | 'medium' | 'high' = 'medium';
+
+      if (task.priority >= 8) {
+        suggestionText = 'High priority task - consider immediate action';
+        impact = 'high';
+      } else if (task.priority >= 5) {
+        suggestionText = 'Medium priority task - schedule within 2-3 days';
+        impact = 'medium';
+      } else {
+        suggestionText = 'Low priority task - can be scheduled for later this week';
+        impact = 'low';
+      }
+
+      return {
+        id: `heuristic_${Date.now()}_${index}`,
+        taskId: task._id,
+        type: 'priority_adjustment',
+        title: `Priority Analysis: ${task.task}`,
+        description: suggestionText,
+        confidence: 70,
+        impact,
+        effort: 'low',
+        aiGenerated: false,
+        metadata: {
+          source: 'heuristic_analysis',
+          timestamp: new Date().toISOString(),
+        },
+      };
+    });
+  }
+
+  /**
+   * ヒューリスティック時間予測（AI不可時のフォールバック）
+   */
+  private generateHeuristicPredictions(tasks: TodoItem[]): TaskPrediction[] {
+    return tasks.map((task) => ({
+      taskId: task._id,
+      estimatedMinutes: this.calculateHeuristicTime(task),
+      confidence: 60,
+      factors: ['complexity', 'priority'],
+      aiGenerated: false,
+    }));
+  }
+
+  private calculateHeuristicTime(task: TodoItem): number {
+    let baseTime = 30; // 30分ベース
+
+    // 優先度による調整
+    if (task.priority >= 8) baseTime *= 1.5;
+    else if (task.priority <= 3) baseTime *= 0.7;
+
+    // タスクタイプによる調整
+    if (task.type === 'planning') baseTime *= 0.8;
+    else if (task.type === 'development') baseTime *= 2.0;
+
+    return Math.round(baseTime);
+  }
+
+  private extractSuggestionFromAI(aiResponse: string, taskName: string): string {
+    // AI応答からタスク固有の提案を抽出
+    const lines = aiResponse.split('\n');
+    for (const line of lines) {
+      if (line.toLowerCase().includes(taskName.toLowerCase().substring(0, 10))) {
+        return line.trim();
+      }
+    }
+    return 'AI-generated priority recommendation based on task analysis.';
+  }
+
+  private extractConfidenceFromAI(aiResponse: string): number {
+    const confidenceMatch = aiResponse.match(/confidence[:\s]+(\d+)/i);
+    return confidenceMatch ? parseInt(confidenceMatch[1]) : 75;
+  }
+
+  private extractFactorsFromAI(aiResponse: string): string[] {
+    const factors = [];
+    if (aiResponse.toLowerCase().includes('complex')) factors.push('complexity');
+    if (aiResponse.toLowerCase().includes('urgent')) factors.push('urgency');
+    if (aiResponse.toLowerCase().includes('depend')) factors.push('dependencies');
+    return factors.length > 0 ? factors : ['general'];
   }
 }
 
