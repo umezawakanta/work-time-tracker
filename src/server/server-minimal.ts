@@ -7,36 +7,16 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3001;
 
-// 強化されたCORS設定
-app.use(
-  cors({
-    origin: true, // 全オリジン許可
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-      'Cache-Control',
-      'X-File-Name',
-    ],
-    exposedHeaders: ['X-Total-Count'],
-    preflightContinue: false,
-    optionsSuccessStatus: 200,
-  })
-);
+console.log('🔍 Starting minimal server setup...');
 
-// 追加のCORSヘッダー設定
+// Basic middleware
+app.use(express.json());
+
+// Simple CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cache-Control, X-File-Name'
-  );
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
@@ -45,20 +25,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Handle explicit OPTIONS requests
-app.options('*', (req, res) => {
-  console.log(`✅ OPTIONS request for: ${req.path}`);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cache-Control, X-File-Name'
-  );
-  res.header('Access-Control-Expose-Headers', 'X-Total-Count');
-  res.sendStatus(200);
-});
-
-app.use(express.json({ limit: '10mb' }));
+console.log('✅ Basic middleware configured');
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

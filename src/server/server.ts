@@ -27,7 +27,7 @@ import surveyRoutes from './routes/surveyRoutes.js';
 import partyRoutes from './routes/partyRoutes.js';
 import habitRoutes from './routes/habitRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
-import projectRoutes from './routes/projectRoutes.ts';
+import projectRoutes from './routes/projectRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルートをインポート
 // import { setupWebSocketServer } from './services/webSocketService.js'; // 開発環境では無効化
 import wbsRoutes from './routes/wbsRoutes.js';
