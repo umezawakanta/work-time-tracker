@@ -44,10 +44,12 @@ const app = express();
 // HTTPサーバーを作成（WebSocketと共用するため）
 const server = http.createServer(app);
 
-// Middleware
+// Middleware - Enhanced CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'http://localhost:5173', // Vite dev server
+  'http://127.0.0.1:5173',
   'https://work-time-tracker-5d9q.vercel.app',
   ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
 ];
@@ -268,11 +270,11 @@ app.get('/test', (req: Request, res: Response) => {
 
 // Routes
 console.log('Setting up API routes...');
-// app.use('/api/auth', authRoutes);
-// app.use('/api/worktime', workTimeRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/worktime', workTimeRoutes);
 // app.use('/api/asset', assetRoutes);
 // app.use('/api/debt', debtRoutes);
-// app.use('/api/todos', todoRoutes);
+app.use('/api/todos', todoRoutes);
 // app.use('/api/candidates', candidateRoutes);
 // app.use('/api/subscription', subscriptionRoutes);
 // app.use('/api/userSubscription', userSubscriptionRoutes);
