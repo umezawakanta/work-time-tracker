@@ -112,21 +112,26 @@ const IntegratedDashboard: React.FC = () => {
       try {
         setIsProjectsLoading(true);
 
-        // 本番環境でのAPI呼び出し
-        const response = await fetch('/api/projects', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-          },
-        });
+        // API呼び出し（Vercel Functions対応）
+        try {
+          const response = await fetch('/api/projects', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            },
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setProjects(data.data);
-            return;
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              setProjects(data.data);
+              console.log('✅ Projects loaded successfully from API');
+              return;
+            }
           }
+        } catch (apiError) {
+          console.warn('⚠️ API server not available, using local data:', apiError);
         }
 
         // フォールバック: デモプロジェクトデータ
