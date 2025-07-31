@@ -199,20 +199,24 @@ describe('FirebaseAuthContext', () => {
       mockSignInWithEmailAndPassword.mockRejectedValue(mockError);
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-        if (typeof callback === 'function') {
-          callback(null);
-        }
         return jest.fn();
       });
 
       const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
 
-      await expect(async () => {
+      let thrownError: any = null;
+      try {
         await act(async () => {
           await result.current.login('test@example.com', 'wrongpassword');
         });
-      }).rejects.toThrow();
+      } catch (error) {
+        thrownError = error;
+      }
 
+      // Verify that an error was thrown
+      expect(thrownError).toBeTruthy();
+
+      // Check that the error state is set correctly
       expect(result.current.error).toBe('auth/invalid-credentials');
     });
 

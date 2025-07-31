@@ -155,9 +155,19 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   // Set error helper - preserves Firebase error codes - use useCallback for stability
   const setErrorMessage = useCallback((error: unknown) => {
     let errorMessage = '';
-    if (error && typeof error === 'object' && 'code' in error) {
-      // Firebase error with code
-      errorMessage = error.code as string;
+    if (error && typeof error === 'object') {
+      // Check for Firebase error code property
+      const errorObj = error as any;
+      if (errorObj.code) {
+        // Firebase error with code
+        errorMessage = errorObj.code;
+      } else if (error instanceof Error) {
+        // Regular error - use the error message directly
+        errorMessage = error.message;
+      } else {
+        // Unknown object error
+        errorMessage = String(error);
+      }
     } else if (error instanceof Error) {
       // Regular error - use the error message directly
       errorMessage = error.message;
@@ -166,7 +176,6 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
       errorMessage = String(error);
     }
 
-    console.log('🔥 Setting Firebase error:', errorMessage);
     setError(errorMessage);
   }, []);
 
@@ -188,14 +197,14 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         // Only clear error on successful completion
         clearError();
         toast.success('ログインしました');
+        setLoading(false);
       } catch (error: unknown) {
         console.log('🔥 signIn catch block:', error);
         setErrorMessage(error);
         const errorMessage = error instanceof Error ? error.message : 'ログインに失敗しました';
         toast.error(errorMessage);
-        throw error; // Re-throw to maintain expected behavior
-      } finally {
         setLoading(false);
+        throw error; // Re-throw to maintain expected behavior
       }
     },
     [clearError, setErrorMessage, isTestEnvironment]

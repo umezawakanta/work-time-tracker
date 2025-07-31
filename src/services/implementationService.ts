@@ -193,27 +193,6 @@ class ImplementationService {
     }
   }
 
-  // 🚫 モックデータ機能は本番環境では使用禁止
-  // 実際のデータベースからのデータ取得のみを許可
-        checklist: [
-          { id: 'c5', label: 'cognitive/ 配下パス修正', completed: true, createdAt: now },
-          { id: 'c6', label: 'worktime/ 配下パス修正', completed: true, createdAt: now },
-        ],
-        startDate: now,
-        completedDate: now,
-        estimatedHours: 1,
-        actualHours: 0.5,
-        projectId,
-        createdAt: now,
-        updatedAt: now,
-        createdBy: 'system',
-        tags: ['refactor', 'imports'],
-        dependencies: [],
-        notes: 'フォルダ構造再編成に伴うパス修正',
-      },
-    ];
-  }
-
   private getMockLogs(projectId: string, limit?: number): ImplementationLog[] {
     const logs = [
       {
