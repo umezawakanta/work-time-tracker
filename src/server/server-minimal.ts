@@ -1,6 +1,5 @@
 // Minimal API Server for Work Time Tracker
 import express from 'express';
-import cors from 'cors';
 import http from 'http';
 
 const app = express();
@@ -12,20 +11,40 @@ console.log('🔍 Starting minimal server setup...');
 // Basic middleware
 app.use(express.json());
 
-// Simple CORS
+// Apply CORS headers - Express-compatible version
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // 許可するオリジンを設定
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://work-time-tracker.vercel.app',
+  ];
+
+  const origin = req.headers.origin;
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Requested-With, stripe-signature'
+  );
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
+    console.log(`✅ OPTIONS preflight request for ${req.path} from ${origin || 'unknown'}`);
     res.sendStatus(200);
   } else {
+    console.log(`🌐 ${req.method} ${req.path} from ${origin || 'no-origin'}`);
     next();
   }
 });
 
-console.log('✅ Basic middleware configured');
+console.log('✅ Basic middleware with robust CORS configured');
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
