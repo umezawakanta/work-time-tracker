@@ -304,13 +304,13 @@ console.log('Setting up API routes...');
 try {
   // 1つずつテストして問題のあるルートを特定
   console.log('🔍 Testing individual routes...');
-  
+
   // 一時的にprogress routesを無効化して最小構成でテスト
   console.log('✅ Loading minimal test route...');
   app.get('/api/test', (req, res) => {
     res.json({ message: 'Server is working!' });
   });
-  
+
   console.log('✅ Progress routes loaded successfully');
 } catch (error) {
   console.error('❌ Error loading routes:', error);

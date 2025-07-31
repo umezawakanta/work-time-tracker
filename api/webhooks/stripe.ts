@@ -102,7 +102,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 async function handlePaymentSucceeded(invoice: Stripe.Invoice, operationId: string) {
   console.log(`💰 [${operationId}] Payment succeeded for invoice: ${invoice.id}`);
 
-  if (!invoice.subscription) {
+  const subscriptionId = (invoice as any).subscription;
+  if (!subscriptionId) {
     console.log(`ℹ️ [${operationId}] One-time payment, no subscription update needed`);
     return;
   }
@@ -112,7 +113,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice, operationId: stri
     const { SubscriptionService } = await import('../../src/services/database/SubscriptionService');
     const subscriptionService = SubscriptionService.getInstance();
 
-    await subscriptionService.updateSubscriptionStatus(invoice.subscription as string, 'active', {
+    await subscriptionService.updateSubscriptionStatus(subscriptionId as string, 'active', {
       lastPaymentDate: new Date(invoice.created * 1000).toISOString(),
       lastPaymentAmount: invoice.amount_paid,
       paymentStatus: 'paid',
@@ -148,21 +149,18 @@ async function handlePaymentFailed(invoice: Stripe.Invoice, operationId: string)
     const subscriptionService = SubscriptionService.getInstance();
 
     // サブスクリプション状態を「支払い遅延」に更新
-    if (invoice.subscription) {
-      await subscriptionService.updateSubscriptionStatus(
-        invoice.subscription as string,
-        'past_due',
-        {
-          paymentStatus: 'failed',
-          failureReason: 'Payment failed',
-          metadata: {
-            invoiceId: invoice.id,
-            source: 'stripe_webhook',
-            operationId,
-            attemptCount: invoice.attempt_count,
-          },
-        }
-      );
+    const subscriptionId = (invoice as any).subscription;
+    if (subscriptionId) {
+      await subscriptionService.updateSubscriptionStatus(subscriptionId as string, 'past_due', {
+        paymentStatus: 'failed',
+        failureReason: 'Payment failed',
+        metadata: {
+          invoiceId: invoice.id,
+          source: 'stripe_webhook',
+          operationId,
+          attemptCount: invoice.attempt_count,
+        },
+      });
     }
 
     // ユーザーに通知（メール送信など）
@@ -224,12 +222,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, oper
       subscription.id,
       subscription.status as any,
       {
-        endDate: subscription.current_period_end
-          ? new Date(subscription.current_period_end * 1000).toISOString()
+        endDate: (subscription as any).current_period_end
+          ? new Date((subscription as any).current_period_end * 1000).toISOString()
           : undefined,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        cancelledAt: subscription.canceled_at
-          ? new Date(subscription.canceled_at * 1000).toISOString()
+        cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
+        cancelledAt: (subscription as any).canceled_at
+          ? new Date((subscription as any).canceled_at * 1000).toISOString()
           : undefined,
         metadata: {
           source: 'stripe_webhook',
