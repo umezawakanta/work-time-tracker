@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { connectDB } from '../../src/server/config/database';
 import { TodoModel } from '../../src/server/models/Todo';
 import { withAuth, AuthenticatedRequest } from '../../src/middleware/auth';
+import { cors } from '../../lib/cors';
 
 // Helper function to create entity ID
 const createEntityId = (prefix: string = 'todo'): string => {
@@ -9,6 +10,15 @@ const createEntityId = (prefix: string = 'todo'): string => {
 };
 
 const handler = async (req: AuthenticatedRequest, res: VercelResponse): Promise<void> => {
+  // Apply CORS headers
+  await cors(req, res);
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   try {
     // Connect to database
     await connectDB();
