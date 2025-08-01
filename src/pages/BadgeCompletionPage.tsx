@@ -30,21 +30,20 @@ const BadgeCompletionPage: React.FC = () => {
     };
   }, []);
 
-  const initializeGameLoopIntegration = async () => {
+  const initializeGameLoopIntegration = () => {
     try {
       // 実際のGameLoopTaskServiceからデータを取得
-      const { GameLoopTaskService } = await import('@/services/productivity/GameLoopTaskService');
-      const gameLoopService = GameLoopTaskService.getInstance();
+      const gameLoopService = gameLoopTaskService;
 
       // ユーザーの統計を取得
-      const userStats = await gameLoopService.getUserStatistics();
+      const userStats = gameLoopService.getGameLoopStats();
 
       const stats = {
-        totalTasksCompleted: userStats.totalCompletedTasks || 0,
-        tasksCompletedToday: userStats.todayCompletedTasks || 0,
+        totalTasksCompleted: userStats.totalTasksCompleted || 0,
+        tasksCompletedToday: userStats.tasksCompletedToday || 0,
         currentStreak: userStats.currentStreak || 0,
-        averageTaskTime: userStats.averageCompletionTime || 0,
-        feedbackJarCount: userStats.feedbackCount || 0,
+        averageTaskTime: userStats.averageTaskTime || 0,
+        feedbackJarCount: userStats.feedbackJarCount || 0,
         morningRoutineStreak: userStats.morningRoutineStreak || 0,
       };
 
@@ -52,15 +51,15 @@ const BadgeCompletionPage: React.FC = () => {
       setShowGameLoopIntegration(true);
 
       // 5分ごとに統計を更新（リアルタイムデータ）
-      const interval = setInterval(async () => {
+      const interval = setInterval(() => {
         try {
-          const updatedUserStats = await gameLoopService.getUserStatistics();
+          const updatedUserStats = gameLoopService.getGameLoopStats();
           const updatedStats = {
-            totalTasksCompleted: updatedUserStats.totalCompletedTasks || 0,
-            tasksCompletedToday: updatedUserStats.todayCompletedTasks || 0,
+            totalTasksCompleted: updatedUserStats.totalTasksCompleted || 0,
+            tasksCompletedToday: updatedUserStats.tasksCompletedToday || 0,
             currentStreak: updatedUserStats.currentStreak || 0,
-            averageTaskTime: updatedUserStats.averageCompletionTime || 0,
-            feedbackJarCount: updatedUserStats.feedbackCount || 0,
+            averageTaskTime: updatedUserStats.averageTaskTime || 0,
+            feedbackJarCount: updatedUserStats.feedbackJarCount || 0,
             morningRoutineStreak: updatedUserStats.morningRoutineStreak || 0,
           };
           setGameLoopStats(updatedStats);
