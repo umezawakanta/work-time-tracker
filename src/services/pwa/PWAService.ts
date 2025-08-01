@@ -123,6 +123,10 @@ class PWAService extends EventEmitter {
    */
   private async registerServiceWorker(): Promise<void> {
     if ('serviceWorker' in navigator) {
+      // Temporarily disabled to prevent sw.js not found errors
+      console.log('🔄 PWA ServiceWorker registration temporarily disabled for development');
+      return;
+
       try {
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',

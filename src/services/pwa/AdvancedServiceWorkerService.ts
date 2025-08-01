@@ -193,6 +193,10 @@ class AdvancedServiceWorkerService {
       return;
     }
 
+    // Temporarily disabled to prevent sw.js not found errors
+    console.log('🔄 ServiceWorker registration temporarily disabled for development');
+    return;
+
     try {
       this.registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
