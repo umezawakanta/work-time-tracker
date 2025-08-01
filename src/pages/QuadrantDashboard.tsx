@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { EisenhowerMatrix } from '@/components/quadrant/EisenhowerMatrix';
+import QuadrantUsageGuide from '@/components/help/QuadrantUsageGuide';
 import { QuadrantAnalysisResult } from '@/services/ai/QuadrantClassificationService';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -56,6 +57,7 @@ const QuadrantDashboard: React.FC = () => {
   const [currentAnalysis, setCurrentAnalysis] = useState<QuadrantAnalysisResult | null>(null);
   const [analysisHistory, setAnalysisHistory] = useState<QuadrantAnalysisResult[]>([]);
   const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [showUsageGuide, setShowUsageGuide] = useState(false);
 
   // タスクのフィルタリング
   const filteredTasks = React.useMemo(() => {
@@ -201,6 +203,15 @@ const QuadrantDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-2">
+          <Button
+            onClick={() => setShowUsageGuide(true)}
+            variant="outline"
+            size="sm"
+            className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+          >
+            <BookOpen className="w-4 h-4 mr-2" />
+            使用方法
+          </Button>
           <Button onClick={handleExportReport} variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
             レポート出力
@@ -609,6 +620,13 @@ const QuadrantDashboard: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* 使用ガイドモーダル */}
+      <QuadrantUsageGuide
+        isOpen={showUsageGuide}
+        onClose={() => setShowUsageGuide(false)}
+        showAsModal={true}
+      />
     </div>
   );
 };

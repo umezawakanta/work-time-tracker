@@ -188,6 +188,14 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       description: '読書習慣管理',
       category: 'productivity',
     },
+    {
+      name: 'サイトマップ',
+      path: '/sitemap',
+      icon: <Settings className="w-4 h-4" />,
+      status: 'active',
+      description: '全機能一覧・使用ガイド',
+      category: 'core',
+    },
   ];
 
   // 管理者権限のあるユーザーには管理者メニューを追加

@@ -41,6 +41,7 @@ import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePag
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import TaskManagementPage from './pages/TaskManagementPage';
 import QuadrantDashboard from './pages/QuadrantDashboard';
+import SitemapPage from './pages/SitemapPage';
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
                     <Route path="reports" element={<WorkTimeReports />} />
                     <Route path="task-management" element={<TaskManagementPage />} />
                     <Route path="quadrant-dashboard" element={<QuadrantDashboard />} />
+                    <Route path="sitemap" element={<SitemapPage />} />
                     <Route path="calendar" element={<CalendarPage />} />
                     <Route path="diary" element={<DiaryPage />} />
                     <Route path="impulse-tracker" element={<ImpulseTrackerPage />} />
