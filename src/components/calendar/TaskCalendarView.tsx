@@ -24,6 +24,7 @@ import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems, updateTodoItem, deleteTodoItem } from '@/store/todoSlice';
 import { EventModal } from '@/components/EventModal';
 import { toast } from 'react-hot-toast';
+import { createSafeDate, normalizeDateTimeLocal } from '@/utils/dateUtils';
 
 interface Event {
   id: string;
@@ -100,11 +101,19 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
   useEffect(() => {
     if (events.length > 0) {
       try {
-        const eventsToSave = events.map((event) => ({
-          ...event,
-          start: event.start.toISOString(),
-          end: event.end.toISOString(),
-        }));
+        const eventsToSave = events.map((event) => {
+          // Validate Date objects before calling toISOString()
+          const startDate =
+            event.start instanceof Date && !isNaN(event.start.getTime()) ? event.start : new Date();
+          const endDate =
+            event.end instanceof Date && !isNaN(event.end.getTime()) ? event.end : new Date();
+
+          return {
+            ...event,
+            start: startDate.toISOString(),
+            end: endDate.toISOString(),
+          };
+        });
         localStorage.setItem('calendar-events', JSON.stringify(eventsToSave));
       } catch (error) {
         console.error('Error saving events:', error);
@@ -123,23 +132,28 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
         // Include tasks with deadlines or all tasks for current day view
         return todo.deadline || view === 'day';
       })
-      .map((todo) => ({
-        id: `task-${todo._id}`,
-        title: todo.task || 'Untitled Task',
-        start: todo.deadline ? new Date(todo.deadline) : new Date(),
-        end: todo.deadline ? new Date(todo.deadline) : new Date(),
-        type: 'task' as const,
-        taskId: todo._id,
-        priority: todo.priority,
-        completed: todo.completed,
-        color: todo.completed
-          ? '#10b981'
-          : todo.isPrioritized
-            ? '#ef4444'
-            : todo.priority > 3
-              ? '#f59e0b'
-              : '#3b82f6',
-      }));
+      .map((todo) => {
+        const startDate = createSafeDate(todo.deadline);
+        const endDate = createSafeDate(todo.deadline);
+
+        return {
+          id: `task-${todo._id}`,
+          title: todo.task || 'Untitled Task',
+          start: startDate,
+          end: endDate,
+          type: 'task' as const,
+          taskId: todo._id,
+          priority: todo.priority,
+          completed: todo.completed,
+          color: todo.completed
+            ? '#10b981'
+            : todo.isPrioritized
+              ? '#ef4444'
+              : todo.priority > 3
+                ? '#f59e0b'
+                : '#3b82f6',
+        };
+      });
   }, [todos, filterStatus, view]);
 
   // Combine events and tasks

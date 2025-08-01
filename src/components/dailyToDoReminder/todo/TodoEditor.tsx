@@ -43,6 +43,15 @@ const TodoEditor: React.FC<TodoEditorProps> = ({
     return today.toISOString().split('T')[0];
   };
 
+  // 日付フォーマットを正規化
+  const normalizeDateValue = (value: string): string => {
+    if (!value) return '';
+    // すでに datetime-local 形式 (YYYY-MM-DDTHH:MM) の場合はそのまま
+    if (value.includes('T')) return value;
+    // date形式 (YYYY-MM-DD) の場合は時刻を追加
+    return `${value}T00:00`;
+  };
+
   // Enterキーで保存、Escキーでキャンセル
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -88,12 +97,16 @@ const TodoEditor: React.FC<TodoEditorProps> = ({
           </Select>
 
           <input
-            type="date"
-            value={deadline || ''}
-            min={getTodayString()}
-            onChange={(e) => onDeadlineChange(e.target.value || undefined)}
+            type="datetime-local"
+            value={deadline ? (deadline.includes('T') ? deadline : `${deadline}T00:00`) : ''}
+            min={`${getTodayString()}T00:00`}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Normalize the date format
+              onDeadlineChange(value || undefined);
+            }}
             className="p-2 text-sm border rounded flex-1"
-            placeholder="期限日を選択"
+            placeholder="期限日時を選択"
           />
         </div>
 
