@@ -126,6 +126,8 @@ const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
 // 🔧 System & Analysis
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
+const QuadrantDashboard = lazy(() => import('./pages/QuadrantDashboard'));
+const SitemapPage = lazy(() => import('./pages/SitemapPage'));
 const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
 const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
 const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
@@ -223,6 +225,16 @@ const App: React.FC = () => {
                               element={
                                 <LayoutWrapper>
                                   <IntegratedDashboard />
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/sitemap"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SitemapPage />
+                                  </LazyWrapper>
                                 </LayoutWrapper>
                               }
                             />
@@ -620,6 +632,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <QualityDashboardPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/quadrant-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <QuadrantDashboard />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
