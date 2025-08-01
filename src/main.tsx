@@ -15,6 +15,17 @@ import PerformanceOptimizer from './lib/performanceOptimizer';
 // 🐛 エラーエリミネーター: グローバルエラーハンドリングの初期化
 setupGlobalErrorHandling();
 
+// 🚫 ServiceWorker完全無効化（デバッグのため）
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister().then(function () {
+        console.log('🗑️ ServiceWorker unregistered:', registration.scope);
+      });
+    }
+  });
+}
+
 // 🥷 パフォーマンス忍者: パフォーマンス監視の初期化
 const performanceOptimizer = PerformanceOptimizer.getInstance();
 performanceOptimizer.startMetricsCollection();

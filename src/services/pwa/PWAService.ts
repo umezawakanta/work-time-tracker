@@ -95,7 +95,7 @@ class PWAService extends EventEmitter {
 
     this.notificationSettings = this.loadNotificationSettings();
 
-    this.initialize();
+    // this.initialize(); // Temporarily disabled for debugging
   }
 
   /**

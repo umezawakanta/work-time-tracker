@@ -146,7 +146,7 @@ class AdvancedServiceWorkerService {
 
   private constructor() {
     this.config = this.getDefaultConfig();
-    this.initializeServiceWorker();
+    // this.initializeServiceWorker(); // Temporarily disabled for debugging
     this.setupEventListeners();
     this.initializeCacheStrategies();
   }
