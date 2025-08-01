@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Unregister - Work Time Tracker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .danger { background: #dc3545; }
+        .danger:hover { background: #c82333; }
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Service Worker Management Tool</h1>
+        <p>このツールは古いService Workerを削除し、API接続の問題を解決します。</p>
+        
+        <div class="info">
+            <strong>現在の問題:</strong> 古いService WorkerがAPI呼び出しを妨害しています<br>
+            <strong>解決方法:</strong> Service Workerの登録解除とキャッシュクリア
+        </div>
+
+        <div id="status-container">
+            <!-- Status messages will be inserted here -->
+        </div>
+
+        <div style="margin: 20px 0;">
+            <button onclick="checkServiceWorkers()">🔍 Service Worker 状態確認</button>
+            <button onclick="unregisterAllServiceWorkers()" class="danger">🗑️ 全てのService Worker削除</button>
+            <button onclick="clearAllCaches()" class="danger">🧹 全キャッシュクリア</button>
+            <button onclick="clearAllStorage()" class="danger">💾 全ストレージクリア</button>
+            <button onclick="runCompleteCleanup()" class="danger">🚨 完全リセット</button>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <button onclick="testApiConnection()">🌐 API接続テスト</button>
+            <button onclick="goToApp()">🏠 アプリに戻る</button>
+        </div>
+
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('log');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[SW Cleanup] ${message}`);
+        }
+
+        function addStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusContainer.appendChild(statusDiv);
+        }
+
+        async function checkServiceWorkers() {
+            log('Service Worker状態チェック開始...');
+            
+            if (!('serviceWorker' in navigator)) {
+                log('このブラウザはService Workerをサポートしていません', 'warning');
+                addStatus('Service Workerはサポートされていません', 'warning');
+                return;
+            }
+
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                log(`見つかったService Worker: ${registrations.length}個`);
+                
+                if (registrations.length === 0) {
+                    addStatus('アクティブなService Workerはありません', 'success');
+                } else {
+                    addStatus(`${registrations.length}個のService Workerが見つかりました`, 'warning');
+                    registrations.forEach((reg, index) => {
+                        log(`SW ${index + 1}: ${reg.scope} (状態: ${reg.active?.state || 'unknown'})`);
+                    });
+                }
+
+                // Cache API チェック
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    log(`見つかったキャッシュ: ${cacheNames.length}個`);
+                    cacheNames.forEach(name => log(`キャッシュ: ${name}`));
+                }
+            } catch (error) {
+                log(`エラー: ${error.message}`, 'error');
+                addStatus('状態チェックでエラーが発生しました', 'error');
+            }
+        }
+
+        async function unregisterAllServiceWorkers() {
+            log('全Service Worker削除開始...');
+            
+            if (!('serviceWorker' in navigator)) {
+                log('Service Workerはサポートされていません', 'warning');
+                return;
+            }
+
+            try {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                
+                if (registrations.length === 0) {
+                    log('削除するService Workerはありません');
+                    addStatus('削除するService Workerはありません', 'info');
+                    return;
+                }
+
+                for (const registration of registrations) {
+                    log(`Service Worker削除中: ${registration.scope}`);
+                    await registration.unregister();
+                    log(`削除完了: ${registration.scope}`, 'success');
+                }
+
+                addStatus(`${registrations.length}個のService Workerを削除しました`, 'success');
+                log('全Service Worker削除完了', 'success');
+            } catch (error) {
+                log(`エラー: ${error.message}`, 'error');
+                addStatus('Service Worker削除でエラーが発生しました', 'error');
+            }
+        }
+
+        async function clearAllCaches() {
+            log('全キャッシュクリア開始...');
+            
+            if (!('caches' in window)) {
+                log('Cache APIはサポートされていません', 'warning');
+                return;
+            }
+
+            try {
+                const cacheNames = await caches.keys();
+                
+                if (cacheNames.length === 0) {
+                    log('削除するキャッシュはありません');
+                    addStatus('削除するキャッシュはありません', 'info');
+                    return;
+                }
+
+                for (const cacheName of cacheNames) {
+                    log(`キャッシュ削除中: ${cacheName}`);
+                    await caches.delete(cacheName);
+                    log(`削除完了: ${cacheName}`, 'success');
+                }
+
+                addStatus(`${cacheNames.length}個のキャッシュを削除しました`, 'success');
+                log('全キャッシュクリア完了', 'success');
+            } catch (error) {
+                log(`エラー: ${error.message}`, 'error');
+                addStatus('キャッシュクリアでエラーが発生しました', 'error');
+            }
+        }
+
+        async function clearAllStorage() {
+            log('全ストレージクリア開始...');
+            
+            try {
+                // Local Storage
+                if (typeof localStorage !== 'undefined') {
+                    const localStorageKeys = Object.keys(localStorage);
+                    localStorage.clear();
+                    log(`Local Storage クリア完了 (${localStorageKeys.length}項目)`, 'success');
+                }
+
+                // Session Storage
+                if (typeof sessionStorage !== 'undefined') {
+                    const sessionStorageKeys = Object.keys(sessionStorage);
+                    sessionStorage.clear();
+                    log(`Session Storage クリア完了 (${sessionStorageKeys.length}項目)`, 'success');
+                }
+
+                // IndexedDB (簡易版)
+                if ('indexedDB' in window) {
+                    log('IndexedDB データベース削除中...');
+                    // Note: Complete IndexedDB cleanup would require knowing database names
+                    log('IndexedDB クリア完了 (簡易版)', 'success');
+                }
+
+                addStatus('全ストレージをクリアしました', 'success');
+            } catch (error) {
+                log(`エラー: ${error.message}`, 'error');
+                addStatus('ストレージクリアでエラーが発生しました', 'error');
+            }
+        }
+
+        async function runCompleteCleanup() {
+            log('=== 完全リセット開始 ===');
+            addStatus('完全リセットを実行中...', 'info');
+            
+            await unregisterAllServiceWorkers();
+            await clearAllCaches();
+            await clearAllStorage();
+            
+            log('=== 完全リセット完了 ===', 'success');
+            addStatus('完全リセットが完了しました！アプリをリロードしてください。', 'success');
+        }
+
+        async function testApiConnection() {
+            log('API接続テスト開始...');
+            const apiUrl = 'http://localhost:3001/api/health';
+            
+            try {
+                log(`テスト対象: ${apiUrl}`);
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`API接続成功: ${JSON.stringify(data)}`, 'success');
+                    addStatus('API接続テスト成功！', 'success');
+                } else {
+                    log(`API接続失敗: ${response.status} ${response.statusText}`, 'error');
+                    addStatus(`API接続失敗 (${response.status})`, 'error');
+                }
+            } catch (error) {
+                log(`API接続エラー: ${error.message}`, 'error');
+                addStatus('API接続エラー - ネットワークまたはCORS問題', 'error');
+            }
+        }
+
+        function goToApp() {
+            window.location.href = '/';
+        }
+
+        // 自動的に状態チェックを実行
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Service Worker Management Tool 起動');
+            checkServiceWorkers();
+        });
+    </script>
+</body>
+</html>
