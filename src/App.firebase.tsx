@@ -40,6 +40,7 @@ import WorkTimeEntry from './pages/WorkTimeEntry';
 import SubscriptionUpgradePage from './pages/subscription/SubscriptionUpgradePage';
 import BillingHistoryPage from './pages/subscription/BillingHistoryPage';
 import TaskManagementPage from './pages/TaskManagementPage';
+import QuadrantDashboard from './pages/QuadrantDashboard';
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
                     <Route path="worktime-form" element={<WorkTimeEntryForm />} />
                     <Route path="reports" element={<WorkTimeReports />} />
                     <Route path="task-management" element={<TaskManagementPage />} />
+                    <Route path="quadrant-dashboard" element={<QuadrantDashboard />} />
                     <Route path="calendar" element={<CalendarPage />} />
                     <Route path="diary" element={<DiaryPage />} />
                     <Route path="impulse-tracker" element={<ImpulseTrackerPage />} />

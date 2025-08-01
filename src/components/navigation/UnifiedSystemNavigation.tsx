@@ -116,6 +116,14 @@ export const UnifiedSystemNavigation: React.FC<UnifiedSystemNavigationProps> = (
       category: 'productivity',
     },
     {
+      name: '4象限マトリックス',
+      path: '/quadrant-dashboard',
+      icon: <Target className="w-4 h-4" />,
+      status: 'active',
+      description: 'AI駆動タスク分類・生産性分析',
+      category: 'analysis',
+    },
+    {
       name: '自動化ルール',
       path: '/automation-rules',
       icon: <Settings className="w-4 h-4" />,
