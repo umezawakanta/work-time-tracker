@@ -36,6 +36,7 @@ import {
   TestTube,
   DollarSign,
   CheckCircle,
+  CheckSquare,
   ChevronDown,
   ChevronRight,
   BookOpen,
@@ -93,6 +94,15 @@ const getCoreMenuItems = (t: (key: string) => string): MenuItem[] => [
     badge: 'ダッシュボード',
     gradient: 'from-blue-400 via-purple-500 to-pink-500',
     accentColor: 'blue',
+  },
+  {
+    icon: <Settings className="h-5 w-5" />,
+    label: '🗺️ サイトマップ',
+    path: '/sitemap',
+    description: '全機能一覧・使用ガイド・新機能案内',
+    badge: 'ガイド',
+    gradient: 'from-green-400 via-blue-500 to-purple-500',
+    accentColor: 'green',
   },
   {
     icon: <Target className="h-5 w-5" />,
@@ -173,6 +183,15 @@ const calendarTaskMenuItems: MenuItem[] = [
     badge: 'スケジュール',
     gradient: 'from-blue-500 via-indigo-500 to-purple-500',
     accentColor: 'blue',
+  },
+  {
+    icon: <CheckSquare className="h-5 w-5" />,
+    label: '✅ 従来タスク',
+    path: '/todos',
+    description: '標準ToDo管理・チェックリスト',
+    badge: 'ToDo',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
   },
   {
     icon: <Clipboard className="h-5 w-5" />,
@@ -303,6 +322,15 @@ const blogMenuItems: MenuItem[] = [
 
 // システム・分析メニューアイテム
 const systemMenuItems: MenuItem[] = [
+  {
+    icon: <Target className="h-5 w-5" />,
+    label: '🎯 4象限マトリックス',
+    path: '/quadrant-dashboard',
+    description: 'AI駆動タスク分類・生産性分析（アイゼンハワーマトリックス）',
+    badge: 'NEW!',
+    gradient: 'from-red-500 via-pink-500 to-rose-500',
+    accentColor: 'red',
+  },
   {
     icon: <Activity className="h-5 w-5" />,
     label: '📈 アナリティクス',
