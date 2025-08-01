@@ -167,18 +167,19 @@ export default defineConfig(({ command, mode }) => {
       host: '0.0.0.0',
       strictPort: true,
       hmr: {
-        port: 3001,
+        port: 3002, // Changed from 3001 to avoid conflict with backend API
         host: 'localhost',
       },
-      proxy: {
-        '^/api/.*': {
-          target: 'http://127.0.0.1:3001',
-          changeOrigin: true,
-          secure: false,
-          ws: false,
-          logLevel: 'debug',
-        },
-      },
+      // Proxy disabled - frontend makes direct requests to backend
+      // proxy: {
+      //   '^/api/.*': {
+      //     target: 'http://127.0.0.1:3001',
+      //     changeOrigin: true,
+      //     secure: false,
+      //     ws: false,
+      //     logLevel: 'debug',
+      //   },
+      // },
       watch: {
         usePolling: false,
         interval: 100,
