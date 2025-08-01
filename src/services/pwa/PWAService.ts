@@ -321,12 +321,15 @@ class PWAService extends EventEmitter {
     }
 
     try {
+      const vapidKey = process.env.REACT_APP_VAPID_PUBLIC_KEY;
+      if (!vapidKey) {
+        console.error('VAPID_PUBLIC_KEYが設定されていません');
+        return;
+      }
+
       const subscription = await this.serviceWorker.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(
-          // 実際の実装では環境変数から取得
-          'YOUR_VAPID_PUBLIC_KEY'
-        ),
+        applicationServerKey: this.urlBase64ToUint8Array(vapidKey),
       });
 
       // サーバーに購読情報を送信

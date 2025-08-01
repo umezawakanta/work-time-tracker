@@ -92,49 +92,61 @@ export const CognitiveIntegratedDashboard: React.FC = () => {
     try {
       setIsLoading(true);
 
-      // デモユーザーIDでダッシュボードデータを生成
-      const userId = 'demo-user';
+      // 実際のユーザーIDを取得
+      const { useAuth } = await import('@/hooks/useAuth');
+      const authContext = useAuth();
+      const currentUser = authContext.user;
 
-      // デモ認知プロファイルを設定
-      const demoCognitiveProfile = {
-        id: 'demo-profile',
-        userId,
-        date: new Date(),
-        verbalComprehension: 110,
-        perceptualReasoning: 95,
-        workingMemory: 85,
-        processingSpeed: 80,
-        executiveFunction: 75,
-        attentionalControl: 70,
-        sensoryProcessing: 85,
-        socialCognition: 90,
-        personalizedSettings: {
-          optimalTaskDuration: 45,
-          preferredBreakFrequency: 25,
-          visualComplexityLevel: 'medium' as const,
-          auditoryProcessingPreference: 'minimal' as const,
-          multitaskingCapacity: 'dual' as const,
-          timeStructureNeed: 'flexible' as const,
-          cognitiveLoadThreshold: 70,
-          distractionSensitivity: 'high' as const,
-        },
-        strengths: ['言語理解', '論理的思考', '創造性'],
-        challenges: ['注意持続', '実行機能', '時間管理'],
-        recommendations: [
-          'タスクを小さく分割する',
-          '定期的な休憩を取る',
-          '視覚的なリマインダーを活用する',
-        ],
-      };
+      if (!currentUser) {
+        console.warn('ユーザーが認証されていません');
+        setIsLoading(false);
+        return;
+      }
 
-      // 認知プロファイルを更新
-      await cognitiveService.updateCognitiveProfile(demoCognitiveProfile);
+      const userId = currentUser.uid || currentUser.id;
+
+      // 既存の認知プロファイルを取得
+      let cognitiveProfile = await cognitiveService.getCognitiveProfile(userId);
+
+      // プロファイルが存在しない場合は初期化
+      if (!cognitiveProfile) {
+        cognitiveProfile = await cognitiveService.initializeCognitiveProfile(userId, {
+          assessmentDate: new Date(),
+          userMetadata: {
+            email: currentUser.email,
+            name: currentUser.name || currentUser.displayName,
+            registrationDate: currentUser.createdAt || new Date().toISOString(),
+          },
+        });
+      }
 
       // 統合ダッシュボードデータを生成
       const data = cognitiveService.generateUnifiedDashboard(userId);
       setDashboardData(data);
+
+      console.log('認知統合ダッシュボード読み込み完了:', {
+        userId,
+        hasProfile: !!cognitiveProfile,
+      });
     } catch (error) {
       console.error('ダッシュボードデータ読み込みエラー:', error);
+      // エラー時は基本的なダッシュボードを表示
+      setDashboardData({
+        overview: {
+          currentScore: 0,
+          todayProgress: 0,
+          weeklyGoal: 100,
+          streakDays: 0,
+        },
+        cognitiveMetrics: {
+          focusLevel: 50,
+          energyLevel: 50,
+          stressLevel: 50,
+          productivityScore: 50,
+        },
+        recommendations: ['システムの初期化中です。しばらくお待ちください。'],
+        upcomingTasks: [],
+      });
     } finally {
       setIsLoading(false);
     }

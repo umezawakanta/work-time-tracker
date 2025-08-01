@@ -353,12 +353,32 @@ async function sendPaymentFailureNotification(
       return;
     }
 
-    // メール送信ロジック（実装に応じて調整）
+    // メール送信サービス統合
     console.log(`📧 [${operationId}] Sending payment failure notification to: ${customer.email}`);
 
-    // TODO: 実際のメール送信サービス（SendGrid、SES等）を統合
+    try {
+      // 実際のメール送信サービスを使用
+      const { EmailService } = await import('../../src/services/notification/EmailService');
+      const emailService = EmailService.getInstance();
 
-    console.log(`✅ [${operationId}] Payment failure notification sent`);
+      await emailService.sendPaymentFailureNotification({
+        to: customer.email,
+        customerName: customer.name || 'お客様',
+        invoiceId: invoice.id,
+        amount: invoice.amount_due,
+        currency: invoice.currency,
+        dueDate: new Date(invoice.due_date * 1000),
+        attemptCount: invoice.attempt_count,
+        nextRetry: invoice.next_payment_attempt
+          ? new Date(invoice.next_payment_attempt * 1000)
+          : null,
+      });
+
+      console.log(`✅ [${operationId}] Payment failure notification sent successfully`);
+    } catch (emailError: any) {
+      console.error(`❌ [${operationId}] Failed to send email notification:`, emailError.message);
+      // メール送信失敗は決済処理の失敗とはしない
+    }
   } catch (error: any) {
     console.error(`❌ [${operationId}] Failed to send notification:`, error.message);
     // 通知失敗はエラーとして投げない（課金処理は正常に完了すべき）

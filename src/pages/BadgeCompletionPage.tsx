@@ -32,36 +32,50 @@ const BadgeCompletionPage: React.FC = () => {
 
   const initializeGameLoopIntegration = async () => {
     try {
-      // 一時的なモックデータ - TODO: 実際のGameLoopTaskService修正後に復元
+      // 実際のGameLoopTaskServiceからデータを取得
+      const { GameLoopTaskService } = await import('@/services/gameloop/GameLoopTaskService');
+      const gameLoopService = GameLoopTaskService.getInstance();
+
+      // ユーザーの統計を取得
+      const userStats = await gameLoopService.getUserStatistics();
+
       const stats = {
-        totalTasksCompleted: 25,
-        tasksCompletedToday: 5,
-        currentStreak: 3,
-        averageTaskTime: 15,
-        feedbackJarCount: 8,
-        morningRoutineStreak: 7,
+        totalTasksCompleted: userStats.totalCompletedTasks || 0,
+        tasksCompletedToday: userStats.todayCompletedTasks || 0,
+        currentStreak: userStats.currentStreak || 0,
+        averageTaskTime: userStats.averageCompletionTime || 0,
+        feedbackJarCount: userStats.feedbackCount || 0,
+        morningRoutineStreak: userStats.morningRoutineStreak || 0,
       };
+
       setGameLoopStats(stats);
       setShowGameLoopIntegration(true);
 
-      // 30秒ごとに統計を更新
+      // 5分ごとに統計を更新（リアルタイムデータ）
       const interval = setInterval(async () => {
-        const updatedStats = {
-          totalTasksCompleted: 25 + Math.floor(Math.random() * 10),
-          tasksCompletedToday: Math.floor(Math.random() * 8) + 1,
-          currentStreak: Math.floor(Math.random() * 7) + 1,
-          averageTaskTime: 10 + Math.floor(Math.random() * 20),
-          feedbackJarCount: Math.floor(Math.random() * 15),
-          morningRoutineStreak: Math.floor(Math.random() * 10),
-        };
-        setGameLoopStats(updatedStats);
-      }, 30000);
+        try {
+          const updatedUserStats = await gameLoopService.getUserStatistics();
+          const updatedStats = {
+            totalTasksCompleted: updatedUserStats.totalCompletedTasks || 0,
+            tasksCompletedToday: updatedUserStats.todayCompletedTasks || 0,
+            currentStreak: updatedUserStats.currentStreak || 0,
+            averageTaskTime: updatedUserStats.averageCompletionTime || 0,
+            feedbackJarCount: updatedUserStats.feedbackCount || 0,
+            morningRoutineStreak: updatedUserStats.morningRoutineStreak || 0,
+          };
+          setGameLoopStats(updatedStats);
+        } catch (error) {
+          console.error('統計更新エラー:', error);
+        }
+      }, 300000); // 5分間隔
 
       setIntegrationRefreshInterval(interval);
 
-      console.log('🎮 Badge Completion × Game Loop統合完了（モックデータ使用）:', stats);
+      console.log('🎮 Badge Completion × Game Loop統合完了（実データ）:', stats);
     } catch (error) {
       console.error('Game Loop統合エラー:', error);
+      // フォールバック: エラー時は機能を無効化
+      setShowGameLoopIntegration(false);
     }
   };
 

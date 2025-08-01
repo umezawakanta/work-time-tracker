@@ -50,6 +50,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import LiveImprovementPlanTracker from '@/components/progress/LiveImprovementPlanTracker';
+import {
+  ProgressReflectionService,
+  ProgressUpdate,
+} from '@/services/ci-cd/ProgressReflectionService';
 
 interface TaskProgress {
   id: string;
@@ -108,6 +112,30 @@ const SiteImprovementPlan: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [lastSync, setLastSync] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const [realtimeUpdates, setRealtimeUpdates] = useState<ProgressUpdate[]>([]);
+  const [progressService] = useState(() => ProgressReflectionService.getInstance());
+
+  // CI/CD進捗リアルタイム購読
+  useEffect(() => {
+    const unsubscribe = progressService.subscribe((update: ProgressUpdate) => {
+      setRealtimeUpdates((prev) => {
+        const filtered = prev.filter((u) => u.id !== update.id);
+        return [update, ...filtered].slice(0, 20); // 最新20件を保持
+      });
+
+      // 進捗更新時の通知
+      if (update.status === 'success') {
+        toast.success(`${update.title}`);
+      } else if (update.status === 'failure') {
+        toast.error(`${update.title}`);
+      }
+    });
+
+    // 初期履歴の取得
+    setRealtimeUpdates(progressService.getProgressHistory().slice(0, 20));
+
+    return unsubscribe;
+  }, [progressService]);
 
   // リアルタイムデータ取得
   useEffect(() => {
@@ -297,7 +325,7 @@ const SiteImprovementPlan: React.FC = () => {
 
       {/* タブナビゲーション */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview" className="flex items-center space-x-2">
             <Activity className="w-4 h-4" />
             <span>概要</span>
@@ -313,6 +341,10 @@ const SiteImprovementPlan: React.FC = () => {
           <TabsTrigger value="realtime" className="flex items-center space-x-2">
             <RefreshCw className="w-4 h-4" />
             <span>リアルタイム</span>
+          </TabsTrigger>
+          <TabsTrigger value="cicd" className="flex items-center space-x-2">
+            <GitBranch className="w-4 h-4" />
+            <span>CI/CD</span>
           </TabsTrigger>
         </TabsList>
 
@@ -616,6 +648,165 @@ const SiteImprovementPlan: React.FC = () => {
             enableAutoSync={true}
             showDetailedMetrics={true}
           />
+        </TabsContent>
+
+        {/* CI/CD進捗タブ */}
+        <TabsContent value="cicd" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 進捗サマリー */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <GitBranch className="w-5 h-5" />
+                  <span>CI/CD進捗サマリー</span>
+                </CardTitle>
+                <CardDescription>GitHub、Vercel、テストシステムからの自動進捗反映</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const summary = progressService.getProgressSummary();
+                  return (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">
+                            {summary.totalCommits}
+                          </div>
+                          <div className="text-sm text-gray-500">コミット数</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">
+                            {summary.successfulDeployments}
+                          </div>
+                          <div className="text-sm text-gray-500">成功デプロイ</div>
+                        </div>
+                      </div>
+
+                      {summary.failedDeployments > 0 && (
+                        <Alert>
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>
+                            {summary.failedDeployments}件のデプロイが失敗しています
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      {summary.lastTestResults && (
+                        <div className="border rounded-lg p-3">
+                          <h4 className="font-medium mb-2">最新テスト結果</h4>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div className="text-green-600">
+                              ✓ {summary.lastTestResults.passed}件成功
+                            </div>
+                            <div className="text-red-600">
+                              ✗ {summary.lastTestResults.failed}件失敗
+                            </div>
+                            <div className="text-gray-600">
+                              カバレッジ: {summary.lastTestResults.coverage}%
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="text-xs text-gray-500">
+                        最終更新: {new Date(summary.latestActivity).toLocaleString()}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+
+            {/* リアルタイム進捗フィード */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="w-5 h-5" />
+                  <span>リアルタイム進捗フィード</span>
+                </CardTitle>
+                <CardDescription>最新の開発・デプロイ・テスト活動</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {realtimeUpdates.length === 0 ? (
+                    <div className="text-center text-gray-500 py-8">進捗データがありません</div>
+                  ) : (
+                    realtimeUpdates.map((update) => (
+                      <div key={update.id} className="border rounded-lg p-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2">
+                              {update.type === 'commit' && (
+                                <GitBranch className="w-4 h-4 text-gray-600" />
+                              )}
+                              {update.type === 'deployment' && (
+                                <Rocket className="w-4 h-4 text-blue-600" />
+                              )}
+                              {update.type === 'test' && (
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                              )}
+                              {update.type === 'build' && (
+                                <Package className="w-4 h-4 text-orange-600" />
+                              )}
+
+                              <Badge
+                                variant={
+                                  update.status === 'success'
+                                    ? 'default'
+                                    : update.status === 'failure'
+                                      ? 'destructive'
+                                      : update.status === 'in_progress'
+                                        ? 'secondary'
+                                        : 'outline'
+                                }
+                              >
+                                {update.status}
+                              </Badge>
+                            </div>
+
+                            <h4 className="font-medium mt-1">{update.title}</h4>
+                            <p className="text-sm text-gray-600">{update.description}</p>
+
+                            <div className="text-xs text-gray-400 mt-1">
+                              {new Date(update.timestamp).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 手動進捗追加 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Plus className="w-5 h-5" />
+                <span>手動進捗追加</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() => {
+                  progressService.addManualUpdate(
+                    'build',
+                    '手動ビルド実行',
+                    '管理者による手動ビルドを実行しました',
+                    'success',
+                    { manual: true, timestamp: new Date().toISOString() }
+                  );
+                  toast.success('手動進捗を追加しました');
+                }}
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                手動進捗を追加
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
