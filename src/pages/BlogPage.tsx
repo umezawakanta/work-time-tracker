@@ -234,8 +234,8 @@ const BlogPage: React.FC = () => {
                   <CardContent>
                     <div className="flex flex-wrap gap-2 mb-4">
                       <Badge variant="secondary">{post.category}</Badge>
-                      {post.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline">
+                      {post.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
                           {tag}
                         </Badge>
                       ))}
