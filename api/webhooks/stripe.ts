@@ -362,12 +362,12 @@ async function sendPaymentFailureNotification(
       const emailService = EmailService.getInstance();
 
       await emailService.sendPaymentFailureNotification({
-        to: customer.email,
-        customerName: customer.name || 'お客様',
-        invoiceId: invoice.id,
+        to: customer.email!,
+        customerName: customer.name ?? 'お客様',
+        invoiceId: invoice.id!,
         amount: invoice.amount_due,
         currency: invoice.currency,
-        dueDate: new Date(invoice.due_date * 1000),
+        dueDate: new Date((invoice.due_date ?? Date.now() / 1000) * 1000),
         attemptCount: invoice.attempt_count,
         nextRetry: invoice.next_payment_attempt
           ? new Date(invoice.next_payment_attempt * 1000)

@@ -33,7 +33,7 @@ const BadgeCompletionPage: React.FC = () => {
   const initializeGameLoopIntegration = async () => {
     try {
       // 実際のGameLoopTaskServiceからデータを取得
-      const { GameLoopTaskService } = await import('@/services/gameloop/GameLoopTaskService');
+      const { GameLoopTaskService } = await import('@/services/productivity/GameLoopTaskService');
       const gameLoopService = GameLoopTaskService.getInstance();
 
       // ユーザーの統計を取得
@@ -161,7 +161,7 @@ const BadgeCompletionPage: React.FC = () => {
               <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Gamepad2 className="h-5 h-5 text-green-500" />
+                    <Gamepad2 className="h-5 w-5 text-green-500" />
                     ゲームループ統合効果 - バッジ完了予測の改善
                   </CardTitle>
                   <CardDescription>

@@ -12,8 +12,9 @@ import { Slider } from '@/components/ui/slider';
 import { EisenhowerMatrix } from '@/components/quadrant/EisenhowerMatrix';
 import QuadrantUsageGuide from '@/components/help/QuadrantUsageGuide';
 import { QuadrantAnalysisResult } from '@/services/ai/QuadrantClassificationService';
+import { TodoItem } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 import {
   Settings,
   Download,
@@ -41,7 +42,7 @@ import {
  */
 const QuadrantDashboard: React.FC = () => {
   const { user } = useAuth();
-  const todos = useSelector((state: RootState) => state.todos.items);
+  const todos = useSelector((state: RootState) => state.todo.items);
 
   // ダッシュボード設定
   const [settings, setSettings] = useState({
@@ -67,7 +68,7 @@ const QuadrantDashboard: React.FC = () => {
 
     // 完了タスクのフィルタリング
     if (settings.filterCompleted) {
-      filtered = filtered.filter((task) => !task.completed);
+      filtered = filtered.filter((task: TodoItem) => !task.completed);
     }
 
     return filtered;
@@ -92,10 +93,16 @@ const QuadrantDashboard: React.FC = () => {
     // 通知が有効な場合のアラート
     if (settings.enableNotifications) {
       if (analysis.quadrantBreakdown.essential.count > analysis.totalTasks * 0.3) {
-        toast.warning('緊急タスクが多すぎます。優先度の見直しをおすすめします。');
+        toast('⚠️ 緊急タスクが多すぎます。優先度の見直しをおすすめします。', {
+          icon: '⚠️',
+          duration: 4000,
+        });
       }
       if (analysis.productivity.score < 60) {
-        toast.info('生産性スコアが低めです。タスクの整理を検討してください。');
+        toast('ℹ️ 生産性スコアが低めです。タスクの整理を検討してください。', {
+          icon: 'ℹ️',
+          duration: 4000,
+        });
       }
     }
   };
@@ -461,9 +468,7 @@ const QuadrantDashboard: React.FC = () => {
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <p className="font-medium">
-                            {new Date(analysis.timestamp).toLocaleString()}
-                          </p>
+                          <p className="font-medium">{new Date().toLocaleString()}</p>
                           <p className="text-sm text-gray-600">
                             タスク数: {analysis.totalTasks}, 生産性: {analysis.productivity.score}
                             /100
