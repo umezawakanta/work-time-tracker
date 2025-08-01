@@ -85,15 +85,23 @@ const SitemapPage: React.FC = () => {
       keywords: ['カレンダー', 'スケジュール', '予定', '日程'],
     },
 
-    // 生産性管理
+    // 生産性管理（タスク追加可能）
     {
       name: 'ゲームループタスク',
       path: '/game-loop-tasks',
       icon: <Play className="w-4 h-4" />,
       category: 'productivity',
       status: 'active',
-      description: 'プロシージネーション対策・ゲーミフィケーション',
-      keywords: ['ゲーム', 'プロシージネーション', 'やる気', 'モチベーション'],
+      description: 'プロシージネーション対策・自動タスク分解・マイクロタスク管理',
+      keywords: [
+        'ゲーム',
+        'プロシージネーション',
+        'やる気',
+        'モチベーション',
+        'タスク追加',
+        '分解',
+      ],
+      features: ['タスク追加', 'AI分解', 'マイクロタスク'],
     },
     {
       name: '従来タスク',
@@ -375,6 +383,121 @@ const SitemapPage: React.FC = () => {
             </Button>
           </AlertDescription>
         </Alert>
+
+        {/* タスク追加クイックガイド */}
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center space-x-2 text-blue-800">
+              <CheckSquare className="w-5 h-5" />
+              <span>⚡ タスク追加クイックガイド</span>
+              <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                5つの方法
+              </Badge>
+            </CardTitle>
+            <CardDescription className="text-blue-700">
+              目的に応じてタスクを追加できる場所をご案内します
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Home className="w-4 h-4 text-green-600" />
+                <span className="font-medium text-sm">ホームページ</span>
+                <Badge variant="outline" className="text-xs">
+                  最速
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => navigate('/')}
+              >
+                今すぐ追加
+              </Button>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <CheckSquare className="w-4 h-4 text-blue-600" />
+                <span className="font-medium text-sm">従来タスク</span>
+                <Badge variant="outline" className="text-xs">
+                  詳細
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">優先度・期限・カテゴリ設定</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => navigate('/todos')}
+              >
+                詳細管理
+              </Button>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Play className="w-4 h-4 text-purple-600" />
+                <span className="font-medium text-sm">ゲームループ</span>
+                <Badge variant="outline" className="text-xs">
+                  AI分解
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => navigate('/game-loop-tasks')}
+              >
+                自動分解
+              </Button>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <BarChart3 className="w-4 h-4 text-orange-600" />
+                <span className="font-medium text-sm">統合ダッシュボード</span>
+                <Badge variant="outline" className="text-xs">
+                  プロジェクト
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">プロジェクト管理・進捗追跡</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={() => navigate('/integrated-dashboard')}
+              >
+                プロジェクト管理
+              </Button>
+            </div>
+
+            <div className="p-3 bg-white rounded-lg border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Brain className="w-4 h-4 text-indigo-600" />
+                <span className="font-medium text-sm">認知特化</span>
+                <Badge variant="outline" className="text-xs">
+                  ADHD対応
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">認知特性に最適化</p>
+              <Button size="sm" variant="outline" className="w-full text-xs" disabled>
+                認知系機能から
+              </Button>
+            </div>
+
+            <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 flex items-center justify-center">
+              <div className="text-center">
+                <Lightbulb className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                <p className="text-xs font-medium text-blue-800 mb-1">迷ったら？</p>
+                <p className="text-xs text-blue-600">ホームページから始めよう！</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* 検索・フィルタ */}
