@@ -848,7 +848,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   </div>
                   <div className="space-y-2">
                     {aiAnalysisResult.subtasks.map((subtask, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div
+                        key={`${subtask.title}-${subtask.type}-${index}`}
+                        className="p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      >
                         <div className="flex items-start gap-2">
                           <CheckSquare className="h-4 w-4 text-gray-400 mt-0.5" />
                           <div className="flex-1">
@@ -887,7 +890,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <ul className="space-y-1">
                       {aiAnalysisResult.actionItems.map((item, index) => (
-                        <li key={index} className="text-sm flex items-start gap-2">
+                        <li key={`${item}-${index}`} className="text-sm flex items-start gap-2">
                           <span className="text-gray-400">•</span>
                           <span>{item}</span>
                         </li>
