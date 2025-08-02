@@ -75,6 +75,13 @@ const WorkTimeEntryForm = lazy(() => import('./components/forms/WorkTimeEntryFor
 const WorkTimeReports = lazy(() => import('./pages/WorkTimeReports'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 
+// 🔐 Authentication Pages
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const FirebaseLogin = lazy(() => import('./pages/FirebaseLogin'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+
 // 🗳️ Election & Political
 const ElectionCandidatesPage = lazy(() => import('./pages/ElectionCandidatesPage'));
 const CandidateRegistrationPage = lazy(() => import('./pages/CandidateRegistrationPage'));
@@ -217,6 +224,48 @@ const App: React.FC = () => {
                                     <HomePage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 🔐 Authentication Routes */}
+                            <Route
+                              path="/login"
+                              element={
+                                <LazyWrapper>
+                                  <Login />
+                                </LazyWrapper>
+                              }
+                            />
+                            <Route
+                              path="/register"
+                              element={
+                                <LazyWrapper>
+                                  <Register />
+                                </LazyWrapper>
+                              }
+                            />
+                            <Route
+                              path="/firebase-login"
+                              element={
+                                <LazyWrapper>
+                                  <FirebaseLogin />
+                                </LazyWrapper>
+                              }
+                            />
+                            <Route
+                              path="/forgot-password"
+                              element={
+                                <LazyWrapper>
+                                  <ForgotPassword />
+                                </LazyWrapper>
+                              }
+                            />
+                            <Route
+                              path="/reset-password"
+                              element={
+                                <LazyWrapper>
+                                  <ResetPassword />
+                                </LazyWrapper>
                               }
                             />
 
