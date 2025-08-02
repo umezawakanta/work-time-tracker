@@ -393,9 +393,13 @@ const SitemapPage: React.FC = () => {
               <Badge variant="secondary" className="bg-blue-200 text-blue-800">
                 5つの方法
               </Badge>
+              <Badge variant="destructive" className="bg-red-200 text-red-800">
+                🔐 ログイン必須
+              </Badge>
             </CardTitle>
             <CardDescription className="text-blue-700">
-              目的に応じてタスクを追加できる場所をご案内します
+              ⚠️
+              すべてのタスク管理機能にログインが必要です。目的に応じてタスクを追加できる場所をご案内します
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -406,15 +410,18 @@ const SitemapPage: React.FC = () => {
                 <Badge variant="outline" className="text-xs">
                   最速
                 </Badge>
+                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                  🔐
+                </Badge>
               </div>
-              <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加</p>
+              <p className="text-xs text-gray-600 mb-2">日常タスクのクイック追加（要ログイン）</p>
               <Button
                 size="sm"
                 variant="outline"
                 className="w-full text-xs"
                 onClick={() => navigate('/')}
               >
-                今すぐ追加
+                ログイン後に追加
               </Button>
             </div>
 
@@ -425,15 +432,18 @@ const SitemapPage: React.FC = () => {
                 <Badge variant="outline" className="text-xs">
                   詳細
                 </Badge>
+                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                  🔐
+                </Badge>
               </div>
-              <p className="text-xs text-gray-600 mb-2">優先度・期限・カテゴリ設定</p>
+              <p className="text-xs text-gray-600 mb-2">優先度・期限・カテゴリ設定（要ログイン）</p>
               <Button
                 size="sm"
                 variant="outline"
                 className="w-full text-xs"
                 onClick={() => navigate('/todos')}
               >
-                詳細管理
+                ログイン後に管理
               </Button>
             </div>
 
@@ -444,15 +454,18 @@ const SitemapPage: React.FC = () => {
                 <Badge variant="outline" className="text-xs">
                   AI分解
                 </Badge>
+                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                  🔐
+                </Badge>
               </div>
-              <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解</p>
+              <p className="text-xs text-gray-600 mb-2">大きな作業を自動分解（要ログイン）</p>
               <Button
                 size="sm"
                 variant="outline"
                 className="w-full text-xs"
                 onClick={() => navigate('/game-loop-tasks')}
               >
-                自動分解
+                ログイン後に分解
               </Button>
             </div>
 
@@ -463,15 +476,18 @@ const SitemapPage: React.FC = () => {
                 <Badge variant="outline" className="text-xs">
                   プロジェクト
                 </Badge>
+                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                  🔐
+                </Badge>
               </div>
-              <p className="text-xs text-gray-600 mb-2">プロジェクト管理・進捗追跡</p>
+              <p className="text-xs text-gray-600 mb-2">プロジェクト管理・進捗追跡（要ログイン）</p>
               <Button
                 size="sm"
                 variant="outline"
                 className="w-full text-xs"
                 onClick={() => navigate('/integrated-dashboard')}
               >
-                プロジェクト管理
+                ログイン後に管理
               </Button>
             </div>
 
@@ -482,10 +498,13 @@ const SitemapPage: React.FC = () => {
                 <Badge variant="outline" className="text-xs">
                   ADHD対応
                 </Badge>
+                <Badge variant="destructive" className="text-xs bg-red-100 text-red-700">
+                  🔐
+                </Badge>
               </div>
-              <p className="text-xs text-gray-600 mb-2">認知特性に最適化</p>
+              <p className="text-xs text-gray-600 mb-2">認知特性に最適化（要ログイン）</p>
               <Button size="sm" variant="outline" className="w-full text-xs" disabled>
-                認知系機能から
+                ログイン後に認知系機能から
               </Button>
             </div>
 
@@ -493,7 +512,7 @@ const SitemapPage: React.FC = () => {
               <div className="text-center">
                 <Lightbulb className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                 <p className="text-xs font-medium text-blue-800 mb-1">迷ったら？</p>
-                <p className="text-xs text-blue-600">ホームページから始めよう！</p>
+                <p className="text-xs text-blue-600">ログイン後にホームページから始めよう！</p>
               </div>
             </div>
           </CardContent>
