@@ -58,6 +58,7 @@ const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 // 📅 Calendar & Task Management
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
+const TodoManagerPage = lazy(() => import('./pages/TodoManagerPage'));
 
 // 📚 Personal & Lifestyle
 const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
@@ -563,6 +564,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <TaskManagementPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/todos"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TodoManagerPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
