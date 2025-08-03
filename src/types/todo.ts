@@ -27,6 +27,7 @@ export interface TagInfo {
 // タスクの基本情報
 export interface Todo {
   _id: string; // ユニークID
+  id?: string; // 互換性のためのalias
   task: string; // タスク内容
   type: TaskType; // タスクタイプ
   completed: boolean; // 完了状態
@@ -36,9 +37,13 @@ export interface Todo {
   createdAt: string; // 作成日時 (ISO文字列)
   updatedAt: string; // 更新日時 (ISO文字列)
   completedDate: string | null; // 完了日時 (ISO文字列)
+  completedAt?: string; // 互換性のため
   deadline?: string; // 期限 (ISO文字列)
   note?: string; // メモ
+  text?: string; // 互換性のため
   tags?: string[]; // タグ
+  category?: string; // カテゴリ
+  userId?: string; // ユーザーID
   efficiency?: TodoEfficiency; // タスク効率分析（プレミアム機能）
   recurrence?: TodoRecurrence; // 繰り返し設定（プレミアム機能）
   reminders?: TodoReminder[]; // リマインダー（プレミアム機能）

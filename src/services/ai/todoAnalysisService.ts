@@ -8,8 +8,10 @@ export interface TaskAnalysis {
 }
 
 export interface TaskRecommendation {
-  type: 'delete' | 'split' | 'clarify' | 'rewrite';
+  type: 'delete' | 'split' | 'clarify' | 'rewrite' | 'priority' | 'optimization' | 'scheduling' | 'breakdown';
+  title?: string;
   reason: string;
+  description?: string;
   newTasks?: string[];
   rewrittenTask?: string;
   confidence: number; // 0-100

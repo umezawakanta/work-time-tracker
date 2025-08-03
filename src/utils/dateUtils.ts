@@ -118,20 +118,91 @@ export const getCurrentDateTimeString = (): string => {
 /**
  * Formats date and time for display in Japanese locale
  * @param dateValue - Date to format
+ * @param locale - Optional locale (defaults to 'ja-JP')
+ * @param options - Optional formatting options
  * @returns Formatted date and time string
  */
-export const formatDateAndTime = (dateValue: string | Date): string => {
+export const formatDateAndTime = (
+  dateValue: string | Date, 
+  locale?: string, 
+  options?: Intl.DateTimeFormatOptions
+): string => {
   try {
     const date = createSafeDate(dateValue);
-    return date.toLocaleString('ja-JP', {
+    const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    };
+    
+    return date.toLocaleString(locale || 'ja-JP', options || defaultOptions);
   } catch (error) {
     console.warn('Error formatting date and time:', dateValue, error);
     return '無効な日時';
+  }
+};
+
+/**
+ * Formats date for billing purposes
+ * @param dateValue - Date to format
+ * @returns Formatted billing date string
+ */
+export const formatBillingDate = (dateValue: string | Date): string => {
+  try {
+    const date = createSafeDate(dateValue);
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  } catch (error) {
+    console.warn('Error formatting billing date:', dateValue, error);
+    return '無効な日付';
+  }
+};
+
+/**
+ * Validates if a date format is valid
+ * @param dateString - Date string to validate
+ * @returns True if date format is valid
+ */
+export const isValidDateFormat = (dateString: string): boolean => {
+  if (!dateString || typeof dateString !== 'string') return false;
+  
+  const date = new Date(dateString.trim());
+  return !isNaN(date.getTime()) && dateString.trim() !== 'Invalid Date';
+};
+
+/**
+ * Converts date string to number (timestamp)
+ * @param dateString - Date string to convert
+ * @returns Number timestamp or 0 if invalid
+ */
+export const convertDateStringToNumber = (dateString: string): number => {
+  try {
+    const date = createSafeDate(dateString);
+    return date.getTime();
+  } catch (error) {
+    console.warn('Error converting date string to number:', dateString, error);
+    return 0;
+  }
+};
+
+/**
+ * Calculates duration between two dates
+ * @param startDate - Start date
+ * @param endDate - End date (defaults to now)
+ * @returns Duration in milliseconds
+ */
+export const calculateDuration = (startDate: string | Date, endDate?: string | Date): number => {
+  try {
+    const start = createSafeDate(startDate);
+    const end = endDate ? createSafeDate(endDate) : new Date();
+    return Math.abs(end.getTime() - start.getTime());
+  } catch (error) {
+    console.warn('Error calculating duration:', startDate, endDate, error);
+    return 0;
   }
 };
