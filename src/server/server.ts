@@ -11,12 +11,12 @@ import { connectDB } from './config/database.js';
 // import workTimeRoutes from './routes/workTimeRoutes.js';
 // import assetRoutes from './routes/assetRoutes.js';
 // import debtRoutes from './routes/debtRoutes.js';
-// import todoRoutes from './routes/todoRoutes.js';
+import todoRoutes from './routes/todoRoutes.js';
 // import candidateRoutes from './routes/candidateRoutes.js';
 // import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
 // import qualityRoutes from './routes/qualityRoutes.js';
 // import withdrawalRoutes from './routes/withdrawalRoutes.js';
-// import authRoutes from './routes/authRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 // import bookRoutes from './routes/bookRoutes.js';
 // import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
 // import blogRoutes from './routes/blogRoutes.js';
@@ -318,7 +318,20 @@ try {
 }
 
 // Temporarily test with no routes at all
-console.log('✅ No routes loaded - testing minimal server');
+console.log('✅ Loading essential routes - auth and todos');
+
+// Essential routes for TODO app
+try {
+  console.log('📝 Loading auth routes...');
+  app.use('/api/auth', authRoutes);
+  console.log('✅ Auth routes loaded successfully');
+
+  console.log('📝 Loading todo routes...');
+  app.use('/api/todos', todoRoutes);
+  console.log('✅ Todo routes loaded successfully');
+} catch (error) {
+  console.error('❌ Error loading essential routes:', error);
+}
 
 // 以下は一時的に無効化
 // app.use('/api/asset', assetRoutes);
