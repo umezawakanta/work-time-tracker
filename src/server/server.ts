@@ -160,9 +160,9 @@ app.use(express.json({ limit: '10mb' }));
 // app.use(helmet());
 // app.use(morgan('combined')); // 一時的に無効化
 
-// Connect to MongoDB - 一時的に無効化
-// console.log('Attempting to connect to MongoDB...');
-// connectDB();
+// Connect to MongoDB
+console.log('Attempting to connect to MongoDB...');
+connectDB();
 
 // Create uploads directory if it doesn't exist - 一時的に無効化
 // const uploadsDir = path.join(__dirname, '../../uploads');
@@ -316,11 +316,11 @@ try {
   console.error('❌ Error loading routes:', error);
 }
 
-// 他のルートは一時的に無効化
-// app.use('/api/auth', authRoutes);
-// app.use('/api/projects', projectRoutes);
-// app.use('/api/todos', todoRoutes);
-// app.use('/api/worktime', workTimeRoutes);
+// Enable essential routes
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/todos', todoRoutes);
+app.use('/api/worktime', workTimeRoutes);
 
 // 以下は一時的に無効化
 // app.use('/api/asset', assetRoutes);
