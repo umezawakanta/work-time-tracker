@@ -128,7 +128,7 @@ export const formatDateAndTime = (dateValue: string | Date): string => {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   } catch (error) {
     console.warn('Error formatting date and time:', dateValue, error);
