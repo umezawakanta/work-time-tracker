@@ -130,6 +130,37 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
+// /api/auth/check エンドポイントを追加
+app.get('/api/auth/check', (req: Request, res: Response) => {
+  console.log('✅ GET /api/auth/check called');
+  
+  // 開発環境用の固定レスポンス
+  res.json({
+    isAuthenticated: true,
+    user: {
+      id: 'demo-user-id',
+      displayName: 'Demo User',
+      email: 'demo@example.com'
+    }
+  });
+});
+
+// /api/auth/user エンドポイントを追加
+app.get('/api/auth/user', (req: Request, res: Response) => {
+  console.log('✅ GET /api/auth/user called');
+  
+  // 開発環境用の固定レスポンス
+  res.json({
+    user: {
+      id: 'demo-user-id',
+      _id: 'demo-user-id',
+      displayName: 'Demo User',
+      email: 'demo@example.com',
+      isAdmin: false,
+    }
+  });
+});
+
 // GET todos
 app.get('/api/todos', (req, res) => {
   console.log('✅ GET /api/todos called');
@@ -228,6 +259,8 @@ console.log('   POST /api/auth/login');
 console.log('   POST /api/auth/register');
 console.log('   POST /api/auth/logout');
 console.log('   GET  /api/auth/me');
+console.log('   GET  /api/auth/check');  // 追加
+console.log('   GET  /api/auth/user');   // 追加
 console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
 
