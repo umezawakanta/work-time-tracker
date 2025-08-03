@@ -114,3 +114,24 @@ export const getCurrentDateTimeString = (): string => {
   const now = new Date();
   return normalizeDateTimeLocal(now.toISOString());
 };
+
+/**
+ * Formats date and time for display in Japanese locale
+ * @param dateValue - Date to format
+ * @returns Formatted date and time string
+ */
+export const formatDateAndTime = (dateValue: string | Date): string => {
+  try {
+    const date = createSafeDate(dateValue);
+    return date.toLocaleString('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    console.warn('Error formatting date and time:', dateValue, error);
+    return '無効な日時';
+  }
+};
