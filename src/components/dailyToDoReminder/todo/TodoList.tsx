@@ -259,9 +259,13 @@ export const TodoList: React.FC<TodoListProps> = ({
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.prioritized.map((todo) => (
+              {groupedTodos.prioritized.map((todo, index) => (
                 <TodoItem
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `prioritized-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -287,9 +291,13 @@ export const TodoList: React.FC<TodoListProps> = ({
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.active.map((todo) => (
+              {groupedTodos.active.map((todo, index) => (
                 <TodoItem
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `active-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -315,9 +323,13 @@ export const TodoList: React.FC<TodoListProps> = ({
             </div>
 
             <div className="space-y-2">
-              {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map((todo) => (
+              {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map((todo, index) => (
                 <TodoItem
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `completed-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
