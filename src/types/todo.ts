@@ -26,8 +26,8 @@ export interface TagInfo {
 
 // タスクの基本情報
 export interface Todo {
-  _id: string; // ユニークID
-  id?: string; // 互換性のためのalias
+  _id?: string; // MongoDBのユニークID (オプショナル)
+  id: string; // プライマリID
   task: string; // タスク内容
   type: TaskType; // タスクタイプ
   completed: boolean; // 完了状態

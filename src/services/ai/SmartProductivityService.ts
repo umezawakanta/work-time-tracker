@@ -121,7 +121,7 @@ ${JSON.stringify(userPreferences, null, 2)}
 
       const response = await multiAIIntegrationService.processTask({
         prompt: analysisPrompt,
-        taskType: 'scheduling',
+        taskType: 'planning',
         priority: 'high',
         useThinking: true, // Gemini 2.5 Pro の thinking mode 活用
       });
@@ -178,7 +178,7 @@ JSON 形式で構造化されたレポートを返してください。定量的
       const response = await multiAIIntegrationService.processTask({
         prompt: reportPrompt,
         taskType: 'analysis',
-        priority: 'medium',
+        priority: 'normal',
         useThinking: true,
       });
 
@@ -224,8 +224,8 @@ JSON 形式で回答してください。`;
 
       const response = await multiAIIntegrationService.processTask({
         prompt: suggestionPrompt,
-        taskType: 'prediction',
-        priority: 'medium',
+        taskType: 'planning',
+        priority: 'normal',
         useThinking: true,
       });
 
