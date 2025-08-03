@@ -68,7 +68,7 @@ import AdvancedAIService from '@/services/ai/AdvancedAIService';
 import { toast } from 'react-hot-toast';
 import TaskImporter from './TaskImporter';
 
-interface TaskSuggestion {
+interface LocalLocalTaskSuggestion {
   id: string;
   task: string;
   type: 'input' | 'output';
@@ -127,7 +127,7 @@ export const EnhancedTaskManager: React.FC = () => {
   const [isImporterOpen, setIsImporterOpen] = useState(false);
 
   // AI State
-  const [taskSuggestions, setTaskSuggestions] = useState<TaskSuggestion[]>([]);
+  const [taskSuggestions, setLocalTaskSuggestions] = useState<LocalTaskSuggestion[]>([]);
   const [taskGroups, setTaskGroups] = useState<TaskGroup[]>([]);
   const [priorityPredictions, setPriorityPredictions] = useState<PriorityPrediction[]>([]);
   const [completionPredictions, setCompletionPredictions] = useState<CompletionPrediction[]>([]);
@@ -149,7 +149,7 @@ export const EnhancedTaskManager: React.FC = () => {
   }, []);
 
   // AI Analysis Functions
-  const generateTaskSuggestions = useCallback(async () => {
+  const generateLocalTaskSuggestions = useCallback(async () => {
     if (!hasPremium) {
       toast.error('AI機能はプレミアムプランでご利用いただけます');
       return;
@@ -162,7 +162,7 @@ export const EnhancedTaskManager: React.FC = () => {
 
       const suggestions = await AdvancedAIService.suggestNextTasks(completedTodos, currentGoals);
 
-      const enhancedSuggestions: TaskSuggestion[] = suggestions.map((suggestion, index) => ({
+      const enhancedSuggestions: LocalTaskSuggestion[] = suggestions.map((suggestion, index) => ({
         id: `suggestion-${index}`,
         task: suggestion.task || `推奨タスク ${index + 1}`,
         type: suggestion.type || 'output',
@@ -172,7 +172,7 @@ export const EnhancedTaskManager: React.FC = () => {
         confidence: Math.random() * 0.3 + 0.7,
       }));
 
-      setTaskSuggestions(enhancedSuggestions);
+      setLocalTaskSuggestions(enhancedSuggestions);
       toast.success(`${enhancedSuggestions.length}個のタスク提案を生成しました`);
     } catch (error) {
       console.error('Task suggestion error:', error);
@@ -363,7 +363,7 @@ export const EnhancedTaskManager: React.FC = () => {
 
     try {
       await Promise.all([
-        generateTaskSuggestions(),
+        generateLocalTaskSuggestions(),
         predictTaskPriorities(),
         predictCompletionTimes(),
         groupSimilarTasks(),
@@ -395,7 +395,7 @@ export const EnhancedTaskManager: React.FC = () => {
   }, [
     todos,
     hasPremium,
-    generateTaskSuggestions,
+    generateLocalTaskSuggestions,
     predictTaskPriorities,
     predictCompletionTimes,
     groupSimilarTasks,
@@ -418,7 +418,7 @@ export const EnhancedTaskManager: React.FC = () => {
     }
   };
 
-  const acceptTaskSuggestion = async (suggestion: TaskSuggestion) => {
+  const acceptLocalTaskSuggestion = async (suggestion: LocalTaskSuggestion) => {
     try {
       await dispatch(
         addTodoItem({
@@ -429,7 +429,7 @@ export const EnhancedTaskManager: React.FC = () => {
         })
       ).unwrap();
 
-      setTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id));
+      setLocalTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id));
       toast.success('提案タスクを追加しました');
     } catch (error) {
       toast.error('タスクの追加に失敗しました');
@@ -747,7 +747,7 @@ export const EnhancedTaskManager: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>AI分析</DropdownMenuLabel>
-              <DropdownMenuItem onClick={generateTaskSuggestions} disabled={isAnalyzing}>
+              <DropdownMenuItem onClick={generateLocalTaskSuggestions} disabled={isAnalyzing}>
                 <Lightbulb className="h-4 w-4 mr-2" />
                 タスク提案
               </DropdownMenuItem>
@@ -794,7 +794,7 @@ export const EnhancedTaskManager: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button
               variant="outline"
-              onClick={generateTaskSuggestions}
+              onClick={generateLocalTaskSuggestions}
               disabled={isAnalyzing}
               className="flex items-center gap-2"
             >
@@ -870,14 +870,14 @@ export const EnhancedTaskManager: React.FC = () => {
                     <p className="text-sm text-gray-600">{suggestion.reason}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => acceptTaskSuggestion(suggestion)}>
+                    <Button size="sm" onClick={() => acceptLocalTaskSuggestion(suggestion)}>
                       採用
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        setTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id))
+                        setLocalTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id))
                       }
                     >
                       却下

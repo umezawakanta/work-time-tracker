@@ -2,22 +2,7 @@
 // 現在はモックデータとプレースホルダー機能を提供
 
 import { TodoItem } from '@/types';
-
-export interface TaskSuggestion {
-  id: string;
-  type: 'priority' | 'scheduling' | 'breakdown' | 'optimization';
-  title: string;
-  description: string;
-  confidence: number; // 0-100
-  suggestedAction: {
-    action: 'update_priority' | 'reschedule' | 'split_task' | 'merge_tasks' | 'add_subtask';
-    targetTaskId?: string;
-    newValues?: Record<string, any>;
-    suggestedDate?: string;
-  };
-  reasoning: string;
-  estimatedTimeImpact: number; // minutes saved/added
-}
+import { TaskSuggestion, TaskPrediction } from '@/types/ai';
 
 export interface TaskAnalysis {
   overallProductivity: number; // 0-100
@@ -34,20 +19,7 @@ export interface TaskAnalysis {
   };
 }
 
-export interface TaskPrediction {
-  taskId: string;
-  estimatedDuration: number; // minutes
-  difficulty: 'easy' | 'medium' | 'hard';
-  optimalTimeSlots: Array<{
-    date: string;
-    startTime: string;
-    endTime: string;
-    score: number; // 0-100, how optimal this slot is
-    reasoning: string;
-  }>;
-  dependencies: string[]; // other task IDs
-  prerequisites: string[];
-}
+
 
 class TaskSuggestionService {
   private isAIEnabled = true; // 実際のAI実装完了

@@ -1,3 +1,5 @@
+import { TaskRecommendation } from '@/types/ai';
+
 export interface TaskAnalysis {
   id: string;
   originalTask: string;
@@ -5,24 +7,6 @@ export interface TaskAnalysis {
   recommendations: TaskRecommendation[];
   clarity: 'clear' | 'vague' | 'abstract';
   actionability: number; // 0-100
-}
-
-export interface TaskRecommendation {
-  type:
-    | 'delete'
-    | 'split'
-    | 'clarify'
-    | 'rewrite'
-    | 'priority'
-    | 'optimization'
-    | 'scheduling'
-    | 'breakdown';
-  title?: string;
-  reason: string;
-  description?: string;
-  newTasks?: string[];
-  rewrittenTask?: string;
-  confidence: number; // 0-100
 }
 
 export interface TodoAnalysisResult {

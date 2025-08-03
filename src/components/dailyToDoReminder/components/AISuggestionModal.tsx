@@ -29,7 +29,7 @@ interface AISuggestionModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-interface TaskSuggestion {
+interface LocalLocalTaskSuggestion {
   task: string;
   type: 'input' | 'output';
   priority: number;
@@ -137,7 +137,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
     [user]
   );
 
-  const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<LocalTaskSuggestion[]>([]);
   const [selectedSuggestions, setSelectedSuggestions] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [wbsProjects, setWbsProjects] = useState<WBSProject[]>([]);
@@ -230,7 +230,7 @@ export const AISuggestionModal: React.FC<AISuggestionModalProps> = ({ open, onOp
       console.log('AI suggestions received:', aiSuggestions.length);
       console.log('AI suggestions:', aiSuggestions);
 
-      const formattedSuggestions: TaskSuggestion[] = aiSuggestions.map((s) => ({
+      const formattedSuggestions: LocalTaskSuggestion[] = aiSuggestions.map((s) => ({
         task: s.task,
         type: s.type || 'output',
         priority: s.priority || 3,

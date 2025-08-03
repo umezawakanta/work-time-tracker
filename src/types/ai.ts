@@ -50,3 +50,81 @@ export interface AIFeatureOptions {
   temperature?: number;
   stream?: boolean;
 }
+
+// =============================================================================
+// AI Task Management Interfaces
+// =============================================================================
+
+export interface TaskSuggestion {
+  id: string;
+  taskId: string;
+  type: 'priority' | 'optimization' | 'scheduling' | 'breakdown' | 'priority_adjustment';
+  title: string;
+  description: string;
+  confidence: number;
+  impact: 'low' | 'medium' | 'high';
+  effort: string;
+  aiGenerated: boolean;
+  suggestedAction?: string;
+  reasoning?: string;
+  estimatedTimeImpact?: number;
+  metadata?: {
+    currentPriority?: number;
+    suggestedPriority?: number;
+    reason?: string;
+  };
+}
+
+export interface TaskPrediction {
+  taskId: string;
+  estimatedDuration: number; // 分単位
+  estimatedMinutes?: number; // エイリアス
+  confidence: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  optimalTimeSlots: string[];
+  dependencies: string[];
+  prerequisites: string[];
+  factors: string[];
+  aiGenerated: boolean;
+}
+
+export interface TaskRecommendation {
+  id: string;
+  title: string;
+  type: string;
+  description: string;
+  priority: number;
+  confidence?: number;
+  aiGenerated?: boolean;
+  metadata?: Record<string, any>;
+}
+
+// =============================================================================
+// AI Analysis Interfaces
+// =============================================================================
+
+export interface TaskAnalysis {
+  taskId: string;
+  complexity: 'low' | 'medium' | 'high';
+  priority: number;
+  estimatedDuration: number;
+  clarity: 'clear' | 'vague' | 'abstract';
+  actionability: number; // 0-100
+  suggestions: TaskSuggestion[];
+  predictions: TaskPrediction[];
+  recommendations: TaskRecommendation[];
+}
+
+export interface AIAnalysisResult {
+  analysisId: string;
+  timestamp: string;
+  totalTasks: number;
+  analysisScore: number;
+  taskAnalyses: TaskAnalysis[];
+  overallRecommendations: string[];
+  productivity: {
+    currentScore: number;
+    potentialScore: number;
+    improvementAreas: string[];
+  };
+}
