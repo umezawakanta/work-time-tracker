@@ -139,6 +139,9 @@ const SitemapPage = lazy(() => import('./pages/SitemapPage'));
 const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
 const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
 const ErrorDashboardPage = lazy(() => import('./pages/ErrorDashboardPage'));
+const TestingDashboard = lazy(() => import('./pages/TestingDashboard'));
+const AnalyticsDashboard = lazy(() => import('./pages/AnalyticsDashboard'));
+const SNSSharePage = lazy(() => import('./pages/SNSSharePage'));
 const AdvancedPerformanceMonitoringPage = lazy(
   () => import('./pages/AdvancedPerformanceMonitoringPage')
 );
@@ -737,6 +740,36 @@ const App: React.FC = () => {
                               }
                             />
                             <Route path="/error-dashboard" element={<ErrorDashboardPage />} />
+                            <Route
+                              path="/testing-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <TestingDashboard />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/analytics-dashboard"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AnalyticsDashboard />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/sns-share"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SNSSharePage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
                             <Route
                               path="/coverage-report"
                               element={
