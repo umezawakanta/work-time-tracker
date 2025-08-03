@@ -123,8 +123,8 @@ export const getCurrentDateTimeString = (): string => {
  * @returns Formatted date and time string
  */
 export const formatDateAndTime = (
-  dateValue: string | Date, 
-  locale?: string, 
+  dateValue: string | Date,
+  locale?: string,
   options?: Intl.DateTimeFormatOptions
 ): string => {
   try {
@@ -136,7 +136,7 @@ export const formatDateAndTime = (
       hour: '2-digit',
       minute: '2-digit',
     };
-    
+
     return date.toLocaleString(locale || 'ja-JP', options || defaultOptions);
   } catch (error) {
     console.warn('Error formatting date and time:', dateValue, error);
@@ -155,7 +155,7 @@ export const formatBillingDate = (dateValue: string | Date): string => {
     return date.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
     });
   } catch (error) {
     console.warn('Error formatting billing date:', dateValue, error);
@@ -170,7 +170,7 @@ export const formatBillingDate = (dateValue: string | Date): string => {
  */
 export const isValidDateFormat = (dateString: string): boolean => {
   if (!dateString || typeof dateString !== 'string') return false;
-  
+
   const date = new Date(dateString.trim());
   return !isNaN(date.getTime()) && dateString.trim() !== 'Invalid Date';
 };
