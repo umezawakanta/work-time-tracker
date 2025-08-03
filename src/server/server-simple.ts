@@ -21,6 +21,115 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Simple server running' });
 });
 
+// Authentication endpoints
+app.post('/api/auth/login', (req, res) => {
+  console.log('✅ POST /api/auth/login called');
+  console.log('📨 Login request headers:', req.headers);
+  console.log('📝 Login request body:', req.body);
+  console.log('🌐 Login request origin:', req.get('origin'));
+
+  const { email, password } = req.body;
+
+  // Simple mock authentication - always success for development
+  if (email && password) {
+    const mockUser = {
+      id: 'user_' + Date.now(),
+      email: email,
+      name: email.split('@')[0],
+      role: 'user',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    const mockToken = 'mock_jwt_token_' + Date.now();
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user: mockUser,
+      token: mockToken,
+      timestamp: new Date().toISOString(),
+    });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Email and password are required',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+app.post('/api/auth/register', (req, res) => {
+  console.log('✅ POST /api/auth/register called');
+  console.log('📝 Register request body:', req.body);
+
+  const { email, password, name } = req.body;
+
+  if (email && password) {
+    const mockUser = {
+      id: 'user_' + Date.now(),
+      email: email,
+      name: name || email.split('@')[0],
+      role: 'user',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    const mockToken = 'mock_jwt_token_' + Date.now();
+
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful',
+      user: mockUser,
+      token: mockToken,
+      timestamp: new Date().toISOString(),
+    });
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Email and password are required',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  console.log('✅ POST /api/auth/logout called');
+  res.json({
+    success: true,
+    message: 'Logout successful',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  console.log('✅ GET /api/auth/me called');
+
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const mockUser = {
+      id: 'user_123',
+      email: 'demo@example.com',
+      name: 'Demo User',
+      role: 'user',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      user: mockUser,
+      timestamp: new Date().toISOString(),
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'Unauthorized - No valid token provided',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // GET todos
 app.get('/api/todos', (req, res) => {
   console.log('✅ GET /api/todos called');
@@ -115,6 +224,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
 console.log('   GET  /api/debug');
+console.log('   POST /api/auth/login');
+console.log('   POST /api/auth/register');
+console.log('   POST /api/auth/logout');
+console.log('   GET  /api/auth/me');
 console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
 
