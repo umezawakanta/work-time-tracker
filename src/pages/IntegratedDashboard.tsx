@@ -37,6 +37,7 @@ import { useNavigate } from 'react-router-dom';
 import { ProjectHubProject, IntegratedTask, ProjectAlert } from '@/types/projectHub';
 import { useAuth } from '@/hooks/useAuth';
 import { useMongoTodos } from '@/hooks/useMongoTodos';
+import { SmartProductivityDashboard } from '@/components/ai/SmartProductivityDashboard';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
 import {
   gameLoopAutomationIntegration,
@@ -632,6 +633,18 @@ const IntegratedDashboard: React.FC = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          {/* 概要コンテンツ */}
+        </TabsContent>
+
+        {/* AI生産性ダッシュボード */}
+        <TabsContent value="ai-productivity" className="space-y-6">
+          <SmartProductivityDashboard 
+            todos={allTodos} 
+            userId={user?.email || 'anonymous'} 
+          />
+        </TabsContent>
+
+        <TabsContent value="tasks" className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-3">
             {/* プロジェクト一覧 */}
             <div className="lg:col-span-2">
