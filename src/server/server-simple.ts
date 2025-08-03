@@ -162,7 +162,7 @@ app.get('/api/auth/user', (req: Request, res: Response) => {
 });
 
 // メモリ内TODOストレージ
-let todos: any[] = [
+const todos: any[] = [
   {
     id: '1',
     _id: '1',
@@ -245,7 +245,7 @@ app.put('/api/todos/:id', (req, res) => {
   console.log('📝 Update data:', req.body);
 
   const todoId = req.params.id;
-  const todoIndex = todos.findIndex(todo => todo.id === todoId || todo._id === todoId);
+  const todoIndex = todos.findIndex((todo) => todo.id === todoId || todo._id === todoId);
 
   if (todoIndex === -1) {
     console.log(`❌ Todo not found with ID: ${todoId}`);
@@ -272,7 +272,7 @@ app.delete('/api/todos/:id', (req, res) => {
   console.log('📝 ID:', req.params.id);
 
   const todoId = req.params.id;
-  const todoIndex = todos.findIndex(todo => todo.id === todoId || todo._id === todoId);
+  const todoIndex = todos.findIndex((todo) => todo.id === todoId || todo._id === todoId);
 
   if (todoIndex === -1) {
     console.log(`❌ Todo not found with ID: ${todoId}`);
@@ -284,7 +284,7 @@ app.delete('/api/todos/:id', (req, res) => {
 
   const deletedTodo = todos.splice(todoIndex, 1)[0];
   console.log(`🗑️ Todo deleted: ${deletedTodo.task}`);
-  
+
   res.json({
     success: true,
     message: 'Todo deleted successfully',
