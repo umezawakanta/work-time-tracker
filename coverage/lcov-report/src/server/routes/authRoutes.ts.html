@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/28</span>
+                <span class='fraction'>0/27</span>
             </div>
         
             
@@ -129,7 +129,10 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,16 +144,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -207,19 +213,22 @@ import { Request, Response } from 'express';
   requestPasswordReset,
   resetPassword,
 } from '../controllers/authController.js';
-<span class="cstat-no" title="statement not covered" >import { authMiddleware } from '../middleware/authMiddleware.js';</span>
+// import { authMiddleware } from '../middleware/authMiddleware.js'; // Disabled for development
 <span class="cstat-no" title="statement not covered" >import { User } from '../models/User.js';</span>
 &nbsp;
 const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >router.post('/login', login);</span>
 <span class="cstat-no" title="statement not covered" >router.post('/register', register);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/check', authMiddleware, checkAuth);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/profile', authMiddleware, <span class="fstat-no" title="function not covered" >(r</span>eq: Request, res: Response): void =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  res.json({ user: req.user });</span>
-});
-<span class="cstat-no" title="statement not covered" >router.put('/profile', authMiddleware, updateProfile);</span>
-<span class="cstat-no" title="statement not covered" >router.get('/user', authMiddleware, getUserData);</span>
+<span class="cstat-no" title="statement not covered" >router.get('/check', /* authMiddleware, */ checkAuth);</span>
+<span class="cstat-no" title="statement not covered" >router.get(</span>
+  '/profile',
+  /* authMiddleware, */ <span class="fstat-no" title="function not covered" >(r</span>eq: Request, res: Response): void =&gt; {
+<span class="cstat-no" title="statement not covered" >    res.json({ user: req.user || { id: 'demo-user', message: 'Development mode' } });</span>
+  }
+);
+<span class="cstat-no" title="statement not covered" >router.put('/profile', /* authMiddleware, */ updateProfile);</span>
+<span class="cstat-no" title="statement not covered" >router.get('/user', /* authMiddleware, */ getUserData);</span>
 &nbsp;
 // 新しいエンドポイントを追加
 <span class="cstat-no" title="statement not covered" >router.post('/refresh', refreshToken);</span>
@@ -229,7 +238,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
 // 管理者権限付与エンドポイント（開発用）
 <span class="cstat-no" title="statement not covered" >router.post(</span>
   '/promote-admin',
-  authMiddleware,
+  /* authMiddleware, */ // Disabled for development
 <span class="fstat-no" title="function not covered" >  async </span>(req: Request, res: Response): Promise&lt;void&gt; =&gt; {
 <span class="cstat-no" title="statement not covered" >    try {</span>
       // 環境が開発環境の場合のみ許可
@@ -268,7 +277,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/193</span>
+                <span class='fraction'>0/198</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/148</span>
+                <span class='fraction'>0/152</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/180</span>
+                <span class='fraction'>0/186</span>
             </div>
         
             
@@ -803,7 +803,21 @@
 <a name='L738'></a><a href='#L738'>738</a>
 <a name='L739'></a><a href='#L739'>739</a>
 <a name='L740'></a><a href='#L740'>740</a>
-<a name='L741'></a><a href='#L741'>741</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L741'></a><a href='#L741'>741</a>
+<a name='L742'></a><a href='#L742'>742</a>
+<a name='L743'></a><a href='#L743'>743</a>
+<a name='L744'></a><a href='#L744'>744</a>
+<a name='L745'></a><a href='#L745'>745</a>
+<a name='L746'></a><a href='#L746'>746</a>
+<a name='L747'></a><a href='#L747'>747</a>
+<a name='L748'></a><a href='#L748'>748</a>
+<a name='L749'></a><a href='#L749'>749</a>
+<a name='L750'></a><a href='#L750'>750</a>
+<a name='L751'></a><a href='#L751'>751</a>
+<a name='L752'></a><a href='#L752'>752</a>
+<a name='L753'></a><a href='#L753'>753</a>
+<a name='L754'></a><a href='#L754'>754</a>
+<a name='L755'></a><a href='#L755'>755</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -829,6 +843,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -908,6 +923,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -928,7 +951,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1569,6 +1597,7 @@ import { RootState, AppDispatch } from '@/store';
 <span class="cstat-no" title="statement not covered" >import { fetchTodoItems, updateTodoItem, deleteTodoItem } from '@/store/todoSlice';</span>
 <span class="cstat-no" title="statement not covered" >import { EventModal } from '@/components/EventModal';</span>
 <span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
+<span class="cstat-no" title="statement not covered" >import { createSafeDate, normalizeDateTimeLocal } from '@/utils/dateUtils';</span>
 &nbsp;
 interface Event {
   id: string;
@@ -1645,11 +1674,19 @@ const TaskCalendarView: React.FC&lt;TaskCalendarViewProps&gt; = <span class="cst
 <span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (events.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      try {</span>
-        const eventsToSave = <span class="cstat-no" title="statement not covered" >events.map(<span class="fstat-no" title="function not covered" >(e</span>vent) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-          ...event,
-          start: event.start.toISOString(),
-          end: event.end.toISOString(),
-        }));
+        const eventsToSave = <span class="cstat-no" title="statement not covered" >events.map(<span class="fstat-no" title="function not covered" >(e</span>vent) =&gt; {</span>
+          // Validate Date objects before calling toISOString()
+          const startDate =
+<span class="cstat-no" title="statement not covered" >            event.start instanceof Date &amp;&amp; !isNaN(event.start.getTime()) ? event.start : new Date();</span>
+          const endDate =
+<span class="cstat-no" title="statement not covered" >            event.end instanceof Date &amp;&amp; !isNaN(event.end.getTime()) ? event.end : new Date();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >          return {</span>
+            ...event,
+            start: startDate.toISOString(),
+            end: endDate.toISOString(),
+          };
+        });
 <span class="cstat-no" title="statement not covered" >        localStorage.setItem('calendar-events', JSON.stringify(eventsToSave));</span>
       } catch (error) {
 <span class="cstat-no" title="statement not covered" >        console.error('Error saving events:', error);</span>
@@ -1668,23 +1705,28 @@ const TaskCalendarView: React.FC&lt;TaskCalendarViewProps&gt; = <span class="cst
         // Include tasks with deadlines or all tasks for current day view
 <span class="cstat-no" title="statement not covered" >        return todo.deadline || view === 'day';</span>
       })
-      .map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
-        id: `task-${todo._id}`,
-        title: todo.task || 'Untitled Task',
-        start: todo.deadline ? new Date(todo.deadline) : new Date(),
-        end: todo.deadline ? new Date(todo.deadline) : new Date(),
-        type: 'task' as const,
-        taskId: todo._id,
-        priority: todo.priority,
-        completed: todo.completed,
-        color: todo.completed
-          ? '#10b981'
-          : todo.isPrioritized
-            ? '#ef4444'
-            : todo.priority &gt; 3
-              ? '#f59e0b'
-              : '#3b82f6',
-      }));
+      .map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {
+        const startDate = <span class="cstat-no" title="statement not covered" >createSafeDate(todo.deadline);</span>
+        const endDate = <span class="cstat-no" title="statement not covered" >createSafeDate(todo.deadline);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+          id: `task-${todo._id}`,
+          title: todo.task || 'Untitled Task',
+          start: startDate,
+          end: endDate,
+          type: 'task' as const,
+          taskId: todo._id,
+          priority: todo.priority,
+          completed: todo.completed,
+          color: todo.completed
+            ? '#10b981'
+            : todo.isPrioritized
+              ? '#ef4444'
+              : todo.priority &gt; 3
+                ? '#f59e0b'
+                : '#3b82f6',
+        };
+      });
   }, [todos, filterStatus, view]);
 &nbsp;
   // Combine events and tasks
@@ -2290,7 +2332,7 @@ const TaskCalendarView: React.FC&lt;TaskCalendarViewProps&gt; = <span class="cst
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/68</span>
             </div>
         
             
@@ -428,7 +428,19 @@
 <a name='L363'></a><a href='#L363'>363</a>
 <a name='L364'></a><a href='#L364'>364</a>
 <a name='L365'></a><a href='#L365'>365</a>
-<a name='L366'></a><a href='#L366'>366</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -718,7 +730,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -746,7 +764,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1054,9 +1078,13 @@ export const <span class="cstat-no" title="statement not covered" >TodoList: Rea
             &lt;/div&gt;
 &nbsp;
             &lt;div className="space-y-2"&gt;
-              {groupedTodos.prioritized.map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; (
+              {groupedTodos.prioritized.map(<span class="fstat-no" title="function not covered" >(t</span>odo, index) =&gt; (
 <span class="cstat-no" title="statement not covered" >                &lt;TodoItem</span>
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `prioritized-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -1082,9 +1110,13 @@ export const <span class="cstat-no" title="statement not covered" >TodoList: Rea
             &lt;/div&gt;
 &nbsp;
             &lt;div className="space-y-2"&gt;
-              {groupedTodos.active.map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; (
+              {groupedTodos.active.map(<span class="fstat-no" title="function not covered" >(t</span>odo, index) =&gt; (
 <span class="cstat-no" title="statement not covered" >                &lt;TodoItem</span>
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `active-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -1110,9 +1142,13 @@ export const <span class="cstat-no" title="statement not covered" >TodoList: Rea
             &lt;/div&gt;
 &nbsp;
             &lt;div className="space-y-2"&gt;
-              {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; (
+              {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map(<span class="fstat-no" title="function not covered" >(t</span>odo, index) =&gt; (
 <span class="cstat-no" title="statement not covered" >                &lt;TodoItem</span>
-                  key={todo.id}
+                  key={
+                    todo.id ||
+                    todo._id ||
+                    `completed-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                  }
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -1165,7 +1201,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoList: Rea
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

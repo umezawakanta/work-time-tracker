@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/31</span>
+                <span class='fraction'>0/29</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/27</span>
+                <span class='fraction'>0/25</span>
             </div>
         
             
@@ -111,12 +111,7 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a>
-<a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,17 +143,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -200,23 +190,18 @@ export const <span class="cstat-no" title="statement not covered" >updateUserPro
 <span class="cstat-no" title="statement not covered" >      return res.status(401).json({ message: 'Unauthorized' });</span>
     }
 &nbsp;
-    const { name, email } = <span class="cstat-no" title="statement not covered" >req.body;</span>
-&nbsp;
-    // nameとemailが文字列であることを確認
-    const nameStr = <span class="cstat-no" title="statement not covered" >typeof name === 'string' ? name : '';</span>
-    const emailStr = <span class="cstat-no" title="statement not covered" >typeof email === 'string' ? email : '';</span>
-&nbsp;
-    const user = <span class="cstat-no" title="statement not covered" >await User.findById(req.user.id);</span>
+    const user = <span class="cstat-no" title="statement not covered" >await User.findById(req.params.id);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) {</span>
 <span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'User not found' });</span>
     }
 &nbsp;
-    // 文字列に変換した値を使用
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (nameStr) <span class="cstat-no" title="statement not covered" >user.name = nameStr;</span></span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (emailStr) <span class="cstat-no" title="statement not covered" >user.email = emailStr;</span></span>
+    // Update fields if provided
+    const { name: displayName, email }: { name?: string; email?: string } = <span class="cstat-no" title="statement not covered" >req.body;</span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (displayName &amp;&amp; typeof displayName === 'string') <span class="cstat-no" title="statement not covered" >user.displayName = displayName;</span></span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (email &amp;&amp; typeof email === 'string') <span class="cstat-no" title="statement not covered" >user.email = email;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    await user.save();</span>
-<span class="cstat-no" title="statement not covered" >    res.json({ name: user.name, email: user.email });</span>
+<span class="cstat-no" title="statement not covered" >    res.json({ displayName: user.displayName, email: user.email });</span>
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    console.error('Update user profile error:', error);</span>
 <span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: 'Server error' });</span>
@@ -229,7 +214,7 @@ export const <span class="cstat-no" title="statement not covered" >updateUserPro
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

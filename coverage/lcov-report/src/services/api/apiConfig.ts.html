@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.56% </span>
+                <span class="strong">42.71% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>44/101</span>
+                <span class='fraction'>44/103</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">35.89% </span>
+                <span class="strong">36.61% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>28/78</span>
+                <span class='fraction'>26/71</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43% </span>
+                <span class="strong">42.15% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>43/100</span>
+                <span class='fraction'>43/102</span>
             </div>
         
             
@@ -316,9 +316,7 @@
 <a name='L251'></a><a href='#L251'>251</a>
 <a name='L252'></a><a href='#L252'>252</a>
 <a name='L253'></a><a href='#L253'>253</a>
-<a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a>
-<a name='L256'></a><a href='#L256'>256</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">37x</span>
+<a name='L254'></a><a href='#L254'>254</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">37x</span>
 <span class="cline-any cline-yes">37x</span>
 <span class="cline-any cline-yes">37x</span>
 <span class="cline-any cline-yes">37x</span>
@@ -332,14 +330,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">37x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -455,6 +445,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -589,16 +585,8 @@ declare global {
 export const USE_MOCK_DATA =
   getBooleanEnv('VITE_USE_MOCK_DATA') ||
   (typeof window !== 'undefined' &amp;&amp; window.__VITE_USE_MOCK_DATA__ === 'true') ||
-  // 開発環境では認証エラーを回避するためモックデータを優先使用
-  (isDev() &amp;&amp;
-<span class="branch-4 cbranch-no" title="branch not covered" >    typeof window !== 'undefined' </span>&amp;&amp;
-    (<span class="branch-5 cbranch-no" title="branch not covered" >window.location.hostname === 'localhost' </span>|| <span class="branch-6 cbranch-no" title="branch not covered" >window.location.hostname === '127.0.0.1')</span>) ||
-  // 本番環境でAPIが存在しない場合は自動的にモックモードを有効化
-  (typeof window !== 'undefined' &amp;&amp;
-    window.location.hostname === 'work-time-tracker-5d9q.vercel.app' &amp;&amp;
-<span class="branch-9 cbranch-no" title="branch not covered" >    !getEnv('VITE_API_BASE_URL')?.includes('herokuapp') </span>&amp;&amp;
-<span class="branch-10 cbranch-no" title="branch not covered" >    !getEnv('VITE_API_BASE_URL')?.includes('railway') </span>&amp;&amp;
-<span class="branch-11 cbranch-no" title="branch not covered" >    !getEnv('VITE_API_BASE_URL')?.includes('render'))</span>;
+  // Mock data only enabled with explicit flag - allow real API in development
+  false;
 &nbsp;
 // デバッグ情報をログ出力
 console.log('🔧 Determining API Configuration...');
@@ -710,6 +698,12 @@ api.interceptors.request.use(
 &nbsp;
     // /auth/token エンドポイントへのリクエストではトークンを追加しない（無限ループ防止）
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (config.url?.includes('/auth/token')) {</span>
+<span class="cstat-no" title="statement not covered" >      return config;</span>
+    }
+&nbsp;
+    // 開発モードではトークン取得をスキップ
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (process.env.NODE_ENV === 'development') {</span>
+      // 開発モードではトークンなしで続行
 <span class="cstat-no" title="statement not covered" >      return config;</span>
     }
 &nbsp;
@@ -835,7 +829,7 @@ export const clearTokenCache = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/34</span>
+                <span class='fraction'>0/36</span>
             </div>
         
             
@@ -357,7 +357,12 @@
 <a name='L292'></a><a href='#L292'>292</a>
 <a name='L293'></a><a href='#L293'>293</a>
 <a name='L294'></a><a href='#L294'>294</a>
-<a name='L295'></a><a href='#L295'>295</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -606,11 +611,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -622,6 +622,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -636,6 +644,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -868,7 +878,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoAIAnalysi
                         &lt;p className="text-sm font-medium text-amber-900"&gt;問題点:&lt;/p&gt;
                         &lt;ul className="text-sm text-amber-800 list-disc list-inside"&gt;
                           {task.issues.map(<span class="fstat-no" title="function not covered" >(i</span>ssue, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                            &lt;li key={index}&gt;{i</span>ssue}&lt;/li&gt;
+<span class="cstat-no" title="statement not covered" >                            &lt;li key={`issue-${task.id}-${index}-${issue.slice(0, 10)}`}&gt;{i</span>ssue}&lt;/li&gt;
                           ))}
                         &lt;/ul&gt;
                       &lt;/div&gt;
@@ -877,7 +887,10 @@ export const <span class="cstat-no" title="statement not covered" >TodoAIAnalysi
 &nbsp;
                   &lt;div className="space-y-2"&gt;
                     {task.recommendations.map(<span class="fstat-no" title="function not covered" >(r</span>ec, index) =&gt; (
-<span class="cstat-no" title="statement not covered" >                      &lt;div key={index} c</span>lassName="border rounded p-3 bg-slate-50"&gt;
+<span class="cstat-no" title="statement not covered" >                      &lt;div</span>
+                        key={`rec-${task.id}-${index}-${rec.title?.slice(0, 10) || rec.type}`}
+                        className="border rounded p-3 bg-slate-50"
+                      &gt;
                         &lt;div className="flex items-start justify-between mb-2"&gt;
                           &lt;div className="flex items-center gap-2"&gt;
                             &lt;div className={cn('p-1 rounded', getRecommendationColor(rec.type))}&gt;
@@ -929,7 +942,9 @@ export const <span class="cstat-no" title="statement not covered" >TodoAIAnalysi
                             &lt;strong&gt;分割案:&lt;/strong&gt;
                             &lt;ul className="list-disc list-inside mt-1"&gt;
                               {rec.newTasks.map(<span class="fstat-no" title="function not covered" >(n</span>ewTask, i) =&gt; (
-<span class="cstat-no" title="statement not covered" >                                &lt;li key={i}&gt;{n</span>ewTask}&lt;/li&gt;
+<span class="cstat-no" title="statement not covered" >                                &lt;li key={`newtask-${index}-${i}-${newTask.slice(0, 15)}`}&gt;</span>
+                                  {newTask}
+                                &lt;/li&gt;
                               ))}
                             &lt;/ul&gt;
                           &lt;/div&gt;
@@ -952,7 +967,7 @@ export const <span class="cstat-no" title="statement not covered" >TodoAIAnalysi
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-20T09:35:11.457Z
+                at 2025-08-03T19:43:21.720Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
