@@ -1022,7 +1022,7 @@ const App: React.FC = () => {
       </LocaleProvider>
     </AuthProvider>
   );
-}
+};
 
 const AppWithProviders: React.FC = () => {
   return (
