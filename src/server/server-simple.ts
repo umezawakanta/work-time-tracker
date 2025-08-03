@@ -284,13 +284,22 @@ class MemoryDatabase {
 
     // ソート
     if (options.sort) {
-      const [sortKey, sortOrder] = Object.entries(options.sort)[0];
+      const sortField = Object.keys(options.sort)[0] as keyof Todo;
+      const sortOrder = options.sort[sortField];
       results.sort((a, b) => {
-        const aVal = a[sortKey as keyof TodoDocument];
-        const bVal = b[sortKey as keyof TodoDocument];
-        if (aVal < bVal) return sortOrder === 1 ? -1 : 1;
-        if (aVal > bVal) return sortOrder === 1 ? 1 : -1;
-        return 0;
+        const aVal = a[sortField];
+        const bVal = b[sortField];
+        
+        // undefined チェックを追加
+        if (aVal === undefined || bVal === undefined) {
+          return 0;
+        }
+        
+        if (sortOrder === 1) {
+          return aVal > bVal ? 1 : -1;
+        } else {
+          return aVal < bVal ? 1 : -1;
+        }
       });
     }
 

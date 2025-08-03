@@ -42,7 +42,7 @@ export interface Todo {
   estimatedTime?: number; // 予想作業時間（分）
   actualTime?: number; // 実際の作業時間（分）
   notes?: string; // メモ
-  
+
   // 拡張プロパティ（後方互換性）
   priorityLevel?: PriorityLevel; // 優先度レベル
   completedDate?: string | null; // 完了日時 (ISO文字列)
