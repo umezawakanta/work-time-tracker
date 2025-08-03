@@ -191,12 +191,22 @@ export const convertDateStringToNumber = (dateString: string): number => {
 };
 
 /**
- * Calculates duration between two dates
+ * Calculates duration between two dates in minutes
+ * @param start - Start date
+ * @param end - End date  
+ * @returns Duration in minutes
+ */
+export const calculateDuration = (start: Date, end: Date): number => {
+  return Math.floor((end.getTime() - start.getTime()) / 1000 / 60); // 分単位
+};
+
+/**
+ * Calculates duration between two dates (overload for backward compatibility)
  * @param startDate - Start date
  * @param endDate - End date (defaults to now)
  * @returns Duration in milliseconds
  */
-export const calculateDuration = (startDate: string | Date, endDate?: string | Date): number => {
+export const calculateDurationMs = (startDate: string | Date, endDate?: string | Date): number => {
   try {
     const start = createSafeDate(startDate);
     const end = endDate ? createSafeDate(endDate) : new Date();
