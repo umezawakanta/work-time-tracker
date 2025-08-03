@@ -227,6 +227,51 @@ app.post('/api/todos', (req, res) => {
   });
 });
 
+// GET projects
+app.get('/api/projects', (req, res) => {
+  console.log('✅ GET /api/projects called');
+
+  const demoProjects = [
+    {
+      id: 'proj-1',
+      name: 'Work Time Tracker',
+      description: 'ADHD特化型時間管理アプリケーション',
+      status: 'active',
+      progress: 75,
+      priority: 'high',
+      startDate: '2024-01-01',
+      endDate: '2024-12-31',
+      tags: ['React', 'TypeScript', 'Node.js'],
+      tasks: [
+        { id: 'task-1', title: 'フロントエンド開発', completed: true },
+        { id: 'task-2', title: 'バックエンドAPI', completed: true },
+        { id: 'task-3', title: 'デプロイメント', completed: false },
+      ],
+    },
+    {
+      id: 'proj-2',
+      name: 'AI統合システム',
+      description: 'Gemini AIを活用したタスク分析システム',
+      status: 'active',
+      progress: 60,
+      priority: 'medium',
+      startDate: '2024-02-01',
+      endDate: '2024-06-30',
+      tags: ['AI', 'Machine Learning', 'API'],
+      tasks: [
+        { id: 'task-4', title: 'AI API統合', completed: true },
+        { id: 'task-5', title: 'データ分析機能', completed: false },
+      ],
+    },
+  ];
+
+  res.json({
+    success: true,
+    data: demoProjects,
+    message: 'Projects retrieved successfully',
+  });
+});
+
 // 404 Error handler - must be after all routes
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
@@ -263,6 +308,7 @@ console.log('   GET  /api/auth/check'); // 追加
 console.log('   GET  /api/auth/user'); // 追加
 console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
+console.log('   GET  /api/projects'); // 追加
 
 app.listen(PORT, () => {
   console.log(`\n✅ Enhanced server running on port ${PORT}`);
