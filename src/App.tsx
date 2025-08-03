@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Layout from '@/components/layout/Layout';
 
 // Loading spinner component using Tailwind
@@ -1021,6 +1022,25 @@ const App: React.FC = () => {
       </LocaleProvider>
     </AuthProvider>
   );
+}
+
+const AppWithProviders: React.FC = () => {
+  return (
+    <>
+      <App />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+      <SpeedInsights />
+    </>
+  );
 };
 
-export default App;
+export default AppWithProviders;
