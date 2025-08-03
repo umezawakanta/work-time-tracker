@@ -12,7 +12,7 @@
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 200",
         "lint:fix": "eslint . --ext ts,tsx --fix",
         "preview": "vite preview",
-        "server": "tsx src/server/server-minimal.ts",
+        "server": "tsx src/server/server-simple.ts",
         "dev": "concurrently \"pnpm run start\" \"pnpm run server\"",
         "test": "jest",
         "test:unit": "jest --coverage",

@@ -7,35 +7,36 @@ import morgan from 'morgan';
 import http from 'http'; // HTTPサーバーを使用
 import net from 'net'; // ポート競合チェック用
 import { connectDB } from './config/database.js';
-import workTimeRoutes from './routes/workTimeRoutes.js';
-import assetRoutes from './routes/assetRoutes.js';
-import debtRoutes from './routes/debtRoutes.js';
-import todoRoutes from './routes/todoRoutes.js';
-import candidateRoutes from './routes/candidateRoutes.js';
-import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
-import qualityRoutes from './routes/qualityRoutes.js';
-import withdrawalRoutes from './routes/withdrawalRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import bookRoutes from './routes/bookRoutes.js';
-import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
-import blogRoutes from './routes/blogRoutes.js';
-import tweetRoutes from './routes/tweetRoutes.js';
+// Temporarily commenting out imports to isolate the problematic route
+// import workTimeRoutes from './routes/workTimeRoutes.js';
+// import assetRoutes from './routes/assetRoutes.js';
+// import debtRoutes from './routes/debtRoutes.js';
+// import todoRoutes from './routes/todoRoutes.js';
+// import candidateRoutes from './routes/candidateRoutes.js';
+// import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
+// import qualityRoutes from './routes/qualityRoutes.js';
+// import withdrawalRoutes from './routes/withdrawalRoutes.js';
+// import authRoutes from './routes/authRoutes.js';
+// import bookRoutes from './routes/bookRoutes.js';
+// import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
+// import blogRoutes from './routes/blogRoutes.js';
+// import tweetRoutes from './routes/tweetRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import surveyRoutes from './routes/surveyRoutes.js';
-import partyRoutes from './routes/partyRoutes.js';
-import habitRoutes from './routes/habitRoutes.js';
-import subscriptionRoutes from './routes/subscriptionRoutes.js';
-import projectRoutes from './routes/projectRoutes.js';
-import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルートをインポート
+// import surveyRoutes from './routes/surveyRoutes.js';
+// import partyRoutes from './routes/partyRoutes.js';
+// import habitRoutes from './routes/habitRoutes.js';
+// import subscriptionRoutes from './routes/subscriptionRoutes.js';
+// import projectRoutes from './routes/projectRoutes.js';
+// import notificationRoutes from './routes/notificationRoutes.js'; // 通知ルートをインポート
 // import { setupWebSocketServer } from './services/webSocketService.js'; // 開発環境では無効化
-import wbsRoutes from './routes/wbsRoutes.js';
-import implementationRoutes from './routes/implementationRoutes.js';
-import teamRoutes from './routes/teamRoutes.js';
+// import wbsRoutes from './routes/wbsRoutes.js';
+// import implementationRoutes from './routes/implementationRoutes.js';
+// import teamRoutes from './routes/teamRoutes.js';
 // import resourceRoutes from './routes/resourceRoutes.js'; // 一時的に無効化
-import progressRoutes from './routes/progressRoutes.js';
-import abstinenceRoutes from './routes/abstinenceRoutes.js';
+// import progressRoutes from './routes/progressRoutes.js';
+// import abstinenceRoutes from './routes/abstinenceRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -316,11 +317,8 @@ try {
   console.error('❌ Error loading routes:', error);
 }
 
-// Enable essential routes
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/todos', todoRoutes);
-app.use('/api/worktime', workTimeRoutes);
+// Temporarily test with no routes at all
+console.log('✅ No routes loaded - testing minimal server');
 
 // 以下は一時的に無効化
 // app.use('/api/asset', assetRoutes);
