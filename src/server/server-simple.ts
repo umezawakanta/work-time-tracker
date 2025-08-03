@@ -161,29 +161,37 @@ app.get('/api/auth/user', (req: Request, res: Response) => {
   });
 });
 
+// メモリ内TODOストレージ
+let todos: any[] = [
+  {
+    id: '1',
+    _id: '1',
+    task: 'サンプルタスク1',
+    completed: false,
+    priority: 3,
+    isPrioritized: true,
+    type: 'input',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    _id: '2',
+    task: 'サンプルタスク2',
+    completed: false,
+    priority: 2,
+    isPrioritized: false,
+    type: 'output',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
 // GET todos
 app.get('/api/todos', (req, res) => {
   console.log('✅ GET /api/todos called');
-  res.json([
-    {
-      id: '1',
-      task: 'サンプルタスク1',
-      completed: false,
-      priority: 'high',
-      isPrioritized: true,
-      type: 'todo',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      task: 'サンプルタスク2',
-      completed: false,
-      priority: 'medium',
-      isPrioritized: false,
-      type: 'todo',
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  console.log(`📊 Current todos count: ${todos.length}`);
+  res.json(todos);
 });
 
 // Debug endpoint to test connectivity
@@ -208,11 +216,12 @@ app.post('/api/todos', (req, res) => {
 
   const newTodo = {
     id: Date.now().toString(),
+    _id: Date.now().toString(),
     task: req.body.task || 'New Task',
     completed: false,
-    priority: req.body.priority || 'medium',
+    priority: req.body.priority || 3,
     isPrioritized: req.body.isPrioritized || false,
-    type: req.body.type || 'todo',
+    type: req.body.type || 'input',
     category: req.body.category || 'general',
     tags: req.body.tags || [],
     deadline: req.body.deadline || null,
@@ -220,10 +229,66 @@ app.post('/api/todos', (req, res) => {
     updatedAt: new Date().toISOString(),
   };
 
-  res.status(201).json({
+  // メモリに追加
+  todos.push(newTodo);
+  console.log(`📝 Todo added to memory. Total: ${todos.length}`);
+  console.log(`🆔 New Todo ID: ${newTodo.id}`);
+
+  // TODOオブジェクトを直接返す（Redux storeが期待する形式）
+  res.status(201).json(newTodo);
+});
+
+// PUT todos/:id (更新)
+app.put('/api/todos/:id', (req, res) => {
+  console.log('✅ PUT /api/todos/:id called');
+  console.log('📝 ID:', req.params.id);
+  console.log('📝 Update data:', req.body);
+
+  const todoId = req.params.id;
+  const todoIndex = todos.findIndex(todo => todo.id === todoId || todo._id === todoId);
+
+  if (todoIndex === -1) {
+    console.log(`❌ Todo not found with ID: ${todoId}`);
+    return res.status(404).json({
+      success: false,
+      message: `Todo not found with ID: ${todoId}`,
+    });
+  }
+
+  // TODOを更新
+  todos[todoIndex] = {
+    ...todos[todoIndex],
+    ...req.body,
+    updatedAt: new Date().toISOString(),
+  };
+
+  console.log(`✅ Todo updated: ${todos[todoIndex].task}`);
+  res.json(todos[todoIndex]);
+});
+
+// DELETE todos/:id (削除)
+app.delete('/api/todos/:id', (req, res) => {
+  console.log('✅ DELETE /api/todos/:id called');
+  console.log('📝 ID:', req.params.id);
+
+  const todoId = req.params.id;
+  const todoIndex = todos.findIndex(todo => todo.id === todoId || todo._id === todoId);
+
+  if (todoIndex === -1) {
+    console.log(`❌ Todo not found with ID: ${todoId}`);
+    return res.status(404).json({
+      success: false,
+      message: `Todo not found with ID: ${todoId}`,
+    });
+  }
+
+  const deletedTodo = todos.splice(todoIndex, 1)[0];
+  console.log(`🗑️ Todo deleted: ${deletedTodo.task}`);
+  
+  res.json({
     success: true,
-    message: 'Todo created successfully',
-    todo: newTodo,
+    message: 'Todo deleted successfully',
+    deletedTodo,
   });
 });
 
@@ -308,6 +373,8 @@ console.log('   GET  /api/auth/check'); // 追加
 console.log('   GET  /api/auth/user'); // 追加
 console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
+console.log('   PUT  /api/todos/:id'); // 追加
+console.log('   DELETE /api/todos/:id'); // 追加
 console.log('   GET  /api/projects'); // 追加
 
 app.listen(PORT, () => {
