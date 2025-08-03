@@ -193,7 +193,7 @@ export const convertDateStringToNumber = (dateString: string): number => {
 /**
  * Calculates duration between two dates in minutes
  * @param start - Start date
- * @param end - End date  
+ * @param end - End date
  * @returns Duration in minutes
  */
 export const calculateDuration = (start: Date, end: Date): number => {

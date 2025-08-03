@@ -26,24 +26,30 @@ export interface TagInfo {
 
 // タスクの基本情報
 export interface Todo {
-  _id?: string; // MongoDBのユニークID (オプショナル)
   id: string; // プライマリID
+  _id?: string; // MongoDBのユニークID (オプショナル)
   task: string; // タスク内容
-  type: TaskType; // タスクタイプ
   completed: boolean; // 完了状態
   priority: number; // 優先度 (1-5、5が最高)
-  priorityLevel?: PriorityLevel; // 優先度レベル
   isPrioritized: boolean; // 優先タスクかどうか
-  createdAt: string; // 作成日時 (ISO文字列)
-  updatedAt: string; // 更新日時 (ISO文字列)
-  completedDate: string | null; // 完了日時 (ISO文字列)
-  completedAt?: string; // 互換性のため
-  deadline?: string; // 期限 (ISO文字列)
-  note?: string; // メモ
-  text?: string; // 互換性のため
-  tags?: string[]; // タグ
+  type: 'input' | 'output'; // タスクタイプ
   category?: string; // カテゴリ
+  tags?: string[]; // タグ
   userId?: string; // ユーザーID
+  createdAt?: Date | string; // 作成日時
+  updatedAt?: Date | string; // 更新日時
+  dueDate?: Date | string; // 期限
+  estimatedTime?: number; // 予想作業時間（分）
+  actualTime?: number; // 実際の作業時間（分）
+  notes?: string; // メモ
+  
+  // 拡張プロパティ（後方互換性）
+  priorityLevel?: PriorityLevel; // 優先度レベル
+  completedDate?: string | null; // 完了日時 (ISO文字列)
+  completedAt?: string; // 互換性のため
+  deadline?: string; // 期限 (ISO文字列) - 互換性のため
+  note?: string; // メモ - 互換性のため
+  text?: string; // 互換性のため
   efficiency?: TodoEfficiency; // タスク効率分析（プレミアム機能）
   recurrence?: TodoRecurrence; // 繰り返し設定（プレミアム機能）
   reminders?: TodoReminder[]; // リマインダー（プレミアム機能）
