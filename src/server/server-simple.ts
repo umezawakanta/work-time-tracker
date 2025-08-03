@@ -161,37 +161,286 @@ app.get('/api/auth/user', (req: Request, res: Response) => {
   });
 });
 
-// メモリ内TODOストレージ
-const todos: any[] = [
-  {
-    id: '1',
-    _id: '1',
-    task: 'サンプルタスク1',
-    completed: false,
-    priority: 3,
-    isPrioritized: true,
-    type: 'input',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    _id: '2',
-    task: 'サンプルタスク2',
-    completed: false,
-    priority: 2,
-    isPrioritized: false,
-    type: 'output',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+// MongoDB風の高度なメモリストレージ
+interface TodoDocument {
+  id: string;
+  _id: string;
+  task: string;
+  completed: boolean;
+  priority: number;
+  isPrioritized: boolean;
+  type: 'input' | 'output' | 'idea' | 'meeting';
+  category?: string;
+  tags?: string[];
+  deadline?: string;
+  userId?: string;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+  estimatedTime?: number;
+  actualTime?: number;
+}
 
-// GET todos
+interface UserDocument {
+  id: string;
+  _id: string;
+  email: string;
+  name: string;
+  role: 'user' | 'admin';
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    language: 'ja' | 'en';
+    notifications: boolean;
+  };
+}
+
+// MongoDB風データストレージ
+class MemoryDatabase {
+  private todos: TodoDocument[] = [];
+  private users: UserDocument[] = [];
+  private idCounter = 1000;
+
+  constructor() {
+    // 初期データの挿入
+    this.insertInitialData();
+  }
+
+  private generateId(): string {
+    return (++this.idCounter).toString();
+  }
+
+  private insertInitialData() {
+    this.todos = [
+      {
+        id: '1001',
+        _id: '1001',
+        task: 'AI機能のテスト',
+        completed: false,
+        priority: 1,
+        isPrioritized: true,
+        type: 'input',
+        category: 'development',
+        tags: ['AI', 'テスト'],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        estimatedTime: 60,
+      },
+      {
+        id: '1002',
+        _id: '1002',
+        task: 'データベース設計',
+        completed: false,
+        priority: 2,
+        isPrioritized: false,
+        type: 'output',
+        category: 'design',
+        tags: ['データベース', '設計'],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        estimatedTime: 120,
+      },
+    ];
+
+    this.users = [
+      {
+        id: 'user1001',
+        _id: 'user1001',
+        email: 'demo@example.com',
+        name: 'Demo User',
+        role: 'user',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        preferences: {
+          theme: 'light',
+          language: 'ja',
+          notifications: true,
+        },
+      },
+    ];
+  }
+
+  // MongoDB風のFind操作
+  findTodos(
+    filter: Partial<TodoDocument> = {},
+    options: {
+      sort?: { [key: string]: 1 | -1 };
+      limit?: number;
+      skip?: number;
+    } = {}
+  ): TodoDocument[] {
+    let results = this.todos.filter((todo) => {
+      return Object.entries(filter).every(([key, value]) => {
+        if (key === 'tags' && Array.isArray(value)) {
+          return value.some((tag) => todo.tags?.includes(tag));
+        }
+        return todo[key as keyof TodoDocument] === value;
+      });
+    });
+
+    // ソート
+    if (options.sort) {
+      const [sortKey, sortOrder] = Object.entries(options.sort)[0];
+      results.sort((a, b) => {
+        const aVal = a[sortKey as keyof TodoDocument];
+        const bVal = b[sortKey as keyof TodoDocument];
+        if (aVal < bVal) return sortOrder === 1 ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 1 ? 1 : -1;
+        return 0;
+      });
+    }
+
+    // ページネーション
+    if (options.skip) results = results.slice(options.skip);
+    if (options.limit) results = results.slice(0, options.limit);
+
+    return results;
+  }
+
+  // MongoDB風のInsert操作
+  insertTodo(todoData: Partial<TodoDocument>): TodoDocument {
+    const id = this.generateId();
+    const newTodo: TodoDocument = {
+      id,
+      _id: id,
+      task: todoData.task || 'New Task',
+      completed: false,
+      priority: todoData.priority || 3,
+      isPrioritized: todoData.isPrioritized || false,
+      type: todoData.type || 'input',
+      category: todoData.category || 'general',
+      tags: todoData.tags || [],
+      deadline: todoData.deadline,
+      userId: todoData.userId || 'user1001',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      estimatedTime: todoData.estimatedTime,
+    };
+
+    this.todos.push(newTodo);
+    return newTodo;
+  }
+
+  // MongoDB風のUpdate操作
+  updateTodo(id: string, updateData: Partial<TodoDocument>): TodoDocument | null {
+    const index = this.todos.findIndex((todo) => todo.id === id || todo._id === id);
+    if (index === -1) return null;
+
+    const updated: TodoDocument = {
+      ...this.todos[index],
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (updateData.completed && !this.todos[index].completed) {
+      updated.completedAt = new Date().toISOString();
+    }
+
+    this.todos[index] = updated;
+    return updated;
+  }
+
+  // MongoDB風のDelete操作
+  deleteTodo(id: string): TodoDocument | null {
+    const index = this.todos.findIndex((todo) => todo.id === id || todo._id === id);
+    if (index === -1) return null;
+
+    const deleted = this.todos.splice(index, 1)[0];
+    return deleted;
+  }
+
+  // 統計情報の取得
+  getTodoStats(userId?: string): {
+    total: number;
+    completed: number;
+    pending: number;
+    prioritized: number;
+    byCategory: { [key: string]: number };
+    byType: { [key: string]: number };
+  } {
+    const userTodos = userId ? this.todos.filter((todo) => todo.userId === userId) : this.todos;
+
+    const stats = {
+      total: userTodos.length,
+      completed: userTodos.filter((todo) => todo.completed).length,
+      pending: userTodos.filter((todo) => !todo.completed).length,
+      prioritized: userTodos.filter((todo) => todo.isPrioritized).length,
+      byCategory: {} as { [key: string]: number },
+      byType: {} as { [key: string]: number },
+    };
+
+    userTodos.forEach((todo) => {
+      // カテゴリ別集計
+      const category = todo.category || 'uncategorized';
+      stats.byCategory[category] = (stats.byCategory[category] || 0) + 1;
+
+      // タイプ別集計
+      stats.byType[todo.type] = (stats.byType[todo.type] || 0) + 1;
+    });
+
+    return stats;
+  }
+}
+
+// グローバルデータベースインスタンス
+const memoryDB = new MemoryDatabase();
+
+// GET todos with MongoDB風クエリ機能
 app.get('/api/todos', (req, res) => {
   console.log('✅ GET /api/todos called');
-  console.log(`📊 Current todos count: ${todos.length}`);
-  res.json(todos);
+
+  try {
+    // クエリパラメータの解析
+    const {
+      completed,
+      priority,
+      category,
+      type,
+      tags,
+      sort = 'createdAt',
+      order = 'desc',
+      limit,
+      skip,
+    } = req.query;
+
+    // フィルター条件の構築
+    const filter: any = {};
+    if (completed !== undefined) filter.completed = completed === 'true';
+    if (priority) filter.priority = parseInt(priority as string);
+    if (category) filter.category = category;
+    if (type) filter.type = type;
+    if (tags) filter.tags = (tags as string).split(',');
+
+    // ソートオプションの構築
+    const sortOptions: any = {};
+    sortOptions[sort as string] = order === 'asc' ? 1 : -1;
+
+    // ページネーション
+    const options: any = {};
+    if (sort) options.sort = sortOptions;
+    if (limit) options.limit = parseInt(limit as string);
+    if (skip) options.skip = parseInt(skip as string);
+
+    const todos = memoryDB.findTodos(filter, options);
+    const stats = memoryDB.getTodoStats();
+
+    console.log(`📊 Filtered todos count: ${todos.length} (total: ${stats.total})`);
+    console.log(`🔍 Applied filters:`, filter);
+    console.log(`📈 Stats:`, stats);
+
+    // フロントエンドの互換性を保つため、todosの配列を直接返す
+    res.json(todos);
+  } catch (error) {
+    console.error('❌ Error in GET /api/todos:', error);
+    res.status(500).json({
+      error: 'Failed to fetch todos',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
 });
 
 // Debug endpoint to test connectivity
@@ -207,63 +456,112 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
-// POST todos
+// POST todos with validation
 app.post('/api/todos', (req, res) => {
   console.log('✅ POST /api/todos called');
-  console.log('📨 Request headers:', req.headers);
   console.log('📝 Request body:', req.body);
-  console.log('🌐 Request origin:', req.get('origin'));
 
-  const newTodo = {
-    id: Date.now().toString(),
-    _id: Date.now().toString(),
-    task: req.body.task || 'New Task',
-    completed: false,
-    priority: req.body.priority || 3,
-    isPrioritized: req.body.isPrioritized || false,
-    type: req.body.type || 'input',
-    category: req.body.category || 'general',
-    tags: req.body.tags || [],
-    deadline: req.body.deadline || null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  try {
+    // バリデーション
+    const { task, priority, isPrioritized, type, category, tags, deadline, estimatedTime } =
+      req.body;
 
-  // メモリに追加
-  todos.push(newTodo);
-  console.log(`📝 Todo added to memory. Total: ${todos.length}`);
-  console.log(`🆔 New Todo ID: ${newTodo.id}`);
+    if (!task || task.trim().length === 0) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Task is required and cannot be empty',
+      });
+    }
 
-  // TODOオブジェクトを直接返す（Redux storeが期待する形式）
-  res.status(201).json(newTodo);
+    if (priority && (priority < 1 || priority > 5)) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Priority must be between 1 and 5',
+      });
+    }
+
+    // 新しいTODOの作成
+    const todoData = {
+      task: task.trim(),
+      priority: priority || 3,
+      isPrioritized: isPrioritized || false,
+      type: type || 'input',
+      category: category || 'general',
+      tags: Array.isArray(tags) ? tags : [],
+      deadline: deadline || undefined,
+      estimatedTime: estimatedTime ? parseInt(estimatedTime) : undefined,
+      userId: 'user1001', // デモユーザー
+    };
+
+    const newTodo = memoryDB.insertTodo(todoData);
+    const stats = memoryDB.getTodoStats();
+
+    console.log(`📝 Todo created successfully. ID: ${newTodo.id}`);
+    console.log(`📊 Updated stats:`, stats);
+
+    // フロントエンドの互換性を保つため、TODOオブジェクトを直接返す
+    res.status(201).json(newTodo);
+  } catch (error) {
+    console.error('❌ Error in POST /api/todos:', error);
+    res.status(500).json({
+      error: 'Failed to create todo',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
 });
 
-// PUT todos/:id (更新)
+// PUT todos/:id (更新) with enhanced validation
 app.put('/api/todos/:id', (req, res) => {
   console.log('✅ PUT /api/todos/:id called');
   console.log('📝 ID:', req.params.id);
   console.log('📝 Update data:', req.body);
 
-  const todoId = req.params.id;
-  const todoIndex = todos.findIndex((todo) => todo.id === todoId || todo._id === todoId);
+  try {
+    const todoId = req.params.id;
+    const { task, priority, isPrioritized, type, category, tags, deadline, completed, actualTime } =
+      req.body;
 
-  if (todoIndex === -1) {
-    console.log(`❌ Todo not found with ID: ${todoId}`);
-    return res.status(404).json({
-      success: false,
-      message: `Todo not found with ID: ${todoId}`,
+    // バリデーション
+    if (task !== undefined && (!task || task.trim().length === 0)) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        message: 'Task cannot be empty',
+      });
+    }
+
+    // 更新データの準備
+    const updateData: any = {};
+    if (task !== undefined) updateData.task = task.trim();
+    if (priority !== undefined) updateData.priority = priority;
+    if (isPrioritized !== undefined) updateData.isPrioritized = isPrioritized;
+    if (type !== undefined) updateData.type = type;
+    if (category !== undefined) updateData.category = category;
+    if (tags !== undefined) updateData.tags = Array.isArray(tags) ? tags : [];
+    if (deadline !== undefined) updateData.deadline = deadline;
+    if (completed !== undefined) updateData.completed = completed;
+    if (actualTime !== undefined) updateData.actualTime = parseInt(actualTime);
+
+    const updatedTodo = memoryDB.updateTodo(todoId, updateData);
+
+    if (!updatedTodo) {
+      console.log(`❌ Todo not found with ID: ${todoId}`);
+      return res.status(404).json({
+        error: 'Todo not found',
+        message: `Todo with ID ${todoId} does not exist`,
+      });
+    }
+
+    const stats = memoryDB.getTodoStats();
+    console.log(`✅ Todo updated successfully: ${updatedTodo.task}`);
+
+    res.json(updatedTodo); // フロントエンドの互換性のため、直接todoオブジェクトを返す
+  } catch (error) {
+    console.error('❌ Error in PUT /api/todos/:id:', error);
+    res.status(500).json({
+      error: 'Failed to update todo',
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-
-  // TODOを更新
-  todos[todoIndex] = {
-    ...todos[todoIndex],
-    ...req.body,
-    updatedAt: new Date().toISOString(),
-  };
-
-  console.log(`✅ Todo updated: ${todos[todoIndex].task}`);
-  res.json(todos[todoIndex]);
 });
 
 // DELETE todos/:id (削除)
@@ -271,25 +569,33 @@ app.delete('/api/todos/:id', (req, res) => {
   console.log('✅ DELETE /api/todos/:id called');
   console.log('📝 ID:', req.params.id);
 
-  const todoId = req.params.id;
-  const todoIndex = todos.findIndex((todo) => todo.id === todoId || todo._id === todoId);
+  try {
+    const todoId = req.params.id;
+    const deletedTodo = memoryDB.deleteTodo(todoId);
 
-  if (todoIndex === -1) {
-    console.log(`❌ Todo not found with ID: ${todoId}`);
-    return res.status(404).json({
-      success: false,
-      message: `Todo not found with ID: ${todoId}`,
+    if (!deletedTodo) {
+      console.log(`❌ Todo not found with ID: ${todoId}`);
+      return res.status(404).json({
+        error: 'Todo not found',
+        message: `Todo with ID ${todoId} does not exist`,
+      });
+    }
+
+    const stats = memoryDB.getTodoStats();
+    console.log(`🗑️ Todo deleted successfully: ${deletedTodo.task}`);
+
+    res.json({
+      success: true,
+      message: 'Todo deleted successfully',
+      deletedTodo,
+    });
+  } catch (error) {
+    console.error('❌ Error in DELETE /api/todos/:id:', error);
+    res.status(500).json({
+      error: 'Failed to delete todo',
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-
-  const deletedTodo = todos.splice(todoIndex, 1)[0];
-  console.log(`🗑️ Todo deleted: ${deletedTodo.task}`);
-
-  res.json({
-    success: true,
-    message: 'Todo deleted successfully',
-    deletedTodo,
-  });
 });
 
 // GET projects

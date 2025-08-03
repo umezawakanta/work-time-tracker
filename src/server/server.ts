@@ -11,12 +11,12 @@ import { connectDB } from './config/database.js';
 // import workTimeRoutes from './routes/workTimeRoutes.js';
 // import assetRoutes from './routes/assetRoutes.js';
 // import debtRoutes from './routes/debtRoutes.js';
-import todoRoutes from './routes/todoRoutes.js';
+// import todoRoutes from './routes/todoRoutes.js';  // 一時的に無効化
 // import candidateRoutes from './routes/candidateRoutes.js';
 // import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
 // import qualityRoutes from './routes/qualityRoutes.js';
 // import withdrawalRoutes from './routes/withdrawalRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+// import authRoutes from './routes/authRoutes.js';  // 一時的に無効化
 // import bookRoutes from './routes/bookRoutes.js';
 // import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
 // import blogRoutes from './routes/blogRoutes.js';
@@ -320,15 +320,25 @@ try {
 // Temporarily test with no routes at all
 console.log('✅ Loading essential routes - auth and todos');
 
-// Essential routes for TODO app
+// Essential routes for TODO app - 段階的に有効化
 try {
-  console.log('📝 Loading auth routes...');
-  app.use('/api/auth', authRoutes);
-  console.log('✅ Auth routes loaded successfully');
+  console.log('📝 Testing basic server without external routes...');
 
-  console.log('📝 Loading todo routes...');
-  app.use('/api/todos', todoRoutes);
-  console.log('✅ Todo routes loaded successfully');
+  // 基本的なテストルートのみ先に追加
+  app.get('/api/test-basic', (req, res) => {
+    res.json({ message: 'Basic server is working!', timestamp: new Date().toISOString() });
+  });
+
+  console.log('✅ Basic routes loaded successfully');
+
+  // TODO: authRoutes と todoRoutes は一時的に無効化
+  // console.log('📝 Loading auth routes...');
+  // app.use('/api/auth', authRoutes);
+  // console.log('✅ Auth routes loaded successfully');
+
+  // console.log('📝 Loading todo routes...');
+  // app.use('/api/todos', todoRoutes);
+  // console.log('✅ Todo routes loaded successfully');
 } catch (error) {
   console.error('❌ Error loading essential routes:', error);
 }
