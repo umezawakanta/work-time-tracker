@@ -215,7 +215,7 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
                         <p className="text-sm font-medium text-amber-900">問題点:</p>
                         <ul className="text-sm text-amber-800 list-disc list-inside">
                           {task.issues.map((issue, index) => (
-                            <li key={index}>{issue}</li>
+                            <li key={`issue-${task.id}-${index}-${issue.slice(0, 10)}`}>{issue}</li>
                           ))}
                         </ul>
                       </div>
@@ -224,7 +224,10 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
 
                   <div className="space-y-2">
                     {task.recommendations.map((rec, index) => (
-                      <div key={index} className="border rounded p-3 bg-slate-50">
+                      <div
+                        key={`rec-${task.id}-${index}-${rec.title?.slice(0, 10) || rec.type}`}
+                        className="border rounded p-3 bg-slate-50"
+                      >
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <div className={cn('p-1 rounded', getRecommendationColor(rec.type))}>
@@ -276,7 +279,9 @@ export const TodoAIAnalysis: React.FC<TodoAIAnalysisProps> = ({
                             <strong>分割案:</strong>
                             <ul className="list-disc list-inside mt-1">
                               {rec.newTasks.map((newTask, i) => (
-                                <li key={i}>{newTask}</li>
+                                <li key={`newtask-${index}-${i}-${newTask.slice(0, 15)}`}>
+                                  {newTask}
+                                </li>
                               ))}
                             </ul>
                           </div>
