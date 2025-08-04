@@ -62,11 +62,11 @@ const QuadrantDashboard: React.FC = () => {
 
   // タスクのフィルタリング
   const filteredTasks = React.useMemo(() => {
-    console.log('🔍 フィルタリング開始:', { 
-      todosType: typeof todos, 
-      todosIsArray: Array.isArray(todos), 
+    console.log('🔍 フィルタリング開始:', {
+      todosType: typeof todos,
+      todosIsArray: Array.isArray(todos),
       todosLength: todos?.length,
-      firstTodoSample: todos?.[0] 
+      firstTodoSample: todos?.[0],
     });
 
     if (!todos || !Array.isArray(todos)) {
@@ -89,10 +89,12 @@ const QuadrantDashboard: React.FC = () => {
     // 型ガードをより寛容に変更
     let filtered = validTasks.filter((task): task is TodoItem => {
       // 必要最小限のプロパティをチェック
-      return task && 
-             typeof task === 'object' && 
-             ('_id' in task || 'id' in task) && 
-             ('task' in task || 'title' in task);
+      return (
+        task &&
+        typeof task === 'object' &&
+        ('_id' in task || 'id' in task) &&
+        ('task' in task || 'title' in task)
+      );
     });
 
     console.log('🔍 型チェック後のタスク数:', filtered.length);
@@ -109,7 +111,7 @@ const QuadrantDashboard: React.FC = () => {
       valid: validTasks.length,
       typeChecked: filtered.length,
       filterCompleted: settings.filterCompleted,
-      sampleFilteredTask: filtered[0]
+      sampleFilteredTask: filtered[0],
     });
 
     return filtered;

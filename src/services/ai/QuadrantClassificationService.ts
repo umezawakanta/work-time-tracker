@@ -530,7 +530,15 @@ JSON形式で回答してください:
       return null;
     }
 
-    return {
+    console.log('🔄 タスク変換中:', {
+      taskType: typeof task,
+      hasId: '_id' in task || 'id' in task,
+      hasTitle: 'title' in task || 'task' in task,
+      taskKeys: Object.keys(task),
+      task: task
+    });
+
+    const unified = {
       id: task._id || task.id || `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       title: task.title || task.task || '無題のタスク',
       description: task.description || task.note || task.memo,
@@ -542,6 +550,9 @@ JSON形式で回答してください:
       status: task.status,
       type: task.type,
     };
+
+    console.log('✅ 変換完了:', unified);
+    return unified;
   }
 }
 

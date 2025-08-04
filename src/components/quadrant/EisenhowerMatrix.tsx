@@ -277,7 +277,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       tasksType: typeof tasks,
       tasksIsArray: Array.isArray(tasks),
       tasksLength: tasks?.length,
-      firstTaskSample: tasks?.[0]
+      firstTaskSample: tasks?.[0],
     });
 
     if (!Array.isArray(tasks)) {
@@ -294,12 +294,12 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     });
 
     const validUnified = converted.filter((task): task is UnifiedTaskData => task !== null);
-    
+
     console.log('🔄 EisenhowerMatrix: 変換結果:', {
       originalCount: tasks.length,
       convertedCount: converted.length,
       validCount: validUnified.length,
-      sampleUnified: validUnified[0]
+      sampleUnified: validUnified[0],
     });
 
     return validUnified;
