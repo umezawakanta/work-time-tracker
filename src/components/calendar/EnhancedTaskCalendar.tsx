@@ -227,7 +227,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   const handleTaskClick = useCallback(
     (task: TaskEvent) => {
       setSelectedTask(task);
-      const todo = safeTodos.find((t) => t._id === task.taskId);
+      const todo = safeTodos.find((t) => t && t._id === task.taskId);
       if (todo) {
         setTaskForm({
           title: todo.task,
@@ -599,7 +599,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   // タスク選択（編集）
   const handleSelectEvent = useCallback(
     (event: CalendarEvent) => {
-      const task = safeTodos.find((todo) => todo._id === event.id);
+      const task = safeTodos.find((todo) => todo && todo._id === event.id);
       if (task) {
         // Convert TodoItem to TaskEvent format or use task directly
         setSelectedTask(task as any); // Quick fix

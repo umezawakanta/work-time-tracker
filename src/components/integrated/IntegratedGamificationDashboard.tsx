@@ -76,6 +76,8 @@ export const IntegratedGamificationDashboard: React.FC<IntegratedGamificationDas
   const todos = useSelector((state: RootState) => state.todo.items);
   const completedTodosToday = todos.filter(
     (todo) =>
+      todo &&
+      todo._id &&
       todo.completed &&
       todo.completedDate &&
       new Date(todo.completedDate).toDateString() === new Date().toDateString()
@@ -417,7 +419,7 @@ export const IntegratedGamificationDashboard: React.FC<IntegratedGamificationDas
                 {/* Today's Tasks */}
                 <div className="grid grid-cols-1 gap-3">
                   {todos
-                    .filter((todo) => !todo.completed)
+                    .filter((todo) => todo && todo._id && !todo.completed)
                     .slice(0, 5)
                     .map((todo) => (
                       <div

@@ -76,13 +76,15 @@ const IntegratedDashboard: React.FC = () => {
       return [];
     }
 
-    const todaysTodos = actualTodos.filter((todo) => {
-      const isCreatedToday = todo.createdAt?.startsWith(today);
-      const hasDeadlineToday = todo.deadline === today;
-      const isUncompletedWithNoDeadline = !todo.completed && !todo.deadline;
+    const todaysTodos = actualTodos
+      .filter((todo) => todo && todo._id)
+      .filter((todo) => {
+        const isCreatedToday = todo.createdAt?.startsWith(today);
+        const hasDeadlineToday = todo.deadline === today;
+        const isUncompletedWithNoDeadline = !todo.completed && !todo.deadline;
 
-      return isCreatedToday || hasDeadlineToday || isUncompletedWithNoDeadline;
-    });
+        return isCreatedToday || hasDeadlineToday || isUncompletedWithNoDeadline;
+      });
 
     console.log('[IntegratedDashboard] 📋 全ToDoリスト (MongoDB):', {
       totalTodos: actualTodos.length,
@@ -282,29 +284,31 @@ const IntegratedDashboard: React.FC = () => {
     });
 
     if (!todosLoading && actualTodos.length > 0) {
-      const integratedFromTodos = actualTodos.map((todo) => ({
-        id: `todo-${todo._id}`,
-        projectId: 'proj-mvp',
-        title: todo.task,
-        description: `ToDoシステムから同期されたタスク (${todo.type})`,
-        type: 'todo' as const,
-        status: todo.completed ? ('completed' as const) : ('not-started' as const),
-        priority: todo.isPrioritized ? ('high' as const) : ('medium' as const),
-        progress: todo.completed ? 100 : 0,
-        startDate: todo.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
-        deadline: todo.deadline,
-        estimatedHours: 1,
-        actualHours: 0,
-        sourceType: 'todo' as const,
-        sourceId: todo._id,
-        lastSyncAt: new Date().toISOString(),
-        syncStatus: 'synced' as const,
-        assignees: [user?.id || 'unknown'],
-        tags: [],
-        dependencies: [],
-        children: [],
-        checklist: [],
-      }));
+      const integratedFromTodos = actualTodos
+        .filter((todo) => todo && todo._id && todo.task)
+        .map((todo) => ({
+          id: `todo-${todo._id}`,
+          projectId: 'proj-mvp',
+          title: todo.task,
+          description: `ToDoシステムから同期されたタスク (${todo.type})`,
+          type: 'todo' as const,
+          status: todo.completed ? ('completed' as const) : ('not-started' as const),
+          priority: todo.isPrioritized ? ('high' as const) : ('medium' as const),
+          progress: todo.completed ? 100 : 0,
+          startDate: todo.createdAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+          deadline: todo.deadline,
+          estimatedHours: 1,
+          actualHours: 0,
+          sourceType: 'todo' as const,
+          sourceId: todo._id,
+          lastSyncAt: new Date().toISOString(),
+          syncStatus: 'synced' as const,
+          assignees: [user?.id || 'unknown'],
+          tags: [],
+          dependencies: [],
+          children: [],
+          checklist: [],
+        }));
 
       console.log('[IntegratedDashboard] ✅ MongoToDo統合完了:', {
         integratedCount: integratedFromTodos.length,
@@ -754,22 +758,25 @@ const IntegratedDashboard: React.FC = () => {
                   {getTodaysTodos.length === 0 ? (
                     <p className="text-sm text-muted-foreground">本日のタスクはありません</p>
                   ) : (
-                    getTodaysTodos.slice(0, 5).map((todo) => (
-                      <div key={todo._id} className="flex items-center gap-3">
-                        <CheckCircle
-                          className={`h-4 w-4 ${
-                            todo.completed ? 'text-green-500' : 'text-gray-300'
-                          }`}
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{todo.task}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {todo.type === 'input' ? 'インプット' : 'アウトプット'}
-                            {todo.deadline && ` - 期限: ${todo.deadline}`}
-                          </p>
+                    getTodaysTodos
+                      .filter((todo) => todo && todo._id)
+                      .slice(0, 5)
+                      .map((todo) => (
+                        <div key={todo._id} className="flex items-center gap-3">
+                          <CheckCircle
+                            className={`h-4 w-4 ${
+                              todo.completed ? 'text-green-500' : 'text-gray-300'
+                            }`}
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{todo.task}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {todo.type === 'input' ? 'インプット' : 'アウトプット'}
+                              {todo.deadline && ` - 期限: ${todo.deadline}`}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))
                   )}
                   <Button
                     variant="outline"

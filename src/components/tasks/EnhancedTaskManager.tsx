@@ -187,7 +187,7 @@ export const EnhancedTaskManager: React.FC = () => {
 
     setIsAnalyzing(true);
     try {
-      const incompleteTasks = todos.filter((todo) => !todo.completed);
+      const incompleteTasks = todos.filter((todo) => todo && todo._id && !todo.completed);
 
       const predictions: PriorityPrediction[] = incompleteTasks.map((todo) => {
         const urgency = todo.deadline
@@ -312,7 +312,7 @@ export const EnhancedTaskManager: React.FC = () => {
     async (taskId: string) => {
       if (!hasPremium) return;
 
-      const task = todos.find((t) => t._id === taskId);
+      const task = todos.find((t) => t && t._id === taskId);
       if (!task) return;
 
       setIsAnalyzing(true);
@@ -479,30 +479,32 @@ export const EnhancedTaskManager: React.FC = () => {
 
   // フィルタリングとソート
   const filteredAndSortedTodos = useMemo(() => {
-    const filtered = todos.filter((todo) => {
-      // 検索クエリによるフィルタリング
-      const matchesSearch =
-        searchQuery === '' ||
-        todo.task.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        todo.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        todo.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const filtered = todos
+      .filter((todo) => todo && todo._id && todo.task)
+      .filter((todo) => {
+        // 検索クエリによるフィルタリング
+        const matchesSearch =
+          searchQuery === '' ||
+          todo.task.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          todo.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          todo.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      if (!matchesSearch) return false;
+        if (!matchesSearch) return false;
 
-      // クイックフィルターによるフィルタリング
-      switch (activeFilter) {
-        case 'today':
-          return todo.deadline ? isToday(new Date(todo.deadline)) : false;
-        case 'important':
-          return todo.priority <= 2;
-        case 'inputOnly':
-          return todo.type === 'input';
-        case 'outputOnly':
-          return todo.type === 'output';
-        default:
-          return true;
-      }
-    });
+        // クイックフィルターによるフィルタリング
+        switch (activeFilter) {
+          case 'today':
+            return todo.deadline ? isToday(new Date(todo.deadline)) : false;
+          case 'important':
+            return todo.priority <= 2;
+          case 'inputOnly':
+            return todo.type === 'input';
+          case 'outputOnly':
+            return todo.type === 'output';
+          default:
+            return true;
+        }
+      });
 
     // ソート
     filtered.sort((a, b) => {
@@ -536,7 +538,7 @@ export const EnhancedTaskManager: React.FC = () => {
   // タスクの完了状態を切り替え
   const handleToggleComplete = async (taskId: string) => {
     try {
-      const task = todos.find((t) => t._id === taskId);
+      const task = todos.find((t) => t && t._id === taskId);
       if (task) {
         await dispatch(
           updateTodoItem({
@@ -552,7 +554,7 @@ export const EnhancedTaskManager: React.FC = () => {
 
   // タスクの削除
   const handleDeleteTask = async () => {
-    if (!taskToDelete) return;
+    if (!taskToDelete || !taskToDelete._id) return;
 
     try {
       await dispatch(deleteTodoItem(taskToDelete._id)).unwrap();
@@ -877,7 +879,9 @@ export const EnhancedTaskManager: React.FC = () => {
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        setLocalTaskSuggestions((prev) => prev.filter((s) => s.id !== suggestion.id))
+                        setLocalTaskSuggestions((prev) =>
+                          prev.filter((s) => s.id !== suggestion.id)
+                        )
                       }
                     >
                       却下
@@ -902,7 +906,7 @@ export const EnhancedTaskManager: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {priorityPredictions.slice(0, 5).map((prediction) => {
-                const task = todos.find((t) => t._id === prediction.taskId);
+                const task = todos.find((t) => t && t._id === prediction.taskId);
                 return (
                   <div
                     key={prediction.taskId}
@@ -942,7 +946,7 @@ export const EnhancedTaskManager: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {completionPredictions.slice(0, 6).map((prediction) => {
-                const task = todos.find((t) => t._id === prediction.taskId);
+                const task = todos.find((t) => t && t._id === prediction.taskId);
                 return (
                   <div key={prediction.taskId} className="p-3 bg-gray-50 rounded-lg">
                     <p className="font-medium text-sm mb-2">{task?.task}</p>
@@ -1012,7 +1016,7 @@ export const EnhancedTaskManager: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               {todos
-                .filter((t) => !t.completed && t.task.length > 50)
+                .filter((t) => t && t._id && t.task && !t.completed && t.task.length > 50)
                 .slice(0, 3)
                 .map((task) => (
                   <div

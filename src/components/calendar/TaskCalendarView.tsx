@@ -197,7 +197,7 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
     if (item.type === 'task' && item.taskId) {
       // Toggle task completion
       try {
-        const todo = todos.find((t) => t._id === item.taskId);
+        const todo = todos.find((t) => t && t._id === item.taskId);
         if (todo) {
           await dispatch(
             updateTodoItem({
@@ -276,7 +276,7 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
 
       // Find the task (draggableId format: "task-{todoId}")
       const taskId = draggableId.replace('task-', '');
-      const todo = todos.find((t) => t._id === taskId);
+      const todo = todos.find((t) => t && t._id === taskId);
 
       if (!todo) {
         toast.error('タスクが見つかりません');

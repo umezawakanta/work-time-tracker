@@ -95,7 +95,10 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
       todosCount: todos.length,
       loading,
       error,
-      todosSample: todos.slice(0, 3).map((t) => ({ _id: t._id, task: t.task, type: t.type })),
+      todosSample: todos
+        .slice(0, 3)
+        .filter((t) => t && t._id)
+        .map((t) => ({ _id: t._id, task: t.task, type: t.type })),
     });
   }, [todos, loading, error]);
 
@@ -132,11 +135,13 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
     try {
       // 実際のToDoデータを分析用の形式にマッピング
-      const tasksForAnalysis = todos.map((todo: TodoItem) => ({
-        id: todo._id,
-        task: todo.task,
-        description: todo.category || '',
-      }));
+      const tasksForAnalysis = todos
+        .filter((todo): todo is TodoItem => todo && todo._id)
+        .map((todo: TodoItem) => ({
+          id: todo._id,
+          task: todo.task,
+          description: todo.category || '',
+        }));
 
       console.log('[DEBUG] todoAnalysisService呼び出し前 - 実データ:', tasksForAnalysis.length);
       const result = await todoAnalysisService.analyzeTodos(tasksForAnalysis);

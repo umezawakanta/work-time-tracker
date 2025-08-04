@@ -236,7 +236,8 @@ const QuadrantCard: React.FC<QuadrantCardProps> = ({
           ) : (
             tasks.map((task, index) => {
               const originalTask = originalTasks.find(
-                (t) => (t._id || t.id) === task.taskId || String(t._id || t.id) === task.taskId
+                (t) =>
+                  t && ((t._id || t.id) === task.taskId || String(t._id || t.id) === task.taskId)
               );
               return (
                 <TaskItem

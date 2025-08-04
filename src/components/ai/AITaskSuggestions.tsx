@@ -422,7 +422,7 @@ const AITaskSuggestions: React.FC = () => {
 
               <div className="space-y-3">
                 {analysisResult?.prioritySuggestions.map((suggestion) => {
-                  const task = todos.find((t) => t._id === suggestion.originalTaskId);
+                  const task = todos.find((t) => t && t._id === suggestion.originalTaskId);
                   return (
                     <Card key={suggestion.id}>
                       <CardContent className="p-4">
@@ -480,7 +480,7 @@ const AITaskSuggestions: React.FC = () => {
 
               <div className="space-y-3">
                 {analysisResult?.timeEstimates.map((estimate) => {
-                  const task = todos.find((t) => t._id === estimate.taskId);
+                  const task = todos.find((t) => t && t._id === estimate.taskId);
                   return (
                     <Card key={estimate.taskId}>
                       <CardContent className="p-4">
@@ -552,7 +552,7 @@ const AITaskSuggestions: React.FC = () => {
                         <div className="text-sm font-medium text-gray-700">含まれるタスク:</div>
                         <div className="space-y-1">
                           {group.taskIds.map((taskId) => {
-                            const task = todos.find((t) => t._id === taskId);
+                            const task = todos.find((t) => t && t._id === taskId);
                             return (
                               <div
                                 key={taskId}

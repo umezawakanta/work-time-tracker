@@ -154,6 +154,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
   // Convert todos to calendar events
   const taskEvents: CalendarEvent[] = useMemo(() => {
     return todos
+      .filter((todo) => todo && todo._id) // 無効なtodoをフィルタリング
       .filter((todo) => {
         // Filter by completion status
         if (filterStatus === 'active' && todo.completed) return false;
@@ -268,7 +269,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
       setSelectedEvent(event);
 
       if (event.resource?.type === 'task') {
-        const todo = todos.find((t) => t._id === event.resource?.taskId);
+        const todo = todos.find((t) => t && t._id === event.resource?.taskId);
         if (todo) {
           setTaskForm({
             title: todo.task,
@@ -411,7 +412,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
     if (!selectedEvent?.resource?.taskId) return;
 
     try {
-      const todo = todos.find((t) => t._id === selectedEvent.resource?.taskId);
+      const todo = todos.find((t) => t && t._id === selectedEvent.resource?.taskId);
       if (todo) {
         await dispatch(
           updateTodoItem({

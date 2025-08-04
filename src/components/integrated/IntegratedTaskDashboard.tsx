@@ -157,7 +157,7 @@ export const IntegratedTaskDashboard: React.FC<{
 
     // ToDoタスクをゲーミフィケーション形式に変換
     const todoTasks: DailyTask[] = safeTodos
-      .filter((todo) => !todo.completed && isToday(todo.createdAt))
+      .filter((todo) => todo && todo._id && !todo.completed && isToday(todo.createdAt))
       .slice(0, 7) // 最大7件
       .map((todo, index) => ({
         id: `todo-${todo._id}`,

@@ -44,7 +44,7 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
 }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
-  
+
   // State for different AI features
   const [insights, setInsights] = useState<ProductivityInsight[]>([]);
   const [schedule, setSchedule] = useState<SmartSchedule[]>([]);
@@ -72,7 +72,7 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
           recentActivity: true,
         }),
         smartProductivityService.generateSmartSchedule(
-          todos.filter(todo => !todo.completed),
+          todos.filter((todo) => !todo.completed),
           { workingHours: '9-17', timezone: 'Asia/Tokyo' },
           {
             start: new Date().toISOString(),
@@ -82,7 +82,7 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
         smartProductivityService.generateWeeklyReport(userId, []),
         smartProductivityService.generateProactiveTaskSuggestions(userId, {
           currentTodos: todos.length,
-          completedToday: todos.filter(t => t.completed).length,
+          completedToday: todos.filter((t) => t.completed).length,
         }),
       ]);
 
@@ -99,7 +99,6 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
       if (proactiveSuggestionsResult.status === 'fulfilled') {
         setProactiveSuggestions(proactiveSuggestionsResult.value);
       }
-
     } catch (error) {
       console.error('AI分析読み込みエラー:', error);
     } finally {
@@ -109,44 +108,52 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
 
   const getImpactColor = (impact: ProductivityInsight['impact']) => {
     switch (impact) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'low': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'high':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'medium':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'low':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-blue-100 text-blue-800 border-blue-200';
     }
   };
 
   const getImpactIcon = (impact: ProductivityInsight['impact']) => {
     switch (impact) {
-      case 'critical': return <AlertCircle className="h-4 w-4" />;
-      case 'high': return <TrendingUp className="h-4 w-4" />;
-      case 'medium': return <Target className="h-4 w-4" />;
-      case 'low': return <CheckCircle className="h-4 w-4" />;
-      default: return <Lightbulb className="h-4 w-4" />;
+      case 'critical':
+        return <AlertCircle className="h-4 w-4" />;
+      case 'high':
+        return <TrendingUp className="h-4 w-4" />;
+      case 'medium':
+        return <Target className="h-4 w-4" />;
+      case 'low':
+        return <CheckCircle className="h-4 w-4" />;
+      default:
+        return <Lightbulb className="h-4 w-4" />;
     }
   };
 
   if (loading) {
     return (
-      <Card className={cn("border-0 shadow-lg bg-gradient-to-br from-blue-50 to-purple-50", className)}>
+      <Card
+        className={cn('border-0 shadow-lg bg-gradient-to-br from-blue-50 to-purple-50', className)}
+      >
         <CardContent className="p-8 text-center">
           <div className="animate-spin mx-auto mb-4">
             <Brain className="h-12 w-12 text-blue-600" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">
-            Gemini 2.5 Pro で分析中...
-          </h3>
-          <p className="text-slate-600">
-            あなたの生産性を最適化するための洞察を生成しています
-          </p>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Gemini 2.5 Pro で分析中...</h3>
+          <p className="text-slate-600">あなたの生産性を最適化するための洞察を生成しています</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn('space-y-6', className)}>
       {/* ヘッダー */}
       <Card className="border-0 shadow-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white">
         <CardContent className="p-6">
@@ -215,13 +222,16 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-slate-600">{insight.description}</p>
-                  
+
                   {insight.actionItems.length > 0 && (
                     <div>
                       <h4 className="font-medium text-slate-900 mb-2">アクションアイテム</h4>
                       <ul className="space-y-1">
                         {insight.actionItems.map((action, actionIndex) => (
-                          <li key={actionIndex} className="flex items-start gap-2 text-sm text-slate-600">
+                          <li
+                            key={actionIndex}
+                            className="flex items-start gap-2 text-sm text-slate-600"
+                          >
                             <ArrowRight className="h-3 w-3 mt-1 text-blue-500 flex-shrink-0" />
                             {action}
                           </li>
@@ -265,13 +275,18 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
                         })}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {Math.round((new Date(item.timeSlot.end).getTime() - new Date(item.timeSlot.start).getTime()) / 60000)}分
+                        {Math.round(
+                          (new Date(item.timeSlot.end).getTime() -
+                            new Date(item.timeSlot.start).getTime()) /
+                            60000
+                        )}
+                        分
                       </div>
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="font-medium text-slate-900">
-                        {todos.find(t => t._id === item.taskId)?.task || 'タスク'}
+                        {todos.find((t) => t && t._id === item.taskId)?.task || 'タスク'}
                       </div>
                       <div className="text-sm text-slate-600">{item.reason}</div>
                     </div>
@@ -312,7 +327,7 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
                     </div>
                     <div className="text-slate-600 mb-4">今週の総合スコア</div>
                     <Progress value={weeklyReport.productivityScore} className="mb-4" />
-                    
+
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       <div className="text-center">
                         <div className="text-lg font-semibold text-green-600">
@@ -371,16 +386,16 @@ export const SmartProductivityDashboard: React.FC<SmartProductivityDashboardProp
                         {suggestion.suggestedTask.title}
                       </h3>
                       <p className="text-slate-600 mb-3">{suggestion.suggestedTask.description}</p>
-                      <div className="text-sm text-slate-500">
-                        理由: {suggestion.reason}
-                      </div>
+                      <div className="text-sm text-slate-500">理由: {suggestion.reason}</div>
                     </div>
-                    <Badge 
+                    <Badge
                       className={cn(
-                        "ml-4",
-                        suggestion.urgency === 'high' ? 'bg-red-100 text-red-800' :
-                        suggestion.urgency === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
+                        'ml-4',
+                        suggestion.urgency === 'high'
+                          ? 'bg-red-100 text-red-800'
+                          : suggestion.urgency === 'medium'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800'
                       )}
                     >
                       {suggestion.urgency}
