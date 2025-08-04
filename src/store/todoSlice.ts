@@ -120,6 +120,16 @@ export const addTodoItem = createAsyncThunk(
       todo.deadline,
       todo.createdAt // API 関数が対応していない場合は修正が必要
     );
+
+    // レスポンスの安全性チェック
+    if (!response.data || !response.data.todo) {
+      throw new Error('APIからの不正なレスポンス: todo データが見つかりません');
+    }
+
+    if (!response.data.todo._id) {
+      throw new Error('APIからの不正なレスポンス: todo._id が見つかりません');
+    }
+
     return response.data.todo;
   }
 );
@@ -128,11 +138,25 @@ export const updateTodoItem = createAsyncThunk(
   'todo/updateTodoItem',
   async ({ _id, updates }: { _id: string; updates: Partial<TodoItem> }) => {
     const response = await todoApi.update(_id, updates);
+
+    // レスポンスの安全性チェック
+    if (!response.data || !response.data.todo) {
+      throw new Error('APIからの不正なレスポンス: todo データが見つかりません');
+    }
+
+    if (!response.data.todo._id) {
+      throw new Error('APIからの不正なレスポンス: todo._id が見つかりません');
+    }
+
     return response.data.todo;
   }
 );
 
 export const deleteTodoItem = createAsyncThunk('todo/deleteTodoItem', async (id: string) => {
+  if (!id || typeof id !== 'string') {
+    throw new Error('削除するタスクIDが無効です');
+  }
+
   await todoApi.delete(id);
   return id;
 });
@@ -301,6 +325,12 @@ const todoSlice = createSlice({
         state.error = action.error.message || null;
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {
+        // 安全性チェック: payloadが有効かどうか確認
+        if (!action.payload || !action.payload._id) {
+          console.error('❌ Invalid payload in addTodoItem.fulfilled:', action.payload);
+          return;
+        }
+
         // 重複チェック: 同じIDのアイテムが既に存在するかチェック
         const existingIndex = state.items.findIndex((item) => item._id === action.payload._id);
         if (existingIndex !== -1) {
@@ -313,7 +343,18 @@ const todoSlice = createSlice({
           console.log(`➕ Todo item added: ${action.payload._id}`);
         }
       })
+      .addCase(addTodoItem.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'タスクの追加に失敗しました';
+        console.error('❌ addTodoItem failed:', action.error);
+      })
       .addCase(updateTodoItem.fulfilled, (state, action) => {
+        // 安全性チェック: payloadが有効かどうか確認
+        if (!action.payload || !action.payload._id) {
+          console.error('❌ Invalid payload in updateTodoItem.fulfilled:', action.payload);
+          return;
+        }
+
         const index = state.items.findIndex((item) => item._id === action.payload._id);
         if (index !== -1) {
           // この行が重要です - 古いオブジェクトを新しいオブジェクトで完全に置き換える
@@ -323,8 +364,25 @@ const todoSlice = createSlice({
           console.log('Todo updated in Redux store:', action.payload);
         }
       })
+      .addCase(updateTodoItem.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'タスクの更新に失敗しました';
+        console.error('❌ updateTodoItem failed:', action.error);
+      })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
+        // 安全性チェック: payloadが有効なIDかどうか確認
+        if (!action.payload || typeof action.payload !== 'string') {
+          console.error('❌ Invalid payload in deleteTodoItem.fulfilled:', action.payload);
+          return;
+        }
+
         state.items = state.items.filter((item) => item._id !== action.payload);
+        console.log(`🗑️ Todo item deleted: ${action.payload}`);
+      })
+      .addCase(deleteTodoItem.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'タスクの削除に失敗しました';
+        console.error('❌ deleteTodoItem failed:', action.error);
       })
       .addCase(resetTodoList.pending, (state) => {
         state.status = 'loading';
