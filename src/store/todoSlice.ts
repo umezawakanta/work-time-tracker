@@ -97,8 +97,48 @@ const initialState: TodoState = {
 };
 
 export const fetchTodoItems = createAsyncThunk('todo/fetchTodoItems', async () => {
-  const response = await todoApi.getAll();
-  return response.data;
+  try {
+    const response = await todoApi.getAll();
+
+    // HTTPステータスコードチェック
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+    }
+
+    // レスポンスの基本構造チェック
+    if (!response.data) {
+      throw new Error('APIからの空のレスポンスです');
+    }
+
+    // エラーレスポンスかどうかチェック（GET /todosはエラー時に{message, error}を返す）
+    if (response.data.error || (response.data.message && !Array.isArray(response.data))) {
+      const errorMsg = response.data.error || response.data.message || '不明なエラー';
+      throw new Error(`API操作エラー: ${errorMsg}`);
+    }
+
+    // 成功レスポンスの検証（GET /todosは直接配列を返す）
+    if (!Array.isArray(response.data)) {
+      console.error('🔍 Unexpected response structure:', response.data);
+      throw new Error('APIレスポンスが期待される配列形式ではありません');
+    }
+
+    console.log(`✅ Fetched ${response.data.length} todos successfully`);
+    return response.data;
+  } catch (apiError: any) {
+    // ネットワークエラーやAxiosエラーの処理
+    if (apiError.response) {
+      // サーバーがエラーレスポンスを返した場合
+      const errorData = apiError.response.data;
+      const errorMsg = errorData?.message || errorData?.error || 'サーバーエラーが発生しました';
+      throw new Error(`API呼び出しエラー: ${errorMsg}`);
+    } else if (apiError.request) {
+      // リクエストが送信されたが応答がない場合
+      throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');
+    } else {
+      // その他のエラー（既に投げたエラー含む）
+      throw apiError;
+    }
+  }
 });
 
 export const addTodoItem = createAsyncThunk(
@@ -111,44 +151,114 @@ export const addTodoItem = createAsyncThunk(
     deadline?: string;
     createdAt?: string; // createdAt プロパティを追加
   }) => {
-    // todoApi.create 関数の引数を確認し、必要に応じて createdAt を追加
-    const response = await todoApi.create(
-      todo.task,
-      todo.priority,
-      todo.isPrioritized,
-      todo.type || 'input',
-      todo.deadline,
-      todo.createdAt // API 関数が対応していない場合は修正が必要
-    );
+    try {
+      // todoApi.create 関数の引数を確認し、必要に応じて createdAt を追加
+      const response = await todoApi.create(
+        todo.task,
+        todo.priority,
+        todo.isPrioritized,
+        todo.type || 'input',
+        todo.deadline,
+        todo.createdAt // API 関数が対応していない場合は修正が必要
+      );
 
-    // レスポンスの安全性チェック
-    if (!response.data || !response.data.todo) {
-      throw new Error('APIからの不正なレスポンス: todo データが見つかりません');
+      // HTTPステータスコードチェック
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+      }
+
+      // レスポンスの基本構造チェック
+      if (!response.data) {
+        throw new Error('APIからの空のレスポンスです');
+      }
+
+      // エラーレスポンスかどうかチェック
+      if (response.data.error || (response.data.message && !response.data.todo)) {
+        const errorMsg = response.data.error || response.data.message || '不明なエラー';
+        throw new Error(`API操作エラー: ${errorMsg}`);
+      }
+
+      // 成功レスポンスの検証
+      if (!response.data.todo) {
+        console.error('🔍 Unexpected response structure:', response.data);
+        throw new Error('APIレスポンスにtodoデータが含まれていません');
+      }
+
+      if (!response.data.todo._id) {
+        console.error('🔍 Todo missing _id:', response.data.todo);
+        throw new Error('作成されたタスクにIDが設定されていません');
+      }
+
+      console.log('✅ Todo created successfully:', response.data.todo._id);
+      return response.data.todo;
+    } catch (apiError: any) {
+      // ネットワークエラーやAxiosエラーの処理
+      if (apiError.response) {
+        // サーバーがエラーレスポンスを返した場合
+        const errorData = apiError.response.data;
+        const errorMsg = errorData?.message || errorData?.error || 'サーバーエラーが発生しました';
+        throw new Error(`API呼び出しエラー: ${errorMsg}`);
+      } else if (apiError.request) {
+        // リクエストが送信されたが応答がない場合
+        throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');
+      } else {
+        // その他のエラー（既に投げたエラー含む）
+        throw apiError;
+      }
     }
-
-    if (!response.data.todo._id) {
-      throw new Error('APIからの不正なレスポンス: todo._id が見つかりません');
-    }
-
-    return response.data.todo;
   }
 );
 
 export const updateTodoItem = createAsyncThunk(
   'todo/updateTodoItem',
   async ({ _id, updates }: { _id: string; updates: Partial<TodoItem> }) => {
-    const response = await todoApi.update(_id, updates);
+    try {
+      const response = await todoApi.update(_id, updates);
 
-    // レスポンスの安全性チェック
-    if (!response.data || !response.data.todo) {
-      throw new Error('APIからの不正なレスポンス: todo データが見つかりません');
+      // HTTPステータスコードチェック
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+      }
+
+      // レスポンスの基本構造チェック
+      if (!response.data) {
+        throw new Error('APIからの空のレスポンスです');
+      }
+
+      // エラーレスポンスかどうかチェック
+      if (response.data.error || (response.data.message && !response.data.todo)) {
+        const errorMsg = response.data.error || response.data.message || '不明なエラー';
+        throw new Error(`API操作エラー: ${errorMsg}`);
+      }
+
+      // 成功レスポンスの検証
+      if (!response.data.todo) {
+        console.error('🔍 Unexpected response structure:', response.data);
+        throw new Error('APIレスポンスにtodoデータが含まれていません');
+      }
+
+      if (!response.data.todo._id) {
+        console.error('🔍 Todo missing _id:', response.data.todo);
+        throw new Error('更新されたタスクにIDが設定されていません');
+      }
+
+      console.log('✅ Todo updated successfully:', response.data.todo._id);
+      return response.data.todo;
+    } catch (apiError: any) {
+      // ネットワークエラーやAxiosエラーの処理
+      if (apiError.response) {
+        // サーバーがエラーレスポンスを返した場合
+        const errorData = apiError.response.data;
+        const errorMsg = errorData?.message || errorData?.error || 'サーバーエラーが発生しました';
+        throw new Error(`API呼び出しエラー: ${errorMsg}`);
+      } else if (apiError.request) {
+        // リクエストが送信されたが応答がない場合
+        throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。');
+      } else {
+        // その他のエラー（既に投げたエラー含む）
+        throw apiError;
+      }
     }
-
-    if (!response.data.todo._id) {
-      throw new Error('APIからの不正なレスポンス: todo._id が見つかりません');
-    }
-
-    return response.data.todo;
   }
 );
 
@@ -303,6 +413,15 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
         state.status = 'succeeded';
+        state.error = null; // エラーをクリア
+
+        // 安全性チェック: payloadが配列かどうか確認
+        if (!Array.isArray(action.payload)) {
+          console.error('❌ Invalid payload in fetchTodoItems.fulfilled:', action.payload);
+          state.error = 'APIレスポンスが無効な形式です';
+          return;
+        }
+
         // 重複IDを排除し、無効なアイテムをフィルタリング
         const validItems = action.payload.filter(
           (item: any) => item && item._id && typeof item._id === 'string'
@@ -324,10 +443,18 @@ const todoSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message || null;
       })
+      .addCase(addTodoItem.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(addTodoItem.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null; // エラーをクリア
+
         // 安全性チェック: payloadが有効かどうか確認
         if (!action.payload || !action.payload._id) {
           console.error('❌ Invalid payload in addTodoItem.fulfilled:', action.payload);
+          state.error = '作成されたタスクデータが無効です';
           return;
         }
 
@@ -348,10 +475,18 @@ const todoSlice = createSlice({
         state.error = action.error.message || 'タスクの追加に失敗しました';
         console.error('❌ addTodoItem failed:', action.error);
       })
+      .addCase(updateTodoItem.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(updateTodoItem.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null; // エラーをクリア
+
         // 安全性チェック: payloadが有効かどうか確認
         if (!action.payload || !action.payload._id) {
           console.error('❌ Invalid payload in updateTodoItem.fulfilled:', action.payload);
+          state.error = '更新されたタスクデータが無効です';
           return;
         }
 
@@ -361,7 +496,9 @@ const todoSlice = createSlice({
           state.items[index] = action.payload;
 
           // デバッグ用にログを追加
-          console.log('Todo updated in Redux store:', action.payload);
+          console.log('✅ Todo updated in Redux store:', action.payload._id);
+        } else {
+          console.warn('⚠️ Updated todo not found in store:', action.payload._id);
         }
       })
       .addCase(updateTodoItem.rejected, (state, action) => {
@@ -369,15 +506,30 @@ const todoSlice = createSlice({
         state.error = action.error.message || 'タスクの更新に失敗しました';
         console.error('❌ updateTodoItem failed:', action.error);
       })
+      .addCase(deleteTodoItem.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(deleteTodoItem.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null; // エラーをクリア
+
         // 安全性チェック: payloadが有効なIDかどうか確認
         if (!action.payload || typeof action.payload !== 'string') {
           console.error('❌ Invalid payload in deleteTodoItem.fulfilled:', action.payload);
+          state.error = '削除されたタスクIDが無効です';
           return;
         }
 
+        const beforeCount = state.items.length;
         state.items = state.items.filter((item) => item._id !== action.payload);
-        console.log(`🗑️ Todo item deleted: ${action.payload}`);
+        const afterCount = state.items.length;
+
+        if (beforeCount === afterCount) {
+          console.warn('⚠️ Todo not found for deletion:', action.payload);
+        } else {
+          console.log(`🗑️ Todo item deleted: ${action.payload}`);
+        }
       })
       .addCase(deleteTodoItem.rejected, (state, action) => {
         state.status = 'failed';
