@@ -63,10 +63,10 @@ import TodoWBSIntegrationService from '@/services/integration/TodoWBSIntegration
 import { useAuth } from '@/hooks/useAuth';
 
 interface TodoItemProps {
-  readonly todo: Todo;
-  readonly onToggle: (todo: Todo) => Promise<void>;
+  readonly todo: TodoItem;
+  readonly onToggle: (todo: TodoItem) => Promise<void>;
   readonly onDelete: (todoId: string) => Promise<void>;
-  readonly onUpdate: (todoId: string, updates: Partial<Todo>) => Promise<void>;
+  readonly onUpdate: (todoId: string, updates: Partial<TodoItem>) => Promise<void>;
   readonly isPremium?: boolean;
   readonly dragHandleProps?: Record<string, unknown> | null;
   readonly isHighPriority?: boolean;
@@ -155,13 +155,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
   const handleDelete = useCallback(async (): Promise<void> => {
     if (isLoading) return;
+
+    const todoId = todo._id || todo._id || todo.id;
+    if (!todoId) {
+      toast.error('削除対象のタスクIDが見つかりません');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      await onDelete(todo.id);
+      await onDelete(todoId);
     } finally {
       setIsLoading(false);
     }
-  }, [todo.id, onDelete, isLoading]);
+  }, [todo._id, todo._id || todo.id, onDelete, isLoading]);
 
   const handleEdit = useCallback((): void => {
     // Reset form data when opening
@@ -196,12 +203,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         estimatedDuration: editFormData.estimatedDuration || undefined,
       };
 
-      await onUpdate(todo.id, updates);
+      await onUpdate(todo._id || todo.id, updates);
       setIsEditDialogOpen(false);
     } finally {
       setIsLoading(false);
     }
-  }, [todo.id, editFormData, onUpdate, isLoading]);
+  }, [todo._id || todo.id, editFormData, onUpdate, isLoading]);
 
   const formatDeadline = (deadline: string): string => {
     const date = new Date(deadline);
@@ -283,7 +290,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         deadline: aiAnalysisResult.deadline,
       };
 
-      await onUpdate(todo.id, updates);
+      await onUpdate(todo._id || todo.id, updates);
 
       // 成功時のフィードバック
       const updatedItems = [];
@@ -304,7 +311,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       setIsLoading(false);
     }
   }, [
-    todo.id,
+    todo._id || todo.id,
     todo.task,
     todo.category,
     todo.tags,
@@ -367,7 +374,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         // 親タスクの完了もWBSに同期
         if (user) {
           await TodoWBSIntegrationService.syncTodoToWBS({
-            _id: todo.id,
+            _id: todo._id || todo.id,
             task: todo.task,
             completed: true,
             priority: todo.priority,
@@ -610,14 +617,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     </DropdownMenuItem>
 
                     {!todo.isPrioritized && (
-                      <DropdownMenuItem onClick={() => onUpdate(todo.id, { isPrioritized: true })}>
+                      <DropdownMenuItem
+                        onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: true })}
+                      >
                         <Target className="h-4 w-4 mr-2" />
                         重要タスクにする
                       </DropdownMenuItem>
                     )}
 
                     {todo.isPrioritized && (
-                      <DropdownMenuItem onClick={() => onUpdate(todo.id, { isPrioritized: false })}>
+                      <DropdownMenuItem
+                        onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: false })}
+                      >
                         <Target className="h-4 w-4 mr-2" />
                         重要タスクを解除
                       </DropdownMenuItem>

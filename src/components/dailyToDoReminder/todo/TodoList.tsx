@@ -75,12 +75,19 @@ export const TodoList: React.FC<TodoListProps> = ({
   }, [todos]);
 
   const handleToggleComplete = useCallback(
-    async (todo: Todo): Promise<void> => {
+    async (todo: TodoItem): Promise<void> => {
       try {
+        // 安全性チェック
+        const todoId = todo._id;
+        if (!todoId) {
+          toast.error('タスクIDが見つかりません');
+          return;
+        }
+
         // Toggle completion status using updateTodoItem
         await dispatch(
           updateTodoItem({
-            _id: todo.id,
+            _id: todoId,
             updates: { completed: !todo.completed },
           })
         ).unwrap();
@@ -111,25 +118,18 @@ export const TodoList: React.FC<TodoListProps> = ({
   );
 
   const handleUpdate = useCallback(
-    async (todoId: string, updates: Partial<Todo>): Promise<void> => {
+    async (todoId: string, updates: Partial<TodoItem>): Promise<void> => {
       try {
-        // Map local Todo properties to global TodoItem properties
-        const mappedUpdates: Partial<{
-          task?: string;
-          priority?: number;
-          isPrioritized?: boolean;
-          type?: 'input' | 'output';
-          deadline?: string;
-          completed?: boolean;
-        }> = {};
+        // 安全性チェック
+        if (!todoId) {
+          toast.error('更新対象のタスクIDが見つかりません');
+          return;
+        }
 
-        if (updates.text !== undefined) mappedUpdates.task = updates.text;
-        if (updates.priority !== undefined) mappedUpdates.priority = updates.priority;
-        if (updates.isPrioritized !== undefined)
-          mappedUpdates.isPrioritized = updates.isPrioritized;
-        if (updates.type !== undefined) mappedUpdates.type = updates.type;
-        if (updates.deadline !== undefined) mappedUpdates.deadline = updates.deadline;
-        if (updates.completed !== undefined) mappedUpdates.completed = updates.completed;
+        // TodoItem型を直接使用（マッピング不要）
+        const mappedUpdates: Partial<TodoItem> = {
+          ...updates,
+        };
 
         await dispatch(updateTodoItem({ _id: todoId, updates: mappedUpdates })).unwrap();
         toast.success('タスクを更新しました');
@@ -143,7 +143,7 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   const getEstimatedTime = (todos: readonly TodoItem[]): number => {
     return todos.reduce((total, todo) => {
-      return total + (todo.estimatedTime || 0);
+      return total + (todo.estimatedDuration || 0);
     }, 0);
   };
 
@@ -179,7 +179,8 @@ export const TodoList: React.FC<TodoListProps> = ({
   return (
     <div className="space-y-6">
       {/* マインドマップモーダル */}
-      {showMindMap && <TodoMindMap todos={todos} onClose={() => setShowMindMap(false)} />}
+      {/* TODO: TodoMindMapをTodoItem型に対応させる必要があります */}
+      {/* {showMindMap && <TodoMindMap todos={todos} onClose={() => setShowMindMap(false)} />} */}
 
       {/* Summary Stats */}
       {isPremium && (
@@ -265,9 +266,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               {groupedTodos.prioritized.map((todo, index) => (
                 <TodoItemComponent
                   key={
-                    todo.id ||
-                    todo._id ||
-                    `prioritized-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                    todo._id || `prioritized-todo-${index}-${todo.task?.slice(0, 10) || 'unknown'}`
                   }
                   todo={todo}
                   onToggle={handleToggleComplete}
@@ -296,11 +295,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             <div className="space-y-2">
               {groupedTodos.active.map((todo, index) => (
                 <TodoItemComponent
-                  key={
-                    todo.id ||
-                    todo._id ||
-                    `active-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
-                  }
+                  key={todo._id || `active-todo-${index}-${todo.task?.slice(0, 10) || 'unknown'}`}
                   todo={todo}
                   onToggle={handleToggleComplete}
                   onDelete={handleDelete}
@@ -329,9 +324,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map((todo, index) => (
                 <TodoItemComponent
                   key={
-                    todo.id ||
-                    todo._id ||
-                    `completed-todo-${index}-${todo.text?.slice(0, 10) || 'unknown'}`
+                    todo._id || `completed-todo-${index}-${todo.task?.slice(0, 10) || 'unknown'}`
                   }
                   todo={todo}
                   onToggle={handleToggleComplete}
