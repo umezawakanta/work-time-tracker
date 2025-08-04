@@ -3,29 +3,26 @@ import axios from 'axios';
 import { Task } from '@/types/task';
 import { Todo } from '@/types/todo';
 
-// 環境変数を安全に取得するユーティリティ関数
-const getEnvVar = (key: string): string | undefined => {
-  // Jest環境ではprocess.envを優先
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
-
-  // Vite環境でのimport.meta.env（安全にアクセス）
-  try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env[key];
-    }
-  } catch (e) {
-    // import.metaが利用できない場合は無視
-  }
-
-  return undefined;
-};
-
 // Gemini APIの設定
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const API_KEY = getEnvVar('VITE_GEMINI_API_KEY') || getEnvVar('GEMINI_API_KEY') || '';
+
+// Vite環境での環境変数取得（修正版）
+const getGeminiApiKey = (): string => {
+  // Viteでの正しい環境変数アクセス方法
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  // デバッグ情報を出力（開発環境のみ）
+  if (import.meta.env.DEV) {
+    console.log('🔍 Gemini API Key Debug:');
+    console.log('  - import.meta.env.VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
+    console.log('  - 全環境変数:', import.meta.env);
+  }
+  
+  return apiKey || '';
+};
+
+const API_KEY = getGeminiApiKey();
 
 // 4象限の定義
 export type QuadrantType = 'essential' | 'effectiveness' | 'illusion' | 'waste';
@@ -133,6 +130,15 @@ export const QUADRANT_DEFINITIONS: Record<QuadrantType, QuadrantInfo> = {
   },
 };
 
+// ファイルの上部でデバッグ
+console.log('🔍 環境変数チェック:');
+console.log('VITE_GEMINI_API_KEY:', import.meta.env.VITE_GEMINI_API_KEY);
+console.log('NODE_ENV:', import.meta.env.MODE);
+console.log(
+  'All VITE vars:',
+  Object.keys(import.meta.env).filter((key) => key.startsWith('VITE_'))
+);
+
 /**
  * 4象限タスク分類サービス - Gemini AI統合
  */
@@ -152,7 +158,13 @@ export class QuadrantClassificationService {
   public async classifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
     try {
       if (!API_KEY) {
-        console.warn('Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。');
+        if (import.meta.env.DEV) {
+          console.warn('🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。');
+          console.log('💡 解決方法:');
+          console.log('  1. .env.local ファイルに VITE_GEMINI_API_KEY=your_api_key を追加');
+          console.log('  2. 開発サーバーを再起動 (pnpm dev)');
+          console.log('  3. Google AI Studio (https://makersuite.google.com/app/apikey) でキーを取得');
+        }
         return this.fallbackClassification(task);
       }
 
