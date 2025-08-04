@@ -124,19 +124,40 @@ const IntegratedDashboard: React.FC = () => {
           });
 
           if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              setProjects(data.data);
-              console.log('✅ Projects loaded successfully from API');
-              return;
+            // レスポンステキストを先に取得
+            const responseText = await response.text();
+
+            // Content-Typeを確認してJSONレスポンスかどうかチェック
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+              try {
+                const data = JSON.parse(responseText);
+                if (data.success) {
+                  setProjects(data.data);
+                  console.log('✅ Projects loaded successfully from API');
+                  return;
+                }
+              } catch (jsonError) {
+                console.warn('⚠️ Failed to parse JSON response:', jsonError);
+                console.warn('Response text preview:', responseText.substring(0, 200));
+              }
+            } else {
+              console.warn('⚠️ API returned non-JSON response, Content-Type:', contentType);
+              console.warn('Response text preview:', responseText.substring(0, 200));
             }
+          } else {
+            console.warn(
+              '⚠️ API request failed with status:',
+              response.status,
+              response.statusText
+            );
           }
         } catch (apiError) {
           console.warn('⚠️ API server not available, using local data:', apiError);
         }
 
         // フォールバック: デモプロジェクトデータ
-        console.warn('Projects API not available, using demo data');
+        console.info('💡 開発環境: APIサーバーが利用できないため、デモデータを使用します');
         const demoProjects: ProjectHubProject[] = [
           {
             id: 'proj-mvp',
@@ -638,7 +659,10 @@ const IntegratedDashboard: React.FC = () => {
 
         {/* AI生産性ダッシュボード */}
         <TabsContent value="ai-productivity" className="space-y-6">
-          <SmartProductivityDashboard todos={gameLoopStats?.todos || []} userId={user?.email || 'anonymous'} />
+          <SmartProductivityDashboard
+            todos={gameLoopStats?.todos || []}
+            userId={user?.email || 'anonymous'}
+          />
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-6">
