@@ -1,6 +1,8 @@
 // Enhanced simple server for todo API with proper error handling
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import { connectDB } from './config/database.js';
+import { Book } from './models/Book.js';
 
 const app = express();
 const PORT = 3001;
@@ -655,40 +657,13 @@ app.get('/api/projects', (req, res) => {
 // Temporarily remove 404 handler - will be moved after all routes
 
 // Route debugging - log all registered routes
-// Books API - Simple mock implementation
-let books: any[] = [
-  {
-    _id: 'book1',
-    id: 'book1',
-    title: 'TypeScript入門',
-    author: '技術太郎',
-    genre: 'プログラミング',
-    readingStatus: 'reading',
-    progress: 45,
-    totalPages: 300,
-    notes: 'TypeScriptの基本的な概念について学習中',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: 'book2',
-    id: 'book2',
-    title: 'React実践ガイド',
-    author: 'フロント花子',
-    genre: 'プログラミング',
-    readingStatus: 'completed',
-    progress: 100,
-    totalPages: 250,
-    notes: 'Reactの実践的な使い方を習得',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
-
+// Books API - Real database implementation
 // GET all books
-app.get('/api/books', (req, res) => {
+app.get('/api/books', async (req, res) => {
   console.log('✅ GET /api/books called');
   try {
+    const books = await Book.find().sort({ createdAt: -1 });
+    console.log(`📚 Found ${books.length} books in database`);
     res.json(books);
   } catch (error) {
     console.error('❌ Error fetching books:', error);
@@ -701,22 +676,17 @@ app.get('/api/books', (req, res) => {
 });
 
 // POST new book
-app.post('/api/books', (req, res) => {
+app.post('/api/books', async (req, res) => {
   console.log('✅ POST /api/books called');
   console.log('📝 Book data:', req.body);
   try {
-    const newBook = {
-      _id: 'book' + Date.now(),
-      id: 'book' + Date.now(),
-      ...req.body,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    books.push(newBook);
+    const newBook = new Book(req.body);
+    const savedBook = await newBook.save();
+    console.log(`📚 Book created with ID: ${savedBook._id}`);
     res.status(201).json({
       success: true,
       message: 'Book created successfully',
-      book: newBook,
+      book: savedBook,
     });
   } catch (error) {
     console.error('❌ Error creating book:', error);
@@ -729,31 +699,29 @@ app.post('/api/books', (req, res) => {
 });
 
 // PUT update book
-app.put('/api/books/:id', (req, res) => {
+app.put('/api/books/:id', async (req, res) => {
   console.log('✅ PUT /api/books/:id called');
   console.log('📝 Book ID:', req.params.id);
   console.log('📝 Update data:', req.body);
   try {
     const bookId = req.params.id;
-    const bookIndex = books.findIndex((book) => book._id === bookId || book.id === bookId);
+    const updatedBook = await Book.findByIdAndUpdate(bookId, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-    if (bookIndex === -1) {
+    if (!updatedBook) {
       return res.status(404).json({
         success: false,
         message: 'Book not found',
       });
     }
 
-    books[bookIndex] = {
-      ...books[bookIndex],
-      ...req.body,
-      updatedAt: new Date().toISOString(),
-    };
-
+    console.log(`📚 Book updated: ${updatedBook._id}`);
     res.json({
       success: true,
       message: 'Book updated successfully',
-      book: books[bookIndex],
+      book: updatedBook,
     });
   } catch (error) {
     console.error('❌ Error updating book:', error);
@@ -766,25 +734,25 @@ app.put('/api/books/:id', (req, res) => {
 });
 
 // DELETE book
-app.delete('/api/books/:id', (req, res) => {
+app.delete('/api/books/:id', async (req, res) => {
   console.log('✅ DELETE /api/books/:id called');
   console.log('📝 Book ID:', req.params.id);
   try {
     const bookId = req.params.id;
-    const bookIndex = books.findIndex((book) => book._id === bookId || book.id === bookId);
+    const deletedBook = await Book.findByIdAndDelete(bookId);
 
-    if (bookIndex === -1) {
+    if (!deletedBook) {
       return res.status(404).json({
         success: false,
         message: 'Book not found',
       });
     }
 
-    books.splice(bookIndex, 1);
-
+    console.log(`📚 Book deleted: ${deletedBook._id}`);
     res.json({
       success: true,
       message: 'Book deleted successfully',
+      book: deletedBook,
     });
   } catch (error) {
     console.error('❌ Error deleting book:', error);
@@ -839,9 +807,24 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n✅ Enhanced server running on port ${PORT}`);
-  console.log(`📍 Health: http://localhost:${PORT}/api/health`);
-  console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
-  console.log('🔍 Debug mode enabled - detailed logging active\n');
-});
+// Connect to database and start server
+const startServer = async () => {
+  try {
+    console.log('🔗 Connecting to database...');
+    await connectDB();
+    console.log('✅ Database connected successfully');
+
+    app.listen(PORT, () => {
+      console.log(`\n✅ Enhanced server running on port ${PORT}`);
+      console.log(`📍 Health: http://localhost:${PORT}/api/health`);
+      console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
+      console.log(`📚 Books: http://localhost:${PORT}/api/books`);
+      console.log('🔍 Debug mode enabled - detailed logging active\n');
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
