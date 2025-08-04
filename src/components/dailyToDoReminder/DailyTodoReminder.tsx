@@ -304,7 +304,8 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
         {/* デバッグ情報表示（開発環境のみ） */}
         {process.env.NODE_ENV === 'development' && (
           <div className="p-2 bg-blue-50 text-xs">
-            🐛 ToDo数: {todos.length}, 状態: {loading ? 'loading' : 'loaded'}, プレミアム: {isPremium ? 'Yes' : 'No'}
+            🐛 ToDo数: {todos.length}, 状態: {loading ? 'loading' : 'loaded'}, プレミアム:{' '}
+            {isPremium ? 'Yes' : 'No'}
           </div>
         )}
 
