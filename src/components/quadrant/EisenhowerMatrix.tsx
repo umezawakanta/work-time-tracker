@@ -234,13 +234,13 @@ const QuadrantCard: React.FC<QuadrantCardProps> = ({
               <p className="text-sm">タスクはありません</p>
             </div>
           ) : (
-            tasks.map((task) => {
+            tasks.map((task, index) => {
               const originalTask = originalTasks.find(
                 (t) => (t._id || t.id) === task.taskId || String(t._id || t.id) === task.taskId
               );
               return (
                 <TaskItem
-                  key={task.taskId}
+                  key={`${quadrant}-${task.taskId}-${index}`}
                   task={task}
                   originalTask={originalTask}
                   onTaskClick={onTaskClick}

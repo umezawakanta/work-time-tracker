@@ -525,7 +525,7 @@ JSON形式で回答してください:
    */
   public convertToUnifiedTask(task: any): UnifiedTaskData {
     return {
-      id: task._id || task.id || String(Date.now()),
+      id: task._id || task.id || `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       title: task.title || task.task || '無題のタスク',
       description: task.description || task.note || task.memo,
       deadline: task.deadline || task.dueDate,

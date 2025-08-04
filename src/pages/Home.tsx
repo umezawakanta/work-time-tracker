@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { fetchTodoItems } from '@/store/todoSlice';
+import { selectAllTodos } from '@/components/dailyToDoReminder/store/selectors/todoSelectors';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,7 @@ const Home: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
 
   // Redux state
-  const todos = useSelector((state: RootState) => state.todo.items) || [];
+  const todos = useSelector(selectAllTodos);
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
 
   // Local state
@@ -99,53 +100,82 @@ const Home: React.FC = () => {
 
   // Calculate real stats from data
   const calculateStats = () => {
-    const today = new Date().toDateString();
+    try {
+      const today = new Date().toDateString();
 
-    const todayTodos = todos.filter(
-      (todo) => todo.createdAt && new Date(todo.createdAt).toDateString() === today
-    );
+      // 安全な null/undefined チェックを追加
+      const validTodos = todos.filter((todo) => todo != null && typeof todo === 'object');
 
-    const completedToday = todayTodos.filter((todo) => todo.completed).length;
-    const totalToday = Math.max(todayTodos.length, 1);
-    const completionRate = Math.round((completedToday / totalToday) * 100);
+      const todayTodos = validTodos.filter((todo) => {
+        if (!todo.createdAt) return false;
+        try {
+          const todoDate = new Date(todo.createdAt);
+          return !isNaN(todoDate.getTime()) && todoDate.toDateString() === today;
+        } catch (error) {
+          console.warn('Invalid date format in todo:', todo.createdAt);
+          return false;
+        }
+      });
 
-    // Calculate streak (simple implementation)
-    let streakDays = 0;
-    const recentDays = 7;
-    for (let i = 0; i < recentDays; i++) {
-      const checkDate = new Date();
-      checkDate.setDate(checkDate.getDate() - i);
-      const dayStr = checkDate.toDateString();
+      const completedToday = todayTodos.filter((todo) => todo.completed).length;
+      const totalToday = Math.max(todayTodos.length, 1);
+      const completionRate = Math.round((completedToday / totalToday) * 100);
 
-      const dayCompleted = todos.some(
-        (todo) =>
-          todo.completed &&
-          todo.completedDate &&
-          new Date(todo.completedDate).toDateString() === dayStr
-      );
+      // Calculate streak (simple implementation)
+      let streakDays = 0;
+      const recentDays = 7;
+      for (let i = 0; i < recentDays; i++) {
+        const checkDate = new Date();
+        checkDate.setDate(checkDate.getDate() - i);
+        const dayStr = checkDate.toDateString();
 
-      if (dayCompleted) streakDays++;
-      else break;
+        const dayCompleted = validTodos.some((todo) => {
+          if (!todo.completed || !todo.completedDate) return false;
+          try {
+            return new Date(todo.completedDate).toDateString() === dayStr;
+          } catch (error) {
+            console.warn('Invalid completedDate format in todo:', todo.completedDate);
+            return false;
+          }
+        });
+
+        if (dayCompleted) streakDays++;
+        else break;
+      }
+
+      // Simple gamification stats
+      const totalCompleted = validTodos.filter((todo) => todo.completed).length;
+      const currentLevel = Math.floor(totalCompleted / 10) + 1;
+      const xp = totalCompleted * 25;
+      const nextLevelXP = currentLevel * 250;
+      const badgesEarned = Math.floor(totalCompleted / 5);
+
+      setStats({
+        tasksCompleted: completedToday,
+        totalTasks: totalToday,
+        completionRate,
+        streakDays,
+        currentLevel,
+        xp,
+        nextLevelXP,
+        badgesEarned,
+        totalBadges: 20,
+      });
+    } catch (error) {
+      console.error('Error calculating dashboard stats:', error);
+      // デフォルト値を設定
+      setStats({
+        tasksCompleted: 0,
+        totalTasks: 1,
+        completionRate: 0,
+        streakDays: 0,
+        currentLevel: 1,
+        xp: 0,
+        nextLevelXP: 250,
+        badgesEarned: 0,
+        totalBadges: 20,
+      });
     }
-
-    // Simple gamification stats
-    const totalCompleted = todos.filter((todo) => todo.completed).length;
-    const currentLevel = Math.floor(totalCompleted / 10) + 1;
-    const xp = totalCompleted * 25;
-    const nextLevelXP = currentLevel * 250;
-    const badgesEarned = Math.floor(totalCompleted / 5);
-
-    setStats({
-      tasksCompleted: completedToday,
-      totalTasks: totalToday,
-      completionRate,
-      streakDays,
-      currentLevel,
-      xp,
-      nextLevelXP,
-      badgesEarned,
-      totalBadges: 20,
-    });
   };
 
   // Quick actions configuration
