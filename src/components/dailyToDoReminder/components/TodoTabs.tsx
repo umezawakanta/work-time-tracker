@@ -20,7 +20,7 @@ import TodoAnalysis from '../../todoAnalysis/TodoAnalysis';
 import { TodoViewControls } from '../controls/TodoViewControls';
 
 // Types
-import { Todo } from '../types';
+import { TodoItem } from '@/types';
 
 type TabType = 'list' | 'calendar' | 'chart';
 type FilterStatus = 'all' | 'active' | 'completed';
@@ -43,7 +43,7 @@ interface FilterControls {
 interface TodoTabsProps {
   readonly selectedTab: TabType;
   readonly onTabChange: (tab: TabType) => void;
-  readonly todos: readonly Todo[];
+  readonly todos: readonly TodoItem[];
   readonly todoHistory: readonly TodoHistoryData[];
   readonly dailyHistory: readonly TodoHistoryData[];
   readonly hasPremium: boolean;

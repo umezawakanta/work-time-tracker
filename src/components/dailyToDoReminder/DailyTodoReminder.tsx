@@ -9,13 +9,8 @@ import { useResponsive } from '@/hooks/useResponsive';
 
 // Store actions and selectors
 import { fetchTodoItems, deleteTodoItem, updateTodoItem, addTodoItem } from '@/store/todoSlice';
-import {
-  selectAllTodos,
-  selectTodosLoading,
-  selectTodosError,
-  selectTodoStats,
-} from './store/selectors/todoSelectors';
-import { AppDispatch } from '@/store';
+import { selectTodos, selectTodoStatus, selectTodoError } from '@/store/todoSlice';
+import { AppDispatch, RootState } from '@/store';
 
 // Sub-components
 import { TodoHeader } from './components/TodoHeader';
@@ -30,7 +25,7 @@ import { useTodoHistory } from './hooks/useTodoHistory';
 import { useTodoFilters } from './hooks/useTodoFilters';
 
 // Types
-import { Todo } from './types';
+import { TodoItem } from '@/types';
 
 // Styles
 import './DailyTodoReminder.css';
@@ -54,10 +49,27 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const dispatch = useDispatch<AppDispatch>();
 
   // Redux selectors with proper type safety
-  const todos = useSelector(selectAllTodos);
-  const loading = useSelector(selectTodosLoading);
-  const error = useSelector(selectTodosError);
-  const stats = useSelector(selectTodoStats);
+  const todos = useSelector(selectTodos);
+  const loading = useSelector(selectTodoStatus) === 'loading';
+  const error = useSelector(selectTodoError);
+
+  // Stats calculation (inline replacement for selectTodoStats)
+  const stats = React.useMemo(() => {
+    const total = todos.length;
+    const completed = todos.filter((todo: TodoItem) => todo.completed).length;
+    const pending = total - completed;
+    const inputCount = todos.filter((todo: TodoItem) => todo.type === 'input').length;
+    const outputCount = todos.filter((todo: TodoItem) => todo.type === 'output').length;
+
+    return {
+      total,
+      completed,
+      pending,
+      inputCount,
+      outputCount,
+      completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }, [todos]);
 
   // Custom hooks for state management
   const { selectedTab, setSelectedTab } = useTodoState();
@@ -77,6 +89,16 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
     dispatch(fetchTodoItems());
   }, [dispatch]);
 
+  // Debug: Redux stateの変更を追跡
+  useEffect(() => {
+    console.log('[DailyTodoReminder] 📊 Redux state更新:', {
+      todosCount: todos.length,
+      loading,
+      error,
+      todosSample: todos.slice(0, 3).map((t) => ({ _id: t._id, task: t.task, type: t.type })),
+    });
+  }, [todos, loading, error]);
+
   // エラー処理を別のuseEffectに分離
   useEffect(() => {
     if (error) {
@@ -86,12 +108,12 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   }, [error]);
 
   // Progress calculations
-  const completedCount = todos.filter((todo: Todo) => todo.completed).length;
+  const completedCount = todos.filter((todo: TodoItem) => todo.completed).length;
   const totalCount = todos.length;
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-  const inputCount = todos.filter((todo: Todo) => todo.type === 'input').length;
-  const outputCount = todos.filter((todo: Todo) => todo.type === 'output').length;
+  const inputCount = todos.filter((todo: TodoItem) => todo.type === 'input').length;
+  const outputCount = todos.filter((todo: TodoItem) => todo.type === 'output').length;
 
   // AI analysis execution
   const handleAnalyzeTodos = async () => {
@@ -110,9 +132,9 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
 
     try {
       // 実際のToDoデータを分析用の形式にマッピング
-      const tasksForAnalysis = todos.map((todo: Todo) => ({
-        id: todo.id,
-        task: todo.text,
+      const tasksForAnalysis = todos.map((todo: TodoItem) => ({
+        id: todo._id,
+        task: todo.task,
         description: todo.category || '',
       }));
 

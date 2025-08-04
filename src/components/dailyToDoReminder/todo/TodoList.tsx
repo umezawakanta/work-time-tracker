@@ -9,23 +9,23 @@ import { toast } from 'react-hot-toast';
 
 import { updateTodoItem, deleteTodoItem } from '@/store/todoSlice';
 import { AppDispatch } from '@/store';
-import { Todo } from '../types';
+import { TodoItem } from '@/types';
 import { getErrorMessage } from '../utils/errorUtils';
 
 // Sub-components
-import { TodoItem } from './TodoItem';
+import { TodoItem as TodoItemComponent } from './TodoItem';
 import { TodoMindMap } from './TodoMindMap';
 
 interface TodoListProps {
-  readonly todos: readonly Todo[];
+  readonly todos: readonly TodoItem[];
   readonly isPremium?: boolean;
   readonly onAnalyzeRequest?: () => void;
 }
 
 interface GroupedTodos {
-  readonly prioritized: readonly Todo[];
-  readonly active: readonly Todo[];
-  readonly completed: readonly Todo[];
+  readonly prioritized: readonly TodoItem[];
+  readonly active: readonly TodoItem[];
+  readonly completed: readonly TodoItem[];
 }
 
 /**
@@ -42,11 +42,11 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   // Group todos by status and priority
   const groupedTodos = useMemo((): GroupedTodos => {
-    const prioritized: Todo[] = [];
-    const active: Todo[] = [];
-    const completed: Todo[] = [];
+    const prioritized: TodoItem[] = [];
+    const active: TodoItem[] = [];
+    const completed: TodoItem[] = [];
 
-    todos.forEach((todo: Todo) => {
+    todos.forEach((todo: TodoItem) => {
       if (todo.completed) {
         completed.push(todo);
       } else if (todo.isPrioritized) {
@@ -57,11 +57,14 @@ export const TodoList: React.FC<TodoListProps> = ({
     });
 
     // Sort each group by priority (descending) and creation date
-    const sortTodos = (a: Todo, b: Todo): number => {
+    const sortTodos = (a: TodoItem, b: TodoItem): number => {
       if (a.priority !== b.priority) {
         return b.priority - a.priority;
       }
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return (
+        new Date(b.createdAt || new Date()).getTime() -
+        new Date(a.createdAt || new Date()).getTime()
+      );
     };
 
     return {
@@ -138,9 +141,9 @@ export const TodoList: React.FC<TodoListProps> = ({
     [dispatch]
   );
 
-  const getEstimatedTime = (todos: readonly Todo[]): number => {
+  const getEstimatedTime = (todos: readonly TodoItem[]): number => {
     return todos.reduce((total, todo) => {
-      return total + (todo.estimatedDuration || 0);
+      return total + (todo.estimatedTime || 0);
     }, 0);
   };
 
@@ -260,7 +263,7 @@ export const TodoList: React.FC<TodoListProps> = ({
 
             <div className="space-y-2">
               {groupedTodos.prioritized.map((todo, index) => (
-                <TodoItem
+                <TodoItemComponent
                   key={
                     todo.id ||
                     todo._id ||
@@ -292,7 +295,7 @@ export const TodoList: React.FC<TodoListProps> = ({
 
             <div className="space-y-2">
               {groupedTodos.active.map((todo, index) => (
-                <TodoItem
+                <TodoItemComponent
                   key={
                     todo.id ||
                     todo._id ||
@@ -324,7 +327,7 @@ export const TodoList: React.FC<TodoListProps> = ({
 
             <div className="space-y-2">
               {groupedTodos.completed.slice(0, isPremium ? 10 : 3).map((todo, index) => (
-                <TodoItem
+                <TodoItemComponent
                   key={
                     todo.id ||
                     todo._id ||
