@@ -11,14 +11,14 @@ const GEMINI_API_URL =
 const getGeminiApiKey = (): string => {
   // Viteでの正しい環境変数アクセス方法
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  
+
   // デバッグ情報を出力（開発環境のみ）
   if (import.meta.env.DEV) {
     console.log('🔍 Gemini API Key Debug:');
     console.log('  - import.meta.env.VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
     console.log('  - 全環境変数:', import.meta.env);
   }
-  
+
   return apiKey || '';
 };
 
@@ -159,11 +159,15 @@ export class QuadrantClassificationService {
     try {
       if (!API_KEY) {
         if (import.meta.env.DEV) {
-          console.warn('🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。');
+          console.warn(
+            '🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。'
+          );
           console.log('💡 解決方法:');
           console.log('  1. .env.local ファイルに VITE_GEMINI_API_KEY=your_api_key を追加');
           console.log('  2. 開発サーバーを再起動 (pnpm dev)');
-          console.log('  3. Google AI Studio (https://makersuite.google.com/app/apikey) でキーを取得');
+          console.log(
+            '  3. Google AI Studio (https://makersuite.google.com/app/apikey) でキーを取得'
+          );
         }
         return this.fallbackClassification(task);
       }
