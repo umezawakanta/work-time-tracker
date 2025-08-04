@@ -1,6 +1,6 @@
 /**
  * 🚀 システム統合テスト
- * 
+ *
  * Work Time Tracker - 完全システム統合テスト
  * 全機能の連携動作確認
  */
@@ -53,16 +53,12 @@ const createIntegrationStore = () => {
 };
 
 // テストラッパー
-const IntegrationTestWrapper: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
-}) => {
+const IntegrationTestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const store = createIntegrationStore();
-  
+
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 };
@@ -74,17 +70,19 @@ jest.mock('@/services/ai/QuadrantClassificationService');
 
 const mockAuthManager = UnifiedAuthManager as jest.MockedClass<typeof UnifiedAuthManager>;
 const mockUserTracking = userTrackingService as jest.Mocked<typeof userTrackingService>;
-const mockQuadrantService = QuadrantClassificationService as jest.MockedClass<typeof QuadrantClassificationService>;
+const mockQuadrantService = QuadrantClassificationService as jest.MockedClass<
+  typeof QuadrantClassificationService
+>;
 
 describe('🚀 Work Time Tracker - システム統合テスト', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // 認証マネージャーのモック設定
     mockAuthManager.getInstance = jest.fn().mockReturnValue({
       login: jest.fn().mockResolvedValue({
         success: true,
-        user: { id: 'test-user', email: 'test@example.com' }
+        user: { id: 'test-user', email: 'test@example.com' },
       }),
       logout: jest.fn().mockResolvedValue({ success: true }),
       validateSession: jest.fn().mockResolvedValue(true),
@@ -139,7 +137,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('Redux storeが正常に初期化される', () => {
       const store = createIntegrationStore();
-      
+
       expect(store.getState()).toBeDefined();
       expect(store.getState().todo).toBeDefined();
       expect(store.getState().todo.items).toEqual([]);
@@ -150,7 +148,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('🔐 認証システム統合', () => {
     test('ログイン・ログアウトフローが正常に動作する', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <IntegrationTestWrapper>
           <TestApp />
@@ -172,7 +170,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('認証状態に基づく機能制御が動作する', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <IntegrationTestWrapper>
           <TestApp />
@@ -191,7 +189,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('📝 ToDo管理システム統合', () => {
     test('Todo作成からAI分析までの完全フローが動作する', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <IntegrationTestWrapper>
           <TestApp />
@@ -221,7 +219,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('Todoデータの永続化が正常に動作する', async () => {
       const store = createIntegrationStore();
-      
+
       // Todo追加のディスパッチ
       store.dispatch({
         type: 'todo/addTodoItem/fulfilled',
@@ -242,7 +240,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('🤖 AI機能統合', () => {
     test('AI分析機能が正常に統合されている', async () => {
       const classificationService = QuadrantClassificationService.getInstance();
-      
+
       const mockTask = {
         id: 'test-task-1',
         title: 'Important Task',
@@ -263,7 +261,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('複数タスクの一括分析が動作する', async () => {
       const classificationService = QuadrantClassificationService.getInstance();
-      
+
       const mockTasks = [
         { id: '1', title: 'Task 1', priority: 'high' },
         { id: '2', title: 'Task 2', priority: 'medium' },
@@ -281,7 +279,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('📊 アナリティクス統合', () => {
     test('ユーザー行動追跡が正常に動作する', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <IntegrationTestWrapper>
           <TestApp />
@@ -299,7 +297,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('データエクスポート機能が統合されている', async () => {
       const analytics = await userTrackingService.getAnalytics('week');
-      
+
       expect(analytics).toBeDefined();
       expect(analytics.totalUsers).toBe(1000);
       expect(analytics.activeUsers).toBe(100);
@@ -309,13 +307,13 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('🔄 状態管理統合', () => {
     test('Redux状態が複数コンポーネント間で共有される', () => {
       const store = createIntegrationStore();
-      
+
       // 複数のアクションをディスパッチ
       store.dispatch({
         type: 'todo/addTodoItem/fulfilled',
         payload: { _id: '1', task: 'Task 1' },
       });
-      
+
       store.dispatch({
         type: 'todo/addTodoItem/fulfilled',
         payload: { _id: '2', task: 'Task 2' },
@@ -327,7 +325,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
     test('非同期操作が正常に処理される', async () => {
       const store = createIntegrationStore();
-      
+
       // 非同期アクションのディスパッチ
       store.dispatch({
         type: 'todo/fetchTodoItems/pending',
@@ -351,12 +349,10 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('⚠️ エラーハンドリング統合', () => {
     test('システム全体のエラーハンドリングが正常に動作する', async () => {
       const user = userEvent.setup();
-      
+
       // 認証エラーのシミュレート
       const authManager = UnifiedAuthManager.getInstance();
-      (authManager.login as jest.Mock).mockRejectedValueOnce(
-        new Error('Authentication failed')
-      );
+      (authManager.login as jest.Mock).mockRejectedValueOnce(new Error('Authentication failed'));
 
       render(
         <IntegrationTestWrapper>
@@ -407,7 +403,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
       );
 
       expect(screen.getByTestId('test-app')).toBeInTheDocument();
-      
+
       // モバイル用のユーザートラッキングが初期化される
       expect(mockUserTracking.trackPageView).toHaveBeenCalled();
     });
@@ -416,9 +412,9 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
   describe('🔄 実時間統合', () => {
     test('リアルタイム機能が正常に動作する', async () => {
       jest.useFakeTimers();
-      
+
       const user = userEvent.setup();
-      
+
       render(
         <IntegrationTestWrapper>
           <TestApp />
@@ -427,12 +423,12 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 
       // 定期的な状態更新をシミュレート
       await user.click(screen.getByTestId('ai-classify'));
-      
+
       // 1秒後の処理
       jest.advanceTimersByTime(1000);
-      
+
       expect(mockUserTracking.trackAIUsage).toHaveBeenCalled();
-      
+
       jest.useRealTimers();
     });
   });
@@ -441,7 +437,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
 describe('🚀 E2E統合シナリオテスト', () => {
   test('完全なユーザージャーニーが正常に動作する', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <IntegrationTestWrapper>
         <TestApp />
@@ -449,13 +445,13 @@ describe('🚀 E2E統合シナリオテスト', () => {
     );
 
     // シナリオ: 新規ユーザーの完全フロー
-    
+
     // 1. アプリケーション起動
     expect(screen.getByText('Work Time Tracker')).toBeInTheDocument();
-    
+
     // 2. ユーザートラッキング開始
     expect(mockUserTracking.trackPageView).toHaveBeenCalled();
-    
+
     // 3. ログイン
     await user.click(screen.getByTestId('login'));
     expect(mockUserTracking.trackInteraction).toHaveBeenCalledWith(
@@ -463,7 +459,7 @@ describe('🚀 E2E統合シナリオテスト', () => {
       'login',
       expect.any(String)
     );
-    
+
     // 4. Todo作成
     await user.click(screen.getByTestId('add-todo'));
     expect(mockUserTracking.trackInteraction).toHaveBeenCalledWith(
@@ -471,7 +467,7 @@ describe('🚀 E2E統合シナリオテスト', () => {
       'add-todo',
       expect.any(String)
     );
-    
+
     // 5. AI分析実行
     await user.click(screen.getByTestId('ai-classify'));
     expect(mockUserTracking.trackAIUsage).toHaveBeenCalledWith(
@@ -479,7 +475,7 @@ describe('🚀 E2E統合シナリオテスト', () => {
       true,
       expect.any(Object)
     );
-    
+
     // 6. データエクスポート
     await user.click(screen.getByTestId('export-data'));
     expect(mockUserTracking.trackInteraction).toHaveBeenCalledWith(
@@ -487,22 +483,22 @@ describe('🚀 E2E統合シナリオテスト', () => {
       'export-data',
       expect.any(String)
     );
-    
+
     // 7. ログアウト
     await user.click(screen.getByTestId('logout'));
-    
+
     // 全ての操作が正常に完了
     expect(mockUserTracking.trackInteraction).toHaveBeenCalledTimes(4);
   });
 
   test('エラー回復シナリオが正常に動作する', async () => {
     const user = userEvent.setup();
-    
+
     // 一時的なエラーをシミュレート
     mockUserTracking.trackInteraction
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValue(undefined);
-    
+
     render(
       <IntegrationTestWrapper>
         <TestApp />
@@ -511,17 +507,17 @@ describe('🚀 E2E統合シナリオテスト', () => {
 
     // エラーが発生するアクション
     await user.click(screen.getByTestId('add-todo'));
-    
+
     // 回復後のアクション
     await user.click(screen.getByTestId('ai-classify'));
-    
+
     // エラー後も正常に動作することを確認
     expect(screen.getByTestId('test-app')).toBeInTheDocument();
   });
 
   test('データ整合性が保たれる', async () => {
     const store = createIntegrationStore();
-    
+
     // 複数の操作を実行
     const actions = [
       { type: 'todo/addTodoItem/fulfilled', payload: { _id: '1', task: 'Task 1' } },
@@ -530,10 +526,10 @@ describe('🚀 E2E統合シナリオテスト', () => {
       { type: 'todo/deleteTodoItem/fulfilled', payload: '2' },
     ];
 
-    actions.forEach(action => store.dispatch(action));
+    actions.forEach((action) => store.dispatch(action));
 
     const finalState = store.getState();
-    
+
     // データの整合性確認
     expect(finalState.todo.items).toHaveLength(1);
     expect(finalState.todo.items[0]._id).toBe('1');
