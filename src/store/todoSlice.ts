@@ -172,25 +172,38 @@ export const addTodoItem = createAsyncThunk(
         throw new Error('APIからの空のレスポンスです');
       }
 
-      // エラーレスポンスかどうかチェック
-      if (response.data.error || (response.data.message && !response.data.todo)) {
+      // エラーレスポンスかどうかチェック（message+errorパターン）
+      if (
+        response.data.error ||
+        (response.data.message && response.data.message.includes('Error'))
+      ) {
         const errorMsg = response.data.error || response.data.message || '不明なエラー';
         throw new Error(`API操作エラー: ${errorMsg}`);
       }
 
-      // 成功レスポンスの検証
-      if (!response.data.todo) {
+      // レスポンス形式を判定: {message, todo} または 直接todoオブジェクト
+      let todoData;
+      if (response.data.todo) {
+        // 標準形式: {message: "...", todo: {...}}
+        todoData = response.data.todo;
+        console.log('📋 Standard response format detected (create)');
+      } else if (response.data._id && response.data.task) {
+        // 直接形式: {...todoオブジェクト...}
+        todoData = response.data;
+        console.log('📋 Direct todo object format detected (create)');
+      } else {
         console.error('🔍 Unexpected response structure:', response.data);
         throw new Error('APIレスポンスにtodoデータが含まれていません');
       }
 
-      if (!response.data.todo._id) {
-        console.error('🔍 Todo missing _id:', response.data.todo);
+      // todoデータの検証
+      if (!todoData._id) {
+        console.error('🔍 Todo missing _id:', todoData);
         throw new Error('作成されたタスクにIDが設定されていません');
       }
 
-      console.log('✅ Todo created successfully:', response.data.todo._id);
-      return response.data.todo;
+      console.log('✅ Todo created successfully:', todoData._id);
+      return todoData;
     } catch (apiError: any) {
       // ネットワークエラーやAxiosエラーの処理
       if (apiError.response) {
@@ -225,25 +238,38 @@ export const updateTodoItem = createAsyncThunk(
         throw new Error('APIからの空のレスポンスです');
       }
 
-      // エラーレスポンスかどうかチェック
-      if (response.data.error || (response.data.message && !response.data.todo)) {
+      // エラーレスポンスかどうかチェック（message+errorパターン）
+      if (
+        response.data.error ||
+        (response.data.message && response.data.message.includes('Error'))
+      ) {
         const errorMsg = response.data.error || response.data.message || '不明なエラー';
         throw new Error(`API操作エラー: ${errorMsg}`);
       }
 
-      // 成功レスポンスの検証
-      if (!response.data.todo) {
+      // レスポンス形式を判定: {message, todo} または 直接todoオブジェクト
+      let todoData;
+      if (response.data.todo) {
+        // 標準形式: {message: "...", todo: {...}}
+        todoData = response.data.todo;
+        console.log('📋 Standard response format detected');
+      } else if (response.data._id && response.data.task) {
+        // 直接形式: {...todoオブジェクト...}
+        todoData = response.data;
+        console.log('📋 Direct todo object format detected');
+      } else {
         console.error('🔍 Unexpected response structure:', response.data);
         throw new Error('APIレスポンスにtodoデータが含まれていません');
       }
 
-      if (!response.data.todo._id) {
-        console.error('🔍 Todo missing _id:', response.data.todo);
+      // todoデータの検証
+      if (!todoData._id) {
+        console.error('🔍 Todo missing _id:', todoData);
         throw new Error('更新されたタスクにIDが設定されていません');
       }
 
-      console.log('✅ Todo updated successfully:', response.data.todo._id);
-      return response.data.todo;
+      console.log('✅ Todo updated successfully:', todoData._id);
+      return todoData;
     } catch (apiError: any) {
       // ネットワークエラーやAxiosエラーの処理
       if (apiError.response) {
