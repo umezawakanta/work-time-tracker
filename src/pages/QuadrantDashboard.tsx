@@ -62,14 +62,26 @@ const QuadrantDashboard: React.FC = () => {
 
   // タスクのフィルタリング
   const filteredTasks = React.useMemo(() => {
-    if (!todos) return [];
+    if (!todos || !Array.isArray(todos)) {
+      console.warn('🚨 todos が無効な値です:', todos);
+      return [];
+    }
 
-    let filtered = todos;
+    // null/undefinedを除外
+    let filtered = todos.filter(
+      (task): task is TodoItem => task !== null && task !== undefined && typeof task === 'object'
+    );
 
     // 完了タスクのフィルタリング
     if (settings.filterCompleted) {
       filtered = filtered.filter((task: TodoItem) => !task.completed);
     }
+
+    console.log('📋 フィルタリング結果:', {
+      original: todos.length,
+      filtered: filtered.length,
+      filterCompleted: settings.filterCompleted,
+    });
 
     return filtered;
   }, [todos, settings.filterCompleted]);

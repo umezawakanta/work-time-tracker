@@ -523,7 +523,13 @@ JSON形式で回答してください:
   /**
    * タスクを統一形式に変換
    */
-  public convertToUnifiedTask(task: any): UnifiedTaskData {
+  public convertToUnifiedTask(task: any): UnifiedTaskData | null {
+    // null/undefinedチェック
+    if (!task || typeof task !== 'object') {
+      console.warn('🚨 無効なタスクデータを無視します:', task);
+      return null;
+    }
+
     return {
       id: task._id || task.id || `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       title: task.title || task.task || '無題のタスク',

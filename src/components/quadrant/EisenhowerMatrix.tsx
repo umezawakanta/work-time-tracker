@@ -273,20 +273,31 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
 
   // タスクを統一形式に変換
   const unifiedTasks = useMemo(() => {
-    return tasks.map((task) => classificationService.convertToUnifiedTask(task));
+    if (!Array.isArray(tasks)) {
+      console.warn('🚨 tasks が配列ではありません:', tasks);
+      return [];
+    }
+
+    return tasks
+      .map((task) => classificationService.convertToUnifiedTask(task))
+      .filter((task): task is UnifiedTaskData => task !== null);
   }, [tasks, classificationService]);
 
   // 分析の実行
   const runAnalysis = async () => {
-    if (unifiedTasks.length === 0) {
-      setAnalysis(null);
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      if (unifiedTasks.length === 0) {
+        setAnalysis(null);
+        setIsLoading(false);
+        console.log('📝 分析対象のタスクがありません');
+        return;
+      }
+
       setIsLoading(true);
-      console.log('🎯 4象限分析を開始します...', { taskCount: unifiedTasks.length });
+      console.log('🎯 4象限分析を開始します...', {
+        taskCount: unifiedTasks.length,
+        originalTaskCount: tasks?.length || 0,
+      });
 
       const result = await classificationService.analyzeQuadrants(unifiedTasks);
       setAnalysis(result);
@@ -295,8 +306,11 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
 
       toast.success(`4象限分析完了: ${result.totalTasks}件のタスクを分類しました`);
     } catch (error) {
-      console.error('4象限分析エラー:', error);
-      toast.error('4象限分析に失敗しました');
+      console.error('🚨 4象限分析エラー:', error);
+      toast.error(
+        `4象限分析に失敗しました: ${error instanceof Error ? error.message : '不明なエラー'}`
+      );
+      setAnalysis(null);
     } finally {
       setIsLoading(false);
     }
