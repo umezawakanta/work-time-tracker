@@ -1,144 +1,176 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from '@/store';
-import { TodoItem as GlobalTodoItem } from '@/types';
-import { TodoItem, Todo, todoItemsToTodos } from '../../types';
+import { Todo } from '@/types/todo';
 
-// Extended TodoState interface to include additional properties
-interface ExtendedTodoState {
-  items?: GlobalTodoItem[];
-  status?: string;
-  error?: string | null;
-  history?: Record<string, number>;
-  dailyHistory?: Array<{ date: string; count: number }>;
-  isPremium?: boolean;
+// LocalTodoItem型定義（Daily Todo Reminder用）
+interface LocalTodoItem {
+  id: string;
+  _id?: string;
+  task: string;
+  completed: boolean;
+  priority: number;
+  isPrioritized: boolean;
+  type: 'input' | 'output';
+  category?: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  dueDate?: string;
+  estimatedTime?: number;
+  actualTime?: number;
+  notes?: string;
 }
 
-// Mapper function to convert global TodoItem to local TodoItem
-const mapGlobalToLocalTodoItem = (globalItem: GlobalTodoItem): TodoItem => {
-  // 緊急修正: undefined/nullチェックを追加
-  if (!globalItem) {
-    console.warn('Todo item is undefined or null');
+// TodosState型定義
+interface TodosState {
+  todos?: Todo[];
+  loading?: boolean;
+  error?: string | null;
+}
+
+// 最適化: mapGlobalToLocalTodoItem関数（メモ化のため外部に定義）
+const mapGlobalToLocalTodoItem = (todo: Todo): LocalTodoItem => {
+  if (!todo) {
     return {
-      id: 'temp-' + Date.now(),
-      text: '',
+      id: 'temp-' + Date.now() + '-' + Math.random(),
+      _id: 'temp-' + Date.now() + '-' + Math.random(),
+      task: '',
       completed: false,
       priority: 3,
       isPrioritized: false,
-      type: 'output',
-      deadline: undefined,
+      type: 'input',
+      category: '',
+      tags: [],
       createdAt: new Date().toISOString(),
-      category: undefined,
-      tags: undefined,
+      updatedAt: new Date().toISOString()
     };
   }
 
   return {
-    // _idとidの両方をサポートし、undefined時はtemporary IDを生成
-    id: globalItem._id || globalItem.id || 'temp-' + Date.now(),
-    text: globalItem.task || '',
-    completed: globalItem.completed || false,
-    priority: globalItem.priority || 3,
-    isPrioritized: globalItem.isPrioritized || false,
-    type: globalItem.type || 'output',
-    deadline: globalItem.deadline,
-    createdAt: globalItem.createdAt || new Date().toISOString(),
-    category: undefined, // Global TodoItem doesn't have category
-    tags: undefined, // Global TodoItem doesn't have tags
+    id: todo.id || todo._id || 'temp-' + Date.now(),
+    _id: todo._id || todo.id || 'temp-' + Date.now(),
+    task: todo.task || '',
+    completed: todo.completed ?? false,
+    priority: todo.priority || 3,
+    isPrioritized: todo.isPrioritized ?? false,
+    type: todo.type || 'input',
+    category: todo.category || '',
+    tags: todo.tags || [],
+    createdAt: todo.createdAt?.toString() || new Date().toISOString(),
+    updatedAt: todo.updatedAt?.toString() || new Date().toISOString(),
+    dueDate: todo.dueDate?.toString(),
+    estimatedTime: todo.estimatedTime,
+    actualTime: todo.actualTime,
+    notes: todo.notes
   };
 };
 
-// Base selectors
-const selectRawTodoItems = (state: RootState): readonly GlobalTodoItem[] => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  const items = todoState?.items;
+// 基本セレクター - todos状態を取得
+const selectTodosState = createSelector(
+  (state: RootState) => state.todos,
+  (todosState): TodosState => todosState || { todos: [], loading: false, error: null }
+);
 
-  if (!Array.isArray(items)) {
-    return [];
-  }
+// todos配列を取得するセレクター（安定した参照を返す）
+const selectTodosArray = createSelector(
+  [selectTodosState],
+  (todosState) => todosState?.todos || []
+);
 
-  // 緊急修正: null/undefined要素をフィルタリング
-  return items.filter(item => item != null);
-};
+// ローディング状態を取得
+export const selectTodosLoading = createSelector(
+  [selectTodosState],
+  (todosState) => todosState?.loading || false
+);
 
-export const selectTodoItems = createSelector(
-  [selectRawTodoItems],
-  (items: readonly GlobalTodoItem[]): readonly TodoItem[] => {
-    // 緊急修正: 安全性チェックを追加
-    if (!Array.isArray(items)) {
-      console.warn('selectTodoItems: items is not an array', items);
-      return [];
-    }
+// エラー状態を取得
+export const selectTodosError = createSelector(
+  [selectTodosState],
+  (todosState) => todosState?.error || null
+);
 
-    // Map global TodoItems to local TodoItems with additional filtering
-    return items
-      .filter(item => item != null) // 二重フィルタリングで確実性を向上
+// 全てのTODOを取得するセレクター（最適化済み）
+export const selectAllTodos = createSelector(
+  [selectTodosArray],
+  (todos): LocalTodoItem[] => {
+    // 配列のフィルタリングとマッピングを一度に実行
+    return todos
+      .filter((todo: Todo) => todo != null)
       .map(mapGlobalToLocalTodoItem);
   }
 );
 
-export const selectTodoStatus = (state: RootState): string => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  return todoState?.status || 'idle';
-};
-
-export const selectTodoError = (state: RootState): string | null => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  return todoState?.error || null;
-};
-
-export const selectTodoHistory = (state: RootState): Record<string, number> => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  return todoState?.history || {};
-};
-
-export const selectDailyHistory = (
-  state: RootState
-): readonly { date: string; count: number }[] => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  return todoState?.dailyHistory || [];
-};
-
-export const selectIsPremium = (state: RootState): boolean => {
-  const todoState = state.todo as unknown as ExtendedTodoState;
-  return todoState?.isPremium || false;
-};
-
-// Memoized selector for converting TodoItems to Todos
-export const selectTodos = createSelector(
-  [selectTodoItems],
-  (todoItems: readonly TodoItem[]): readonly Todo[] => {
-    return todoItemsToTodos(todoItems);
+// 完了状態別のTODOを取得
+export const selectTodosByStatus = createSelector(
+  [selectAllTodos, (_state: RootState, completed: boolean) => completed],
+  (todos, completed) => {
+    return todos.filter(todo => todo.completed === completed);
   }
 );
 
-// Additional computed selectors
-export const selectActiveTodos = createSelector(
-  [selectTodos],
-  (todos: readonly Todo[]): readonly Todo[] => {
-    return todos.filter((todo: Todo) => !todo.completed);
-  }
-);
-
+// 完了済みTODOを取得
 export const selectCompletedTodos = createSelector(
-  [selectTodos],
-  (todos: readonly Todo[]): readonly Todo[] => {
-    return todos.filter((todo: Todo) => todo.completed);
+  [selectAllTodos],
+  (todos) => todos.filter(todo => todo.completed)
+);
+
+// 未完了TODOを取得
+export const selectActiveTodos = createSelector(
+  [selectAllTodos],
+  (todos) => todos.filter(todo => !todo.completed)
+);
+
+// 優先度別のTODOを取得
+export const selectTodosByPriority = createSelector(
+  [selectAllTodos, (_state: RootState, priority: number) => priority],
+  (todos, priority) => {
+    return todos.filter(todo => todo.priority === priority);
   }
 );
 
-export const selectTodoStats = createSelector([selectTodos], (todos: readonly Todo[]) => {
-  const total = todos.length;
-  const completed = todos.filter((todo: Todo) => todo.completed).length;
-  const active = total - completed;
-  const inputCount = todos.filter((todo: Todo) => todo.type === 'input').length;
-  const outputCount = todos.filter((todo: Todo) => todo.type === 'output').length;
+// カテゴリ別のTODOを取得
+export const selectTodosByCategory = createSelector(
+  [selectAllTodos, (_state: RootState, category: string) => category],
+  (todos, category) => {
+    if (!category) return todos;
+    return todos.filter(todo => todo.category === category);
+  }
+);
 
-  return {
-    total,
-    completed,
-    active,
-    inputCount,
-    outputCount,
-    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
-  };
-});
+// TODOの統計情報
+export const selectTodoStats = createSelector(
+  [selectAllTodos],
+  (todos) => {
+    const total = todos.length;
+    const completed = todos.filter(todo => todo.completed).length;
+    const pending = total - completed;
+    const inputCount = todos.filter(todo => todo.type === 'input').length;
+    const outputCount = todos.filter(todo => todo.type === 'output').length;
+    
+    return {
+      total,
+      completed,
+      pending,
+      inputCount,
+      outputCount,
+      completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  }
+);
+
+// 今日期限のTODOを取得
+export const selectTodaysTodos = createSelector(
+  [selectAllTodos],
+  (todos) => {
+    const today = new Date().toISOString().split('T')[0];
+    return todos.filter(todo => 
+      todo.dueDate && todo.dueDate.startsWith(today)
+    );
+  }
+);
+
+// 優先度の高いTODOを取得
+export const selectHighPriorityTodos = createSelector(
+  [selectAllTodos],
+  (todos) => todos.filter(todo => todo.priority >= 4 || todo.isPrioritized)
+);

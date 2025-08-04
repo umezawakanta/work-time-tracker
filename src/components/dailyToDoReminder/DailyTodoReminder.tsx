@@ -10,10 +10,10 @@ import { useResponsive } from '@/hooks/useResponsive';
 // Store actions and selectors
 import { fetchTodoItems, deleteTodoItem, updateTodoItem, addTodoItem } from '@/store/todoSlice';
 import {
-  selectTodos,
-  selectTodoStatus,
-  selectTodoError,
-  selectIsPremium,
+  selectAllTodos,
+  selectTodosLoading,
+  selectTodosError,
+  selectTodoStats,
 } from './store/selectors/todoSelectors';
 import { AppDispatch } from '@/store';
 
@@ -54,10 +54,10 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const dispatch = useDispatch<AppDispatch>();
 
   // Redux selectors with proper type safety
-  const todos = useSelector(selectTodos);
-  const status = useSelector(selectTodoStatus);
-  const error = useSelector(selectTodoError);
-  const hasPremium = useSelector(selectIsPremium) || isPremium;
+  const todos = useSelector(selectAllTodos);
+  const loading = useSelector(selectTodosLoading);
+  const error = useSelector(selectTodosError);
+  const stats = useSelector(selectTodoStats);
 
   // Custom hooks for state management
   const { selectedTab, setSelectedTab } = useTodoState();
@@ -266,7 +266,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   };
 
   // Loading state
-  if (status === 'loading') {
+  if (loading) {
     return (
       <Card className="w-full shadow-sm border border-gray-200">
         <CardContent className="p-4 text-center">
@@ -278,7 +278,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   }
 
   // エラー状態の表示を改善
-  if (status === 'failed') {
+  if (error) {
     return (
       <Card className="w-full shadow-sm border border-red-200">
         <CardContent className="p-4 text-center">
@@ -304,14 +304,14 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
         {/* デバッグ情報表示（開発環境のみ） */}
         {process.env.NODE_ENV === 'development' && (
           <div className="p-2 bg-blue-50 text-xs">
-            🐛 ToDo数: {todos.length}, 状態: {status}, プレミアム: {hasPremium ? 'Yes' : 'No'}
+            🐛 ToDo数: {todos.length}, 状態: {loading ? 'loading' : 'loaded'}, プレミアム: {isPremium ? 'Yes' : 'No'}
           </div>
         )}
 
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <TodoHeader
-              hasPremium={hasPremium}
+              hasPremium={isPremium}
               streakCount={streakCount}
               completedToday={completedCount}
               totalToday={totalCount}
@@ -321,12 +321,12 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
             {/* デバッグ用ボタン表示条件確認 */}
             {process.env.NODE_ENV === 'development' && (
               <div className="text-xs text-gray-500">
-                ボタン条件: Premium={hasPremium ? 'Yes' : 'No'}, Todos={todos.length}
+                ボタン条件: Premium={isPremium ? 'Yes' : 'No'}, Todos={todos.length}
               </div>
             )}
 
             {/* AI分析ボタン */}
-            {(hasPremium || process.env.NODE_ENV === 'development') && (
+            {(isPremium || process.env.NODE_ENV === 'development') && (
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -369,7 +369,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
             todos={filteredTodos}
             todoHistory={todoHistory}
             dailyHistory={dailyHistory}
-            hasPremium={hasPremium}
+            hasPremium={isPremium}
             filterControls={filterControls}
             onAnalyzeRequest={handleAnalyzeTodos}
           />
