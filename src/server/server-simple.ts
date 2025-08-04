@@ -289,12 +289,12 @@ class MemoryDatabase {
       results.sort((a, b) => {
         const aVal = a[sortField];
         const bVal = b[sortField];
-        
+
         // undefined チェックを追加
         if (aVal === undefined || bVal === undefined) {
           return 0;
         }
-        
+
         if (sortOrder === 1) {
           return aVal > bVal ? 1 : -1;
         } else {
@@ -652,6 +652,169 @@ app.get('/api/projects', (req, res) => {
   });
 });
 
+// Temporarily remove 404 handler - will be moved after all routes
+
+// Route debugging - log all registered routes
+// Books API - Simple mock implementation
+let books: any[] = [
+  {
+    _id: 'book1',
+    id: 'book1',
+    title: 'TypeScript入門',
+    author: '技術太郎',
+    genre: 'プログラミング',
+    readingStatus: 'reading',
+    progress: 45,
+    totalPages: 300,
+    notes: 'TypeScriptの基本的な概念について学習中',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: 'book2',
+    id: 'book2',
+    title: 'React実践ガイド',
+    author: 'フロント花子',
+    genre: 'プログラミング',
+    readingStatus: 'completed',
+    progress: 100,
+    totalPages: 250,
+    notes: 'Reactの実践的な使い方を習得',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+// GET all books
+app.get('/api/books', (req, res) => {
+  console.log('✅ GET /api/books called');
+  try {
+    res.json(books);
+  } catch (error) {
+    console.error('❌ Error fetching books:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching books',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// POST new book
+app.post('/api/books', (req, res) => {
+  console.log('✅ POST /api/books called');
+  console.log('📝 Book data:', req.body);
+  try {
+    const newBook = {
+      _id: 'book' + Date.now(),
+      id: 'book' + Date.now(),
+      ...req.body,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    books.push(newBook);
+    res.status(201).json({
+      success: true,
+      message: 'Book created successfully',
+      book: newBook,
+    });
+  } catch (error) {
+    console.error('❌ Error creating book:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating book',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// PUT update book
+app.put('/api/books/:id', (req, res) => {
+  console.log('✅ PUT /api/books/:id called');
+  console.log('📝 Book ID:', req.params.id);
+  console.log('📝 Update data:', req.body);
+  try {
+    const bookId = req.params.id;
+    const bookIndex = books.findIndex((book) => book._id === bookId || book.id === bookId);
+
+    if (bookIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Book not found',
+      });
+    }
+
+    books[bookIndex] = {
+      ...books[bookIndex],
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      message: 'Book updated successfully',
+      book: books[bookIndex],
+    });
+  } catch (error) {
+    console.error('❌ Error updating book:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating book',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// DELETE book
+app.delete('/api/books/:id', (req, res) => {
+  console.log('✅ DELETE /api/books/:id called');
+  console.log('📝 Book ID:', req.params.id);
+  try {
+    const bookId = req.params.id;
+    const bookIndex = books.findIndex((book) => book._id === bookId || book.id === bookId);
+
+    if (bookIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Book not found',
+      });
+    }
+
+    books.splice(bookIndex, 1);
+
+    res.json({
+      success: true,
+      message: 'Book deleted successfully',
+    });
+  } catch (error) {
+    console.error('❌ Error deleting book:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting book',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+console.log('\n🗺️  Registered Routes:');
+console.log('   GET  /api/health');
+console.log('   GET  /api/debug');
+console.log('   POST /api/auth/login');
+console.log('   POST /api/auth/register');
+console.log('   POST /api/auth/logout');
+console.log('   GET  /api/auth/me');
+console.log('   GET  /api/auth/check'); // 追加
+console.log('   GET  /api/auth/user'); // 追加
+console.log('   GET  /api/todos');
+console.log('   POST /api/todos');
+console.log('   PUT  /api/todos/:id'); // 追加
+console.log('   DELETE /api/todos/:id'); // 追加
+console.log('   GET  /api/projects'); // 追加
+console.log('   GET  /api/books'); // 追加
+console.log('   POST /api/books'); // 追加
+console.log('   PUT  /api/books/:id'); // 追加
+console.log('   DELETE /api/books/:id'); // 追加
+
 // 404 Error handler - must be after all routes
 app.use((req: Request, res: Response): void => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
@@ -675,22 +838,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
     timestamp: new Date().toISOString(),
   });
 });
-
-// Route debugging - log all registered routes
-console.log('\n🗺️  Registered Routes:');
-console.log('   GET  /api/health');
-console.log('   GET  /api/debug');
-console.log('   POST /api/auth/login');
-console.log('   POST /api/auth/register');
-console.log('   POST /api/auth/logout');
-console.log('   GET  /api/auth/me');
-console.log('   GET  /api/auth/check'); // 追加
-console.log('   GET  /api/auth/user'); // 追加
-console.log('   GET  /api/todos');
-console.log('   POST /api/todos');
-console.log('   PUT  /api/todos/:id'); // 追加
-console.log('   DELETE /api/todos/:id'); // 追加
-console.log('   GET  /api/projects'); // 追加
 
 app.listen(PORT, () => {
   console.log(`\n✅ Enhanced server running on port ${PORT}`);
