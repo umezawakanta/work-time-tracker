@@ -31,6 +31,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
+import SocialShareButton from '@/components/ui/SocialShareButton';
 
 interface AdminMetrics {
   users: {
@@ -471,63 +473,7 @@ const AdminDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>成長指標</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">ユーザー成長率</span>
-                      <span className="text-sm text-green-600">+12.3%</span>
-                    </div>
-                    <Progress value={85} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">売上成長率</span>
-                      <span className="text-sm text-green-600">+18.7%</span>
-                    </div>
-                    <Progress value={92} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-medium">顧客満足度</span>
-                      <span className="text-sm text-blue-600">4.6/5.0</span>
-                    </div>
-                    <Progress value={92} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>次の目標</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">MRR 100万円達成</h4>
-                    <p className="text-sm text-gray-600">残り ¥20,000</p>
-                    <Progress value={98} className="mt-2" />
-                  </div>
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">ユーザー数 1,500人</h4>
-                    <p className="text-sm text-gray-600">残り 253人</p>
-                    <Progress value={83} className="mt-2" />
-                  </div>
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">チャーン率 2%以下</h4>
-                    <p className="text-sm text-gray-600">現在 2.1%</p>
-                    <Progress value={95} className="mt-2" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <AnalyticsDashboard isAdminUser={true} />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
@@ -538,6 +484,62 @@ const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* AI設定 */}
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-blue-900">🤖 Gemini AI設定</h4>
+                        <p className="text-sm text-blue-700">
+                          AIアイゼンハワーマトリックスを有効化
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="text-orange-600 border-orange-300">
+                        要設定
+                      </Badge>
+                    </div>
+                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                      <p className="text-sm text-yellow-800">
+                        <strong>設定方法:</strong>
+                        <br />
+                        1. プロジェクトルートに <code>.env.local</code> ファイルを作成
+                        <br />
+                        2. <code>VITE_GEMINI_API_KEY=your_api_key</code> を追加
+                        <br />
+                        3.{' '}
+                        <a
+                          href="https://makersuite.google.com/app/apikey"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          Google AI Studio
+                        </a>{' '}
+                        でキーを取得
+                        <br />
+                        4. 開発サーバーを再起動 (<code>pnpm dev</code>)
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* SNSシェア機能 */}
+                <Card className="border-green-200 bg-green-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-green-900">📢 SNSシェア機能</h4>
+                        <p className="text-sm text-green-700">ユーザー拡散とマーケティング</p>
+                      </div>
+                      <SocialShareButton
+                        title="Work Time Tracker - AI搭載タスク管理"
+                        description="ADHDユーザー特化のAI搭載タスク管理ツール！"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* 既存の設定項目 */}
                 <Button variant="outline" className="w-full justify-start">
                   <Users className="w-4 h-4 mr-2" />
                   ユーザー管理

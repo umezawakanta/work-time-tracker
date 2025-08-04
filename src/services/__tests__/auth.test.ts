@@ -1,437 +1,307 @@
-import { authApi, LoginCredentials } from '../auth';
-import { api } from '../api';
-import { User } from '@/types';
+/**
+ * 🔐 認証システムテスト
+ * 
+ * Firebase + JWT 双方向認証システムの動作確認
+ */
 
-// api モジュールをモック
-jest.mock('../api', () => ({
-  api: {
-    post: jest.fn(),
-  },
+import { UnifiedAuthManager } from '@/services/auth/UnifiedAuthManager';
+import { userTrackingService } from '@/services/analytics/UserTrackingService';
+
+// モック設定
+jest.mock('@/services/analytics/UserTrackingService', () => ({
+  userTrackingService: {
+    initializeSession: jest.fn(),
+    updateUserAttributes: jest.fn(),
+    trackInteraction: jest.fn(),
+  }
 }));
 
-// localStorage をモック
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-
-  return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
-      store[key] = value;
-    }),
-    removeItem: jest.fn((key: string) => {
-      delete store[key];
-    }),
-    clear: jest.fn(() => {
-      store = {};
-    }),
-  };
-})();
-
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
-
-describe('authApi', () => {
-  const mockApiPost = api.post as jest.MockedFunction<typeof api.post>;
+describe('🔐 認証システムテスト', () => {
+  let authManager: UnifiedAuthManager;
 
   beforeEach(() => {
+    // モックをリセット
     jest.clearAllMocks();
-    localStorageMock.clear();
+    
+    // 認証マネージャーの新しいインスタンスを取得
+    authManager = UnifiedAuthManager.getInstance();
   });
 
-  describe('login', () => {
-    const mockCredentials: LoginCredentials = {
-      email: 'test@example.com',
-      password: 'password123',
-    };
+  describe('✅ UnifiedAuthManager - 基本機能', () => {
+    test('シングルトンパターンが正常に動作する', () => {
+      const instance1 = UnifiedAuthManager.getInstance();
+      const instance2 = UnifiedAuthManager.getInstance();
+      
+      expect(instance1).toBe(instance2);
+      expect(instance1).toBeInstanceOf(UnifiedAuthManager);
+    });
 
-    const mockResponse = {
-      token: 'mock-jwt-token',
-      user: {
-        id: '1',
+    test('初期設定が正しく行われる', () => {
+      expect(authManager).toBeDefined();
+      // インスタンス作成時の初期化確認
+    });
+  });
+
+  describe('🎯 JWT認証', () => {
+    test('JWT ログイン成功ケース', async () => {
+      // Axiosモックの設定
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+        data: {
+          success: true,
+          user: {
+            id: 'test-user-123',
+            email: 'test@example.com',
+            name: 'Test User'
+          },
+          accessToken: 'mock-access-token',
+          refreshToken: 'mock-refresh-token',
+          expiresAt: Date.now() + 3600000
+        }
+      });
+
+      const result = await authManager.login({
         email: 'test@example.com',
-        name: 'Test User',
-        role: 'user',
-      } as User,
-    };
-
-    it('should call api.post with correct parameters', async () => {
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      const result = await authApi.login(mockCredentials);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/login', mockCredentials);
-      expect(result).toEqual(mockResponse);
-    });
-
-    it('should handle login with different credentials', async () => {
-      const differentCredentials: LoginCredentials = {
-        email: 'another@example.com',
-        password: 'differentpass',
-      };
-
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.login(differentCredentials);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/login', differentCredentials);
-    });
-
-    it('should throw error when api.post fails', async () => {
-      const error = new Error('Login failed');
-      mockApiPost.mockRejectedValue(error);
-
-      await expect(authApi.login(mockCredentials)).rejects.toThrow('Login failed');
-    });
-
-    it('should handle empty credentials', async () => {
-      const emptyCredentials: LoginCredentials = {
-        email: '',
-        password: '',
-      };
-
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.login(emptyCredentials);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/login', emptyCredentials);
-    });
-
-    it('should handle special characters in credentials', async () => {
-      const specialCredentials: LoginCredentials = {
-        email: 'test+special@example.com',
-        password: 'p@ssw0rd!#$',
-      };
-
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.login(specialCredentials);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/login', specialCredentials);
-    });
-  });
-
-  describe('register', () => {
-    const mockUserData = {
-      email: 'newuser@example.com',
-      password: 'newpassword123',
-      name: 'New User',
-    };
-
-    const mockResponse = {
-      token: 'new-jwt-token',
-      user: {
-        id: '2',
-        email: 'newuser@example.com',
-        name: 'New User',
-        role: 'user',
-      } as User,
-    };
-
-    it('should call api.post with correct parameters', async () => {
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      const result = await authApi.register(mockUserData);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/register', mockUserData);
-      expect(result).toEqual(mockResponse);
-    });
-
-    it('should handle registration with minimum required fields', async () => {
-      const minimalUserData = {
-        email: 'minimal@example.com',
-        password: 'pass123',
-        name: 'M',
-      };
-
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.register(minimalUserData);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/register', minimalUserData);
-    });
-
-    it('should handle registration with long name', async () => {
-      const longNameUserData = {
-        email: 'longname@example.com',
         password: 'password123',
-        name: 'A'.repeat(100),
-      };
+        provider: 'jwt'
+      });
 
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.register(longNameUserData);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/register', longNameUserData);
+      expect(result.success).toBe(true);
+      expect(result.user).toEqual(expect.objectContaining({
+        id: 'test-user-123',
+        email: 'test@example.com',
+        name: 'Test User'
+      }));
+      expect(mockAxios.default.post).toHaveBeenCalledWith(
+        '/api/auth/login',
+        expect.objectContaining({
+          email: 'test@example.com',
+          password: 'password123'
+        })
+      );
     });
 
-    it('should throw error when registration fails', async () => {
-      const error = new Error('Registration failed');
-      mockApiPost.mockRejectedValue(error);
+    test('JWT ログイン失敗ケース', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockRejectedValueOnce(
+        new Error('Authentication failed')
+      );
 
-      await expect(authApi.register(mockUserData)).rejects.toThrow('Registration failed');
-    });
+      const result = await authManager.login({
+        email: 'invalid@example.com',
+        password: 'wrongpassword',
+        provider: 'jwt'
+      });
 
-    it('should handle special characters in user data', async () => {
-      const specialUserData = {
-        email: 'special+chars@test-domain.co.jp',
-        password: 'Special123!@#',
-        name: 'José María',
-      };
-
-      mockApiPost.mockResolvedValue(mockResponse);
-
-      await authApi.register(specialUserData);
-
-      expect(mockApiPost).toHaveBeenCalledWith('/auth/register', specialUserData);
-    });
-  });
-
-  describe('logout', () => {
-    it('should remove token and user from localStorage', () => {
-      // localStorage にデータを設定
-      localStorageMock.setItem('token', 'some-token');
-      localStorageMock.setItem('user', JSON.stringify({ id: '1', name: 'Test' }));
-
-      authApi.logout();
-
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user');
-    });
-
-    it('should handle logout when no data in localStorage', () => {
-      authApi.logout();
-
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user');
-    });
-
-    it('should not throw error when called multiple times', () => {
-      expect(() => {
-        authApi.logout();
-        authApi.logout();
-        authApi.logout();
-      }).not.toThrow();
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Authentication failed');
     });
   });
 
-  describe('getCurrentUser', () => {
-    const mockUser: User = {
-      id: '1',
-      email: 'test@example.com',
-      name: 'Test User',
-      role: 'user',
-    };
-
-    it('should return user from localStorage when valid JSON', () => {
-      // Use the auth service method to set the user
-      authApi.setCurrentUser(mockUser, 'test-token');
-
-      const result = authApi.getCurrentUser();
-
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('user');
-      expect(result).toEqual(mockUser);
-    });
-
-    it('should return null when no user in localStorage', () => {
-      localStorageMock.getItem.mockReturnValue(null);
-
-      const result = authApi.getCurrentUser();
-
-      expect(result).toBeNull();
-    });
-
-    it('should return null when user data is invalid JSON', () => {
-      localStorageMock.getItem.mockReturnValue('invalid-json');
-
-      const result = authApi.getCurrentUser();
-
-      expect(result).toBeNull();
-    });
-
-    it('should return null when user data is empty string', () => {
-      localStorageMock.getItem.mockReturnValue('');
-
-      const result = authApi.getCurrentUser();
-
-      expect(result).toBeNull();
-    });
-
-    it('should handle complex user objects', () => {
-      const complexUser: User = {
-        id: '123',
-        email: 'complex@example.com',
-        name: 'Complex User',
-        role: 'admin',
-        avatar: 'https://example.com/avatar.jpg',
-        lastLoginAt: '2024-01-15T10:30:00Z',
-        preferences: {
-          theme: 'dark',
-          language: 'ja',
+  describe('🔥 Firebase認証', () => {
+    test('Firebase ログイン成功ケース', async () => {
+      // Firebase認証のモック
+      const mockUser = {
+        uid: 'firebase-uid-123',
+        email: 'firebase@example.com',
+        displayName: 'Firebase User',
+        photoURL: 'https://example.com/avatar.jpg',
+        emailVerified: true,
+        metadata: {
+          creationTime: '2023-01-01T00:00:00.000Z',
+          lastSignInTime: '2023-12-01T00:00:00.000Z'
         },
+        getIdToken: jest.fn().mockResolvedValue('firebase-id-token'),
+        refreshToken: 'firebase-refresh-token'
       };
 
-      // Use the auth service method to set the user
-      authApi.setCurrentUser(complexUser, 'test-token');
+      // Firebase認証の成功をモック
+      jest.doMock('firebase/auth', () => ({
+        signInWithEmailAndPassword: jest.fn().mockResolvedValue({
+          user: mockUser
+        })
+      }));
 
-      const result = authApi.getCurrentUser();
+      jest.doMock('@/config/firebase', () => ({
+        auth: {}
+      }));
 
-      expect(result).toEqual(complexUser);
+      // Firebase認証の場合のテスト実行
+      const result = await authManager.login({
+        email: 'firebase@example.com',
+        password: 'password123',
+        provider: 'firebase'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.user).toEqual(expect.objectContaining({
+        id: 'firebase-uid-123',
+        email: 'firebase@example.com',
+        provider: 'firebase'
+      }));
     });
   });
 
-  describe('setCurrentUser', () => {
-    const mockUser: User = {
-      id: '1',
-      email: 'test@example.com',
-      name: 'Test User',
-      role: 'user',
-    };
+  describe('📊 ユーザートラッキング連携', () => {
+    test('ログイン時にユーザートラッキングが正しく初期化される', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+        data: {
+          success: true,
+          user: { id: 'user-123', email: 'test@example.com' },
+          accessToken: 'token',
+          refreshToken: 'refresh-token'
+        }
+      });
 
-    const mockToken = 'jwt-token-123';
+      await authManager.login({
+        email: 'test@example.com',
+        password: 'password123',
+        provider: 'jwt'
+      });
 
-    it('should set token and user in localStorage', () => {
-      authApi.setCurrentUser(mockUser, mockToken);
-
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockToken);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(mockUser));
-    });
-
-    it('should handle user with special characters', () => {
-      const specialUser: User = {
-        id: '2',
-        email: 'special+user@test.com',
-        name: 'Special ユーザー',
-        role: 'user',
-      };
-
-      authApi.setCurrentUser(specialUser, mockToken);
-
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockToken);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(specialUser));
-    });
-
-    it('should handle empty token', () => {
-      authApi.setCurrentUser(mockUser, '');
-
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', '');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(mockUser));
-    });
-
-    it('should handle user with null/undefined properties', () => {
-      const partialUser: User = {
-        id: '3',
-        email: 'partial@example.com',
-        name: 'Partial User',
-        role: 'user',
-        avatar: undefined,
-        lastLoginAt: null,
-      };
-
-      authApi.setCurrentUser(partialUser, mockToken);
-
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', mockToken);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(partialUser));
-    });
-
-    it('should overwrite existing user data', () => {
-      // 最初のユーザーを設定
-      const firstUser: User = {
-        id: '1',
-        email: 'first@example.com',
-        name: 'First User',
-        role: 'user',
-      };
-      authApi.setCurrentUser(firstUser, 'first-token');
-
-      // 新しいユーザーで上書き
-      const secondUser: User = {
-        id: '2',
-        email: 'second@example.com',
-        name: 'Second User',
-        role: 'admin',
-      };
-      authApi.setCurrentUser(secondUser, 'second-token');
-
-      // Check that the second user data was set correctly
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'second-token');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('user', JSON.stringify(secondUser));
+      // ユーザートラッキングの初期化が呼ばれることを確認
+      // 実際の実装では、認証成功後にユーザートラッキングが初期化される
+      expect(userTrackingService.initializeSession).toHaveBeenCalled();
     });
   });
 
-  describe('integration tests', () => {
-    it('should perform complete login flow', async () => {
-      const credentials: LoginCredentials = {
-        email: 'integration@example.com',
-        password: 'integrationpass',
-      };
+  describe('🔄 セッション管理', () => {
+    test('セッション検証が正常に動作する', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.get as jest.Mock).mockResolvedValueOnce({
+        data: {
+          valid: true,
+          user: { id: 'user-123', email: 'test@example.com' }
+        }
+      });
 
-      const loginResponse = {
-        token: 'integration-token',
+      const isValid = await authManager.validateSession();
+      
+      expect(isValid).toBe(true);
+      expect(mockAxios.default.get).toHaveBeenCalledWith('/api/auth/validate');
+    });
+
+    test('無効なセッションが正しく処理される', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.get as jest.Mock).mockRejectedValueOnce(
+        new Error('Session expired')
+      );
+
+      const isValid = await authManager.validateSession();
+      
+      expect(isValid).toBe(false);
+    });
+  });
+
+  describe('🚪 ログアウト', () => {
+    test('ログアウトが正常に実行される', async () => {
+      // ログイン状態にする
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+        data: {
+          success: true,
+          user: { id: 'user-123' },
+          accessToken: 'token'
+        }
+      });
+
+      await authManager.login({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+
+      // ログアウト実行
+      (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+        data: { success: true }
+      });
+
+      const result = await authManager.logout();
+      
+      expect(result.success).toBe(true);
+      expect(mockAxios.default.post).toHaveBeenCalledWith('/api/auth/logout');
+    });
+  });
+
+  describe('⚠️ エラーハンドリング', () => {
+    test('ネットワークエラーが適切に処理される', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockRejectedValueOnce(
+        new Error('Network Error')
+      );
+
+      const result = await authManager.login({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Network Error');
+    });
+
+    test('認証失敗が適切に処理される', async () => {
+      const mockAxios = await import('axios');
+      (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+        data: {
+          success: false,
+          error: 'Invalid credentials'
+        }
+      });
+
+      const result = await authManager.login({
+        email: 'wrong@example.com',
+        password: 'wrongpassword'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid credentials');
+    });
+  });
+});
+
+describe('🎯 認証統合テスト', () => {
+  test('完全な認証フローが正常に動作する', async () => {
+    const authManager = UnifiedAuthManager.getInstance();
+    const mockAxios = await import('axios');
+
+    // 1. ログイン
+    (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+      data: {
+        success: true,
         user: {
-          id: 'int-1',
+          id: 'integration-user-123',
           email: 'integration@example.com',
-          name: 'Integration User',
-          role: 'user',
-        } as User,
-      };
-
-      mockApiPost.mockResolvedValue({ data: loginResponse });
-
-      // ログイン実行
-      const result = await authApi.login(credentials);
-
-      // レスポンス確認
-      expect(result.data).toEqual(loginResponse);
-
-      // ユーザー情報を localStorage に保存
-      authApi.setCurrentUser(result.data.user, result.data.token);
-
-      // 保存されたユーザー情報を取得
-      const currentUser = authApi.getCurrentUser();
-      expect(currentUser).toEqual(loginResponse.user);
-
-      // ログアウト
-      authApi.logout();
-
-      // ログアウト後はユーザー情報が取得できない
-      const afterLogoutUser = authApi.getCurrentUser();
-      expect(afterLogoutUser).toBeNull();
+          name: 'Integration Test User'
+        },
+        accessToken: 'integration-access-token',
+        refreshToken: 'integration-refresh-token'
+      }
     });
 
-    it('should handle register and immediate logout', async () => {
-      const userData = {
-        email: 'register@example.com',
-        password: 'registerpass',
-        name: 'Register User',
-      };
-
-      const registerResponse = {
-        token: 'register-token',
-        user: {
-          id: 'reg-1',
-          email: 'register@example.com',
-          name: 'Register User',
-          role: 'user',
-        } as User,
-      };
-
-      mockApiPost.mockResolvedValue({ data: registerResponse });
-
-      // 登録実行
-      const result = await authApi.register(userData);
-      authApi.setCurrentUser(result.data.user, result.data.token);
-
-      // 登録直後のユーザー取得
-      const registeredUser = authApi.getCurrentUser();
-      expect(registeredUser).toEqual(registerResponse.user);
-
-      // すぐにログアウト
-      authApi.logout();
-
-      // ログアウト後の確認
-      const afterLogoutUser = authApi.getCurrentUser();
-      expect(afterLogoutUser).toBeNull();
+    const loginResult = await authManager.login({
+      email: 'integration@example.com',
+      password: 'password123'
     });
+
+    expect(loginResult.success).toBe(true);
+
+    // 2. セッション検証
+    (mockAxios.default.get as jest.Mock).mockResolvedValueOnce({
+      data: {
+        valid: true,
+        user: { id: 'integration-user-123' }
+      }
+    });
+
+    const sessionValid = await authManager.validateSession();
+    expect(sessionValid).toBe(true);
+
+    // 3. ログアウト
+    (mockAxios.default.post as jest.Mock).mockResolvedValueOnce({
+      data: { success: true }
+    });
+
+    const logoutResult = await authManager.logout();
+    expect(logoutResult.success).toBe(true);
   });
 });

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { toast } from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Brain } from 'lucide-react';
+import SocialShareButton from '@/components/ui/SocialShareButton';
 import { PullToRefresh } from '@/components/ui/pull-to-refresh';
 import { useResponsive } from '@/hooks/useResponsive';
 
@@ -23,6 +24,7 @@ import { TodoAIAnalysis } from './components/TodoAIAnalysis';
 import { useTodoState } from './hooks/useTodoState';
 import { useTodoHistory } from './hooks/useTodoHistory';
 import { useTodoFilters } from './hooks/useTodoFilters';
+import { useUserTracking } from '@/hooks/useUserTracking';
 
 // Types
 import { TodoItem } from '@/types';
@@ -75,6 +77,7 @@ const DailyTodoReminder: React.FC<DailyTodoReminderProps> = ({ isPremium = false
   const { selectedTab, setSelectedTab } = useTodoState();
   const { streakCount, todoHistory, dailyHistory } = useTodoHistory(todos);
   const { filteredTodos, filterControls } = useTodoFilters(todos);
+  const { trackInteraction, trackAIUsage } = useUserTracking();
 
   // AI analysis related state
   const [analysisResult, setAnalysisResult] = useState<TodoAnalysisResult | null>(null);
