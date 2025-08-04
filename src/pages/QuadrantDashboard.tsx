@@ -62,25 +62,54 @@ const QuadrantDashboard: React.FC = () => {
 
   // タスクのフィルタリング
   const filteredTasks = React.useMemo(() => {
+    console.log('🔍 フィルタリング開始:', { 
+      todosType: typeof todos, 
+      todosIsArray: Array.isArray(todos), 
+      todosLength: todos?.length,
+      firstTodoSample: todos?.[0] 
+    });
+
     if (!todos || !Array.isArray(todos)) {
       console.warn('🚨 todos が無効な値です:', todos);
       return [];
     }
 
-    // null/undefinedを除外
-    let filtered = todos.filter(
-      (task): task is TodoItem => task !== null && task !== undefined && typeof task === 'object'
-    );
+    // より詳細なデバッグ情報
+    const validTasks = todos.filter((task, index) => {
+      const isValid = task !== null && task !== undefined && typeof task === 'object';
+      if (!isValid) {
+        console.warn(`🚨 無効なタスク[${index}]:`, task);
+      }
+      return isValid;
+    });
+
+    console.log('✅ 有効なタスク数:', validTasks.length);
+    console.log('📝 有効なタスクのサンプル:', validTasks.slice(0, 3));
+
+    // 型ガードをより寛容に変更
+    let filtered = validTasks.filter((task): task is TodoItem => {
+      // 必要最小限のプロパティをチェック
+      return task && 
+             typeof task === 'object' && 
+             ('_id' in task || 'id' in task) && 
+             ('task' in task || 'title' in task);
+    });
+
+    console.log('🔍 型チェック後のタスク数:', filtered.length);
 
     // 完了タスクのフィルタリング
     if (settings.filterCompleted) {
+      const beforeFilter = filtered.length;
       filtered = filtered.filter((task: TodoItem) => !task.completed);
+      console.log(`🗂️ 完了タスクフィルタ: ${beforeFilter} → ${filtered.length}`);
     }
 
-    console.log('📋 フィルタリング結果:', {
+    console.log('📋 最終フィルタリング結果:', {
       original: todos.length,
-      filtered: filtered.length,
+      valid: validTasks.length,
+      typeChecked: filtered.length,
       filterCompleted: settings.filterCompleted,
+      sampleFilteredTask: filtered[0]
     });
 
     return filtered;

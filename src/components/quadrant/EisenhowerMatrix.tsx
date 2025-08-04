@@ -273,14 +273,36 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
 
   // タスクを統一形式に変換
   const unifiedTasks = useMemo(() => {
+    console.log('🔄 EisenhowerMatrix: タスク変換開始:', {
+      tasksType: typeof tasks,
+      tasksIsArray: Array.isArray(tasks),
+      tasksLength: tasks?.length,
+      firstTaskSample: tasks?.[0]
+    });
+
     if (!Array.isArray(tasks)) {
       console.warn('🚨 tasks が配列ではありません:', tasks);
       return [];
     }
 
-    return tasks
-      .map((task) => classificationService.convertToUnifiedTask(task))
-      .filter((task): task is UnifiedTaskData => task !== null);
+    const converted = tasks.map((task, index) => {
+      const unified = classificationService.convertToUnifiedTask(task);
+      if (!unified) {
+        console.warn(`🚨 タスク変換失敗[${index}]:`, task);
+      }
+      return unified;
+    });
+
+    const validUnified = converted.filter((task): task is UnifiedTaskData => task !== null);
+    
+    console.log('🔄 EisenhowerMatrix: 変換結果:', {
+      originalCount: tasks.length,
+      convertedCount: converted.length,
+      validCount: validUnified.length,
+      sampleUnified: validUnified[0]
+    });
+
+    return validUnified;
   }, [tasks, classificationService]);
 
   // 分析の実行
