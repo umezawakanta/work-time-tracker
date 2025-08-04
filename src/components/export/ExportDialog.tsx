@@ -122,23 +122,25 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ trigger, onExport })
 
   // フィルタリングされたタスクの計算
   const filteredTasks = useMemo(() => {
-    return todos.filter((todo) => {
-      // 完了状態でフィルタ
-      if (!options.includeCompleted && todo.completed) return false;
-      if (!options.includePending && !todo.completed) return false;
+    return todos
+      .filter((todo) => todo && todo._id && todo.task)
+      .filter((todo) => {
+        // 完了状態でフィルタ
+        if (!options.includeCompleted && todo.completed) return false;
+        if (!options.includePending && !todo.completed) return false;
 
-      // 日付範囲でフィルタ
-      if (options.dateRange.from || options.dateRange.to) {
-        const taskDate = todo.deadline
-          ? new Date(todo.deadline)
-          : new Date(todo.createdAt || new Date());
+        // 日付範囲でフィルタ
+        if (options.dateRange.from || options.dateRange.to) {
+          const taskDate = todo.deadline
+            ? new Date(todo.deadline)
+            : new Date(todo.createdAt || new Date());
 
-        if (options.dateRange.from && taskDate < options.dateRange.from) return false;
-        if (options.dateRange.to && taskDate > options.dateRange.to) return false;
-      }
+          if (options.dateRange.from && taskDate < options.dateRange.from) return false;
+          if (options.dateRange.to && taskDate > options.dateRange.to) return false;
+        }
 
-      return true;
-    });
+        return true;
+      });
   }, [todos, options.includeCompleted, options.includePending, options.dateRange]);
 
   // エクスポート実行

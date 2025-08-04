@@ -192,6 +192,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
         // タスク検索
         const todoResults = todos
+          .filter((todo) => todo && todo._id && todo.task) // 安全性チェック
           .filter(
             (todo) =>
               todo.task.toLowerCase().includes(searchTerm) ||

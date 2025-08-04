@@ -31,6 +31,7 @@ export const TaskCalendar: React.FC<TaskCalendarProps> = ({ onTaskSelect, onDate
   // TodoをCalendarEventに変換
   const events = useMemo<CalendarEvent[]>(() => {
     return todos
+      .filter((todo: TodoItem) => todo && todo._id && todo.task)
       .filter((todo: TodoItem) => todo.deadline || todo.createdAt)
       .map((todo: TodoItem) => {
         const deadline = todo.deadline

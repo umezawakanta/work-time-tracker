@@ -124,6 +124,7 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({ className }) => {
   // Convert todos to calendar events
   const taskEvents: Event[] = useMemo(() => {
     return todos
+      .filter((todo) => todo && todo._id && todo.task) // 安全性チェック
       .filter((todo) => {
         // Filter by status
         if (filterStatus === 'active' && todo.completed) return false;

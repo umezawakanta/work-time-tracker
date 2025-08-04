@@ -122,6 +122,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
   // Convert todos to task events with date filtering
   const taskEvents: TaskEvent[] = useMemo(() => {
     return safeTodos
+      .filter((todo) => todo && todo._id && todo.task) // 安全性チェック
       .filter((todo) => {
         // Filter by completion status
         if (filterStatus === 'active' && todo.completed) return false;
