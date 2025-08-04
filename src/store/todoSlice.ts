@@ -279,14 +279,39 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodoItems.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        // 重複IDを排除し、無効なアイテムをフィルタリング
+        const validItems = action.payload.filter(
+          (item: any) => item && item._id && typeof item._id === 'string'
+        );
+
+        // 重複IDを排除（最初に見つかったアイテムを保持）
+        const uniqueItems = validItems.filter(
+          (item: any, index: number, self: any[]) =>
+            index === self.findIndex((t: any) => t._id === item._id)
+        );
+
+        state.items = uniqueItems;
+
+        console.log(
+          `📋 Todo items loaded: ${uniqueItems.length} valid items (filtered from ${action.payload.length})`
+        );
       })
       .addCase(fetchTodoItems.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || null;
       })
       .addCase(addTodoItem.fulfilled, (state, action) => {
-        state.items.push(action.payload);
+        // 重複チェック: 同じIDのアイテムが既に存在するかチェック
+        const existingIndex = state.items.findIndex((item) => item._id === action.payload._id);
+        if (existingIndex !== -1) {
+          // 既存のアイテムを更新
+          state.items[existingIndex] = action.payload;
+          console.log(`📝 Todo item updated: ${action.payload._id}`);
+        } else {
+          // 新しいアイテムを追加
+          state.items.push(action.payload);
+          console.log(`➕ Todo item added: ${action.payload._id}`);
+        }
       })
       .addCase(updateTodoItem.fulfilled, (state, action) => {
         const index = state.items.findIndex((item) => item._id === action.payload._id);

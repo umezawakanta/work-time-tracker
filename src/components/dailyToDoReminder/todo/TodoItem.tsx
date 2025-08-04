@@ -54,7 +54,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-import { Todo } from '../types';
+import { TodoItem as Todo } from '@/types';
 import { RateLimitedTaskAnalyzer } from '@/services/RateLimitedTaskAnalyzer';
 import { AppDispatch } from '@/store';
 import { addTodoItem } from '@/store/todoSlice';
@@ -95,6 +95,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isHighPriority = false,
   isCompleted = false,
 }) => {
+  // 安全性チェック: todoオブジェクトの検証
+  if (!todo || !todo._id || (!todo.task && todo.task !== '')) {
+    console.warn('TodoItem: Invalid todo object', todo);
+    return (
+      <div className="p-4 border border-red-200 bg-red-50 rounded-lg">
+        <p className="text-red-600 text-sm">エラー: 無効なタスクデータです</p>
+      </div>
+    );
+  }
+
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -124,7 +134,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     tags?: string;
     estimatedDuration?: number;
   }>({
-    text: todo.text,
+    text: todo.task,
     type: todo.type,
     priority: todo.priority,
     deadline: todo.deadline ? new Date(todo.deadline) : undefined,
@@ -156,7 +166,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const handleEdit = useCallback((): void => {
     // Reset form data when opening
     setEditFormData({
-      text: todo.text,
+      text: todo.task,
       type: todo.type,
       priority: todo.priority,
       deadline: todo.deadline ? new Date(todo.deadline) : undefined,
@@ -236,7 +246,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
     try {
       // 完全な分析を実行
-      const result = await RateLimitedTaskAnalyzer.analyzeComplete(todo.text);
+      const result = await RateLimitedTaskAnalyzer.analyzeComplete(todo.task);
 
       // 詳細分析結果を設定（新しいフィールドも含む）
       if (result.detailAnalysis) {
@@ -257,7 +267,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     } finally {
       setIsAnalyzing(false);
     }
-  }, [todo.text, isAnalyzing]);
+  }, [todo.task, isAnalyzing]);
 
   // AI分析結果を保存（拡張版）
   const handleSaveAIAnalysis = useCallback(async (): Promise<void> => {
@@ -266,7 +276,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     setIsLoading(true);
     try {
       const updates: Partial<Todo> = {
-        text: aiAnalysisResult.improvedTitle || todo.text,
+        text: aiAnalysisResult.improvedTitle || todo.task,
         category: aiAnalysisResult.category || 'サイト開発',
         tags: aiAnalysisResult.tags ? [...aiAnalysisResult.tags] : undefined,
         estimatedDuration: aiAnalysisResult.estimatedDuration,
@@ -277,7 +287,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       // 成功時のフィードバック
       const updatedItems = [];
-      if (aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text) {
+      if (aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.task) {
         updatedItems.push('タイトル');
       }
       if (aiAnalysisResult.category) updatedItems.push('カテゴリ');
@@ -295,7 +305,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     }
   }, [
     todo.id,
-    todo.text,
+    todo.task,
     todo.category,
     todo.tags,
     todo.estimatedDuration,
@@ -322,7 +332,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           category: aiAnalysisResult.category || todo.category,
           tags: aiAnalysisResult.tags || todo.tags,
           // 親タスクへの参照を説明に含める
-          description: `${subtask.description || ''} (親タスク: ${todo.text})`,
+          description: `${subtask.description || ''} (親タスク: ${todo.task})`,
         };
 
         // TodoListに追加
@@ -358,7 +368,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         if (user) {
           await TodoWBSIntegrationService.syncTodoToWBS({
             _id: todo.id,
-            task: todo.text,
+            task: todo.task,
             completed: true,
             priority: todo.priority,
             type: todo.type,
@@ -381,12 +391,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   }, [aiAnalysisResult, todo, dispatch, onToggle, isLoading, user]);
 
   // タスクテキストが長いかどうかを判定する関数
-  const isLongText = (text: string): boolean => {
+  const isLongText = (text: string | undefined | null): boolean => {
+    if (!text || typeof text !== 'string') return false;
     return text.length > 100 || text.includes('\n');
   };
 
   // タスクテキストの最初の部分を取得する関数
-  const getTruncatedText = (text: string, maxLength: number = 100): string => {
+  const getTruncatedText = (text: string | undefined | null, maxLength: number = 100): string => {
+    if (!text || typeof text !== 'string') return '';
     const firstLine = text.split('\n')[0];
     if (firstLine.length > maxLength) {
       return firstLine.substring(0, maxLength) + '...';
@@ -430,13 +442,13 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                         todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
                       }`}
                     >
-                      {isExpanded || !isLongText(todo.text)
-                        ? todo.text
-                        : getTruncatedText(todo.text)}
+                      {isExpanded || !isLongText(todo.task)
+                        ? todo.task
+                        : getTruncatedText(todo.task)}
                     </h4>
 
                     {/* 展開/折りたたみボタン */}
-                    {isLongText(todo.text) && (
+                    {isLongText(todo.task) && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -458,9 +470,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     )}
 
                     {/* 詳細説明エリア（展開時のみ表示） */}
-                    {isExpanded && isLongText(todo.text) && (
+                    {isExpanded && isLongText(todo.task) && (
                       <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{todo.text}</p>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{todo.task}</p>
                       </div>
                     )}
                   </div>
@@ -812,7 +824,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               )}
 
               {/* 改善されたタイトル */}
-              {aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.text && (
+              {aiAnalysisResult.improvedTitle && aiAnalysisResult.improvedTitle !== todo.task && (
                 <div className="grid gap-2">
                   <Label>改善されたタスクタイトル</Label>
                   <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
