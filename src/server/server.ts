@@ -11,13 +11,13 @@ import { connectDB } from './config/database.js';
 // import workTimeRoutes from './routes/workTimeRoutes.js';
 // import assetRoutes from './routes/assetRoutes.js';
 // import debtRoutes from './routes/debtRoutes.js';
-// import todoRoutes from './routes/todoRoutes.js';  // 一時的に無効化
+import todoRoutes from './routes/todoRoutes.js';
 // import candidateRoutes from './routes/candidateRoutes.js';
 // import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
 // import qualityRoutes from './routes/qualityRoutes.js';
 // import withdrawalRoutes from './routes/withdrawalRoutes.js';
 // import authRoutes from './routes/authRoutes.js';  // 一時的に無効化
-// import bookRoutes from './routes/bookRoutes.js';
+import bookRoutes from './routes/bookRoutes.js';
 // import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
 // import blogRoutes from './routes/blogRoutes.js';
 // import tweetRoutes from './routes/tweetRoutes.js';
@@ -337,8 +337,12 @@ try {
   // console.log('✅ Auth routes loaded successfully');
 
   // console.log('📝 Loading todo routes...');
-  // app.use('/api/todos', todoRoutes);
-  // console.log('✅ Todo routes loaded successfully');
+  app.use('/api/todos', todoRoutes);
+  console.log('✅ Todo routes loaded successfully');
+
+  console.log('📚 Loading book routes...');
+  app.use('/api/books', bookRoutes);
+  console.log('✅ Book routes loaded successfully');
 } catch (error) {
   console.error('❌ Error loading essential routes:', error);
 }
@@ -350,7 +354,7 @@ try {
 // app.use('/api/subscription', subscriptionRoutes);
 // app.use('/api/userSubscription', userSubscriptionRoutes);
 // app.use('/api/withdrawal', withdrawalRoutes);
-// app.use('/api/books', bookRoutes);
+// app.use('/api/books', bookRoutes); // エラーハンドリング付きのtry-catchブロック内に移動済み
 // app.use('/api/sleep-records', sleepTrackerRoutes);
 // app.use('/api/blog', blogRoutes);
 // app.use('/api/tweets', tweetRoutes);
