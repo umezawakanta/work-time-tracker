@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { selectAllTodos } from '@/components/dailyToDoReminder/store/selectors/todoSelectors';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,6 @@ import { Slider } from '@/components/ui/slider';
 import { EisenhowerMatrix } from '@/components/quadrant/EisenhowerMatrix';
 import QuadrantUsageGuide from '@/components/help/QuadrantUsageGuide';
 import { QuadrantAnalysisResult } from '@/services/ai/QuadrantClassificationService';
-import { TodoItem } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import {
@@ -42,7 +42,7 @@ import {
  */
 const QuadrantDashboard: React.FC = () => {
   const { user } = useAuth();
-  const todos = useSelector((state: RootState) => state.todo.items);
+  const todos = useSelector(selectAllTodos);
 
   // ダッシュボード設定
   const [settings, setSettings] = useState({
@@ -87,7 +87,7 @@ const QuadrantDashboard: React.FC = () => {
     console.log('📝 有効なタスクのサンプル:', validTasks.slice(0, 3));
 
     // 型ガードをより寛容に変更
-    let filtered = validTasks.filter((task): task is TodoItem => {
+    let filtered = validTasks.filter((task): task is any => {
       // 必要最小限のプロパティをチェック
       return (
         task &&
@@ -102,7 +102,7 @@ const QuadrantDashboard: React.FC = () => {
     // 完了タスクのフィルタリング
     if (settings.filterCompleted) {
       const beforeFilter = filtered.length;
-      filtered = filtered.filter((task: TodoItem) => !task.completed);
+      filtered = filtered.filter((task: any) => !task.completed);
       console.log(`🗂️ 完了タスクフィルタ: ${beforeFilter} → ${filtered.length}`);
     }
 

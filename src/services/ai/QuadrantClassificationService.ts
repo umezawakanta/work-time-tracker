@@ -535,7 +535,7 @@ JSON形式で回答してください:
       hasId: '_id' in task || 'id' in task,
       hasTitle: 'title' in task || 'task' in task,
       taskKeys: Object.keys(task),
-      task: task
+      task: task,
     });
 
     const unified = {
