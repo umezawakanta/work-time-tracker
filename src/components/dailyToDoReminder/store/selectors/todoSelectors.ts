@@ -15,10 +15,28 @@ interface ExtendedTodoState {
 
 // Mapper function to convert global TodoItem to local TodoItem
 const mapGlobalToLocalTodoItem = (globalItem: GlobalTodoItem): TodoItem => {
+  // 緊急修正: undefined/nullチェックを追加
+  if (!globalItem) {
+    console.warn('Todo item is undefined or null');
+    return {
+      id: 'temp-' + Date.now(),
+      text: '',
+      completed: false,
+      priority: 3,
+      isPrioritized: false,
+      type: 'output',
+      deadline: undefined,
+      createdAt: new Date().toISOString(),
+      category: undefined,
+      tags: undefined,
+    };
+  }
+
   return {
-    id: globalItem._id,
-    text: globalItem.task,
-    completed: globalItem.completed,
+    // _idとidの両方をサポートし、undefined時はtemporary IDを生成
+    id: globalItem._id || globalItem.id || 'temp-' + Date.now(),
+    text: globalItem.task || '',
+    completed: globalItem.completed || false,
     priority: globalItem.priority || 3,
     isPrioritized: globalItem.isPrioritized || false,
     type: globalItem.type || 'output',
@@ -38,14 +56,23 @@ const selectRawTodoItems = (state: RootState): readonly GlobalTodoItem[] => {
     return [];
   }
 
-  return items;
+  // 緊急修正: null/undefined要素をフィルタリング
+  return items.filter(item => item != null);
 };
 
 export const selectTodoItems = createSelector(
   [selectRawTodoItems],
   (items: readonly GlobalTodoItem[]): readonly TodoItem[] => {
-    // Map global TodoItems to local TodoItems
-    return items.map(mapGlobalToLocalTodoItem);
+    // 緊急修正: 安全性チェックを追加
+    if (!Array.isArray(items)) {
+      console.warn('selectTodoItems: items is not an array', items);
+      return [];
+    }
+
+    // Map global TodoItems to local TodoItems with additional filtering
+    return items
+      .filter(item => item != null) // 二重フィルタリングで確実性を向上
+      .map(mapGlobalToLocalTodoItem);
   }
 );
 
