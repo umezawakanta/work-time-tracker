@@ -1,6 +1,6 @@
 /**
  * 🔥 スモークテスト - システム基本動作確認
- * 
+ *
  * 最重要機能が正常に動作することを確認する
  */
 
@@ -14,15 +14,13 @@ import { store } from '@/store';
 describe('🔥 Smoke Tests - システム基本動作', () => {
   const TestWrapper = ({ children }: { children: React.ReactNode }) => (
     <Provider store={store}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </Provider>
   );
 
   test('✅ React環境が正常に動作する', () => {
     const TestComponent = () => <div data-testid="test-component">Hello Test</div>;
-    
+
     render(
       <TestWrapper>
         <TestComponent />
@@ -41,32 +39,34 @@ describe('🔥 Smoke Tests - システム基本動作', () => {
 
   test('✅ テストユーティリティが正常に動作する', () => {
     expect(global.testUtils).toBeDefined();
-    expect(global.testUtils.createMockUser).toBeFunction();
-    expect(global.testUtils.createMockTodo).toBeFunction();
-    expect(global.testUtils.delay).toBeFunction();
+    expect(typeof global.testUtils.createMockUser).toBe('function');
+    expect(typeof global.testUtils.createMockTodo).toBe('function');
+    expect(typeof global.testUtils.delay).toBe('function');
   });
 
   test('✅ モックユーザーが正常に作成される', () => {
     const mockUser = global.testUtils.createMockUser();
-    
+
     expect(mockUser).toEqual({
       id: 'test-user-id',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'user'
+      role: 'user',
     });
   });
 
   test('✅ モックToDoが正常に作成される', () => {
     const mockTodo = global.testUtils.createMockTodo();
-    
-    expect(mockTodo).toEqual(expect.objectContaining({
-      id: 'test-todo-id',
-      name: 'Test Todo',
-      completed: false,
-      priority: 1,
-      category: 'test'
-    }));
+
+    expect(mockTodo).toEqual(
+      expect.objectContaining({
+        id: 'test-todo-id',
+        name: 'Test Todo',
+        completed: false,
+        priority: 1,
+        category: 'test',
+      })
+    );
   });
 
   test('✅ 環境変数が正しく設定されている', () => {
@@ -76,7 +76,7 @@ describe('🔥 Smoke Tests - システム基本動作', () => {
 
   test('✅ Axiosモックが正常に動作する', async () => {
     const axios = await import('axios');
-    
+
     expect(axios.default.get).toBeDefined();
     expect(axios.default.post).toBeDefined();
     expect(axios.default.put).toBeDefined();
@@ -87,15 +87,15 @@ describe('🔥 Smoke Tests - システム基本動作', () => {
     // LocalStorage
     expect(localStorage.setItem).toBeDefined();
     expect(localStorage.getItem).toBeDefined();
-    
+
     // SessionStorage
     expect(sessionStorage.setItem).toBeDefined();
     expect(sessionStorage.getItem).toBeDefined();
-    
+
     // Navigator
     expect(navigator.userAgent).toBeDefined();
     expect(navigator.clipboard).toBeDefined();
-    
+
     // Window APIs
     expect(window.matchMedia).toBeDefined();
     expect(global.IntersectionObserver).toBeDefined();
