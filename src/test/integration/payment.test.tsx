@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
@@ -7,7 +8,7 @@ import { AuthProvider } from '@/context/AuthContext';
 
 // Mock Stripe
 jest.mock('@stripe/stripe-js', () => ({
-  loadStripe: jest.fn(() => 
+  loadStripe: jest.fn(() =>
     Promise.resolve({
       elements: jest.fn(() => ({
         create: jest.fn(() => ({
@@ -141,7 +142,7 @@ const server = setupServer(
       );
     }
     return res(ctx.status(201), ctx.json({ success: true }));
-  }),
+  })
 );
 
 beforeEach(() => {
@@ -156,9 +157,7 @@ afterEach(() => {
 
 // テスト用のWrapper
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <AuthProvider>
-    {children}
-  </AuthProvider>
+  <AuthProvider>{children}</AuthProvider>
 );
 
 describe('課金システム統合テスト', () => {
@@ -166,7 +165,7 @@ describe('課金システム統合テスト', () => {
     test('プラン一覧が正しく表示される', async () => {
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -183,7 +182,7 @@ describe('課金システム統合テスト', () => {
     test('プランを選択できる', async () => {
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -191,9 +190,10 @@ describe('課金システム統合テスト', () => {
         </TestWrapper>
       );
 
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('[data-testid="plan-card"]') || 
-                           screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
-      
+      const basicPlanCard =
+        screen.getByText('ベーシックプラン').closest('[data-testid="plan-card"]') ||
+        screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+
       fireEvent.click(basicPlanCard!);
 
       await waitFor(() => {
@@ -204,13 +204,16 @@ describe('課金システム統合テスト', () => {
     test('請求サイクルを変更できる', async () => {
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
-            plans={[...mockPlans, {
-              ...mockPlans[1],
-              id: 'plan-basic-yearly',
-              billingCycle: 'yearly' as const,
-              price: 9800,
-            }]}
+          <EnhancedSubscriptionForm
+            plans={[
+              ...mockPlans,
+              {
+                ...mockPlans[1],
+                id: 'plan-basic-yearly',
+                billingCycle: 'yearly' as const,
+                price: 9800,
+              },
+            ]}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
           />
@@ -229,10 +232,10 @@ describe('課金システム統合テスト', () => {
   describe('決済処理', () => {
     test('成功時の決済フローが正しく動作する', async () => {
       const onSubscriptionCreate = jest.fn();
-      
+
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={onSubscriptionCreate}
             onError={jest.fn()}
@@ -241,7 +244,9 @@ describe('課金システム統合テスト', () => {
       );
 
       // プラン選択
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+      const basicPlanCard = screen
+        .getByText('ベーシックプラン')
+        .closest('div[class*="cursor-pointer"]');
       fireEvent.click(basicPlanCard!);
 
       // 決済開始
@@ -259,19 +264,22 @@ describe('課金システム統合テスト', () => {
       expect(screen.getByText('サブスクリプション作成')).toBeInTheDocument();
 
       // 成功コールバックが呼ばれる
-      await waitFor(() => {
-        expect(onSubscriptionCreate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            id: 'sub_test123',
-            planId: 'plan-basic',
-          })
-        );
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(onSubscriptionCreate).toHaveBeenCalledWith(
+            expect.objectContaining({
+              id: 'sub_test123',
+              planId: 'plan-basic',
+            })
+          );
+        },
+        { timeout: 10000 }
+      );
     });
 
     test('カード拒否エラーが適切に処理される', async () => {
       const onError = jest.fn();
-      
+
       // カード拒否エラーをシミュレートするためのモックプラン
       const errorPlan = {
         ...mockPlans[1],
@@ -280,7 +288,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={[errorPlan]}
             onSubscriptionCreate={jest.fn()}
             onError={onError}
@@ -296,10 +304,15 @@ describe('課金システム統合テスト', () => {
       fireEvent.click(subscribeButton);
 
       // エラーメッセージの確認
-      await waitFor(() => {
-        expect(screen.getByText('カードが拒否されました。別のカードをお試しください。')).toBeInTheDocument();
-        expect(screen.getByText('別のクレジットカードをお試しください')).toBeInTheDocument();
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText('カードが拒否されました。別のカードをお試しください。')
+          ).toBeInTheDocument();
+          expect(screen.getByText('別のクレジットカードをお試しください')).toBeInTheDocument();
+        },
+        { timeout: 10000 }
+      );
 
       // エラーコールバックが呼ばれる
       expect(onError).toHaveBeenCalled();
@@ -310,7 +323,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={onError}
@@ -319,7 +332,9 @@ describe('課金システム統合テスト', () => {
       );
 
       // 最初の決済試行
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+      const basicPlanCard = screen
+        .getByText('ベーシックプラン')
+        .closest('div[class*="cursor-pointer"]');
       fireEvent.click(basicPlanCard!);
 
       const subscribeButton = screen.getByText('サブスクリプションを開始');
@@ -333,9 +348,14 @@ describe('課金システム統合テスト', () => {
 
       fireEvent.click(subscribeButton);
 
-      await waitFor(() => {
-        expect(screen.getByText('同じ操作が既に実行中です。しばらくお待ちください。')).toBeInTheDocument();
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText('同じ操作が既に実行中です。しばらくお待ちください。')
+          ).toBeInTheDocument();
+        },
+        { timeout: 10000 }
+      );
     });
 
     test('サーバーエラー時のリトライ機能が動作する', async () => {
@@ -346,7 +366,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={[errorPlan]}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -362,10 +382,15 @@ describe('課金システム統合テスト', () => {
       fireEvent.click(subscribeButton);
 
       // エラーとリトライボタンの確認
-      await waitFor(() => {
-        expect(screen.getByText('サーバーでエラーが発生しました。しばらく待ってからお試しください。')).toBeInTheDocument();
-        expect(screen.getByText('再試行')).toBeInTheDocument();
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText('サーバーでエラーが発生しました。しばらく待ってからお試しください。')
+          ).toBeInTheDocument();
+          expect(screen.getByText('再試行')).toBeInTheDocument();
+        },
+        { timeout: 10000 }
+      );
 
       // リトライボタンをクリック
       const retryButton = screen.getByText('再試行');
@@ -395,7 +420,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -403,16 +428,21 @@ describe('課金システム統合テスト', () => {
         </TestWrapper>
       );
 
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+      const basicPlanCard = screen
+        .getByText('ベーシックプラン')
+        .closest('div[class*="cursor-pointer"]');
       fireEvent.click(basicPlanCard!);
 
       const subscribeButton = screen.getByText('サブスクリプションを開始');
       fireEvent.click(subscribeButton);
 
-      await waitFor(() => {
-        expect(interceptedRequests).toHaveLength(1);
-        expect(interceptedRequests[0].headers.get('Authorization')).toBe('Bearer test_token_123');
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(interceptedRequests).toHaveLength(1);
+          expect(interceptedRequests[0].headers.get('Authorization')).toBe('Bearer test_token_123');
+        },
+        { timeout: 10000 }
+      );
     });
 
     test('確認トークンが生成される', async () => {
@@ -426,7 +456,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -434,17 +464,22 @@ describe('課金システム統合テスト', () => {
         </TestWrapper>
       );
 
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+      const basicPlanCard = screen
+        .getByText('ベーシックプラン')
+        .closest('div[class*="cursor-pointer"]');
       fireEvent.click(basicPlanCard!);
 
       const subscribeButton = screen.getByText('サブスクリプションを開始');
       fireEvent.click(subscribeButton);
 
-      await waitFor(() => {
-        expect(interceptedRequests).toHaveLength(1);
-        expect(interceptedRequests[0]).toHaveProperty('confirmationToken');
-        expect(interceptedRequests[0].confirmationToken).toMatch(/^conf_\d+_[a-z0-9]+$/);
-      }, { timeout: 10000 });
+      await waitFor(
+        () => {
+          expect(interceptedRequests).toHaveLength(1);
+          expect(interceptedRequests[0]).toHaveProperty('confirmationToken');
+          expect(interceptedRequests[0].confirmationToken).toMatch(/^conf_\d+_[a-z0-9]+$/);
+        },
+        { timeout: 10000 }
+      );
     });
 
     test('XSS攻撃に対する保護', async () => {
@@ -456,7 +491,7 @@ describe('課金システム統合テスト', () => {
 
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={[maliciousPlan]}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -474,7 +509,7 @@ describe('課金システム統合テスト', () => {
     test('キーボードナビゲーションが動作する', async () => {
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -482,11 +517,13 @@ describe('課金システム統合テスト', () => {
         </TestWrapper>
       );
 
-      const firstPlanCard = screen.getByText('フリープラン').closest('div[class*="cursor-pointer"]');
-      
+      const firstPlanCard = screen
+        .getByText('フリープラン')
+        .closest('div[class*="cursor-pointer"]');
+
       // フォーカスを設定
       firstPlanCard?.focus();
-      
+
       // Enterキーで選択
       fireEvent.keyDown(firstPlanCard!, { key: 'Enter', code: 'Enter' });
 
@@ -498,7 +535,7 @@ describe('課金システム統合テスト', () => {
     test('スクリーンリーダー対応のaria属性が設定されている', () => {
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -511,7 +548,9 @@ describe('課金システム統合テスト', () => {
       expect(planCards.length).toBeGreaterThan(0);
 
       // プログレスバーのアクセシビリティ
-      const basicPlanCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+      const basicPlanCard = screen
+        .getByText('ベーシックプラン')
+        .closest('div[class*="cursor-pointer"]');
       fireEvent.click(basicPlanCard!);
 
       const subscribeButton = screen.getByText('サブスクリプションを開始');
@@ -533,10 +572,10 @@ describe('課金システム統合テスト', () => {
       }));
 
       const startTime = performance.now();
-      
+
       render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={manyPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -556,7 +595,7 @@ describe('課金システム統合テスト', () => {
     test('メモリリークが発生しない', async () => {
       const { unmount } = render(
         <TestWrapper>
-          <EnhancedSubscriptionForm 
+          <EnhancedSubscriptionForm
             plans={mockPlans}
             onSubscriptionCreate={jest.fn()}
             onError={jest.fn()}
@@ -634,4 +673,4 @@ export const simulateFailedPayment = async (errorCode = 'card_declined') => {
       type: 'card_error',
     },
   });
-}; 
+};

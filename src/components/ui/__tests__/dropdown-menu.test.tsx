@@ -73,9 +73,16 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
   ),
   RadioGroup: ({ children, value, onValueChange, ...props }: any) => (
     <div data-testid="dropdown-radio-group" data-value={value} {...props}>
-      {React.Children.map(children, (child) =>
-        cloneElement(child, { groupValue: value, onGroupValueChange: onValueChange })
-      )}
+      {children && Array.isArray(children)
+        ? children.map((child, index) =>
+            cloneElement(child, {
+              key: index,
+              groupValue: value,
+              onGroupValueChange: onValueChange,
+            })
+          )
+        : children &&
+          cloneElement(children, { groupValue: value, onGroupValueChange: onValueChange })}
     </div>
   ),
   RadioItem: ({ children, value, groupValue, onGroupValueChange, className, ...props }: any) => (

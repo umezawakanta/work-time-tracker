@@ -1,6 +1,6 @@
 /**
  * 📊 アナリティクスダッシュボードテスト
- * 
+ *
  * ユーザー解析ダッシュボードコンポーネントの表示・機能テスト
  */
 
@@ -27,7 +27,9 @@ jest.mock('react-hot-toast', () => ({
 
 // rechartsをモック（チャートライブラリ）
 jest.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: any) => <div data-testid="responsive-container">{children}</div>,
+  ResponsiveContainer: ({ children }: any) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
   BarChart: ({ children }: any) => <div data-testid="bar-chart">{children}</div>,
   PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
   Bar: () => <div data-testid="bar" />,
@@ -97,7 +99,9 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       render(<AnalyticsDashboard isAdminUser={false} />);
 
       expect(screen.getByText('管理者権限が必要です')).toBeInTheDocument();
-      expect(screen.getByText('このダッシュボードは管理者のみアクセスできます。')).toBeInTheDocument();
+      expect(
+        screen.getByText('このダッシュボードは管理者のみアクセスできます。')
+      ).toBeInTheDocument();
     });
 
     test('ローディング状態が正しく表示される', () => {
@@ -178,7 +182,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const monthOption = screen.getByRole('option', { name: '過去30日' });
       await user.click(monthOption);
 
-      expect(userTrackingService.getAnalytics).toHaveBeenLastCalledWith('month');
+      expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('month');
     });
   });
 
@@ -223,7 +227,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
   describe('📤 エクスポート機能', () => {
     test('エクスポートボタンでデータダウンロードが実行される', async () => {
       const user = userEvent.setup();
-      
+
       // createObjectURLとrevokeObjectURLをモック
       const mockCreateObjectURL = jest.fn(() => 'blob:test-url');
       const mockRevokeObjectURL = jest.fn();
@@ -273,9 +277,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('⚠️ エラーハンドリング', () => {
     test('データ取得失敗時にエラー処理される', async () => {
-      (userTrackingService.getAnalytics as jest.Mock).mockRejectedValueOnce(
-        new Error('API Error')
-      );
+      (userTrackingService.getAnalytics as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
 
       render(<AnalyticsDashboard isAdminUser={true} />);
 

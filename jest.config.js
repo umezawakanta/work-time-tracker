@@ -31,10 +31,20 @@ module.exports = {
       tsconfig: 'tsconfig.json',
       useESM: false,
     }],
+    '^.+\\.(js|jsx)$': 'babel-jest',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(firebase|@firebase|@google-cloud|recharts)/)',
+  ],
   globals: {
     'ts-jest': {
       useESM: false,
+    },
+    'import.meta': {
+      env: {
+        VITE_GEMINI_API_KEY: 'test-key',
+        DEV: false,
+      },
     },
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

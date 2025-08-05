@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 // Import components and services
 import SubscriptionPage from '@/pages/SubscriptionPage';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
-import { AuthContext } from '@/context/AuthContext';
+import AuthContext from '@/context/AuthContext';
 import userSubscriptionApi from '@/services/api/userSubscriptionApi';
 import { formatPrice } from '@/config/stripe';
 

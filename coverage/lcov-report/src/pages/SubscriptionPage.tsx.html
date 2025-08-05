@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.14% </span>
+                <span class="strong">76.47% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/35</span>
+                <span class='fraction'>26/34</span>
             </div>
         
             
@@ -491,18 +491,7 @@
 <a name='L426'></a><a href='#L426'>426</a>
 <a name='L427'></a><a href='#L427'>427</a>
 <a name='L428'></a><a href='#L428'>428</a>
-<a name='L429'></a><a href='#L429'>429</a>
-<a name='L430'></a><a href='#L430'>430</a>
-<a name='L431'></a><a href='#L431'>431</a>
-<a name='L432'></a><a href='#L432'>432</a>
-<a name='L433'></a><a href='#L433'>433</a>
-<a name='L434'></a><a href='#L434'>434</a>
-<a name='L435'></a><a href='#L435'>435</a>
-<a name='L436'></a><a href='#L436'>436</a>
-<a name='L437'></a><a href='#L437'>437</a>
-<a name='L438'></a><a href='#L438'>438</a>
-<a name='L439'></a><a href='#L439'>439</a>
-<a name='L440'></a><a href='#L440'>440</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L429'></a><a href='#L429'>429</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -549,10 +538,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -690,9 +675,7 @@
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">55x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -770,8 +753,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">33x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -829,8 +810,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -930,8 +909,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -941,7 +918,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">// src/pages/SubscriptionPage.tsx
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/pages/SubscriptionPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -949,16 +927,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { 
-  CreditCard, 
-  CheckCircle, 
-  Star, 
-  Zap, 
-  Shield, 
+import {
+  CreditCard,
+  CheckCircle,
+  Star,
+  Zap,
+  Shield,
   Clock,
   ArrowRight,
   Gift,
-  Info
+  Info,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
@@ -1001,7 +979,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'Todoリスト',
       '4象限分析（月10回）',
       'データエクスポート',
-      'コミュニティサポート'
+      'コミュニティサポート',
     ],
     limits: {
       workHours: 160,
@@ -1010,9 +988,9 @@ const subscriptionPlans: SubscriptionPlan[] = [
       reports: 5,
       apiCalls: 100,
       storage: 100, // MB
-      teamMembers: 1
+      teamMembers: 1,
     },
-    trialDays: 0
+    trialDays: 0,
   },
   {
     id: 'basic-monthly',
@@ -1029,7 +1007,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'データ自動バックアップ',
       'メールサポート',
       'スケジュール管理',
-      'モバイルアプリ同期'
+      'モバイルアプリ同期',
     ],
     limits: {
       workHours: -1, // 無制限
@@ -1038,10 +1016,10 @@ const subscriptionPlans: SubscriptionPlan[] = [
       reports: 50,
       apiCalls: 5000,
       storage: 1000, // MB
-      teamMembers: 1
+      teamMembers: 1,
     },
     trialDays: 14,
-    isPopular: true
+    isPopular: true,
   },
   {
     id: 'basic-yearly',
@@ -1051,11 +1029,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
     originalPrice: 11760, // 月額980円 × 12ヶ月
     currency: 'jpy',
     billingCycle: 'yearly',
-    features: [
-      'ベーシックプランの全機能',
-      '年額払いで2ヶ月分お得',
-      '優先サポート'
-    ],
+    features: ['ベーシックプランの全機能', '年額払いで2ヶ月分お得', '優先サポート'],
     limits: {
       workHours: -1,
       projects: 10,
@@ -1063,9 +1037,9 @@ const subscriptionPlans: SubscriptionPlan[] = [
       reports: 50,
       apiCalls: 5000,
       storage: 1000,
-      teamMembers: 1
+      teamMembers: 1,
     },
-    trialDays: 30
+    trialDays: 30,
   },
   {
     id: 'premium-monthly',
@@ -1082,7 +1056,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'カスタム通知',
       'ブランディング設定',
       '電話サポート',
-      'オンライン研修'
+      'オンライン研修',
     ],
     limits: {
       workHours: -1,
@@ -1091,9 +1065,9 @@ const subscriptionPlans: SubscriptionPlan[] = [
       reports: -1,
       apiCalls: 50000,
       storage: 10000,
-      teamMembers: 10
+      teamMembers: 10,
     },
-    trialDays: 14
+    trialDays: 14,
   },
   {
     id: 'premium-yearly',
@@ -1107,7 +1081,7 @@ const subscriptionPlans: SubscriptionPlan[] = [
       'プレミアムプランの全機能',
       '年額払いで2ヶ月分お得',
       '専任サポート',
-      'カスタム開発相談'
+      'カスタム開発相談',
     ],
     limits: {
       workHours: -1,
@@ -1116,10 +1090,10 @@ const subscriptionPlans: SubscriptionPlan[] = [
       reports: -1,
       apiCalls: 50000,
       storage: 10000,
-      teamMembers: 10
+      teamMembers: 10,
     },
-    trialDays: 30
-  }
+    trialDays: 30,
+  },
 ];
 &nbsp;
 const SubscriptionPage: React.FC = () =&gt; {
@@ -1129,9 +1103,7 @@ const SubscriptionPage: React.FC = () =&gt; {
   const [isLoading, setIsLoading] = useState(false);
 &nbsp;
   // 現在のプランに基づいてフィルタリング
-  const currentPlans = subscriptionPlans.filter(plan =&gt; 
-    plan.billingCycle === billingCycle
-  );
+  const currentPlans = subscriptionPlans.filter((plan) =&gt; plan.billingCycle === billingCycle);
 &nbsp;
   const handlePlanSelect = <span class="fstat-no" title="function not covered" >(p</span>lan: SubscriptionPlan) =&gt; {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (plan.id === 'free') {</span>
@@ -1140,8 +1112,8 @@ const SubscriptionPage: React.FC = () =&gt; {
     }
 &nbsp;
     // プレミアムプランの場合は決済ページへ
-<span class="cstat-no" title="statement not covered" >    navigate('/subscription-upgrade', { </span>
-      state: { selectedPlan: plan } 
+<span class="cstat-no" title="statement not covered" >    navigate('/subscription-upgrade', {</span>
+      state: { selectedPlan: plan },
     });
   };
 &nbsp;
@@ -1201,9 +1173,7 @@ const SubscriptionPage: React.FC = () =&gt; {
             }`}
           &gt;
             年額払い
-            &lt;Badge className="ml-2 bg-green-100 text-green-800"&gt;
-              2ヶ月分お得
-            &lt;/Badge&gt;
+            &lt;Badge className="ml-2 bg-green-100 text-green-800"&gt;2ヶ月分お得&lt;/Badge&gt;
           &lt;/button&gt;
         &lt;/div&gt;
       &lt;/div&gt;
@@ -1211,8 +1181,8 @@ const SubscriptionPage: React.FC = () =&gt; {
       {/* プランカード */}
       &lt;div className="grid md:grid-cols-3 gap-8 mb-12"&gt;
         {currentPlans.map((plan) =&gt; (
-          &lt;Card 
-            key={plan.id} 
+          &lt;Card
+            key={plan.id}
             className={`relative transition-all duration-200 hover:shadow-lg ${
               plan.isPopular ? 'ring-2 ring-blue-500 scale-105' : ''
             }`}
@@ -1228,10 +1198,8 @@ const SubscriptionPage: React.FC = () =&gt; {
 &nbsp;
             &lt;CardHeader className="text-center pb-4"&gt;
               &lt;CardTitle className="text-2xl font-bold"&gt;{plan.name}&lt;/CardTitle&gt;
-              &lt;CardDescription className="text-gray-600 mt-2"&gt;
-                {plan.description}
-              &lt;/CardDescription&gt;
-              
+              &lt;CardDescription className="text-gray-600 mt-2"&gt;{plan.description}&lt;/CardDescription&gt;
+&nbsp;
               &lt;div className="mt-6"&gt;
                 {plan.originalPrice &amp;&amp; (
 <span class="branch-1 cbranch-no" title="branch not covered" >                  &lt;div className="text-sm text-gray-500 line-through"&gt;</span>
@@ -1269,14 +1237,14 @@ const SubscriptionPage: React.FC = () =&gt; {
               {renderFeatureList(plan.features)}
               {renderLimits(plan.limits)}
 &nbsp;
-              &lt;Button 
+              &lt;Button
                 onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handlePlanSelect(plan)}</span>
                 className={`w-full mt-6 ${
-                  plan.isPopular 
-                    ? 'bg-blue-600 hover:bg-blue-700' 
+                  plan.isPopular
+                    ? 'bg-blue-600 hover:bg-blue-700'
                     : plan.id === 'free'
-                    ? 'bg-gray-600 hover:bg-gray-700'
-                    : 'bg-gray-800 hover:bg-gray-900'
+                      ? 'bg-gray-600 hover:bg-gray-700'
+                      : 'bg-gray-800 hover:bg-gray-900'
                 }`}
                 disabled={isLoading}
               &gt;
@@ -1299,9 +1267,7 @@ const SubscriptionPage: React.FC = () =&gt; {
         &lt;Alert&gt;
           &lt;Shield className="h-4 w-4" /&gt;
           &lt;AlertTitle&gt;安全な決済&lt;/AlertTitle&gt;
-          &lt;AlertDescription&gt;
-            Stripe社の業界最高水準のセキュリティで決済情報を保護
-          &lt;/AlertDescription&gt;
+          &lt;AlertDescription&gt;Stripe社の業界最高水準のセキュリティで決済情報を保護&lt;/AlertDescription&gt;
         &lt;/Alert&gt;
 &nbsp;
         &lt;Alert&gt;
@@ -1324,7 +1290,7 @@ const SubscriptionPage: React.FC = () =&gt; {
       {/* よくある質問セクション */}
       &lt;div className="max-w-4xl mx-auto"&gt;
         &lt;h2 className="text-2xl font-bold text-center mb-8"&gt;よくある質問&lt;/h2&gt;
-        
+&nbsp;
         &lt;div className="space-y-6"&gt;
           &lt;Card&gt;
             &lt;CardHeader&gt;
@@ -1369,9 +1335,9 @@ const SubscriptionPage: React.FC = () =&gt; {
         &lt;p className="text-gray-600 mb-4"&gt;
           まだ決められませんか？フリープランで基本機能をお試しください
         &lt;/p&gt;
-        &lt;Button 
-          variant="outline" 
-          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handlePlanSelect(currentPlans.find(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.id === 'free')</span>!)}</span>
+        &lt;Button
+          variant="outline"
+          onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >handlePlanSelect(currentPlans.find(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >p.id === 'free')</span>!)}</span>
         &gt;
           フリープランで始める
         &lt;/Button&gt;
@@ -1380,14 +1346,15 @@ const SubscriptionPage: React.FC = () =&gt; {
   );
 };
 &nbsp;
-export default SubscriptionPage;</pre></td></tr></table></pre>
+export default SubscriptionPage;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-05T05:31:46.807Z
+                at 2025-08-05T05:52:03.976Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
