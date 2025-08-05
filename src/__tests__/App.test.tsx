@@ -52,34 +52,112 @@ jest.mock('../pages/NotFound', () => {
   };
 });
 
+// Mock all lazy-loaded components to avoid Suspense issues
+jest.mock('../pages/IntegratedDashboard', () => {
+  return function IntegratedDashboard() {
+    return <div>Integrated Dashboard</div>;
+  };
+});
+
+jest.mock('../pages/RealtimeClockPage', () => {
+  return function RealtimeClockPage() {
+    return <div>Realtime Clock</div>;
+  };
+});
+
+// Mock the Layout component to avoid loading issues
+jest.mock('../components/layout/Layout', () => {
+  return function Layout({ children }: { children: React.ReactNode }) {
+    return <div data-testid="layout">{children}</div>;
+  };
+});
+
+// Override React.Suspense and React.lazy for testing
+jest.doMock('react', () => {
+  const originalReact = jest.requireActual('react');
+
+  return {
+    ...originalReact,
+    Suspense: ({ children }: { children: React.ReactNode; fallback?: React.ReactNode }) => children,
+    lazy: (factory: () => Promise<{ default: React.ComponentType<any> }>) => {
+      // Return a synchronous component for testing
+      const Component = (props: any) => {
+        // Check the factory function to determine which component to render
+        const factoryString = factory.toString();
+        if (factoryString.includes('NotFound')) {
+          return originalReact.createElement(
+            'div',
+            null,
+            originalReact.createElement('h1', null, '404 - ページが見つかりません'),
+            originalReact.createElement('a', { href: '/' }, 'ホームに戻る')
+          );
+        }
+        return originalReact.createElement('div', null, 'Mocked Lazy Component');
+      };
+      return Component;
+    },
+  };
+});
+
 // Mock AuthContext to avoid loading states interfering with tests
-jest.mock('../context/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
-  useAuth: () => ({
+jest.mock('../context/AuthContext', () => {
+  const React = require('react');
+  const mockAuthValue = {
+    isAuthenticated: false,
+    setIsAuthenticated: jest.fn(),
+    loading: false, // This is crucial - no loading state
     user: null,
-    login: jest.fn(),
-    logout: jest.fn(),
-    loading: false,
-    error: null,
-  }),
-  __esModule: true,
-  default: {
-    Provider: ({ children }: { children: React.ReactNode }) => children,
-    Consumer: ({ children }: { children: any }) =>
-      children({
-        user: null,
-        login: jest.fn(),
-        logout: jest.fn(),
-        loading: false,
-        error: null,
-      }),
-  },
-}));
+    setUser: jest.fn(),
+    fetchUser: jest.fn(),
+    updateProfile: jest.fn(),
+    sessionExpired: false,
+    refreshAuth: jest.fn(),
+    sessionInfo: {
+      isAuthenticated: false,
+      expiresAt: null,
+      refreshExpiresAt: null,
+      timeUntilExpiry: 0,
+      refreshTimeUntilExpiry: 0,
+    },
+  };
+
+  return {
+    AuthProvider: ({ children }: { children: React.ReactNode }) => {
+      return React.createElement('div', { 'data-testid': 'mock-auth-provider' }, children);
+    },
+    useAuth: () => mockAuthValue,
+    __esModule: true,
+    default: React.createContext(mockAuthValue),
+  };
+});
 
 // Mock other problematic components
 jest.mock('../components/pomodoro/PomodoroManager', () => ({
   PomodoroManager: () => <div data-testid="pomodoro-manager">Pomodoro</div>,
 }));
+
+// Mock services to prevent App component from showing loading state
+jest.mock('../services/analytics/AnalyticsService', () => ({
+  initializeAnalytics: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../services/DatabaseService', () => ({
+  initializeDatabase: jest.fn().mockResolvedValue(undefined),
+  DatabaseService: {
+    getInstance: jest.fn(() => ({
+      initialize: jest.fn().mockResolvedValue(undefined),
+    })),
+  },
+}));
+
+// Mock timers to skip the 500ms delay in App initialization
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
 
 jest.mock('../context/PomodoroContext', () => ({
   PomodoroProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -185,6 +263,10 @@ describe('App', () => {
       </MemoryRouter>,
       { disableRouter: true }
     );
+
+    // Fast-forward past the initialization delay
+    jest.advanceTimersByTime(500);
+
     // The NotFound component is now mocked so no need to wait
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
   });
@@ -196,6 +278,9 @@ describe('App', () => {
       </MemoryRouter>,
       { disableRouter: true }
     );
+
+    // Fast-forward past the initialization delay
+    jest.advanceTimersByTime(500);
 
     // The NotFound component is now mocked so no need to wait
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();

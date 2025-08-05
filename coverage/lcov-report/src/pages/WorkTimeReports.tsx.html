@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">35.71% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/42</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.46% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/39</span>
+                <span class='fraction'>0/39</span>
             </div>
         
             
@@ -270,24 +270,24 @@
 <a name='L205'></a><a href='#L205'>205</a>
 <a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -475,24 +475,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+<span class="cstat-no" title="statement not covered" >import { useState, useEffect } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import { useSelector, useDispatch } from 'react-redux';</span>
 import { RootState, AppDispatch } from '@/store';
 // import { useLocale } from '../hooks/useLocale'; // LocaleProvider issue - using default locale
-import { WorkTimeList } from '@/components/list/WorkTimeList';
-import { WorkTimeCharts } from '@/components/chart/WorkTimeChars';
-import { PomodoroStatsWidget } from '@/components/pomodoro/PomodoroStatsWidget';
-import { useReportData } from '@/hooks/useReportData';
-import { fetchWorkTimeEntries } from '@/store/workTimeSlice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
-import { Play, Target, Clock, CheckCircle, BarChart3, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+<span class="cstat-no" title="statement not covered" >import { WorkTimeList } from '@/components/list/WorkTimeList';</span>
+<span class="cstat-no" title="statement not covered" >import { WorkTimeCharts } from '@/components/chart/WorkTimeChars';</span>
+<span class="cstat-no" title="statement not covered" >import { PomodoroStatsWidget } from '@/components/pomodoro/PomodoroStatsWidget';</span>
+<span class="cstat-no" title="statement not covered" >import { useReportData } from '@/hooks/useReportData';</span>
+<span class="cstat-no" title="statement not covered" >import { fetchWorkTimeEntries } from '@/store/workTimeSlice';</span>
+<span class="cstat-no" title="statement not covered" >import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';</span>
+<span class="cstat-no" title="statement not covered" >import { Badge } from '@/components/ui/badge';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Progress } from '@/components/ui/progress';</span>
+<span class="cstat-no" title="statement not covered" >import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';</span>
+<span class="cstat-no" title="statement not covered" >import { Play, Target, Clock, CheckCircle, BarChart3, Zap } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { useNavigate } from 'react-router-dom';</span>
 &nbsp;
-export default function <span class="fstat-no" title="function not covered" >WorkTimeReports(</span>) {
+<span class="cstat-no" title="statement not covered" >export default function <span class="fstat-no" title="function not covered" >W</span>orkTimeReports(</span>) {
   const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
   // const { locale } = useLocale(); // LocaleProvider issue - using default locale
   const locale = <span class="cstat-no" title="statement not covered" >'ja-JP';</span> // デフォルトロケール設定
@@ -685,7 +685,7 @@ export default function <span class="fstat-no" title="function not covered" >Wor
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-05T17:26:04.188Z
+                at 2025-08-05T18:10:45.076Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -739,33 +739,36 @@ jest.mock('@radix-ui/react-popover', () => ({
 }));
 
 // Mock Radix UI Dropdown Menu
-jest.mock('@radix-ui/react-dropdown-menu', () => ({
-  Root: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-root', ...props }, children),
-  Trigger: ({ children, ...props }: any) =>
-    React.createElement('button', { 'data-testid': 'dropdown-trigger', ...props }, children),
-  Content: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-content', ...props }, children),
-  Portal: ({ children }: any) => children,
-  Item: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-item', ...props }, children),
-  CheckboxItem: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-checkbox-item', ...props }, children),
-  RadioItem: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-radio-item', ...props }, children),
-  Label: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-label', ...props }, children),
-  Separator: ({ ...props }: any) =>
-    React.createElement('hr', { 'data-testid': 'dropdown-separator', ...props }),
-  Group: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-group', ...props }, children),
-  Sub: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-sub', ...props }, children),
-  SubTrigger: ({ children, ...props }: any) =>
-    React.createElement('button', { 'data-testid': 'dropdown-sub-trigger', ...props }, children),
-  SubContent: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'dropdown-sub-content', ...props }, children),
-}));
+jest.mock('@radix-ui/react-dropdown-menu', () => {
+  const React = require('react');
+  return {
+    Root: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-root', ...props }, children),
+    Trigger: ({ children, ...props }: any) =>
+      React.createElement('button', { 'data-testid': 'dropdown-trigger', ...props }, children),
+    Content: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-content', ...props }, children),
+    Portal: ({ children }: any) => children,
+    Item: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-item', ...props }, children),
+    CheckboxItem: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-checkbox-item', ...props }, children),
+    RadioItem: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-radio-item', ...props }, children),
+    Label: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-label', ...props }, children),
+    Separator: ({ ...props }: any) =>
+      React.createElement('hr', { 'data-testid': 'dropdown-separator', ...props }),
+    Group: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-group', ...props }, children),
+    Sub: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-sub', ...props }, children),
+    SubTrigger: ({ children, ...props }: any) =>
+      React.createElement('button', { 'data-testid': 'dropdown-sub-trigger', ...props }, children),
+    SubContent: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'dropdown-sub-content', ...props }, children),
+  };
+});
 
 // ========================================
 // Radix UI Specific Mocks and Setup
