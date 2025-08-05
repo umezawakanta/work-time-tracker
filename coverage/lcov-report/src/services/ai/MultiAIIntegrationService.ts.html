@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">3.08% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/227</span>
+                <span class='fraction'>7/227</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">0.84% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/118</span>
+                <span class='fraction'>1/118</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.25% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/47</span>
+                <span class='fraction'>2/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">3.19% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/219</span>
+                <span class='fraction'>7/219</span>
             </div>
         
             
@@ -986,15 +986,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1816,7 +1816,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * 🤖 マルチAI統合サービス
  * ChatGPT、Claude、Gemini、Manus、NotebookLM、Notion、AI Studio、SuperWhisper、Soraを統合
@@ -1862,16 +1862,16 @@ export interface AITaskResponse {
   metadata?: any;
 }
 &nbsp;
-<span class="fstat-no" title="function not covered" >class M</span>ultiAIIntegrationService {
-  private static <span class="cstat-no" title="statement not covered" >instance: MultiAIIntegrationService | null = n</span>ull;
-  private <span class="cstat-no" title="statement not covered" >config: MultiAIConfig | null = null;</span>
-  private <span class="cstat-no" title="statement not covered" >usageStats = new Map&lt;string, { requests: number; errors: number; totalCost: number }&gt;();</span>
+class MultiAIIntegrationService {
+  private static instance: MultiAIIntegrationService | null = null;
+  private config: MultiAIConfig | null = null;
+  private usageStats = new Map&lt;string, { requests: number; errors: number; totalCost: number }&gt;();
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >static </span>getInstance(): MultiAIIntegrationService {
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!MultiAIIntegrationService.instance) {</span>
-<span class="cstat-no" title="statement not covered" >      MultiAIIntegrationService.instance = new MultiAIIntegrationService();</span>
+  public static getInstance(): MultiAIIntegrationService {
+    if (!MultiAIIntegrationService.instance) {
+      MultiAIIntegrationService.instance = new MultiAIIntegrationService();
     }
-<span class="cstat-no" title="statement not covered" >    return MultiAIIntegrationService.instance;</span>
+    return MultiAIIntegrationService.instance;
   }
 &nbsp;
   /**
@@ -2693,7 +2693,7 @@ export interface AITaskResponse {
   }
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >multiAIIntegrationService = MultiAIIntegrationService.getInstance();</span>
+export const multiAIIntegrationService = MultiAIIntegrationService.getInstance();
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -2701,7 +2701,7 @@ export const <span class="cstat-no" title="statement not covered" >multiAIIntegr
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-05T12:41:38.880Z
+                at 2025-08-05T15:22:27.439Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

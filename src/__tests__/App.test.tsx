@@ -122,25 +122,28 @@ describe('App', () => {
     expect(document.querySelector('body')).toBeInTheDocument();
   });
 
-  test('renders not found page for reports (requires auth)', () => {
+  test('renders not found page for reports (requires auth)', async () => {
     render(
       <MemoryRouter initialEntries={['/reports']}>
         <App />
       </MemoryRouter>,
       { disableRouter: true }
     );
-    expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
+    // Wait for the NotFound component to load (it's lazy loaded)
+    expect(await screen.findByText('404 - ページが見つかりません')).toBeInTheDocument();
   });
 
-  test('renders not found page for invalid route', () => {
+  test('renders not found page for invalid route', async () => {
     render(
       <MemoryRouter initialEntries={['/invalid-route']}>
         <App />
       </MemoryRouter>,
       { disableRouter: true }
     );
-    expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
-    expect(screen.getByText('ホームに戻る')).toBeInTheDocument();
+
+    // Wait for the NotFound component to load (it's lazy loaded)
+    expect(await screen.findByText('404 - ページが見つかりません')).toBeInTheDocument();
+    expect(await screen.findByText('ホームに戻る')).toBeInTheDocument();
   });
 
   test('renders login page correctly', () => {

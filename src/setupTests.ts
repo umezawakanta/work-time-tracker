@@ -10,6 +10,7 @@ if (typeof window !== 'undefined') {
 
 // Now import other dependencies
 import '@testing-library/jest-dom';
+import React from 'react';
 import { TextEncoder, TextDecoder } from 'util';
 import 'whatwg-fetch';
 

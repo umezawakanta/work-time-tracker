@@ -45,6 +45,7 @@ import { ADHDLifeManagementHub } from './components/cognitive/ADHDLifeManagement
 
 // 🚀 Time Tracking & Work Management - High Priority
 const RealtimeClockPage = lazy(() => import('./pages/RealtimeClockPage'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 const DailyWorkVisualizationPage = lazy(() => import('./pages/DailyWorkVisualizationPage'));
 const MonthlyTimesheetPage = lazy(() => import('./pages/MonthlyTimesheetPage'));
 const WorkPatternSettingsPage = lazy(() => import('./pages/WorkPatternSettingsPage'));
@@ -1017,8 +1018,14 @@ const App: React.FC = () => {
 
                             {/* Catch-all route */}
                             <Route
-                              path="/*"
-                              element={<Navigate to="/integrated-dashboard" replace />}
+                              path="*"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <NotFound />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
                             />
                           </Routes>
                         </div>
