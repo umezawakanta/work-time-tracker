@@ -92,6 +92,7 @@ const TwitterPage = lazy(() => import('./pages/TwitterPage'));
 const PoliticalTrends = lazy(() => import('./pages/PoliticalTrends'));
 
 // 💳 Subscription & Billing
+const SubscriptionPage = lazy(() => import('./pages/SubscriptionPage'));
 const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManagementPage'));
 const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
 const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
@@ -843,6 +844,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <SubscriptionManagementPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/subscription"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SubscriptionPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }

@@ -29,6 +29,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UserSession {
   id: string;
@@ -132,6 +133,7 @@ interface AnalyticsData {
  * 包括的分析ダッシュボード - ユーザー行動・アクセス解析
  */
 const ComprehensiveAnalyticsDashboard: React.FC = () => {
+  const { user } = useAuth();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [userSessions, setUserSessions] = useState<UserSession[]>([]);
   const [pageViews, setPageViews] = useState<PageView[]>([]);
@@ -151,27 +153,44 @@ const ComprehensiveAnalyticsDashboard: React.FC = () => {
     setIsLoading(true);
     try {
       // 実際の分析データを取得
-      const response = await fetch(`/api/analytics/data?timeRange=${selectedTimeRange}`);
+      const response = await fetch(`/api/analytics/data?timeRange=${selectedTimeRange}`, {
+        headers: {
+          Authorization: `Bearer ${await user?.getIdToken()}`,
+        },
+      });
+
       if (response.ok) {
-        const data = await response.json();
-        setAnalyticsData(data.analytics || getMockAnalyticsData());
-        setUserSessions(data.sessions || []);
-        setPageViews(data.pageViews || []);
-        setUserProfiles(data.users || []);
+        const result = await response.json();
+        if (result.success && result.data) {
+          setAnalyticsData(result.data.analytics);
+          setUserSessions(result.data.sessions || []);
+          setPageViews(result.data.pageViews || []);
+          setUserProfiles(result.data.users || []);
+          console.log('✅ Analytics data loaded successfully');
+        } else {
+          throw new Error(result.message || 'Failed to load analytics data');
+        }
       } else {
-        // APIが利用できない場合はモックデータを使用
-        setAnalyticsData(getMockAnalyticsData());
-        setUserSessions(getMockUserSessions());
-        setPageViews(getMockPageViews());
-        setUserProfiles(getMockUserProfiles());
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       setLastUpdate(new Date());
     } catch (error) {
-      console.warn('分析データの取得に失敗しました。モックデータを使用します。', error);
-      setAnalyticsData(getMockAnalyticsData());
-      setUserSessions(getMockUserSessions());
-      setPageViews(getMockPageViews());
-      setUserProfiles(getMockUserProfiles());
+      console.error('❌ Analytics data fetch failed:', error);
+      // エラー時は空のデータ構造で初期化
+      setAnalyticsData({
+        users: { total: 0, active: 0, new: 0, returning: 0, churned: 0 },
+        sessions: { total: 0, avgDuration: 0, bounceRate: 0, pagesPerSession: 0 },
+        pageViews: { total: 0, unique: 0, topPages: [] },
+        devices: { desktop: 0, mobile: 0, tablet: 0 },
+        browsers: { chrome: 0, firefox: 0, safari: 0, edge: 0, other: 0 },
+        geographic: [],
+        conversion: { signups: 0, subscriptions: 0, conversionRate: 0 },
+        engagement: { avgSessionTime: 0, repeatVisitors: 0, socialShares: 0, downloads: 0 },
+      });
+      setUserSessions([]);
+      setPageViews([]);
+      setUserProfiles([]);
+      toast.error('分析データの取得に失敗しました。ネットワーク接続を確認してください。');
     } finally {
       setIsLoading(false);
     }

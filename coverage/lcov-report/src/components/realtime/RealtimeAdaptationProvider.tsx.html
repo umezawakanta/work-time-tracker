@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">9.92% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/131</span>
+                <span class='fraction'>13/131</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.82% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/115</span>
+                <span class='fraction'>9/115</span>
             </div>
         
             
@@ -577,8 +577,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -624,10 +624,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -655,7 +655,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1026,7 +1026,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1037,8 +1037,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1067,8 +1067,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1080,14 +1080,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * ⚡ リアルタイム適応プロバイダー
  * 行動パターンに基づくリアルタイムUI調整システム
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';</span>
-<span class="cstat-no" title="statement not covered" >import BehavioralPatternDetector from '@/services/realtime/BehavioralPatternDetector';</span>
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import BehavioralPatternDetector from '@/services/realtime/BehavioralPatternDetector';
 import { useAdaptiveUI } from '@/components/ui/AdaptiveUIProvider';
 &nbsp;
 // リアルタイム適応の型定義
@@ -1133,10 +1133,10 @@ interface RealtimeAdaptationContextType {
   updateUserResponse: (eventIndex: number, response: AdaptationEvent['userResponse']) =&gt; void;
 }
 &nbsp;
-const RealtimeAdaptationContext = <span class="cstat-no" title="statement not covered" >createContext&lt;RealtimeAdaptationContextType | null&gt;(null);</span>
+const RealtimeAdaptationContext = createContext&lt;RealtimeAdaptationContextType | null&gt;(null);
 &nbsp;
 // 初期状態
-const initialState: RealtimeAdaptationState = <span class="cstat-no" title="statement not covered" >{</span>
+const initialState: RealtimeAdaptationState = {
   isActive: false,
   cognitiveState: {
     attention: 70,
@@ -1164,7 +1164,7 @@ interface RealtimeAdaptationProviderProps {
   adaptationThreshold?: number;
 }
 &nbsp;
-export const <span class="cstat-no" title="statement not covered" >RealtimeAdaptationProvider: React.FC&lt;RealtimeAdaptationProviderProps&gt; = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>{</span></span>
+export const RealtimeAdaptationProvider: React.FC&lt;RealtimeAdaptationProviderProps&gt; = <span class="fstat-no" title="function not covered" >({</span>
   children,
   autoStart = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
   adaptationThreshold = <span class="branch-0 cbranch-no" title="branch not covered" >0.7,</span>
@@ -1535,7 +1535,7 @@ export const <span class="cstat-no" title="statement not covered" >RealtimeAdapt
 /**
  * リアルタイム適応システムのフック
  */
-export const <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const useRealtimeAdaptation = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
   const context = <span class="cstat-no" title="statement not covered" >useContext(RealtimeAdaptationContext);</span>
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!context) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('useRealtimeAdaptation must be used within a RealtimeAdaptationProvider');</span>
@@ -1546,7 +1546,7 @@ export const <span class="cstat-no" title="statement not covered" >useRealtimeAd
 /**
  * 認知状態監視フック
  */
-export const <span class="cstat-no" title="statement not covered" >useCognitiveMonitoring = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const useCognitiveMonitoring = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
   const { state, getCurrentCognitiveState } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span>
 &nbsp;
   const [cognitiveMetrics, setCognitiveMetrics] = <span class="cstat-no" title="statement not covered" >useState({</span>
@@ -1576,7 +1576,7 @@ export const <span class="cstat-no" title="statement not covered" >useCognitiveM
 /**
  * セッション統計フック
  */
-export const <span class="cstat-no" title="statement not covered" >useSessionStats = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>) =</span>&gt; {</span>
+export const useSessionStats = <span class="fstat-no" title="function not covered" >() =</span>&gt; {
   const { state } = <span class="cstat-no" title="statement not covered" >useRealtimeAdaptation();</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
@@ -1589,7 +1589,7 @@ export const <span class="cstat-no" title="statement not covered" >useSessionSta
   };
 };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default RealtimeAdaptationProvider;</span>
+export default RealtimeAdaptationProvider;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1597,7 +1597,7 @@ export const <span class="cstat-no" title="statement not covered" >useSessionSta
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-05T05:05:56.343Z
+                at 2025-08-05T05:31:46.807Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

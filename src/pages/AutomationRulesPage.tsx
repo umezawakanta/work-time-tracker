@@ -8,8 +8,10 @@ import { PageLayout } from '@/components/layout/PageLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-hot-toast';
+import { RootState, AppDispatch } from '@/store';
+import { addTodoItem } from '@/store/todoSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { useAutomatedTaskManagement } from '@/hooks/useAutomatedTaskManagement';
 import { IntegratedAutomationDashboard } from '@/components/automation/IntegratedAutomationDashboard';
@@ -53,6 +55,7 @@ const AutomationRulesPage: React.FC = () => {
 
   // Auth and User Data
   const { user, isAuthenticated } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
 
   // Automated Task Management
@@ -61,17 +64,110 @@ const AutomationRulesPage: React.FC = () => {
   // モック統計データ
   const stats = getAutomationStats();
 
-  // モック自動化制御関数
-  const startAutomation = () => {
-    console.log('🚀 Automation started (mock)');
+  // 自動化制御関数（実装済み）
+  const startAutomation = async () => {
+    setIsInitialized(false);
+    try {
+      console.log('🚀 Automation starting...');
+
+      // 自動化サービスを開始
+      const result = await fetch('/api/automation/start', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await user?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          userId: user?.uid,
+          config: config,
+        }),
+      });
+
+      if (result.ok) {
+        console.log('✅ Automation started successfully');
+        toast.success('自動化が開始されました');
+        // 統計データを更新
+        const newStats = getAutomationStats();
+        setAutomationStats(newStats);
+      } else {
+        throw new Error('自動化の開始に失敗しました');
+      }
+    } catch (error) {
+      console.error('❌ Failed to start automation:', error);
+      toast.error('自動化の開始に失敗しました');
+    } finally {
+      setIsInitialized(true);
+    }
   };
 
-  const stopAutomation = () => {
-    console.log('⏹️ Automation stopped (mock)');
+  const stopAutomation = async () => {
+    setIsInitialized(false);
+    try {
+      console.log('⏹️ Automation stopping...');
+
+      const result = await fetch('/api/automation/stop', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await user?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          userId: user?.uid,
+        }),
+      });
+
+      if (result.ok) {
+        console.log('✅ Automation stopped successfully');
+        toast.success('自動化が停止されました');
+      } else {
+        throw new Error('自動化の停止に失敗しました');
+      }
+    } catch (error) {
+      console.error('❌ Failed to stop automation:', error);
+      toast.error('自動化の停止に失敗しました');
+    } finally {
+      setIsInitialized(true);
+    }
   };
 
-  const triggerAutomatedTaskGeneration = () => {
-    console.log('⚡ Manual task generation triggered (mock)');
+  const triggerAutomatedTaskGeneration = async () => {
+    setIsInitialized(false);
+    try {
+      console.log('⚡ Manual task generation triggering...');
+
+      const result = await fetch('/api/automation/generate-tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await user?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          userId: user?.uid,
+          config: config,
+        }),
+      });
+
+      if (result.ok) {
+        const data = await result.json();
+        console.log('✅ Tasks generated successfully:', data);
+        toast.success(`${data.tasksGenerated}個のタスクが生成されました`);
+
+        // タスクリストを更新
+        if (data.tasks && data.tasks.length > 0) {
+          // Redux storeにタスクを追加
+          data.tasks.forEach((task) => {
+            dispatch(addTodoItem(task));
+          });
+        }
+      } else {
+        throw new Error('タスク生成に失敗しました');
+      }
+    } catch (error) {
+      console.error('❌ Failed to generate tasks:', error);
+      toast.error('タスク生成に失敗しました');
+    } finally {
+      setIsInitialized(true);
+    }
   };
 
   useEffect(() => {
