@@ -1,4 +1,5 @@
 import { GeminiService } from '../GeminiService';
+import { ENV } from '@/utils/env';
 
 export interface BlogAnalysisResult {
   improvedTitle?: string;
@@ -72,7 +73,7 @@ JSON形式:
 }`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
         {
           method: 'POST',
           headers: {
@@ -147,7 +148,7 @@ JSON形式:
 }`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${ENV.GEMINI_API_KEY()}`,
         {
           method: 'POST',
           headers: {

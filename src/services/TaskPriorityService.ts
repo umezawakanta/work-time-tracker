@@ -1,10 +1,11 @@
 // src/services/TaskPriorityService.ts
 import axios from 'axios';
+import { ENV } from '@/utils/env';
 
 // Gemini APIエンドポイントとAPIキー
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || '';
+const API_KEY = ENV.GEMINI_API_KEY() || '';
 
 // 優先度の分析結果インターフェース
 export interface PriorityAnalysis {

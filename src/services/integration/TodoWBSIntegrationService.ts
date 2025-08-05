@@ -1,6 +1,6 @@
-import { WBSNode } from '../../types/wbs.js';
-import { Todo, NewTodo } from '../../types/todo.js';
-import WBSService from '../wbs/WBSService.js';
+import { WBSNode } from '../../types/wbs';
+import { Todo, NewTodo } from '../../types/todo';
+import WBSService from '../wbs/WBSService';
 
 interface TodoWBSMapping {
   todoId: string;

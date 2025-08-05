@@ -3,6 +3,8 @@
  * Gemini、Claude、ChatGPTを使用して動的なライフサポートアドバイスを生成
  */
 
+import { ENV } from '@/utils/env';
+
 export interface LifeSupportContext {
   userStatus?: {
     level?: number;
@@ -44,9 +46,9 @@ class LifeSupportChatService {
   private openaiApiKey: string | null = null;
 
   constructor() {
-    this.geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || null;
-    this.claudeApiKey = import.meta.env.VITE_CLAUDE_API_KEY || null;
-    this.openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY || null;
+    this.geminiApiKey = ENV.GEMINI_API_KEY() || null;
+    this.claudeApiKey = ENV.CLAUDE_API_KEY() || null;
+    this.openaiApiKey = ENV.OPENAI_API_KEY() || null;
 
     console.log('🤖 LifeSupportChatService initialized with APIs:', {
       gemini: !!this.geminiApiKey,

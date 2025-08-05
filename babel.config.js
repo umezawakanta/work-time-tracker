@@ -17,14 +17,7 @@ module.exports = {
     ],
     '@babel/preset-typescript',
   ],
-  plugins: [
-    [
-      'babel-plugin-transform-import-meta',
-      {
-        module: 'IMPORT_META',
-      },
-    ],
-  ],
+
   env: {
     test: {
       presets: [
@@ -45,14 +38,7 @@ module.exports = {
         ],
         '@babel/preset-typescript',
       ],
-      plugins: [
-        [
-          'babel-plugin-transform-import-meta',
-          {
-            module: 'IMPORT_META',
-          },
-        ],
-      ],
+
     },
   },
 }; 

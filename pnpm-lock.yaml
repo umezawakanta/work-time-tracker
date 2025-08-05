@@ -419,9 +419,6 @@ importers:
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)
-      babel-plugin-transform-import-meta:
-        specifier: ^2.3.3
-        version: 2.3.3(@babel/core@7.27.4)
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -4041,11 +4038,6 @@ packages:
     resolution: {integrity: sha512-ISqQ2frbiNU9vIJkzg7dlPpznPZ4jOiUQ1uSmB0fEHeowtN3COYRsXr/xexn64NpU13P06jc/L5TgiJXOgrbEg==}
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
-
-  babel-plugin-transform-import-meta@2.3.3:
-    resolution: {integrity: sha512-bbh30qz1m6ZU1ybJoNOhA2zaDvmeXMnGNBMVMDOJ1Fni4+wMBoy/j7MTRVmqAUCIcy54/rEnr9VEBsfcgbpm3Q==}
-    peerDependencies:
-      '@babel/core': ^7.10.0
 
   babel-preset-current-node-syntax@1.1.0:
     resolution: {integrity: sha512-ldYss8SbBlWva1bs28q78Ju5Zq1F+8BrqBZZ0VFhLBvhh6lCpC2o3gDJi/5DRLs9FgYZCnmPYIVFU4lRXCkyUw==}
@@ -13523,12 +13515,6 @@ snapshots:
       '@babel/helper-define-polyfill-provider': 0.6.5(@babel/core@7.27.4)
     transitivePeerDependencies:
       - supports-color
-
-  babel-plugin-transform-import-meta@2.3.3(@babel/core@7.27.4):
-    dependencies:
-      '@babel/core': 7.27.4
-      '@babel/template': 7.27.2
-      tslib: 2.8.1
 
   babel-preset-current-node-syntax@1.1.0(@babel/core@7.27.4):
     dependencies:

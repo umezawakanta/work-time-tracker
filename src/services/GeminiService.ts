@@ -1,29 +1,11 @@
 // src/services/GeminiService.ts
 import axios from 'axios';
-
-// 環境変数を安全に取得するユーティリティ関数
-const getEnvVar = (key: string): string | undefined => {
-  // Jest環境ではprocess.envを優先
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
-  }
-
-  // Vite環境でのimport.meta.env（安全にアクセス）
-  try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env[key];
-    }
-  } catch (e) {
-    // import.metaが利用できない場合は無視
-  }
-
-  return undefined;
-};
+import { ENV } from '@/utils/env';
 
 // Gemini APIの最新エンドポイントとAPIキー
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const API_KEY = getEnvVar('VITE_GEMINI_API_KEY') || getEnvVar('GEMINI_API_KEY') || '';
+const API_KEY = ENV.GEMINI_API_KEY() || '';
 
 // タスクのタイプを分類するためのインターフェース
 export interface TaskClassification {

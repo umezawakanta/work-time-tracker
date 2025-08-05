@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { loadStripe, Stripe as StripeJS } from '@stripe/stripe-js';
+import { ENV } from '@/utils/env';
 
 // Environment variables validation
 const validateStripeConfig = () => {
@@ -23,10 +24,10 @@ const validateStripeConfig = () => {
 
   // Client-side validation (browser environment)
   if (typeof window !== 'undefined') {
-    const missingClientKeys = requiredClientKeys.filter((key) => !import.meta.env[key]);
+    const missingClientKeys = requiredClientKeys.filter((key) => !ENV.getEnv(key));
 
     if (missingClientKeys.length > 0) {
-      if (import.meta.env.DEV) {
+      if (ENV.isDev()) {
         console.warn('🚧 Development: Missing Stripe client keys:', missingClientKeys);
         return false;
       } else {
@@ -65,8 +66,8 @@ let stripePromise: Promise<StripeJS | null> | null = null;
 if (typeof window !== 'undefined') {
   const isConfigValid = validateStripeConfig();
 
-  if (isConfigValid && import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) {
-    stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+  if (isConfigValid && ENV.STRIPE_PUBLISHABLE_KEY()) {
+    stripePromise = loadStripe(ENV.STRIPE_PUBLISHABLE_KEY()!);
     console.log('✅ Stripe client initialized successfully');
   } else {
     console.log('🎭 Development: Using mock Stripe client');
