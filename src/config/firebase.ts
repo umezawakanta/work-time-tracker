@@ -28,8 +28,13 @@ const validateFirebaseConfig = (): boolean => {
   );
 
   if (missingFields.length > 0) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('🚧 Development mode: Missing Firebase config fields:', missingFields);
+    // テスト環境や開発環境では警告のみ、本番環境ではエラー
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      process.env.JEST_WORKER_ID
+    ) {
+      console.warn('🚧 Development/Test mode: Missing Firebase config fields:', missingFields);
       return false;
     } else {
       console.error('❌ Production: Missing required Firebase config:', missingFields);

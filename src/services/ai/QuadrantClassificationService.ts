@@ -130,14 +130,15 @@ export const QUADRANT_DEFINITIONS: Record<QuadrantType, QuadrantInfo> = {
   },
 };
 
-// ファイルの上部でデバッグ
-console.log('🔍 環境変数チェック:');
-console.log('VITE_GEMINI_API_KEY:', import.meta.env.VITE_GEMINI_API_KEY);
-console.log('NODE_ENV:', import.meta.env.MODE);
-console.log(
-  'All VITE vars:',
-  Object.keys(import.meta.env).filter((key) => key.startsWith('VITE_'))
-);
+// デバッグ情報（開発環境のみ）
+if (import.meta.env.DEV) {
+  console.log('🔍 環境変数チェック:');
+  console.log(
+    'VITE_GEMINI_API_KEY:',
+    import.meta.env.VITE_GEMINI_API_KEY ? '設定済み ✅' : '未設定 ❌'
+  );
+  console.log('NODE_ENV:', import.meta.env.MODE);
+}
 
 /**
  * 4象限タスク分類サービス - Gemini AI統合

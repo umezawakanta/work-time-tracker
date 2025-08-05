@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/238</span>
+                <span class='fraction'>0/239</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/111</span>
+                <span class='fraction'>0/118</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/62</span>
+                <span class='fraction'>0/63</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/214</span>
+                <span class='fraction'>0/215</span>
             </div>
         
             
@@ -962,7 +962,8 @@
 <a name='L897'></a><a href='#L897'>897</a>
 <a name='L898'></a><a href='#L898'>898</a>
 <a name='L899'></a><a href='#L899'>899</a>
-<a name='L900'></a><a href='#L900'>900</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L900'></a><a href='#L900'>900</a>
+<a name='L901'></a><a href='#L901'>901</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1084,6 +1085,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1985,6 +1987,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskC
   // Convert todos to task events with date filtering
   const taskEvents: TaskEvent[] = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    return safeTodos</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id &amp;&amp; todo.task)</span> // 安全性チェック
       .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {
         // Filter by completion status
 <span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (filterStatus === 'active' &amp;&amp; todo.completed) <span class="cstat-no" title="statement not covered" >return false;</span></span>
@@ -2090,7 +2093,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskC
   const handleTaskClick = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (t</span>ask: TaskEvent) =&gt; {
 <span class="cstat-no" title="statement not covered" >      setSelectedTask(task);</span>
-      const todo = <span class="cstat-no" title="statement not covered" >safeTodos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t._id === task.taskId)</span>;</span>
+      const todo = <span class="cstat-no" title="statement not covered" >safeTodos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id === task.taskId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (todo) {</span>
 <span class="cstat-no" title="statement not covered" >        setTaskForm({</span>
           title: todo.task,
@@ -2462,7 +2465,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskC
   // タスク選択（編集）
   const handleSelectEvent = <span class="cstat-no" title="statement not covered" >useCallback(</span>
 <span class="fstat-no" title="function not covered" >    (e</span>vent: CalendarEvent) =&gt; {
-      const task = <span class="cstat-no" title="statement not covered" >safeTodos.find(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo._id === event.id)</span>;</span>
+      const task = <span class="cstat-no" title="statement not covered" >safeTodos.find(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id === event.id)</span>;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (task) {</span>
         // Convert TodoItem to TaskEvent format or use task directly
 <span class="cstat-no" title="statement not covered" >        setSelectedTask(task as any); </span>// Quick fix
@@ -2767,7 +2770,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskC
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T19:43:21.720Z
+                at 2025-08-04T20:46:15.654Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

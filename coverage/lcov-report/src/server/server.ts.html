@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/123</span>
+                <span class='fraction'>0/130</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/123</span>
+                <span class='fraction'>0/130</span>
             </div>
         
             
@@ -523,7 +523,11 @@
 <a name='L458'></a><a href='#L458'>458</a>
 <a name='L459'></a><a href='#L459'>459</a>
 <a name='L460'></a><a href='#L460'>460</a>
-<a name='L461'></a><a href='#L461'>461</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -536,13 +540,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -855,7 +859,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -863,7 +866,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -996,13 +1004,13 @@ import morgan from 'morgan';
 // import workTimeRoutes from './routes/workTimeRoutes.js';
 // import assetRoutes from './routes/assetRoutes.js';
 // import debtRoutes from './routes/debtRoutes.js';
-// import todoRoutes from './routes/todoRoutes.js';  // 一時的に無効化
+<span class="cstat-no" title="statement not covered" >import todoRoutes from './routes/todoRoutes.js';</span>
 // import candidateRoutes from './routes/candidateRoutes.js';
 // import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
 // import qualityRoutes from './routes/qualityRoutes.js';
 // import withdrawalRoutes from './routes/withdrawalRoutes.js';
 // import authRoutes from './routes/authRoutes.js';  // 一時的に無効化
-// import bookRoutes from './routes/bookRoutes.js';
+<span class="cstat-no" title="statement not covered" >import bookRoutes from './routes/bookRoutes.js';</span>
 // import sleepTrackerRoutes from './routes/sleepTrackerRoutes.js';
 // import blogRoutes from './routes/blogRoutes.js';
 // import tweetRoutes from './routes/tweetRoutes.js';
@@ -1322,8 +1330,12 @@ const corsOrigin = <span class="cstat-no" title="statement not covered" ><span c
   // console.log('✅ Auth routes loaded successfully');
 &nbsp;
   // console.log('📝 Loading todo routes...');
-  // app.use('/api/todos', todoRoutes);
-  // console.log('✅ Todo routes loaded successfully');
+<span class="cstat-no" title="statement not covered" >  app.use('/api/todos', todoRoutes);</span>
+<span class="cstat-no" title="statement not covered" >  console.log('✅ Todo routes loaded successfully');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  console.log('📚 Loading book routes...');</span>
+<span class="cstat-no" title="statement not covered" >  app.use('/api/books', bookRoutes);</span>
+<span class="cstat-no" title="statement not covered" >  console.log('✅ Book routes loaded successfully');</span>
 } catch (error) {
 <span class="cstat-no" title="statement not covered" >  console.error('❌ Error loading essential routes:', error);</span>
 }
@@ -1335,7 +1347,7 @@ const corsOrigin = <span class="cstat-no" title="statement not covered" ><span c
 // app.use('/api/subscription', subscriptionRoutes);
 // app.use('/api/userSubscription', userSubscriptionRoutes);
 // app.use('/api/withdrawal', withdrawalRoutes);
-// app.use('/api/books', bookRoutes);
+// app.use('/api/books', bookRoutes); // エラーハンドリング付きのtry-catchブロック内に移動済み
 // app.use('/api/sleep-records', sleepTrackerRoutes);
 // app.use('/api/blog', blogRoutes);
 // app.use('/api/tweets', tweetRoutes);
@@ -1450,7 +1462,7 @@ const PORT = <span class="cstat-no" title="statement not covered" >typeof BASE_P
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T19:43:21.720Z
+                at 2025-08-04T20:46:15.654Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

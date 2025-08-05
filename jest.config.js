@@ -2,6 +2,9 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
   moduleNameMapper: {
     // Specific TokenManager mock MUST come first for Jest to apply it
     '^@/services/auth/TokenManager$': '<rootDir>/src/__mocks__/TokenManager.js',

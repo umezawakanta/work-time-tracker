@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/164</span>
+                <span class='fraction'>0/165</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/112</span>
+                <span class='fraction'>0/115</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/155</span>
+                <span class='fraction'>0/156</span>
             </div>
         
             
@@ -706,7 +706,9 @@
 <a name='L641'></a><a href='#L641'>641</a>
 <a name='L642'></a><a href='#L642'>642</a>
 <a name='L643'></a><a href='#L643'>643</a>
-<a name='L644'></a><a href='#L644'>644</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L644'></a><a href='#L644'>644</a>
+<a name='L645'></a><a href='#L645'>645</a>
+<a name='L646'></a><a href='#L646'>646</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -831,6 +833,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1473,23 +1477,25 @@ export const <span class="cstat-no" title="statement not covered" >ExportDialog:
 &nbsp;
   // フィルタリングされたタスクの計算
   const filteredTasks = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    return todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
-      // 完了状態でフィルタ
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!options.includeCompleted &amp;&amp; todo.completed) <span class="cstat-no" title="statement not covered" >return false;</span></span>
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!options.includePending &amp;&amp; !todo.completed) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >    return todos</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id &amp;&amp; todo.task)</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {
+        // 完了状態でフィルタ
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!options.includeCompleted &amp;&amp; todo.completed) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!options.includePending &amp;&amp; !todo.completed) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
-      // 日付範囲でフィルタ
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.from || options.dateRange.to) {</span>
-        const taskDate = <span class="cstat-no" title="statement not covered" >todo.deadline</span>
-          ? new Date(todo.deadline)
-          : new Date(todo.createdAt || new Date());
+        // 日付範囲でフィルタ
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.from || options.dateRange.to) {</span>
+          const taskDate = <span class="cstat-no" title="statement not covered" >todo.deadline</span>
+            ? new Date(todo.deadline)
+            : new Date(todo.createdAt || new Date());
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.from &amp;&amp; taskDate &lt; options.dateRange.from) <span class="cstat-no" title="statement not covered" >return false;</span></span>
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.to &amp;&amp; taskDate &gt; options.dateRange.to) <span class="cstat-no" title="statement not covered" >return false;</span></span>
-      }
+<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.from &amp;&amp; taskDate &lt; options.dateRange.from) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (options.dateRange.to &amp;&amp; taskDate &gt; options.dateRange.to) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+        }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      return true;</span>
-    });
+<span class="cstat-no" title="statement not covered" >        return true;</span>
+      });
   }, [todos, options.includeCompleted, options.includePending, options.dateRange]);
 &nbsp;
   // エクスポート実行
@@ -1999,7 +2005,7 @@ export const <span class="cstat-no" title="statement not covered" >ExportDialog:
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T19:43:21.720Z
+                at 2025-08-04T20:46:15.654Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

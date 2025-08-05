@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/297</span>
+                <span class='fraction'>0/298</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/140</span>
+                <span class='fraction'>0/159</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/87</span>
+                <span class='fraction'>0/88</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/259</span>
+                <span class='fraction'>0/261</span>
             </div>
         
             
@@ -1278,7 +1278,11 @@
 <a name='L1213'></a><a href='#L1213'>1213</a>
 <a name='L1214'></a><a href='#L1214'>1214</a>
 <a name='L1215'></a><a href='#L1215'>1215</a>
-<a name='L1216'></a><a href='#L1216'>1216</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L1216'></a><a href='#L1216'>1216</a>
+<a name='L1217'></a><a href='#L1217'>1217</a>
+<a name='L1218'></a><a href='#L1218'>1218</a>
+<a name='L1219'></a><a href='#L1219'>1219</a>
+<a name='L1220'></a><a href='#L1220'>1220</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1760,6 +1764,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2158,6 +2164,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2563,7 +2571,7 @@ import TaskForm from './TaskForm';
 <span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
 <span class="cstat-no" title="statement not covered" >import TaskImporter from './TaskImporter';</span>
 &nbsp;
-interface TaskSuggestion {
+interface LocalLocalTaskSuggestion {
   id: string;
   task: string;
   type: 'input' | 'output';
@@ -2622,7 +2630,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
   const [isImporterOpen, setIsImporterOpen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
 &nbsp;
   // AI State
-  const [taskSuggestions, setTaskSuggestions] = <span class="cstat-no" title="statement not covered" >useState&lt;TaskSuggestion[]&gt;([]);</span>
+  const [taskSuggestions, setLocalTaskSuggestions] = <span class="cstat-no" title="statement not covered" >useState&lt;LocalTaskSuggestion[]&gt;([]);</span>
   const [taskGroups, setTaskGroups] = <span class="cstat-no" title="statement not covered" >useState&lt;TaskGroup[]&gt;([]);</span>
   const [priorityPredictions, setPriorityPredictions] = <span class="cstat-no" title="statement not covered" >useState&lt;PriorityPrediction[]&gt;([]);</span>
   const [completionPredictions, setCompletionPredictions] = <span class="cstat-no" title="statement not covered" >useState&lt;CompletionPrediction[]&gt;([]);</span>
@@ -2644,7 +2652,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
   }, []);
 &nbsp;
   // AI Analysis Functions
-  const generateTaskSuggestions = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
+  const generateLocalTaskSuggestions = <span class="cstat-no" title="statement not covered" >useCallback(<span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasPremium) {</span>
 <span class="cstat-no" title="statement not covered" >      toast.error('AI機能はプレミアムプランでご利用いただけます');</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
@@ -2657,7 +2665,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 &nbsp;
       const suggestions = <span class="cstat-no" title="statement not covered" >await AdvancedAIService.suggestNextTasks(completedTodos, currentGoals);</span>
 &nbsp;
-      const enhancedSuggestions: TaskSuggestion[] = <span class="cstat-no" title="statement not covered" >suggestions.map(<span class="fstat-no" title="function not covered" >(s</span>uggestion, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+      const enhancedSuggestions: LocalTaskSuggestion[] = <span class="cstat-no" title="statement not covered" >suggestions.map(<span class="fstat-no" title="function not covered" >(s</span>uggestion, index) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
         id: `suggestion-${index}`,
         task: suggestion.task || `推奨タスク ${index + 1}`,
         type: suggestion.type || 'output',
@@ -2667,7 +2675,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
         confidence: Math.random() * 0.3 + 0.7,
       }));
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setTaskSuggestions(enhancedSuggestions);</span>
+<span class="cstat-no" title="statement not covered" >      setLocalTaskSuggestions(enhancedSuggestions);</span>
 <span class="cstat-no" title="statement not covered" >      toast.success(`${enhancedSuggestions.length}個のタスク提案を生成しました`);</span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      console.error('Task suggestion error:', error);</span>
@@ -2682,7 +2690,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    setIsAnalyzing(true);</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const incompleteTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >!todo.completed)</span>;</span>
+      const incompleteTasks = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id &amp;&amp; !todo.completed)</span>;</span>
 &nbsp;
       const predictions: PriorityPrediction[] = <span class="cstat-no" title="statement not covered" >incompleteTasks.map(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
         const urgency = <span class="cstat-no" title="statement not covered" >todo.deadline</span>
@@ -2807,7 +2815,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 <span class="fstat-no" title="function not covered" >    async </span>(taskId: string) =&gt; {
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!hasPremium) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
-      const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t._id === taskId)</span>;</span>
+      const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id === taskId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!task) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      setIsAnalyzing(true);</span>
@@ -2858,7 +2866,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      await Promise.all([</span>
-        generateTaskSuggestions(),
+        generateLocalTaskSuggestions(),
         predictTaskPriorities(),
         predictCompletionTimes(),
         groupSimilarTasks(),
@@ -2890,7 +2898,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
   }, [
     todos,
     hasPremium,
-    generateTaskSuggestions,
+    generateLocalTaskSuggestions,
     predictTaskPriorities,
     predictCompletionTimes,
     groupSimilarTasks,
@@ -2913,7 +2921,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
     }
   };
 &nbsp;
-  const acceptTaskSuggestion = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(suggestion: TaskSuggestion) =&gt; {</span>
+  const acceptLocalTaskSuggestion = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(suggestion: LocalTaskSuggestion) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      await dispatch(</span>
         addTodoItem({
@@ -2924,7 +2932,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
         })
       ).unwrap();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      setTaskSuggestions(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.id !== suggestion.id)</span>)</span>;</span>
+<span class="cstat-no" title="statement not covered" >      setLocalTaskSuggestions(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.id !== suggestion.id)</span>)</span>;</span>
 <span class="cstat-no" title="statement not covered" >      toast.success('提案タスクを追加しました');</span>
     } catch (error) {
 <span class="cstat-no" title="statement not covered" >      toast.error('タスクの追加に失敗しました');</span>
@@ -2974,30 +2982,32 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 &nbsp;
   // フィルタリングとソート
   const filteredAndSortedTodos = <span class="cstat-no" title="statement not covered" >useMemo(<span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-    const filtered = <span class="cstat-no" title="statement not covered" >todos.filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {</span>
-      // 検索クエリによるフィルタリング
-      const matchesSearch =
-<span class="cstat-no" title="statement not covered" >        searchQuery === '' ||</span>
-        todo.task.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        todo.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        todo.tags?.some(<span class="fstat-no" title="function not covered" >(t</span>ag) =&gt; <span class="cstat-no" title="statement not covered" >tag.toLowerCase().includes(searchQuery.toLowerCase()))</span>;
+    const filtered = <span class="cstat-no" title="statement not covered" >todos</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; <span class="cstat-no" title="statement not covered" >todo &amp;&amp; todo._id &amp;&amp; todo.task)</span>
+      .filter(<span class="fstat-no" title="function not covered" >(t</span>odo) =&gt; {
+        // 検索クエリによるフィルタリング
+        const matchesSearch =
+<span class="cstat-no" title="statement not covered" >          searchQuery === '' ||</span>
+          todo.task.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          todo.note?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          todo.tags?.some(<span class="fstat-no" title="function not covered" >(t</span>ag) =&gt; <span class="cstat-no" title="statement not covered" >tag.toLowerCase().includes(searchQuery.toLowerCase()))</span>;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!matchesSearch) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!matchesSearch) <span class="cstat-no" title="statement not covered" >return false;</span></span>
 &nbsp;
-      // クイックフィルターによるフィルタリング
-<span class="cstat-no" title="statement not covered" >      switch (activeFilter) {</span>
-        case 'today':
-<span class="cstat-no" title="statement not covered" >          return todo.deadline ? isToday(new Date(todo.deadline)) : false;</span>
-        case 'important':
-<span class="cstat-no" title="statement not covered" >          return todo.priority &lt;= 2;</span>
-        case 'inputOnly':
-<span class="cstat-no" title="statement not covered" >          return todo.type === 'input';</span>
-        case 'outputOnly':
-<span class="cstat-no" title="statement not covered" >          return todo.type === 'output';</span>
-        default:
-<span class="cstat-no" title="statement not covered" >          return true;</span>
-      }
-    });
+        // クイックフィルターによるフィルタリング
+<span class="cstat-no" title="statement not covered" >        switch (activeFilter) {</span>
+          case 'today':
+<span class="cstat-no" title="statement not covered" >            return todo.deadline ? isToday(new Date(todo.deadline)) : false;</span>
+          case 'important':
+<span class="cstat-no" title="statement not covered" >            return todo.priority &lt;= 2;</span>
+          case 'inputOnly':
+<span class="cstat-no" title="statement not covered" >            return todo.type === 'input';</span>
+          case 'outputOnly':
+<span class="cstat-no" title="statement not covered" >            return todo.type === 'output';</span>
+          default:
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+        }
+      });
 &nbsp;
     // ソート
 <span class="cstat-no" title="statement not covered" >    filtered.sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; {</span>
@@ -3031,7 +3041,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
   // タスクの完了状態を切り替え
   const handleToggleComplete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>(taskId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    try {</span>
-      const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t._id === taskId)</span>;</span>
+      const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id === taskId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (task) {</span>
 <span class="cstat-no" title="statement not covered" >        await dispatch(</span>
           updateTodoItem({
@@ -3047,7 +3057,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
 &nbsp;
   // タスクの削除
   const handleDeleteTask = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >async </span>() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!taskToDelete) <span class="cstat-no" title="statement not covered" >return;</span></span>
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!taskToDelete || !taskToDelete._id) <span class="cstat-no" title="statement not covered" >return;</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
 <span class="cstat-no" title="statement not covered" >      await dispatch(deleteTodoItem(taskToDelete._id)).unwrap();</span>
@@ -3242,7 +3252,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
             &lt;/DropdownMenuTrigger&gt;
             &lt;DropdownMenuContent align="end" className="w-56"&gt;
               &lt;DropdownMenuLabel&gt;AI分析&lt;/DropdownMenuLabel&gt;
-              &lt;DropdownMenuItem onClick={generateTaskSuggestions} disabled={isAnalyzing}&gt;
+              &lt;DropdownMenuItem onClick={generateLocalTaskSuggestions} disabled={isAnalyzing}&gt;
                 &lt;Lightbulb className="h-4 w-4 mr-2" /&gt;
                 タスク提案
               &lt;/DropdownMenuItem&gt;
@@ -3289,7 +3299,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
           &lt;div className="grid grid-cols-2 md:grid-cols-4 gap-3"&gt;
             &lt;Button
               variant="outline"
-              onClick={generateTaskSuggestions}
+              onClick={generateLocalTaskSuggestions}
               disabled={isAnalyzing}
               className="flex items-center gap-2"
             &gt;
@@ -3365,14 +3375,16 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
                     &lt;p className="text-sm text-gray-600"&gt;{suggestion.reason}&lt;/p&gt;
                   &lt;/div&gt;
                   &lt;div className="flex gap-2"&gt;
-                    &lt;Button size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >acceptTaskSuggestion(suggestion)}</span>&gt;
+                    &lt;Button size="sm" onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >acceptLocalTaskSuggestion(suggestion)}</span>&gt;
                       採用
                     &lt;/Button&gt;
                     &lt;Button
                       size="sm"
                       variant="outline"
                       onClick={<span class="fstat-no" title="function not covered" >() =</span>&gt;
-<span class="cstat-no" title="statement not covered" >                        setTaskSuggestions(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt; <span class="cstat-no" title="statement not covered" >prev.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.id !== suggestion.id)</span>)</span></span>
+<span class="cstat-no" title="statement not covered" >                        setLocalTaskSuggestions(<span class="fstat-no" title="function not covered" >(p</span>rev) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >                          prev.filter(<span class="fstat-no" title="function not covered" >(s</span>) =&gt; <span class="cstat-no" title="statement not covered" >s.id !== suggestion.id)</span></span>
+                        )
                       }
                     &gt;
                       却下
@@ -3397,7 +3409,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
           &lt;CardContent&gt;
             &lt;div className="space-y-3"&gt;
               {priorityPredictions.slice(0, 5).map(<span class="fstat-no" title="function not covered" >(p</span>rediction) =&gt; {
-                const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t._id === prediction.taskId)</span>;</span>
+                const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id === prediction.taskId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >                return (</span>
                   &lt;div
                     key={prediction.taskId}
@@ -3437,7 +3449,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
           &lt;CardContent&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-3"&gt;
               {completionPredictions.slice(0, 6).map(<span class="fstat-no" title="function not covered" >(p</span>rediction) =&gt; {
-                const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t._id === prediction.taskId)</span>;</span>
+                const task = <span class="cstat-no" title="statement not covered" >todos.find(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id === prediction.taskId)</span>;</span>
 <span class="cstat-no" title="statement not covered" >                return (</span>
                   &lt;div key={prediction.taskId} className="p-3 bg-gray-50 rounded-lg"&gt;
                     &lt;p className="font-medium text-sm mb-2"&gt;{task?.task}&lt;/p&gt;
@@ -3507,7 +3519,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
           &lt;CardContent&gt;
             &lt;div className="space-y-3"&gt;
               {todos
-                .filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >!t.completed &amp;&amp; t.task.length &gt; 50)</span>
+                .filter(<span class="fstat-no" title="function not covered" >(t</span>) =&gt; <span class="cstat-no" title="statement not covered" >t &amp;&amp; t._id &amp;&amp; t.task &amp;&amp; !t.completed &amp;&amp; t.task.length &gt; 50)</span>
                 .slice(0, 3)
                 .map(<span class="fstat-no" title="function not covered" >(t</span>ask) =&gt; (
 <span class="cstat-no" title="statement not covered" >                  &lt;div</span>
@@ -3715,7 +3727,7 @@ export const <span class="cstat-no" title="statement not covered" >EnhancedTaskM
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T19:43:21.720Z
+                at 2025-08-04T20:46:15.654Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -12,7 +12,11 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { EisenhowerMatrix } from '@/components/quadrant/EisenhowerMatrix';
 import QuadrantUsageGuide from '@/components/help/QuadrantUsageGuide';
-import { QuadrantAnalysisResult } from '@/services/ai/QuadrantClassificationService';
+import TaskInputForm from '@/components/quadrant/TaskInputForm';
+import {
+  QuadrantAnalysisResult,
+  UnifiedTaskData,
+} from '@/services/ai/QuadrantClassificationService';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import {
@@ -43,6 +47,7 @@ import {
 const QuadrantDashboard: React.FC = () => {
   const { user } = useAuth();
   const todos = useSelector(selectAllTodos);
+  const [customTasks, setCustomTasks] = useState<UnifiedTaskData[]>([]);
 
   // ダッシュボード設定
   const [settings, setSettings] = useState({
@@ -60,22 +65,36 @@ const QuadrantDashboard: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [showUsageGuide, setShowUsageGuide] = useState(false);
 
+  // タスク管理
+  const handleTaskAdd = (newTask: UnifiedTaskData) => {
+    setCustomTasks((prev) => [...prev, newTask]);
+    toast.success('タスクが追加されました。AI分析を実行中...');
+  };
+
+  const handleTasksImport = (tasks: UnifiedTaskData[]) => {
+    setCustomTasks((prev) => [...prev, ...tasks]);
+    toast.success(`${tasks.length}個のサンプルタスクがインポートされました`);
+  };
+
+  // 統合タスクリスト（Todo + カスタムタスク）
+  const allTasks = [...(todos || []), ...customTasks];
+
   // タスクのフィルタリング
   const filteredTasks = React.useMemo(() => {
     console.log('🔍 フィルタリング開始:', {
-      todosType: typeof todos,
-      todosIsArray: Array.isArray(todos),
-      todosLength: todos?.length,
-      firstTodoSample: todos?.[0],
+      todosType: typeof allTasks,
+      todosIsArray: Array.isArray(allTasks),
+      todosLength: allTasks?.length,
+      firstTodoSample: allTasks?.[0],
     });
 
-    if (!todos || !Array.isArray(todos)) {
-      console.warn('🚨 todos が無効な値です:', todos);
+    if (!allTasks || !Array.isArray(allTasks)) {
+      console.warn('🚨 allTasks が無効な値です:', allTasks);
       return [];
     }
 
     // より詳細なデバッグ情報
-    const validTasks = todos.filter((task, index) => {
+    const validTasks = allTasks.filter((task, index) => {
       const isValid = task !== null && task !== undefined && typeof task === 'object';
       if (!isValid) {
         console.warn(`🚨 無効なタスク[${index}]:`, task);
@@ -115,7 +134,7 @@ const QuadrantDashboard: React.FC = () => {
     });
 
     return filtered;
-  }, [todos, settings.filterCompleted]);
+  }, [allTasks, settings.filterCompleted]);
 
   // 分析結果の保存
   const handleAnalysisComplete = (analysis: QuadrantAnalysisResult) => {
@@ -346,12 +365,45 @@ const QuadrantDashboard: React.FC = () => {
 
       {/* メインコンテンツ */}
       <Tabs defaultValue="matrix" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="input">タスク入力</TabsTrigger>
           <TabsTrigger value="matrix">4象限マトリックス</TabsTrigger>
           <TabsTrigger value="analytics">分析・レポート</TabsTrigger>
           <TabsTrigger value="history">履歴・トレンド</TabsTrigger>
           <TabsTrigger value="settings">設定</TabsTrigger>
         </TabsList>
+
+        {/* タスク入力タブ */}
+        <TabsContent value="input" className="space-y-6">
+          <TaskInputForm onTaskAdd={handleTaskAdd} onTasksImport={handleTasksImport} />
+
+          {customTasks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>追加されたタスク ({customTasks.length}件)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {customTasks.map((task) => (
+                    <div key={task.id} className="p-3 border rounded-lg">
+                      <div className="font-medium">{task.title}</div>
+                      <div className="text-sm text-gray-600">
+                        {task.description && <div className="mt-1">{task.description}</div>}
+                        <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                          {task.category && <span>📂 {task.category}</span>}
+                          {task.estimatedTime && <span>⏱️ {task.estimatedTime}分</span>}
+                          {task.deadline && (
+                            <span>📅 {new Date(task.deadline).toLocaleDateString()}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
 
         {/* メイン4象限マトリックス */}
         <TabsContent value="matrix" className="space-y-6">

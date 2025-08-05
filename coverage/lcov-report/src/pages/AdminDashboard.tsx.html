@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/57</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/53</span>
+                <span class='fraction'>0/55</span>
             </div>
         
             
@@ -633,7 +633,9 @@
 <a name='L568'></a><a href='#L568'>568</a>
 <a name='L569'></a><a href='#L569'>569</a>
 <a name='L570'></a><a href='#L570'>570</a>
-<a name='L571'></a><a href='#L571'>571</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L571'></a><a href='#L571'>571</a>
+<a name='L572'></a><a href='#L572'>572</a>
+<a name='L573'></a><a href='#L573'>573</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -665,6 +667,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1236,6 +1240,8 @@
   RefreshCw,
 } from 'lucide-react';
 <span class="cstat-no" title="statement not covered" >import { toast } from 'react-hot-toast';</span>
+<span class="cstat-no" title="statement not covered" >import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';</span>
+<span class="cstat-no" title="statement not covered" >import SocialShareButton from '@/components/ui/SocialShareButton';</span>
 &nbsp;
 interface AdminMetrics {
   users: {
@@ -1676,63 +1682,7 @@ const AdminDashboard: React.FC = <span class="cstat-no" title="statement not cov
         &lt;/TabsContent&gt;
 &nbsp;
         &lt;TabsContent value="analytics" className="space-y-6"&gt;
-          &lt;div className="grid grid-cols-1 lg:grid-cols-2 gap-6"&gt;
-            &lt;Card&gt;
-              &lt;CardHeader&gt;
-                &lt;CardTitle&gt;成長指標&lt;/CardTitle&gt;
-              &lt;/CardHeader&gt;
-              &lt;CardContent&gt;
-                &lt;div className="space-y-4"&gt;
-                  &lt;div&gt;
-                    &lt;div className="flex justify-between items-center mb-1"&gt;
-                      &lt;span className="text-sm font-medium"&gt;ユーザー成長率&lt;/span&gt;
-                      &lt;span className="text-sm text-green-600"&gt;+12.3%&lt;/span&gt;
-                    &lt;/div&gt;
-                    &lt;Progress value={85} /&gt;
-                  &lt;/div&gt;
-                  &lt;div&gt;
-                    &lt;div className="flex justify-between items-center mb-1"&gt;
-                      &lt;span className="text-sm font-medium"&gt;売上成長率&lt;/span&gt;
-                      &lt;span className="text-sm text-green-600"&gt;+18.7%&lt;/span&gt;
-                    &lt;/div&gt;
-                    &lt;Progress value={92} /&gt;
-                  &lt;/div&gt;
-                  &lt;div&gt;
-                    &lt;div className="flex justify-between items-center mb-1"&gt;
-                      &lt;span className="text-sm font-medium"&gt;顧客満足度&lt;/span&gt;
-                      &lt;span className="text-sm text-blue-600"&gt;4.6/5.0&lt;/span&gt;
-                    &lt;/div&gt;
-                    &lt;Progress value={92} /&gt;
-                  &lt;/div&gt;
-                &lt;/div&gt;
-              &lt;/CardContent&gt;
-            &lt;/Card&gt;
-&nbsp;
-            &lt;Card&gt;
-              &lt;CardHeader&gt;
-                &lt;CardTitle&gt;次の目標&lt;/CardTitle&gt;
-              &lt;/CardHeader&gt;
-              &lt;CardContent&gt;
-                &lt;div className="space-y-3"&gt;
-                  &lt;div className="p-3 border rounded-lg"&gt;
-                    &lt;h4 className="font-medium"&gt;MRR 100万円達成&lt;/h4&gt;
-                    &lt;p className="text-sm text-gray-600"&gt;残り ¥20,000&lt;/p&gt;
-                    &lt;Progress value={98} className="mt-2" /&gt;
-                  &lt;/div&gt;
-                  &lt;div className="p-3 border rounded-lg"&gt;
-                    &lt;h4 className="font-medium"&gt;ユーザー数 1,500人&lt;/h4&gt;
-                    &lt;p className="text-sm text-gray-600"&gt;残り 253人&lt;/p&gt;
-                    &lt;Progress value={83} className="mt-2" /&gt;
-                  &lt;/div&gt;
-                  &lt;div className="p-3 border rounded-lg"&gt;
-                    &lt;h4 className="font-medium"&gt;チャーン率 2%以下&lt;/h4&gt;
-                    &lt;p className="text-sm text-gray-600"&gt;現在 2.1%&lt;/p&gt;
-                    &lt;Progress value={95} className="mt-2" /&gt;
-                  &lt;/div&gt;
-                &lt;/div&gt;
-              &lt;/CardContent&gt;
-            &lt;/Card&gt;
-          &lt;/div&gt;
+          &lt;AnalyticsDashboard isAdminUser={true} /&gt;
         &lt;/TabsContent&gt;
 &nbsp;
         &lt;TabsContent value="settings" className="space-y-6"&gt;
@@ -1743,6 +1693,62 @@ const AdminDashboard: React.FC = <span class="cstat-no" title="statement not cov
             &lt;/CardHeader&gt;
             &lt;CardContent&gt;
               &lt;div className="space-y-4"&gt;
+                {/* AI設定 */}
+                &lt;Card className="border-blue-200 bg-blue-50"&gt;
+                  &lt;CardContent className="p-4"&gt;
+                    &lt;div className="flex items-center justify-between"&gt;
+                      &lt;div&gt;
+                        &lt;h4 className="font-semibold text-blue-900"&gt;🤖 Gemini AI設定&lt;/h4&gt;
+                        &lt;p className="text-sm text-blue-700"&gt;
+                          AIアイゼンハワーマトリックスを有効化
+                        &lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;Badge variant="outline" className="text-orange-600 border-orange-300"&gt;
+                        要設定
+                      &lt;/Badge&gt;
+                    &lt;/div&gt;
+                    &lt;div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded"&gt;
+                      &lt;p className="text-sm text-yellow-800"&gt;
+                        &lt;strong&gt;設定方法:&lt;/strong&gt;
+                        &lt;br /&gt;
+                        1. プロジェクトルートに &lt;code&gt;.env.local&lt;/code&gt; ファイルを作成
+                        &lt;br /&gt;
+                        2. &lt;code&gt;VITE_GEMINI_API_KEY=your_api_key&lt;/code&gt; を追加
+                        &lt;br /&gt;
+                        3.{' '}
+                        &lt;a
+                          href="https://makersuite.google.com/app/apikey"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        &gt;
+                          Google AI Studio
+                        &lt;/a&gt;{' '}
+                        でキーを取得
+                        &lt;br /&gt;
+                        4. 開発サーバーを再起動 (&lt;code&gt;pnpm dev&lt;/code&gt;)
+                      &lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/CardContent&gt;
+                &lt;/Card&gt;
+&nbsp;
+                {/* SNSシェア機能 */}
+                &lt;Card className="border-green-200 bg-green-50"&gt;
+                  &lt;CardContent className="p-4"&gt;
+                    &lt;div className="flex items-center justify-between"&gt;
+                      &lt;div&gt;
+                        &lt;h4 className="font-semibold text-green-900"&gt;📢 SNSシェア機能&lt;/h4&gt;
+                        &lt;p className="text-sm text-green-700"&gt;ユーザー拡散とマーケティング&lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;SocialShareButton
+                        title="Work Time Tracker - AI搭載タスク管理"
+                        description="ADHDユーザー特化のAI搭載タスク管理ツール！"
+                      /&gt;
+                    &lt;/div&gt;
+                  &lt;/CardContent&gt;
+                &lt;/Card&gt;
+&nbsp;
+                {/* 既存の設定項目 */}
                 &lt;Button variant="outline" className="w-full justify-start"&gt;
                   &lt;Users className="w-4 h-4 mr-2" /&gt;
                   ユーザー管理
@@ -1780,7 +1786,7 @@ const AdminDashboard: React.FC = <span class="cstat-no" title="statement not cov
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-03T19:43:21.720Z
+                at 2025-08-04T20:46:15.654Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
