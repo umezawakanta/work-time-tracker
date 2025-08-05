@@ -254,6 +254,10 @@ Object.defineProperty(globalThis, 'import', {
   configurable: true,
 });
 
+// Define IMPORT_META global for babel-plugin-transform-import-meta
+global.IMPORT_META = importMeta;
+(globalThis as any).IMPORT_META = importMeta;
+
 // ========================================
 // Browser API Mocks
 // ========================================
@@ -602,53 +606,53 @@ if (typeof EventTarget === 'undefined') {
 jest.mock('@radix-ui/react-tabs', () => {
   const React = require('react');
   return {
-  Root: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
-  List: ({ children, ...props }: any) =>
-    React.createElement(
-      'div',
-      {
-        'data-testid': 'tabs-list',
-        role: 'tablist',
-        'aria-orientation': 'horizontal',
-        ...props,
-      },
-      children
-    ),
-  Trigger: ({ children, ...props }: any) =>
-    React.createElement(
-      'button',
-      {
-        'data-testid': 'tabs-trigger',
-        role: 'tab',
-        'aria-selected': props.value === props.defaultValue ? 'true' : 'false',
-        tabIndex: props.value === props.defaultValue ? 0 : -1,
-        ...props,
-      },
-      children
-    ),
-  Content: ({ children, ...props }: any) =>
-    React.createElement(
-      'div',
-      {
-        'data-testid': 'tabs-content',
-        role: 'tabpanel',
-        tabIndex: 0,
-        ...props,
-      },
-      children
-    ),
+    Root: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
+    List: ({ children, ...props }: any) =>
+      React.createElement(
+        'div',
+        {
+          'data-testid': 'tabs-list',
+          role: 'tablist',
+          'aria-orientation': 'horizontal',
+          ...props,
+        },
+        children
+      ),
+    Trigger: ({ children, ...props }: any) =>
+      React.createElement(
+        'button',
+        {
+          'data-testid': 'tabs-trigger',
+          role: 'tab',
+          'aria-selected': props.value === props.defaultValue ? 'true' : 'false',
+          tabIndex: props.value === props.defaultValue ? 0 : -1,
+          ...props,
+        },
+        children
+      ),
+    Content: ({ children, ...props }: any) =>
+      React.createElement(
+        'div',
+        {
+          'data-testid': 'tabs-content',
+          role: 'tabpanel',
+          tabIndex: 0,
+          ...props,
+        },
+        children
+      ),
   };
 });
 
 jest.mock('@radix-ui/react-roving-focus', () => {
   const React = require('react');
   return {
-  createRovingFocusGroupScope: () => () => ({}),
-  RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
-  RovingFocusGroupItem: ({ children, ...props }: any) =>
-    React.createElement('div', props, children),
-  useRovingFocus: () => ({ tabStopId: undefined, focusableId: undefined }),
+    createRovingFocusGroupScope: () => () => ({}),
+    RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
+    RovingFocusGroupItem: ({ children, ...props }: any) =>
+      React.createElement('div', props, children),
+    useRovingFocus: () => ({ tabStopId: undefined, focusableId: undefined }),
   };
 });
 

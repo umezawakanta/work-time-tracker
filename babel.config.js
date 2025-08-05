@@ -17,7 +17,14 @@ module.exports = {
     ],
     '@babel/preset-typescript',
   ],
-  // Remove plugins that might not be available or are included in presets
+  plugins: [
+    [
+      'babel-plugin-transform-import-meta',
+      {
+        module: 'IMPORT_META',
+      },
+    ],
+  ],
   env: {
     test: {
       presets: [
@@ -37,6 +44,14 @@ module.exports = {
           },
         ],
         '@babel/preset-typescript',
+      ],
+      plugins: [
+        [
+          'babel-plugin-transform-import-meta',
+          {
+            module: 'IMPORT_META',
+          },
+        ],
       ],
     },
   },

@@ -206,6 +206,7 @@
         "@vitejs/plugin-react": "^4.4.0",
         "@vitejs/plugin-react-swc": "^3.9.0",
         "autoprefixer": "^10.4.21",
+        "babel-plugin-transform-import-meta": "^2.3.3",
         "chalk": "^5.4.1",
         "concurrently": "^9.1.2",
         "cypress": "^14.3.0",
