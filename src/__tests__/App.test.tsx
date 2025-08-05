@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import React, { ReactNode } from 'react';
-import { screen } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -136,19 +136,7 @@ jest.mock('../components/pomodoro/PomodoroManager', () => ({
   PomodoroManager: () => <div data-testid="pomodoro-manager">Pomodoro</div>,
 }));
 
-// Mock services to prevent App component from showing loading state
-jest.mock('../services/analytics/AnalyticsService', () => ({
-  initializeAnalytics: jest.fn().mockResolvedValue(undefined),
-}));
 
-jest.mock('../services/DatabaseService', () => ({
-  initializeDatabase: jest.fn().mockResolvedValue(undefined),
-  DatabaseService: {
-    getInstance: jest.fn(() => ({
-      initialize: jest.fn().mockResolvedValue(undefined),
-    })),
-  },
-}));
 
 // Mock timers to skip the 500ms delay in App initialization
 beforeAll(() => {
@@ -161,6 +149,19 @@ afterAll(() => {
 
 jest.mock('../context/PomodoroContext', () => ({
   PomodoroProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock('../context/ThemeContext', () => ({
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() }),
+}));
+
+jest.mock('../context/LocaleContext', () => ({
+  LocaleProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+jest.mock('../context/TodoContext', () => ({
+  TodoProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 jest.mock('../hooks/useInternationalization', () => ({
@@ -256,31 +257,35 @@ describe('App', () => {
     expect(document.querySelector('body')).toBeInTheDocument();
   });
 
-  test('renders not found page for reports (requires auth)', () => {
-    render(
-      <MemoryRouter initialEntries={['/reports']}>
-        <App />
-      </MemoryRouter>,
-      { disableRouter: true }
-    );
+  test('renders not found page for reports (requires auth)', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/reports']}>
+          <App />
+        </MemoryRouter>,
+        { disableRouter: true }
+      );
 
-    // Fast-forward past the initialization delay
-    jest.advanceTimersByTime(500);
+      // Fast-forward past the initialization delay
+      jest.advanceTimersByTime(500);
+    });
 
     // The NotFound component is now mocked so no need to wait
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();
   });
 
-  test('renders not found page for invalid route', () => {
-    render(
-      <MemoryRouter initialEntries={['/invalid-route']}>
-        <App />
-      </MemoryRouter>,
-      { disableRouter: true }
-    );
+  test('renders not found page for invalid route', async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/invalid-route']}>
+          <App />
+        </MemoryRouter>,
+        { disableRouter: true }
+      );
 
-    // Fast-forward past the initialization delay
-    jest.advanceTimersByTime(500);
+      // Fast-forward past the initialization delay
+      jest.advanceTimersByTime(500);
+    });
 
     // The NotFound component is now mocked so no need to wait
     expect(screen.getByText('404 - ページが見つかりません')).toBeInTheDocument();

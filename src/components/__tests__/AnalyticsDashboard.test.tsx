@@ -25,6 +25,53 @@ jest.mock('react-hot-toast', () => ({
   },
 }));
 
+// Recharts components
+jest.mock('recharts', () => ({
+  LineChart: ({ children, ...props }: any) => <div data-testid="line-chart" {...props}>{children}</div>,
+  Line: (props: any) => <div data-testid="line" {...props} />,
+  XAxis: (props: any) => <div data-testid="x-axis" {...props} />,
+  YAxis: (props: any) => <div data-testid="y-axis" {...props} />,
+  CartesianGrid: (props: any) => <div data-testid="cartesian-grid" {...props} />,
+  Tooltip: (props: any) => <div data-testid="tooltip" {...props} />,
+  ResponsiveContainer: ({ children, ...props }: any) => <div data-testid="responsive-container" {...props}>{children}</div>,
+  BarChart: ({ children, ...props }: any) => <div data-testid="bar-chart" {...props}>{children}</div>,
+  Bar: (props: any) => <div data-testid="bar" {...props} />,
+  PieChart: ({ children, ...props }: any) => <div data-testid="pie-chart" {...props}>{children}</div>,
+  Pie: (props: any) => <div data-testid="pie" {...props} />,
+  Cell: (props: any) => <div data-testid="cell" {...props} />,
+}));
+
+// Radix UI Select components
+jest.mock('@radix-ui/react-select', () => {
+  const React = require('react');
+  const MockComponent = ({ children, ...props }: any) => React.createElement('div', props, children);
+  MockComponent.displayName = 'MockSelectComponent';
+  
+  return {
+    Root: MockComponent,
+    Trigger: ({ children, ...props }: any) => (
+      React.createElement('button', { role: 'combobox', 'data-testid': 'select-trigger', ...props }, children)
+    ),
+    Value: MockComponent,
+    Content: MockComponent,
+    Viewport: MockComponent,
+    Item: ({ children, value, ...props }: any) => (
+      React.createElement('div', { 
+        role: 'option', 
+        'data-testid': `select-item-${value}`, 
+        'aria-label': children,
+        ...props 
+      }, children)
+    ),
+    ItemText: MockComponent,
+    ScrollUpButton: MockComponent,
+    ScrollDownButton: MockComponent,
+    Separator: MockComponent,
+    Group: MockComponent,
+    Label: MockComponent,
+  };
+});
+
 // rechartsをモック（チャートライブラリ）
 jest.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: any) => (
@@ -80,8 +127,15 @@ const mockAnalytics: UserAnalytics = {
 
 describe('📊 AnalyticsDashboard コンポーネント', () => {
   beforeEach(() => {
+    // Enable fake timers for all tests
+    jest.useFakeTimers();
     jest.clearAllMocks();
     (userTrackingService.getAnalytics as jest.Mock).mockResolvedValue(mockAnalytics);
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   describe('✅ 基本表示機能', () => {
@@ -154,7 +208,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('🔄 データ更新機能', () => {
     test('更新ボタンクリックでデータが再読み込みされる', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -168,7 +222,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('時間範囲変更でデータが更新される', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -182,13 +236,18 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const monthOption = screen.getByRole('option', { name: '過去30日' });
       await user.click(monthOption);
 
-      expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('month');
+      // Allow time for async state updates
+      jest.advanceTimersByTime(100);
+
+      await waitFor(() => {
+        expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('month');
+      });
     });
   });
 
   describe('📊 タブ機能', () => {
     test('タブ切り替えが正常に動作する', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -209,7 +268,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('ページ解析タブでチャートが表示される', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -226,7 +285,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('📤 エクスポート機能', () => {
     test('エクスポートボタンでデータダウンロードが実行される', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
       // createObjectURLとrevokeObjectURLをモック
       const mockCreateObjectURL = jest.fn(() => 'blob:test-url');
@@ -236,8 +295,16 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
       // a要素のclickをモック
       const mockClick = jest.fn();
-      const mockLink = { click: mockClick, href: '', download: '' };
+      const mockLink = { 
+        click: mockClick, 
+        href: '', 
+        download: '',
+        setAttribute: jest.fn(),
+        style: {}
+      };
       jest.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+      jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
+      jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
 
       render(<AnalyticsDashboard isAdminUser={true} />);
 
@@ -248,8 +315,13 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const exportButton = screen.getByRole('button', { name: /エクスポート/i });
       await user.click(exportButton);
 
-      expect(mockCreateObjectURL).toHaveBeenCalled();
-      expect(mockClick).toHaveBeenCalled();
+      // Allow time for export functionality to complete
+      jest.advanceTimersByTime(100);
+
+      await waitFor(() => {
+        expect(mockCreateObjectURL).toHaveBeenCalled();
+        expect(mockClick).toHaveBeenCalled();
+      });
     });
   });
 
@@ -262,7 +334,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       });
 
       // デバイス別データが表示されることを確認
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       const devicesTab = screen.getByRole('tab', { name: 'デバイス' });
       await user.click(devicesTab);
 
@@ -328,7 +400,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('🎨 チャート表示', () => {
     test('パイチャートが正しく表示される', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -343,7 +415,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('棒グラフが正しく表示される', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -360,7 +432,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('🔍 データフィルタリング', () => {
     test('時間範囲フィルターが正しく動作する', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -402,7 +474,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('キーボードナビゲーションが正常に動作する', async () => {
-      const user = userEvent.setup();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       render(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
@@ -424,7 +496,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
 describe('📊 AnalyticsDashboard 統合テスト', () => {
   test('完全なダッシュボード操作フローが正常に動作する', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     (userTrackingService.getAnalytics as jest.Mock).mockResolvedValue(mockAnalytics);
 
     render(<AnalyticsDashboard isAdminUser={true} />);

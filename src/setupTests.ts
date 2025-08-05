@@ -259,6 +259,15 @@ Object.defineProperty(globalThis, 'import', {
 global.IMPORT_META = importMeta;
 (globalThis as any).IMPORT_META = importMeta;
 
+// Mock BroadcastChannel for MSW compatibility
+global.BroadcastChannel = class BroadcastChannel {
+  constructor(public name: string) {}
+  postMessage(message: any) {}
+  addEventListener(type: string, listener: any) {}
+  removeEventListener(type: string, listener: any) {}
+  close() {}
+};
+
 // ========================================
 // Browser API Mocks
 // ========================================
