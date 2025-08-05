@@ -198,10 +198,20 @@ Object.assign(global, {
 
 // テスト環境用の環境変数設定
 process.env.NODE_ENV = 'test';
+process.env.JEST_WORKER_ID = '1';
 process.env.VITE_API_BASE_URL = 'http://localhost:3001/api';
 process.env.VITE_USE_MOCK_DATA = 'true';
 process.env.VITE_ENABLE_ANALYTICS = 'false';
 process.env.VITE_DEBUG = 'false';
+
+// Firebase test configuration
+process.env.VITE_FIREBASE_API_KEY = 'test-api-key';
+process.env.VITE_FIREBASE_AUTH_DOMAIN = 'test-project.firebaseapp.com';
+process.env.VITE_FIREBASE_PROJECT_ID = 'test-project';
+process.env.VITE_FIREBASE_STORAGE_BUCKET = 'test-project.appspot.com';
+process.env.VITE_FIREBASE_MESSAGING_SENDER_ID = '123456789';
+process.env.VITE_FIREBASE_APP_ID = '1:123456789:web:test123456';
+process.env.VITE_GEMINI_API_KEY = 'test-gemini-key';
 
 // Enhanced import.meta.env for Vite compatibility
 const viteEnv = {
@@ -213,6 +223,13 @@ const viteEnv = {
   VITE_USE_MOCK_DATA: 'true',
   VITE_ENABLE_ANALYTICS: 'false',
   VITE_DEBUG: 'false',
+  VITE_FIREBASE_API_KEY: 'test-api-key',
+  VITE_FIREBASE_AUTH_DOMAIN: 'test-project.firebaseapp.com',
+  VITE_FIREBASE_PROJECT_ID: 'test-project',
+  VITE_FIREBASE_STORAGE_BUCKET: 'test-project.appspot.com',
+  VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789',
+  VITE_FIREBASE_APP_ID: '1:123456789:web:test123456',
+  VITE_GEMINI_API_KEY: 'test-gemini-key',
 };
 
 // Define import.meta for Vite compatibility with proper typing
@@ -582,7 +599,9 @@ if (typeof EventTarget === 'undefined') {
 // ========================================
 
 // Mock Radix UI components that cause issues in Jest
-jest.mock('@radix-ui/react-tabs', () => ({
+jest.mock('@radix-ui/react-tabs', () => {
+  const React = require('react');
+  return {
   Root: ({ children, ...props }: any) =>
     React.createElement('div', { 'data-testid': 'tabs-root', ...props }, children),
   List: ({ children, ...props }: any) =>
@@ -619,15 +638,19 @@ jest.mock('@radix-ui/react-tabs', () => ({
       },
       children
     ),
-}));
+  };
+});
 
-jest.mock('@radix-ui/react-roving-focus', () => ({
+jest.mock('@radix-ui/react-roving-focus', () => {
+  const React = require('react');
+  return {
   createRovingFocusGroupScope: () => () => ({}),
   RovingFocusGroup: ({ children, ...props }: any) => React.createElement('div', props, children),
   RovingFocusGroupItem: ({ children, ...props }: any) =>
     React.createElement('div', props, children),
   useRovingFocus: () => ({ tabStopId: undefined, focusableId: undefined }),
-}));
+  };
+});
 
 // Mock Radix UI Popper to prevent infinite loops
 jest.mock('@radix-ui/react-popper', () => ({
@@ -644,6 +667,7 @@ jest.mock('@radix-ui/react-popper', () => ({
 
 // Mock other problematic Radix UI components
 jest.mock('@radix-ui/react-select', () => {
+  const React = require('react');
   const mockComponent = (displayName: string, element = 'div') => {
     const Component = React.forwardRef(({ children, ...props }: any, ref: any) => {
       let roleProps: any = {};

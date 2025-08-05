@@ -7,16 +7,16 @@ import { Todo } from '@/types/todo';
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-// Vite環境での環境変数取得（修正版）
+import { ENV } from '@/utils/env';
+
+// 環境変数取得（修正版）
 const getGeminiApiKey = (): string => {
-  // Viteでの正しい環境変数アクセス方法
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = ENV.GEMINI_API_KEY();
 
   // デバッグ情報を出力（開発環境のみ）
-  if (import.meta.env.DEV) {
+  if (ENV.isDev()) {
     console.log('🔍 Gemini API Key Debug:');
-    console.log('  - import.meta.env.VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
-    console.log('  - 全環境変数:', import.meta.env);
+    console.log('  - VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
   }
 
   return apiKey || '';
@@ -159,7 +159,7 @@ export class QuadrantClassificationService {
   public async classifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
     try {
       if (!API_KEY) {
-        if (import.meta.env.DEV) {
+        if (ENV.isDev()) {
           console.warn(
             '🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。'
           );

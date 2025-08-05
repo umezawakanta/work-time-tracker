@@ -533,9 +533,9 @@ class MultiAIIntegrationService {
       console.log(`🤖 Performing AI analysis for type: ${type}`);
 
       // 環境変数からAPIキーを取得
-      const openaiKey = process.env.VITE_OPENAI_API_KEY || import.meta.env?.VITE_OPENAI_API_KEY;
-      const anthropicKey =
-        process.env.VITE_ANTHROPIC_API_KEY || import.meta.env?.VITE_ANTHROPIC_API_KEY;
+      const { ENV } = await import('@/utils/env');
+      const openaiKey = ENV.OPENAI_API_KEY();
+      const anthropicKey = ENV.ANTHROPIC_API_KEY();
 
       if (!openaiKey && !anthropicKey) {
         console.warn('⚠️ No AI API keys configured, using enhanced heuristic analysis');

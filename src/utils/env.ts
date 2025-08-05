@@ -1,73 +1,143 @@
-// 環境変数アクセスのヘルパー関数
-export const getEnv = (key: string): string | undefined => {
-  // テスト環境またはNode.js環境
+// src/utils/env.ts
+/**
+ * 環境変数へのユニバーサルアクセス
+ * テスト環境とブラウザ環境の両方で動作します
+ */
+
+interface ViteImportMeta {
+  env: Record<string, any>;
+}
+
+declare global {
+  interface Window {
+    __VITE_ENV__?: Record<string, any>;
+  }
+}
+
+/**
+ * 環境変数を安全に取得
+ */
+export function getEnv(key: string): string | undefined {
+  // Node.js環境（テスト含む）
   if (typeof process !== 'undefined' && process.env) {
     return process.env[key];
   }
 
-  // ブラウザ環境でViteのimport.metaが利用可能（Jest環境では無効）
+  // ブラウザ環境（Vite）
   try {
-    if (typeof window !== 'undefined' && 'import' in globalThis) {
-      const importMeta = (globalThis as any).import?.meta;
-      if (importMeta?.env) {
-        return importMeta.env[key];
-      }
+    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+      return (globalThis as any).import.meta.env[key];
     }
-  } catch (error) {
-    // Jest環境などでimport.metaが利用できない場合は無視
+  } catch {
+    // 無視
+  }
+
+  // フォールバック
+  try {
+    if (typeof window !== 'undefined' && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env[key];
+    }
+  } catch {
+    // 無視
   }
 
   return undefined;
-};
+}
 
-export const getBooleanEnv = (key: string, defaultValue = false): boolean => {
+/**
+ * ブール値の環境変数を取得
+ */
+export function getBooleanEnv(key: string): boolean {
   const value = getEnv(key);
-  return value === 'true' || value === '1' || defaultValue;
-};
+  return value === 'true' || value === '1';
+}
 
-export const isDev = (): boolean => {
-  // テスト環境
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
-    return true;
+/**
+ * 開発環境かどうかを判定
+ */
+export function isDev(): boolean {
+  if (typeof process !== 'undefined') {
+    return process.env.NODE_ENV === 'development';
   }
-
-  // Node.js環境
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
-    return true;
-  }
-
-  // ブラウザ環境（Jest環境でのエラーを回避）
+  
   try {
-    if (typeof window !== 'undefined' && 'import' in globalThis) {
-      const importMeta = (globalThis as any).import?.meta;
-      if (importMeta?.env?.DEV) {
-        return true;
-      }
+    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+      return (globalThis as any).import.meta.env.DEV === true;
     }
-  } catch (error) {
-    // Jest環境などでimport.metaが利用できない場合は無視
+  } catch {
+    // 無視
   }
-
+  
   return false;
-};
+}
 
-export const isProd = (): boolean => {
-  // Node.js環境
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
-    return true;
+/**
+ * テスト環境かどうかを判定
+ */
+export function isTest(): boolean {
+  if (typeof process !== 'undefined') {
+    return process.env.NODE_ENV === 'test' || Boolean(process.env.JEST_WORKER_ID);
   }
+  
+  return false;
+}
 
-  // ブラウザ環境（Jest環境でのエラーを回避）
+/**
+ * 本番環境かどうかを判定
+ */
+export function isProd(): boolean {
+  if (typeof process !== 'undefined') {
+    return process.env.NODE_ENV === 'production';
+  }
+  
   try {
-    if (typeof window !== 'undefined' && 'import' in globalThis) {
-      const importMeta = (globalThis as any).import?.meta;
-      if (importMeta?.env?.PROD) {
-        return true;
-      }
+    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+      return (globalThis as any).import.meta.env.PROD === true;
     }
-  } catch (error) {
-    // Jest環境などでimport.metaが利用できない場合は無視
+  } catch {
+    // 無視
   }
-
+  
   return false;
+}
+
+/**
+ * よく使用される環境変数のヘルパー
+ */
+export const ENV = {
+  // API Keys
+  GEMINI_API_KEY: () => getEnv('VITE_GEMINI_API_KEY'),
+  OPENAI_API_KEY: () => getEnv('VITE_OPENAI_API_KEY'),
+  CLAUDE_API_KEY: () => getEnv('VITE_CLAUDE_API_KEY'),
+  ANTHROPIC_API_KEY: () => getEnv('VITE_ANTHROPIC_API_KEY'),
+  
+  // Firebase
+  FIREBASE_API_KEY: () => getEnv('VITE_FIREBASE_API_KEY'),
+  FIREBASE_AUTH_DOMAIN: () => getEnv('VITE_FIREBASE_AUTH_DOMAIN'),
+  FIREBASE_PROJECT_ID: () => getEnv('VITE_FIREBASE_PROJECT_ID'),
+  FIREBASE_STORAGE_BUCKET: () => getEnv('VITE_FIREBASE_STORAGE_BUCKET'),
+  FIREBASE_MESSAGING_SENDER_ID: () => getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  FIREBASE_APP_ID: () => getEnv('VITE_FIREBASE_APP_ID'),
+  
+  // API URLs
+  API_BASE_URL: () => getEnv('VITE_API_BASE_URL'),
+  APP_URL: () => getEnv('VITE_APP_URL'),
+  
+  // Stripe
+  STRIPE_PUBLISHABLE_KEY: () => getEnv('VITE_STRIPE_PUBLISHABLE_KEY'),
+  
+  // GitHub
+  GITHUB_TOKEN: () => getEnv('VITE_GITHUB_TOKEN'),
+  
+  // Flags
+  USE_MOCK_DATA: () => getEnv('VITE_USE_MOCK_DATA') === 'true',
+  ENABLE_ANALYTICS: () => getEnv('VITE_ENABLE_ANALYTICS') === 'true',
+  DEBUG: () => getEnv('VITE_DEBUG') === 'true',
+  
+  // Environment checks
+  isDev,
+  isTest,
+  isProd,
 };
+
+export default ENV;
