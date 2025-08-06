@@ -27,16 +27,32 @@ jest.mock('react-hot-toast', () => ({
 
 // Recharts components
 jest.mock('recharts', () => ({
-  LineChart: ({ children, ...props }: any) => <div data-testid="line-chart" {...props}>{children}</div>,
+  LineChart: ({ children, ...props }: any) => (
+    <div data-testid="line-chart" {...props}>
+      {children}
+    </div>
+  ),
   Line: (props: any) => <div data-testid="line" {...props} />,
   XAxis: (props: any) => <div data-testid="x-axis" {...props} />,
   YAxis: (props: any) => <div data-testid="y-axis" {...props} />,
   CartesianGrid: (props: any) => <div data-testid="cartesian-grid" {...props} />,
   Tooltip: (props: any) => <div data-testid="tooltip" {...props} />,
-  ResponsiveContainer: ({ children, ...props }: any) => <div data-testid="responsive-container" {...props}>{children}</div>,
-  BarChart: ({ children, ...props }: any) => <div data-testid="bar-chart" {...props}>{children}</div>,
+  ResponsiveContainer: ({ children, ...props }: any) => (
+    <div data-testid="responsive-container" {...props}>
+      {children}
+    </div>
+  ),
+  BarChart: ({ children, ...props }: any) => (
+    <div data-testid="bar-chart" {...props}>
+      {children}
+    </div>
+  ),
   Bar: (props: any) => <div data-testid="bar" {...props} />,
-  PieChart: ({ children, ...props }: any) => <div data-testid="pie-chart" {...props}>{children}</div>,
+  PieChart: ({ children, ...props }: any) => (
+    <div data-testid="pie-chart" {...props}>
+      {children}
+    </div>
+  ),
   Pie: (props: any) => <div data-testid="pie" {...props} />,
   Cell: (props: any) => <div data-testid="cell" {...props} />,
 }));
@@ -44,25 +60,32 @@ jest.mock('recharts', () => ({
 // Radix UI Select components
 jest.mock('@radix-ui/react-select', () => {
   const React = require('react');
-  const MockComponent = ({ children, ...props }: any) => React.createElement('div', props, children);
+  const MockComponent = ({ children, ...props }: any) =>
+    React.createElement('div', props, children);
   MockComponent.displayName = 'MockSelectComponent';
-  
+
   return {
     Root: MockComponent,
-    Trigger: ({ children, ...props }: any) => (
-      React.createElement('button', { role: 'combobox', 'data-testid': 'select-trigger', ...props }, children)
-    ),
+    Trigger: ({ children, ...props }: any) =>
+      React.createElement(
+        'button',
+        { role: 'combobox', 'data-testid': 'select-trigger', ...props },
+        children
+      ),
     Value: MockComponent,
     Content: MockComponent,
     Viewport: MockComponent,
-    Item: ({ children, value, ...props }: any) => (
-      React.createElement('div', { 
-        role: 'option', 
-        'data-testid': `select-item-${value}`, 
-        'aria-label': children,
-        ...props 
-      }, children)
-    ),
+    Item: ({ children, value, ...props }: any) =>
+      React.createElement(
+        'div',
+        {
+          role: 'option',
+          'data-testid': `select-item-${value}`,
+          'aria-label': children,
+          ...props,
+        },
+        children
+      ),
     ItemText: MockComponent,
     ScrollUpButton: MockComponent,
     ScrollDownButton: MockComponent,
@@ -295,12 +318,12 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
       // a要素のclickをモック
       const mockClick = jest.fn();
-      const mockLink = { 
-        click: mockClick, 
-        href: '', 
+      const mockLink = {
+        click: mockClick,
+        href: '',
         download: '',
         setAttribute: jest.fn(),
-        style: {}
+        style: {},
       };
       jest.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
       jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
