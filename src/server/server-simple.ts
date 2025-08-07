@@ -782,7 +782,7 @@ app.post('/api/analytics/track', (req, res) => {
 
   try {
     const { event, data, timestamp } = req.body;
-    
+
     if (!event || !timestamp) {
       return res.status(400).json({
         success: false,

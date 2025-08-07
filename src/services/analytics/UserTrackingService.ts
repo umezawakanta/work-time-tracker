@@ -350,7 +350,7 @@ class UserTrackingService {
     try {
       // API設定を動的に取得
       const apiBaseUrl = this.getApiBaseUrl();
-      
+
       await fetch(`${apiBaseUrl}/analytics/track`, {
         method: 'POST',
         headers: {
@@ -374,7 +374,7 @@ class UserTrackingService {
     // 開発環境では localhost:3001、本番環境では適切なURLを使用
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
-      
+
       if (hostname === 'work-time-tracker-5d9q.vercel.app') {
         return 'https://work-time-tracker-5d9q.vercel.app/api';
       } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
@@ -385,7 +385,7 @@ class UserTrackingService {
         return `${window.location.protocol}//${window.location.hostname}/api`;
       }
     }
-    
+
     // サーバーサイドや fallback
     return 'http://localhost:3001/api';
   }
