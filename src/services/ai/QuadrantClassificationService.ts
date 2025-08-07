@@ -131,13 +131,14 @@ export const QUADRANT_DEFINITIONS: Record<QuadrantType, QuadrantInfo> = {
 };
 
 // デバッグ情報（開発環境のみ）
-if (import.meta.env.DEV) {
+const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+if (isDev) {
   console.log('🔍 環境変数チェック:');
-  console.log(
-    'VITE_GEMINI_API_KEY:',
-    import.meta.env.VITE_GEMINI_API_KEY ? '設定済み ✅' : '未設定 ❌'
-  );
-  console.log('NODE_ENV:', import.meta.env.MODE);
+  const apiKey =
+    process.env.VITE_GEMINI_API_KEY ||
+    (typeof window !== 'undefined' && (window as any).import?.meta?.env?.VITE_GEMINI_API_KEY);
+  console.log('VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
 }
 
 /**

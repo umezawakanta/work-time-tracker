@@ -64,13 +64,30 @@ const IntegrationTestWrapper: React.FC<{ children: React.ReactNode }> = ({ child
 };
 
 // モック設定
-jest.mock('@/services/auth/UnifiedAuthManager');
-jest.mock('@/services/analytics/UserTrackingService');
-jest.mock('@/services/ai/QuadrantClassificationService');
+jest.mock('@/services/auth/UnifiedAuthManager', () => ({
+  UnifiedAuthManager: {
+    getInstance: jest.fn(),
+  },
+}));
 
-const mockAuthManager = UnifiedAuthManager as jest.MockedClass<typeof UnifiedAuthManager>;
+jest.mock('@/services/analytics/UserTrackingService', () => ({
+  userTrackingService: {
+    trackPageView: jest.fn(),
+    trackInteraction: jest.fn(),
+    trackAIUsage: jest.fn(),
+    getAnalytics: jest.fn(),
+  },
+}));
+
+jest.mock('@/services/ai/QuadrantClassificationService', () => ({
+  QuadrantClassificationService: {
+    getInstance: jest.fn(),
+  },
+}));
+
+const mockAuthManager = UnifiedAuthManager as jest.Mocked<typeof UnifiedAuthManager>;
 const mockUserTracking = userTrackingService as jest.Mocked<typeof userTrackingService>;
-const mockQuadrantService = QuadrantClassificationService as jest.MockedClass<
+const mockQuadrantService = QuadrantClassificationService as jest.Mocked<
   typeof QuadrantClassificationService
 >;
 
@@ -79,7 +96,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
     jest.clearAllMocks();
 
     // 認証マネージャーのモック設定
-    mockAuthManager.getInstance = jest.fn().mockReturnValue({
+    (mockAuthManager.getInstance as jest.Mock).mockReturnValue({
       login: jest.fn().mockResolvedValue({
         success: true,
         user: { id: 'test-user', email: 'test@example.com' },
@@ -88,12 +105,11 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
       validateSession: jest.fn().mockResolvedValue(true),
     });
 
-    // ユーザートラッキングのモック設定
-    mockUserTracking.initializeSession = jest.fn();
-    mockUserTracking.trackPageView = jest.fn();
-    mockUserTracking.trackInteraction = jest.fn();
-    mockUserTracking.trackAIUsage = jest.fn();
-    mockUserTracking.getAnalytics = jest.fn().mockResolvedValue({
+    // ユーザートラッキングのモック設定 - no need to reassign since they're already mocked
+    mockUserTracking.trackPageView.mockImplementation(() => {});
+    mockUserTracking.trackInteraction.mockImplementation(() => {});
+    mockUserTracking.trackAIUsage.mockImplementation(() => {});
+    mockUserTracking.getAnalytics.mockResolvedValue({
       totalUsers: 1000,
       activeUsers: 100,
       pageViewsTotal: 5000,
@@ -101,7 +117,7 @@ describe('🚀 Work Time Tracker - システム統合テスト', () => {
     });
 
     // AI分類サービスのモック設定
-    mockQuadrantService.getInstance = jest.fn().mockReturnValue({
+    (mockQuadrantService.getInstance as jest.Mock).mockReturnValue({
       classifyTask: jest.fn().mockResolvedValue({
         quadrant: 'essential',
         importance: 8,
