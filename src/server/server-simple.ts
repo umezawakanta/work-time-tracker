@@ -646,6 +646,92 @@ app.post('/api/todos/reset', async (req, res) => {
   }
 });
 
+// GET todos/history - todo completion history
+app.get('/api/todos/history', async (req, res) => {
+  console.log('✅ GET /api/todos/history called');
+
+  try {
+    // Generate mock history data for the past 30 days
+    const history = [];
+    const today = new Date();
+
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+
+      // Generate random completion count (0-8 tasks per day)
+      const completedCount = Math.floor(Math.random() * 9);
+
+      history.push({
+        date: dateStr,
+        completedCount,
+        day: date.toLocaleDateString('ja-JP', { weekday: 'short' }),
+      });
+    }
+
+    console.log(`📊 Generated history for ${history.length} days`);
+
+    res.json({
+      success: true,
+      data: history,
+      message: 'TODO履歴を取得しました',
+    });
+  } catch (error) {
+    console.error('❌ Error in GET /api/todos/history:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch history',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// GET todos/history/daily - daily history summary
+app.get('/api/todos/history/daily', async (req, res) => {
+  console.log('✅ GET /api/todos/history/daily called');
+
+  try {
+    // Generate mock daily summary for the past 7 days
+    const dailyHistory = [];
+    const today = new Date();
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+
+      // Generate random daily stats
+      const completed = Math.floor(Math.random() * 8);
+      const total = completed + Math.floor(Math.random() * 5);
+
+      dailyHistory.push({
+        date: dateStr,
+        completed,
+        total,
+        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+        day: date.toLocaleDateString('ja-JP', { weekday: 'short' }),
+        dayOfMonth: date.getDate(),
+      });
+    }
+
+    console.log(`📅 Generated daily history for ${dailyHistory.length} days`);
+
+    res.json({
+      success: true,
+      data: dailyHistory,
+      message: '日別履歴を取得しました',
+    });
+  } catch (error) {
+    console.error('❌ Error in GET /api/todos/history/daily:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch daily history',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 // GET projects
 app.get('/api/projects', (req, res) => {
   console.log('✅ GET /api/projects called');
@@ -910,6 +996,8 @@ console.log('   POST /api/todos');
 console.log('   PUT  /api/todos/:id'); // 追加
 console.log('   DELETE /api/todos/:id'); // 追加
 console.log('   POST /api/todos/reset'); // 追加
+console.log('   GET  /api/todos/history'); // 追加
+console.log('   GET  /api/todos/history/daily'); // 追加
 console.log('   GET  /api/projects'); // 追加
 console.log('   GET  /api/books'); // 追加
 console.log('   POST /api/books'); // 追加

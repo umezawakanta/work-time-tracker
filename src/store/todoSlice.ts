@@ -567,8 +567,10 @@ const todoSlice = createSlice({
       })
       .addCase(resetTodoList.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = []; // リセット後は空の配列
+        state.error = null; // エラーをクリア
         // 履歴データはそのまま保持
+        console.log('🗑️ Todo list reset completed');
       })
       .addCase(fetchTodoHistory.fulfilled, (state, action) => {
         // 履歴データを適切な形式に変換
