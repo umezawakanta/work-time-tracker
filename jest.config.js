@@ -2,10 +2,24 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  globals: {
+    // Add global polyfills for Node.js compatibility
+    TransformStream: require('node:stream/web').TransformStream,
+    ReadableStream: require('node:stream/web').ReadableStream,
+    WritableStream: require('node:stream/web').WritableStream,
+  },
   testEnvironmentOptions: {
     customExportConditions: [''],
   },
   moduleNameMapper: {
+    // Firebase module mocks
+    '^firebase/app$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/firestore$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/auth$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/storage$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/analytics$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/database$': '<rootDir>/src/__mocks__/firebase.js',
+    '^firebase/functions$': '<rootDir>/src/__mocks__/firebase.js',
     // Specific TokenManager mock MUST come first for Jest to apply it
     '^@/services/auth/TokenManager$': '<rootDir>/src/__mocks__/TokenManager.js',
     // CSS files specific handling
@@ -30,11 +44,12 @@ module.exports = {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
       useESM: false,
+      isolatedModules: true,
     }],
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.(js|jsx|mjs)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(firebase|@firebase|@google-cloud|recharts)/)',
+    'node_modules/(?!(firebase|@firebase|@google-cloud|recharts|@grpc|google-gax)/)',
   ],
   globals: {
     'ts-jest': {
