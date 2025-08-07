@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
 import { AuthProvider } from '@/context/AuthContext';
@@ -70,10 +70,9 @@ const mockPlans = [
 // MSW サーバー設定
 const server = setupServer(
   // 成功レスポンス
-  rest.post('/api/subscriptions/create', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
+  http.post('/api/subscriptions/create', () => {
+    return HttpResponse.json(
+      {
         success: true,
         data: {
           subscription: {
@@ -86,7 +85,8 @@ const server = setupServer(
           message: 'サブスクリプションを作成しました',
           nextSteps: ['プロフィールを設定してください'],
         },
-      })
+      },
+      { status: 201 }
     );
   }),
 

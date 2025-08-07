@@ -12,6 +12,7 @@ import { connectDB } from './config/database.js';
 // import assetRoutes from './routes/assetRoutes.js';
 // import debtRoutes from './routes/debtRoutes.js';
 import todoRoutes from './routes/todoRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
 // import candidateRoutes from './routes/candidateRoutes.js';
 // import userSubscriptionRoutes from './routes/userSubscriptionRoutes.js';
 // import qualityRoutes from './routes/qualityRoutes.js';
@@ -339,6 +340,10 @@ try {
   // console.log('📝 Loading todo routes...');
   app.use('/api/todos', todoRoutes);
   console.log('✅ Todo routes loaded successfully');
+
+  console.log('📊 Loading analytics routes...');
+  app.use('/api/analytics', analyticsRoutes);
+  console.log('✅ Analytics routes loaded successfully');
 
   console.log('📚 Loading book routes...');
   app.use('/api/books', bookRoutes);
