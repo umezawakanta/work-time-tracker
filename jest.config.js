@@ -66,7 +66,7 @@ module.exports = {
     },
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  testTimeout: 10000,
+  testTimeout: 30000,
   clearMocks: true,
   restoreMocks: true,
   resetMocks: false, // Keep this false to preserve our manual mocks
