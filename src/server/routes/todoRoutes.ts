@@ -314,4 +314,41 @@ interface DailyCounts {
   [date: string]: number;
 }
 
+// 🔄 Reset all todos
+router.post('/reset', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    // すべてのTodoを削除
+    const deleteResult = await TodoItem.deleteMany({});
+
+    // 履歴にも記録
+    const resetHistory = new TodoHistory({
+      action: 'RESET_ALL',
+      data: {
+        deletedCount: deleteResult.deletedCount,
+        timestamp: new Date().toISOString(),
+      },
+      timestamp: new Date(),
+    });
+
+    await resetHistory.save();
+
+    console.log(`✅ Reset completed: ${deleteResult.deletedCount} todos deleted`);
+
+    res.json({
+      success: true,
+      message: 'All todos have been reset successfully',
+      deletedCount: deleteResult.deletedCount,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('❌ Error resetting todos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error resetting todos',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 export default router;

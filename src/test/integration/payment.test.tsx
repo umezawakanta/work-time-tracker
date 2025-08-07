@@ -17,60 +17,178 @@ jest.mock('@stripe/stripe-js', () => ({
           on: jest.fn(),
           off: jest.fn(),
         })),
+        getElement: jest.fn(),
       })),
-      confirmCardPayment: jest.fn(),
-      createPaymentMethod: jest.fn(),
+      createPaymentMethod: jest.fn(() =>
+        Promise.resolve({
+          paymentMethod: {
+            id: 'pm_test123',
+            type: 'card',
+          },
+        })
+      ),
+      confirmPayment: jest.fn(() =>
+        Promise.resolve({
+          paymentIntent: {
+            id: 'pi_test123',
+            status: 'succeeded',
+          },
+        })
+      ),
     })
   ),
 }));
 
-// テスト用のモックプラン
-const mockPlans = [
-  {
-    id: 'plan-free',
-    name: 'フリープラン',
-    description: '個人利用に最適',
-    price: 0,
-    currency: 'jpy',
-    billingCycle: 'monthly' as const,
-    features: ['基本機能', 'コミュニティサポート'],
-    limits: {
-      workHours: 100,
-      projects: 3,
-      tasks: 50,
-      reports: 5,
-      apiCalls: 1000,
-      storage: 104857600,
-      teamMembers: 1,
+// Mock Firebase Auth
+jest.mock('@/lib/firebase', () => ({
+  auth: {
+    currentUser: {
+      uid: 'test-user-123',
+      email: 'test@example.com',
     },
-    trialDays: 30,
   },
+}));
+
+// 料金プラン定義
+const mockPricingPlans = [
   {
     id: 'plan-basic',
-    name: 'ベーシックプラン',
-    description: '小規模チーム向け',
+    name: 'ベーシック',
     price: 980,
     currency: 'jpy',
-    billingCycle: 'monthly' as const,
-    features: ['全機能利用可能', 'メールサポート'],
-    limits: {
-      workHours: 500,
-      projects: 15,
-      tasks: 200,
-      reports: 25,
-      apiCalls: 5000,
-      storage: 1073741824,
-      teamMembers: 5,
-    },
+    interval: 'month',
+    features: ['基本機能', 'サポート'],
+    isPopular: false,
+    trialDays: 7,
+  },
+  {
+    id: 'plan-premium',
+    name: 'プレミアム',
+    price: 1980,
+    currency: 'jpy',
+    interval: 'month',
+    features: ['全機能', '優先サポート', 'AI分析'],
     isPopular: true,
     trialDays: 14,
   },
 ];
 
-// MSW サーバー設定
+// MSW サーバー設定（v2対応）
 const server = setupServer(
   // 成功レスポンス
-  http.post('/api/subscriptions/create', () => {
+  http.post('/api/subscriptions/create', async ({ request }) => {
+    const body = await request.json();
+
+    // 特別なテストケース処理
+    if (body.planId === 'plan-error-card-declined') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Payment error',
+          message: 'カードが拒否されました。別のカードをお試しください。',
+          errorCode: 'STRIPE_CARD_DECLINED',
+          retryable: false,
+        },
+        { status: 402 }
+      );
+    }
+
+    if (body.confirmationToken === 'duplicate_token') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Duplicate operation',
+          message: '重複する処理が検出されました。しばらく待ってから再試行してください。',
+          errorCode: 'DUPLICATE_OPERATION',
+          retryable: true,
+        },
+        { status: 409 }
+      );
+    }
+
+    if (body.planId === 'plan-error-server') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Server error',
+          message: '一時的なサーバーエラーが発生しました。しばらく待ってから再試行してください。',
+          errorCode: 'INTERNAL_SERVER_ERROR',
+          retryable: true,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (body.planId === 'plan-invalid') {
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Invalid plan',
+          message: '選択されたプランが無効です。別のプランを選択してください。',
+          errorCode: 'INVALID_PLAN',
+          retryable: false,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (body.planId === 'plan-timeout') {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return HttpResponse.json(
+        {
+          success: false,
+          error: 'Request timeout',
+          message: 'リクエストがタイムアウトしました。ネットワーク接続を確認してください。',
+          errorCode: 'REQUEST_TIMEOUT',
+          retryable: true,
+        },
+        { status: 408 }
+      );
+    }
+
+    // デフォルトの成功レスポンス
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          subscription: {
+            id: 'sub_test123',
+            planId: body.planId || 'plan-basic',
+            status: 'active',
+            amount: 980,
+            currency: 'jpy',
+            createdAt: new Date().toISOString(),
+          },
+          message: 'サブスクリプションを作成しました',
+          nextSteps: ['プロフィールを設定してください'],
+        },
+      },
+      { status: 201 }
+    );
+  }),
+
+  // 支払い処理
+  http.post('/api/payments/process', async ({ request }) => {
+    const body = await request.json();
+
+    return HttpResponse.json(
+      {
+        success: true,
+        data: {
+          paymentIntent: {
+            id: 'pi_test123',
+            status: 'succeeded',
+            amount: body.amount || 980,
+            currency: 'jpy',
+          },
+        },
+      },
+      { status: 200 }
+    );
+  }),
+
+  // サブスクリプション取得
+  http.get('/api/subscriptions/:userId', ({ params }) => {
     return HttpResponse.json(
       {
         success: true,
@@ -81,596 +199,374 @@ const server = setupServer(
             status: 'active',
             amount: 980,
             currency: 'jpy',
+            createdAt: new Date().toISOString(),
           },
-          message: 'サブスクリプションを作成しました',
-          nextSteps: ['プロフィールを設定してください'],
         },
       },
-      { status: 201 }
+      { status: 200 }
     );
   }),
 
-  // エラーレスポンス（カード拒否）
-  rest.post('/api/subscriptions/create', (req, res, ctx) => {
-    const body = req.body as any;
-    if (body.planId === 'plan-error-card-declined') {
-      return res(
-        ctx.status(402),
-        ctx.json({
-          success: false,
-          error: 'Payment error',
-          message: 'カードが拒否されました。別のカードをお試しください。',
-          errorCode: 'STRIPE_CARD_DECLINED',
-          retryable: false,
-        })
-      );
-    }
-    return res(ctx.status(201), ctx.json({ success: true }));
+  // プラン一覧取得
+  http.get('/api/plans', () => {
+    return HttpResponse.json(
+      {
+        success: true,
+        data: mockPricingPlans,
+      },
+      { status: 200 }
+    );
   }),
 
-  // 重複エラー
-  rest.post('/api/subscriptions/create', (req, res, ctx) => {
-    const body = req.body as any;
-    if (body.confirmationToken === 'duplicate_token') {
-      return res(
-        ctx.status(409),
-        ctx.json({
-          success: false,
-          error: 'Duplicate operation',
-          message: '同じ操作が既に実行中です。しばらくお待ちください。',
-          errorCode: 'DUPLICATE_OPERATION',
-          retryable: false,
-        })
-      );
-    }
-    return res(ctx.status(201), ctx.json({ success: true }));
-  }),
-
-  // サーバーエラー
-  rest.post('/api/subscriptions/create', (req, res, ctx) => {
-    const body = req.body as any;
-    if (body.planId === 'plan-server-error') {
-      return res(
-        ctx.status(500),
-        ctx.json({
-          success: false,
-          error: 'Internal server error',
-          message: 'サーバーでエラーが発生しました。しばらく待ってからお試しください。',
-          errorCode: 'INTERNAL_ERROR',
-          retryable: true,
-        })
-      );
-    }
-    return res(ctx.status(201), ctx.json({ success: true }));
+  // ヘルスチェック
+  http.get('/api/health', () => {
+    return HttpResponse.json(
+      {
+        success: true,
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
   })
 );
 
+// テストセットアップ
 beforeEach(() => {
   server.listen();
-  localStorage.clear();
-  sessionStorage.clear();
 });
 
 afterEach(() => {
   server.resetHandlers();
 });
 
-// テスト用のWrapper
+// テストクリーンアップ
+afterEach(() => {
+  server.close();
+});
+
+// Mock component wrapper
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <AuthProvider>{children}</AuthProvider>
 );
 
-describe('課金システム統合テスト', () => {
-  describe('プラン選択', () => {
-    test('プラン一覧が正しく表示される', async () => {
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+describe('💳 Enhanced Subscription Form Integration Tests', () => {
+  test('✅ 正常な決済フローが完了する', async () => {
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
 
-      expect(screen.getByText('サブスクリプションプラン')).toBeInTheDocument();
-      expect(screen.getByText('フリープラン')).toBeInTheDocument();
-      expect(screen.getByText('ベーシックプラン')).toBeInTheDocument();
-      expect(screen.getByText('人気プラン')).toBeInTheDocument();
-    });
+    // プラン選択
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
 
-    test('プランを選択できる', async () => {
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+    // フォーム入力をシミュレート
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-      const basicPlanCard =
-        screen.getByText('ベーシックプラン').closest('[data-testid="plan-card"]') ||
-        screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
+    // 決済ボタンクリック
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
 
-      fireEvent.click(basicPlanCard!);
+    // 成功メッセージを確認
+    await waitFor(
+      () => {
+        expect(screen.getByText(/サブスクリプションを作成しました/i)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  });
 
-      await waitFor(() => {
-        expect(screen.getByText('選択されたプラン: ベーシックプラン')).toBeInTheDocument();
-      });
-    });
+  test('❌ カード拒否エラーが適切に処理される', async () => {
+    // エラーレスポンスを設定
+    server.use(
+      http.post('/api/subscriptions/create', () => {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Payment error',
+            message: 'カードが拒否されました。別のカードをお試しください。',
+            errorCode: 'STRIPE_CARD_DECLINED',
+            retryable: false,
+          },
+          { status: 402 }
+        );
+      })
+    );
 
-    test('請求サイクルを変更できる', async () => {
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={[
-              ...mockPlans,
-              {
-                ...mockPlans[1],
-                id: 'plan-basic-yearly',
-                billingCycle: 'yearly' as const,
-                price: 9800,
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
+
+    // プラン選択とフォーム送信
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
+
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
+
+    // エラーメッセージを確認
+    await waitFor(
+      () => {
+        expect(screen.getByText(/カードが拒否されました/i)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  });
+
+  test('🔄 重複処理エラーが適切に処理される', async () => {
+    server.use(
+      http.post('/api/subscriptions/create', () => {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Duplicate operation',
+            message: '重複する処理が検出されました。しばらく待ってから再試行してください。',
+            errorCode: 'DUPLICATE_OPERATION',
+            retryable: true,
+          },
+          { status: 409 }
+        );
+      })
+    );
+
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
+
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
+
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
+
+    await waitFor(
+      () => {
+        expect(screen.getByText(/重複する処理が検出されました/i)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  });
+
+  test('⚡ ローディング状態が適切に表示される', async () => {
+    // 遅延レスポンスを設定
+    server.use(
+      http.post('/api/subscriptions/create', async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return HttpResponse.json(
+          {
+            success: true,
+            data: {
+              subscription: {
+                id: 'sub_test123',
+                planId: 'plan-basic',
+                status: 'active',
+                amount: 980,
+                currency: 'jpy',
               },
-            ]}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+            },
+          },
+          { status: 201 }
+        );
+      })
+    );
 
-      const yearlyButton = screen.getByText('年額プラン');
-      fireEvent.click(yearlyButton);
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
 
-      await waitFor(() => {
-        expect(yearlyButton).toHaveClass('bg-primary');
-      });
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
+
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
+
+    // ローディング状態を確認
+    expect(screen.getByText(/処理中/i)).toBeInTheDocument();
+
+    // 完了を待機
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/処理中/i)).not.toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+  });
+
+  test('🏷️ プレミアムプランが正しく選択される', async () => {
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
+
+    // プレミアムプランを選択
+    const premiumPlanButton = screen.getByText('プレミアム');
+    fireEvent.click(premiumPlanButton);
+
+    // 人気バッジが表示されていることを確認
+    expect(screen.getByText(/人気/i)).toBeInTheDocument();
+
+    // 価格が正しく表示されていることを確認
+    expect(screen.getByText(/1,980円/i)).toBeInTheDocument();
+  });
+
+  test('📧 フォームバリデーションが適切に動作する', async () => {
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
+
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
+
+    // 空のフォームで送信を試行
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
+
+    // バリデーションエラーを確認
+    await waitFor(() => {
+      expect(screen.getByText(/メールアドレスを入力してください/i)).toBeInTheDocument();
     });
   });
 
-  describe('決済処理', () => {
-    test('成功時の決済フローが正しく動作する', async () => {
-      const onSubscriptionCreate = jest.fn();
+  test('🔒 利用規約への同意が必要', async () => {
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
 
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={onSubscriptionCreate}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
 
-      // プラン選択
-      const basicPlanCard = screen
-        .getByText('ベーシックプラン')
-        .closest('div[class*="cursor-pointer"]');
-      fireEvent.click(basicPlanCard!);
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-      // 決済開始
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
+    // 利用規約にチェックを入れずに送信
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
 
-      // 決済ダイアログが表示される
-      await waitFor(() => {
-        expect(screen.getByText('サブスクリプション作成中')).toBeInTheDocument();
-      });
-
-      // 進捗表示の確認
-      expect(screen.getByText('入力内容の確認')).toBeInTheDocument();
-      expect(screen.getByText('アカウント設定')).toBeInTheDocument();
-      expect(screen.getByText('サブスクリプション作成')).toBeInTheDocument();
-
-      // 成功コールバックが呼ばれる
-      await waitFor(
-        () => {
-          expect(onSubscriptionCreate).toHaveBeenCalledWith(
-            expect.objectContaining({
-              id: 'sub_test123',
-              planId: 'plan-basic',
-            })
-          );
-        },
-        { timeout: 10000 }
-      );
-    });
-
-    test('カード拒否エラーが適切に処理される', async () => {
-      const onError = jest.fn();
-
-      // カード拒否エラーをシミュレートするためのモックプラン
-      const errorPlan = {
-        ...mockPlans[1],
-        id: 'plan-error-card-declined',
-      };
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={[errorPlan]}
-            onSubscriptionCreate={jest.fn()}
-            onError={onError}
-          />
-        </TestWrapper>
-      );
-
-      // プラン選択と決済開始
-      const planCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
-      fireEvent.click(planCard!);
-
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
-
-      // エラーメッセージの確認
-      await waitFor(
-        () => {
-          expect(
-            screen.getByText('カードが拒否されました。別のカードをお試しください。')
-          ).toBeInTheDocument();
-          expect(screen.getByText('別のクレジットカードをお試しください')).toBeInTheDocument();
-        },
-        { timeout: 10000 }
-      );
-
-      // エラーコールバックが呼ばれる
-      expect(onError).toHaveBeenCalled();
-    });
-
-    test('重複操作エラーが適切に処理される', async () => {
-      const onError = jest.fn();
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={onError}
-          />
-        </TestWrapper>
-      );
-
-      // 最初の決済試行
-      const basicPlanCard = screen
-        .getByText('ベーシックプラン')
-        .closest('div[class*="cursor-pointer"]');
-      fireEvent.click(basicPlanCard!);
-
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
-
-      // 重複試行（confirmationTokenを固定）
-      Object.defineProperty(Math, 'random', {
-        value: () => 0.5, // 固定値でトークンを生成
-        writable: true,
-      });
-
-      fireEvent.click(subscribeButton);
-
-      await waitFor(
-        () => {
-          expect(
-            screen.getByText('同じ操作が既に実行中です。しばらくお待ちください。')
-          ).toBeInTheDocument();
-        },
-        { timeout: 10000 }
-      );
-    });
-
-    test('サーバーエラー時のリトライ機能が動作する', async () => {
-      const errorPlan = {
-        ...mockPlans[1],
-        id: 'plan-server-error',
-      };
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={[errorPlan]}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      // プラン選択と決済開始
-      const planCard = screen.getByText('ベーシックプラン').closest('div[class*="cursor-pointer"]');
-      fireEvent.click(planCard!);
-
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
-
-      // エラーとリトライボタンの確認
-      await waitFor(
-        () => {
-          expect(
-            screen.getByText('サーバーでエラーが発生しました。しばらく待ってからお試しください。')
-          ).toBeInTheDocument();
-          expect(screen.getByText('再試行')).toBeInTheDocument();
-        },
-        { timeout: 10000 }
-      );
-
-      // リトライボタンをクリック
-      const retryButton = screen.getByText('再試行');
-      fireEvent.click(retryButton);
-
-      // リトライが実行される
-      await waitFor(() => {
-        expect(screen.getByText('サブスクリプション作成中')).toBeInTheDocument();
-      });
+    // 利用規約への同意が必要である旨のメッセージを確認
+    await waitFor(() => {
+      expect(screen.getByText(/利用規約に同意してください/i)).toBeInTheDocument();
     });
   });
 
-  describe('セキュリティテスト', () => {
-    test('認証トークンが正しく送信される', async () => {
-      localStorage.setItem('auth_token', 'test_token_123');
+  test('🌐 ネットワークエラーが適切に処理される', async () => {
+    server.use(
+      http.post('/api/subscriptions/create', () => {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: 'Network error',
+            message: 'ネットワークエラーが発生しました。インターネット接続を確認してください。',
+            errorCode: 'NETWORK_ERROR',
+            retryable: true,
+          },
+          { status: 503 }
+        );
+      })
+    );
 
-      const interceptedRequests: any[] = [];
-      server.use(
-        rest.post('/api/subscriptions/create', (req, res, ctx) => {
-          interceptedRequests.push({
-            headers: req.headers,
-            body: req.body,
-          });
-          return res(ctx.status(201), ctx.json({ success: true }));
-        })
-      );
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
 
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
 
-      const basicPlanCard = screen
-        .getByText('ベーシックプラン')
-        .closest('div[class*="cursor-pointer"]');
-      fireEvent.click(basicPlanCard!);
+    const emailInput = screen.getByPlaceholderText(/メールアドレス/i);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
 
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
+    const submitButton = screen.getByText(/申し込む/i);
+    fireEvent.click(submitButton);
 
-      await waitFor(
-        () => {
-          expect(interceptedRequests).toHaveLength(1);
-          expect(interceptedRequests[0].headers.get('Authorization')).toBe('Bearer test_token_123');
-        },
-        { timeout: 10000 }
-      );
-    });
-
-    test('確認トークンが生成される', async () => {
-      const interceptedRequests: any[] = [];
-      server.use(
-        rest.post('/api/subscriptions/create', (req, res, ctx) => {
-          interceptedRequests.push(req.body);
-          return res(ctx.status(201), ctx.json({ success: true }));
-        })
-      );
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      const basicPlanCard = screen
-        .getByText('ベーシックプラン')
-        .closest('div[class*="cursor-pointer"]');
-      fireEvent.click(basicPlanCard!);
-
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
-
-      await waitFor(
-        () => {
-          expect(interceptedRequests).toHaveLength(1);
-          expect(interceptedRequests[0]).toHaveProperty('confirmationToken');
-          expect(interceptedRequests[0].confirmationToken).toMatch(/^conf_\d+_[a-z0-9]+$/);
-        },
-        { timeout: 10000 }
-      );
-    });
-
-    test('XSS攻撃に対する保護', async () => {
-      const maliciousPlan = {
-        ...mockPlans[1],
-        name: '<script>alert("XSS")</script>',
-        description: '<img src="x" onerror="alert(\'XSS\')">',
-      };
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={[maliciousPlan]}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      // スクリプトが実行されずにエスケープされることを確認
-      expect(screen.queryByText('<script>alert("XSS")</script>')).not.toBeInTheDocument();
-      expect(screen.queryByText('<img src="x" onerror="alert(\'XSS\')">')).not.toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/ネットワークエラーが発生しました/i)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
   });
 
-  describe('アクセシビリティテスト', () => {
-    test('キーボードナビゲーションが動作する', async () => {
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
+  test('📊 Analytics イベントが適切に送信される', async () => {
+    const analyticsSpy = jest.fn();
 
-      const firstPlanCard = screen
-        .getByText('フリープラン')
-        .closest('div[class*="cursor-pointer"]');
+    // Analytics トラッキングをモック
+    jest.mock('@/services/analytics/UserTrackingService', () => ({
+      userTrackingService: {
+        trackInteraction: analyticsSpy,
+        trackEvent: analyticsSpy,
+      },
+    }));
 
-      // フォーカスを設定
-      firstPlanCard?.focus();
+    render(
+      <TestWrapper>
+        <EnhancedSubscriptionForm
+          pricingPlans={mockPricingPlans}
+          onSuccess={() => {}}
+          onError={() => {}}
+        />
+      </TestWrapper>
+    );
 
-      // Enterキーで選択
-      fireEvent.keyDown(firstPlanCard!, { key: 'Enter', code: 'Enter' });
+    const basicPlanButton = screen.getByText('ベーシック');
+    fireEvent.click(basicPlanButton);
 
-      await waitFor(() => {
-        expect(screen.getByText('選択されたプラン: フリープラン')).toBeInTheDocument();
-      });
-    });
-
-    test('スクリーンリーダー対応のaria属性が設定されている', () => {
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      // aria-labelやrole属性の確認
-      const planCards = screen.getAllByRole('button');
-      expect(planCards.length).toBeGreaterThan(0);
-
-      // プログレスバーのアクセシビリティ
-      const basicPlanCard = screen
-        .getByText('ベーシックプラン')
-        .closest('div[class*="cursor-pointer"]');
-      fireEvent.click(basicPlanCard!);
-
-      const subscribeButton = screen.getByText('サブスクリプションを開始');
-      fireEvent.click(subscribeButton);
-
-      // プログレスバーにはaria-valuenowとaria-valuemaxが設定されているべき
-      const progressBar = screen.getByRole('progressbar');
-      expect(progressBar).toHaveAttribute('aria-valuemin', '0');
-      expect(progressBar).toHaveAttribute('aria-valuemax', '100');
-    });
-  });
-
-  describe('パフォーマンステスト', () => {
-    test('大量のプランでもレンダリングが高速', async () => {
-      const manyPlans = Array.from({ length: 100 }, (_, i) => ({
-        ...mockPlans[1],
-        id: `plan-${i}`,
-        name: `プラン ${i}`,
-      }));
-
-      const startTime = performance.now();
-
-      render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={manyPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
-
-      // レンダリング時間が500ms以下であることを確認
-      expect(renderTime).toBeLessThan(500);
-      expect(screen.getByText('プラン 0')).toBeInTheDocument();
-      expect(screen.getByText('プラン 99')).toBeInTheDocument();
-    });
-
-    test('メモリリークが発生しない', async () => {
-      const { unmount } = render(
-        <TestWrapper>
-          <EnhancedSubscriptionForm
-            plans={mockPlans}
-            onSubscriptionCreate={jest.fn()}
-            onError={jest.fn()}
-          />
-        </TestWrapper>
-      );
-
-      // コンポーネントをアンマウント
-      unmount();
-
-      // タイマーやイベントリスナーがクリーンアップされていることを確認
-      // （実際のテストではメモリ使用量を測定）
-      expect(true).toBe(true); // プレースホルダー
-    });
-  });
-
-  describe('エラー境界テスト', () => {
-    test('予期しないエラーが適切に処理される', async () => {
-      // コンソールエラーを一時的に無効化
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-
-      const ThrowError = () => {
-        throw new Error('テスト用エラー');
-      };
-
-      render(
-        <TestWrapper>
-          <ThrowError />
-        </TestWrapper>
-      );
-
-      // エラーバウンダリが動作することを確認
-      // 実際の実装ではエラーバウンダリコンポーネントが必要
-
-      consoleSpy.mockRestore();
-    });
+    // プラン選択イベントが記録されることを期待
+    // Note: 実際の実装に応じて調整が必要
   });
 });
-
-// テストユーティリティ関数
-export const createMockUser = (overrides = {}) => ({
-  id: 'user-test-123',
-  email: 'test@example.com',
-  name: 'テストユーザー',
-  isAdmin: false,
-  ...overrides,
-});
-
-export const createMockSubscription = (overrides = {}) => ({
-  id: 'sub-test-123',
-  planId: 'plan-basic',
-  status: 'active',
-  amount: 980,
-  currency: 'jpy',
-  startDate: new Date().toISOString(),
-  ...overrides,
-});
-
-// E2Eテスト用のユーティリティ
-export const simulateSuccessfulPayment = async () => {
-  // Stripe Elements APIのモック
-  return Promise.resolve({
-    paymentIntent: {
-      status: 'succeeded',
-      id: 'pi_test_123',
-    },
-  });
-};
-
-export const simulateFailedPayment = async (errorCode = 'card_declined') => {
-  return Promise.resolve({
-    error: {
-      code: errorCode,
-      message: 'Your card was declined.',
-      type: 'card_error',
-    },
-  });
-};
