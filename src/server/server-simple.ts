@@ -620,6 +620,32 @@ app.delete('/api/todos/:id', async (req, res) => {
   }
 });
 
+// POST todos/reset - reset all todos
+app.post('/api/todos/reset', async (req, res) => {
+  console.log('✅ POST /api/todos/reset called');
+
+  try {
+    // Delete all todos
+    const deleteResult = await TodoModel.deleteMany({});
+
+    console.log(`🗑️ Reset completed: ${deleteResult.deletedCount} todos deleted`);
+
+    res.json({
+      success: true,
+      message: `すべてのTODOをリセットしました (${deleteResult.deletedCount}件削除)`,
+      deletedCount: deleteResult.deletedCount,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('❌ Error in POST /api/todos/reset:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to reset todos',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 // GET projects
 app.get('/api/projects', (req, res) => {
   console.log('✅ GET /api/projects called');
@@ -883,6 +909,7 @@ console.log('   GET  /api/todos');
 console.log('   POST /api/todos');
 console.log('   PUT  /api/todos/:id'); // 追加
 console.log('   DELETE /api/todos/:id'); // 追加
+console.log('   POST /api/todos/reset'); // 追加
 console.log('   GET  /api/projects'); // 追加
 console.log('   GET  /api/books'); // 追加
 console.log('   POST /api/books'); // 追加
