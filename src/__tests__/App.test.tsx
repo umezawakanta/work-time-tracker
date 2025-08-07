@@ -136,33 +136,39 @@ jest.mock('../components/pomodoro/PomodoroManager', () => ({
   PomodoroManager: () => <div data-testid="pomodoro-manager">Pomodoro</div>,
 }));
 
-
-
 // Mock the entire App component to avoid loading state issues
 jest.mock('../App', () => {
   const React = require('react');
   const { Routes, Route } = require('react-router-dom');
-  
+
   const MockedApp = () => {
-    return React.createElement('div', { className: 'App' },
-      React.createElement('div', { className: 'min-h-screen bg-gray-50' },
-        React.createElement(Routes, null,
+    return React.createElement(
+      'div',
+      { className: 'App' },
+      React.createElement(
+        'div',
+        { className: 'min-h-screen bg-gray-50' },
+        React.createElement(
+          Routes,
+          null,
           // Just render the catch-all route for our tests
-          React.createElement(Route, { 
-            path: '*', 
-            element: React.createElement('div', null,
+          React.createElement(Route, {
+            path: '*',
+            element: React.createElement(
+              'div',
+              null,
               React.createElement('h1', null, '404 - ページが見つかりません'),
               React.createElement('a', { href: '/' }, 'ホームに戻る')
-            )
+            ),
           })
         )
       )
     );
   };
-  
+
   return {
     __esModule: true,
-    default: MockedApp
+    default: MockedApp,
   };
 });
 
