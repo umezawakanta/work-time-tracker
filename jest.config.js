@@ -2,12 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  globals: {
-    // Add global polyfills for Node.js compatibility
-    TransformStream: require('node:stream/web').TransformStream,
-    ReadableStream: require('node:stream/web').ReadableStream,
-    WritableStream: require('node:stream/web').WritableStream,
-  },
+  setupFiles: ['<rootDir>/src/jest.polyfills.js'],
   testEnvironmentOptions: {
     customExportConditions: [''],
   },
