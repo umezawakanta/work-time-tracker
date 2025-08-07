@@ -805,6 +805,11 @@ app.post('/api/analytics/track', (req, res) => {
       case 'page_view':
         console.log(`📄 Page view: ${data?.page} (Title: ${data?.title})`);
         break;
+      case 'page_view_end':
+        console.log(
+          `📄 Page view ended: ${data?.page} (Time: ${data?.timeSpent}s, Scroll: ${data?.scrollDepth}%)`
+        );
+        break;
       case 'interaction':
         console.log(`👆 User interaction: ${data?.type} on ${data?.element}`);
         break;
