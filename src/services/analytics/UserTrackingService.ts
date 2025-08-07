@@ -214,7 +214,8 @@ class UserTrackingService {
    */
   public async getAnalytics(timeRange: 'day' | 'week' | 'month' = 'week'): Promise<UserAnalytics> {
     try {
-      const response = await fetch(`/api/analytics/summary?range=${timeRange}`);
+      const apiBaseUrl = this.getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/analytics/summary?range=${timeRange}`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -347,7 +348,10 @@ class UserTrackingService {
    */
   private async sendToServer(event: string, data: any): Promise<void> {
     try {
-      await fetch('/api/analytics/track', {
+      // API設定を動的に取得
+      const apiBaseUrl = this.getApiBaseUrl();
+      
+      await fetch(`${apiBaseUrl}/analytics/track`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -361,6 +365,29 @@ class UserTrackingService {
     } catch (error) {
       console.log('Analytics tracking failed:', error);
     }
+  }
+
+  /**
+   * 🔗 API Base URLを取得
+   */
+  private getApiBaseUrl(): string {
+    // 開発環境では localhost:3001、本番環境では適切なURLを使用
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      
+      if (hostname === 'work-time-tracker-5d9q.vercel.app') {
+        return 'https://work-time-tracker-5d9q.vercel.app/api';
+      } else if (hostname.match(/^work-time-tracker-5d9q-.*\.vercel\.app$/)) {
+        return 'https://work-time-tracker-5d9q.vercel.app/api';
+      } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:3001/api';
+      } else {
+        return `${window.location.protocol}//${window.location.hostname}/api`;
+      }
+    }
+    
+    // サーバーサイドや fallback
+    return 'http://localhost:3001/api';
   }
 
   /**

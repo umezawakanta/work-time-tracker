@@ -775,6 +775,96 @@ app.delete('/api/books/:id', async (req, res) => {
   }
 });
 
+// Analytics API routes
+app.post('/api/analytics/track', (req, res) => {
+  console.log('📊 POST /api/analytics/track called');
+  console.log('📝 Analytics event:', req.body);
+
+  try {
+    const { event, data, timestamp } = req.body;
+    
+    if (!event || !timestamp) {
+      return res.status(400).json({
+        success: false,
+        error: 'Bad Request',
+        message: 'Required fields: event, timestamp',
+      });
+    }
+
+    // Generate event ID
+    const eventId = `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Log different event types for debugging
+    switch (event) {
+      case 'session_start':
+        console.log(`🎯 Session started: ${data?.sessionId} (User: ${data?.userId})`);
+        break;
+      case 'session_end':
+        console.log(`⏰ Session ended: ${data?.sessionId} (Duration: ${data?.totalTimeSpent}s)`);
+        break;
+      case 'page_view':
+        console.log(`📄 Page view: ${data?.page} (Title: ${data?.title})`);
+        break;
+      case 'interaction':
+        console.log(`👆 User interaction: ${data?.type} on ${data?.element}`);
+        break;
+      case 'user_attributes':
+        console.log(`👤 User attributes: ${data?.userId} (Role: ${data?.role})`);
+        break;
+      default:
+        console.log(`❓ Unknown event: ${event}`);
+    }
+
+    // Mock successful response
+    res.status(200).json({
+      success: true,
+      message: 'トラッキングイベントが正常に記録されました',
+      eventId: eventId,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('❌ Analytics tracking error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      message: 'トラッキングの記録に失敗しました',
+    });
+  }
+});
+
+app.get('/api/analytics/summary', (req, res) => {
+  console.log('📊 GET /api/analytics/summary called');
+  console.log('📝 Query params:', req.query);
+
+  // Mock analytics data
+  const mockAnalytics = {
+    totalUsers: 1247,
+    activeUsers: 89,
+    newUsers: 23,
+    returningUsers: 66,
+    averageSessionDuration: 847,
+    pageViewsTotal: 3421,
+    topPages: [
+      { page: '/dashboard', views: 892 },
+      { page: '/todo-manager', views: 743 },
+      { page: '/quadrant-dashboard', views: 651 },
+    ],
+    deviceBreakdown: {
+      desktop: 67,
+      mobile: 28,
+      tablet: 5,
+    },
+    trafficSources: {
+      direct: 45,
+      search: 32,
+      social: 15,
+      referral: 8,
+    },
+  };
+
+  res.json(mockAnalytics);
+});
+
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
 console.log('   GET  /api/debug');
@@ -793,6 +883,8 @@ console.log('   GET  /api/books'); // 追加
 console.log('   POST /api/books'); // 追加
 console.log('   PUT  /api/books/:id'); // 追加
 console.log('   DELETE /api/books/:id'); // 追加
+console.log('   POST /api/analytics/track'); // 追加
+console.log('   GET  /api/analytics/summary'); // 追加
 
 // 404 Error handler - must be after all routes
 app.use((req: Request, res: Response): void => {
