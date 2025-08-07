@@ -1,13 +1,14 @@
 /**
  * 📢 SNSシェアボタンテスト
- * 
+ *
  * ソーシャルメディアシェア機能のテスト
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SocialShareButton from '@/components/ui/SocialShareButton';
+import { renderWithAuth } from '@/test-utils/render';
 
 // react-hot-toastをモック
 jest.mock('react-hot-toast', () => ({
@@ -55,7 +56,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
   describe('✅ 基本表示機能', () => {
     test('シェアボタンが正常に表示される', () => {
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       expect(shareButton).toBeInTheDocument();
@@ -64,7 +65,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
     test('ドロップダウンメニューが正常に表示される', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -77,14 +78,14 @@ describe('📢 SocialShareButton コンポーネント', () => {
     });
 
     test('デフォルト値が正しく設定される', () => {
-      render(<SocialShareButton />);
+      renderWithAuth(<SocialShareButton />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       expect(shareButton).toBeInTheDocument();
     });
 
     test('カスタムvariantとsizeが適用される', () => {
-      render(<SocialShareButton variant="ghost" size="sm" />);
+      renderWithAuth(<SocialShareButton variant="ghost" size="sm" />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       expect(shareButton).toHaveClass('text-sm'); // size="sm"のクラス
@@ -94,7 +95,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('🐦 Twitter/X シェア', () => {
     test('Twitterシェアが正常に動作する', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -117,7 +118,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
     test('Twitterシェア時にアナリティクスが記録される', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -139,7 +140,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('📘 Facebook シェア', () => {
     test('Facebookシェアが正常に動作する', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -162,7 +163,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('💼 LinkedIn シェア', () => {
     test('LinkedInシェアが正常に動作する', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -186,13 +187,13 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('✉️ メールシェア', () => {
     test('メールシェアが正常に動作する', async () => {
       const user = userEvent.setup();
-      
+
       // window.location.hrefをモック
       const originalLocation = window.location;
       delete (window as any).location;
       window.location = { ...originalLocation, href: '' } as Location;
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -214,7 +215,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
       const user = userEvent.setup();
       mockWriteText.mockResolvedValueOnce(undefined);
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -234,7 +235,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
       const user = userEvent.setup();
       mockWriteText.mockRejectedValueOnce(new Error('Clipboard error'));
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -252,7 +253,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('📊 アナリティクス追跡', () => {
     test('すべてのシェアアクションでアナリティクスが記録される', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -272,12 +273,12 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
     test('Google Analyticsが利用可能な場合のトラッキング', async () => {
       const user = userEvent.setup();
-      
+
       // gtagをモック
       const mockGtag = jest.fn();
       (global as any).gtag = mockGtag;
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -299,13 +300,13 @@ describe('📢 SocialShareButton コンポーネント', () => {
       const user = userEvent.setup();
       mockFetch.mockRejectedValueOnce(new Error('Analytics API error'));
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
 
       const linkedinOption = screen.getByText('LinkedIn で共有');
-      
+
       // エラーが発生してもシェアは正常に動作する
       await user.click(linkedinOption);
       expect(mockWindowOpen).toHaveBeenCalled();
@@ -321,7 +322,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
         description: 'Custom Description',
       };
 
-      render(<SocialShareButton {...customProps} />);
+      renderWithAuth(<SocialShareButton {...customProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -342,7 +343,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
         description: '',
       };
 
-      render(<SocialShareButton {...emptyProps} />);
+      renderWithAuth(<SocialShareButton {...emptyProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -362,13 +363,13 @@ describe('📢 SocialShareButton コンポーネント', () => {
         throw new Error('Popup blocked');
       });
 
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
 
       const twitterOption = screen.getByText('Twitter / X で共有');
-      
+
       // エラーが発生してもアプリケーションが停止しない
       expect(() => user.click(twitterOption)).not.toThrow();
     });
@@ -381,7 +382,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
         description: 'Description with #hashtags and @mentions',
       };
 
-      render(<SocialShareButton {...specialCharsProps} />);
+      renderWithAuth(<SocialShareButton {...specialCharsProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
@@ -398,7 +399,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('♿ アクセシビリティ', () => {
     test('適切なARIA属性が設定されている', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       expect(shareButton).toBeInTheDocument();
@@ -415,10 +416,10 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
     test('キーボードナビゲーションが正常に動作する', async () => {
       const user = userEvent.setup();
-      render(<SocialShareButton {...defaultProps} />);
+      renderWithAuth(<SocialShareButton {...defaultProps} />);
 
       const shareButton = screen.getByRole('button', { name: /シェア/i });
-      
+
       // Tabキーでフォーカス
       await user.tab();
       expect(shareButton).toHaveFocus();
@@ -450,7 +451,7 @@ describe('📢 SocialShareButton 統合テスト', () => {
       description: 'ADHDユーザー特化のAI搭載タスク管理ツール',
     };
 
-    render(<SocialShareButton {...props} />);
+    renderWithAuth(<SocialShareButton {...props} />);
 
     // 1. シェアボタンクリック
     const shareButton = screen.getByRole('button', { name: /シェア/i });
@@ -466,7 +467,7 @@ describe('📢 SocialShareButton 統合テスト', () => {
     for (const platform of platforms) {
       const option = screen.getByText(platform.name);
       await user.click(option);
-      
+
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining(platform.url),
         '_blank',

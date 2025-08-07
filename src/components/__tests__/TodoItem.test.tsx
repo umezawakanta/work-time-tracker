@@ -1,17 +1,18 @@
 /**
  * 📝 TodoItemコンポーネントテスト
- * 
+ *
  * ToDo項目の表示・編集・削除機能をテスト
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import todoSlice from '@/store/todoSlice';
 import { TodoItem } from '@/components/dailyToDoReminder/todo/TodoItem';
 import { TodoItem as TodoItemType } from '@/types';
+import { renderWithAuth } from '@/test-utils/render';
 
 // テスト用のストア作成
 const createTestStore = (initialState = {}) => {
@@ -30,18 +31,11 @@ const createTestStore = (initialState = {}) => {
   });
 };
 
-// テストユーティリティ
-const renderWithRedux = (
-  component: React.ReactElement,
-  initialState = {}
-) => {
+// テストユーティリティ（AuthProvider付き）
+const renderWithRedux = (component: React.ReactElement, initialState = {}) => {
   const store = createTestStore(initialState);
   return {
-    ...render(
-      <Provider store={store}>
-        {component}
-      </Provider>
-    ),
+    ...renderWithAuth(<Provider store={store}>{component}</Provider>),
     store,
   };
 };
@@ -338,7 +332,7 @@ describe('📝 TodoItem コンポーネント', () => {
       renderWithRedux(<TodoItem {...mockProps} />);
 
       const checkbox = screen.getByRole('checkbox');
-      
+
       // Tabキーでフォーカス移動
       await user.tab();
       expect(checkbox).toHaveFocus();

@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
+import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { userTrackingService, UserAnalytics } from '@/services/analytics/UserTrackingService';
+import { renderWithAdminAuth } from '@/test-utils/render';
 
 // userTrackingServiceをモック
-jest.mock('@/services/analytics/UserTrackingService', () => ({
+jest.mock('../../services/analytics/UserTrackingService', () => ({
   userTrackingService: {
     getAnalytics: jest.fn(),
   },
@@ -166,7 +167,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('✅ 基本表示機能', () => {
     test('管理者ユーザーにダッシュボードが表示される', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -176,7 +177,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('非管理者ユーザーにアクセス拒否メッセージが表示される', () => {
-      render(<AnalyticsDashboard isAdminUser={false} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={false} />);
 
       expect(screen.getByText('管理者権限が必要です')).toBeInTheDocument();
       expect(
@@ -189,7 +190,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
         () => new Promise(() => {}) // 未解決のPromise
       );
 
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       expect(screen.getByText('解析データを読み込み中...')).toBeInTheDocument();
     });
@@ -197,7 +198,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('📈 メトリクス表示', () => {
     test('概要メトリクスが正しく表示される', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('1,247')).toBeInTheDocument(); // totalUsers
@@ -208,7 +209,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('成長率指標が表示される', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getAllByText('+12.5%')).toHaveLength(1);
@@ -219,7 +220,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     });
 
     test('人気ページが正しく表示される', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('/dashboard')).toBeInTheDocument();
@@ -235,7 +236,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
   describe('🔄 データ更新機能', () => {
     test('更新ボタンクリックでデータが再読み込みされる', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -249,7 +250,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
     test('時間範囲変更でデータが更新される', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -274,7 +275,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
   describe('📊 タブ機能', () => {
     test('タブ切り替えが正常に動作する', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -295,7 +296,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
     test('ページ解析タブでチャートが表示される', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -332,7 +333,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
       jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
 
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -353,7 +354,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('📱 レスポンシブ表示', () => {
     test('デバイス情報が適切に表示される', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -377,7 +378,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
     test('データ取得失敗時にエラー処理される', async () => {
       (userTrackingService.getAnalytics as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
 
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('データが見つかりません')).toBeInTheDocument();
@@ -393,7 +394,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       );
 
       const { toast } = await import('react-hot-toast');
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('解析データの読み込みに失敗しました');
@@ -416,7 +417,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
       (userTrackingService.getAnalytics as jest.Mock).mockResolvedValueOnce(emptyAnalytics);
 
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('0')).toBeInTheDocument();
@@ -427,7 +428,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
   describe('🎨 チャート表示', () => {
     test('パイチャートが正しく表示される', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -442,7 +443,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
     test('棒グラフが正しく表示される', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -459,7 +460,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
   describe('🔍 データフィルタリング', () => {
     test('時間範囲フィルターが正しく動作する', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -481,7 +482,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
   describe('♿ アクセシビリティ', () => {
     test('適切なARIA属性が設定されている', async () => {
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -501,7 +502,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
     test('キーボードナビゲーションが正常に動作する', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      render(<AnalyticsDashboard isAdminUser={true} />);
+      renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
         expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
@@ -529,7 +530,7 @@ describe('📊 AnalyticsDashboard 統合テスト', () => {
     const mockGetAnalytics = jest.fn().mockResolvedValue(mockAnalytics);
     (userTrackingService.getAnalytics as jest.Mock) = mockGetAnalytics;
 
-    render(<AnalyticsDashboard isAdminUser={true} />);
+    renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
     // 1. 初期読み込み - ローディング状態からダッシュボード表示まで待つ
     await waitFor(
