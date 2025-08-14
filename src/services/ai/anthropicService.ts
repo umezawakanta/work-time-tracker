@@ -608,6 +608,119 @@ Format as JSON with structure: { template: { name, tasks: [] }, customizationTip
       };
     }
   }
+
+  /**
+   * タスクの最適な実行順序を決定
+   */
+  async optimizeTaskOrder(tasks: TodoItem[]): Promise<{
+    sortedTasks: TodoItem[];
+    reasoning: string;
+    recommendations: string[];
+  }> {
+    if (!tasks || tasks.length === 0) {
+      return {
+        sortedTasks: [],
+        reasoning: 'タスクがありません。',
+        recommendations: [],
+      };
+    }
+
+    const systemPrompt = `あなたは生産性の専門家です。タスクリストを分析し、最も効率的な実行順序を決定してください。
+
+以下の要因を考慮してください：
+1. 優先度（1-5、5が最高）
+2. 締切日時
+3. タスクの種類（input/output）
+4. 完了状態
+5. 依存関係（推測）
+6. 認知負荷
+7. タスクのバッチング（似たタスクをグループ化）
+
+レスポンスは以下のJSON形式で返してください：
+{
+  "sortedTaskIds": ["task_id_1", "task_id_2", ...],
+  "reasoning": "並び替えの理由",
+  "recommendations": ["推奨事項1", "推奨事項2", ...]
+}`;
+
+    const tasksInfo = tasks.map((t) => ({
+      id: t._id,
+      task: t.task,
+      priority: t.priority,
+      completed: t.completed,
+      deadline: t.deadline,
+      type: t.type,
+      category: t.category,
+    }));
+
+    const message = `以下のタスクリストを最適な実行順序に並び替えてください：
+    
+${JSON.stringify(tasksInfo, null, 2)}
+
+未完了のタスクを優先し、完了済みのタスクは最後に配置してください。`;
+
+    try {
+      const response = await this.makeRequest([
+        {
+          role: 'user',
+          content: `${systemPrompt}\n\n${message}`,
+        },
+      ]);
+
+      const content = response.content[0]?.text || '{}';
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+
+      if (jsonMatch) {
+        const result = JSON.parse(jsonMatch[0]);
+
+        // IDに基づいてタスクを並び替え
+        const sortedTasks: TodoItem[] = [];
+        const taskMap = new Map(tasks.map((t) => [t._id, t]));
+
+        for (const id of result.sortedTaskIds || []) {
+          const task = taskMap.get(id);
+          if (task) {
+            sortedTasks.push(task);
+            taskMap.delete(id);
+          }
+        }
+
+        // 含まれなかったタスクを最後に追加
+        taskMap.forEach((task) => sortedTasks.push(task));
+
+        return {
+          sortedTasks,
+          reasoning: result.reasoning || '優先度と締切に基づいて並び替えました。',
+          recommendations: result.recommendations || [],
+        };
+      }
+    } catch (error) {
+      console.error('Failed to optimize task order:', error);
+    }
+
+    // エラー時は元の順序を維持（未完了を先に、完了済みを後に）
+    const incompleteTasks = tasks
+      .filter((t) => !t.completed)
+      .sort((a, b) => {
+        // 優先度で降順ソート
+        if (a.priority !== b.priority) return b.priority - a.priority;
+        // 締切でソート
+        if (a.deadline && b.deadline) {
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        }
+        if (a.deadline) return -1;
+        if (b.deadline) return 1;
+        return 0;
+      });
+
+    const completedTasks = tasks.filter((t) => t.completed);
+
+    return {
+      sortedTasks: [...incompleteTasks, ...completedTasks],
+      reasoning: 'デフォルトの優先度と締切に基づいて並び替えました。',
+      recommendations: ['高優先度のタスクから始めましょう', '締切の近いタスクに注意してください'],
+    };
+  }
 }
 
 // Export singleton instance

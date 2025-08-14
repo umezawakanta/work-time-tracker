@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './index';
 import { todoApi } from '@/services/api/todoApi';
 import { TodoItem } from '@/types';
+import anthropicService from '@/services/ai/anthropicService';
 
 // 分析サマリーの型定義
 interface AnalysisSummary {
@@ -362,6 +363,29 @@ export const fetchAnalysisSummary = createAsyncThunk('todo/fetchAnalysisSummary'
   };
 });
 
+// AIによる自動タスク並び替え
+export const autoSortTodos = createAsyncThunk('todo/autoSort', async (_, { getState }) => {
+  const state = getState() as RootState;
+  const todos = state.todo.items;
+
+  if (todos.length === 0) {
+    return { sortedTasks: [], reasoning: '', recommendations: [] };
+  }
+
+  try {
+    const result = await anthropicService.optimizeTaskOrder(todos);
+    return result;
+  } catch (error) {
+    console.error('Failed to auto-sort todos:', error);
+    // エラー時は現在の並び順を維持
+    return {
+      sortedTasks: todos,
+      reasoning: '並び替えに失敗しました。現在の順序を維持します。',
+      recommendations: [],
+    };
+  }
+});
+
 const todoSlice = createSlice({
   name: 'todo',
   initialState,
@@ -430,6 +454,16 @@ const todoSlice = createSlice({
 
       // 状態を更新（完了タスクは変更せず、アクティブなタスクのみ更新）
       state.items = [...reorderedTodos, ...state.items.filter((todo) => todo.completed)];
+    },
+
+    // タスクリストを並び替え
+    reorderTodos: (state, action: PayloadAction<TodoItem[]>) => {
+      state.items = action.payload;
+    },
+
+    // 完了済みタスクをクリア
+    clearCompletedTodos: (state) => {
+      state.items = state.items.filter((todo) => !todo.completed);
     },
   },
   extraReducers: (builder) => {
@@ -601,11 +635,29 @@ const todoSlice = createSlice({
       })
       .addCase(fetchAnalysisSummary.fulfilled, (state, action) => {
         state.analysisSummary = action.payload;
+      })
+      // 自動並び替えのハンドリング
+      .addCase(autoSortTodos.pending, (state) => {
+        // 並び替え中の状態を表示可能にする
+        state.status = 'loading';
+      })
+      .addCase(autoSortTodos.fulfilled, (state, action) => {
+        state.items = action.payload.sortedTasks;
+        state.status = 'succeeded';
+        // 並び替えの理由と推奨事項をログに出力（UI表示用に保存することも可能）
+        console.log('タスク並び替え完了:', action.payload.reasoning);
+        if (action.payload.recommendations.length > 0) {
+          console.log('推奨事項:', action.payload.recommendations);
+        }
+      })
+      .addCase(autoSortTodos.rejected, (state) => {
+        state.status = 'failed';
       });
   },
 });
 
-export const { updateTodoHistory, adjustDeadlinePriorities } = todoSlice.actions;
+export const { updateTodoHistory, adjustDeadlinePriorities, reorderTodos, clearCompletedTodos } =
+  todoSlice.actions;
 
 export const selectTodos = (state: RootState) => state.todo.items;
 export const selectTodoStatus = (state: RootState) => state.todo.status;

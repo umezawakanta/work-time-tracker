@@ -4,9 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import {
   CheckSquare,
   Calendar,
@@ -45,6 +47,9 @@ const UnifiedTaskPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('daily');
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
+  const [autoSortEnabled, setAutoSortEnabled] = useState(() => {
+    return window.localStorage.getItem('enableAutoSort') !== 'false';
+  });
 
   const todos = useSelector((state: RootState) => state.todo.items);
   const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
@@ -72,6 +77,15 @@ const UnifiedTaskPage: React.FC = () => {
     }
   }, []);
 
+  // 自動並び替えのトグル
+  const handleAutoSortToggle = (checked: boolean) => {
+    setAutoSortEnabled(checked);
+    window.localStorage.setItem('enableAutoSort', checked ? 'true' : 'false');
+    toast.success(checked ? '🤖 AI自動並び替えを有効にしました' : '自動並び替えを無効にしました', {
+      duration: 3000,
+    });
+  };
+
   return (
     <PageLayout
       title="タスク管理センター"
@@ -83,6 +97,15 @@ const UnifiedTaskPage: React.FC = () => {
       }}
       actions={
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1 bg-purple-50 rounded-lg">
+            <Sparkles className="h-4 w-4 text-purple-600" />
+            <span className="text-sm font-medium text-purple-700">AI自動並び替え</span>
+            <Switch
+              checked={autoSortEnabled}
+              onCheckedChange={handleAutoSortToggle}
+              className="data-[state=checked]:bg-purple-600"
+            />
+          </div>
           <Button
             variant="outline"
             onClick={() => navigate('/ai-assistant')}

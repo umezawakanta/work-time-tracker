@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-hot-toast';
 import { AppDispatch } from '@/store';
-import { addTodoItem } from '@/store/todoSlice';
+import { addTodoItem, autoSortTodos } from '@/store/todoSlice';
 import { getErrorMessage } from '../../utils/errorUtils';
 import taskAnalyzer from '@/services/RateLimitedTaskAnalyzer';
 import WBSService from '@/services/wbs/WBSService';
@@ -178,6 +178,31 @@ export const useTodoForm = (onClose: () => void) => {
 
         // ToDoを作成
         await dispatch(addTodoItem(newTodo)).unwrap();
+
+        // AIによる自動タスク並び替え（オプション機能として実装）
+        if (window.localStorage.getItem('enableAutoSort') !== 'false') {
+          // タスク並び替えを非同期で実行（UIをブロックしない）
+          setTimeout(() => {
+            dispatch(autoSortTodos())
+              .then((result) => {
+                if (autoSortTodos.fulfilled.match(result)) {
+                  const { reasoning } = result.payload;
+                  if (
+                    reasoning &&
+                    reasoning !== 'デフォルトの優先度と締切に基づいて並び替えました。'
+                  ) {
+                    toast.success(`タスクを最適な順序に並び替えました: ${reasoning}`, {
+                      duration: 5000,
+                      icon: '🤖',
+                    });
+                  }
+                }
+              })
+              .catch((error) => {
+                console.error('自動並び替えエラー:', error);
+              });
+          }, 500);
+        }
 
         // WBS連携が有効な場合
         if (formData.linkToWBS && formData.wbsProjectId) {
