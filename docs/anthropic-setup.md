@@ -48,7 +48,7 @@ ANTHROPIC_API_KEY=sk-ant-api03-your-actual-api-key-here
 
 #### 3. 開発サーバーの起動
 
-**オプション1: ローカルプロキシ付き（簡単）**
+**オプション1: 通常の開発サーバー（推奨）**
 
 ```bash
 pnpm dev
@@ -57,8 +57,7 @@ pnpm dev
 このコマンドで以下が起動します：
 
 - Viteフロントエンド開発サーバー（ポート3000）
-- バックエンドAPIサーバー
-- Anthropicプロキシサーバー（ポート3001）
+- 統合APIサーバー（ポート3001） - Anthropicプロキシを含む
 
 **オプション2: Vercel CLI（本番環境に近い）**
 

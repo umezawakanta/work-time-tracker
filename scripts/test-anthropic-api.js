@@ -70,14 +70,21 @@ function checkEnvFile() {
 function checkAPIEndpoint() {
     log('\n🌐 Checking API endpoint configuration...', colors.cyan);
 
-    const apiPath = path.join(process.cwd(), 'api', 'ai', 'anthropic.ts');
+    const serverPath = path.join(process.cwd(), 'src', 'server', 'server-simple.ts');
 
-    if (fs.existsSync(apiPath)) {
-        log('✅ API proxy endpoint found at api/ai/anthropic.ts', colors.green);
-        return true;
+    if (fs.existsSync(serverPath)) {
+        const content = fs.readFileSync(serverPath, 'utf8');
+        if (content.includes('/api/ai/anthropic')) {
+            log('✅ API proxy endpoint integrated in server-simple.ts', colors.green);
+            return true;
+        } else {
+            log('❌ API proxy endpoint not found in server', colors.red);
+            log('   Expected: /api/ai/anthropic endpoint in server-simple.ts', colors.yellow);
+            return false;
+        }
     } else {
-        log('❌ API proxy endpoint not found', colors.red);
-        log('   Expected location: api/ai/anthropic.ts', colors.yellow);
+        log('❌ Server file not found', colors.red);
+        log('   Expected location: src/server/server-simple.ts', colors.yellow);
         return false;
     }
 }
@@ -161,10 +168,9 @@ function printInstructions() {
     log('\n1. Create a .env.local file in the project root:');
     log('   echo "ANTHROPIC_API_KEY=your-api-key-here" > .env.local\n');
     log('2. Get your API key from: https://console.anthropic.com/api-keys\n');
-    log('3. Start the development server with Vercel CLI:');
-    log('   pnpm dev:vercel');
-    log('   or');
-    log('   vercel dev\n');
+    log('3. Start the development server:');
+    log('   pnpm dev');
+    log('   (This starts both frontend and API server with Anthropic proxy)\n');
     log('4. Open http://localhost:3000 and navigate to AI Assistant\n');
 }
 

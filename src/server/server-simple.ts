@@ -4,9 +4,26 @@ import cors from 'cors';
 import { connectDB } from './config/database.js';
 import { Book } from './models/Book.js';
 import { TodoModel } from './models/Todo.js';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
 
 const app = express();
 const PORT = 3001;
+
+// Anthropic API configuration
+const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || process.env.VITE_ANTHROPIC_API_KEY;
+
+// Debug: Log API key status at startup
+console.log('🔑 Environment variables loaded:');
+console.log(`   ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? '✅ Found' : '❌ Not found'}`);
+console.log(
+  `   VITE_ANTHROPIC_API_KEY: ${process.env.VITE_ANTHROPIC_API_KEY ? '✅ Found' : '❌ Not found'}`
+);
+console.log(`   Using API Key: ${ANTHROPIC_API_KEY ? '✅ Configured' : '❌ Not configured'}`);
 
 // Middleware
 app.use(cors());
@@ -982,6 +999,107 @@ app.get('/api/analytics/summary', (req, res) => {
   res.json(mockAnalytics);
 });
 
+// Anthropic AI proxy endpoint
+app.post('/api/ai/anthropic', async (req, res) => {
+  console.log('🤖 POST /api/ai/anthropic called');
+
+  // Check for API key
+  if (!ANTHROPIC_API_KEY) {
+    console.log('❌ Anthropic API key not configured');
+    return res.status(500).json({
+      error: 'Anthropic API key not configured',
+      code: 'NOT_CONFIGURED',
+    });
+  }
+
+  try {
+    const body = req.body;
+
+    // Validate request body
+    if (!body.messages || !Array.isArray(body.messages)) {
+      return res.status(400).json({
+        error: 'Invalid request: messages array is required',
+        code: 'INVALID_REQUEST',
+      });
+    }
+
+    console.log(`📤 Proxying request to Anthropic API (${body.messages.length} messages)`);
+
+    // Forward request to Anthropic API
+    const anthropicResponse = await fetch(ANTHROPIC_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: body.model || 'claude-3-5-sonnet-20241022',
+        max_tokens: body.max_tokens || 8192,
+        temperature: body.temperature || 0.7,
+        top_p: body.top_p || 0.95,
+        messages: body.messages,
+        system: body.system,
+      }),
+    });
+
+    // Handle Anthropic API errors
+    if (!anthropicResponse.ok) {
+      const errorData = await anthropicResponse.json().catch(() => ({}));
+
+      if (anthropicResponse.status === 429) {
+        console.log('⚠️ Anthropic rate limit exceeded');
+        return res.status(429).json({
+          error: 'Rate limit exceeded. Please try again later.',
+          code: 'RATE_LIMIT',
+          retryAfter: anthropicResponse.headers.get('retry-after'),
+        });
+      } else if (anthropicResponse.status === 401) {
+        console.log('❌ Invalid Anthropic API key');
+        return res.status(401).json({
+          error: 'Invalid API key',
+          code: 'INVALID_API_KEY',
+        });
+      } else if (anthropicResponse.status === 400) {
+        console.log('❌ Bad request to Anthropic API');
+        return res.status(400).json({
+          error: errorData.error?.message || 'Bad request',
+          code: 'BAD_REQUEST',
+        });
+      } else {
+        console.log(`❌ Anthropic API error: ${anthropicResponse.status}`);
+        return res.status(anthropicResponse.status).json({
+          error: `API request failed: ${anthropicResponse.statusText}`,
+          code: 'API_ERROR',
+        });
+      }
+    }
+
+    // Return successful response
+    const data = await anthropicResponse.json();
+    console.log('✅ Anthropic API response received successfully');
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('❌ Anthropic API proxy error:', error);
+
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+// Health check for AI API
+app.get('/api/ai/health', (req, res) => {
+  console.log('🤖 GET /api/ai/health called');
+  res.json({
+    status: 'OK',
+    hasApiKey: !!ANTHROPIC_API_KEY,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 console.log('\n🗺️  Registered Routes:');
 console.log('   GET  /api/health');
 console.log('   GET  /api/debug');
@@ -1005,6 +1123,8 @@ console.log('   PUT  /api/books/:id'); // 追加
 console.log('   DELETE /api/books/:id'); // 追加
 console.log('   POST /api/analytics/track'); // 追加
 console.log('   GET  /api/analytics/summary'); // 追加
+console.log('   POST /api/ai/anthropic'); // 追加
+console.log('   GET  /api/ai/health'); // 追加
 
 // 404 Error handler - must be after all routes
 app.use((req: Request, res: Response): void => {
@@ -1042,6 +1162,8 @@ const startServer = async () => {
       console.log(`📍 Health: http://localhost:${PORT}/api/health`);
       console.log(`📍 Todos: http://localhost:${PORT}/api/todos`);
       console.log(`📚 Books: http://localhost:${PORT}/api/books`);
+      console.log(`🤖 AI API: http://localhost:${PORT}/api/ai/anthropic`);
+      console.log(`   API Key configured: ${ANTHROPIC_API_KEY ? 'Yes ✅' : 'No ❌'}`);
       console.log('🔍 Debug mode enabled - detailed logging active\n');
     });
   } catch (error) {
