@@ -34,9 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Check for API key
   if (!ANTHROPIC_API_KEY) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Anthropic API key not configured',
-      code: 'NOT_CONFIGURED' 
+      code: 'NOT_CONFIGURED',
     });
     return;
   }
@@ -46,9 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Validate request body
     if (!body.messages || !Array.isArray(body.messages)) {
-      res.status(400).json({ 
+      res.status(400).json({
         error: 'Invalid request: messages array is required',
-        code: 'INVALID_REQUEST' 
+        code: 'INVALID_REQUEST',
       });
       return;
     }
@@ -74,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle Anthropic API errors
     if (!anthropicResponse.ok) {
       const errorData = await anthropicResponse.json().catch(() => ({}));
-      
+
       if (anthropicResponse.status === 429) {
         res.status(429).json({
           error: 'Rate limit exceeded. Please try again later.',
@@ -106,10 +106,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Return successful response
     const data = await anthropicResponse.json();
     res.status(200).json(data);
-
   } catch (error) {
     console.error('Anthropic API proxy error:', error);
-    
+
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',

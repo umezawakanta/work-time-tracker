@@ -80,7 +80,8 @@ export class AnthropicError extends Error {
 
 class AnthropicService {
   private config: AnthropicConfig;
-  private baseUrl = 'https://api.anthropic.com/v1';
+  // Use the same origin for API calls (works in both dev and production)
+  private baseUrl = '/api/ai/anthropic';
   private conversationHistory: Map<string, AnthropicMessage[]> = new Map();
 
   constructor() {
@@ -99,9 +100,13 @@ class AnthropicService {
 
   /**
    * Check if the service is properly configured
+   * Since we're using a proxy, we always return true
+   * The proxy will handle API key validation
    */
   isConfigured(): boolean {
-    return !!this.config.apiKey;
+    // The proxy handles API key configuration
+    // So we always return true for client-side checks
+    return true;
   }
 
   /**
@@ -112,20 +117,17 @@ class AnthropicService {
   }
 
   /**
-   * Make a request to the Anthropic API
+   * Make a request to the Anthropic API via our proxy
    */
   private async makeRequest(messages: AnthropicMessage[]): Promise<AnthropicResponse> {
-    if (!this.isConfigured()) {
-      throw new AnthropicError('Anthropic API key not configured', 'NOT_CONFIGURED');
-    }
+    // For the proxy, we don't need to check API key on client side
+    // The proxy will handle it using server-side environment variables
 
     try {
-      const response = await fetch(`${this.baseUrl}/messages`, {
+      const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': this.config.apiKey,
-          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: this.config.model,
