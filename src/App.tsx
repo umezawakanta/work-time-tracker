@@ -59,8 +59,7 @@ const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 
 // 📅 Calendar & Task Management
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
-const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
-const TodoManagerPage = lazy(() => import('./pages/TodoManagerPage'));
+const UnifiedTaskPage = lazy(() => import('./pages/UnifiedTaskPage'));
 
 // 📚 Personal & Lifestyle
 const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
@@ -307,11 +306,15 @@ const App: React.FC = () => {
                             />*/}
                             <Route
                               path="/adhd-task-manager"
-                              element={
-                                <LayoutWrapper>
-                                  <ADHDTaskManager />
-                                </LayoutWrapper>
-                              }
+                              element={<Navigate to="/tasks" replace />}
+                            />
+                            <Route
+                              path="/game-loop-tasks"
+                              element={<Navigate to="/tasks" replace />}
+                            />
+                            <Route
+                              path="/todo-analytics"
+                              element={<Navigate to="/tasks" replace />}
                             />
                             <Route
                               path="/adhd-integrated-life"
@@ -568,24 +571,24 @@ const App: React.FC = () => {
                               }
                             />
                             <Route
-                              path="/task-management"
+                              path="/tasks"
                               element={
                                 <LayoutWrapper>
                                   <LazyWrapper>
-                                    <TaskManagementPage />
+                                    <UnifiedTaskPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
                             />
+                            {/* Legacy redirects */}
                             <Route
-                              path="/todos"
-                              element={
-                                <LayoutWrapper>
-                                  <LazyWrapper>
-                                    <TodoManagerPage />
-                                  </LazyWrapper>
-                                </LayoutWrapper>
-                              }
+                              path="/task-management"
+                              element={<Navigate to="/tasks" replace />}
+                            />
+                            <Route path="/todos" element={<Navigate to="/tasks" replace />} />
+                            <Route
+                              path="/todo-manager"
+                              element={<Navigate to="/tasks" replace />}
                             />
                             <Route
                               path="/diary"
