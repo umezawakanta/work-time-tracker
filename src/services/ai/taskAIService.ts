@@ -1,4 +1,5 @@
 import { TodoItem } from '@/types';
+import anthropicService, { AnthropicError } from './anthropicService';
 
 // Rate limiting interface
 interface RateLimitConfig {
@@ -147,12 +148,15 @@ class TaskAIService {
   private retryDelay = 1000; // 1 second base delay
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_CLAUDE_API_KEY || import.meta.env.VITE_OPENAI_API_KEY;
+    this.apiKey =
+      import.meta.env.VITE_ANTHROPIC_API_KEY ||
+      import.meta.env.VITE_CLAUDE_API_KEY ||
+      import.meta.env.VITE_OPENAI_API_KEY;
 
     // Rate limiting: 10 requests per minute
     this.rateLimiter = new RateLimiter({
-      maxRequests: 10,
-      windowMs: 60000, // 1 minute
+      maxRequests: parseInt(import.meta.env.VITE_AI_RATE_LIMIT || '10'),
+      windowMs: parseInt(import.meta.env.VITE_AI_RATE_WINDOW_MS || '60000'), // 1 minute
     });
   }
 
@@ -214,6 +218,21 @@ class TaskAIService {
 
   // Enhanced API call with proper error handling
   private async callAI(prompt: string, context: string = 'AI request'): Promise<string> {
+    // First try to use Anthropic service if configured
+    if (anthropicService.isConfigured()) {
+      try {
+        const response = await anthropicService.chat(prompt, 'task-ai-service');
+        return response;
+      } catch (error) {
+        console.error('Anthropic service failed, falling back:', error);
+
+        if (error instanceof AnthropicError && !error.retryable) {
+          throw new AIServiceError(error.message, error.code, error.retryable);
+        }
+      }
+    }
+
+    // Fallback to direct API call if Anthropic service is not configured or failed
     if (!this.apiKey) {
       console.warn('No AI API key configured, using mock response');
       return this.getMockResponse(prompt);
@@ -225,11 +244,11 @@ class TaskAIService {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.apiKey}`,
+            'x-api-key': this.apiKey,
             'anthropic-version': '2023-06-01',
           },
           body: JSON.stringify({
-            model: 'claude-3-sonnet-20240229',
+            model: import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
             max_tokens: 1000,
             messages: [{ role: 'user', content: prompt }],
           }),

@@ -213,6 +213,19 @@ const calendarTaskMenuItems: MenuItem[] = [
   },
 ];
 
+// AI & アシスタントメニューアイテム
+const aiAssistantMenuItems: MenuItem[] = [
+  {
+    icon: <Brain className="h-5 w-5" />,
+    label: '🤖 AIアシスタント',
+    path: '/ai-assistant',
+    description: 'Anthropic Claude連携によるAI支援機能',
+    badge: 'AI',
+    gradient: 'from-purple-500 via-indigo-500 to-blue-500',
+    accentColor: 'purple',
+  },
+];
+
 // 勤怠管理メニューアイテム
 const workTimeMenuItems: MenuItem[] = [
   {
@@ -615,6 +628,13 @@ const getMenuSections = (t: (key: string) => string): MenuSection[] => [
     icon: <Brain className="h-4 w-4" />,
     items: adhdSpecializedMenuItems,
     defaultExpanded: true,
+  },
+  {
+    id: 'ai-assistant',
+    title: 'AI & アシスタント',
+    icon: <Brain className="h-4 w-4" />,
+    items: aiAssistantMenuItems,
+    defaultExpanded: false,
   },
   {
     id: 'calendar-task',

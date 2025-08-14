@@ -98,6 +98,9 @@ const SubscriptionManagementPage = lazy(() => import('./pages/SubscriptionManage
 const SubscriptionUpgradePage = lazy(() => import('./pages/subscription/SubscriptionUpgradePage'));
 const BillingHistoryPage = lazy(() => import('./pages/subscription/BillingHistoryPage'));
 
+// 🤖 AI & Assistant
+const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
+
 // 💰 Finance & Reports
 const AssetLiabilityReportPage = lazy(() => import('./pages/AssetLiabilityReportPage'));
 
@@ -779,6 +782,18 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <CoverageReportPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+
+                            {/* 🤖 AI & Assistant */}
+                            <Route
+                              path="/ai-assistant"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <AIAssistantPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }
