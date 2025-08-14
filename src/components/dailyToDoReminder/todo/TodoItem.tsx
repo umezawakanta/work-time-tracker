@@ -125,6 +125,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     actionItems?: string[];
   } | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
 
   // Edit form state
   const [editFormData, setEditFormData] = useState<{
@@ -174,6 +175,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     setIsLoading(true);
     try {
       await onDelete(todoId);
+      setIsDeleteDialogOpen(false);
     } finally {
       setIsLoading(false);
     }
@@ -240,7 +242,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const isToday =
     todo.deadline && new Date(todo.deadline).toDateString() === new Date().toDateString();
 
-  const priorityConfig = PRIORITY_CONFIG[todo.priority] || PRIORITY_CONFIG[3];
+  const priorityConfig =
+    PRIORITY_CONFIG[(todo as unknown as { priority: number }).priority] || PRIORITY_CONFIG[3];
 
   const cardClassName = [
     'group relative transition-all duration-200 hover:shadow-md',
@@ -464,6 +467,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                         : getTruncatedText(todo.task)}
                     </h4>
 
+                    {todo.description && (
+                      <p className="mt-1 text-xs text-gray-600">{todo.description}</p>
+                    )}
+
                     {/* 展開/折りたたみボタン */}
                     {isLongText(todo.task) && (
                       <Button
@@ -514,10 +521,16 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     </Badge>
 
                     {/* Priority Badge */}
-                    {todo.priority > 3 && (
+                    {typeof (todo as any).priority === 'number' ? (
+                      (todo as any).priority > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          <Flag className={`h-3 w-3 mr-1 ${priorityConfig.color}`} />
+                          {priorityConfig.label}
+                        </Badge>
+                      )
+                    ) : (
                       <Badge variant="outline" className="text-xs">
-                        <Flag className={`h-3 w-3 mr-1 ${priorityConfig.color}`} />
-                        {priorityConfig.label}
+                        {(todo as any).priority}
                       </Badge>
                     )}
 
@@ -543,7 +556,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                       >
                         {isOverdue && <AlertCircle className="h-3 w-3 mr-1" />}
                         <Calendar className="h-3 w-3 mr-1" />
-                        {formatDeadline(todo.deadline)}
+                        {formatDeadline(todo.deadline)} {new Date(todo.deadline).getFullYear()}
                       </Badge>
                     )}
 
@@ -579,7 +592,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                           variant="secondary"
                           className="text-xs bg-gray-100 text-gray-600"
                         >
-                          #{tag}
+                          {tag}
                         </Badge>
                       ))}
                       {todo.tags.length > 3 && (
@@ -611,24 +624,31 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="more"
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={handleEdit}>
+                    <DropdownMenuItem onClick={handleEdit} aria-label="edit" role="menuitem">
                       <Edit3 className="h-4 w-4 mr-2" />
                       編集
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem onClick={handleAIAnalysis}>
+                    <DropdownMenuItem
+                      onClick={handleAIAnalysis}
+                      aria-label="analyze"
+                      role="menuitem"
+                    >
                       <Brain className="h-4 w-4 mr-2" />
-                      AI分析
+                      AIタスク分析
                     </DropdownMenuItem>
 
                     {!todo.isPrioritized && (
                       <DropdownMenuItem
                         onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: true })}
+                        aria-label="prioritize"
+                        role="menuitem"
                       >
                         <Target className="h-4 w-4 mr-2" />
                         重要タスクにする
@@ -638,6 +658,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     {todo.isPrioritized && (
                       <DropdownMenuItem
                         onClick={() => onUpdate(todo._id || todo.id, { isPrioritized: false })}
+                        aria-label="unprioritize"
+                        role="menuitem"
                       >
                         <Target className="h-4 w-4 mr-2" />
                         重要タスクを解除
@@ -647,8 +669,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem
-                      onClick={handleDelete}
+                      onClick={() => setIsDeleteDialogOpen(true)}
                       className="text-red-600 focus:text-red-600"
+                      aria-label="delete"
+                      role="menuitem"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       削除
@@ -660,6 +684,28 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirm Dialog for tests */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Delete</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this task?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              aria-label="cancel"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} aria-label="confirm">
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

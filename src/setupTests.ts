@@ -736,16 +736,19 @@ jest.mock('@radix-ui/react-select', () => {
 });
 
 // Mock Radix UI Popover
-jest.mock('@radix-ui/react-popover', () => ({
-  Root: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popover-root', ...props }, children),
-  Trigger: ({ children, ...props }: any) =>
-    React.createElement('button', { 'data-testid': 'popover-trigger', ...props }, children),
-  Content: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
-  Anchor: ({ children, ...props }: any) =>
-    React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children),
-}));
+jest.mock('@radix-ui/react-popover', () => {
+  const React = require('react');
+  return {
+    Root: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover-root', ...props }, children),
+    Trigger: ({ children, ...props }: any) =>
+      React.createElement('button', { 'data-testid': 'popover-trigger', ...props }, children),
+    Content: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
+    Anchor: ({ children, ...props }: any) =>
+      React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children),
+  };
+});
 
 // Mock Radix UI Dropdown Menu
 jest.mock('@radix-ui/react-dropdown-menu', () => {
