@@ -6,16 +6,36 @@
 
 ## セットアップ手順
 
-### 1. Anthropic APIキーの取得
+### クイックスタート（推奨）
+
+#### Windows
+
+```powershell
+pnpm setup:anthropic:win
+```
+
+#### Mac/Linux
+
+```bash
+pnpm setup:anthropic:unix
+```
+
+このコマンドで以下が自動的に実行されます：
+
+1. APIキーの設定
+2. 依存関係のインストール
+3. 開発サーバーの起動
+
+### 手動セットアップ
+
+#### 1. Anthropic APIキーの取得
 
 1. [Anthropic Console](https://console.anthropic.com)にアクセス
 2. アカウントを作成またはログイン
 3. APIキーセクションで新しいキーを生成
 4. キーを安全な場所にコピー（一度しか表示されません）
 
-### 2. 環境変数の設定
-
-#### 開発環境（ローカル）
+#### 2. 環境変数の設定
 
 プロジェクトルートに`.env.local`ファイルを作成：
 
@@ -26,7 +46,37 @@ ANTHROPIC_API_KEY=sk-ant-api03-your-actual-api-key-here
 
 **重要**: `.env.local`ファイルは`.gitignore`に含まれているため、GitHubにコミットされません。
 
-#### 本番環境（Vercel）
+#### 3. 開発サーバーの起動
+
+**オプション1: ローカルプロキシ付き（簡単）**
+
+```bash
+pnpm dev
+```
+
+このコマンドで以下が起動します：
+
+- Viteフロントエンド開発サーバー（ポート3000）
+- バックエンドAPIサーバー
+- Anthropicプロキシサーバー（ポート3001）
+
+**オプション2: Vercel CLI（本番環境に近い）**
+
+```bash
+# Vercel CLIをインストール（未インストールの場合）
+npm i -g vercel
+
+# Vercel開発サーバーを起動
+pnpm dev:vercel
+```
+
+#### 4. API機能の確認
+
+1. ブラウザで http://localhost:3000 を開く
+2. サイドメニューから「🤖 AIアシスタント」をクリック
+3. チャットに質問を入力して送信
+
+### 本番環境（Vercel）へのデプロイ
 
 1. [Vercel Dashboard](https://vercel.com)にアクセス
 2. プロジェクトを選択
@@ -35,30 +85,7 @@ ANTHROPIC_API_KEY=sk-ant-api03-your-actual-api-key-here
    - Key: `ANTHROPIC_API_KEY`
    - Value: あなたのAPIキー
    - Environment: Production, Preview, Development
-
-### 3. ローカル開発サーバーの起動
-
-```bash
-# Vercel CLIをインストール（未インストールの場合）
-npm i -g vercel
-
-# ローカル開発サーバーを起動
-vercel dev
-```
-
-または、通常の開発サーバーを使用：
-
-```bash
-npm run dev
-# または
-pnpm dev
-```
-
-### 4. API機能の確認
-
-1. ブラウザで http://localhost:3000 を開く
-2. サイドメニューから「🤖 AIアシスタント」をクリック
-3. 「設定」タブで接続テストを実行
+5. 再デプロイ
 
 ## アーキテクチャ
 

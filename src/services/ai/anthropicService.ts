@@ -80,8 +80,10 @@ export class AnthropicError extends Error {
 
 class AnthropicService {
   private config: AnthropicConfig;
-  // Use the same origin for API calls (works in both dev and production)
-  private baseUrl = '/api/ai/anthropic';
+  // Use local proxy in development, relative path in production
+  private baseUrl = import.meta.env.DEV
+    ? 'http://localhost:3001/api/ai/anthropic' // Local proxy server
+    : '/api/ai/anthropic'; // Vercel Functions in production
   private conversationHistory: Map<string, AnthropicMessage[]> = new Map();
 
   constructor() {

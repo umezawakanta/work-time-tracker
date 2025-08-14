@@ -29,6 +29,13 @@ React + TypeScript + Viteを使用した包括的な生産性管理プラット�
 - 📚 読書管理・学習トラッカー
 - 💰 資産管理・家計簿
 
+### 🤖 **AI機能** (NEW!)
+
+- 💬 **AIチャット**: Anthropic Claude連携による対話型アシスタント
+- 🧠 **タスク分析**: AIによる優先度最適化・時間見積もり
+- 💻 **コード生成**: 要件からの自動コード生成
+- 📊 **ワークフロー最適化**: 作業効率化の提案
+
 ## 🏗️ アーキテクチャ
 
 ### 技術スタック
@@ -60,7 +67,7 @@ React + TypeScript + Viteを使用した包括的な生産性管理プラット�
 ### 環境要件
 
 - Node.js 18+
-- npm 9+
+- npm 9+ or pnpm 8+
 
 ### セットアップ
 
@@ -70,18 +77,40 @@ git clone https://github.com/your-repo/work-time-tracker.git
 cd work-time-tracker
 
 # 依存関係インストール
+pnpm install
+# または
 npm install
 
 # 開発サーバー起動
+pnpm dev
+# または
 npm run dev
 
 # テスト実行
-npm test
+pnpm test
 
 # 品質チェック実行
-npm run lint
-npm run type-check
+pnpm lint
+pnpm type-check
 ```
+
+### 🤖 AI機能のセットアップ（オプション）
+
+```bash
+# Windows
+pnpm setup:anthropic:win
+
+# Mac/Linux
+pnpm setup:anthropic:unix
+```
+
+または手動でセットアップ:
+
+1. [Anthropic Console](https://console.anthropic.com)でAPIキーを取得
+2. `.env.local`ファイルを作成し、APIキーを設定
+3. `pnpm dev`で開発サーバーを起動
+
+詳細は[AI設定ガイド](docs/anthropic-setup.md)を参照
 
 ### 品質ダッシュボード
 
@@ -402,5 +431,6 @@ MIT License
 ---
 
 **Made with ❤️ by the Work Time Tracker Team**
-U p d a t e d   b u i l d   t i m e s t a m p :   0 7 / 2 8 / 2 0 2 5   0 4 : 3 5 : 2 3  
+U p d a t e d   b u i l d   t i m e s t a m p :   0 7 / 2 8 / 2 0 2 5   0 4 : 3 5 : 2 3 
+ 
  
