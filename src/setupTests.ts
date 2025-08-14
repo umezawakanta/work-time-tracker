@@ -738,16 +738,33 @@ jest.mock('@radix-ui/react-select', () => {
 // Mock Radix UI Popover
 jest.mock('@radix-ui/react-popover', () => {
   const React = require('react');
-  return {
-    Root: ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'popover-root', ...props }, children),
-    Trigger: ({ children, ...props }: any) =>
-      React.createElement('button', { 'data-testid': 'popover-trigger', ...props }, children),
-    Content: ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'popover-content', ...props }, children),
-    Anchor: ({ children, ...props }: any) =>
-      React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children),
-  };
+
+  const Root = ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popover-root', ...props }, children);
+
+  const Trigger = React.forwardRef(({ asChild, children, ...props }: any, ref: any) => {
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, { ref, ...props });
+    }
+    return React.createElement(
+      'button',
+      { 'data-testid': 'popover-trigger', ref, ...props },
+      children
+    );
+  });
+  Trigger.displayName = 'PopoverTriggerMock';
+
+  const Content = React.forwardRef(({ children, ...props }: any, ref: any) =>
+    React.createElement('div', { 'data-testid': 'popover-content', ref, ...props }, children)
+  );
+  Content.displayName = 'PopoverContentMock';
+
+  const Anchor = ({ children, ...props }: any) =>
+    React.createElement('div', { 'data-testid': 'popover-anchor', ...props }, children);
+
+  const Portal = ({ children }: any) => children;
+
+  return { Root, Trigger, Content, Anchor, Portal };
 });
 
 // Mock Radix UI Dropdown Menu

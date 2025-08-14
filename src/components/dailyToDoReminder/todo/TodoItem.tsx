@@ -556,7 +556,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                       >
                         {isOverdue && <AlertCircle className="h-3 w-3 mr-1" />}
                         <Calendar className="h-3 w-3 mr-1" />
-                        {formatDeadline(todo.deadline)} {new Date(todo.deadline).getFullYear()}
+                        {formatDeadline(todo.deadline)}{' '}
+                        {new Date(todo.deadline).toISOString().slice(0, 4)}
                       </Badge>
                     )}
 
@@ -641,7 +642,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                       role="menuitem"
                     >
                       <Brain className="h-4 w-4 mr-2" />
-                      AIタスク分析
+                      タスク分析
                     </DropdownMenuItem>
 
                     {!todo.isPrioritized && (
