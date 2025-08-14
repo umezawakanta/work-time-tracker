@@ -91,7 +91,9 @@ const AITaskManager: React.FC = () => {
 ${todos.map((t) => `- ID: ${t._id}, タイトル: ${t.task}, 優先度: ${t.priority}, 完了: ${t.completed}`).join('\n')}
 `;
 
-        const response = await anthropicService.chat(text, 'task-manager', systemPrompt);
+        // システムプロンプトを含めた完全なメッセージを作成
+        const fullMessage = `${systemPrompt}\n\nユーザー入力: ${text}`;
+        const response = await anthropicService.chat(fullMessage, 'task-manager', todos);
 
         // レスポンスからJSONを抽出
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -222,11 +224,10 @@ ${highPriorityTasks.length > 0 ? `\n⚠️ 高優先度タスク:\n${highPriorit
         response = await executeCommand(command);
       } else {
         // 通常のAI応答
-        const aiResponse = await anthropicService.chat(
-          userMessage,
-          'task-assistant',
-          'あなたはタスク管理の専門家です。ユーザーの質問に対して、タスク管理のベストプラクティスや生産性向上のアドバイスを提供してください。'
-        );
+        const systemMessage =
+          'あなたはタスク管理の専門家です。ユーザーの質問に対して、タスク管理のベストプラクティスや生産性向上のアドバイスを提供してください。';
+        const fullMessage = `${systemMessage}\n\nユーザーの質問: ${userMessage}`;
+        const aiResponse = await anthropicService.chat(fullMessage, 'task-assistant', todos);
         response = aiResponse;
       }
 
