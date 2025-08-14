@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import AIChat from '@/components/ai/AIChat';
 import AISettings from '@/components/ai/AISettings';
 import AITaskSuggestions from '@/components/ai/AITaskSuggestions';
+import AITaskManager from '@/components/ai/AITaskManager';
 import anthropicService from '@/services/ai/anthropicService';
 
 const AIAssistantPage: React.FC = () => {
@@ -42,6 +43,20 @@ const AIAssistantPage: React.FC = () => {
             <p className="text-gray-600 mt-2">
               Anthropic Claude APIを活用した高度なAI機能でタスク管理を効率化
             </p>
+            <div className="flex items-center gap-2 mt-3">
+              <Badge variant="outline" className="text-xs">
+                <Target className="h-3 w-3 mr-1" />
+                タスク管理連携
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                <MessageSquare className="h-3 w-3 mr-1" />
+                自然言語操作
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                <Brain className="h-3 w-3 mr-1" />
+                AI分析・最適化
+              </Badge>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {isConfigured ? (

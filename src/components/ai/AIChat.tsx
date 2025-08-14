@@ -30,6 +30,7 @@ import {
   Download,
   Trash2,
   Loader2,
+  ListTodo,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -37,6 +38,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import anthropicService from '@/services/ai/anthropicService';
 import { selectTodos } from '@/store/todoSlice';
+import AITaskManager from './AITaskManager';
 
 interface ChatMessage {
   id: string;
@@ -433,10 +435,14 @@ ${optimization.focusAreas.map((f: string) => `🎯 ${f}`).join('\n')}`;
 
       <CardContent className="flex-1 flex flex-col p-0">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <TabsList className="mx-6 mb-4">
+          <TabsList className="mx-6 mb-4 grid grid-cols-4 w-full">
             <TabsTrigger value="chat">
               <MessageSquare className="h-4 w-4 mr-2" />
               チャット
+            </TabsTrigger>
+            <TabsTrigger value="tasks">
+              <ListTodo className="h-4 w-4 mr-2" />
+              タスク管理
             </TabsTrigger>
             <TabsTrigger value="code">
               <Code className="h-4 w-4 mr-2" />
@@ -528,6 +534,10 @@ ${optimization.focusAreas.map((f: string) => `🎯 ${f}`).join('\n')}`;
                 )}
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="tasks" className="flex-1 px-6 pb-6">
+            <AITaskManager />
           </TabsContent>
 
           <TabsContent value="code" className="px-6 pb-6">

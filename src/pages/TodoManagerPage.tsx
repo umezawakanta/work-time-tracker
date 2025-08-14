@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import DailyTodoReminder from '@/components/dailyToDoReminder/DailyTodoReminder';
+import AITaskSuggestions from '@/components/ai/AITaskSuggestions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSelector } from 'react-redux';
@@ -15,6 +16,8 @@ import {
   Settings,
   Play,
   Zap,
+  Brain,
+  MessageSquare,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
@@ -27,6 +30,7 @@ const TodoManagerPage: React.FC = () => {
   // ゲームループシステム連携
   const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
   const [showGameLoopIntegration, setShowGameLoopIntegration] = useState(false);
+  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
 
   useEffect(() => {
     try {
@@ -55,18 +59,34 @@ const TodoManagerPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
+            onClick={() => navigate('/ai-assistant')}
+            className="flex items-center gap-2"
+          >
+            <MessageSquare className="h-4 w-4" />
+            AIチャット
+          </Button>
+          <Button
+            variant={showAIAnalysis ? 'default' : 'outline'}
+            onClick={() => setShowAIAnalysis(!showAIAnalysis)}
+            className="flex items-center gap-2"
+          >
+            <Brain className="h-4 w-4" />
+            AI分析
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => navigate('/integrated-dashboard')}
             className="flex items-center gap-2"
           >
             <Target className="h-4 w-4" />
-            プロジェクト管理
+            プロジェクト
           </Button>
           <Button
             onClick={() => navigate('/work-time-reports')}
             className="flex items-center gap-2"
           >
             <BarChart3 className="h-4 w-4" />
-            分析レポート
+            レポート
           </Button>
         </div>
       }
@@ -77,6 +97,13 @@ const TodoManagerPage: React.FC = () => {
         <div className="col-span-full">
           <DailyTodoReminder isPremium={hasActiveSubscription} />
         </div>
+
+        {/* AI分析セクション */}
+        {showAIAnalysis && (
+          <div className="col-span-full">
+            <AITaskSuggestions />
+          </div>
+        )}
 
         {/* ゲームループシステム統合 */}
         {showGameLoopIntegration && gameLoopStats && (
