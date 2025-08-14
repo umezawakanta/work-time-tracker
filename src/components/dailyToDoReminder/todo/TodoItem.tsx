@@ -64,7 +64,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface TodoItemProps {
   readonly todo: TodoItem;
-  readonly onToggle: (todo: TodoItem) => Promise<void>;
+  readonly onToggle?: (todo: TodoItem) => Promise<void> | void;
+  readonly onToggleComplete?: (todoId: string) => Promise<void> | void;
   readonly onDelete: (todoId: string) => Promise<void>;
   readonly onUpdate: (todoId: string, updates: Partial<TodoItem>) => Promise<void>;
   readonly isPremium?: boolean;
@@ -88,6 +89,7 @@ const PRIORITY_CONFIG: Record<number, { color: string; label: string }> = {
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   onToggle,
+  onToggleComplete,
   onDelete,
   onUpdate,
   isPremium = false,
@@ -147,11 +149,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     if (isLoading) return;
     setIsLoading(true);
     try {
-      await onToggle(todo);
+      const identifiable = todo as unknown as { _id?: string; id?: string };
+      const todoId = identifiable._id ?? identifiable.id;
+
+      if (onToggle) {
+        await onToggle(todo);
+      } else if (onToggleComplete && todoId) {
+        await onToggleComplete(todoId);
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [todo, onToggle, isLoading]);
+  }, [todo, onToggle, onToggleComplete, isLoading]);
 
   const handleDelete = useCallback(async (): Promise<void> => {
     if (isLoading) return;
@@ -415,7 +424,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
   return (
     <>
-      <Card className={cardClassName}>
+      <Card role="article" data-testid="todo-item" className={cardClassName}>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             {/* Drag Handle */}
@@ -435,6 +444,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 onCheckedChange={handleToggle}
                 disabled={isLoading}
                 className="h-5 w-5"
+                aria-label={`タスク「${todo.task}」の完了を切り替え`}
               />
             </div>
 
