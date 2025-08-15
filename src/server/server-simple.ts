@@ -19,15 +19,17 @@ const PORT = 3001;
 
 // Anthropic API configuration
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || process.env.VITE_ANTHROPIC_API_KEY;
+const ANTHROPIC_API_KEY = process.env.VITE_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
 
 // Debug: Log API key status at startup
 console.log('🔑 Environment variables loaded:');
-console.log(`   ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? '✅ Found' : '❌ Not found'}`);
 console.log(
   `   VITE_ANTHROPIC_API_KEY: ${process.env.VITE_ANTHROPIC_API_KEY ? '✅ Found' : '❌ Not found'}`
 );
-console.log(`   Using API Key: ${ANTHROPIC_API_KEY ? '✅ Configured' : '❌ Not configured'}`);
+console.log(`   ANTHROPIC_API_KEY: ${process.env.ANTHROPIC_API_KEY ? '✅ Found' : '❌ Not found'}`);
+console.log(
+  `   Using API Key: ${ANTHROPIC_API_KEY ? '✅ Configured (VITE_ANTHROPIC_API_KEY優先)' : '❌ Not configured'}`
+);
 
 // Middleware
 app.use(cors());
@@ -1129,17 +1131,11 @@ console.log('   POST /api/analytics/track'); // 追加
 console.log('   GET  /api/analytics/summary'); // 追加
 console.log('   POST /api/ai/anthropic'); // 追加
 console.log('   GET  /api/ai/health'); // 追加
-
-// 404 Error handler - must be after all routes
-app.use((req: Request, res: Response): void => {
-  console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
-  res.status(404).json({
-    success: false,
-    error: 'Not found',
-    message: `Route ${req.method} ${req.url} not found`,
-    timestamp: new Date().toISOString(),
-  });
-});
+console.log('   POST /api/todos/notify-added'); // 追加
+console.log('   GET  /api/notifications/settings/:userId'); // 追加
+console.log('   POST /api/notifications/settings/:userId'); // 追加
+console.log('   POST /api/notifications/test'); // 追加
+console.log('   GET  /api/notifications/status'); // 追加
 
 // ========================================
 // Notification API Endpoints
@@ -1288,6 +1284,17 @@ app.get('/api/notifications/status', (req, res) => {
         ? 'Email service is configured and ready'
         : 'Email service is not configured. Check EMAIL_USER and EMAIL_PASS environment variables.',
     },
+  });
+});
+
+// 404 Error handler - must be after all routes
+app.use((req: Request, res: Response): void => {
+  console.log(`❌ 404 - Route not found: ${req.method} ${req.url}`);
+  res.status(404).json({
+    success: false,
+    error: 'Not found',
+    message: `Route ${req.method} ${req.url} not found`,
+    timestamp: new Date().toISOString(),
   });
 });
 
