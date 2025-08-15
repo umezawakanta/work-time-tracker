@@ -10,6 +10,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { LanguageSwitcher } from '@/components/internationalization/LanguageSwitcher';
+import { logout } from '@/services/api/authApi';
 import {
   Home,
   Search,
@@ -51,6 +52,7 @@ import {
   CreditCard,
   Star,
   Smartphone,
+  LogOut,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -713,7 +715,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, setIsAuthenticated, setUser } = useAuth();
   const isDarkMode = theme === 'dark';
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -726,6 +728,20 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
   const t = (key: string) => key;
 
   const menuSections = getMenuSections(t);
+
+  // ログアウト処理
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsAuthenticated(false);
+      setUser(null);
+      toast.success('ログアウトしました');
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('ログアウトに失敗しました');
+    }
+  };
 
   // セクションの展開状態を切り替え
   const toggleSection = (sectionId: string) => {
@@ -890,19 +906,39 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           {/* フッター */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             {!isCollapsed && (
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {user?.name || 'ゲストユーザー'}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {user?.email || 'demo@example.com'}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {user?.name || 'ゲストユーザー'}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {user?.email || 'demo@example.com'}
-                  </p>
-                </div>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+                >
+                  <LogOut className="h-4 w-4" />
+                  ログアウト
+                </Button>
               </div>
+            )}
+            {isCollapsed && (
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             )}
           </div>
         </aside>
