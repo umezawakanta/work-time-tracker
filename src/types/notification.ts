@@ -8,6 +8,14 @@ export interface NotificationSettings {
   enabled: boolean;
   emailAddress: string;
 
+  // メールサービス設定（ユーザーごと）
+  emailService?: 'gmail' | 'hotmail' | 'yahoo' | 'outlook' | 'custom';
+  emailUser?: string; // 送信元メールアドレス
+  emailPass?: string; // アプリパスワード（暗号化して保存）
+  smtpHost?: string; // カスタムSMTPホスト
+  smtpPort?: number; // カスタムSMTPポート
+  smtpSecure?: boolean; // SSL/TLS使用
+
   // 通知タイミング設定
   notifyOnTaskAdd: boolean;
   notifyOnTaskComplete: boolean;

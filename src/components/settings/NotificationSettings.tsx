@@ -12,7 +12,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'react-hot-toast';
-import { Bell, Mail, Clock, Calendar, Filter, TestTube, Save, AlertCircle } from 'lucide-react';
+import {
+  Bell,
+  Mail,
+  Clock,
+  Calendar,
+  Filter,
+  TestTube,
+  Save,
+  AlertCircle,
+  Settings,
+} from 'lucide-react';
 import {
   NotificationSettings as NotificationSettingsType,
   DEFAULT_NOTIFICATION_SETTINGS,
@@ -140,20 +150,42 @@ const NotificationSettings: React.FC = () => {
       </div>
 
       {/* サービス状態 */}
-      {emailStatus && (
-        <Card className={emailStatus.ready ? 'border-green-500' : 'border-yellow-500'}>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <AlertCircle
-                className={`h-5 w-5 ${emailStatus.ready ? 'text-green-500' : 'text-yellow-500'}`}
-              />
-              <span className={emailStatus.ready ? 'text-green-700' : 'text-yellow-700'}>
-                {emailStatus.message}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Card
+        className={
+          settings.emailUser && settings.emailPass
+            ? 'border-green-500'
+            : emailStatus?.ready
+              ? 'border-blue-500'
+              : 'border-yellow-500'
+        }
+      >
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-3">
+            <AlertCircle
+              className={`h-5 w-5 ${
+                settings.emailUser && settings.emailPass
+                  ? 'text-green-500'
+                  : emailStatus?.ready
+                    ? 'text-blue-500'
+                    : 'text-yellow-500'
+              }`}
+            />
+            <span
+              className={
+                settings.emailUser && settings.emailPass
+                  ? 'text-green-700'
+                  : emailStatus?.ready
+                    ? 'text-blue-700'
+                    : 'text-yellow-700'
+              }
+            >
+              {settings.emailUser && settings.emailPass
+                ? 'ユーザー個別のメール設定が有効です'
+                : emailStatus?.message || 'メールサービスが設定されていません'}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 基本設定 */}
       <Card>
@@ -189,6 +221,106 @@ const NotificationSettings: React.FC = () => {
               disabled={!settings.enabled}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* メールサービス設定 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            メールサービス設定
+          </CardTitle>
+          <CardDescription>メール送信に使用するサービスの設定を行います</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="emailService">メールサービス</Label>
+            <Select
+              value={settings.emailService || 'gmail'}
+              onValueChange={(value) => updateSetting('emailService', value as any)}
+              disabled={!settings.enabled}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gmail">Gmail</SelectItem>
+                <SelectItem value="outlook">Outlook/Hotmail</SelectItem>
+                <SelectItem value="yahoo">Yahoo</SelectItem>
+                <SelectItem value="custom">カスタムSMTP</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="emailUser">送信元メールアドレス</Label>
+            <Input
+              id="emailUser"
+              type="email"
+              placeholder="your-email@gmail.com"
+              value={settings.emailUser || ''}
+              onChange={(e) => updateSetting('emailUser', e.target.value)}
+              disabled={!settings.enabled}
+            />
+            <p className="text-sm text-gray-500">通知メールの送信元となるメールアドレス</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="emailPass">アプリパスワード</Label>
+            <Input
+              id="emailPass"
+              type="password"
+              placeholder="••••••••••••••••"
+              value={settings.emailPass || ''}
+              onChange={(e) => updateSetting('emailPass', e.target.value)}
+              disabled={!settings.enabled}
+            />
+            <p className="text-sm text-gray-500">
+              Gmailの場合は2段階認証を有効にしてアプリパスワードを生成してください
+            </p>
+          </div>
+
+          {settings.emailService === 'custom' && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="smtpHost">SMTPホスト</Label>
+                <Input
+                  id="smtpHost"
+                  type="text"
+                  placeholder="smtp.example.com"
+                  value={settings.smtpHost || ''}
+                  onChange={(e) => updateSetting('smtpHost', e.target.value)}
+                  disabled={!settings.enabled}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="smtpPort">SMTPポート</Label>
+                <Input
+                  id="smtpPort"
+                  type="number"
+                  placeholder="587"
+                  value={settings.smtpPort || 587}
+                  onChange={(e) => updateSetting('smtpPort', parseInt(e.target.value) || 587)}
+                  disabled={!settings.enabled}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="smtpSecure">SSL/TLSを使用</Label>
+                  <p className="text-sm text-gray-500">セキュアな接続を使用します</p>
+                </div>
+                <Switch
+                  id="smtpSecure"
+                  checked={settings.smtpSecure || false}
+                  onCheckedChange={(checked) => updateSetting('smtpSecure', checked)}
+                  disabled={!settings.enabled}
+                />
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

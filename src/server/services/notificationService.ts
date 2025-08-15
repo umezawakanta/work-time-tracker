@@ -107,8 +107,8 @@ class NotificationService {
       return;
     }
 
-    // メール送信
-    await emailService.sendTaskAddedNotification(settings.emailAddress, task, totalTasks);
+    // メール送信（ユーザー設定を渡す）
+    await emailService.sendTaskAddedNotification(settings.emailAddress, task, totalTasks, settings);
 
     // 通知履歴を記録
     await this.recordNotification({
@@ -146,7 +146,7 @@ class NotificationService {
       });
 
       if (upcomingTasks.length > 0) {
-        await emailService.sendDeadlineNotification(settings.emailAddress, upcomingTasks);
+        await emailService.sendDeadlineNotification(settings.emailAddress, upcomingTasks, settings);
 
         console.log(
           `📧 Sent deadline notification to ${settings.emailAddress}: ${upcomingTasks.length} tasks`
@@ -200,7 +200,7 @@ class NotificationService {
         highPriorityTasks,
       };
 
-      await emailService.sendDailyDigest(settings.emailAddress, stats);
+      await emailService.sendDailyDigest(settings.emailAddress, stats, settings);
 
       console.log(`📧 Sent daily digest to ${settings.emailAddress}`);
     }

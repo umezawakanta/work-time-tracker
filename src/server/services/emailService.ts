@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { TodoItem } from '../../types';
+import { NotificationSettings } from '../../types/notification';
 
 // メール送信設定の型定義
 interface EmailConfig {
@@ -79,23 +80,72 @@ class EmailService {
   }
 
   /**
+   * ユーザー設定からトランスポーターを作成
+   */
+  createUserTransporter(settings: NotificationSettings): nodemailer.Transporter | null {
+    if (!settings.emailUser || !settings.emailPass) {
+      return null;
+    }
+
+    try {
+      if (settings.emailService === 'custom' && settings.smtpHost) {
+        // カスタムSMTP設定
+        return nodemailer.createTransport({
+          host: settings.smtpHost,
+          port: settings.smtpPort || 587,
+          secure: settings.smtpSecure || false,
+          auth: {
+            user: settings.emailUser,
+            pass: settings.emailPass,
+          },
+        });
+      } else {
+        // プリセットサービス（Gmail, Outlook等）
+        return nodemailer.createTransporter({
+          service: settings.emailService || 'gmail',
+          auth: {
+            user: settings.emailUser,
+            pass: settings.emailPass,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create user transporter:', error);
+      return null;
+    }
+  }
+
+  /**
    * タスク追加通知メールを送信
    */
   async sendTaskAddedNotification(
     userEmail: string,
     task: TodoItem,
-    totalTasks: number
+    totalTasks: number,
+    userSettings?: NotificationSettings
   ): Promise<boolean> {
-    if (!this.isConfigured || !this.transporter) {
-      console.log('Email service not configured');
+    // ユーザー固有の設定がある場合は優先
+    let transporter = this.transporter;
+    let fromEmail = process.env.EMAIL_USER || 'noreply@worktime-tracker.com';
+
+    if (userSettings?.emailUser && userSettings?.emailPass) {
+      const userTransporter = this.createUserTransporter(userSettings);
+      if (userTransporter) {
+        transporter = userTransporter;
+        fromEmail = userSettings.emailUser;
+      }
+    }
+
+    if (!transporter) {
+      console.log('No email transporter available');
       return false;
     }
 
     const template = this.createTaskAddedTemplate(task, totalTasks);
 
     try {
-      await this.transporter.sendMail({
-        from: `"Work Time Tracker" <${process.env.EMAIL_USER}>`,
+      await transporter.sendMail({
+        from: `"Work Time Tracker" <${fromEmail}>`,
         to: userEmail,
         subject: template.subject,
         html: template.html,
@@ -113,16 +163,37 @@ class EmailService {
   /**
    * 期限接近通知メールを送信
    */
-  async sendDeadlineNotification(userEmail: string, tasks: TodoItem[]): Promise<boolean> {
-    if (!this.isConfigured || !this.transporter || tasks.length === 0) {
+  async sendDeadlineNotification(
+    userEmail: string,
+    tasks: TodoItem[],
+    userSettings?: NotificationSettings
+  ): Promise<boolean> {
+    if (tasks.length === 0) {
+      return false;
+    }
+
+    // ユーザー固有の設定がある場合は優先
+    let transporter = this.transporter;
+    let fromEmail = process.env.EMAIL_USER || 'noreply@worktime-tracker.com';
+
+    if (userSettings?.emailUser && userSettings?.emailPass) {
+      const userTransporter = this.createUserTransporter(userSettings);
+      if (userTransporter) {
+        transporter = userTransporter;
+        fromEmail = userSettings.emailUser;
+      }
+    }
+
+    if (!transporter) {
+      console.log('No email transporter available');
       return false;
     }
 
     const template = this.createDeadlineTemplate(tasks);
 
     try {
-      await this.transporter.sendMail({
-        from: `"Work Time Tracker" <${process.env.EMAIL_USER}>`,
+      await transporter.sendMail({
+        from: `"Work Time Tracker" <${fromEmail}>`,
         to: userEmail,
         subject: template.subject,
         html: template.html,
@@ -148,17 +219,31 @@ class EmailService {
       pendingTasks: number;
       upcomingDeadlines: TodoItem[];
       highPriorityTasks: TodoItem[];
-    }
+    },
+    userSettings?: NotificationSettings
   ): Promise<boolean> {
-    if (!this.isConfigured || !this.transporter) {
+    // ユーザー固有の設定がある場合は優先
+    let transporter = this.transporter;
+    let fromEmail = process.env.EMAIL_USER || 'noreply@worktime-tracker.com';
+
+    if (userSettings?.emailUser && userSettings?.emailPass) {
+      const userTransporter = this.createUserTransporter(userSettings);
+      if (userTransporter) {
+        transporter = userTransporter;
+        fromEmail = userSettings.emailUser;
+      }
+    }
+
+    if (!transporter) {
+      console.log('No email transporter available');
       return false;
     }
 
     const template = this.createDailyDigestTemplate(stats);
 
     try {
-      await this.transporter.sendMail({
-        from: `"Work Time Tracker" <${process.env.EMAIL_USER}>`,
+      await transporter.sendMail({
+        from: `"Work Time Tracker" <${fromEmail}>`,
         to: userEmail,
         subject: template.subject,
         html: template.html,

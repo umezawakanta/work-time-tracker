@@ -1250,14 +1250,18 @@ app.post('/api/notifications/test', async (req, res) => {
       });
     }
 
-    // Send test email
-    const testSent = await emailService.sendDailyDigest(settings.emailAddress, {
-      totalTasks: 10,
-      completedToday: 3,
-      pendingTasks: 7,
-      upcomingDeadlines: [],
-      highPriorityTasks: [],
-    });
+    // Send test email（ユーザー設定を使用）
+    const testSent = await emailService.sendDailyDigest(
+      settings.emailAddress,
+      {
+        totalTasks: 10,
+        completedToday: 3,
+        pendingTasks: 7,
+        upcomingDeadlines: [],
+        highPriorityTasks: [],
+      },
+      settings
+    );
 
     res.json({
       success: testSent,
