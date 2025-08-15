@@ -238,11 +238,15 @@ export const checkAuth = async (): Promise<boolean> => {
       err.name === 'AbortError' ||
       err.code === 'ECONNREFUSED' ||
       err.code === 'NETWORK_ERROR' ||
-      !err.response ||
-      isDev
+      !err.response
     ) {
-      console.log('⚠️ Network error or timeout - maintaining auth state (dev mode)');
-      return true; // 開発環境では認証状態を維持
+      // 開発環境でもトークンがある場合は実際の認証状態を確認
+      if (isDev && tokenManager.isAuthenticated()) {
+        console.log('⚠️ Network error but token exists - maintaining auth state (dev mode)');
+        return true; // トークンがある場合のみ認証状態を維持
+      }
+      console.log('⚠️ Network error - auth state depends on token existence');
+      return false;
     }
 
     // サーバーが明示的に認証エラーを返した場合のみクリア
@@ -322,26 +326,17 @@ export const fetchUserData = async (): Promise<User> => {
   } catch (error) {
     console.error('Fetch user data error:', error);
 
-    // ネットワークエラーなど重大な問題の場合のみフォールバック
+    // ネットワークエラーの場合はエラーをそのまま投げる
     if (
       error instanceof Error &&
       (error.message.includes('ECONNREFUSED') ||
         error.message.includes('NETWORK_ERROR') ||
         error.message.includes('timeout'))
     ) {
-      console.log('🔧 Network error detected: Fallback to demo user data');
+      console.log('🔧 Network error detected');
       console.log(
         '💡 Tip: サーバーが停止している場合は `npm run dev` でサーバーを起動してください'
       );
-      return {
-        id: 'demo-user',
-        _id: 'demo-user-id',
-        name: 'Demo User (Network Error)',
-        username: 'demouser',
-        email: 'demo@example.com',
-        isAdmin: true,
-        avatar: '',
-      };
     }
 
     throw error;

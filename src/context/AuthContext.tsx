@@ -63,6 +63,12 @@ const isDev = () => {
     return false;
   }
 
+  // 実際のトークンがある場合は開発環境でも本番と同じ動作をする
+  const hasValidToken = typeof tokenManager !== 'undefined' && tokenManager.isAuthenticated();
+  if (hasValidToken) {
+    return false; // トークンがある場合は開発モードを無効化
+  }
+
   return (
     nodeEnv === 'development' || getEnvVar('DEV') === 'true' || getEnvVar('MODE') === 'development'
   );
@@ -377,13 +383,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
           isLoggedOut,
         });
 
+        // 開発環境でも実際のトークンがある場合は実際のユーザー情報を取得
         if (
           currentIsDev &&
           !isTestEnvironment &&
           window.location.hostname === 'localhost' &&
-          !isLoggedOut
+          !isLoggedOut &&
+          !isTokenValid // トークンが無い場合のみデモユーザーを設定
         ) {
-          console.log('🚀 Development fast auth mode enabled');
+          console.log('🚀 Development fast auth mode enabled (no token)');
           if (isMounted) {
             setUser({
               id: 'demo-user',
@@ -431,32 +439,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // ログアウト状態をチェック
           const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
-          // 開発環境でトークンがない場合のフォールバック（ログアウトしていない場合のみ）
-          if (
-            isDev() &&
-            !isTestEnvironment &&
-            window.location.hostname === 'localhost' &&
-            !isLoggedOut
-          ) {
-            console.log('🔧 Development mode: Setting demo auth for no token case');
-            setUser({
-              id: 'demo-user',
-              _id: 'demo-user-id',
-              name: 'Demo User (No Token)',
-              username: 'demouser',
-              email: 'demo@example.com',
-              isAdmin: true,
-              avatar: '',
-            });
-            setIsAuthenticated(true);
-          } else {
-            // トークンが無効な場合はクリア
-            tokenManager.clearTokens();
-            setIsAuthenticated(false);
-            setUser(null);
-            if (isLoggedOut) {
-              console.log('🚪 Logged out state preserved');
-            }
+          // トークンが無効な場合はクリア
+          tokenManager.clearTokens();
+          setIsAuthenticated(false);
+          setUser(null);
+          if (isLoggedOut) {
+            console.log('🚪 Logged out state preserved');
           }
           console.log('🔒 Auth cleared - user needs to login');
         }
