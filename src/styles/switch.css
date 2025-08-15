@@ -1,0 +1,120 @@
+/* Custom Switch Styles */
+
+/* Enhanced Switch Component Styles */
+.switch-enhanced {
+  /* Base styles for better visibility */
+  --switch-unchecked-bg: #e5e7eb;
+  --switch-unchecked-border: #d1d5db;
+  --switch-checked-bg: #8b5cf6;
+  --switch-checked-border: #7c3aed;
+  --switch-thumb-bg: #ffffff;
+  --switch-disabled-opacity: 0.5;
+}
+
+/* Custom switch variants */
+.switch-success {
+  --switch-checked-bg: #10b981;
+  --switch-checked-border: #059669;
+}
+
+.switch-danger {
+  --switch-checked-bg: #ef4444;
+  --switch-checked-border: #dc2626;
+}
+
+.switch-warning {
+  --switch-checked-bg: #f59e0b;
+  --switch-checked-border: #d97706;
+}
+
+.switch-info {
+  --switch-checked-bg: #3b82f6;
+  --switch-checked-border: #2563eb;
+}
+
+/* Hover effects */
+.switch-enhanced:hover:not(:disabled) {
+  --switch-unchecked-bg: #d1d5db;
+  --switch-unchecked-border: #9ca3af;
+}
+
+/* Focus styles */
+.switch-enhanced:focus-visible {
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .switch-enhanced {
+    --switch-unchecked-bg: #374151;
+    --switch-unchecked-border: #4b5563;
+    --switch-thumb-bg: #f3f4f6;
+  }
+
+  .switch-enhanced:hover:not(:disabled) {
+    --switch-unchecked-bg: #4b5563;
+    --switch-unchecked-border: #6b7280;
+  }
+}
+
+/* Accessibility: High contrast mode */
+@media (prefers-contrast: high) {
+  .switch-enhanced {
+    --switch-unchecked-border: #000000;
+    --switch-checked-border: #000000;
+  }
+
+  .switch-enhanced[data-state='unchecked'] {
+    border-width: 3px;
+  }
+
+  .switch-enhanced[data-state='checked'] {
+    border-width: 3px;
+  }
+}
+
+/* Size variants */
+.switch-sm {
+  height: 1.25rem;
+  width: 2.25rem;
+}
+
+.switch-sm span {
+  height: 1rem;
+  width: 1rem;
+}
+
+.switch-sm span[data-state='checked'] {
+  transform: translateX(1rem);
+}
+
+.switch-lg {
+  height: 2rem;
+  width: 3.75rem;
+}
+
+.switch-lg span {
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+.switch-lg span[data-state='checked'] {
+  transform: translateX(1.75rem);
+}
+
+/* Animation */
+@keyframes switch-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+.switch-pulse[data-state='checked'] {
+  animation: switch-pulse 2s infinite;
+}

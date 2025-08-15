@@ -174,6 +174,7 @@ const NotificationSettings: React.FC = () => {
               id="enabled"
               checked={settings.enabled}
               onCheckedChange={(checked) => updateSetting('enabled', checked)}
+              className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
             />
           </div>
 

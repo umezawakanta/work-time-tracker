@@ -103,7 +103,7 @@ const UnifiedTaskPage: React.FC = () => {
             <Switch
               checked={autoSortEnabled}
               onCheckedChange={handleAutoSortToggle}
-              className="data-[state=checked]:bg-purple-600"
+              className="data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
             />
           </div>
           <Button
