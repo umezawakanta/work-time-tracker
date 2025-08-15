@@ -38,8 +38,33 @@ export class TokenManager {
     const hostname = window.location.hostname;
     console.log(`✅ TokenManager enabled for ${hostname}`);
 
+    // 即座にlocalStorageからトークンを読み込む
+    this.loadFromStorageSync();
+
     // API可用性を確認してからトークン管理を開始
     this.initializeWithHealthCheck();
+  }
+
+  /**
+   * 同期的にlocalStorageからトークンを読み込む
+   */
+  private loadFromStorageSync(): void {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const expiresAt = localStorage.getItem('expiresAt');
+      const refreshExpiresAt = localStorage.getItem('refreshExpiresAt');
+
+      if (accessToken && refreshToken && expiresAt && refreshExpiresAt) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresAt = parseInt(expiresAt, 10);
+        this.refreshExpiresAt = parseInt(refreshExpiresAt, 10);
+        console.log('✅ Tokens loaded synchronously from localStorage');
+      }
+    } catch (error) {
+      console.error('❌ Failed to load tokens synchronously:', error);
+    }
   }
 
   /**

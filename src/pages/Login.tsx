@@ -40,7 +40,7 @@ export default function Login() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { setIsAuthenticated, isAuthenticated, refreshAuth } = useAuth();
+  const { setIsAuthenticated, isAuthenticated, refreshAuth, setUser } = useAuth();
 
   // リダイレクト先を取得（PrivateRouteから渡される）
   const from = location.state?.from?.pathname || '/';
@@ -122,10 +122,11 @@ export default function Login() {
 
     try {
       console.log('🚀 Calling login API...');
-      const _loginResponse = await login(formData.email.trim(), formData.password, rememberMe);
+      const loginResponse = await login(formData.email.trim(), formData.password, rememberMe);
 
       console.log('✅ Login API call successful');
-      console.log('  - Response received:', !!_loginResponse);
+      console.log('  - Response received:', !!loginResponse);
+      console.log('  - User data:', loginResponse.user);
 
       // Remember Me 機能（Emailの保存のみローカルで実行）
       if (rememberMe) {
@@ -136,11 +137,17 @@ export default function Login() {
 
       toast.success('ログインに成功しました');
 
-      console.log('🔄 Refreshing auth context...');
-      await refreshAuth();
+      // ユーザー情報を直接設定
+      if (loginResponse.user) {
+        console.log('🔄 Setting user data directly...');
+        setUser(loginResponse.user);
+      }
 
       console.log('🔄 Setting authenticated state...');
       setIsAuthenticated(true);
+
+      // refreshAuthは呼ばない（すでにユーザー情報とトークンは設定済み）
+      console.log('✅ Login complete - user and tokens set');
 
       // ログイン成功後、元のページまたはホームページにリダイレクト
       console.log('🔀 Redirecting to:', from);

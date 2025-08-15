@@ -344,6 +344,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             refreshToken: localStorage.getItem('refreshToken') ? 'exists' : 'missing',
             rememberMe: localStorage.getItem('rememberMe'),
           },
+          tokenManagerState: {
+            hasAccessToken: !!debugInfo.accessToken,
+            hasRefreshToken: !!debugInfo.refreshToken,
+            expiresAt: debugInfo.expiresAt,
+            refreshExpiresAt: debugInfo.refreshExpiresAt,
+          },
         });
 
         // ログアウト状態をチェック
@@ -376,16 +382,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           }
         } else {
           console.log('🔒 トークン無効 - 認証クリア');
-          // ログアウト状態をチェック
-          const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
-
           // トークンが無効な場合はクリア
           tokenManager.clearTokens();
           setIsAuthenticated(false);
           setUser(null);
-          if (isLoggedOut) {
-            console.log('🚪 Logged out state preserved');
-          }
           console.log('🔒 Auth cleared - user needs to login');
         }
       } catch (error) {
