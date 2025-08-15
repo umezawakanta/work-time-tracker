@@ -63,12 +63,6 @@ const isDev = () => {
     return false;
   }
 
-  // 実際のトークンがある場合は開発環境でも本番と同じ動作をする
-  const hasValidToken = typeof tokenManager !== 'undefined' && tokenManager.isAuthenticated();
-  if (hasValidToken) {
-    return false; // トークンがある場合は開発モードを無効化
-  }
-
   return (
     nodeEnv === 'development' || getEnvVar('DEV') === 'true' || getEnvVar('MODE') === 'development'
   );
@@ -352,64 +346,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           },
         });
 
-        // 開発環境でのサーバー起動ガイダンス（初回のみ）
-        if (
-          isDev() &&
-          window.location.hostname === 'localhost' &&
-          !sessionStorage.getItem('auth-init-shown')
-        ) {
-          console.log('💡 Development Mode Guidance:');
-          console.log('   - Frontend: http://localhost:3000 ✅');
-          console.log('   - Backend: http://localhost:3001 (確認中...)');
-          console.log('   - サーバーが起動していない場合、オフラインモードで動作します');
-          sessionStorage.setItem('auth-init-shown', 'true');
-        }
-
-        // 開発環境での即座認証設定（サーバー問題を回避）
         // ログアウト状態をチェック
         const isLoggedOut = sessionStorage.getItem('user-logged-out') === 'true';
 
-        // テスト環境では開発モードを無効化
-        const isTestEnvironment = getEnvVar('NODE_ENV') === 'test';
-        const currentIsDev = isDev();
-
-        console.log('🔍 Environment check:', {
-          NODE_ENV: getEnvVar('NODE_ENV'),
-          DEV: getEnvVar('DEV'),
-          MODE: getEnvVar('MODE'),
-          isTestEnvironment,
-          currentIsDev,
-          hostname: window.location.hostname,
-          isLoggedOut,
-        });
-
-        // 開発環境でも実際のトークンがある場合は実際のユーザー情報を取得
-        if (
-          currentIsDev &&
-          !isTestEnvironment &&
-          window.location.hostname === 'localhost' &&
-          !isLoggedOut &&
-          !isTokenValid // トークンが無い場合のみデモユーザーを設定
-        ) {
-          console.log('🚀 Development fast auth mode enabled (no token)');
-          if (isMounted) {
-            setUser({
-              id: 'demo-user',
-              _id: 'demo-user-id',
-              name: 'Demo User (Dev)',
-              username: 'demouser',
-              email: 'demo@example.com',
-              isAdmin: true,
-              avatar: '',
-            });
-            setIsAuthenticated(true);
-            updateActivity();
-            setLoading(false); // 開発環境では即座にローディング解除
-            console.log('✅ Development auth set immediately');
-            console.log('🏁 認証初期化完了 - loading終了 (dev fast mode)');
-            return; // 早期リターンで他の処理をスキップ
-          }
-        } else if (isLoggedOut) {
+        if (isLoggedOut) {
           console.log('🚪 User manually logged out - skipping auto auth');
         }
 
