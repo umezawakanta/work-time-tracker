@@ -294,9 +294,9 @@ const workTimeMenuItems: MenuItem[] = [
   },
   {
     icon: <Bell className="h-5 w-5" />,
-    label: '🔔 通知設定',
-    path: '/notification-settings',
-    description: 'アラート・通知の詳細設定',
+    label: '🔔 メール通知設定',
+    path: '/settings/notifications',
+    description: 'メール通知の詳細設定',
     badge: '通知',
     gradient: 'from-orange-500 via-amber-500 to-yellow-500',
     accentColor: 'orange',

@@ -61,6 +61,9 @@ const ApprovalWorkflowPage = lazy(() => import('./pages/ApprovalWorkflowPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
 const UnifiedTaskPage = lazy(() => import('./pages/UnifiedTaskPage'));
 
+// ⚙️ Settings
+const NotificationSettings = lazy(() => import('./components/settings/NotificationSettings'));
+
 // 📚 Personal & Lifestyle
 const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
 const AssetCalendarPage = lazy(() =>
@@ -576,6 +579,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <UnifiedTaskPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/settings/notifications"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <NotificationSettings />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }

@@ -10,6 +10,10 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
+// Import services
+import notificationService from './services/notificationService.js';
+import emailService from './services/emailService.js';
+
 const app = express();
 const PORT = 3001;
 
@@ -1134,6 +1138,156 @@ app.use((req: Request, res: Response): void => {
     error: 'Not found',
     message: `Route ${req.method} ${req.url} not found`,
     timestamp: new Date().toISOString(),
+  });
+});
+
+// ========================================
+// Notification API Endpoints
+// ========================================
+
+// Notify task added
+app.post('/api/todos/notify-added', async (req, res) => {
+  try {
+    const { userId, taskId } = req.body;
+
+    // タスクを取得
+    const todo = await TodoModel.findById(taskId);
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found',
+      });
+    }
+
+    // 全タスク数を取得
+    const totalTasks = await TodoModel.countDocuments({ userId });
+
+    // 通知を送信（TodoDocumentをTodoItem形式に変換）
+    const priorityMap = { low: 1, medium: 2, high: 3, critical: 5 };
+    const todoItem = {
+      _id: todo._id.toString(),
+      task: todo.title, // TodoDocumentではtitleプロパティ
+      priority: priorityMap[todo.priority] || 2,
+      isPrioritized: todo.priority === 'high' || todo.priority === 'critical',
+      completed: todo.completed,
+      completedDate: todo.completedAt,
+      createdAt: todo.createdAt?.toISOString(),
+      updatedAt: todo.updatedAt?.toISOString(),
+      deadline: todo.dueDate,
+      type: todo.type === 'task' ? 'output' : 'input',
+      description: todo.description,
+      category: todo.category,
+      tags: todo.tags,
+    };
+    await notificationService.notifyTaskAdded(userId, todoItem as any, totalTasks);
+
+    res.json({
+      success: true,
+      message: 'Notification sent',
+    });
+  } catch (error) {
+    console.error('Error sending task notification:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send notification',
+    });
+  }
+});
+
+// Get notification settings
+app.get('/api/notifications/settings/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const settings = await notificationService.getUserSettings(userId);
+
+    if (!settings) {
+      return res.status(404).json({
+        success: false,
+        message: 'Settings not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: settings,
+    });
+  } catch (error) {
+    console.error('Error fetching notification settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notification settings',
+    });
+  }
+});
+
+// Update notification settings
+app.post('/api/notifications/settings/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const settings = req.body;
+
+    await notificationService.saveUserSettings(userId, settings);
+
+    res.json({
+      success: true,
+      message: 'Settings saved successfully',
+    });
+  } catch (error) {
+    console.error('Error saving notification settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save notification settings',
+    });
+  }
+});
+
+// Send test notification
+app.post('/api/notifications/test', async (req, res) => {
+  try {
+    const { userId, type } = req.body;
+
+    const settings = await notificationService.getUserSettings(userId);
+    if (!settings || !settings.enabled) {
+      return res.status(400).json({
+        success: false,
+        message: 'Notifications are disabled',
+      });
+    }
+
+    // Send test email
+    const testSent = await emailService.sendDailyDigest(settings.emailAddress, {
+      totalTasks: 10,
+      completedToday: 3,
+      pendingTasks: 7,
+      upcomingDeadlines: [],
+      highPriorityTasks: [],
+    });
+
+    res.json({
+      success: testSent,
+      message: testSent ? 'Test notification sent' : 'Failed to send test notification',
+    });
+  } catch (error) {
+    console.error('Error sending test notification:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send test notification',
+    });
+  }
+});
+
+// Check email service status
+app.get('/api/notifications/status', (req, res) => {
+  const isReady = emailService.isReady();
+
+  res.json({
+    success: true,
+    data: {
+      emailServiceReady: isReady,
+      message: isReady
+        ? 'Email service is configured and ready'
+        : 'Email service is not configured. Check EMAIL_USER and EMAIL_PASS environment variables.',
+    },
   });
 });
 

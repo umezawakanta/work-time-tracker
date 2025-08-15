@@ -38,6 +38,7 @@ React + TypeScript + Viteを使用した包括的な生産性管理プラット�
 - 🔗 **タスク管理連携**: 自然言語でタスクを作成・更新・分析
 - 📝 **スマート提案**: AIがタスクの最適な処理方法を提案
 - 🎯 **自動タスク並び替え**: タスク追加時にAIが最適な実行順序に自動整理
+- 📧 **メール通知機能**: タスク追加・締切接近・デイリーダイジェストをメールで通知
 
 ## 🏗️ アーキテクチャ
 
@@ -352,6 +353,29 @@ vercel dev
 
 - API関数用の専用 `tsconfig.json` が `api/` フォルダに配置されています
 - Vercel のビルドプロセスと互換性があります
+
+## 🚀 クイックスタート
+
+### AI機能の設定
+
+```bash
+# .env.localファイルにAnthropicのAPIキーを追加
+echo "ANTHROPIC_API_KEY=your-api-key" >> .env.local
+```
+
+### メール通知の設定
+
+```bash
+# .env.localファイルにメール設定を追加
+echo "EMAIL_SERVICE=gmail" >> .env.local
+echo "EMAIL_USER=your-email@gmail.com" >> .env.local
+echo "EMAIL_PASS=your-app-password" >> .env.local
+```
+
+詳細な設定方法:
+
+- [AI機能セットアップガイド](docs/anthropic-setup.md)
+- [メール通知セットアップガイド](docs/email-notification-setup.md)
 
 ## 📦 インストール
 
