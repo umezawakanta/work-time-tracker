@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   BarChart,
   Bar,
@@ -287,6 +288,16 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const [availableProviders, setAvailableProviders] = useState<
     { provider: AIProvider; available: boolean; name: string }[]
   >([]);
+  const [priorityFilter, setPriorityFilter] = useState<{
+    high: boolean;
+    medium: boolean;
+    low: boolean;
+  }>({
+    high: true,
+    medium: true,
+    low: true,
+  });
+  const [enablePriorityFilter, setEnablePriorityFilter] = useState(false);
 
   // プロバイダー一覧を取得
   useEffect(() => {
@@ -297,7 +308,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     loadProviders();
   }, [classificationService]);
 
-  // タスクを統一形式に変換（完了済みタスクは除外）
+  // タスクを統一形式に変換（完了済みタスクは除外、優先度フィルター適用）
   const unifiedTasks = useMemo(() => {
     if (!Array.isArray(tasks)) {
       console.warn('🚨 EisenhowerMatrix: tasks が配列ではありません:', typeof tasks);
@@ -309,12 +320,45 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     }
 
     // 完了済みタスクをフィルタリング
-    const incompleteTasks = tasks.filter((task) => {
+    let incompleteTasks = tasks.filter((task) => {
       // 様々なタスク形式に対応
       return (
         task && task._id && !task.completed && !task.isCompleted && task.status !== 'completed'
       );
     });
+
+    // 優先度フィルターを適用
+    if (enablePriorityFilter) {
+      incompleteTasks = incompleteTasks.filter((task) => {
+        const priority = task.priority || task.priorityLevel || 'medium';
+        const priorityValue = typeof priority === 'number' ? priority : priority.toLowerCase();
+
+        // 数値の場合の変換（1-5を低中高にマッピング）
+        if (typeof priorityValue === 'number') {
+          if (priorityValue >= 4) return priorityFilter.high;
+          if (priorityValue >= 2) return priorityFilter.medium;
+          return priorityFilter.low;
+        }
+
+        // 文字列の場合
+        switch (priorityValue) {
+          case 'high':
+          case '高':
+            return priorityFilter.high;
+          case 'low':
+          case '低':
+            return priorityFilter.low;
+          case 'medium':
+          case '中':
+          default:
+            return priorityFilter.medium;
+        }
+      });
+
+      console.log(
+        `🎯 優先度フィルター適用: ${incompleteTasks.length}件（フィルター前: ${tasks.filter((t) => !t.completed && !t.isCompleted && t.status !== 'completed').length}件）`
+      );
+    }
 
     console.log(
       `📊 分析対象: ${incompleteTasks.length}件（完了済み除外: ${tasks.length - incompleteTasks.length}件）`
@@ -325,7 +369,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       .filter((task): task is UnifiedTaskData => task !== null);
 
     return converted;
-  }, [tasks, classificationService]);
+  }, [tasks, classificationService, enablePriorityFilter, priorityFilter]);
 
   // AIプロバイダー変更ハンドラー
   const handleProviderChange = (provider: AIProvider) => {
@@ -534,65 +578,128 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {lastUpdate && (
-            <span className="text-sm text-gray-500">
-              最終更新: {lastUpdate.toLocaleTimeString()}
-            </span>
-          )}
-          <div className="flex items-center gap-2">
-            {/* AIプロバイダー選択 */}
-            <Select
-              value={currentProvider}
-              onValueChange={(value) => handleProviderChange(value as AIProvider)}
-            >
-              <SelectTrigger className="w-36">
-                <SelectValue placeholder="AI選択" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableProviders.map((p) => (
-                  <SelectItem key={p.provider} value={p.provider} disabled={!p.available}>
-                    <div className="flex items-center gap-2">
-                      <span>
-                        {p.provider === 'claude'
-                          ? '🤖'
-                          : p.provider === 'openai'
-                            ? '🧠'
-                            : p.provider === 'ollama'
-                              ? '🦙'
-                              : '✨'}
-                      </span>
-                      <span>{p.name}</span>
-                      {!p.available && (
-                        <span className="text-xs text-red-500">
-                          {p.provider === 'ollama' ? '(未接続)' : '(未設定)'}
-                        </span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}
+        <div className="space-y-2">
+          {/* 優先度フィルター */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="enable-priority-filter"
+                checked={enablePriorityFilter}
+                onCheckedChange={(checked) => setEnablePriorityFilter(checked as boolean)}
               />
-              {isAnalyzing ? '分析中...' : '再分析'}
-            </Button>
-            <Button
-              onClick={() => {
-                classificationService.clearCache();
-                toast.success(
-                  'キャッシュをクリアしました。次回の分析時に新規APIコールが実行されます。'
-                );
-              }}
-              variant="outline"
-              size="sm"
-              title="分析キャッシュをクリア"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+              <label
+                htmlFor="enable-priority-filter"
+                className="text-sm font-medium cursor-pointer"
+              >
+                優先度フィルター
+              </label>
+            </div>
+            {enablePriorityFilter && (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1">
+                  <Checkbox
+                    id="filter-high"
+                    checked={priorityFilter.high}
+                    onCheckedChange={(checked) =>
+                      setPriorityFilter((prev) => ({ ...prev, high: checked as boolean }))
+                    }
+                  />
+                  <label htmlFor="filter-high" className="text-sm cursor-pointer">
+                    <Badge variant="destructive">高</Badge>
+                  </label>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Checkbox
+                    id="filter-medium"
+                    checked={priorityFilter.medium}
+                    onCheckedChange={(checked) =>
+                      setPriorityFilter((prev) => ({ ...prev, medium: checked as boolean }))
+                    }
+                  />
+                  <label htmlFor="filter-medium" className="text-sm cursor-pointer">
+                    <Badge variant="default">中</Badge>
+                  </label>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Checkbox
+                    id="filter-low"
+                    checked={priorityFilter.low}
+                    onCheckedChange={(checked) =>
+                      setPriorityFilter((prev) => ({ ...prev, low: checked as boolean }))
+                    }
+                  />
+                  <label htmlFor="filter-low" className="text-sm cursor-pointer">
+                    <Badge variant="outline">低</Badge>
+                  </label>
+                </div>
+              </div>
+            )}
+            {enablePriorityFilter && unifiedTasks.length > 0 && (
+              <span className="text-sm text-gray-500">フィルター適用: {unifiedTasks.length}件</span>
+            )}
+          </div>
+
+          {/* AIプロバイダー選択と操作ボタン */}
+          <div className="flex items-center space-x-2">
+            {lastUpdate && (
+              <span className="text-sm text-gray-500">
+                最終更新: {lastUpdate.toLocaleTimeString()}
+              </span>
+            )}
+            <div className="flex items-center gap-2">
+              {/* AIプロバイダー選択 */}
+              <Select
+                value={currentProvider}
+                onValueChange={(value) => handleProviderChange(value as AIProvider)}
+              >
+                <SelectTrigger className="w-36">
+                  <SelectValue placeholder="AI選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableProviders.map((p) => (
+                    <SelectItem key={p.provider} value={p.provider} disabled={!p.available}>
+                      <div className="flex items-center gap-2">
+                        <span>
+                          {p.provider === 'claude'
+                            ? '🤖'
+                            : p.provider === 'openai'
+                              ? '🧠'
+                              : p.provider === 'ollama'
+                                ? '🦙'
+                                : '✨'}
+                        </span>
+                        <span>{p.name}</span>
+                        {!p.available && (
+                          <span className="text-xs text-red-500">
+                            {p.provider === 'ollama' ? '(未接続)' : '(未設定)'}
+                          </span>
+                        )}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}
+                />
+                {isAnalyzing ? '分析中...' : '再分析'}
+              </Button>
+              <Button
+                onClick={() => {
+                  classificationService.clearCache();
+                  toast.success(
+                    'キャッシュをクリアしました。次回の分析時に新規APIコールが実行されます。'
+                  );
+                }}
+                variant="outline"
+                size="sm"
+                title="分析キャッシュをクリア"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
