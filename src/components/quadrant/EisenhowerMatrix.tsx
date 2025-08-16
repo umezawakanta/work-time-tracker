@@ -412,7 +412,18 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
             ? 'Ollama (ローカル)'
             : 'Gemini';
 
-    if (provider === 'openai') {
+    if (provider === 'claude') {
+      toast.error(
+        `⚠️ ClaudeはCORS制限のためブラウザから直接使用できません。\nバックエンドサーバー経由で使用するか、他のプロバイダーをご利用ください。`,
+        { duration: 6000 }
+      );
+      // 自動的にGeminiに切り替え
+      setTimeout(() => {
+        setCurrentProvider('gemini');
+        classificationService.setProvider('gemini');
+        toast.info('Geminiに自動切り替えしました');
+      }, 2000);
+    } else if (provider === 'openai') {
       toast.warning(
         `AIプロバイダーを ${providerName} に切り替えました。\n⚠️ OpenAIはレート制限が厳しく、コストも高いため、少数のタスクのみ分析されます。`,
         { duration: 6000 }

@@ -340,19 +340,19 @@ if (isDev) {
 // レート制限の設定（プロバイダー別）
 const RATE_LIMIT = {
   gemini: {
-    requestsPerMinute: 10,
-    retryDelay: 3000,
+    requestsPerMinute: 5, // より厳しく制限
+    retryDelay: 5000, // リトライ遅延を長めに
     maxRetries: 3,
     batchSize: 1,
-    maxTasksPerAnalysis: 20, // 15→20に増加
-    initialDelay: 1000,
+    maxTasksPerAnalysis: 10, // タスク数を制限
+    initialDelay: 2000, // 初期遅延を長めに
   },
   claude: {
     requestsPerMinute: 10,
     retryDelay: 3000,
     maxRetries: 3,
     batchSize: 1,
-    maxTasksPerAnalysis: 20, // 15→20に増加
+    maxTasksPerAnalysis: 20,
     initialDelay: 1000,
   },
   openai: {
@@ -525,10 +525,17 @@ export class QuadrantClassificationService {
     const now = Date.now();
     const RECOVERY_TIME = 60000; // 1分後に再試行可能
 
-    // 優先順位: Gemini > Claude > Ollama > OpenAI
-    const priorityOrder: AIProvider[] = ['gemini', 'claude', 'ollama', 'openai'];
+    // 優先順位: Gemini > OpenAI > Ollama > Claude
+    // 注意: ClaudeはCORS制限のためブラウザから直接呼び出せません
+    const priorityOrder: AIProvider[] = ['gemini', 'openai', 'ollama', 'claude'];
 
-    for (const provider of priorityOrder) {
+    // ブラウザ環境でClaudeを除外
+    const isInBrowser = typeof window !== 'undefined';
+    const finalPriorityOrder = isInBrowser
+      ? priorityOrder.filter((p) => p !== 'claude')
+      : priorityOrder;
+
+    for (const provider of finalPriorityOrder) {
       // 除外リストに含まれている場合はスキップ
       if (excludeProviders.includes(provider)) continue;
 
@@ -696,6 +703,15 @@ export class QuadrantClassificationService {
     type?: string;
     estimatedTime?: number;
   }): Promise<{ deadline: Date; reasoning: string; confidence: number }> {
+    // ブラウザ環境でClaudeの場合はフォールバック
+    const isInBrowser = typeof window !== 'undefined';
+    if (isInBrowser && this.currentProvider === 'claude') {
+      console.log(
+        '⚠️ ClaudeはCORS制限のためブラウザから使用できません。ヒューリスティック分析を使用します。'
+      );
+      return this.fallbackDeadlineSuggestion(task);
+    }
+
     const apiKey = getApiKey(this.currentProvider);
     if (!apiKey && this.currentProvider !== 'ollama') {
       // APIキーがない場合はヒューリスティックに期限を提案
@@ -1001,6 +1017,15 @@ JSON形式で回答してください:
     priority?: number | string;
     currentType?: string;
   }): Promise<{ type: string; reasoning: string; confidence: number }> {
+    // ブラウザ環境でClaudeの場合はフォールバック
+    const isInBrowser = typeof window !== 'undefined';
+    if (isInBrowser && this.currentProvider === 'claude') {
+      console.log(
+        '⚠️ ClaudeはCORS制限のためブラウザから使用できません。ヒューリスティック分析を使用します。'
+      );
+      return this.fallbackTypeSuggestion(task);
+    }
+
     const apiKey = getApiKey(this.currentProvider);
     if (!apiKey && this.currentProvider !== 'ollama') {
       // APIキーがない場合はヒューリスティックにタイプを提案
@@ -1399,6 +1424,15 @@ JSON形式で回答してください:
       classificationCache.set(cacheKey, cachedResult);
       console.log(`📌 キャッシュヒット（旧形式）: タスク「${task.title}」の分析結果を再利用`);
       return cachedResult;
+    }
+
+    // ブラウザ環境でClaudeの場合はフォールバック
+    const isInBrowser = typeof window !== 'undefined';
+    if (isInBrowser && this.currentProvider === 'claude') {
+      console.log(
+        '⚠️ ClaudeはCORS制限のためブラウザから使用できません。ヒューリスティック分析を使用します。'
+      );
+      return this.fallbackClassification(task);
     }
 
     const apiKey = getApiKey(this.currentProvider);
