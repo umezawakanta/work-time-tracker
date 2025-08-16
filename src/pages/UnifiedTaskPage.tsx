@@ -43,9 +43,11 @@ import { ADHDTaskManager } from '@/components/cognitive/ADHDTaskManager';
 import { GameLoopTaskDashboard } from '@/components/productivity/GameLoopTaskDashboard';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
 import EisenhowerMatrix from '@/components/quadrant/EisenhowerMatrix';
+import { usePremiumFeatures } from '@/components/dailyToDoReminder/controls/usePremiumFeatures';
 
 const UnifiedTaskPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isPremium } = usePremiumFeatures(); // Premium状態を取得
 
   // URLパラメータからタブを取得
   const searchParams = new URLSearchParams(window.location.search);
@@ -59,7 +61,7 @@ const UnifiedTaskPage: React.FC = () => {
   });
 
   const todos = useSelector((state: RootState) => state.todo.items);
-  const hasActiveSubscription = useSelector((state: RootState) => state.user.hasActiveSubscription);
+  const hasActiveSubscription = isPremium; // isPremiumを使用
 
   // タスク統計の計算
   const taskStats = React.useMemo(() => {
