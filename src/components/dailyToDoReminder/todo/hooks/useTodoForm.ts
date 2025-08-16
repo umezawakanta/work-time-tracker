@@ -57,50 +57,6 @@ export const useTodoForm = (onClose: () => void) => {
   const [deadlineSuggestTimer, setDeadlineSuggestTimer] = useState<NodeJS.Timeout | null>(null);
   const [typeSuggestTimer, setTypeSuggestTimer] = useState<NodeJS.Timeout | null>(null);
 
-  const handleInputChange = useCallback(
-    <K extends keyof FormData>(field: K, value: FormData[K]): void => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
-
-      // タイトル入力時に自動提案を実行
-      if (field === 'text' && typeof value === 'string') {
-        // 期限の自動提案
-        if (autoSuggestDeadline && !formData.deadline && value.length > 10) {
-          // 既存のタイマーをクリア
-          if (deadlineSuggestTimer) {
-            clearTimeout(deadlineSuggestTimer);
-          }
-          // 1.5秒後に期限を提案
-          const timer = setTimeout(() => {
-            handleSuggestDeadline();
-          }, 1500);
-          setDeadlineSuggestTimer(timer);
-        }
-
-        // タイプの自動提案
-        if (autoSuggestType && value.length > 5) {
-          // 既存のタイマーをクリア
-          if (typeSuggestTimer) {
-            clearTimeout(typeSuggestTimer);
-          }
-          // 1秒後にタイプを提案
-          const timer = setTimeout(() => {
-            handleSuggestType();
-          }, 1000);
-          setTypeSuggestTimer(timer);
-        }
-      }
-    },
-    [
-      formData.deadline,
-      autoSuggestDeadline,
-      autoSuggestType,
-      deadlineSuggestTimer,
-      typeSuggestTimer,
-      handleSuggestDeadline,
-      handleSuggestType,
-    ]
-  );
-
   const handleAIAnalysis = useCallback(async (): Promise<void> => {
     if (!formData.text.trim()) {
       toast.error('タスク名を入力してください');
@@ -116,7 +72,7 @@ export const useTodoForm = (onClose: () => void) => {
         // タイプの分析結果を反映
         if (analysisResult.typeAnalysis) {
           const type = analysisResult.typeAnalysis.type.toLowerCase() as TodoType;
-          handleInputChange('type', type);
+          setFormData((prev) => ({ ...prev, type }));
         }
 
         // 優先度の分析結果を反映
@@ -133,10 +89,10 @@ export const useTodoForm = (onClose: () => void) => {
           else if (averageScore >= 3) priority = 2;
           else priority = 1;
 
-          handleInputChange('priority', priority);
+          setFormData((prev) => ({ ...prev, priority }));
 
           if (isPrioritized) {
-            handleInputChange('isPrioritized', true);
+            setFormData((prev) => ({ ...prev, isPrioritized: true }));
           }
         }
 
@@ -147,22 +103,22 @@ export const useTodoForm = (onClose: () => void) => {
 
           // 説明を設定
           if (description && description !== formData.text) {
-            handleInputChange('description', description);
+            setFormData((prev) => ({ ...prev, description }));
           }
 
           // カテゴリを設定
           if (category && category !== 'その他') {
-            handleInputChange('category', category);
+            setFormData((prev) => ({ ...prev, category }));
           }
 
           // タグを設定
           if (tags && tags.length > 0) {
-            handleInputChange('tags', tags);
+            setFormData((prev) => ({ ...prev, tags }));
           }
 
           // 推定所要時間を設定
           if (estimatedDuration && estimatedDuration !== 60) {
-            handleInputChange('estimatedDuration', estimatedDuration);
+            setFormData((prev) => ({ ...prev, estimatedDuration }));
           }
 
           // 期限を設定
@@ -170,7 +126,7 @@ export const useTodoForm = (onClose: () => void) => {
             // ISO日付形式をHTMLのdatetime-local形式に変換
             const deadlineDate = new Date(deadline);
             const localDatetime = deadlineDate.toISOString().slice(0, 16);
-            handleInputChange('deadline', localDatetime);
+            setFormData((prev) => ({ ...prev, deadline: localDatetime }));
           }
 
           // 分析の確信度が高い場合はメッセージを表示
@@ -187,7 +143,7 @@ export const useTodoForm = (onClose: () => void) => {
     } finally {
       setIsAnalyzing(false);
     }
-  }, [formData.text, handleInputChange]);
+  }, [formData.text]);
 
   const handleSuggestDeadline = useCallback(async (): Promise<void> => {
     if (!formData.text.trim()) {
@@ -208,7 +164,7 @@ export const useTodoForm = (onClose: () => void) => {
       if (suggestion) {
         // 日付をdatetime-local形式に変換
         const localDatetime = suggestion.deadline.toISOString().slice(0, 16);
-        handleInputChange('deadline', localDatetime);
+        setFormData((prev) => ({ ...prev, deadline: localDatetime }));
 
         // 確信度に応じたメッセージ
         if (suggestion.confidence > 0.7) {
@@ -223,7 +179,7 @@ export const useTodoForm = (onClose: () => void) => {
     } finally {
       setIsSuggestingDeadline(false);
     }
-  }, [formData, handleInputChange, classificationService]);
+  }, [formData, classificationService]);
 
   const handleSuggestType = useCallback(async (): Promise<void> => {
     if (!formData.text.trim()) {
@@ -241,7 +197,7 @@ export const useTodoForm = (onClose: () => void) => {
       });
 
       if (suggestion) {
-        handleInputChange('type', suggestion.type as TodoType);
+        setFormData((prev) => ({ ...prev, type: suggestion.type as TodoType }));
 
         // 確信度に応じたメッセージ
         if (suggestion.confidence > 0.7) {
@@ -262,7 +218,7 @@ export const useTodoForm = (onClose: () => void) => {
     } finally {
       setIsSuggestingType(false);
     }
-  }, [formData, handleInputChange, classificationService]);
+  }, [formData, classificationService]);
 
   const validateForm = useCallback((): boolean => {
     if (!formData.text.trim()) {
@@ -400,6 +356,51 @@ export const useTodoForm = (onClose: () => void) => {
     localStorage.setItem('autoSuggestType', String(newValue));
     toast.info(newValue ? '自動タイプ提案を有効にしました' : '自動タイプ提案を無効にしました');
   }, [autoSuggestType]);
+
+  // 適切な位置で handleInputChange を定義（他の関数がすべて定義された後）
+  const handleInputChange = useCallback(
+    <K extends keyof FormData>(field: K, value: FormData[K]): void => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+
+      // タイトル入力時に自動提案を実行
+      if (field === 'text' && typeof value === 'string') {
+        // 期限の自動提案
+        if (autoSuggestDeadline && !formData.deadline && value.length > 10) {
+          // 既存のタイマーをクリア
+          if (deadlineSuggestTimer) {
+            clearTimeout(deadlineSuggestTimer);
+          }
+          // 1.5秒後に期限を提案
+          const timer = setTimeout(() => {
+            handleSuggestDeadline();
+          }, 1500);
+          setDeadlineSuggestTimer(timer);
+        }
+
+        // タイプの自動提案
+        if (autoSuggestType && value.length > 5) {
+          // 既存のタイマーをクリア
+          if (typeSuggestTimer) {
+            clearTimeout(typeSuggestTimer);
+          }
+          // 1秒後にタイプを提案
+          const timer = setTimeout(() => {
+            handleSuggestType();
+          }, 1000);
+          setTypeSuggestTimer(timer);
+        }
+      }
+    },
+    [
+      formData.deadline,
+      autoSuggestDeadline,
+      autoSuggestType,
+      deadlineSuggestTimer,
+      typeSuggestTimer,
+      handleSuggestDeadline,
+      handleSuggestType,
+    ]
+  );
 
   return {
     formData,
