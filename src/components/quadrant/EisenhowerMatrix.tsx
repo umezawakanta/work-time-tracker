@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   BarChart,
   Bar,
@@ -45,6 +46,7 @@ import {
   Loader2,
   Activity,
   BarChart3,
+  Zap,
 } from 'lucide-react';
 import QuadrantClassificationService, {
   QuadrantType,
@@ -298,6 +300,11 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     low: true,
   });
   const [enablePriorityFilter, setEnablePriorityFilter] = useState(false);
+  const [autoFallback, setAutoFallback] = useState(true);
+  const [providerStatus, setProviderStatus] = useState<{
+    isInFallback: boolean;
+    original: AIProvider | null;
+  }>({ isInFallback: false, original: null });
 
   // プロバイダー一覧を取得
   useEffect(() => {
@@ -306,6 +313,27 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       setAvailableProviders(providers);
     };
     loadProviders();
+  }, [classificationService]);
+
+  // 自動フォールバックの設定を同期
+  useEffect(() => {
+    classificationService.setAutoFallback(autoFallback);
+  }, [autoFallback, classificationService]);
+
+  // プロバイダー状態を定期的に更新
+  useEffect(() => {
+    const updateProviderStatus = () => {
+      const status = classificationService.getProviderStatus();
+      setProviderStatus({
+        isInFallback: status.isInFallback,
+        original: status.original,
+      });
+    };
+
+    updateProviderStatus();
+    const interval = setInterval(updateProviderStatus, 5000); // 5秒ごとに更新
+
+    return () => clearInterval(interval);
   }, [classificationService]);
 
   // タスクを統一形式に変換（完了済みタスクは除外、優先度フィルター適用）
@@ -699,6 +727,25 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
+
+              {/* 自動フォールバック設定 */}
+              <div className="flex items-center space-x-2 border-l pl-3">
+                <Zap className={`w-4 h-4 ${autoFallback ? 'text-yellow-500' : 'text-gray-400'}`} />
+                <label htmlFor="auto-fallback" className="text-sm font-medium cursor-pointer">
+                  自動切替
+                </label>
+                <Switch
+                  id="auto-fallback"
+                  checked={autoFallback}
+                  onCheckedChange={setAutoFallback}
+                  title="レート制限時に自動でプロバイダーを切り替え"
+                />
+                {providerStatus.isInFallback && (
+                  <Badge variant="secondary" className="text-xs">
+                    フォールバック中
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>

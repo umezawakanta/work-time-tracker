@@ -434,6 +434,10 @@ export class QuadrantClassificationService {
   private requestQueue: Array<() => Promise<any>> = [];
   private isProcessingQueue = false;
   private currentProvider: AIProvider = 'gemini';
+  private originalProvider: AIProvider | null = null; // フォールバック前のプロバイダー
+  private providerFailureCount: Map<AIProvider, number> = new Map();
+  private providerLastFailureTime: Map<AIProvider, number> = new Map();
+  private autoFallbackEnabled = true;
 
   public static getInstance(): QuadrantClassificationService {
     if (!QuadrantClassificationService.instance) {
@@ -501,6 +505,185 @@ export class QuadrantClassificationService {
     localStorage.removeItem(CACHE_STORAGE_KEY);
     localStorage.removeItem(ANALYZED_TASKS_KEY);
     console.log('✅ 分類キャッシュと永続化データをクリアしました');
+  }
+
+  /**
+   * 自動フォールバックの有効/無効を設定
+   */
+  public setAutoFallback(enabled: boolean): void {
+    this.autoFallbackEnabled = enabled;
+    console.log(`🔄 自動フォールバック: ${enabled ? '有効' : '無効'}`);
+  }
+
+  /**
+   * 次の利用可能なプロバイダーを取得
+   */
+  private async getNextAvailableProvider(
+    excludeProviders: AIProvider[] = []
+  ): Promise<AIProvider | null> {
+    const providers = await this.getAvailableProviders();
+    const now = Date.now();
+    const RECOVERY_TIME = 60000; // 1分後に再試行可能
+
+    // 優先順位: Gemini > Claude > Ollama > OpenAI
+    const priorityOrder: AIProvider[] = ['gemini', 'claude', 'ollama', 'openai'];
+
+    for (const provider of priorityOrder) {
+      // 除外リストに含まれている場合はスキップ
+      if (excludeProviders.includes(provider)) continue;
+
+      // 現在のプロバイダーはスキップ
+      if (provider === this.currentProvider) continue;
+
+      // 利用可能性をチェック
+      const providerInfo = providers.find((p) => p.provider === provider);
+      if (!providerInfo || !providerInfo.available) continue;
+
+      // 最近失敗したプロバイダーは一定時間スキップ
+      const lastFailure = this.providerLastFailureTime.get(provider) || 0;
+      if (now - lastFailure < RECOVERY_TIME) continue;
+
+      return provider;
+    }
+
+    return null;
+  }
+
+  /**
+   * プロバイダーの自動切り替え
+   */
+  private async fallbackToNextProvider(): Promise<boolean> {
+    if (!this.autoFallbackEnabled) {
+      console.log('⚠️ 自動フォールバックが無効です');
+      return false;
+    }
+
+    const failedProvider = this.currentProvider;
+    const nextProvider = await this.getNextAvailableProvider([failedProvider]);
+
+    if (!nextProvider) {
+      console.error('❌ 利用可能な代替プロバイダーがありません');
+      return false;
+    }
+
+    // 元のプロバイダーを記憶（初回のみ）
+    if (!this.originalProvider) {
+      this.originalProvider = failedProvider;
+    }
+
+    // プロバイダーを切り替え
+    this.currentProvider = nextProvider;
+
+    console.log(`🔄 自動切り替え: ${failedProvider} → ${nextProvider}`);
+
+    // UIに通知（動的インポートでtoastを使用）
+    if (typeof window !== 'undefined') {
+      import('sonner')
+        .then(({ toast }) => {
+          toast.warning(
+            `レート制限のため ${this.getProviderDisplayName(failedProvider)} から ${this.getProviderDisplayName(nextProvider)} に自動切り替えしました`,
+            { duration: 5000 }
+          );
+        })
+        .catch(() => {
+          // toast が利用できない場合は console.log のみ
+          console.log(`⚠️ UI通知: ${failedProvider} → ${nextProvider} に自動切り替え`);
+        });
+    }
+
+    return true;
+  }
+
+  /**
+   * プロバイダーの表示名を取得
+   */
+  private getProviderDisplayName(provider: AIProvider): string {
+    switch (provider) {
+      case 'gemini':
+        return 'Gemini';
+      case 'claude':
+        return 'Claude';
+      case 'openai':
+        return 'GPT-4';
+      case 'ollama':
+        return 'Ollama';
+      default:
+        return provider;
+    }
+  }
+
+  /**
+   * 元のプロバイダーに戻す
+   */
+  public async restoreOriginalProvider(): Promise<boolean> {
+    if (!this.originalProvider) {
+      console.log('ℹ️ 元のプロバイダーが記録されていません');
+      return false;
+    }
+
+    const current = this.currentProvider;
+    const original = this.originalProvider;
+
+    // 元のプロバイダーが利用可能かチェック
+    const providers = await this.getAvailableProviders();
+    const originalProviderInfo = providers.find((p) => p.provider === original);
+
+    if (!originalProviderInfo || !originalProviderInfo.available) {
+      console.log(`⚠️ 元のプロバイダー ${original} はまだ利用できません`);
+      return false;
+    }
+
+    // 最近失敗していないかチェック（5分経過後に復旧とみなす）
+    const lastFailure = this.providerLastFailureTime.get(original) || 0;
+    const now = Date.now();
+    const RECOVERY_TIME = 300000; // 5分
+
+    if (now - lastFailure < RECOVERY_TIME) {
+      console.log(
+        `⏳ 元のプロバイダー ${original} は回復待機中です（残り ${Math.ceil((RECOVERY_TIME - (now - lastFailure)) / 1000)}秒）`
+      );
+      return false;
+    }
+
+    // プロバイダーを元に戻す
+    this.currentProvider = original;
+    this.originalProvider = null;
+    this.providerFailureCount.set(original, 0);
+
+    console.log(`✅ プロバイダーを元に戻しました: ${current} → ${original}`);
+
+    // UIに通知
+    if (typeof window !== 'undefined') {
+      import('sonner')
+        .then(({ toast }) => {
+          toast.success(
+            `${this.getProviderDisplayName(original)} が復旧したため、元のプロバイダーに戻しました`,
+            { duration: 5000 }
+          );
+        })
+        .catch(() => {
+          console.log(`✅ UI通知: ${original} に復旧`);
+        });
+    }
+
+    return true;
+  }
+
+  /**
+   * 現在のプロバイダー状態を取得
+   */
+  public getProviderStatus(): {
+    current: AIProvider;
+    original: AIProvider | null;
+    isInFallback: boolean;
+    failureCounts: Map<AIProvider, number>;
+  } {
+    return {
+      current: this.currentProvider,
+      original: this.originalProvider,
+      isInFallback: this.originalProvider !== null,
+      failureCounts: new Map(this.providerFailureCount),
+    };
   }
 
   /**
@@ -718,12 +901,36 @@ export class QuadrantClassificationService {
         classificationCache.set(cacheKey, result);
         cleanupCache();
 
+        // 成功したら失敗カウントをリセット
+        if (this.providerFailureCount.get(this.currentProvider)) {
+          this.providerFailureCount.set(this.currentProvider, 0);
+          console.log(`✅ ${this.currentProvider} のレート制限カウントをリセット`);
+        }
+
         return result;
       } catch (error: any) {
         lastError = error;
 
         // 429エラーの場合
         if (error.response?.status === 429) {
+          // 失敗回数を記録
+          const failureCount = (this.providerFailureCount.get(this.currentProvider) || 0) + 1;
+          this.providerFailureCount.set(this.currentProvider, failureCount);
+          this.providerLastFailureTime.set(this.currentProvider, Date.now());
+
+          // 3回連続で失敗したら自動切り替え
+          if (failureCount >= 3 && this.autoFallbackEnabled) {
+            console.log(`⚠️ ${this.currentProvider} で連続3回レート制限に達しました`);
+            const switched = await this.fallbackToNextProvider();
+
+            if (switched) {
+              // 新しいプロバイダーで再試行
+              console.log(`🔄 新しいプロバイダーで再試行します`);
+              this.providerFailureCount.set(this.currentProvider, 0); // 新プロバイダーのカウントをリセット
+              continue; // 新しいプロバイダーで最初から試行
+            }
+          }
+
           retryCount++;
           if (retryCount <= config.maxRetries) {
             const delay = config.retryDelay * Math.pow(2, retryCount - 1); // 指数バックオフ
