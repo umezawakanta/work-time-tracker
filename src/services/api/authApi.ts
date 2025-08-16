@@ -165,21 +165,15 @@ export const logout = async (): Promise<void> => {
   // TokenManagerを使用してクリーンアップ
   tokenManager.clearTokens();
 
-  // API経由でセッション情報を削除
-  try {
-    await api.delete('/user/session');
-    // 必要に応じて他の情報も削除
-    // await api.delete('/user/activity');
-    // await api.delete('/user/profile-cache');
-  } catch (error) {
-    console.error('Failed to clear session info from DB:', error);
-    // 必要ならユーザーに通知
-  }
+  // 注意: バックエンドにログアウトエンドポイントが実装されていないため、
+  // クライアントサイドでのトークン削除のみ行います。
+  // 将来的にバックエンドでセッション管理が必要になった場合は、
+  // ここにAPI呼び出しを追加してください。
 
   // 開発環境での自動認証を無効化するフラグを設定
   sessionStorage.setItem('user-logged-out', 'true');
 
-  console.log('🚪 Logout completed - auto auth disabled');
+  console.log('🚪 Logout completed - tokens cleared');
 };
 
 export const checkAuth = async (): Promise<boolean> => {
