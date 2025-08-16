@@ -800,6 +800,26 @@ jest.mock('@radix-ui/react-dropdown-menu', () => {
 });
 
 // ========================================
+// Firebase Auth Provider Mock Fix
+// ========================================
+// Ensure GoogleAuthProvider is a constructible mock in any test file
+jest.mock('firebase/auth', () => {
+  return {
+    __esModule: true,
+    createUserWithEmailAndPassword: jest.fn(),
+    signInWithEmailAndPassword: jest.fn(),
+    signOut: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
+    updateProfile: jest.fn(),
+    signInWithPopup: jest.fn(),
+    onAuthStateChanged: jest.fn().mockImplementation(() => jest.fn()),
+    GoogleAuthProvider: jest.fn().mockImplementation(() => ({
+      setCustomParameters: jest.fn(),
+    })),
+  };
+});
+
+// ========================================
 // Radix UI Specific Mocks and Setup
 // ========================================
 
@@ -1034,6 +1054,18 @@ const mockCSSProperties = () => {
 };
 
 mockCSSProperties();
+
+// ========================================
+// Polyfills
+// ========================================
+// AbortSignal.timeout polyfill for Node environments lacking it
+if (typeof (AbortSignal as any).timeout !== 'function') {
+  (AbortSignal as any).timeout = function timeout(ms: number) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), ms);
+    return controller.signal;
+  };
+}
 
 // TokenManager is now mocked via Jest's moduleNameMapper and the manual mock file
 // in src/__mocks__/TokenManager.js - no need for global mocking here
