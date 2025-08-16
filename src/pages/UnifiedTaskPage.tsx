@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { selectTodos } from '@/store/todoSlice';
 import {
   CheckSquare,
   Calendar,
@@ -41,10 +42,16 @@ import { TodoAnalytics } from '@/components/analytics/TodoAnalytics';
 import { ADHDTaskManager } from '@/components/cognitive/ADHDTaskManager';
 import { GameLoopTaskDashboard } from '@/components/productivity/GameLoopTaskDashboard';
 import { gameLoopTaskService, GameLoopStats } from '@/services/productivity/GameLoopTaskService';
+import EisenhowerMatrix from '@/components/quadrant/EisenhowerMatrix';
 
 const UnifiedTaskPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('daily');
+
+  // URLパラメータからタブを取得
+  const searchParams = new URLSearchParams(window.location.search);
+  const tabParam = searchParams.get('tab');
+
+  const [activeTab, setActiveTab] = useState(tabParam || 'daily');
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [gameLoopStats, setGameLoopStats] = useState<GameLoopStats | null>(null);
   const [autoSortEnabled, setAutoSortEnabled] = useState(() => {
@@ -89,7 +96,7 @@ const UnifiedTaskPage: React.FC = () => {
   return (
     <PageLayout
       title="タスク管理センター"
-      subtitle="すべてのタスク管理機能を一箇所に集約"
+      subtitle="デイリータスク、4象限マトリックス、AI管理、分析など全機能を統合"
       badge={{
         text: hasActiveSubscription ? 'プレミアム' : 'スタンダード',
         variant: hasActiveSubscription ? 'default' : 'secondary',
@@ -203,10 +210,14 @@ const UnifiedTaskPage: React.FC = () => {
 
         {/* メインタブコンテンツ */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 gap-2">
+          <TabsList className="grid w-full grid-cols-5 md:grid-cols-9 gap-2">
             <TabsTrigger value="daily" className="flex items-center gap-2">
               <CheckSquare className="h-4 w-4" />
               <span className="hidden md:inline">デイリー</span>
+            </TabsTrigger>
+            <TabsTrigger value="quadrant" className="flex items-center gap-2">
+              <Target className="h-4 w-4" />
+              <span className="hidden md:inline">4象限</span>
             </TabsTrigger>
             <TabsTrigger value="ai" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
@@ -249,6 +260,30 @@ const UnifiedTaskPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <DailyTodoReminder isPremium={hasActiveSubscription} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* 4象限マトリックス */}
+          <TabsContent value="quadrant" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-orange-500" />
+                  4象限マトリックス（アイゼンハワーマトリックス）
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EisenhowerMatrix
+                  tasks={todos}
+                  showAnalytics={true}
+                  autoRefresh={true}
+                  refreshInterval={5}
+                  onTaskClick={(task) => {
+                    console.log('Task clicked:', task);
+                    toast.success(`タスク「${task.title || task.text}」を選択しました`);
+                  }}
+                />
               </CardContent>
             </Card>
           </TabsContent>

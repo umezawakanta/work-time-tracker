@@ -142,7 +142,7 @@ const BlogPostDetail = lazy(() => import('./pages/BlogPostDetail'));
 // 🔧 System & Analysis
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const QualityDashboardPage = lazy(() => import('./pages/QualityDashboardPage'));
-const QuadrantDashboard = lazy(() => import('./pages/QuadrantDashboard'));
+// QuadrantDashboard は統合タスクページに統合済み
 const SitemapPage = lazy(() => import('./pages/SitemapPage'));
 const SiteImprovementPlan = lazy(() => import('./pages/SiteImprovementPlan'));
 const CoverageReportPage = lazy(() => import('./pages/CoverageReportPage'));
@@ -721,15 +721,10 @@ const App: React.FC = () => {
                                 </LayoutWrapper>
                               }
                             />
+                            {/* 4象限マトリックスは統合タスクページにリダイレクト */}
                             <Route
                               path="/quadrant-dashboard"
-                              element={
-                                <LayoutWrapper>
-                                  <LazyWrapper>
-                                    <QuadrantDashboard />
-                                  </LazyWrapper>
-                                </LayoutWrapper>
-                              }
+                              element={<Navigate to="/tasks?tab=quadrant" replace />}
                             />
                             <Route
                               path="/advanced-performance-monitoring"

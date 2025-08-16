@@ -341,9 +341,9 @@ const systemMenuItems: MenuItem[] = [
   {
     icon: <Target className="h-5 w-5" />,
     label: '🎯 4象限マトリックス',
-    path: '/quadrant-dashboard',
-    description: 'AI駆動タスク分類・生産性分析（アイゼンハワーマトリックス）',
-    badge: 'NEW!',
+    path: '/tasks?tab=quadrant',
+    description: 'AI駆動タスク分類・生産性分析（統合タスク管理センター内）',
+    badge: '統合',
     gradient: 'from-red-500 via-pink-500 to-rose-500',
     accentColor: 'red',
   },
