@@ -11,18 +11,60 @@ import { ENV } from '@/utils/env';
 
 // 環境変数取得（修正版）
 const getGeminiApiKey = (): string => {
-  const apiKey = ENV.GEMINI_API_KEY();
+  // 複数の方法で環境変数を取得を試みる
+  let apiKey = '';
 
-  // デバッグ情報を出力（開発環境のみ）
-  if (ENV.isDev()) {
-    console.log('🔍 Gemini API Key Debug:');
-    console.log('  - VITE_GEMINI_API_KEY:', apiKey ? '設定済み ✅' : '未設定 ❌');
+  // 方法1: ENVヘルパーを使用
+  apiKey = ENV.GEMINI_API_KEY() || '';
+
+  // 方法2: import.meta.envから直接取得
+  if (!apiKey) {
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
+        apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+      }
+    } catch (e) {
+      // 無視
+    }
   }
 
-  return apiKey || '';
+  // 方法3: windowオブジェクトから取得（フォールバック）
+  if (!apiKey && typeof window !== 'undefined') {
+    try {
+      apiKey = (window as any)?.import?.meta?.env?.VITE_GEMINI_API_KEY || '';
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  // 方法4: ユーザー提供のAPIキーを使用（一時的な解決策）
+  // 注意: 本番環境では環境変数を使用してください
+  if (!apiKey) {
+    // ユーザーが提供したAPIキーを使用
+    apiKey = 'AIzaSyDSapnVkg5I6U2JDjOme9cG4dkdfrxENh8';
+    if (ENV.isDev()) {
+      console.log('⚠️ ハードコーディングされたAPIキーを使用しています');
+      console.log('💡 推奨: .envファイルを作成して環境変数を設定してください');
+    }
+  }
+
+  // デバッグ情報を出力（開発環境のみ）
+  if (ENV.isDev() && apiKey) {
+    console.log('✅ Gemini API Key: 設定済み');
+    console.log('  - APIキー長さ:', apiKey.length, '文字');
+  }
+
+  return apiKey;
 };
 
-const API_KEY = getGeminiApiKey();
+// API_KEYを遅延評価に変更
+let _apiKey: string | null = null;
+const getApiKey = (): string => {
+  if (_apiKey === null) {
+    _apiKey = getGeminiApiKey();
+  }
+  return _apiKey;
+};
 
 // 4象限の定義
 export type QuadrantType = 'essential' | 'effectiveness' | 'illusion' | 'waste';
@@ -159,16 +201,11 @@ export class QuadrantClassificationService {
    */
   public async classifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
     try {
-      if (!API_KEY) {
+      const apiKey = getApiKey();
+      if (!apiKey) {
         if (ENV.isDev()) {
           console.warn(
             '🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。'
-          );
-          console.log('💡 解決方法:');
-          console.log('  1. .env.local ファイルに VITE_GEMINI_API_KEY=your_api_key を追加');
-          console.log('  2. 開発サーバーを再起動 (pnpm dev)');
-          console.log(
-            '  3. Google AI Studio (https://makersuite.google.com/app/apikey) でキーを取得'
           );
         }
         return this.fallbackClassification(task);
@@ -177,7 +214,7 @@ export class QuadrantClassificationService {
       const prompt = this.createClassificationPrompt(task);
 
       const response = await axios.post(
-        `${GEMINI_API_URL}?key=${API_KEY}`,
+        `${GEMINI_API_URL}?key=${apiKey}`,
         {
           contents: [
             {
