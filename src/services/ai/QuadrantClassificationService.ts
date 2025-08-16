@@ -239,6 +239,13 @@ export interface TaskQuadrantClassification {
   recommendations: string[];
   timeAllocation?: number; // 推奨時間配分（%）
   priority: number; // 1-100スケール
+  importanceScore?: number; // 追加: 旧プロパティの互換性維持
+  urgencyScore?: number; // 追加: 旧プロパティの互換性維持
+  votingDetails?: {
+    quadrantVotes: Record<string, number>;
+    providersUsed: string[];
+    consensusLevel: number;
+  };
 }
 
 // タスク統合データ（様々なタスク形式に対応）
@@ -356,12 +363,12 @@ const RATE_LIMIT = {
     initialDelay: 1000,
   },
   openai: {
-    requestsPerMinute: 3, // OpenAIはより厳しい制限
-    retryDelay: 5000, // 長めのリトライ遅延
-    maxRetries: 5, // より多くのリトライ
+    requestsPerMinute: 2, // OpenAIはさらに厳しい制限
+    retryDelay: 15000, // 15秒のリトライ遅延
+    maxRetries: 2, // リトライ回数を減らす（401エラーの場合は無駄）
     batchSize: 1,
-    maxTasksPerAnalysis: 5, // 少なめのタスク数
-    initialDelay: 2000, // 長めの初期遅延
+    maxTasksPerAnalysis: 3, // 最小限のタスク数
+    initialDelay: 3000, // 3秒の初期遅延
   },
   ollama: {
     requestsPerMinute: 60, // ローカル実行なので制限緩め
@@ -495,6 +502,38 @@ export class QuadrantClassificationService {
         name: 'ローカルLLM (Ollama)',
       },
     ];
+  }
+
+  /**
+   * 次に利用可能なAIプロバイダーを取得
+   */
+  public getNextAvailableProvider(): AIProvider | null {
+    // ブラウザ環境でのClaude制限を考慮
+    const isInBrowser = typeof window !== 'undefined';
+
+    // 優先順位リスト（現在のプロバイダーを除外）
+    const priorityOrder: AIProvider[] = ['gemini', 'openai', 'ollama'];
+    if (!isInBrowser) {
+      priorityOrder.push('claude');
+    }
+
+    // 現在のプロバイダーを除外
+    const availableProviders = priorityOrder.filter((p) => p !== this.currentProvider);
+
+    // 利用可能なプロバイダーを探す
+    for (const provider of availableProviders) {
+      const apiKey = getApiKey(provider);
+      if (apiKey) {
+        return provider;
+      }
+
+      // Ollamaの場合は特別処理（APIキー不要）
+      if (provider === 'ollama') {
+        return 'ollama';
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -2002,6 +2041,21 @@ JSON形式で回答してください:
           }
         }
 
+        // 401エラー（認証エラー）の場合はリトライしない
+        if (error.response?.status === 401) {
+          console.error(
+            `❌ ${this.currentProvider.toUpperCase()} API認証エラー: APIキーが無効です`
+          );
+          // 自動的に別のプロバイダーに切り替え
+          const nextProvider = this.getNextAvailableProvider();
+          if (nextProvider && nextProvider !== this.currentProvider) {
+            console.log(`🔄 ${nextProvider.toUpperCase()}に自動切り替えします`);
+            this.currentProvider = nextProvider;
+            return await this.classifyTask(task);
+          }
+          break;
+        }
+
         // その他のエラーまたはリトライ上限に達した場合
         break;
       }
@@ -2011,6 +2065,18 @@ JSON形式で回答してください:
     if (lastError?.response?.status === 429) {
       console.warn(`⚠️ ${this.currentProvider.toUpperCase()} APIのレート制限に達しました`);
       console.log('💡 ヒューリスティック分析で代替します（十分な精度があります）');
+
+      // レート制限の場合も自動で別プロバイダーに切り替え
+      const nextProvider = this.getNextAvailableProvider();
+      if (nextProvider && nextProvider !== this.currentProvider) {
+        console.log(`🔄 レート制限のため${nextProvider.toUpperCase()}に切り替えます`);
+        this.currentProvider = nextProvider;
+        // 少し待ってから再試行
+        await sleep(2000);
+        return await this.classifyTask(task);
+      }
+    } else if (lastError?.response?.status === 401) {
+      console.error(`❌ ${this.currentProvider.toUpperCase()} API認証エラー`);
     } else {
       console.error(
         `${this.currentProvider.toUpperCase()} API分類エラー:`,
@@ -2027,10 +2093,165 @@ JSON形式で回答してください:
   }
 
   /**
+   * ハイブリッドAI分析（複数AI統合）
+   * 複数のAIプロバイダーから結果を取得し、最適な分類を決定
+   */
+  public async hybridClassifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    console.log(`🤖 ハイブリッドAI分析開始: "${task.title}"`);
+
+    // 利用可能なプロバイダーを取得
+    const availableProviders = this.getAvailableProviders();
+    const results: Map<AIProvider, TaskQuadrantClassification> = new Map();
+    const errors: Map<AIProvider, string> = new Map();
+
+    // 並列でAI分析を実行
+    const promises = availableProviders.map(async (provider) => {
+      try {
+        const originalProvider = this.currentProvider;
+        this.currentProvider = provider;
+
+        console.log(`  ⚡ ${provider.toUpperCase()}で分析中...`);
+        const result = await this.classifyTaskWithProvider(task, provider);
+        results.set(provider, result);
+
+        this.currentProvider = originalProvider;
+      } catch (error: any) {
+        console.warn(`  ⚠️ ${provider.toUpperCase()}分析失敗:`, error.message);
+        errors.set(provider, error.message);
+      }
+    });
+
+    await Promise.allSettled(promises);
+
+    // 結果がない場合はフォールバック
+    if (results.size === 0) {
+      console.log('  ❌ すべてのAIプロバイダーで失敗。ヒューリスティック分析を使用');
+      return this.fallbackClassification(task);
+    }
+
+    // 投票システムによる最終決定
+    const finalResult = this.aggregateClassifications(task, results);
+
+    console.log(`  ✅ ハイブリッド分析完了 - 最終判定: ${finalResult.quadrant}`);
+    console.log(`  📊 使用AI: ${Array.from(results.keys()).join(', ')}`);
+
+    return finalResult;
+  }
+
+  /**
+   * 複数のAI結果を統合して最適な分類を決定
+   */
+  private aggregateClassifications(
+    task: UnifiedTaskData,
+    results: Map<AIProvider, TaskQuadrantClassification>
+  ): TaskQuadrantClassification {
+    // 象限の投票
+    const quadrantVotes = new Map<QuadrantType, number>();
+    const importanceScores: number[] = [];
+    const urgencyScores: number[] = [];
+    const confidenceScores: number[] = [];
+    const reasons: string[] = [];
+    const allRecommendations: string[] = [];
+    const priorities: number[] = [];
+
+    results.forEach((result, provider) => {
+      // 象限に投票
+      const currentVotes = quadrantVotes.get(result.quadrant) || 0;
+      quadrantVotes.set(result.quadrant, currentVotes + 1);
+
+      // スコアを収集（importance/urgencyまたはimportanceScore/urgencyScoreに対応）
+      importanceScores.push(result.importance || result.importanceScore || 5);
+      urgencyScores.push(result.urgency || result.urgencyScore || 5);
+      confidenceScores.push(result.confidence || 0.75);
+      priorities.push(result.priority || 50);
+
+      if (result.reasoning) {
+        reasons.push(`[${provider.toUpperCase()}] ${result.reasoning}`);
+      }
+
+      if (result.recommendations) {
+        allRecommendations.push(...result.recommendations);
+      }
+    });
+
+    // 最も投票数が多い象限を選択
+    let finalQuadrant: QuadrantType = 'effectiveness';
+    let maxVotes = 0;
+    quadrantVotes.forEach((votes, quadrant) => {
+      if (votes > maxVotes) {
+        maxVotes = votes;
+        finalQuadrant = quadrant;
+      }
+    });
+
+    // スコアの平均を計算
+    const avgImportance = importanceScores.reduce((a, b) => a + b, 0) / importanceScores.length;
+    const avgUrgency = urgencyScores.reduce((a, b) => a + b, 0) / urgencyScores.length;
+    const avgConfidence = confidenceScores.reduce((a, b) => a + b, 0) / confidenceScores.length;
+    const avgPriority = priorities.reduce((a, b) => a + b, 0) / priorities.length;
+
+    // 重複を除いた推奨事項
+    const uniqueRecommendations = Array.from(new Set(allRecommendations)).slice(0, 5);
+
+    // 統合された理由を生成
+    const aggregatedReasoning = `ハイブリッドAI分析結果（${results.size}つのAI使用）:\n${reasons.join('\n')}`;
+
+    return {
+      taskId: task.id,
+      quadrant: finalQuadrant,
+      importance: Math.round(avgImportance),
+      urgency: Math.round(avgUrgency),
+      confidence: avgConfidence,
+      reasoning: aggregatedReasoning,
+      recommendations: uniqueRecommendations,
+      priority: Math.round(avgPriority),
+      importanceScore: Math.round(avgImportance), // 互換性維持
+      urgencyScore: Math.round(avgUrgency), // 互換性維持
+      votingDetails: {
+        quadrantVotes: Object.fromEntries(quadrantVotes),
+        providersUsed: Array.from(results.keys()),
+        consensusLevel: maxVotes / results.size,
+      },
+    };
+  }
+
+  /**
+   * 特定のプロバイダーでタスクを分類
+   */
+  private async classifyTaskWithProvider(
+    task: UnifiedTaskData,
+    provider: AIProvider
+  ): Promise<TaskQuadrantClassification> {
+    const config = this.getRateLimitConfig();
+
+    switch (provider) {
+      case 'gemini':
+        return await this.classifyWithGemini(task);
+      case 'claude':
+        if (typeof window !== 'undefined') {
+          throw new Error('Claude APIはブラウザからは使用できません（CORS制限）');
+        }
+        return await this.classifyWithClaude(task);
+      case 'openai':
+        return await this.classifyWithOpenAI(task);
+      case 'ollama':
+        return await this.classifyWithOllama(task);
+      default:
+        return this.fallbackClassification(task);
+    }
+  }
+
+  /**
    * 複数タスクをバッチで分類（レート制限対応）
    */
-  public async classifyTasks(tasks: UnifiedTaskData[]): Promise<TaskQuadrantClassification[]> {
+  public async classifyTasks(
+    tasks: UnifiedTaskData[],
+    useHybrid: boolean = false
+  ): Promise<TaskQuadrantClassification[]> {
     console.log(`📊 ${tasks.length}個のタスクを分類開始...`);
+    if (useHybrid) {
+      console.log('🤖 ハイブリッドAI分析モードを使用');
+    }
 
     const config = this.getRateLimitConfig();
     const results: TaskQuadrantClassification[] = [];
@@ -2077,7 +2298,10 @@ JSON形式で回答してください:
         console.log(`🔄 新規タスク ${taskNumber}/${tasksNeedingApiCall.length} を分析中...`);
 
         try {
-          const result = await this.classifyTask(task);
+          // ハイブリッドモードまたは通常モード
+          const result = useHybrid
+            ? await this.hybridClassifyTask(task)
+            : await this.classifyTask(task);
           results.push(result);
           apiCallCount++;
         } catch (error) {

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/10</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/10</span>
+                <span class='fraction'>0/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -105,25 +105,25 @@
 <a name='L40'></a><a href='#L40'>40</a>
 <a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -145,12 +145,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+<span class="cstat-no" title="statement not covered" >import { format } from 'date-fns';</span>
+<span class="cstat-no" title="statement not covered" >import { Calendar as CalendarIcon } from 'lucide-react';</span>
+<span class="cstat-no" title="statement not covered" >import { cn } from '@/lib/utils';</span>
+<span class="cstat-no" title="statement not covered" >import { Button } from '@/components/ui/button';</span>
+<span class="cstat-no" title="statement not covered" >import { Calendar } from '@/components/ui/calendar';</span>
+<span class="cstat-no" title="statement not covered" >import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';</span>
 import { SelectSingleEventHandler } from 'react-day-picker';
 &nbsp;
 interface DatePickerProps {
@@ -158,23 +158,23 @@ interface DatePickerProps {
   setDate: (date: Date | undefined) =&gt; void;
 }
 &nbsp;
-export function DatePicker({ date, setDate }: DatePickerProps) {
-  const handleSelect: SelectSingleEventHandler = <span class="fstat-no" title="function not covered" >(s</span>elected) =&gt; {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >D</span>atePicker(</span>{ date, setDate }: DatePickerProps) {
+  const handleSelect: SelectSingleEventHandler = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>elected) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setDate(selected);</span>
   };
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;Popover&gt;
       &lt;PopoverTrigger asChild&gt;
         &lt;Button
           variant={'outline'}
           className={cn(
             'w-[240px] justify-start text-left font-normal',
-            !date &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >'text-muted-foreground'</span>
+            !date &amp;&amp; 'text-muted-foreground'
           )}
         &gt;
           &lt;CalendarIcon className="mr-2 h-4 w-4" /&gt;
-          {date ? format(date, 'PPP') : <span class="branch-1 cbranch-no" title="branch not covered" >&lt;span&gt;Pick a date&lt;/span&gt;}</span>
+          {date ? format(date, 'PPP') : &lt;span&gt;Pick a date&lt;/span&gt;}
         &lt;/Button&gt;
       &lt;/PopoverTrigger&gt;
       &lt;PopoverContent className="w-auto p-0" align="start"&gt;
@@ -190,7 +190,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-14T21:29:40.835Z
+                at 2025-08-16T17:56:55.010Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

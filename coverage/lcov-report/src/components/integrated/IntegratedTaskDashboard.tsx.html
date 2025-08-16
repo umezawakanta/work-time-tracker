@@ -2030,7 +2030,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
               &lt;Trophy className="h-6 w-6 text-white" /&gt;
             &lt;/div&gt;
             統合タスクダッシュボード
-            &lt;Badge variant="outline" className="ml-2 bg-white/50"&gt;
+            &lt;Badge variant="outline" className="ml-2 bg-white"&gt;
               レベル {playerStats.level}
             &lt;/Badge&gt;
           &lt;/CardTitle&gt;
@@ -2046,7 +2046,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
               &lt;/p&gt;
               &lt;Progress
                 value={Math.round((playerStats.currentXP / playerStats.xpToNextLevel) * 100)}
-                className="h-2 bg-white/50 mt-1"
+                className="h-2 bg-gray-200 mt-1"
               /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
@@ -2079,7 +2079,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 &nbsp;
       &lt;CardContent&gt;
         &lt;Tabs value={selectedTab} onValueChange={<span class="fstat-no" title="function not covered" >(v</span>alue: any) =&gt; <span class="cstat-no" title="statement not covered" >setSelectedTab(value)}</span>&gt;
-          &lt;TabsList className="grid w-full grid-cols-3 bg-white/50"&gt;
+          &lt;TabsList className="grid w-full grid-cols-3 bg-gray-100"&gt;
             &lt;TabsTrigger value="tasks" className="flex items-center gap-2"&gt;
               &lt;CheckSquare className="h-4 w-4" /&gt;
               タスク
@@ -2102,7 +2102,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 value={newTaskTitle}
                 onChange={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >setNewTaskTitle(e.target.value)}</span>
                 onKeyPress={<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >e.key === 'Enter' &amp;&amp; addNewTask()}</span>
-                className="bg-white/70"
+                className="bg-white"
               /&gt;
               &lt;Button onClick={addNewTask} size="sm"&gt;
                 &lt;Plus className="h-4 w-4" /&gt;
@@ -2117,8 +2117,8 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                   className={cn(
                     'p-4 rounded-lg border transition-all duration-200',
                     task.isCompleted
-                      ? 'bg-white/30 border-green-200 opacity-75'
-                      : 'bg-white/70 border-white/50 hover:bg-white/90'
+                      ? 'bg-gray-50 border-green-200 opacity-60'
+                      : 'bg-white border-gray-200 hover:shadow-md'
                   )}
                 &gt;
                   &lt;div className="flex items-start gap-3"&gt;
@@ -2207,7 +2207,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                     'p-4 rounded-lg border',
                     achievement.unlocked
                       ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200'
-                      : 'bg-white/50 border-gray-200'
+                      : 'bg-gray-50 border-gray-200'
                   )}
                 &gt;
                   &lt;div className="flex items-start gap-3"&gt;
@@ -2241,7 +2241,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
 &nbsp;
           &lt;TabsContent value="stats" className="mt-6"&gt;
             &lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;TrendingUp className="h-5 w-5 text-blue-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;レベル進捗&lt;/h4&gt;
@@ -2252,7 +2252,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 &lt;/p&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;Flame className="h-5 w-5 text-orange-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;ストリーク記録&lt;/h4&gt;
@@ -2261,7 +2261,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 &lt;p className="text-sm text-gray-600"&gt;最長記録: {playerStats.longestStreak}日&lt;/p&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;Star className="h-5 w-5 text-yellow-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;総獲得XP&lt;/h4&gt;
@@ -2270,7 +2270,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 &lt;p className="text-sm text-gray-600"&gt;今週: {playerStats.weeklyXP} XP&lt;/p&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;CheckCircle2 className="h-5 w-5 text-green-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;完了タスク&lt;/h4&gt;
@@ -2279,7 +2279,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 &lt;p className="text-sm text-gray-600"&gt;今日の完了率: {completionRate}%&lt;/p&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;Award className="h-5 w-5 text-purple-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;アチーブメント&lt;/h4&gt;
@@ -2290,7 +2290,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
                 &lt;p className="text-sm text-gray-600"&gt;{achievements.length}個中&lt;/p&gt;
               &lt;/div&gt;
 &nbsp;
-              &lt;div className="bg-white/50 p-4 rounded-lg"&gt;
+              &lt;div className="bg-white p-4 rounded-lg border border-gray-200"&gt;
                 &lt;div className="flex items-center gap-2 mb-2"&gt;
                   &lt;Target className="h-5 w-5 text-indigo-500" /&gt;
                   &lt;h4 className="font-semibold text-slate-900"&gt;平均完了率&lt;/h4&gt;
@@ -2314,7 +2314,7 @@ export const <span class="cstat-no" title="statement not covered" >IntegratedTas
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-14T21:29:40.835Z
+                at 2025-08-16T17:56:55.010Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
