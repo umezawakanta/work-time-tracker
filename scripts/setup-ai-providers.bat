@@ -1,0 +1,83 @@
+@echo off
+setlocal EnableDelayedExpansion
+
+echo ========================================
+echo AI Provider Setup for Work Time Tracker
+echo ========================================
+echo.
+
+:: Check if .env file exists
+if exist ".env" (
+    echo Existing .env file found. Backing up to .env.backup
+    copy .env .env.backup >nul
+) else (
+    echo Creating new .env file...
+    type nul > .env
+)
+
+echo.
+echo Select AI Providers to configure:
+echo 1. Gemini only (Recommended for free usage)
+echo 2. Claude only
+echo 3. Both Gemini and Claude
+echo.
+set /p choice="Enter your choice (1-3): "
+
+if "%choice%"=="1" goto :gemini
+if "%choice%"=="2" goto :claude
+if "%choice%"=="3" goto :both
+echo Invalid choice. Exiting...
+exit /b 1
+
+:gemini
+echo.
+echo Setting up Gemini API...
+echo Please visit: https://makersuite.google.com/app/apikey
+echo.
+set /p gemini_key="Enter your Gemini API key: "
+echo VITE_GEMINI_API_KEY=%gemini_key%>> .env
+echo ✓ Gemini API key configured
+goto :complete
+
+:claude
+echo.
+echo Setting up Claude API...
+echo Please visit: https://console.anthropic.com/
+echo.
+set /p claude_key="Enter your Claude API key: "
+echo VITE_CLAUDE_API_KEY=%claude_key%>> .env
+echo ✓ Claude API key configured
+goto :complete
+
+:both
+echo.
+echo Setting up Gemini API...
+echo Please visit: https://makersuite.google.com/app/apikey
+echo.
+set /p gemini_key="Enter your Gemini API key: "
+echo VITE_GEMINI_API_KEY=%gemini_key%>> .env
+echo ✓ Gemini API key configured
+
+echo.
+echo Setting up Claude API...
+echo Please visit: https://console.anthropic.com/
+echo.
+set /p claude_key="Enter your Claude API key: "
+echo VITE_CLAUDE_API_KEY=%claude_key%>> .env
+echo ✓ Claude API key configured
+goto :complete
+
+:complete
+echo.
+echo ========================================
+echo ✅ AI Provider setup completed!
+echo ========================================
+echo.
+echo Next steps:
+echo 1. Restart your development server (npm run dev)
+echo 2. Open the Task Management Center
+echo 3. Select your preferred AI provider from the dropdown
+echo.
+echo For more information, see: docs/ai-provider-setup.md
+echo.
+pause

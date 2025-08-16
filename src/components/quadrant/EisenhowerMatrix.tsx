@@ -9,6 +9,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   BarChart,
   Bar,
   XAxis,
@@ -44,6 +51,7 @@ import QuadrantClassificationService, {
   QuadrantAnalysisResult,
   QUADRANT_DEFINITIONS,
   UnifiedTaskData,
+  AIProvider,
 } from '@/services/ai/QuadrantClassificationService';
 import { toast } from 'sonner';
 
@@ -273,6 +281,10 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const [classificationService] = useState(() => QuadrantClassificationService.getInstance());
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [currentProvider, setCurrentProvider] = useState<AIProvider>(
+    classificationService.getProvider()
+  );
+  const [availableProviders] = useState(() => classificationService.getAvailableProviders());
 
   // タスクを統一形式に変換（完了済みタスクは除外）
   const unifiedTasks = useMemo(() => {
@@ -303,6 +315,13 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
 
     return converted;
   }, [tasks, classificationService]);
+
+  // AIプロバイダー変更ハンドラー
+  const handleProviderChange = (provider: AIProvider) => {
+    setCurrentProvider(provider);
+    classificationService.setProvider(provider);
+    toast.info(`AIプロバイダーを ${provider === 'claude' ? 'Claude' : 'Gemini'} に切り替えました`);
+  };
 
   // 分析の実行
   const runAnalysis = useCallback(async () => {
@@ -431,7 +450,8 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
               <p className="text-lg font-medium">AI による4象限分析実行中...</p>
               <p className="text-sm text-gray-600 mt-2">
-                Gemini AIが未完了タスク{unifiedTasks.length}件を分析しています
+                {currentProvider === 'claude' ? 'Claude AI' : 'Gemini AI'}が未完了タスク
+                {unifiedTasks.length}件を分析しています
               </p>
             </div>
           </CardContent>
@@ -470,6 +490,27 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
             </span>
           )}
           <div className="flex items-center gap-2">
+            {/* AIプロバイダー選択 */}
+            <Select
+              value={currentProvider}
+              onValueChange={(value) => handleProviderChange(value as AIProvider)}
+            >
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="AI選択" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableProviders.map((p) => (
+                  <SelectItem key={p.provider} value={p.provider} disabled={!p.available}>
+                    <div className="flex items-center gap-2">
+                      <span>{p.provider === 'claude' ? '🤖' : '✨'}</span>
+                      <span>{p.name}</span>
+                      {!p.available && <span className="text-xs text-red-500">(未設定)</span>}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
               <RefreshCw
                 className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}

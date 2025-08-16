@@ -3,9 +3,13 @@ import axios from 'axios';
 import { Task } from '@/types/task';
 import { Todo } from '@/types/todo';
 
-// Gemini APIの設定
+// AI Provider Types
+export type AIProvider = 'gemini' | 'claude';
+
+// API Configuration
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
 import { ENV } from '@/utils/env';
 
@@ -43,7 +47,7 @@ const getGeminiApiKey = (): string => {
     // ユーザーが提供したAPIキーを使用
     apiKey = 'AIzaSyDSapnVkg5I6U2JDjOme9cG4dkdfrxENh8';
     if (ENV.isDev()) {
-      console.log('⚠️ ハードコーディングされたAPIキーを使用しています');
+      console.log('⚠️ ハードコーディングされたGemini APIキーを使用しています');
       console.log('💡 推奨: .envファイルを作成して環境変数を設定してください');
     }
   }
@@ -57,13 +61,62 @@ const getGeminiApiKey = (): string => {
   return apiKey;
 };
 
-// API_KEYを遅延評価に変更
-let _apiKey: string | null = null;
-const getApiKey = (): string => {
-  if (_apiKey === null) {
-    _apiKey = getGeminiApiKey();
+// Claude API キーの取得
+const getClaudeApiKey = (): string => {
+  let apiKey = '';
+
+  // 方法1: ENVヘルパーを使用
+  try {
+    apiKey = ENV.CLAUDE_API_KEY?.() || '';
+  } catch (e) {
+    // 無視
   }
-  return _apiKey;
+
+  // 方法2: import.meta.envから直接取得
+  if (!apiKey) {
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
+        apiKey = import.meta.env.VITE_CLAUDE_API_KEY || '';
+      }
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  // 方法3: windowオブジェクトから取得（フォールバック）
+  if (!apiKey && typeof window !== 'undefined') {
+    try {
+      apiKey = (window as any)?.import?.meta?.env?.VITE_CLAUDE_API_KEY || '';
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  // デバッグ情報を出力（開発環境のみ）
+  if (ENV.isDev() && apiKey) {
+    console.log('✅ Claude API Key: 設定済み');
+    console.log('  - APIキー長さ:', apiKey.length, '文字');
+  }
+
+  return apiKey;
+};
+
+// API_KEYを遅延評価に変更
+let _geminiApiKey: string | null = null;
+let _claudeApiKey: string | null = null;
+
+const getApiKey = (provider: AIProvider = 'gemini'): string => {
+  if (provider === 'claude') {
+    if (_claudeApiKey === null) {
+      _claudeApiKey = getClaudeApiKey();
+    }
+    return _claudeApiKey;
+  } else {
+    if (_geminiApiKey === null) {
+      _geminiApiKey = getGeminiApiKey();
+    }
+    return _geminiApiKey;
+  }
 };
 
 // 4象限の定義
@@ -259,12 +312,49 @@ export class QuadrantClassificationService {
   private lastRequestTime = 0;
   private requestQueue: Array<() => Promise<any>> = [];
   private isProcessingQueue = false;
+  private currentProvider: AIProvider = 'gemini';
 
   public static getInstance(): QuadrantClassificationService {
     if (!QuadrantClassificationService.instance) {
       QuadrantClassificationService.instance = new QuadrantClassificationService();
     }
     return QuadrantClassificationService.instance;
+  }
+
+  /**
+   * AIプロバイダーを設定
+   */
+  public setProvider(provider: AIProvider): void {
+    this.currentProvider = provider;
+    console.log(`🤖 AIプロバイダーを ${provider} に切り替えました`);
+
+    // プロバイダー切り替え時にキャッシュをクリア（オプション）
+    // this.clearCache();
+  }
+
+  /**
+   * 現在のAIプロバイダーを取得
+   */
+  public getProvider(): AIProvider {
+    return this.currentProvider;
+  }
+
+  /**
+   * 利用可能なAIプロバイダーを取得
+   */
+  public getAvailableProviders(): { provider: AIProvider; available: boolean; name: string }[] {
+    return [
+      {
+        provider: 'gemini',
+        available: !!getApiKey('gemini'),
+        name: 'Google Gemini',
+      },
+      {
+        provider: 'claude',
+        available: !!getApiKey('claude'),
+        name: 'Anthropic Claude',
+      },
+    ];
   }
 
   /**
@@ -326,10 +416,12 @@ export class QuadrantClassificationService {
       return cachedResult;
     }
 
-    const apiKey = getApiKey();
+    const apiKey = getApiKey(this.currentProvider);
     if (!apiKey) {
       if (ENV.isDev()) {
-        console.warn('🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。');
+        console.warn(
+          `🚨 ${this.currentProvider.toUpperCase()} APIキーが設定されていません。ヒューリスティック分析を使用します。`
+        );
       }
       return this.fallbackClassification(task);
     }
@@ -344,30 +436,61 @@ export class QuadrantClassificationService {
         await this.waitForRateLimit();
 
         const prompt = this.createClassificationPrompt(task);
+        let generatedText: string;
 
-        const response = await axios.post(
-          `${GEMINI_API_URL}?key=${apiKey}`,
-          {
-            contents: [
-              {
-                parts: [{ text: prompt }],
-              },
-            ],
-            generationConfig: {
+        if (this.currentProvider === 'claude') {
+          // Claude API コール
+          const response = await axios.post(
+            CLAUDE_API_URL,
+            {
+              model: 'claude-3-haiku-20240307', // より高速で低コストなモデル
+              max_tokens: 1500,
               temperature: 0.3,
-              maxOutputTokens: 1500,
+              messages: [
+                {
+                  role: 'user',
+                  content: prompt,
+                },
+              ],
             },
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            timeout: 30000, // 30秒のタイムアウト
-          }
-        );
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+              },
+              timeout: 30000, // 30秒のタイムアウト
+            }
+          );
 
-        const generatedText = response.data.candidates[0].content.parts[0].text;
-        const result = this.parseGeminiResponse(generatedText, task);
+          generatedText = response.data.content[0].text;
+        } else {
+          // Gemini API コール
+          const response = await axios.post(
+            `${GEMINI_API_URL}?key=${apiKey}`,
+            {
+              contents: [
+                {
+                  parts: [{ text: prompt }],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 1500,
+              },
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              timeout: 30000, // 30秒のタイムアウト
+            }
+          );
+
+          generatedText = response.data.candidates[0].content.parts[0].text;
+        }
+
+        const result = this.parseAIResponse(generatedText, task);
 
         // キャッシュに保存
         classificationCache.set(cacheKey, result);
@@ -397,10 +520,13 @@ export class QuadrantClassificationService {
 
     // エラーの詳細をログ
     if (lastError?.response?.status === 429) {
-      console.warn('⚠️ Gemini APIのレート制限に達しました');
+      console.warn(`⚠️ ${this.currentProvider.toUpperCase()} APIのレート制限に達しました`);
       console.log('💡 ヒューリスティック分析で代替します（十分な精度があります）');
     } else {
-      console.error('Gemini API分類エラー:', lastError?.message || lastError);
+      console.error(
+        `${this.currentProvider.toUpperCase()} API分類エラー:`,
+        lastError?.message || lastError
+      );
     }
 
     const fallbackResult = this.fallbackClassification(task);
@@ -594,9 +720,9 @@ JSON形式で回答してください:
   }
 
   /**
-   * Gemini応答の解析
+   * AI応答の解析（Gemini/Claude共通）
    */
-  private parseGeminiResponse(response: string, task: UnifiedTaskData): TaskQuadrantClassification {
+  private parseAIResponse(response: string, task: UnifiedTaskData): TaskQuadrantClassification {
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -615,7 +741,7 @@ JSON形式で回答してください:
         };
       }
     } catch (error) {
-      console.error('Gemini応答解析エラー:', error);
+      console.error('AI応答解析エラー:', error);
     }
 
     return this.fallbackClassification(task);
