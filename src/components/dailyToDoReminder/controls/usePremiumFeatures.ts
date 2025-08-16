@@ -40,6 +40,24 @@ export function usePremiumFeatures() {
         return;
       }
 
+      // 特定のユーザーをPremiumとして扱う（開発用）
+      if (user.email === 'kanta13jp@gmail.com') {
+        setIsPremium(true);
+        setPremiumFeatures({
+          dataExport: true,
+          priorityAdjustment: true,
+          advancedStats: true,
+          unlimitedStorage: true,
+          unlimitedTasks: true,
+          referralBonus: true,
+          prioritySupport: true,
+        });
+        setExpiresAt(new Date('2025-12-31')); // 2025年末まで有効
+        setLoading(false);
+        console.log('✅ kanta13jp@gmail.com をPremiumユーザーとして設定しました');
+        return;
+      }
+
       try {
         setLoading(true);
         const status = await checkPremiumFeatures(user.uid);
@@ -66,7 +84,7 @@ export function usePremiumFeatures() {
     };
 
     checkStatus();
-  }, [user?.uid]);
+  }, [user?.uid, user?.email]);
 
   const upgrade = async (planType: PremiumPlanType) => {
     if (!user?.uid) {
