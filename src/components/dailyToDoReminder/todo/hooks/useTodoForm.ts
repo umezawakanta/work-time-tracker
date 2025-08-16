@@ -9,7 +9,7 @@ import WBSService from '@/services/wbs/WBSService';
 import { WBSNode } from '@/types/wbs';
 import QuadrantClassificationService from '@/services/ai/QuadrantClassificationService';
 
-export type TodoType = 'input' | 'output';
+export type TodoType = 'input' | 'output' | 'personal' | 'work' | 'study' | 'health' | 'other';
 export type PriorityLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface FormData {
@@ -49,14 +49,56 @@ export const useTodoForm = (onClose: () => void) => {
   const [autoSuggestDeadline, setAutoSuggestDeadline] = useState(
     localStorage.getItem('autoSuggestDeadline') === 'true' || false
   );
+  const [isSuggestingType, setIsSuggestingType] = useState(false);
+  const [autoSuggestType, setAutoSuggestType] = useState(
+    localStorage.getItem('autoSuggestType') === 'true' || false
+  );
   const [classificationService] = useState(() => QuadrantClassificationService.getInstance());
   const [deadlineSuggestTimer, setDeadlineSuggestTimer] = useState<NodeJS.Timeout | null>(null);
+  const [typeSuggestTimer, setTypeSuggestTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleInputChange = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]): void => {
       setFormData((prev) => ({ ...prev, [field]: value }));
+
+      // タイトル入力時に自動提案を実行
+      if (field === 'text' && typeof value === 'string') {
+        // 期限の自動提案
+        if (autoSuggestDeadline && !formData.deadline && value.length > 10) {
+          // 既存のタイマーをクリア
+          if (deadlineSuggestTimer) {
+            clearTimeout(deadlineSuggestTimer);
+          }
+          // 1.5秒後に期限を提案
+          const timer = setTimeout(() => {
+            handleSuggestDeadline();
+          }, 1500);
+          setDeadlineSuggestTimer(timer);
+        }
+
+        // タイプの自動提案
+        if (autoSuggestType && value.length > 5) {
+          // 既存のタイマーをクリア
+          if (typeSuggestTimer) {
+            clearTimeout(typeSuggestTimer);
+          }
+          // 1秒後にタイプを提案
+          const timer = setTimeout(() => {
+            handleSuggestType();
+          }, 1000);
+          setTypeSuggestTimer(timer);
+        }
+      }
     },
-    []
+    [
+      formData.deadline,
+      autoSuggestDeadline,
+      autoSuggestType,
+      deadlineSuggestTimer,
+      typeSuggestTimer,
+      handleSuggestDeadline,
+      handleSuggestType,
+    ]
   );
 
   const handleAIAnalysis = useCallback(async (): Promise<void> => {
@@ -180,6 +222,45 @@ export const useTodoForm = (onClose: () => void) => {
       toast.error('期限の提案に失敗しました');
     } finally {
       setIsSuggestingDeadline(false);
+    }
+  }, [formData, handleInputChange, classificationService]);
+
+  const handleSuggestType = useCallback(async (): Promise<void> => {
+    if (!formData.text.trim()) {
+      toast.error('タスク名を入力してください');
+      return;
+    }
+
+    setIsSuggestingType(true);
+    try {
+      const suggestion = await classificationService.suggestTaskType({
+        title: formData.text,
+        description: formData.description,
+        priority: formData.priority,
+        currentType: formData.type,
+      });
+
+      if (suggestion) {
+        handleInputChange('type', suggestion.type as TodoType);
+
+        // 確信度に応じたメッセージ
+        if (suggestion.confidence > 0.7) {
+          toast.success(`タイプを自動設定しました: ${suggestion.reasoning}`, {
+            duration: 3000,
+            icon: '🎯',
+          });
+        } else {
+          toast.info(`タイプを提案しました: ${suggestion.reasoning}`, {
+            duration: 3000,
+            icon: '💡',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Type suggestion error:', error);
+      toast.error('タイプの提案に失敗しました');
+    } finally {
+      setIsSuggestingType(false);
     }
   }, [formData, handleInputChange, classificationService]);
 
@@ -313,17 +394,28 @@ export const useTodoForm = (onClose: () => void) => {
     toast.info(newValue ? '自動期限提案を有効にしました' : '自動期限提案を無効にしました');
   }, [autoSuggestDeadline]);
 
+  const toggleAutoSuggestType = useCallback((): void => {
+    const newValue = !autoSuggestType;
+    setAutoSuggestType(newValue);
+    localStorage.setItem('autoSuggestType', String(newValue));
+    toast.info(newValue ? '自動タイプ提案を有効にしました' : '自動タイプ提案を無効にしました');
+  }, [autoSuggestType]);
+
   return {
     formData,
     isSubmitting,
     isAnalyzing,
     isSuggestingDeadline,
+    isSuggestingType,
     autoSuggestDeadline,
+    autoSuggestType,
     handleInputChange,
     handleAIAnalysis,
     handleSuggestDeadline,
+    handleSuggestType,
     handleSubmit,
     handleReset,
     toggleAutoSuggestDeadline,
+    toggleAutoSuggestType,
   };
 };

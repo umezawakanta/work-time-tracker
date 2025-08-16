@@ -37,13 +37,17 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
       isSubmitting,
       isAnalyzing,
       isSuggestingDeadline,
+      isSuggestingType,
       autoSuggestDeadline,
+      autoSuggestType,
       handleInputChange,
       handleAIAnalysis,
       handleSuggestDeadline,
+      handleSuggestType,
       handleSubmit,
       handleReset,
       toggleAutoSuggestDeadline,
+      toggleAutoSuggestType,
     } = useTodoForm(onClose);
 
     if (!isVisible) return null;
@@ -95,6 +99,9 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
               <TaskTypeSelect
                 value={formData.type}
                 onChange={(value) => handleInputChange('type', value)}
+                onSuggestType={handleSuggestType}
+                isSuggestingType={isSuggestingType}
+                isPremium={isPremium}
               />
 
               <PrioritySelect
@@ -154,6 +161,20 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                       id="auto-suggest-deadline"
                       checked={autoSuggestDeadline}
                       onCheckedChange={toggleAutoSuggestDeadline}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="h-4 w-4 text-purple-500" />
+                      <Label htmlFor="auto-suggest-type" className="text-sm font-medium">
+                        タイプを自動提案
+                      </Label>
+                    </div>
+                    <Switch
+                      id="auto-suggest-type"
+                      checked={autoSuggestType}
+                      onCheckedChange={toggleAutoSuggestType}
                     />
                   </div>
                 </div>

@@ -993,6 +993,358 @@ JSON形式で回答してください:
   }
 
   /**
+   * タスクのタイプを提案
+   */
+  public async suggestTaskType(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    currentType?: string;
+  }): Promise<{ type: string; reasoning: string; confidence: number }> {
+    const apiKey = getApiKey(this.currentProvider);
+    if (!apiKey && this.currentProvider !== 'ollama') {
+      // APIキーがない場合はヒューリスティックにタイプを提案
+      return this.fallbackTypeSuggestion(task);
+    }
+
+    // Ollamaの場合、接続確認
+    if (this.currentProvider === 'ollama') {
+      const isConnected = await checkOllamaConnection();
+      if (!isConnected) {
+        return this.fallbackTypeSuggestion(task);
+      }
+    }
+
+    try {
+      // レート制限の待機
+      await this.waitForRateLimit();
+
+      const prompt = this.createTypePrompt(task);
+      let generatedText: string;
+
+      if (this.currentProvider === 'claude') {
+        // Claude API コール
+        const response = await axios.post(
+          CLAUDE_API_URL,
+          {
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 300,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.content[0].text;
+      } else if (this.currentProvider === 'openai') {
+        // OpenAI API コール
+        const response = await axios.post(
+          OPENAI_API_URL,
+          {
+            model: 'gpt-4-turbo-preview',
+            max_tokens: 300,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクのタイプを適切に分類してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${apiKey}`,
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.choices[0].message.content;
+      } else if (this.currentProvider === 'ollama') {
+        // Ollama API コール
+        if (_ollamaModel === null) {
+          _ollamaModel = getOllamaModel();
+        }
+
+        const response = await axios.post(
+          OLLAMA_API_URL,
+          {
+            model: _ollamaModel,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクのタイプを適切に分類してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            stream: false,
+            format: 'json',
+            options: {
+              temperature: 0.3,
+              num_ctx: 2048,
+              num_predict: 300,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 20000,
+          }
+        );
+        generatedText = response.data.message.content;
+      } else {
+        // Gemini API コール
+        const response = await axios.post(
+          `${GEMINI_API_URL}?key=${apiKey}`,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 300,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.candidates[0].content.parts[0].text;
+      }
+
+      return this.parseTypeResponse(generatedText, task);
+    } catch (error) {
+      console.error('タイプ提案エラー:', error);
+      return this.fallbackTypeSuggestion(task);
+    }
+  }
+
+  /**
+   * タイプ提案プロンプトの作成
+   */
+  private createTypePrompt(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    currentType?: string;
+  }): string {
+    return `
+以下のタスクに対して、最も適切なタイプを提案してください。
+
+タスク情報:
+- タイトル: "${task.title}"
+- 説明: "${task.description || 'なし'}"
+- 優先度: ${task.priority || '中'}
+- 現在のタイプ: ${task.currentType || '未設定'}
+
+利用可能なタイプ:
+- personal: 個人的なタスク（家事、趣味、プライベートな予定など）
+- work: 仕事関連のタスク（業務、会議、プロジェクトなど）
+- study: 学習・勉強関連のタスク（講座、資格、スキルアップなど）
+- health: 健康・運動関連のタスク（運動、通院、健康管理など）
+- other: その他のタスク（上記に当てはまらないもの）
+
+タスクの内容を分析して、以下の基準で判断してください：
+1. タイトルや説明に含まれるキーワード
+2. タスクの性質（個人的、仕事、学習、健康など）
+3. 優先度との整合性
+
+JSON形式で回答してください:
+{
+  "type": "選択したタイプ（personal/work/study/health/other）",
+  "reasoning": "タイプ選択の理由",
+  "confidence": 0-1の確信度
+}
+`;
+  }
+
+  /**
+   * タイプ提案応答の解析
+   */
+  private parseTypeResponse(
+    response: string,
+    task: any
+  ): { type: string; reasoning: string; confidence: number } {
+    try {
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        // タイプの検証
+        const validTypes = ['personal', 'work', 'study', 'health', 'other'];
+        const type = validTypes.includes(parsed.type) ? parsed.type : 'other';
+
+        return {
+          type,
+          reasoning: parsed.reasoning || '自動提案されたタイプです',
+          confidence: parsed.confidence || 0.7,
+        };
+      }
+    } catch (error) {
+      console.error('タイプ応答解析エラー:', error);
+    }
+
+    return this.fallbackTypeSuggestion(task);
+  }
+
+  /**
+   * フォールバックタイプ提案（ヒューリスティック）
+   */
+  private fallbackTypeSuggestion(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    currentType?: string;
+  }): { type: string; reasoning: string; confidence: number } {
+    const text = `${task.title} ${task.description || ''}`.toLowerCase();
+    let type = 'other';
+    let reasoning = 'キーワードマッチングによる自動分類';
+    let confidence = 0.5;
+
+    // 仕事関連のキーワード
+    const workKeywords = [
+      '会議',
+      'ミーティング',
+      '資料',
+      '報告',
+      'プレゼン',
+      '業務',
+      '仕事',
+      'プロジェクト',
+      '納期',
+      'クライアント',
+      '顧客',
+      '提案',
+      '見積',
+      '契約',
+      '営業',
+      '開発',
+      'meeting',
+      'report',
+      'presentation',
+      'project',
+      'client',
+    ];
+
+    // 個人的なキーワード
+    const personalKeywords = [
+      '買い物',
+      '掃除',
+      '洗濯',
+      '料理',
+      '家事',
+      '家族',
+      '友達',
+      '趣味',
+      '遊び',
+      'ゲーム',
+      '映画',
+      '読書',
+      'shopping',
+      'cleaning',
+      'family',
+      'friend',
+      'hobby',
+    ];
+
+    // 学習関連のキーワード
+    const studyKeywords = [
+      '勉強',
+      '学習',
+      '講座',
+      '資格',
+      'スキル',
+      '研修',
+      '本',
+      '教材',
+      '試験',
+      'テスト',
+      '練習',
+      '復習',
+      'study',
+      'learn',
+      'course',
+      'skill',
+      'exam',
+      'test',
+    ];
+
+    // 健康関連のキーワード
+    const healthKeywords = [
+      '運動',
+      'ジム',
+      'ランニング',
+      '散歩',
+      '病院',
+      '通院',
+      '薬',
+      '健康',
+      'ダイエット',
+      '体重',
+      '睡眠',
+      '休息',
+      'exercise',
+      'gym',
+      'running',
+      'hospital',
+      'health',
+      'diet',
+    ];
+
+    // キーワードマッチング
+    const workMatches = workKeywords.filter((k) => text.includes(k)).length;
+    const personalMatches = personalKeywords.filter((k) => text.includes(k)).length;
+    const studyMatches = studyKeywords.filter((k) => text.includes(k)).length;
+    const healthMatches = healthKeywords.filter((k) => text.includes(k)).length;
+
+    // 最も多くマッチしたタイプを選択
+    const matches = [
+      { type: 'work', count: workMatches },
+      { type: 'personal', count: personalMatches },
+      { type: 'study', count: studyMatches },
+      { type: 'health', count: healthMatches },
+    ];
+
+    const topMatch = matches.reduce((max, item) => (item.count > max.count ? item : max));
+
+    if (topMatch.count > 0) {
+      type = topMatch.type;
+      confidence = Math.min(0.9, 0.5 + topMatch.count * 0.2);
+      reasoning = `"${task.title}"に含まれるキーワードから${type}タスクと判断`;
+    }
+
+    return {
+      type,
+      reasoning,
+      confidence,
+    };
+  }
+
+  /**
    * 現在のプロバイダーの設定を取得
    */
   private getRateLimitConfig() {
