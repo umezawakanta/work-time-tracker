@@ -105,6 +105,9 @@ export interface UnifiedTaskData {
   estimatedTime?: number;
   status?: string;
   type?: string;
+  isCompleted?: boolean;
+  updatedAt?: Date | string;
+  createdAt?: Date | string;
 }
 
 // 4象限分析結果
@@ -824,6 +827,9 @@ JSON形式で回答してください:
       estimatedTime: task.estimatedTime || task.estimatedDuration,
       status: task.status,
       type: task.type,
+      isCompleted: task.completed || task.isCompleted || task.status === 'completed',
+      updatedAt: task.updatedAt,
+      createdAt: task.createdAt,
     };
 
     return unified;

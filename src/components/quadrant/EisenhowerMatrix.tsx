@@ -37,8 +37,6 @@ import {
   Loader2,
   Activity,
   BarChart3,
-  RefreshCw,
-  Trash2,
 } from 'lucide-react';
 import QuadrantClassificationService, {
   QuadrantType,
