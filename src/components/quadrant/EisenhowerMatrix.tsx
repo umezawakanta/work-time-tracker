@@ -416,7 +416,14 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       setIsLoading(false);
       setIsAnalyzing(false);
     }
-  }, [unifiedTasks, classificationService, onQuadrantAnalysis, isAnalyzing]);
+  }, [
+    unifiedTasks,
+    tasks,
+    classificationService,
+    onQuadrantAnalysis,
+    isAnalyzing,
+    currentProvider,
+  ]);
 
   // 初回実行とタスク変更時の更新を統合
   useEffect(() => {
