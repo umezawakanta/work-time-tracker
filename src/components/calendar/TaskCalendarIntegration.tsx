@@ -82,7 +82,9 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
 
   // TodoItemをカレンダーイベントに変換
   const calendarEvents = useMemo(() => {
-    return todos.reduce((events: CalendarEvent[], todo) => {
+    const events: CalendarEvent[] = [];
+
+    todos.forEach((todo) => {
       // 期限のあるタスクを期限日にイベントとして表示
       if (todo.deadline) {
         const deadlineDate = new Date(todo.deadline);
@@ -96,21 +98,47 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
         });
       }
 
-      // 進行中または今日作成されたタスクを今日のイベントとして表示
-      if (todo.createdAt && new Date(todo.createdAt).toDateString() === new Date().toDateString()) {
-        const today = new Date();
+      // 未完了タスクを表示（期限がない場合は作成日または今日に表示）
+      if (!todo.completed) {
+        // 期限がない場合の表示日を決定
+        let taskDate: Date;
+
+        if (todo.deadline) {
+          // 期限がある場合はスキップ（上で既に追加済み）
+          return;
+        } else if (todo.createdAt) {
+          // 作成日がある場合は作成日に表示
+          taskDate = new Date(todo.createdAt);
+        } else {
+          // それ以外は今日に表示
+          taskDate = new Date();
+        }
+
         events.push({
           id: `task-${todo._id}`,
-          title: `${todo.completed ? '✅' : '🔘'} ${todo.task}`,
-          start: today,
-          end: today,
+          title: `🔘 ${todo.task}`,
+          start: taskDate,
+          end: taskDate,
           resource: todo,
           type: 'task',
         });
       }
 
-      return events;
-    }, []);
+      // 完了済みタスクも表示（オプション）
+      if (todo.completed && todo.completedAt) {
+        const completedDate = new Date(todo.completedAt);
+        events.push({
+          id: `completed-${todo._id}`,
+          title: `✅ ${todo.task}`,
+          start: completedDate,
+          end: completedDate,
+          resource: todo,
+          type: 'task',
+        });
+      }
+    });
+
+    return events;
   }, [todos]);
 
   // イベントの色を決定
