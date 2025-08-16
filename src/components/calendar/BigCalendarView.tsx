@@ -578,7 +578,7 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
 
       {/* Task Modal */}
       <Dialog open={showTaskModal} onOpenChange={setShowTaskModal}>
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-2xl bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>
               {selectedEvent?.resource?.type === 'task' ? 'タスク編集' : '新規タスク作成'}

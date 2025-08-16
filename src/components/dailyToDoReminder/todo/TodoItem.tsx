@@ -688,7 +688,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       {/* Delete Confirm Dialog for tests */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[420px] bg-white">
+        <DialogContent className="sm:max-w-[420px] bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>Delete</DialogTitle>
             <DialogDescription>Are you sure you want to delete this task?</DialogDescription>
@@ -710,7 +710,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] bg-white">
+        <DialogContent className="sm:max-w-[525px] bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>タスクを編集</DialogTitle>
             <DialogDescription>タスクの詳細を編集してください。</DialogDescription>
@@ -868,7 +868,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       {/* AI分析ダイアログ（拡張版） */}
       <Dialog open={isAIAnalysisDialogOpen} onOpenChange={setIsAIAnalysisDialogOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>AI分析結果</DialogTitle>
             <DialogDescription>AIがタスクを分析し、詳細情報を抽出しました。</DialogDescription>
