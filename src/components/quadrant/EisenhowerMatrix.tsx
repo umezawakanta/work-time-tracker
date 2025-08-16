@@ -274,7 +274,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // タスクを統一形式に変換
+  // タスクを統一形式に変換（完了済みタスクは除外）
   const unifiedTasks = useMemo(() => {
     if (!Array.isArray(tasks)) {
       console.warn('🚨 EisenhowerMatrix: tasks が配列ではありません:', typeof tasks);
@@ -285,8 +285,19 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       return [];
     }
 
-    const converted = tasks
-      .filter((task) => task && task._id) // 無効なタスクを事前にフィルタリング
+    // 完了済みタスクをフィルタリング
+    const incompleteTasks = tasks.filter((task) => {
+      // 様々なタスク形式に対応
+      return (
+        task && task._id && !task.completed && !task.isCompleted && task.status !== 'completed'
+      );
+    });
+
+    console.log(
+      `📊 分析対象: ${incompleteTasks.length}件（完了済み除外: ${tasks.length - incompleteTasks.length}件）`
+    );
+
+    const converted = incompleteTasks
       .map((task) => classificationService.convertToUnifiedTask(task))
       .filter((task): task is UnifiedTaskData => task !== null);
 
@@ -311,9 +322,14 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
 
       setIsAnalyzing(true);
       setIsLoading(true);
+
+      const completedCount = tasks.filter(
+        (t) => t?.completed || t?.isCompleted || t?.status === 'completed'
+      ).length;
       console.log('🎯 4象限分析を開始します...', {
         taskCount: unifiedTasks.length,
         originalTaskCount: tasks?.length || 0,
+        completedCount: completedCount,
       });
 
       const result = await classificationService.analyzeQuadrants(unifiedTasks);
@@ -322,10 +338,18 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       onQuadrantAnalysis?.(result);
 
       // タスク数の制限について通知
+      const completedCount = tasks.filter(
+        (t) => t?.completed || t?.isCompleted || t?.status === 'completed'
+      ).length;
       if (unifiedTasks.length > 15) {
-        toast.info(`タスク数が多いため、最初の15件のみ分析しました（全${unifiedTasks.length}件）`, {
-          duration: 5000,
-        });
+        toast.info(
+          `未完了タスク${unifiedTasks.length}件中、最初の15件を分析しました（完了済み${completedCount}件は除外）`,
+          { duration: 5000 }
+        );
+      } else if (completedCount > 0) {
+        toast.success(
+          `4象限分析完了: 未完了${result.totalTasks}件を分類（完了済み${completedCount}件は除外）`
+        );
       } else {
         toast.success(`4象限分析完了: ${result.totalTasks}件のタスクを分類しました`);
       }
@@ -409,7 +433,9 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
             <div className="text-center">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
               <p className="text-lg font-medium">AI による4象限分析実行中...</p>
-              <p className="text-sm text-gray-600 mt-2">Gemini AIがタスクを分析しています</p>
+              <p className="text-sm text-gray-600 mt-2">
+                Gemini AIが未完了タスク{unifiedTasks.length}件を分析しています
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -426,7 +452,18 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
             <Brain className="w-6 h-6" />
             <span>アイゼンハワーマトリックス</span>
           </h2>
-          <p className="text-gray-600 mt-1">Gemini AIによる4象限タスク分類とパフォーマンス分析</p>
+          <p className="text-gray-600 mt-1">
+            Gemini AIによる4象限タスク分類とパフォーマンス分析
+            {tasks.length > 0 && (
+              <span className="ml-2 text-sm">
+                （未完了: {unifiedTasks.length}件
+                {tasks.filter((t) => t?.completed || t?.isCompleted || t?.status === 'completed')
+                  .length > 0 &&
+                  ` / 完了済み: ${tasks.filter((t) => t?.completed || t?.isCompleted || t?.status === 'completed').length}件`}
+                ）
+              </span>
+            )}
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
