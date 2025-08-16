@@ -66,18 +66,19 @@ const getGeminiApiKey = (): string => {
 const getClaudeApiKey = (): string => {
   let apiKey = '';
 
-  // 方法1: ENVヘルパーを使用
+  // 方法1: ENVヘルパーを使用（両方のキー名をサポート）
   try {
-    apiKey = ENV.CLAUDE_API_KEY?.() || '';
+    apiKey = ENV.CLAUDE_API_KEY?.() || ENV.ANTHROPIC_API_KEY?.() || '';
   } catch (e) {
     // 無視
   }
 
-  // 方法2: import.meta.envから直接取得
+  // 方法2: import.meta.envから直接取得（両方のキー名をサポート）
   if (!apiKey) {
     try {
       if (typeof import.meta !== 'undefined' && import.meta.env) {
-        apiKey = import.meta.env.VITE_CLAUDE_API_KEY || '';
+        apiKey =
+          import.meta.env.VITE_CLAUDE_API_KEY || import.meta.env.VITE_ANTHROPIC_API_KEY || '';
       }
     } catch (e) {
       // 無視
@@ -87,7 +88,10 @@ const getClaudeApiKey = (): string => {
   // 方法3: windowオブジェクトから取得（フォールバック）
   if (!apiKey && typeof window !== 'undefined') {
     try {
-      apiKey = (window as any)?.import?.meta?.env?.VITE_CLAUDE_API_KEY || '';
+      apiKey =
+        (window as any)?.import?.meta?.env?.VITE_CLAUDE_API_KEY ||
+        (window as any)?.import?.meta?.env?.VITE_ANTHROPIC_API_KEY ||
+        '';
     } catch (e) {
       // 無視
     }
