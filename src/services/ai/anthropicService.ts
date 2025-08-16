@@ -92,14 +92,30 @@ class AnthropicService {
   private cleanAndParseJson(jsonString: string): any {
     try {
       // JSONコメントを除去（//で始まる行と/* */形式のコメント）
-      const cleanJson = jsonString
+      let cleanJson = jsonString
         .replace(/\/\*[\s\S]*?\*\//g, '') // /* */ 形式のコメントを除去
         .replace(/\/\/.*$/gm, ''); // // 形式のコメントを除去
+
+      // 不正な配列要素（プレースホルダーテキスト）を除去
+      // 例: [完了済みタスクのID...] のような不正な要素を削除
+      cleanJson = cleanJson.replace(/,?\s*\[[^\]]*?\.\.\.[^\]]*?\]/g, '');
+
+      // 配列の末尾のカンマを除去
+      cleanJson = cleanJson.replace(/,(\s*[\]}])/g, '$1');
+
+      // 連続するカンマを単一のカンマに置換
+      cleanJson = cleanJson.replace(/,+/g, ',');
 
       return JSON.parse(cleanJson);
     } catch (error) {
       console.error('Failed to parse JSON:', error, 'Original:', jsonString);
-      throw error;
+
+      // パースエラーの場合、基本的な構造を返す
+      return {
+        sortedTaskIds: [],
+        reasoning: 'JSONパースエラーのため、デフォルトの順序を使用します。',
+        recommendations: [],
+      };
     }
   }
 
@@ -642,6 +658,29 @@ Format as JSON with structure: { template: { name, tasks: [] }, customizationTip
       };
     }
 
+    // タスク数が多すぎる場合は、未完了タスクを優先して制限
+    const MAX_TASKS_FOR_ANALYSIS = 30;
+    let tasksToAnalyze = tasks;
+
+    if (tasks.length > MAX_TASKS_FOR_ANALYSIS) {
+      // 未完了タスクと完了済みタスクを分ける
+      const incompleteTasks = tasks.filter((t) => !t.completed);
+      const completedTasks = tasks.filter((t) => t.completed);
+
+      // 未完了タスクを優先度でソート
+      incompleteTasks.sort((a, b) => b.priority - a.priority);
+
+      // 最大数まで取得（未完了を優先）
+      tasksToAnalyze = [
+        ...incompleteTasks.slice(0, MAX_TASKS_FOR_ANALYSIS),
+        ...completedTasks.slice(0, Math.max(0, MAX_TASKS_FOR_ANALYSIS - incompleteTasks.length)),
+      ];
+
+      console.log(
+        `⚠️ タスク数が多いため、${tasksToAnalyze.length}件に制限して分析します（全${tasks.length}件中）`
+      );
+    }
+
     const systemPrompt = `あなたは生産性の専門家です。タスクリストを分析し、最も効率的な実行順序を決定してください。
 
 以下の要因を考慮してください：
@@ -653,14 +692,20 @@ Format as JSON with structure: { template: { name, tasks: [] }, customizationTip
 6. 認知負荷
 7. タスクのバッチング（似たタスクをグループ化）
 
-レスポンスは以下のJSON形式で返してください：
+重要な注意事項：
+- sortedTaskIdsには実際のタスクIDのみを含めてください
+- プレースホルダーや省略記号（...）は使用しないでください
+- すべてのタスクIDを具体的にリストアップしてください
+- タスク数が多い場合でも、すべてのIDを含めてください
+
+レスポンスは以下の厳密なJSON形式で返してください（コメントは含めないでください）：
 {
   "sortedTaskIds": ["task_id_1", "task_id_2", ...],
   "reasoning": "並び替えの理由",
   "recommendations": ["推奨事項1", "推奨事項2", ...]
 }`;
 
-    const tasksInfo = tasks.map((t) => ({
+    const tasksInfo = tasksToAnalyze.map((t) => ({
       id: t._id,
       task: t.task,
       priority: t.priority,
@@ -693,18 +738,28 @@ ${JSON.stringify(tasksInfo, null, 2)}
 
         // IDに基づいてタスクを並び替え
         const sortedTasks: TodoItem[] = [];
-        const taskMap = new Map(tasks.map((t) => [t._id, t]));
+        const allTaskMap = new Map(tasks.map((t) => [t._id, t])); // すべてのタスクのマップ
+        const analyzedTaskIds = new Set(tasksToAnalyze.map((t) => t._id)); // 分析されたタスクのID
 
+        // 分析結果に基づいて並び替え
         for (const id of result.sortedTaskIds || []) {
-          const task = taskMap.get(id);
+          const task = allTaskMap.get(id);
           if (task) {
             sortedTasks.push(task);
-            taskMap.delete(id);
+            allTaskMap.delete(id);
           }
         }
 
-        // 含まれなかったタスクを最後に追加
-        taskMap.forEach((task) => sortedTasks.push(task));
+        // 分析されなかったタスクを追加（元の順序を維持）
+        tasks.forEach((task) => {
+          if (!analyzedTaskIds.has(task._id) && allTaskMap.has(task._id)) {
+            sortedTasks.push(task);
+            allTaskMap.delete(task._id);
+          }
+        });
+
+        // まだ含まれていないタスクがあれば最後に追加
+        allTaskMap.forEach((task) => sortedTasks.push(task));
 
         return {
           sortedTasks,
