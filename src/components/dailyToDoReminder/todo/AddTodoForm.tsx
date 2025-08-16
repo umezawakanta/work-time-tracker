@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Plus, X, Sparkles, Clock } from 'lucide-react';
 
 import { useTodoForm } from './hooks/useTodoForm';
 import { TaskNameInput } from './components/TaskNameInput';
@@ -34,10 +36,14 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
       formData,
       isSubmitting,
       isAnalyzing,
+      isSuggestingDeadline,
+      autoSuggestDeadline,
       handleInputChange,
       handleAIAnalysis,
+      handleSuggestDeadline,
       handleSubmit,
       handleReset,
+      toggleAutoSuggestDeadline,
     } = useTodoForm(onClose);
 
     if (!isVisible) return null;
@@ -106,6 +112,9 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                     <DeadlineInput
                       value={formData.deadline}
                       onChange={(value) => handleInputChange('deadline', value)}
+                      onSuggestDeadline={handleSuggestDeadline}
+                      isSuggestingDeadline={isSuggestingDeadline}
+                      isPremium={isPremium}
                     />
 
                     <DurationInput
@@ -133,6 +142,20 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                     checked={formData.linkToWBS}
                     onChange={(checked) => handleInputChange('linkToWBS', checked)}
                   />
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-gray-500" />
+                      <Label htmlFor="auto-suggest-deadline" className="text-sm font-medium">
+                        期限を自動提案
+                      </Label>
+                    </div>
+                    <Switch
+                      id="auto-suggest-deadline"
+                      checked={autoSuggestDeadline}
+                      onCheckedChange={toggleAutoSuggestDeadline}
+                    />
+                  </div>
                 </div>
               </>
             )}

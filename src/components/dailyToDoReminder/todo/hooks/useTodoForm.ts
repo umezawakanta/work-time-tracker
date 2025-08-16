@@ -7,6 +7,7 @@ import { getErrorMessage } from '../../utils/errorUtils';
 import taskAnalyzer from '@/services/RateLimitedTaskAnalyzer';
 import WBSService from '@/services/wbs/WBSService';
 import { WBSNode } from '@/types/wbs';
+import QuadrantClassificationService from '@/services/ai/QuadrantClassificationService';
 
 export type TodoType = 'input' | 'output';
 export type PriorityLevel = 1 | 2 | 3 | 4 | 5;
@@ -44,6 +45,12 @@ export const useTodoForm = (onClose: () => void) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isSuggestingDeadline, setIsSuggestingDeadline] = useState(false);
+  const [autoSuggestDeadline, setAutoSuggestDeadline] = useState(
+    localStorage.getItem('autoSuggestDeadline') === 'true' || false
+  );
+  const [classificationService] = useState(() => QuadrantClassificationService.getInstance());
+  const [deadlineSuggestTimer, setDeadlineSuggestTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleInputChange = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]): void => {
@@ -139,6 +146,42 @@ export const useTodoForm = (onClose: () => void) => {
       setIsAnalyzing(false);
     }
   }, [formData.text, handleInputChange]);
+
+  const handleSuggestDeadline = useCallback(async (): Promise<void> => {
+    if (!formData.text.trim()) {
+      toast.error('タスク名を入力してください');
+      return;
+    }
+
+    setIsSuggestingDeadline(true);
+    try {
+      const suggestion = await classificationService.suggestDeadline({
+        title: formData.text,
+        description: formData.description,
+        priority: formData.priority,
+        type: formData.type,
+        estimatedTime: formData.estimatedDuration,
+      });
+
+      if (suggestion) {
+        // 日付をdatetime-local形式に変換
+        const localDatetime = suggestion.deadline.toISOString().slice(0, 16);
+        handleInputChange('deadline', localDatetime);
+
+        // 確信度に応じたメッセージ
+        if (suggestion.confidence > 0.7) {
+          toast.success(`期限を自動設定しました: ${suggestion.reasoning}`);
+        } else {
+          toast.info(`期限を提案しました: ${suggestion.reasoning}`);
+        }
+      }
+    } catch (error) {
+      console.error('Deadline suggestion error:', error);
+      toast.error('期限の提案に失敗しました');
+    } finally {
+      setIsSuggestingDeadline(false);
+    }
+  }, [formData, handleInputChange, classificationService]);
 
   const validateForm = useCallback((): boolean => {
     if (!formData.text.trim()) {
@@ -263,13 +306,24 @@ export const useTodoForm = (onClose: () => void) => {
     setFormData(initialFormData);
   }, []);
 
+  const toggleAutoSuggestDeadline = useCallback((): void => {
+    const newValue = !autoSuggestDeadline;
+    setAutoSuggestDeadline(newValue);
+    localStorage.setItem('autoSuggestDeadline', String(newValue));
+    toast.info(newValue ? '自動期限提案を有効にしました' : '自動期限提案を無効にしました');
+  }, [autoSuggestDeadline]);
+
   return {
     formData,
     isSubmitting,
     isAnalyzing,
+    isSuggestingDeadline,
+    autoSuggestDeadline,
     handleInputChange,
     handleAIAnalysis,
+    handleSuggestDeadline,
     handleSubmit,
     handleReset,
+    toggleAutoSuggestDeadline,
   };
 };

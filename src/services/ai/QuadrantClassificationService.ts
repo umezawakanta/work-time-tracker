@@ -687,6 +687,312 @@ export class QuadrantClassificationService {
   }
 
   /**
+   * タスクの期限を提案
+   */
+  public async suggestDeadline(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    type?: string;
+    estimatedTime?: number;
+  }): Promise<{ deadline: Date; reasoning: string; confidence: number }> {
+    const apiKey = getApiKey(this.currentProvider);
+    if (!apiKey && this.currentProvider !== 'ollama') {
+      // APIキーがない場合はヒューリスティックに期限を提案
+      return this.fallbackDeadlineSuggestion(task);
+    }
+
+    // Ollamaの場合、接続確認
+    if (this.currentProvider === 'ollama') {
+      const isConnected = await checkOllamaConnection();
+      if (!isConnected) {
+        return this.fallbackDeadlineSuggestion(task);
+      }
+    }
+
+    try {
+      // レート制限の待機
+      await this.waitForRateLimit();
+
+      const prompt = this.createDeadlinePrompt(task);
+      let generatedText: string;
+
+      if (this.currentProvider === 'claude') {
+        // Claude API コール
+        const response = await axios.post(
+          CLAUDE_API_URL,
+          {
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 500,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            timeout: 15000,
+          }
+        );
+        generatedText = response.data.content[0].text;
+      } else if (this.currentProvider === 'openai') {
+        // OpenAI API コール
+        const response = await axios.post(
+          OPENAI_API_URL,
+          {
+            model: 'gpt-4-turbo-preview',
+            max_tokens: 500,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクの適切な期限を提案してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${apiKey}`,
+            },
+            timeout: 15000,
+          }
+        );
+        generatedText = response.data.choices[0].message.content;
+      } else if (this.currentProvider === 'ollama') {
+        // Ollama API コール
+        if (_ollamaModel === null) {
+          _ollamaModel = getOllamaModel();
+        }
+
+        const response = await axios.post(
+          OLLAMA_API_URL,
+          {
+            model: _ollamaModel,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクの適切な期限を提案してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            stream: false,
+            format: 'json',
+            options: {
+              temperature: 0.3,
+              num_ctx: 2048,
+              num_predict: 500,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 30000,
+          }
+        );
+        generatedText = response.data.message.content;
+      } else {
+        // Gemini API コール
+        const response = await axios.post(
+          `${GEMINI_API_URL}?key=${apiKey}`,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 500,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 15000,
+          }
+        );
+        generatedText = response.data.candidates[0].content.parts[0].text;
+      }
+
+      return this.parseDeadlineResponse(generatedText, task);
+    } catch (error) {
+      console.error('期限提案エラー:', error);
+      return this.fallbackDeadlineSuggestion(task);
+    }
+  }
+
+  /**
+   * 期限提案プロンプトの作成
+   */
+  private createDeadlinePrompt(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    type?: string;
+    estimatedTime?: number;
+  }): string {
+    const today = new Date();
+    const todayStr = today.toLocaleDateString('ja-JP');
+    const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][today.getDay()];
+
+    return `
+今日は${todayStr}（${dayOfWeek}）です。
+以下のタスクに対して、適切な期限を提案してください。
+
+タスク情報:
+- タイトル: "${task.title}"
+- 説明: "${task.description || 'なし'}"
+- 優先度: ${task.priority || '中'}
+- タイプ: ${task.type || '一般'}
+- 推定作業時間: ${task.estimatedTime ? `${task.estimatedTime}分` : '不明'}
+
+以下の要因を考慮して期限を設定してください：
+1. タスクの複雑さと作業量
+2. 優先度（高優先度は短め、低優先度は長め）
+3. タスクのタイプ（バグ修正は緊急、計画タスクは余裕を持って）
+4. 現実的な作業ペース（週末や祝日を考慮）
+5. バッファ時間（予期せぬ問題への対処）
+
+期限設定の目安：
+- 緊急（バグ修正など）: 1-2日以内
+- 高優先度: 3-5日以内
+- 中優先度: 1-2週間以内
+- 低優先度: 2-4週間以内
+- 計画タスク: 1-3ヶ月以内
+
+JSON形式で回答してください:
+{
+  "days_from_today": 期限までの日数（数値）,
+  "reasoning": "期限設定の理由",
+  "confidence": 0-1の確信度,
+  "suggested_date": "YYYY-MM-DD形式の日付"
+}
+`;
+  }
+
+  /**
+   * 期限提案応答の解析
+   */
+  private parseDeadlineResponse(
+    response: string,
+    task: any
+  ): { deadline: Date; reasoning: string; confidence: number } {
+    try {
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        let deadline: Date;
+        if (parsed.suggested_date) {
+          deadline = new Date(parsed.suggested_date);
+        } else if (parsed.days_from_today) {
+          deadline = new Date();
+          deadline.setDate(deadline.getDate() + parsed.days_from_today);
+        } else {
+          throw new Error('日付情報が不足');
+        }
+
+        // 週末の場合は翌営業日に調整
+        const dayOfWeek = deadline.getDay();
+        if (dayOfWeek === 0) {
+          // 日曜日の場合、月曜日に
+          deadline.setDate(deadline.getDate() + 1);
+        } else if (dayOfWeek === 6) {
+          // 土曜日の場合、月曜日に
+          deadline.setDate(deadline.getDate() + 2);
+        }
+
+        return {
+          deadline,
+          reasoning: parsed.reasoning || '自動提案された期限です',
+          confidence: parsed.confidence || 0.7,
+        };
+      }
+    } catch (error) {
+      console.error('期限応答解析エラー:', error);
+    }
+
+    return this.fallbackDeadlineSuggestion(task);
+  }
+
+  /**
+   * フォールバック期限提案（ヒューリスティック）
+   */
+  private fallbackDeadlineSuggestion(task: {
+    title: string;
+    description?: string;
+    priority?: number | string;
+    type?: string;
+    estimatedTime?: number;
+  }): { deadline: Date; reasoning: string; confidence: number } {
+    const deadline = new Date();
+    let daysToAdd = 7; // デフォルト1週間
+    let reasoning = 'デフォルト設定（1週間後）';
+
+    // 優先度による調整
+    const priority = typeof task.priority === 'number' ? task.priority : 3;
+    if (priority <= 2) {
+      daysToAdd = 3;
+      reasoning = '高優先度のため3日後に設定';
+    } else if (priority >= 4) {
+      daysToAdd = 14;
+      reasoning = '低優先度のため2週間後に設定';
+    }
+
+    // タスクタイプによる調整
+    const title = task.title.toLowerCase();
+    if (title.includes('バグ') || title.includes('修正') || title.includes('緊急')) {
+      daysToAdd = Math.min(daysToAdd, 2);
+      reasoning = '緊急性の高いタスクのため短期間で設定';
+    } else if (title.includes('計画') || title.includes('検討') || title.includes('調査')) {
+      daysToAdd = Math.max(daysToAdd, 14);
+      reasoning = '計画・検討タスクのため余裕を持って設定';
+    }
+
+    // 作業時間による調整
+    if (task.estimatedTime) {
+      if (task.estimatedTime > 480) {
+        // 8時間以上
+        daysToAdd = Math.max(daysToAdd, 10);
+        reasoning = '長時間の作業が必要なため余裕を持って設定';
+      }
+    }
+
+    deadline.setDate(deadline.getDate() + daysToAdd);
+
+    // 週末の場合は翌営業日に調整
+    const dayOfWeek = deadline.getDay();
+    if (dayOfWeek === 0) {
+      deadline.setDate(deadline.getDate() + 1);
+    } else if (dayOfWeek === 6) {
+      deadline.setDate(deadline.getDate() + 2);
+    }
+
+    return {
+      deadline,
+      reasoning,
+      confidence: 0.5,
+    };
+  }
+
+  /**
    * 現在のプロバイダーの設定を取得
    */
   private getRateLimitConfig() {
