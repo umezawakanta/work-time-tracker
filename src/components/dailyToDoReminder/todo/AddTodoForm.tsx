@@ -75,14 +75,15 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
               )}
             </CardTitle>
             <div className="flex items-center gap-2">
-              {isPremium && formData.text.length > 3 && (
+              {isPremium && (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleSuggestAll}
-                  disabled={isSuggestingAll}
+                  disabled={isSuggestingAll || !formData.text.trim()}
                   className="text-xs"
+                  title={!formData.text.trim() ? 'タスク名を入力してください' : ''}
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
                   {isSuggestingAll ? 'AI設定中...' : 'AIで自動設定'}
