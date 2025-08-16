@@ -1,5 +1,5 @@
 // src/components/quadrant/EisenhowerMatrix.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -271,6 +271,8 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [classificationService] = useState(() => QuadrantClassificationService.getInstance());
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // タスクを統一形式に変換
   const unifiedTasks = useMemo(() => {
@@ -292,7 +294,13 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   }, [tasks, classificationService]);
 
   // 分析の実行
-  const runAnalysis = async () => {
+  const runAnalysis = useCallback(async () => {
+    // 既に分析中の場合はスキップ
+    if (isAnalyzing) {
+      console.log('⏳ 分析が既に実行中です...');
+      return;
+    }
+
     try {
       if (unifiedTasks.length === 0) {
         setAnalysis(null);
@@ -301,6 +309,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
         return;
       }
 
+      setIsAnalyzing(true);
       setIsLoading(true);
       console.log('🎯 4象限分析を開始します...', {
         taskCount: unifiedTasks.length,
@@ -312,7 +321,14 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       setLastUpdate(new Date());
       onQuadrantAnalysis?.(result);
 
-      toast.success(`4象限分析完了: ${result.totalTasks}件のタスクを分類しました`);
+      // タスク数の制限について通知
+      if (unifiedTasks.length > 15) {
+        toast.info(`タスク数が多いため、最初の15件のみ分析しました（全${unifiedTasks.length}件）`, {
+          duration: 5000,
+        });
+      } else {
+        toast.success(`4象限分析完了: ${result.totalTasks}件のタスクを分類しました`);
+      }
     } catch (error) {
       console.error('🚨 4象限分析エラー:', error);
       toast.error(
@@ -321,33 +337,35 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       setAnalysis(null);
     } finally {
       setIsLoading(false);
+      setIsAnalyzing(false);
     }
-  };
+  }, [unifiedTasks, classificationService, onQuadrantAnalysis, isAnalyzing]);
 
-  // 初回実行（一度だけ）
+  // 初回実行とタスク変更時の更新を統合
   useEffect(() => {
-    if (unifiedTasks.length > 0) {
+    // 初回実行
+    if (!hasInitialized && unifiedTasks.length > 0) {
+      setHasInitialized(true);
       runAnalysis();
-    } else {
+    }
+    // タスクがない場合
+    else if (unifiedTasks.length === 0) {
       setIsLoading(false);
+      setAnalysis(null);
     }
-  }, []); // 空の依存配列で初回のみ実行
-
-  // タスクが大きく変更された場合の手動更新
-  useEffect(() => {
-    const taskCount = unifiedTasks.length;
-    const prevTaskCount = analysis?.totalTasks || 0;
-
-    // タスク数が大きく変わった場合（±5件以上）のみ再分析
-    if (Math.abs(taskCount - prevTaskCount) >= 5) {
-      console.log('📊 タスク数が大きく変更されたため再分析します');
-      runAnalysis();
+    // タスク数が大きく変更された場合（初回以降）
+    else if (hasInitialized) {
+      const prevTaskCount = analysis?.totalTasks || 0;
+      if (Math.abs(unifiedTasks.length - prevTaskCount) >= 5) {
+        console.log('📊 タスク数が大きく変更されたため再分析します');
+        runAnalysis();
+      }
     }
-  }, [unifiedTasks.length]);
+  }, [unifiedTasks.length, hasInitialized, analysis?.totalTasks, runAnalysis]);
 
-  // 自動更新
+  // 自動更新（独立して管理）
   useEffect(() => {
-    if (!autoRefresh || unifiedTasks.length === 0) return;
+    if (!autoRefresh || unifiedTasks.length === 0 || !hasInitialized) return;
 
     const interval = setInterval(
       () => {
@@ -358,7 +376,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     );
 
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval]);
+  }, [autoRefresh, refreshInterval, hasInitialized, unifiedTasks.length, runAnalysis]);
 
   // チャートデータの準備
   const chartData = useMemo(() => {
@@ -417,9 +435,11 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
               最終更新: {lastUpdate.toLocaleTimeString()}
             </span>
           )}
-          <Button onClick={runAnalysis} disabled={isLoading} size="sm">
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            再分析
+          <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}
+            />
+            {isAnalyzing ? '分析中...' : '再分析'}
           </Button>
         </div>
       </div>
