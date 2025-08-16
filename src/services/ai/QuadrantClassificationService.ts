@@ -4,13 +4,14 @@ import { Task } from '@/types/task';
 import { Todo } from '@/types/todo';
 
 // AI Provider Types
-export type AIProvider = 'gemini' | 'claude' | 'openai';
+export type AIProvider = 'gemini' | 'claude' | 'openai' | 'ollama';
 
 // API Configuration
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const OLLAMA_API_URL = 'http://localhost:11434/api/chat';
 
 import { ENV } from '@/utils/env';
 
@@ -146,10 +147,50 @@ const getOpenAIApiKey = (): string => {
   return apiKey;
 };
 
+// Ollama設定の取得（APIキー不要、モデル名のみ）
+const getOllamaModel = (): string => {
+  // デフォルトモデル（日本語対応が良いモデル）
+  const defaultModel = 'llama3.2:3b'; // または 'mistral', 'phi3', 'qwen2.5' など
+
+  // 環境変数から取得を試みる
+  let model = '';
+
+  try {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      model = import.meta.env.VITE_OLLAMA_MODEL || '';
+    }
+  } catch (e) {
+    // 無視
+  }
+
+  if (!model && typeof window !== 'undefined') {
+    try {
+      model = (window as any)?.import?.meta?.env?.VITE_OLLAMA_MODEL || '';
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  return model || defaultModel;
+};
+
+// Ollamaの接続確認
+const checkOllamaConnection = async (): Promise<boolean> => {
+  try {
+    const response = await axios.get('http://localhost:11434/api/tags', {
+      timeout: 5000,
+    });
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+};
+
 // API_KEYを遅延評価に変更
 let _geminiApiKey: string | null = null;
 let _claudeApiKey: string | null = null;
 let _openaiApiKey: string | null = null;
+let _ollamaModel: string | null = null;
 
 const getApiKey = (provider: AIProvider = 'gemini'): string => {
   if (provider === 'claude') {
@@ -162,6 +203,9 @@ const getApiKey = (provider: AIProvider = 'gemini'): string => {
       _openaiApiKey = getOpenAIApiKey();
     }
     return _openaiApiKey;
+  } else if (provider === 'ollama') {
+    // Ollamaはローカル実行のためAPIキー不要
+    return 'local';
   } else {
     if (_geminiApiKey === null) {
       _geminiApiKey = getGeminiApiKey();
@@ -319,6 +363,14 @@ const RATE_LIMIT = {
     maxTasksPerAnalysis: 5, // 少なめのタスク数
     initialDelay: 2000, // 長めの初期遅延
   },
+  ollama: {
+    requestsPerMinute: 60, // ローカル実行なので制限緩め
+    retryDelay: 1000,
+    maxRetries: 3,
+    batchSize: 1,
+    maxTasksPerAnalysis: 50, // ローカルなので多めでOK
+    initialDelay: 500,
+  },
 };
 
 // キャッシュの実装（最大100件まで保持）
@@ -411,7 +463,12 @@ export class QuadrantClassificationService {
   /**
    * 利用可能なAIプロバイダーを取得
    */
-  public getAvailableProviders(): { provider: AIProvider; available: boolean; name: string }[] {
+  public async getAvailableProviders(): Promise<
+    { provider: AIProvider; available: boolean; name: string }[]
+  > {
+    // Ollamaの接続状態を確認
+    const ollamaAvailable = await checkOllamaConnection();
+
     return [
       {
         provider: 'gemini',
@@ -427,6 +484,11 @@ export class QuadrantClassificationService {
         provider: 'openai',
         available: !!getApiKey('openai'),
         name: 'OpenAI GPT-4',
+      },
+      {
+        provider: 'ollama',
+        available: ollamaAvailable,
+        name: 'ローカルLLM (Ollama)',
       },
     ];
   }
@@ -499,13 +561,22 @@ export class QuadrantClassificationService {
     }
 
     const apiKey = getApiKey(this.currentProvider);
-    if (!apiKey) {
+    if (!apiKey && this.currentProvider !== 'ollama') {
       if (ENV.isDev()) {
         console.warn(
           `🚨 ${this.currentProvider.toUpperCase()} APIキーが設定されていません。ヒューリスティック分析を使用します。`
         );
       }
       return this.fallbackClassification(task);
+    }
+
+    // Ollamaの場合、接続確認
+    if (this.currentProvider === 'ollama') {
+      const isConnected = await checkOllamaConnection();
+      if (!isConnected) {
+        console.warn('🚨 Ollamaサーバーに接続できません。ヒューリスティック分析を使用します。');
+        return this.fallbackClassification(task);
+      }
     }
 
     // リトライロジック
@@ -577,6 +648,44 @@ export class QuadrantClassificationService {
           );
 
           generatedText = response.data.choices[0].message.content;
+        } else if (this.currentProvider === 'ollama') {
+          // Ollama API コール
+          if (_ollamaModel === null) {
+            _ollamaModel = getOllamaModel();
+          }
+
+          const response = await axios.post(
+            OLLAMA_API_URL,
+            {
+              model: _ollamaModel,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    'あなたはタスク管理の専門家です。タスクをアイゼンハワーマトリックスの4象限に分類し、JSON形式で回答してください。',
+                },
+                {
+                  role: 'user',
+                  content: prompt,
+                },
+              ],
+              stream: false,
+              format: 'json',
+              options: {
+                temperature: 0.3,
+                num_ctx: 4096, // コンテキストウィンドウ
+                num_predict: 1500, // 最大出力トークン数
+              },
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              timeout: 60000, // 60秒のタイムアウト（ローカル実行のため長め）
+            }
+          );
+
+          generatedText = response.data.message.content;
         } else {
           // Gemini API コール
           const response = await axios.post(

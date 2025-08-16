@@ -20,14 +20,16 @@ echo Select AI Providers to configure:
 echo 1. Gemini only (Recommended for free usage)
 echo 2. Claude only
 echo 3. OpenAI GPT-4 only
-echo 4. All providers
+echo 4. Ollama (Local LLM) only
+echo 5. All providers
 echo.
-set /p choice="Enter your choice (1-4): "
+set /p choice="Enter your choice (1-5): "
 
 if "%choice%"=="1" goto :gemini
 if "%choice%"=="2" goto :claude
 if "%choice%"=="3" goto :openai
-if "%choice%"=="4" goto :all
+if "%choice%"=="4" goto :ollama
+if "%choice%"=="5" goto :all
 echo Invalid choice. Exiting...
 exit /b 1
 
@@ -61,6 +63,25 @@ echo VITE_OPENAI_API_KEY=%openai_key%>> .env
 echo ✓ OpenAI API key configured
 goto :complete
 
+:ollama
+echo.
+echo Setting up Ollama (Local LLM)...
+echo.
+echo Please ensure Ollama is installed and running.
+echo Visit: https://ollama.com/download
+echo.
+echo Default model is llama3.2:3b. To use a different model:
+set /p ollama_model="Enter model name (or press Enter for default): "
+if not "%ollama_model%"=="" (
+    echo VITE_OLLAMA_MODEL=%ollama_model%>> .env
+    echo ✓ Ollama model configured: %ollama_model%
+) else (
+    echo ✓ Using default Ollama model: llama3.2:3b
+)
+echo.
+echo To download the model, run: ollama pull llama3.2:3b
+goto :complete
+
 :all
 echo.
 echo Setting up Gemini API...
@@ -85,6 +106,17 @@ echo.
 set /p openai_key="Enter your OpenAI API key: "
 echo VITE_OPENAI_API_KEY=%openai_key%>> .env
 echo ✓ OpenAI API key configured
+
+echo.
+echo Setting up Ollama (Local LLM)...
+echo Default model is llama3.2:3b. To use a different model:
+set /p ollama_model="Enter model name (or press Enter for default): "
+if not "%ollama_model%"=="" (
+    echo VITE_OLLAMA_MODEL=%ollama_model%>> .env
+    echo ✓ Ollama model configured: %ollama_model%
+) else (
+    echo ✓ Using default Ollama model: llama3.2:3b
+)
 goto :complete
 
 :complete

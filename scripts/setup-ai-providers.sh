@@ -19,9 +19,10 @@ echo "Select AI Providers to configure:"
 echo "1. Gemini only (Recommended for free usage)"
 echo "2. Claude only"
 echo "3. OpenAI GPT-4 only"
-echo "4. All providers"
+echo "4. Ollama (Local LLM) only"
+echo "5. All providers"
 echo
-read -p "Enter your choice (1-4): " choice
+read -p "Enter your choice (1-5): " choice
 
 setup_gemini() {
     echo
@@ -53,6 +54,25 @@ setup_openai() {
     echo "✓ OpenAI API key configured"
 }
 
+setup_ollama() {
+    echo
+    echo "Setting up Ollama (Local LLM)..."
+    echo
+    echo "Please ensure Ollama is installed and running."
+    echo "Visit: https://ollama.com/download"
+    echo
+    echo "Default model is llama3.2:3b. To use a different model:"
+    read -p "Enter model name (or press Enter for default): " ollama_model
+    if [ ! -z "$ollama_model" ]; then
+        echo "VITE_OLLAMA_MODEL=$ollama_model" >> .env
+        echo "✓ Ollama model configured: $ollama_model"
+    else
+        echo "✓ Using default Ollama model: llama3.2:3b"
+    fi
+    echo
+    echo "To download the model, run: ollama pull llama3.2:3b"
+}
+
 case $choice in
     1)
         setup_gemini
@@ -64,9 +84,13 @@ case $choice in
         setup_openai
         ;;
     4)
+        setup_ollama
+        ;;
+    5)
         setup_gemini
         setup_claude
         setup_openai
+        setup_ollama
         ;;
     *)
         echo "Invalid choice. Exiting..."

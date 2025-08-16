@@ -284,7 +284,18 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const [currentProvider, setCurrentProvider] = useState<AIProvider>(
     classificationService.getProvider()
   );
-  const [availableProviders] = useState(() => classificationService.getAvailableProviders());
+  const [availableProviders, setAvailableProviders] = useState<
+    { provider: AIProvider; available: boolean; name: string }[]
+  >([]);
+
+  // プロバイダー一覧を取得
+  useEffect(() => {
+    const loadProviders = async () => {
+      const providers = await classificationService.getAvailableProviders();
+      setAvailableProviders(providers);
+    };
+    loadProviders();
+  }, [classificationService]);
 
   // タスクを統一形式に変換（完了済みタスクは除外）
   const unifiedTasks = useMemo(() => {
@@ -321,12 +332,23 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     setCurrentProvider(provider);
     classificationService.setProvider(provider);
     const providerName =
-      provider === 'claude' ? 'Claude' : provider === 'openai' ? 'GPT-4' : 'Gemini';
+      provider === 'claude'
+        ? 'Claude'
+        : provider === 'openai'
+          ? 'GPT-4'
+          : provider === 'ollama'
+            ? 'Ollama (ローカル)'
+            : 'Gemini';
 
     if (provider === 'openai') {
       toast.warning(
         `AIプロバイダーを ${providerName} に切り替えました。\n⚠️ OpenAIはレート制限が厳しく、コストも高いため、少数のタスクのみ分析されます。`,
         { duration: 6000 }
+      );
+    } else if (provider === 'ollama') {
+      toast.success(
+        `AIプロバイダーを ${providerName} に切り替えました。\n🦙 ローカルLLMのため、プライバシーが保護され、無料で使用できます。`,
+        { duration: 5000 }
       );
     } else {
       toast.info(`AIプロバイダーを ${providerName} に切り替えました`);
@@ -367,7 +389,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       onQuadrantAnalysis?.(result);
 
       // タスク数の制限について通知
-      const maxTasks = currentProvider === 'openai' ? 5 : 20;
+      const maxTasks = currentProvider === 'openai' ? 5 : currentProvider === 'ollama' ? 50 : 20;
       if (unifiedTasks.length > maxTasks) {
         toast.info(
           `未完了タスク${unifiedTasks.length}件中、最初の${maxTasks}件を分析しました（完了済み${completedCount}件は除外）${
@@ -469,7 +491,9 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
                   ? 'Claude AI'
                   : currentProvider === 'openai'
                     ? 'GPT-4'
-                    : 'Gemini AI'}
+                    : currentProvider === 'ollama'
+                      ? 'ローカルLLM (Ollama)'
+                      : 'Gemini AI'}
                 が未完了タスク
                 {unifiedTasks.length}件を分析しています
               </p>
@@ -523,10 +547,20 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
                   <SelectItem key={p.provider} value={p.provider} disabled={!p.available}>
                     <div className="flex items-center gap-2">
                       <span>
-                        {p.provider === 'claude' ? '🤖' : p.provider === 'openai' ? '🧠' : '✨'}
+                        {p.provider === 'claude'
+                          ? '🤖'
+                          : p.provider === 'openai'
+                            ? '🧠'
+                            : p.provider === 'ollama'
+                              ? '🦙'
+                              : '✨'}
                       </span>
                       <span>{p.name}</span>
-                      {!p.available && <span className="text-xs text-red-500">(未設定)</span>}
+                      {!p.available && (
+                        <span className="text-xs text-red-500">
+                          {p.provider === 'ollama' ? '(未接続)' : '(未設定)'}
+                        </span>
+                      )}
                     </div>
                   </SelectItem>
                 ))}
