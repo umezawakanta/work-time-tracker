@@ -300,7 +300,7 @@ const RATE_LIMIT = {
     retryDelay: 3000,
     maxRetries: 3,
     batchSize: 1,
-    maxTasksPerAnalysis: 15,
+    maxTasksPerAnalysis: 20, // 15→20に増加
     initialDelay: 1000,
   },
   claude: {
@@ -308,7 +308,7 @@ const RATE_LIMIT = {
     retryDelay: 3000,
     maxRetries: 3,
     batchSize: 1,
-    maxTasksPerAnalysis: 15,
+    maxTasksPerAnalysis: 20, // 15→20に増加
     initialDelay: 1000,
   },
   openai: {

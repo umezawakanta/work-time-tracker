@@ -86,6 +86,23 @@ class AnthropicService {
     : '/api/ai/anthropic'; // Vercel Functions in production
   private conversationHistory: Map<string, AnthropicMessage[]> = new Map();
 
+  /**
+   * JSONコメントを除去してパースする
+   */
+  private cleanAndParseJson(jsonString: string): any {
+    try {
+      // JSONコメントを除去（//で始まる行と/* */形式のコメント）
+      const cleanJson = jsonString
+        .replace(/\/\*[\s\S]*?\*\//g, '') // /* */ 形式のコメントを除去
+        .replace(/\/\/.*$/gm, ''); // // 形式のコメントを除去
+
+      return JSON.parse(cleanJson);
+    } catch (error) {
+      console.error('Failed to parse JSON:', error, 'Original:', jsonString);
+      throw error;
+    }
+  }
+
   constructor() {
     this.config = {
       apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
@@ -226,8 +243,8 @@ Format the response as JSON with keys: summary, suggestions (array), insights (a
       const response = await this.makeRequest(messages);
       const content = response.content[0]?.text || '{}';
 
-      // Parse the JSON response
-      const result = JSON.parse(content);
+      // Parse the JSON response (コメントを除去してからパース)
+      const result = this.cleanAndParseJson(content);
 
       return {
         summary: result.summary || 'タスク分析を完了しました。',
@@ -325,7 +342,7 @@ Format as JSON with keys: intent, entities (object), suggestedTasks (array of ta
     try {
       const response = await this.makeRequest(messages);
       const content = response.content[0]?.text || '{}';
-      const result = JSON.parse(content);
+      const result = this.cleanAndParseJson(content);
 
       return {
         intent: result.intent || 'create_task',
@@ -449,7 +466,7 @@ Format as JSON with keys: optimizations, automationOpportunities, timeWasters, f
     try {
       const response = await this.makeRequest(messages);
       const content = response.content[0]?.text || '{}';
-      const result = JSON.parse(content);
+      const result = this.cleanAndParseJson(content);
 
       return {
         optimizations: result.optimizations || [],
@@ -502,7 +519,7 @@ Format as JSON with structure: { template: { name, tasks: [] }, customizationTip
     try {
       const response = await this.makeRequest(messages);
       const content = response.content[0]?.text || '{}';
-      const result = JSON.parse(content);
+      const result = this.cleanAndParseJson(content);
 
       return result;
     } catch (error) {
@@ -671,7 +688,8 @@ ${JSON.stringify(tasksInfo, null, 2)}
       const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
-        const result = JSON.parse(jsonMatch[0]);
+        // JSONコメントを除去してパース
+        const result = this.cleanAndParseJson(jsonMatch[0]);
 
         // IDに基づいてタスクを並び替え
         const sortedTasks: TodoItem[] = [];

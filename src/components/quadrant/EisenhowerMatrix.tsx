@@ -367,7 +367,7 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       onQuadrantAnalysis?.(result);
 
       // タスク数の制限について通知
-      const maxTasks = currentProvider === 'openai' ? 5 : 15;
+      const maxTasks = currentProvider === 'openai' ? 5 : 20;
       if (unifiedTasks.length > maxTasks) {
         toast.info(
           `未完了タスク${unifiedTasks.length}件中、最初の${maxTasks}件を分析しました（完了済み${completedCount}件は除外）${
