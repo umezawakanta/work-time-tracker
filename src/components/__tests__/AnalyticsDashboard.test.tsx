@@ -26,37 +26,7 @@ jest.mock('react-hot-toast', () => ({
   },
 }));
 
-// Recharts components
-jest.mock('recharts', () => ({
-  LineChart: ({ children, ...props }: any) => (
-    <div data-testid="line-chart" {...props}>
-      {children}
-    </div>
-  ),
-  Line: (props: any) => <div data-testid="line" {...props} />,
-  XAxis: (props: any) => <div data-testid="x-axis" {...props} />,
-  YAxis: (props: any) => <div data-testid="y-axis" {...props} />,
-  CartesianGrid: (props: any) => <div data-testid="cartesian-grid" {...props} />,
-  Tooltip: (props: any) => <div data-testid="tooltip" {...props} />,
-  ResponsiveContainer: ({ children, ...props }: any) => (
-    <div data-testid="responsive-container" {...props}>
-      {children}
-    </div>
-  ),
-  BarChart: ({ children, ...props }: any) => (
-    <div data-testid="bar-chart" {...props}>
-      {children}
-    </div>
-  ),
-  Bar: (props: any) => <div data-testid="bar" {...props} />,
-  PieChart: ({ children, ...props }: any) => (
-    <div data-testid="pie-chart" {...props}>
-      {children}
-    </div>
-  ),
-  Pie: (props: any) => <div data-testid="pie" {...props} />,
-  Cell: (props: any) => <div data-testid="cell" {...props} />,
-}));
+// (Recharts mock is defined later; ensure single definition only)
 
 // Radix UI Select components
 jest.mock('@radix-ui/react-select', () => {
@@ -84,7 +54,7 @@ jest.mock('@radix-ui/react-select', () => {
         {
           role: 'option',
           'data-testid': `select-item-${value}`,
-          'aria-label': children,
+          // avoid incorrect accessible name from object labels; use text content instead
           ...props,
         },
         children
@@ -105,7 +75,11 @@ jest.mock('recharts', () => ({
     <div data-testid="responsive-container">{children}</div>
   ),
   BarChart: ({ children }: any) => <div data-testid="bar-chart">{children}</div>,
-  PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+  PieChart: ({ children }: any) => (
+    <div data-testid="chart-container">
+      <div data-testid="pie-chart">{children}</div>
+    </div>
+  ),
   Bar: () => <div data-testid="bar" />,
   Pie: () => <div data-testid="pie" />,
   Cell: () => <div data-testid="cell" />,

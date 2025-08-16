@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1755369417244" clover="3.2.0">
-  <project timestamp="1755369417244" name="All files">
-    <metrics statements="74416" coveredstatements="3136" conditionals="33710" coveredconditionals="893" methods="18692" coveredmethods="546" elements="126818" coveredelements="4575" complexity="0" loc="74416" ncloc="74416" packages="211" files="1065" classes="1065"/>
+<coverage generated="1755370409032" clover="3.2.0">
+  <project timestamp="1755370409032" name="All files">
+    <metrics statements="74421" coveredstatements="3063" conditionals="33711" coveredconditionals="881" methods="18694" coveredmethods="540" elements="126826" coveredelements="4484" complexity="0" loc="74421" ncloc="74421" packages="211" files="1065" classes="1065"/>
     <package name="src">
       <metrics statements="152" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="144" coveredmethods="0"/>
       <file name="App.firebase.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\App.firebase.tsx">
@@ -10551,8 +10551,8 @@
         <line num="112" count="864" type="stmt"/>
         <line num="113" count="864" type="stmt"/>
         <line num="114" count="864" type="cond" truecount="3" falsecount="0"/>
-        <line num="115" count="853" type="stmt"/>
-        <line num="116" count="853" type="stmt"/>
+        <line num="115" count="847" type="stmt"/>
+        <line num="116" count="847" type="stmt"/>
         <line num="120" count="144" type="cond" truecount="1" falsecount="0"/>
         <line num="121" count="144" type="stmt"/>
         <line num="125" count="24" type="stmt"/>
@@ -28959,7 +28959,7 @@
       </file>
     </package>
     <package name="src.config">
-      <metrics statements="174" coveredstatements="55" conditionals="116" coveredconditionals="22" methods="37" coveredmethods="5"/>
+      <metrics statements="174" coveredstatements="0" conditionals="116" coveredconditionals="0" methods="37" coveredmethods="0"/>
       <file name="aiPricing.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\config\aiPricing.ts">
         <metrics statements="24" coveredstatements="0" conditionals="15" coveredconditionals="0" methods="3" coveredmethods="0"/>
         <line num="18" count="0" type="stmt"/>
@@ -28988,39 +28988,39 @@
         <line num="168" count="0" type="stmt"/>
       </file>
       <file name="firebase.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\config\firebase.ts">
-        <metrics statements="62" coveredstatements="34" conditionals="12" coveredconditionals="3" methods="23" coveredmethods="3"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="27" count="6" type="stmt"/>
-        <line num="30" count="1" type="cond" truecount="0" falsecount="1"/>
+        <metrics statements="62" coveredstatements="0" conditionals="12" coveredconditionals="0" methods="23" coveredmethods="0"/>
+        <line num="2" count="0" type="stmt"/>
+        <line num="3" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="32" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
         <line num="40" count="0" type="stmt"/>
         <line num="41" count="0" type="stmt"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
-        <line num="52" count="1" type="stmt"/>
-        <line num="53" count="1" type="stmt"/>
-        <line num="54" count="1" type="stmt"/>
-        <line num="55" count="1" type="stmt"/>
-        <line num="56" count="1" type="stmt"/>
-        <line num="58" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="59" count="1" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
-        <line num="61" count="1" type="stmt"/>
-        <line num="62" count="1" type="stmt"/>
-        <line num="63" count="1" type="stmt"/>
-        <line num="64" count="1" type="stmt"/>
-        <line num="67" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="68" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="58" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="67" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="68" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="70" count="0" type="stmt"/>
         <line num="71" count="0" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
@@ -29044,29 +29044,29 @@
         <line num="104" count="0" type="stmt"/>
         <line num="105" count="0" type="stmt"/>
         <line num="109" count="0" type="stmt"/>
-        <line num="113" count="1" type="stmt"/>
-        <line num="115" count="1" type="stmt"/>
-        <line num="116" count="1" type="stmt"/>
-        <line num="117" count="1" type="stmt"/>
-        <line num="118" count="1" type="stmt"/>
-        <line num="120" count="1" type="stmt"/>
-        <line num="121" count="1" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="115" count="0" type="stmt"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="118" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
       </file>
       <file name="index.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\config\index.ts">
-        <metrics statements="33" coveredstatements="21" conditionals="37" coveredconditionals="19" methods="6" coveredmethods="2"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="11" count="22" type="cond" truecount="4" falsecount="0"/>
-        <line num="12" count="10" type="stmt"/>
-        <line num="16" count="12" type="stmt"/>
-        <line num="17" count="12" type="cond" truecount="3" falsecount="0"/>
-        <line num="18" count="12" type="stmt"/>
+        <metrics statements="33" coveredstatements="0" conditionals="37" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="18" count="0" type="stmt"/>
         <line num="24" count="0" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="28" count="2" type="stmt"/>
-        <line num="36" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="36" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="37" count="0" type="stmt"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="58" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="58" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="59" count="0" type="stmt"/>
         <line num="61" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="62" count="0" type="stmt"/>
@@ -29077,16 +29077,16 @@
         <line num="74" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="75" count="0" type="stmt"/>
         <line num="78" count="0" type="stmt"/>
-        <line num="85" count="1" type="stmt"/>
-        <line num="88" count="1" type="stmt"/>
-        <line num="96" count="1" type="stmt"/>
-        <line num="123" count="1" type="stmt"/>
-        <line num="157" count="1" type="stmt"/>
-        <line num="163" count="1" type="stmt"/>
-        <line num="171" count="1" type="stmt"/>
-        <line num="193" count="1" type="stmt"/>
-        <line num="202" count="1" type="stmt"/>
-        <line num="210" count="1" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="157" count="0" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
+        <line num="171" count="0" type="stmt"/>
+        <line num="193" count="0" type="stmt"/>
+        <line num="202" count="0" type="stmt"/>
+        <line num="210" count="0" type="stmt"/>
       </file>
       <file name="stripe.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\config\stripe.ts">
         <metrics statements="55" coveredstatements="0" conditionals="52" coveredconditionals="0" methods="5" coveredmethods="0"/>
@@ -29161,27 +29161,27 @@
       <metrics statements="540" coveredstatements="284" conditionals="155" coveredconditionals="69" methods="87" coveredmethods="52"/>
       <file name="AuthContext.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\context\AuthContext.tsx">
         <metrics statements="211" coveredstatements="77" conditionals="43" coveredconditionals="11" methods="32" coveredmethods="16"/>
-        <line num="1" count="12" type="stmt"/>
-        <line num="2" count="12" type="stmt"/>
-        <line num="3" count="12" type="stmt"/>
-        <line num="5" count="12" type="stmt"/>
-        <line num="6" count="12" type="stmt"/>
-        <line num="35" count="12" type="stmt"/>
-        <line num="42" count="12" type="stmt"/>
+        <line num="1" count="11" type="stmt"/>
+        <line num="2" count="11" type="stmt"/>
+        <line num="3" count="11" type="stmt"/>
+        <line num="5" count="11" type="stmt"/>
+        <line num="6" count="11" type="stmt"/>
+        <line num="35" count="11" type="stmt"/>
+        <line num="42" count="11" type="stmt"/>
         <line num="44" count="3" type="cond" truecount="4" falsecount="0"/>
         <line num="45" count="3" type="stmt"/>
         <line num="48" count="0" type="stmt"/>
         <line num="49" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="50" count="0" type="stmt"/>
         <line num="55" count="0" type="stmt"/>
-        <line num="59" count="12" type="stmt"/>
+        <line num="59" count="11" type="stmt"/>
         <line num="61" count="3" type="stmt"/>
         <line num="62" count="3" type="cond" truecount="1" falsecount="0"/>
         <line num="63" count="3" type="stmt"/>
         <line num="66" count="0" type="stmt"/>
-        <line num="71" count="12" type="stmt"/>
+        <line num="71" count="11" type="stmt"/>
         <line num="72" count="0" type="stmt"/>
-        <line num="75" count="12" type="stmt"/>
+        <line num="75" count="11" type="stmt"/>
         <line num="76" count="24" type="stmt"/>
         <line num="77" count="24" type="stmt"/>
         <line num="78" count="24" type="stmt"/>
@@ -29371,7 +29371,7 @@
         <line num="472" count="3" type="stmt"/>
         <line num="476" count="24" type="stmt"/>
         <line num="489" count="24" type="stmt"/>
-        <line num="492" count="12" type="stmt"/>
+        <line num="492" count="11" type="stmt"/>
       </file>
       <file name="FirebaseAuthContext.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\context\FirebaseAuthContext.tsx">
         <metrics statements="191" coveredstatements="125" conditionals="79" coveredconditionals="38" methods="20" coveredmethods="17"/>
@@ -32067,7 +32067,7 @@
       </file>
     </package>
     <package name="src.hooks">
-      <metrics statements="3153" coveredstatements="113" conditionals="933" coveredconditionals="18" methods="722" coveredmethods="30"/>
+      <metrics statements="3153" coveredstatements="62" conditionals="933" coveredconditionals="14" methods="722" coveredmethods="19"/>
       <file name="useADHDNotifications.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\hooks\useADHDNotifications.ts">
         <metrics statements="67" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="19" coveredmethods="0"/>
         <line num="1" count="0" type="stmt"/>
@@ -32397,9 +32397,9 @@
       </file>
       <file name="useAuth.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\hooks\useAuth.ts">
         <metrics statements="7" coveredstatements="7" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
-        <line num="2" count="9" type="stmt"/>
-        <line num="3" count="9" type="stmt"/>
-        <line num="5" count="9" type="stmt"/>
+        <line num="2" count="8" type="stmt"/>
+        <line num="3" count="8" type="stmt"/>
+        <line num="5" count="8" type="stmt"/>
         <line num="6" count="108" type="stmt"/>
         <line num="7" count="108" type="cond" truecount="1" falsecount="0"/>
         <line num="8" count="4" type="stmt"/>
@@ -34375,58 +34375,58 @@
         <line num="78" count="0" type="stmt"/>
       </file>
       <file name="useTodos.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\hooks\useTodos.ts">
-        <metrics statements="51" coveredstatements="51" conditionals="4" coveredconditionals="4" methods="11" coveredmethods="11"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="20" count="48" type="stmt"/>
-        <line num="21" count="48" type="stmt"/>
-        <line num="22" count="48" type="stmt"/>
-        <line num="23" count="48" type="stmt"/>
-        <line num="24" count="48" type="stmt"/>
-        <line num="26" count="48" type="stmt"/>
-        <line num="27" count="25" type="cond" truecount="1" falsecount="0"/>
-        <line num="28" count="3" type="stmt"/>
-        <line num="29" count="3" type="stmt"/>
-        <line num="30" count="3" type="stmt"/>
-        <line num="33" count="22" type="stmt"/>
-        <line num="34" count="22" type="stmt"/>
-        <line num="37" count="5" type="stmt"/>
-        <line num="38" count="5" type="stmt"/>
-        <line num="44" count="22" type="stmt"/>
-        <line num="47" count="48" type="stmt"/>
-        <line num="48" count="34" type="cond" truecount="1" falsecount="0"/>
-        <line num="50" count="27" type="stmt"/>
-        <line num="51" count="27" type="stmt"/>
-        <line num="52" count="25" type="stmt"/>
-        <line num="54" count="2" type="stmt"/>
-        <line num="58" count="48" type="stmt"/>
-        <line num="59" count="32" type="stmt"/>
-        <line num="62" count="48" type="stmt"/>
-        <line num="64" count="6" type="cond" truecount="1" falsecount="0"/>
-        <line num="66" count="5" type="stmt"/>
-        <line num="67" count="5" type="stmt"/>
-        <line num="68" count="2" type="stmt"/>
-        <line num="70" count="3" type="stmt"/>
-        <line num="71" count="3" type="stmt"/>
-        <line num="77" count="48" type="stmt"/>
-        <line num="78" count="4" type="stmt"/>
-        <line num="79" count="4" type="stmt"/>
-        <line num="80" count="2" type="stmt"/>
-        <line num="82" count="2" type="stmt"/>
-        <line num="83" count="2" type="stmt"/>
-        <line num="87" count="48" type="stmt"/>
-        <line num="88" count="2" type="stmt"/>
-        <line num="89" count="2" type="stmt"/>
-        <line num="90" count="1" type="stmt"/>
-        <line num="92" count="1" type="stmt"/>
-        <line num="93" count="1" type="stmt"/>
-        <line num="97" count="48" type="stmt"/>
-        <line num="99" count="3" type="stmt"/>
-        <line num="100" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="102" count="1" type="stmt"/>
-        <line num="112" count="48" type="stmt"/>
+        <metrics statements="51" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="11" coveredmethods="0"/>
+        <line num="2" count="0" type="stmt"/>
+        <line num="3" count="0" type="stmt"/>
+        <line num="4" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="64" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="100" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
       </file>
       <file name="useUnifiedAuth.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\hooks\useUnifiedAuth.ts">
         <metrics statements="181" coveredstatements="0" conditionals="53" coveredconditionals="0" methods="44" coveredmethods="0"/>
@@ -47489,7 +47489,7 @@
         <line num="279" count="150" type="stmt"/>
         <line num="289" count="44" type="stmt"/>
         <line num="290" count="40044" type="cond" truecount="2" falsecount="0"/>
-        <line num="291" count="46608" type="stmt"/>
+        <line num="291" count="45660" type="stmt"/>
         <line num="293" count="44" type="cond" truecount="1" falsecount="0"/>
         <line num="295" count="40" type="stmt"/>
         <line num="297" count="40" type="stmt"/>
@@ -56268,39 +56268,39 @@
       </file>
       <file name="apiConfig.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\api\apiConfig.ts">
         <metrics statements="102" coveredstatements="40" conditionals="71" coveredconditionals="24" methods="10" coveredmethods="1"/>
-        <line num="1" count="52" type="stmt"/>
-        <line num="2" count="52" type="stmt"/>
-        <line num="3" count="52" type="stmt"/>
-        <line num="4" count="52" type="stmt"/>
-        <line num="14" count="52" type="stmt"/>
-        <line num="21" count="52" type="stmt"/>
-        <line num="22" count="52" type="stmt"/>
-        <line num="30" count="52" type="cond" truecount="2" falsecount="0"/>
-        <line num="31" count="48" type="stmt"/>
-        <line num="34" count="48" type="stmt"/>
+        <line num="1" count="51" type="stmt"/>
+        <line num="2" count="51" type="stmt"/>
+        <line num="3" count="51" type="stmt"/>
+        <line num="4" count="51" type="stmt"/>
+        <line num="14" count="51" type="stmt"/>
+        <line num="21" count="51" type="stmt"/>
+        <line num="22" count="51" type="stmt"/>
+        <line num="30" count="51" type="cond" truecount="2" falsecount="0"/>
+        <line num="31" count="47" type="stmt"/>
+        <line num="34" count="47" type="stmt"/>
         <line num="36" count="4" type="stmt"/>
-        <line num="39" count="52" type="cond" truecount="1" falsecount="1"/>
-        <line num="40" count="52" type="stmt"/>
-        <line num="44" count="52" type="cond" truecount="2" falsecount="0"/>
+        <line num="39" count="51" type="cond" truecount="1" falsecount="1"/>
+        <line num="40" count="51" type="stmt"/>
+        <line num="44" count="51" type="cond" truecount="2" falsecount="0"/>
         <line num="45" count="4" type="stmt"/>
         <line num="46" count="4" type="stmt"/>
-        <line num="47" count="48" type="cond" truecount="2" falsecount="0"/>
+        <line num="47" count="47" type="cond" truecount="2" falsecount="0"/>
         <line num="48" count="2" type="stmt"/>
         <line num="49" count="2" type="stmt"/>
-        <line num="50" count="46" type="cond" truecount="4" falsecount="0"/>
-        <line num="52" count="35" type="stmt"/>
-        <line num="53" count="35" type="cond" truecount="3" falsecount="1"/>
+        <line num="50" count="45" type="cond" truecount="4" falsecount="0"/>
+        <line num="52" count="34" type="stmt"/>
+        <line num="53" count="34" type="cond" truecount="3" falsecount="1"/>
         <line num="54" count="0" type="stmt"/>
         <line num="55" count="0" type="stmt"/>
-        <line num="57" count="35" type="stmt"/>
-        <line num="58" count="35" type="cond" truecount="0" falsecount="1"/>
+        <line num="57" count="34" type="stmt"/>
+        <line num="58" count="34" type="cond" truecount="0" falsecount="1"/>
         <line num="59" count="0" type="stmt"/>
         <line num="60" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="61" count="0" type="stmt"/>
         <line num="66" count="11" type="stmt"/>
         <line num="67" count="11" type="stmt"/>
-        <line num="70" count="52" type="stmt"/>
-        <line num="73" count="52" type="cond" truecount="1" falsecount="0"/>
+        <line num="70" count="51" type="stmt"/>
+        <line num="73" count="51" type="cond" truecount="1" falsecount="0"/>
         <line num="79" count="6" type="cond" truecount="2" falsecount="0"/>
         <line num="82" count="6" type="stmt"/>
         <line num="85" count="6" type="stmt"/>
@@ -56311,10 +56311,10 @@
         <line num="99" count="0" type="stmt"/>
         <line num="103" count="0" type="stmt"/>
         <line num="104" count="0" type="stmt"/>
-        <line num="109" count="52" type="stmt"/>
-        <line num="117" count="52" type="stmt"/>
-        <line num="118" count="52" type="stmt"/>
-        <line num="120" count="52" type="stmt"/>
+        <line num="109" count="51" type="stmt"/>
+        <line num="117" count="51" type="stmt"/>
+        <line num="118" count="51" type="stmt"/>
+        <line num="120" count="51" type="stmt"/>
         <line num="123" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="124" count="0" type="stmt"/>
         <line num="125" count="0" type="stmt"/>
@@ -56342,7 +56342,7 @@
         <line num="176" count="0" type="stmt"/>
         <line num="179" count="0" type="stmt"/>
         <line num="180" count="0" type="stmt"/>
-        <line num="185" count="52" type="stmt"/>
+        <line num="185" count="51" type="stmt"/>
         <line num="188" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="190" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="191" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -56366,7 +56366,7 @@
         <line num="237" count="0" type="stmt"/>
         <line num="242" count="0" type="stmt"/>
         <line num="244" count="0" type="stmt"/>
-        <line num="249" count="52" type="stmt"/>
+        <line num="249" count="51" type="stmt"/>
         <line num="250" count="1" type="stmt"/>
         <line num="251" count="1" type="stmt"/>
         <line num="252" count="1" type="stmt"/>
@@ -56503,11 +56503,11 @@
       </file>
       <file name="authApi.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\api\authApi.ts">
         <metrics statements="204" coveredstatements="160" conditionals="70" coveredconditionals="37" methods="21" coveredmethods="20"/>
-        <line num="1" count="16" type="stmt"/>
-        <line num="2" count="16" type="stmt"/>
-        <line num="3" count="16" type="stmt"/>
-        <line num="5" count="16" type="stmt"/>
-        <line num="35" count="16" type="stmt"/>
+        <line num="1" count="15" type="stmt"/>
+        <line num="2" count="15" type="stmt"/>
+        <line num="3" count="15" type="stmt"/>
+        <line num="5" count="15" type="stmt"/>
+        <line num="35" count="15" type="stmt"/>
         <line num="36" count="2" type="stmt"/>
         <line num="37" count="2" type="stmt"/>
         <line num="39" count="2" type="stmt"/>
@@ -56517,7 +56517,7 @@
         <line num="54" count="2" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
         <line num="57" count="0" type="stmt"/>
-        <line num="61" count="16" type="stmt"/>
+        <line num="61" count="15" type="stmt"/>
         <line num="66" count="4" type="stmt"/>
         <line num="67" count="4" type="stmt"/>
         <line num="68" count="4" type="stmt"/>
@@ -56563,11 +56563,11 @@
         <line num="156" count="0" type="stmt"/>
         <line num="157" count="0" type="stmt"/>
         <line num="160" count="0" type="stmt"/>
-        <line num="164" count="16" type="stmt"/>
+        <line num="164" count="15" type="stmt"/>
         <line num="166" count="2" type="stmt"/>
         <line num="174" count="2" type="stmt"/>
         <line num="176" count="2" type="stmt"/>
-        <line num="179" count="16" type="stmt"/>
+        <line num="179" count="15" type="stmt"/>
         <line num="180" count="6" type="stmt"/>
         <line num="182" count="6" type="cond" truecount="3" falsecount="0"/>
         <line num="183" count="2" type="stmt"/>
@@ -56602,13 +56602,13 @@
         <line num="248" count="0" type="stmt"/>
         <line num="249" count="0" type="stmt"/>
         <line num="252" count="0" type="stmt"/>
-        <line num="256" count="16" type="stmt"/>
+        <line num="256" count="15" type="stmt"/>
         <line num="257" count="2" type="stmt"/>
         <line num="258" count="2" type="stmt"/>
         <line num="259" count="1" type="stmt"/>
         <line num="261" count="1" type="stmt"/>
         <line num="262" count="1" type="stmt"/>
-        <line num="266" count="16" type="stmt"/>
+        <line num="266" count="15" type="stmt"/>
         <line num="270" count="3" type="stmt"/>
         <line num="271" count="3" type="stmt"/>
         <line num="272" count="3" type="cond" truecount="1" falsecount="0"/>
@@ -56617,7 +56617,7 @@
         <line num="277" count="0" type="stmt"/>
         <line num="279" count="3" type="stmt"/>
         <line num="280" count="3" type="stmt"/>
-        <line num="284" count="16" type="stmt"/>
+        <line num="284" count="15" type="stmt"/>
         <line num="285" count="4" type="stmt"/>
         <line num="286" count="4" type="stmt"/>
         <line num="287" count="4" type="stmt"/>
@@ -56640,25 +56640,25 @@
         <line num="330" count="1" type="stmt"/>
         <line num="331" count="1" type="stmt"/>
         <line num="336" count="1" type="stmt"/>
-        <line num="341" count="16" type="stmt"/>
+        <line num="341" count="15" type="stmt"/>
         <line num="342" count="2" type="stmt"/>
         <line num="343" count="2" type="stmt"/>
         <line num="344" count="1" type="stmt"/>
         <line num="346" count="1" type="stmt"/>
         <line num="347" count="1" type="stmt"/>
-        <line num="351" count="16" type="stmt"/>
+        <line num="351" count="15" type="stmt"/>
         <line num="352" count="2" type="stmt"/>
         <line num="353" count="2" type="stmt"/>
         <line num="354" count="1" type="stmt"/>
         <line num="356" count="1" type="stmt"/>
         <line num="357" count="1" type="stmt"/>
-        <line num="361" count="16" type="stmt"/>
+        <line num="361" count="15" type="stmt"/>
         <line num="365" count="2" type="stmt"/>
         <line num="366" count="2" type="stmt"/>
         <line num="370" count="1" type="stmt"/>
         <line num="372" count="1" type="stmt"/>
         <line num="373" count="1" type="stmt"/>
-        <line num="378" count="16" type="stmt"/>
+        <line num="378" count="15" type="stmt"/>
         <line num="379" count="3" type="stmt"/>
         <line num="380" count="3" type="stmt"/>
         <line num="384" count="2" type="cond" truecount="3" falsecount="0"/>
@@ -56667,7 +56667,7 @@
         <line num="395" count="1" type="stmt"/>
         <line num="396" count="1" type="stmt"/>
         <line num="397" count="1" type="stmt"/>
-        <line num="402" count="16" type="stmt"/>
+        <line num="402" count="15" type="stmt"/>
         <line num="406" count="3" type="stmt"/>
         <line num="407" count="3" type="stmt"/>
         <line num="408" count="3" type="cond" truecount="1" falsecount="0"/>
@@ -56676,34 +56676,34 @@
         <line num="417" count="0" type="stmt"/>
         <line num="419" count="3" type="stmt"/>
         <line num="420" count="3" type="stmt"/>
-        <line num="425" count="16" type="stmt"/>
+        <line num="425" count="15" type="stmt"/>
         <line num="426" count="2" type="stmt"/>
         <line num="427" count="2" type="stmt"/>
         <line num="428" count="1" type="stmt"/>
         <line num="430" count="1" type="stmt"/>
         <line num="431" count="1" type="stmt"/>
-        <line num="435" count="16" type="stmt"/>
+        <line num="435" count="15" type="stmt"/>
         <line num="436" count="2" type="stmt"/>
         <line num="437" count="2" type="stmt"/>
         <line num="438" count="1" type="stmt"/>
         <line num="440" count="1" type="stmt"/>
         <line num="441" count="1" type="stmt"/>
-        <line num="446" count="16" type="stmt"/>
+        <line num="446" count="15" type="stmt"/>
         <line num="447" count="2" type="stmt"/>
         <line num="448" count="2" type="stmt"/>
         <line num="449" count="1" type="stmt"/>
         <line num="450" count="1" type="stmt"/>
         <line num="452" count="1" type="stmt"/>
         <line num="453" count="1" type="stmt"/>
-        <line num="458" count="16" type="stmt"/>
+        <line num="458" count="15" type="stmt"/>
         <line num="459" count="1" type="stmt"/>
-        <line num="463" count="16" type="stmt"/>
+        <line num="463" count="15" type="stmt"/>
         <line num="464" count="1" type="stmt"/>
-        <line num="468" count="16" type="stmt"/>
+        <line num="468" count="15" type="stmt"/>
         <line num="469" count="2" type="stmt"/>
         <line num="470" count="2" type="stmt"/>
         <line num="472" count="1" type="stmt"/>
-        <line num="477" count="16" type="stmt"/>
+        <line num="477" count="15" type="stmt"/>
         <line num="478" count="2" type="stmt"/>
         <line num="479" count="2" type="stmt"/>
         <line num="481" count="1" type="stmt"/>
@@ -57147,9 +57147,9 @@
       </file>
       <file name="tokenService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\api\tokenService.ts">
         <metrics statements="22" coveredstatements="21" conditionals="5" coveredconditionals="5" methods="2" coveredmethods="2"/>
-        <line num="1" count="24" type="stmt"/>
-        <line num="4" count="24" type="stmt"/>
-        <line num="11" count="24" type="stmt"/>
+        <line num="1" count="23" type="stmt"/>
+        <line num="4" count="23" type="stmt"/>
+        <line num="11" count="23" type="stmt"/>
         <line num="13" count="19" type="cond" truecount="1" falsecount="0"/>
         <line num="14" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
@@ -58394,71 +58394,76 @@
       </file>
     </package>
     <package name="src.services.auth">
-      <metrics statements="482" coveredstatements="153" conditionals="229" coveredconditionals="31" methods="87" coveredmethods="24"/>
+      <metrics statements="487" coveredstatements="192" conditionals="230" coveredconditionals="45" methods="89" coveredmethods="35"/>
       <file name="AuthService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\auth\AuthService.ts">
-        <metrics statements="59" coveredstatements="7" conditionals="40" coveredconditionals="0" methods="17" coveredmethods="1"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
+        <metrics statements="64" coveredstatements="38" conditionals="41" coveredconditionals="10" methods="19" coveredmethods="12"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="30" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="2" type="cond" truecount="0" falsecount="1"/>
         <line num="41" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="47" count="0" type="cond" truecount="0" falsecount="1"/>
-        <line num="49" count="0" type="cond" truecount="0" falsecount="1"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="53" count="0" type="cond" truecount="0" falsecount="1"/>
-        <line num="54" count="0" type="stmt"/>
+        <line num="42" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
         <line num="57" count="0" type="stmt"/>
-        <line num="61" count="0" type="stmt"/>
-        <line num="62" count="0" type="stmt"/>
-        <line num="64" count="0" type="stmt"/>
-        <line num="89" count="0" type="stmt"/>
-        <line num="103" count="0" type="stmt"/>
-        <line num="104" count="0" type="stmt"/>
-        <line num="106" count="0" type="stmt"/>
-        <line num="108" count="0" type="stmt"/>
-        <line num="117" count="0" type="stmt"/>
-        <line num="119" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="63" count="2" type="cond" truecount="0" falsecount="1"/>
+        <line num="65" count="2" type="cond" truecount="0" falsecount="1"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="69" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="105" count="1" type="stmt"/>
+        <line num="119" count="3" type="stmt"/>
+        <line num="120" count="3" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
         <line num="124" count="0" type="stmt"/>
-        <line num="132" count="0" type="stmt"/>
         <line num="133" count="0" type="stmt"/>
         <line num="135" count="0" type="stmt"/>
-        <line num="139" count="0" type="stmt"/>
-        <line num="141" count="0" type="stmt"/>
-        <line num="146" count="0" type="stmt"/>
-        <line num="154" count="0" type="stmt"/>
+        <line num="140" count="3" type="stmt"/>
+        <line num="148" count="4" type="stmt"/>
+        <line num="149" count="4" type="stmt"/>
+        <line num="151" count="0" type="stmt"/>
         <line num="155" count="0" type="stmt"/>
         <line num="157" count="0" type="stmt"/>
-        <line num="159" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="160" count="0" type="stmt"/>
-        <line num="170" count="0" type="stmt"/>
-        <line num="175" count="0" type="stmt"/>
-        <line num="177" count="0" type="stmt"/>
-        <line num="182" count="0" type="stmt"/>
-        <line num="190" count="0" type="stmt"/>
-        <line num="194" count="0" type="stmt"/>
-        <line num="195" count="0" type="stmt"/>
-        <line num="196" count="0" type="stmt"/>
-        <line num="198" count="0" type="stmt"/>
-        <line num="203" count="0" type="stmt"/>
-        <line num="204" count="0" type="cond" truecount="0" falsecount="1"/>
-        <line num="206" count="0" type="stmt"/>
-        <line num="229" count="0" type="stmt"/>
-        <line num="231" count="0" type="stmt"/>
-        <line num="270" count="0" type="stmt"/>
-        <line num="279" count="1" type="stmt"/>
+        <line num="162" count="4" type="stmt"/>
+        <line num="170" count="2" type="stmt"/>
+        <line num="171" count="2" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="175" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="176" count="0" type="stmt"/>
+        <line num="186" count="0" type="stmt"/>
+        <line num="191" count="0" type="stmt"/>
+        <line num="193" count="0" type="stmt"/>
+        <line num="198" count="2" type="stmt"/>
+        <line num="206" count="1" type="stmt"/>
+        <line num="210" count="2" type="stmt"/>
+        <line num="211" count="2" type="stmt"/>
+        <line num="212" count="0" type="stmt"/>
+        <line num="214" count="2" type="stmt"/>
+        <line num="219" count="2" type="stmt"/>
+        <line num="220" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="222" count="1" type="stmt"/>
+        <line num="245" count="11" type="stmt"/>
+        <line num="247" count="11" type="stmt"/>
+        <line num="286" count="11" type="stmt"/>
+        <line num="295" count="2" type="stmt"/>
       </file>
       <file name="TokenManager.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\auth\TokenManager.ts">
-        <metrics statements="186" coveredstatements="108" conditionals="53" coveredconditionals="22" methods="24" coveredmethods="16"/>
+        <metrics statements="186" coveredstatements="116" conditionals="53" coveredconditionals="26" methods="24" coveredmethods="16"/>
         <line num="1" count="14" type="stmt"/>
         <line num="18" count="14" type="stmt"/>
         <line num="20" count="14" type="stmt"/>
@@ -58489,26 +58494,26 @@
         <line num="66" count="0" type="stmt"/>
         <line num="74" count="14" type="stmt"/>
         <line num="76" count="14" type="stmt"/>
-        <line num="81" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="83" count="0" type="stmt"/>
-        <line num="84" count="0" type="stmt"/>
-        <line num="85" count="0" type="stmt"/>
+        <line num="81" count="14" type="cond" truecount="2" falsecount="2"/>
+        <line num="83" count="14" type="stmt"/>
+        <line num="84" count="14" type="stmt"/>
+        <line num="85" count="14" type="stmt"/>
         <line num="87" count="0" type="stmt"/>
         <line num="88" count="0" type="stmt"/>
-        <line num="91" count="14" type="stmt"/>
-        <line num="92" count="14" type="stmt"/>
-        <line num="100" count="14" type="stmt"/>
-        <line num="101" count="14" type="stmt"/>
-        <line num="105" count="14" type="stmt"/>
-        <line num="112" count="0" type="stmt"/>
-        <line num="113" count="0" type="stmt"/>
-        <line num="116" count="0" type="stmt"/>
-        <line num="117" count="0" type="stmt"/>
-        <line num="118" count="0" type="stmt"/>
-        <line num="119" count="0" type="stmt"/>
-        <line num="121" count="0" type="cond" truecount="0" falsecount="5"/>
-        <line num="122" count="0" type="stmt"/>
-        <line num="123" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
+        <line num="112" count="14" type="stmt"/>
+        <line num="113" count="14" type="stmt"/>
+        <line num="116" count="14" type="stmt"/>
+        <line num="117" count="14" type="stmt"/>
+        <line num="118" count="14" type="stmt"/>
+        <line num="119" count="14" type="stmt"/>
+        <line num="121" count="14" type="cond" truecount="2" falsecount="3"/>
+        <line num="122" count="14" type="stmt"/>
+        <line num="123" count="14" type="stmt"/>
         <line num="126" count="0" type="stmt"/>
         <line num="127" count="0" type="stmt"/>
         <line num="128" count="0" type="stmt"/>
@@ -60863,14 +60868,14 @@
       </file>
     </package>
     <package name="src.services.data">
-      <metrics statements="122" coveredstatements="6" conditionals="73" coveredconditionals="0" methods="38" coveredmethods="1"/>
+      <metrics statements="122" coveredstatements="0" conditionals="73" coveredconditionals="0" methods="38" coveredmethods="0"/>
       <file name="TodoService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\data\TodoService.ts">
-        <metrics statements="122" coveredstatements="6" conditionals="73" coveredconditionals="0" methods="38" coveredmethods="1"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="40" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <metrics statements="122" coveredstatements="0" conditionals="73" coveredconditionals="0" methods="38" coveredmethods="0"/>
+        <line num="2" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
         <line num="57" count="0" type="stmt"/>
@@ -60987,7 +60992,7 @@
         <line num="355" count="0" type="stmt"/>
         <line num="356" count="0" type="stmt"/>
         <line num="357" count="0" type="stmt"/>
-        <line num="361" count="1" type="stmt"/>
+        <line num="361" count="0" type="stmt"/>
       </file>
     </package>
     <package name="src.services.database">
@@ -65636,9 +65641,9 @@
       </file>
       <file name="TodoWBSIntegrationService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\integration\TodoWBSIntegrationService.ts">
         <metrics statements="57" coveredstatements="4" conditionals="50" coveredconditionals="0" methods="21" coveredmethods="1"/>
-        <line num="3" count="2" type="stmt"/>
-        <line num="14" count="2" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
         <line num="36" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="38" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -65692,7 +65697,7 @@
         <line num="240" count="0" type="stmt"/>
         <line num="241" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="242" count="0" type="stmt"/>
-        <line num="246" count="2" type="stmt"/>
+        <line num="246" count="1" type="stmt"/>
       </file>
       <file name="UnifiedDashboardService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\integration\UnifiedDashboardService.ts">
         <metrics statements="108" coveredstatements="0" conditionals="11" coveredconditionals="0" methods="38" coveredmethods="0"/>
@@ -75311,9 +75316,9 @@
       <metrics statements="65" coveredstatements="4" conditionals="36" coveredconditionals="0" methods="24" coveredmethods="1"/>
       <file name="WBSService.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\services\wbs\WBSService.ts">
         <metrics statements="65" coveredstatements="4" conditionals="36" coveredconditionals="0" methods="24" coveredmethods="1"/>
-        <line num="5" count="2" type="stmt"/>
-        <line num="6" count="2" type="stmt"/>
-        <line num="7" count="2" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
         <line num="27" count="0" type="stmt"/>
         <line num="33" count="0" type="cond" truecount="0" falsecount="1"/>
@@ -75375,7 +75380,7 @@
         <line num="200" count="0" type="stmt"/>
         <line num="210" count="0" type="stmt"/>
         <line num="211" count="0" type="stmt"/>
-        <line num="215" count="2" type="stmt"/>
+        <line num="215" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.store">
@@ -77357,9 +77362,9 @@
       </file>
       <file name="env.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\utils\env.ts">
         <metrics statements="50" coveredstatements="16" conditionals="22" coveredconditionals="6" methods="22" coveredmethods="5"/>
-        <line num="20" count="22" type="stmt"/>
-        <line num="22" count="110" type="cond" truecount="3" falsecount="0"/>
-        <line num="23" count="110" type="stmt"/>
+        <line num="20" count="21" type="stmt"/>
+        <line num="22" count="106" type="cond" truecount="3" falsecount="0"/>
+        <line num="23" count="106" type="stmt"/>
         <line num="27" count="0" type="stmt"/>
         <line num="28" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="29" count="0" type="stmt"/>
@@ -77367,28 +77372,28 @@
         <line num="37" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="38" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="50" count="22" type="stmt"/>
-        <line num="51" count="21" type="stmt"/>
-        <line num="52" count="21" type="cond" truecount="1" falsecount="1"/>
-        <line num="58" count="22" type="stmt"/>
-        <line num="59" count="50" type="cond" truecount="1" falsecount="0"/>
-        <line num="60" count="50" type="stmt"/>
+        <line num="50" count="21" type="stmt"/>
+        <line num="51" count="20" type="stmt"/>
+        <line num="52" count="20" type="cond" truecount="1" falsecount="1"/>
+        <line num="58" count="21" type="stmt"/>
+        <line num="59" count="48" type="cond" truecount="1" falsecount="0"/>
+        <line num="60" count="48" type="stmt"/>
         <line num="63" count="0" type="stmt"/>
         <line num="64" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="65" count="0" type="stmt"/>
         <line num="71" count="0" type="stmt"/>
-        <line num="77" count="22" type="stmt"/>
+        <line num="77" count="21" type="stmt"/>
         <line num="78" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="79" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="82" count="0" type="stmt"/>
-        <line num="88" count="22" type="stmt"/>
-        <line num="89" count="21" type="cond" truecount="1" falsecount="0"/>
-        <line num="90" count="21" type="stmt"/>
+        <line num="88" count="21" type="stmt"/>
+        <line num="89" count="20" type="cond" truecount="1" falsecount="0"/>
+        <line num="90" count="20" type="stmt"/>
         <line num="93" count="0" type="stmt"/>
         <line num="94" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="95" count="0" type="stmt"/>
         <line num="101" count="0" type="stmt"/>
-        <line num="107" count="22" type="stmt"/>
+        <line num="107" count="21" type="stmt"/>
         <line num="109" count="2" type="stmt"/>
         <line num="110" count="0" type="stmt"/>
         <line num="111" count="0" type="stmt"/>
@@ -77406,7 +77411,7 @@
         <line num="133" count="0" type="stmt"/>
         <line num="134" count="0" type="stmt"/>
         <line num="135" count="0" type="stmt"/>
-        <line num="143" count="22" type="stmt"/>
+        <line num="143" count="21" type="stmt"/>
       </file>
       <file name="export.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\utils\export.ts">
         <metrics statements="53" coveredstatements="0" conditionals="38" coveredconditionals="0" methods="5" coveredmethods="0"/>
@@ -77703,22 +77708,22 @@
       </file>
       <file name="logger.ts" path="C:\Users\kanta\GitHub\work-time-tracker\src\utils\logger.ts">
         <metrics statements="28" coveredstatements="11" conditionals="30" coveredconditionals="2" methods="11" coveredmethods="2"/>
-        <line num="2" count="22" type="cond" truecount="2" falsecount="0"/>
-        <line num="3" count="22" type="stmt"/>
-        <line num="4" count="22" type="stmt"/>
-        <line num="5" count="22" type="stmt"/>
-        <line num="6" count="22" type="stmt"/>
-        <line num="10" count="22" type="stmt"/>
-        <line num="11" count="22" type="cond" truecount="0" falsecount="1"/>
-        <line num="12" count="22" type="stmt"/>
-        <line num="15" count="22" type="stmt"/>
-        <line num="18" count="22" type="stmt"/>
+        <line num="2" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="3" count="21" type="stmt"/>
+        <line num="4" count="21" type="stmt"/>
+        <line num="5" count="21" type="stmt"/>
+        <line num="6" count="21" type="stmt"/>
+        <line num="10" count="21" type="stmt"/>
+        <line num="11" count="21" type="cond" truecount="0" falsecount="1"/>
+        <line num="12" count="21" type="stmt"/>
+        <line num="15" count="21" type="stmt"/>
+        <line num="18" count="21" type="stmt"/>
         <line num="20" count="0" type="cond" truecount="0" falsecount="1"/>
         <line num="24" count="0" type="stmt"/>
         <line num="28" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="29" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
-        <line num="36" count="22" type="stmt"/>
+        <line num="36" count="21" type="stmt"/>
         <line num="38" count="0" type="cond" truecount="0" falsecount="3"/>
         <line num="39" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="44" count="0" type="cond" truecount="0" falsecount="3"/>

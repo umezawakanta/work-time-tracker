@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.06% </span>
+                <span class="strong">62.36% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>108/186</span>
+                <span class='fraction'>116/186</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.5% </span>
+                <span class="strong">49.05% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>22/53</span>
+                <span class='fraction'>26/53</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.06% </span>
+                <span class="strong">62.36% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>108/186</span>
+                <span class='fraction'>116/186</span>
             </div>
         
             
@@ -608,49 +608,49 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1073,49 +1073,49 @@ export class TokenManager {
         signal: AbortSignal.timeout(5000), // 5秒タイムアウト
       });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      if (response.ok || response.status === 404) {</span>
+      if (response.ok || <span class="branch-1 cbranch-no" title="branch not covered" >response.status === 404)</span> {
         // 404は正常（まだトークンが保存されていない）
-<span class="cstat-no" title="statement not covered" >        console.log('✅ API endpoint available, initializing TokenManager');</span>
-<span class="cstat-no" title="statement not covered" >        this.loadFromStorage();</span>
-<span class="cstat-no" title="statement not covered" >        this.setupAxiosInterceptors();</span>
-      } else {
+        console.log('✅ API endpoint available, initializing TokenManager');
+        this.loadFromStorage();
+        this.setupAxiosInterceptors();
+      } else <span class="missing-if-branch" title="else path not taken" >E</span>{
 <span class="cstat-no" title="statement not covered" >        console.warn('⚠️ API endpoint returned unexpected status:', response.status);</span>
 <span class="cstat-no" title="statement not covered" >        this.handleApiUnavailable();</span>
       }
     } catch (error) {
-      console.error('❌ API health check failed:', error);
-      this.handleApiUnavailable();
+<span class="cstat-no" title="statement not covered" >      console.error('❌ API health check failed:', error);</span>
+<span class="cstat-no" title="statement not covered" >      this.handleApiUnavailable();</span>
     }
   }
 &nbsp;
   /**
    * 🚫 API利用不可時のフォールバック処理
    */
-  private handleApiUnavailable(): void {
-    console.log('🔄 API unavailable, using fallback mode');
-    console.log('💡 TokenManager will operate in memory-only mode');
+  private <span class="fstat-no" title="function not covered" >handleApiUnavailable(</span>): void {
+<span class="cstat-no" title="statement not covered" >    console.log('🔄 API unavailable, using fallback mode');</span>
+<span class="cstat-no" title="statement not covered" >    console.log('💡 TokenManager will operate in memory-only mode');</span>
 &nbsp;
     // メモリ内でのみトークン管理を行う
     // APIへの保存・読み込みは無効化
-    this.setupAxiosInterceptors();
+<span class="cstat-no" title="statement not covered" >    this.setupAxiosInterceptors();</span>
   }
 &nbsp;
   /**
    * ストレージからトークンを読み込み
    */
-  private <span class="fstat-no" title="function not covered" >async </span>loadFromStorage(): Promise&lt;void&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      console.log('📂 Loading tokens from localStorage...');</span>
+  private async loadFromStorage(): Promise&lt;void&gt; {
+    try {
+      console.log('📂 Loading tokens from localStorage...');
 &nbsp;
       // localStorageから直接読み込む
-      const accessToken = <span class="cstat-no" title="statement not covered" >localStorage.getItem('accessToken');</span>
-      const refreshToken = <span class="cstat-no" title="statement not covered" >localStorage.getItem('refreshToken');</span>
-      const expiresAt = <span class="cstat-no" title="statement not covered" >localStorage.getItem('expiresAt');</span>
-      const refreshExpiresAt = <span class="cstat-no" title="statement not covered" >localStorage.getItem('refreshExpiresAt');</span>
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const expiresAt = localStorage.getItem('expiresAt');
+      const refreshExpiresAt = localStorage.getItem('refreshExpiresAt');
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (!accessToken || !refreshToken || !expiresAt || !refreshExpiresAt) {</span>
-<span class="cstat-no" title="statement not covered" >        console.log('📝 No tokens found in localStorage');</span>
-<span class="cstat-no" title="statement not covered" >        return;</span>
+      if (!accessToken || <span class="branch-1 cbranch-no" title="branch not covered" >!refreshToken </span>|| <span class="branch-2 cbranch-no" title="branch not covered" >!expiresAt </span>|| <span class="branch-3 cbranch-no" title="branch not covered" >!refreshExpiresAt)</span> {
+        console.log('📝 No tokens found in localStorage');
+        return;
       }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      this.accessToken = accessToken;</span>
@@ -1465,7 +1465,7 @@ export const tokenManager = TokenManager.getInstance();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-16T18:36:52.929Z
+                at 2025-08-16T18:53:25.219Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
