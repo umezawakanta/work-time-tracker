@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, X, Sparkles, Clock } from 'lucide-react';
+import { Plus, X, Sparkles, Clock, Flag } from 'lucide-react';
 
 import { useTodoForm } from './hooks/useTodoForm';
 import { TaskNameInput } from './components/TaskNameInput';
@@ -38,16 +38,24 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
       isAnalyzing,
       isSuggestingDeadline,
       isSuggestingType,
+      isSuggestingPriority,
+      isSuggestingAll,
       autoSuggestDeadline,
       autoSuggestType,
+      autoSuggestPriority,
+      autoSuggestAll,
       handleInputChange,
       handleAIAnalysis,
       handleSuggestDeadline,
       handleSuggestType,
+      handleSuggestPriority,
+      handleSuggestAll,
       handleSubmit,
       handleReset,
       toggleAutoSuggestDeadline,
       toggleAutoSuggestType,
+      toggleAutoSuggestPriority,
+      toggleAutoSuggestAll,
     } = useTodoForm(onClose);
 
     if (!isVisible) return null;
@@ -66,9 +74,24 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                 </Badge>
               )}
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {isPremium && formData.text.length > 3 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSuggestAll}
+                  disabled={isSuggestingAll}
+                  className="text-xs"
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  {isSuggestingAll ? 'AI設定中...' : 'AIで自動設定'}
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -107,6 +130,9 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
               <PrioritySelect
                 value={formData.priority}
                 onChange={(value) => handleInputChange('priority', value)}
+                onSuggestPriority={handleSuggestPriority}
+                isSuggestingPriority={isSuggestingPriority}
+                isPremium={isPremium}
               />
             </div>
 
@@ -150,33 +176,67 @@ export const AddTodoForm = React.memo<AddTodoFormProps>(
                     onChange={(checked) => handleInputChange('linkToWBS', checked)}
                   />
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <Label htmlFor="auto-suggest-deadline" className="text-sm font-medium">
-                        期限を自動提案
-                      </Label>
-                    </div>
-                    <Switch
-                      id="auto-suggest-deadline"
-                      checked={autoSuggestDeadline}
-                      onCheckedChange={toggleAutoSuggestDeadline}
-                    />
-                  </div>
+                  <Separator className="my-4" />
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Sparkles className="h-4 w-4 text-purple-500" />
-                      <Label htmlFor="auto-suggest-type" className="text-sm font-medium">
-                        タイプを自動提案
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      <Label htmlFor="auto-suggest-all" className="text-sm font-medium">
+                        すべての項目を自動設定
                       </Label>
                     </div>
                     <Switch
-                      id="auto-suggest-type"
-                      checked={autoSuggestType}
-                      onCheckedChange={toggleAutoSuggestType}
+                      id="auto-suggest-all"
+                      checked={autoSuggestAll}
+                      onCheckedChange={toggleAutoSuggestAll}
                     />
                   </div>
+
+                  {!autoSuggestAll && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Sparkles className="h-4 w-4 text-purple-500" />
+                          <Label htmlFor="auto-suggest-type" className="text-sm font-medium">
+                            タイプを自動提案
+                          </Label>
+                        </div>
+                        <Switch
+                          id="auto-suggest-type"
+                          checked={autoSuggestType}
+                          onCheckedChange={toggleAutoSuggestType}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Flag className="h-4 w-4 text-orange-500" />
+                          <Label htmlFor="auto-suggest-priority" className="text-sm font-medium">
+                            優先度を自動提案
+                          </Label>
+                        </div>
+                        <Switch
+                          id="auto-suggest-priority"
+                          checked={autoSuggestPriority}
+                          onCheckedChange={toggleAutoSuggestPriority}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <Label htmlFor="auto-suggest-deadline" className="text-sm font-medium">
+                            期限を自動提案
+                          </Label>
+                        </div>
+                        <Switch
+                          id="auto-suggest-deadline"
+                          checked={autoSuggestDeadline}
+                          onCheckedChange={toggleAutoSuggestDeadline}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </>
             )}

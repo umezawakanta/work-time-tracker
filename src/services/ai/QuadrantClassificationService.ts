@@ -1237,6 +1237,374 @@ JSON形式で回答してください:
   }
 
   /**
+   * タスクの優先度を提案
+   */
+  public async suggestPriority(task: {
+    title: string;
+    description?: string;
+    type?: string;
+    deadline?: string;
+  }): Promise<{ priority: number; reasoning: string; confidence: number }> {
+    // ブラウザ環境でClaudeの場合はフォールバック
+    const isInBrowser = typeof window !== 'undefined';
+    if (isInBrowser && this.currentProvider === 'claude') {
+      console.log(
+        '⚠️ ClaudeはCORS制限のためブラウザから使用できません。ヒューリスティック分析を使用します。'
+      );
+      return this.fallbackPrioritySuggestion(task);
+    }
+
+    const apiKey = getApiKey(this.currentProvider);
+    if (!apiKey && this.currentProvider !== 'ollama') {
+      return this.fallbackPrioritySuggestion(task);
+    }
+
+    // Ollamaの場合、接続確認
+    if (this.currentProvider === 'ollama') {
+      const isConnected = await checkOllamaConnection();
+      if (!isConnected) {
+        return this.fallbackPrioritySuggestion(task);
+      }
+    }
+
+    try {
+      // レート制限の待機
+      await this.waitForRateLimit();
+
+      const prompt = this.createPriorityPrompt(task);
+      let generatedText: string;
+
+      if (this.currentProvider === 'claude') {
+        // Claude API コール
+        const response = await axios.post(
+          CLAUDE_API_URL,
+          {
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 300,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.content[0].text;
+      } else if (this.currentProvider === 'openai') {
+        // OpenAI API コール
+        const response = await axios.post(
+          OPENAI_API_URL,
+          {
+            model: 'gpt-4-turbo-preview',
+            max_tokens: 300,
+            temperature: 0.3,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクの優先度を適切に判定してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${apiKey}`,
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.choices[0].message.content;
+      } else if (this.currentProvider === 'ollama') {
+        // Ollama API コール
+        if (_ollamaModel === null) {
+          _ollamaModel = getOllamaModel();
+        }
+
+        const response = await axios.post(
+          OLLAMA_API_URL,
+          {
+            model: _ollamaModel,
+            messages: [
+              {
+                role: 'system',
+                content: 'あなたはタスク管理の専門家です。タスクの優先度を適切に判定してください。',
+              },
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+            stream: false,
+            format: 'json',
+            options: {
+              temperature: 0.3,
+              num_ctx: 2048,
+              num_predict: 300,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 20000,
+          }
+        );
+        generatedText = response.data.message.content;
+      } else {
+        // Gemini API コール
+        const response = await axios.post(
+          `${GEMINI_API_URL}?key=${apiKey}`,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 300,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 10000,
+          }
+        );
+        generatedText = response.data.candidates[0].content.parts[0].text;
+      }
+
+      return this.parsePriorityResponse(generatedText, task);
+    } catch (error) {
+      console.error('優先度提案エラー:', error);
+      return this.fallbackPrioritySuggestion(task);
+    }
+  }
+
+  /**
+   * 優先度提案プロンプトの作成
+   */
+  private createPriorityPrompt(task: {
+    title: string;
+    description?: string;
+    type?: string;
+    deadline?: string;
+  }): string {
+    const deadlineInfo = task.deadline
+      ? `期限: ${new Date(task.deadline).toLocaleDateString('ja-JP')}`
+      : '期限: 未設定';
+
+    return `
+以下のタスクに対して、最も適切な優先度を提案してください。
+
+タスク情報:
+- タイトル: "${task.title}"
+- 説明: "${task.description || 'なし'}"
+- タイプ: ${task.type || '未設定'}
+- ${deadlineInfo}
+
+優先度レベル（1-5）:
+- 5: 最優先（緊急かつ重要、即座に対応が必要）
+- 4: 高優先（重要度が高く、早めの対応が必要）
+- 3: 中優先（通常のタスク、標準的な対応）
+- 2: 低優先（重要度は低いが、いずれ対応が必要）
+- 1: 最低優先（余裕があるときに対応）
+
+以下の基準で判断してください：
+1. タスクの緊急性（期限との関係）
+2. タスクの重要性（影響範囲、ビジネスインパクト）
+3. タスクのタイプ（仕事関連は高め、個人的なものは調整）
+4. キーワード（「緊急」「重要」「ASAP」などの有無）
+
+JSON形式で回答してください:
+{
+  "priority": 1-5の数値,
+  "reasoning": "優先度判定の理由",
+  "confidence": 0-1の確信度
+}
+`;
+  }
+
+  /**
+   * 優先度提案応答の解析
+   */
+  private parsePriorityResponse(
+    response: string,
+    task: any
+  ): { priority: number; reasoning: string; confidence: number } {
+    try {
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        // 優先度の検証（1-5の範囲）
+        const priority = Math.max(1, Math.min(5, parsed.priority || 3));
+
+        return {
+          priority,
+          reasoning: parsed.reasoning || '自動提案された優先度です',
+          confidence: parsed.confidence || 0.7,
+        };
+      }
+    } catch (error) {
+      console.error('優先度応答解析エラー:', error);
+    }
+
+    return this.fallbackPrioritySuggestion(task);
+  }
+
+  /**
+   * すべての項目（タイプ、優先度、期限）を一度に提案
+   */
+  public async suggestAllFields(task: { title: string; description?: string }): Promise<{
+    type: string;
+    priority: number;
+    deadline: Date;
+    reasoning: {
+      type: string;
+      priority: string;
+      deadline: string;
+    };
+    confidence: number;
+  }> {
+    try {
+      // 並行して3つの提案を実行
+      const [typeResult, priorityResult, deadlineResult] = await Promise.all([
+        this.suggestTaskType({
+          title: task.title,
+          description: task.description,
+        }),
+        this.suggestPriority({
+          title: task.title,
+          description: task.description,
+        }),
+        this.suggestDeadline({
+          title: task.title,
+          description: task.description,
+        }),
+      ]);
+
+      // 総合的な確信度を計算
+      const overallConfidence =
+        (typeResult.confidence + priorityResult.confidence + deadlineResult.confidence) / 3;
+
+      return {
+        type: typeResult.type,
+        priority: priorityResult.priority,
+        deadline: deadlineResult.deadline,
+        reasoning: {
+          type: typeResult.reasoning,
+          priority: priorityResult.reasoning,
+          deadline: deadlineResult.reasoning,
+        },
+        confidence: overallConfidence,
+      };
+    } catch (error) {
+      console.error('総合提案エラー:', error);
+
+      // フォールバック
+      const typeResult = this.fallbackTypeSuggestion(task);
+      const priorityResult = this.fallbackPrioritySuggestion(task);
+      const deadlineResult = this.fallbackDeadlineSuggestion(task);
+
+      return {
+        type: typeResult.type,
+        priority: priorityResult.priority,
+        deadline: deadlineResult.deadline,
+        reasoning: {
+          type: typeResult.reasoning,
+          priority: priorityResult.reasoning,
+          deadline: deadlineResult.reasoning,
+        },
+        confidence: 0.5,
+      };
+    }
+  }
+
+  /**
+   * フォールバック優先度提案（ヒューリスティック）
+   */
+  private fallbackPrioritySuggestion(task: {
+    title: string;
+    description?: string;
+    type?: string;
+    deadline?: string;
+  }): { priority: number; reasoning: string; confidence: number } {
+    const text = `${task.title} ${task.description || ''}`.toLowerCase();
+    let priority = 3; // デフォルト中優先
+    let reasoning = '標準的なタスクとして中優先に設定';
+    let confidence = 0.5;
+
+    // 緊急性キーワード
+    const urgentKeywords = ['緊急', '至急', '今すぐ', 'asap', 'urgent', '即座', '即日'];
+    const importantKeywords = ['重要', '必須', 'critical', 'important', 'must', '必ず'];
+    const lowKeywords = ['いつか', '時間があれば', '余裕', '検討', '将来'];
+
+    // キーワードチェック
+    const hasUrgent = urgentKeywords.some((k) => text.includes(k));
+    const hasImportant = importantKeywords.some((k) => text.includes(k));
+    const hasLow = lowKeywords.some((k) => text.includes(k));
+
+    // 期限による調整
+    if (task.deadline) {
+      const deadline = new Date(task.deadline);
+      const today = new Date();
+      const daysUntil = Math.ceil((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (daysUntil <= 1) {
+        priority = Math.max(priority, 4);
+        reasoning = '期限が迫っているため高優先度に設定';
+        confidence = 0.8;
+      } else if (daysUntil <= 3) {
+        priority = Math.max(priority, 3);
+        reasoning = '期限が近いため中優先度以上に設定';
+        confidence = 0.7;
+      }
+    }
+
+    // キーワードによる調整
+    if (hasUrgent && hasImportant) {
+      priority = 5;
+      reasoning = '緊急かつ重要なタスクのため最優先に設定';
+      confidence = 0.9;
+    } else if (hasUrgent || hasImportant) {
+      priority = Math.max(priority, 4);
+      reasoning = hasUrgent ? '緊急性が高いため高優先度に設定' : '重要度が高いため高優先度に設定';
+      confidence = 0.8;
+    } else if (hasLow) {
+      priority = Math.min(priority, 2);
+      reasoning = '余裕を持って対応可能なため低優先度に設定';
+      confidence = 0.7;
+    }
+
+    // タスクタイプによる調整
+    if (task.type === 'work') {
+      priority = Math.max(priority, 3);
+      if (priority === 3) reasoning = '仕事関連のため標準優先度に設定';
+    }
+
+    return {
+      priority,
+      reasoning,
+      confidence,
+    };
+  }
+
+  /**
    * フォールバックタイプ提案（ヒューリスティック）
    */
   private fallbackTypeSuggestion(task: {

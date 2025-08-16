@@ -53,9 +53,19 @@ export const useTodoForm = (onClose: () => void) => {
   const [autoSuggestType, setAutoSuggestType] = useState(
     localStorage.getItem('autoSuggestType') === 'true' || false
   );
+  const [isSuggestingPriority, setIsSuggestingPriority] = useState(false);
+  const [autoSuggestPriority, setAutoSuggestPriority] = useState(
+    localStorage.getItem('autoSuggestPriority') === 'true' || false
+  );
+  const [isSuggestingAll, setIsSuggestingAll] = useState(false);
+  const [autoSuggestAll, setAutoSuggestAll] = useState(
+    localStorage.getItem('autoSuggestAll') === 'true' || false
+  );
   const [classificationService] = useState(() => QuadrantClassificationService.getInstance());
   const [deadlineSuggestTimer, setDeadlineSuggestTimer] = useState<NodeJS.Timeout | null>(null);
   const [typeSuggestTimer, setTypeSuggestTimer] = useState<NodeJS.Timeout | null>(null);
+  const [prioritySuggestTimer, setPrioritySuggestTimer] = useState<NodeJS.Timeout | null>(null);
+  const [allSuggestTimer, setAllSuggestTimer] = useState<NodeJS.Timeout | null>(null);
 
   const handleAIAnalysis = useCallback(async (): Promise<void> => {
     if (!formData.text.trim()) {
@@ -170,7 +180,7 @@ export const useTodoForm = (onClose: () => void) => {
         if (suggestion.confidence > 0.7) {
           toast.success(`期限を自動設定しました: ${suggestion.reasoning}`);
         } else {
-          toast.info(`期限を提案しました: ${suggestion.reasoning}`);
+          toast(`期限を提案しました: ${suggestion.reasoning}`);
         }
       }
     } catch (error) {
@@ -206,7 +216,7 @@ export const useTodoForm = (onClose: () => void) => {
             icon: '🎯',
           });
         } else {
-          toast.info(`タイプを提案しました: ${suggestion.reasoning}`, {
+          toast(`タイプを提案しました: ${suggestion.reasoning}`, {
             duration: 3000,
             icon: '💡',
           });
@@ -219,6 +229,101 @@ export const useTodoForm = (onClose: () => void) => {
       setIsSuggestingType(false);
     }
   }, [formData, classificationService]);
+
+  const handleSuggestPriority = useCallback(async (): Promise<void> => {
+    if (!formData.text.trim()) {
+      toast.error('タスク名を入力してください');
+      return;
+    }
+
+    setIsSuggestingPriority(true);
+    try {
+      const suggestion = await classificationService.suggestPriority({
+        title: formData.text,
+        description: formData.description,
+        type: formData.type,
+        deadline: formData.deadline,
+      });
+
+      if (suggestion) {
+        setFormData((prev) => ({ ...prev, priority: suggestion.priority as PriorityLevel }));
+
+        // 確信度に応じたメッセージ
+        if (suggestion.confidence > 0.7) {
+          toast.success(`優先度を自動設定しました: ${suggestion.reasoning}`, {
+            duration: 3000,
+            icon: '⭐',
+          });
+        } else {
+          toast(`優先度を提案しました: ${suggestion.reasoning}`, {
+            duration: 3000,
+            icon: '💫',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Priority suggestion error:', error);
+      toast.error('優先度の提案に失敗しました');
+    } finally {
+      setIsSuggestingPriority(false);
+    }
+  }, [formData, classificationService]);
+
+  const handleSuggestAll = useCallback(async (): Promise<void> => {
+    if (!formData.text.trim()) {
+      toast.error('タスク名を入力してください');
+      return;
+    }
+
+    setIsSuggestingAll(true);
+    try {
+      const suggestions = await classificationService.suggestAllFields({
+        title: formData.text,
+        description: formData.description,
+      });
+
+      if (suggestions) {
+        // すべての項目を一度に設定
+        const localDatetime = suggestions.deadline.toISOString().slice(0, 16);
+        setFormData((prev) => ({
+          ...prev,
+          type: suggestions.type as TodoType,
+          priority: suggestions.priority as PriorityLevel,
+          deadline: localDatetime,
+        }));
+
+        // 結果メッセージを表示
+        if (suggestions.confidence > 0.7) {
+          toast.success(
+            `AIが自動設定しました！\n` +
+              `タイプ: ${suggestions.type}\n` +
+              `優先度: ${suggestions.priority}\n` +
+              `期限: ${suggestions.deadline.toLocaleDateString('ja-JP')}`,
+            {
+              duration: 5000,
+              icon: '🎯',
+            }
+          );
+        } else {
+          toast(
+            `AIが提案しました\n` +
+              `タイプ: ${suggestions.type}\n` +
+              `優先度: ${suggestions.priority}\n` +
+              `期限: ${suggestions.deadline.toLocaleDateString('ja-JP')}`,
+            {
+              duration: 5000,
+              icon: '💡',
+            }
+          );
+        }
+      }
+    } catch (error) {
+      console.error('All fields suggestion error:', error);
+      toast.error('自動設定に失敗しました');
+    } finally {
+      setIsSuggestingAll(false);
+    }
+  }, [formData.text, formData.description, classificationService]);
 
   const validateForm = useCallback((): boolean => {
     if (!formData.text.trim()) {
@@ -256,8 +361,19 @@ export const useTodoForm = (onClose: () => void) => {
           deadline: formData.deadline || undefined,
         };
 
+        // タスクタイプをinput/outputにマッピング
+        const mappedType: 'input' | 'output' =
+          formData.type === 'work' || formData.type === 'study' || formData.type === 'input'
+            ? 'input'
+            : 'output';
+
         // ToDoを作成
-        await dispatch(addTodoItem(newTodo)).unwrap();
+        await dispatch(
+          addTodoItem({
+            ...newTodo,
+            type: mappedType,
+          })
+        ).unwrap();
 
         // AIによる自動タスク並び替え（オプション機能として実装）
         if (window.localStorage.getItem('enableAutoSort') !== 'false') {
@@ -347,15 +463,29 @@ export const useTodoForm = (onClose: () => void) => {
     const newValue = !autoSuggestDeadline;
     setAutoSuggestDeadline(newValue);
     localStorage.setItem('autoSuggestDeadline', String(newValue));
-    toast.info(newValue ? '自動期限提案を有効にしました' : '自動期限提案を無効にしました');
+    toast(newValue ? '自動期限提案を有効にしました' : '自動期限提案を無効にしました');
   }, [autoSuggestDeadline]);
 
   const toggleAutoSuggestType = useCallback((): void => {
     const newValue = !autoSuggestType;
     setAutoSuggestType(newValue);
     localStorage.setItem('autoSuggestType', String(newValue));
-    toast.info(newValue ? '自動タイプ提案を有効にしました' : '自動タイプ提案を無効にしました');
+    toast(newValue ? '自動タイプ提案を有効にしました' : '自動タイプ提案を無効にしました');
   }, [autoSuggestType]);
+
+  const toggleAutoSuggestPriority = useCallback((): void => {
+    const newValue = !autoSuggestPriority;
+    setAutoSuggestPriority(newValue);
+    localStorage.setItem('autoSuggestPriority', String(newValue));
+    toast(newValue ? '自動優先度提案を有効にしました' : '自動優先度提案を無効にしました');
+  }, [autoSuggestPriority]);
+
+  const toggleAutoSuggestAll = useCallback((): void => {
+    const newValue = !autoSuggestAll;
+    setAutoSuggestAll(newValue);
+    localStorage.setItem('autoSuggestAll', String(newValue));
+    toast(newValue ? 'AI自動設定を有効にしました' : 'AI自動設定を無効にしました');
+  }, [autoSuggestAll]);
 
   // 適切な位置で handleInputChange を定義（他の関数がすべて定義された後）
   const handleInputChange = useCallback(
@@ -363,42 +493,63 @@ export const useTodoForm = (onClose: () => void) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
 
       // タイトル入力時に自動提案を実行
-      if (field === 'text' && typeof value === 'string') {
-        // 期限の自動提案
-        if (autoSuggestDeadline && !formData.deadline && value.length > 10) {
+      if (field === 'text' && typeof value === 'string' && value.length > 3) {
+        // すべて自動設定が有効な場合
+        if (autoSuggestAll && value.length > 8) {
           // 既存のタイマーをクリア
-          if (deadlineSuggestTimer) {
-            clearTimeout(deadlineSuggestTimer);
+          if (allSuggestTimer) {
+            clearTimeout(allSuggestTimer);
           }
-          // 1.5秒後に期限を提案
+          // 2秒後にすべての項目を提案
           const timer = setTimeout(() => {
-            handleSuggestDeadline();
-          }, 1500);
-          setDeadlineSuggestTimer(timer);
-        }
+            handleSuggestAll();
+          }, 2000);
+          setAllSuggestTimer(timer);
+        } else {
+          // 個別の自動提案
+          // タイプの自動提案
+          if (autoSuggestType && value.length > 5) {
+            if (typeSuggestTimer) clearTimeout(typeSuggestTimer);
+            const timer = setTimeout(() => {
+              handleSuggestType();
+            }, 1000);
+            setTypeSuggestTimer(timer);
+          }
 
-        // タイプの自動提案
-        if (autoSuggestType && value.length > 5) {
-          // 既存のタイマーをクリア
-          if (typeSuggestTimer) {
-            clearTimeout(typeSuggestTimer);
+          // 優先度の自動提案
+          if (autoSuggestPriority && value.length > 7) {
+            if (prioritySuggestTimer) clearTimeout(prioritySuggestTimer);
+            const timer = setTimeout(() => {
+              handleSuggestPriority();
+            }, 1200);
+            setPrioritySuggestTimer(timer);
           }
-          // 1秒後にタイプを提案
-          const timer = setTimeout(() => {
-            handleSuggestType();
-          }, 1000);
-          setTypeSuggestTimer(timer);
+
+          // 期限の自動提案
+          if (autoSuggestDeadline && !formData.deadline && value.length > 10) {
+            if (deadlineSuggestTimer) clearTimeout(deadlineSuggestTimer);
+            const timer = setTimeout(() => {
+              handleSuggestDeadline();
+            }, 1500);
+            setDeadlineSuggestTimer(timer);
+          }
         }
       }
     },
     [
       formData.deadline,
+      autoSuggestAll,
       autoSuggestDeadline,
       autoSuggestType,
+      autoSuggestPriority,
+      allSuggestTimer,
       deadlineSuggestTimer,
       typeSuggestTimer,
+      prioritySuggestTimer,
+      handleSuggestAll,
       handleSuggestDeadline,
       handleSuggestType,
+      handleSuggestPriority,
     ]
   );
 
@@ -408,15 +559,23 @@ export const useTodoForm = (onClose: () => void) => {
     isAnalyzing,
     isSuggestingDeadline,
     isSuggestingType,
+    isSuggestingPriority,
+    isSuggestingAll,
     autoSuggestDeadline,
     autoSuggestType,
+    autoSuggestPriority,
+    autoSuggestAll,
     handleInputChange,
     handleAIAnalysis,
     handleSuggestDeadline,
     handleSuggestType,
+    handleSuggestPriority,
+    handleSuggestAll,
     handleSubmit,
     handleReset,
     toggleAutoSuggestDeadline,
     toggleAutoSuggestType,
+    toggleAutoSuggestPriority,
+    toggleAutoSuggestAll,
   };
 };
