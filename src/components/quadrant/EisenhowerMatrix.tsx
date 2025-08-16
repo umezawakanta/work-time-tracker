@@ -37,6 +37,8 @@ import {
   Loader2,
   Activity,
   BarChart3,
+  RefreshCw,
+  Trash2,
 } from 'lucide-react';
 import QuadrantClassificationService, {
   QuadrantType,
@@ -469,12 +471,27 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
               最終更新: {lastUpdate.toLocaleTimeString()}
             </span>
           )}
-          <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
-            <RefreshCw
-              className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}
-            />
-            {isAnalyzing ? '分析中...' : '再分析'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={runAnalysis} disabled={isLoading || isAnalyzing} size="sm">
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${isLoading || isAnalyzing ? 'animate-spin' : ''}`}
+              />
+              {isAnalyzing ? '分析中...' : '再分析'}
+            </Button>
+            <Button
+              onClick={() => {
+                classificationService.clearCache();
+                toast.success(
+                  'キャッシュをクリアしました。次回の分析時に新規APIコールが実行されます。'
+                );
+              }}
+              variant="outline"
+              size="sm"
+              title="分析キャッシュをクリア"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 

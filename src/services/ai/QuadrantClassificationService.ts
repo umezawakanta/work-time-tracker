@@ -200,6 +200,39 @@ const RATE_LIMIT = {
 const classificationCache = new Map<string, TaskQuadrantClassification>();
 const MAX_CACHE_SIZE = 100;
 
+// 分析済みタスクの永続化
+const ANALYZED_TASKS_KEY = 'quadrant_analyzed_tasks';
+const CACHE_STORAGE_KEY = 'quadrant_classification_cache';
+
+// 永続化されたキャッシュをロード
+const loadPersistedCache = () => {
+  try {
+    const cached = localStorage.getItem(CACHE_STORAGE_KEY);
+    if (cached) {
+      const parsedCache = JSON.parse(cached);
+      Object.entries(parsedCache).forEach(([key, value]) => {
+        classificationCache.set(key, value as TaskQuadrantClassification);
+      });
+      console.log(`📦 ${classificationCache.size}件の分析済みタスクをキャッシュから復元`);
+    }
+  } catch (error) {
+    console.error('キャッシュの復元に失敗:', error);
+  }
+};
+
+// キャッシュを永続化
+const persistCache = () => {
+  try {
+    const cacheObject: Record<string, TaskQuadrantClassification> = {};
+    classificationCache.forEach((value, key) => {
+      cacheObject[key] = value;
+    });
+    localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(cacheObject));
+  } catch (error) {
+    console.error('キャッシュの永続化に失敗:', error);
+  }
+};
+
 // キャッシュのクリーンアップ
 const cleanupCache = () => {
   if (classificationCache.size > MAX_CACHE_SIZE) {
@@ -209,7 +242,11 @@ const cleanupCache = () => {
       classificationCache.delete(keys[i]);
     }
   }
+  persistCache();
 };
+
+// 初回ロード時にキャッシュを復元
+loadPersistedCache();
 
 // スリープ関数
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -232,7 +269,9 @@ export class QuadrantClassificationService {
    */
   public clearCache(): void {
     classificationCache.clear();
-    console.log('✅ 分類キャッシュをクリアしました');
+    localStorage.removeItem(CACHE_STORAGE_KEY);
+    localStorage.removeItem(ANALYZED_TASKS_KEY);
+    console.log('✅ 分類キャッシュと永続化データをクリアしました');
   }
 
   /**
@@ -254,11 +293,34 @@ export class QuadrantClassificationService {
   /**
    * 単一タスクを4象限に分類（レート制限とリトライ対応）
    */
+  /**
+   * タスクのコンテンツハッシュを生成
+   */
+  private getTaskContentHash(task: UnifiedTaskData): string {
+    // タスクの主要な内容を組み合わせてハッシュキーを生成
+    const content = `${task.title}|${task.description || ''}|${task.priority || ''}|${task.deadline || ''}|${task.isCompleted}`;
+    return content;
+  }
+
   public async classifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
+    // タスクの内容に基づくキャッシュキーを生成
+    const contentHash = this.getTaskContentHash(task);
+    const cacheKey = `${task.id}_${contentHash}`;
+
     // キャッシュチェック
-    const cacheKey = `${task.id}_${task.updatedAt || task.createdAt}`;
     if (classificationCache.has(cacheKey)) {
+      console.log(`📌 キャッシュヒット: タスク「${task.title}」の分析結果を再利用`);
       return classificationCache.get(cacheKey)!;
+    }
+
+    // 古いキーでもチェック（後方互換性）
+    const oldCacheKey = `${task.id}_${task.updatedAt || task.createdAt}`;
+    if (classificationCache.has(oldCacheKey)) {
+      const cachedResult = classificationCache.get(oldCacheKey)!;
+      // 新しいキーでも保存
+      classificationCache.set(cacheKey, cachedResult);
+      console.log(`📌 キャッシュヒット（旧形式）: タスク「${task.title}」の分析結果を再利用`);
+      return cachedResult;
     }
 
     const apiKey = getApiKey();
@@ -352,37 +414,73 @@ export class QuadrantClassificationService {
   public async classifyTasks(tasks: UnifiedTaskData[]): Promise<TaskQuadrantClassification[]> {
     console.log(`📊 ${tasks.length}個のタスクを分類開始...`);
 
-    // 初回リクエスト前に待機
-    if (tasks.length > 0) {
-      console.log(`⏳ 初回リクエスト前に${RATE_LIMIT.initialDelay / 1000}秒待機...`);
-      await sleep(RATE_LIMIT.initialDelay);
-    }
-
     const results: TaskQuadrantClassification[] = [];
+    let cachedCount = 0;
+    let apiCallCount = 0;
+    const tasksNeedingApiCall: UnifiedTaskData[] = [];
 
-    // 1つずつ順次処理（RATE_LIMIT.batchSize = 1）
-    for (let i = 0; i < tasks.length; i++) {
-      const task = tasks[i];
-      const taskNumber = i + 1;
+    // まずキャッシュをチェックして、API呼び出しが必要なタスクを特定
+    for (const task of tasks) {
+      const contentHash = this.getTaskContentHash(task);
+      const cacheKey = `${task.id}_${contentHash}`;
+      const oldCacheKey = `${task.id}_${task.updatedAt || task.createdAt}`;
 
-      console.log(`🔄 タスク ${taskNumber}/${tasks.length} を処理中...`);
-
-      try {
+      if (classificationCache.has(cacheKey) || classificationCache.has(oldCacheKey)) {
+        // キャッシュから取得（classifyTaskメソッドが処理）
         const result = await this.classifyTask(task);
         results.push(result);
-      } catch (error) {
-        console.error(`タスク "${task.title}" の分類に失敗:`, error);
-        const fallback = this.fallbackClassification(task);
-        results.push(fallback);
-      }
-
-      // 次のタスクまで待機（最後のタスク以外）
-      if (i < tasks.length - 1) {
-        await sleep(1000); // 1秒待機
+        cachedCount++;
+      } else {
+        // API呼び出しが必要
+        tasksNeedingApiCall.push(task);
       }
     }
 
-    console.log(`✅ ${results.length}個のタスクの分類が完了しました`);
+    // キャッシュヒット率を表示
+    if (cachedCount > 0) {
+      const hitRate = Math.round((cachedCount / tasks.length) * 100);
+      console.log(`📌 キャッシュヒット率: ${hitRate}% (${cachedCount}/${tasks.length}件)`);
+    }
+
+    // API呼び出しが必要なタスクがある場合のみ処理
+    if (tasksNeedingApiCall.length > 0) {
+      console.log(`🚀 新規分析が必要なタスク: ${tasksNeedingApiCall.length}件`);
+
+      // 初回待機
+      console.log(`⏳ 初回リクエスト前に${RATE_LIMIT.initialDelay / 1000}秒待機...`);
+      await sleep(RATE_LIMIT.initialDelay);
+
+      // 順次処理（レート制限対策）
+      for (let i = 0; i < tasksNeedingApiCall.length; i++) {
+        const task = tasksNeedingApiCall[i];
+        const taskNumber = i + 1;
+
+        console.log(`🔄 新規タスク ${taskNumber}/${tasksNeedingApiCall.length} を分析中...`);
+
+        try {
+          const result = await this.classifyTask(task);
+          results.push(result);
+          apiCallCount++;
+        } catch (error) {
+          console.error(`タスク "${task.title}" の分類に失敗:`, error);
+          const fallback = this.fallbackClassification(task);
+          results.push(fallback);
+        }
+
+        // 次のタスクまで少し待機（最後のタスクでは待機しない）
+        if (i < tasksNeedingApiCall.length - 1) {
+          await sleep(1000); // 1秒待機
+        }
+      }
+    }
+
+    console.log(
+      `✅ 分析完了: 合計${results.length}件（キャッシュ: ${cachedCount}件, 新規API: ${apiCallCount}件）`
+    );
+
+    // キャッシュを永続化
+    persistCache();
+
     return results;
   }
 
