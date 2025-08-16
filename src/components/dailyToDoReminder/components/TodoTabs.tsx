@@ -101,7 +101,7 @@ export const TodoTabs: React.FC<TodoTabsProps> = ({
                   <span>タスク分析</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[800px]">
+              <DialogContent className="sm:max-w-[800px] bg-white">
                 <DialogHeader>
                   <DialogTitle>タスク分析</DialogTitle>
                   <DialogDescription>
