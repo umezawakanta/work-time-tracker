@@ -289,14 +289,32 @@ if (isDev) {
 /**
  * 4象限タスク分類サービス - Gemini AI統合
  */
-// レート制限の設定
+// レート制限の設定（プロバイダー別）
 const RATE_LIMIT = {
-  requestsPerMinute: 10, // より保守的な制限（Gemini無料プラン向け）
-  retryDelay: 3000, // リトライまでの初期遅延（ミリ秒）
-  maxRetries: 3, // 最大リトライ回数
-  batchSize: 1, // 同時処理の最大数（1つずつ処理）
-  maxTasksPerAnalysis: 15, // 一度に分析する最大タスク数
-  initialDelay: 1000, // 初回リクエスト前の待機時間
+  gemini: {
+    requestsPerMinute: 10,
+    retryDelay: 3000,
+    maxRetries: 3,
+    batchSize: 1,
+    maxTasksPerAnalysis: 15,
+    initialDelay: 1000,
+  },
+  claude: {
+    requestsPerMinute: 10,
+    retryDelay: 3000,
+    maxRetries: 3,
+    batchSize: 1,
+    maxTasksPerAnalysis: 15,
+    initialDelay: 1000,
+  },
+  openai: {
+    requestsPerMinute: 3, // OpenAIはより厳しい制限
+    retryDelay: 5000, // 長めのリトライ遅延
+    maxRetries: 5, // より多くのリトライ
+    batchSize: 1,
+    maxTasksPerAnalysis: 5, // 少なめのタスク数
+    initialDelay: 2000, // 長めの初期遅延
+  },
 };
 
 // キャッシュの実装（最大100件まで保持）
@@ -420,12 +438,20 @@ export class QuadrantClassificationService {
   }
 
   /**
+   * 現在のプロバイダーの設定を取得
+   */
+  private getRateLimitConfig() {
+    return RATE_LIMIT[this.currentProvider] || RATE_LIMIT.gemini;
+  }
+
+  /**
    * レート制限を考慮した待機処理
    */
   private async waitForRateLimit(): Promise<void> {
+    const config = this.getRateLimitConfig();
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
-    const minInterval = (60 * 1000) / RATE_LIMIT.requestsPerMinute; // ミリ秒単位の最小間隔
+    const minInterval = (60 * 1000) / config.requestsPerMinute; // ミリ秒単位の最小間隔
 
     if (timeSinceLastRequest < minInterval) {
       const waitTime = minInterval - timeSinceLastRequest;
@@ -479,10 +505,11 @@ export class QuadrantClassificationService {
     }
 
     // リトライロジック
+    const config = this.getRateLimitConfig();
     let retryCount = 0;
     let lastError: any;
 
-    while (retryCount <= RATE_LIMIT.maxRetries) {
+    while (retryCount <= config.maxRetries) {
       try {
         // レート制限の待機
         await this.waitForRateLimit();
@@ -585,10 +612,10 @@ export class QuadrantClassificationService {
         // 429エラーの場合
         if (error.response?.status === 429) {
           retryCount++;
-          if (retryCount <= RATE_LIMIT.maxRetries) {
-            const delay = RATE_LIMIT.retryDelay * Math.pow(2, retryCount - 1); // 指数バックオフ
+          if (retryCount <= config.maxRetries) {
+            const delay = config.retryDelay * Math.pow(2, retryCount - 1); // 指数バックオフ
             console.warn(
-              `⏳ レート制限に達しました。${delay / 1000}秒後にリトライします... (${retryCount}/${RATE_LIMIT.maxRetries})`
+              `⏳ レート制限に達しました。${delay / 1000}秒後にリトライします... (${retryCount}/${config.maxRetries})`
             );
             await sleep(delay);
             continue;
@@ -625,6 +652,7 @@ export class QuadrantClassificationService {
   public async classifyTasks(tasks: UnifiedTaskData[]): Promise<TaskQuadrantClassification[]> {
     console.log(`📊 ${tasks.length}個のタスクを分類開始...`);
 
+    const config = this.getRateLimitConfig();
     const results: TaskQuadrantClassification[] = [];
     let cachedCount = 0;
     let apiCallCount = 0;
@@ -658,8 +686,8 @@ export class QuadrantClassificationService {
       console.log(`🚀 新規分析が必要なタスク: ${tasksNeedingApiCall.length}件`);
 
       // 初回待機
-      console.log(`⏳ 初回リクエスト前に${RATE_LIMIT.initialDelay / 1000}秒待機...`);
-      await sleep(RATE_LIMIT.initialDelay);
+      console.log(`⏳ 初回リクエスト前に${config.initialDelay / 1000}秒待機...`);
+      await sleep(config.initialDelay);
 
       // 順次処理（レート制限対策）
       for (let i = 0; i < tasksNeedingApiCall.length; i++) {
@@ -699,12 +727,14 @@ export class QuadrantClassificationService {
    * 4象限分析を実行（レート制限対応）
    */
   public async analyzeQuadrants(tasks: UnifiedTaskData[]): Promise<QuadrantAnalysisResult> {
-    // タスク数が多すぎる場合は制限
-    const tasksToAnalyze = tasks.slice(0, RATE_LIMIT.maxTasksPerAnalysis);
+    const config = this.getRateLimitConfig();
 
-    if (tasks.length > RATE_LIMIT.maxTasksPerAnalysis) {
+    // タスク数が多すぎる場合は制限
+    const tasksToAnalyze = tasks.slice(0, config.maxTasksPerAnalysis);
+
+    if (tasks.length > config.maxTasksPerAnalysis) {
       console.warn(
-        `⚠️ タスク数が制限を超えています。最初の${RATE_LIMIT.maxTasksPerAnalysis}件のみを分析します。` +
+        `⚠️ タスク数が制限を超えています。最初の${config.maxTasksPerAnalysis}件のみを分析します。` +
           `（全${tasks.length}件中）`
       );
     }

@@ -322,7 +322,15 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     classificationService.setProvider(provider);
     const providerName =
       provider === 'claude' ? 'Claude' : provider === 'openai' ? 'GPT-4' : 'Gemini';
-    toast.info(`AIプロバイダーを ${providerName} に切り替えました`);
+
+    if (provider === 'openai') {
+      toast.warning(
+        `AIプロバイダーを ${providerName} に切り替えました。\n⚠️ OpenAIはレート制限が厳しく、コストも高いため、少数のタスクのみ分析されます。`,
+        { duration: 6000 }
+      );
+    } else {
+      toast.info(`AIプロバイダーを ${providerName} に切り替えました`);
+    }
   };
 
   // 分析の実行
@@ -359,9 +367,14 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       onQuadrantAnalysis?.(result);
 
       // タスク数の制限について通知
-      if (unifiedTasks.length > 15) {
+      const maxTasks = currentProvider === 'openai' ? 5 : 15;
+      if (unifiedTasks.length > maxTasks) {
         toast.info(
-          `未完了タスク${unifiedTasks.length}件中、最初の15件を分析しました（完了済み${completedCount}件は除外）`,
+          `未完了タスク${unifiedTasks.length}件中、最初の${maxTasks}件を分析しました（完了済み${completedCount}件は除外）${
+            currentProvider === 'openai'
+              ? '\n※OpenAIはレート制限が厳しいため、分析数を制限しています'
+              : ''
+          }`,
           { duration: 5000 }
         );
       } else if (completedCount > 0) {
