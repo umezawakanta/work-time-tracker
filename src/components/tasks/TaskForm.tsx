@@ -104,7 +104,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose, onSubmit }) => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto bg-white">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Tag className="h-5 w-5" />

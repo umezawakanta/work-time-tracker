@@ -753,7 +753,7 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
 
       {/* Task Modal */}
       <Dialog open={showTaskModal} onOpenChange={setShowTaskModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white">
           <DialogHeader>
             <DialogTitle>{selectedTask ? 'タスク編集' : '新規タスク作成'}</DialogTitle>
           </DialogHeader>

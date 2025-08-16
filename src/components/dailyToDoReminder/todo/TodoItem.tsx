@@ -246,9 +246,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     PRIORITY_CONFIG[(todo as unknown as { priority: number }).priority] || PRIORITY_CONFIG[3];
 
   const cardClassName = [
-    'group relative transition-all duration-200 hover:shadow-md',
-    isCompleted ? 'opacity-75' : '',
-    isHighPriority ? 'border-l-4 border-l-red-500 bg-red-50/30' : '',
+    'group relative transition-all duration-200 hover:shadow-md bg-white',
+    isCompleted ? 'opacity-60 bg-gray-50' : '',
+    isHighPriority ? 'border-l-4 border-l-red-500 bg-red-50/50' : '',
     isOverdue && !isCompleted ? 'border-l-4 border-l-red-500 bg-red-50' : '',
     isToday && !isCompleted ? 'border-l-4 border-l-orange-500 bg-orange-50' : '',
   ]

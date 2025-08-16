@@ -469,7 +469,7 @@ export const IntegratedTaskDashboard: React.FC<{
               <Trophy className="h-6 w-6 text-white" />
             </div>
             統合タスクダッシュボード
-            <Badge variant="outline" className="ml-2 bg-white/50">
+            <Badge variant="outline" className="ml-2 bg-white">
               レベル {playerStats.level}
             </Badge>
           </CardTitle>
@@ -485,7 +485,7 @@ export const IntegratedTaskDashboard: React.FC<{
               </p>
               <Progress
                 value={Math.round((playerStats.currentXP / playerStats.xpToNextLevel) * 100)}
-                className="h-2 bg-white/50 mt-1"
+                className="h-2 bg-gray-200 mt-1"
               />
             </div>
           </div>
@@ -518,7 +518,7 @@ export const IntegratedTaskDashboard: React.FC<{
 
       <CardContent>
         <Tabs value={selectedTab} onValueChange={(value: any) => setSelectedTab(value)}>
-          <TabsList className="grid w-full grid-cols-3 bg-white/50">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100">
             <TabsTrigger value="tasks" className="flex items-center gap-2">
               <CheckSquare className="h-4 w-4" />
               タスク
@@ -541,7 +541,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && addNewTask()}
-                className="bg-white/70"
+                className="bg-white"
               />
               <Button onClick={addNewTask} size="sm">
                 <Plus className="h-4 w-4" />
@@ -556,8 +556,8 @@ export const IntegratedTaskDashboard: React.FC<{
                   className={cn(
                     'p-4 rounded-lg border transition-all duration-200',
                     task.isCompleted
-                      ? 'bg-white/30 border-green-200 opacity-75'
-                      : 'bg-white/70 border-white/50 hover:bg-white/90'
+                      ? 'bg-gray-50 border-green-200 opacity-60'
+                      : 'bg-white border-gray-200 hover:shadow-md'
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -646,7 +646,7 @@ export const IntegratedTaskDashboard: React.FC<{
                     'p-4 rounded-lg border',
                     achievement.unlocked
                       ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200'
-                      : 'bg-white/50 border-gray-200'
+                      : 'bg-gray-50 border-gray-200'
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -680,7 +680,7 @@ export const IntegratedTaskDashboard: React.FC<{
 
           <TabsContent value="stats" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
                   <h4 className="font-semibold text-slate-900">レベル進捗</h4>
@@ -691,7 +691,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 </p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Flame className="h-5 w-5 text-orange-500" />
                   <h4 className="font-semibold text-slate-900">ストリーク記録</h4>
@@ -700,7 +700,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 <p className="text-sm text-gray-600">最長記録: {playerStats.longestStreak}日</p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="h-5 w-5 text-yellow-500" />
                   <h4 className="font-semibold text-slate-900">総獲得XP</h4>
@@ -709,7 +709,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 <p className="text-sm text-gray-600">今週: {playerStats.weeklyXP} XP</p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                   <h4 className="font-semibold text-slate-900">完了タスク</h4>
@@ -718,7 +718,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 <p className="text-sm text-gray-600">今日の完了率: {completionRate}%</p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="h-5 w-5 text-purple-500" />
                   <h4 className="font-semibold text-slate-900">アチーブメント</h4>
@@ -729,7 +729,7 @@ export const IntegratedTaskDashboard: React.FC<{
                 <p className="text-sm text-gray-600">{achievements.length}個中</p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="h-5 w-5 text-indigo-500" />
                   <h4 className="font-semibold text-slate-900">平均完了率</h4>

@@ -584,8 +584,8 @@ export const EnhancedTaskManager: React.FC = () => {
     return (
       <Card
         key={task._id}
-        className={`transition-all duration-200 hover:shadow-md ${
-          task.completed ? 'opacity-75' : ''
+        className={`transition-all duration-200 hover:shadow-md bg-white ${
+          task.completed ? 'opacity-60' : ''
         } ${deadlineStatus === 'overdue' ? 'border-l-4 border-l-red-500' : ''}
         ${deadlineStatus === 'today' ? 'border-l-4 border-l-yellow-500' : ''}`}
       >
