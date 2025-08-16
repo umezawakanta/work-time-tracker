@@ -338,9 +338,6 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
       onQuadrantAnalysis?.(result);
 
       // タスク数の制限について通知
-      const completedCount = tasks.filter(
-        (t) => t?.completed || t?.isCompleted || t?.status === 'completed'
-      ).length;
       if (unifiedTasks.length > 15) {
         toast.info(
           `未完了タスク${unifiedTasks.length}件中、最初の15件を分析しました（完了済み${completedCount}件は除外）`,
