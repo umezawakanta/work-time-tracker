@@ -63,6 +63,7 @@ const UnifiedTaskPage = lazy(() => import('./pages/UnifiedTaskPage'));
 
 // ⚙️ Settings
 const NotificationSettings = lazy(() => import('./components/settings/NotificationSettings'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 // 📚 Personal & Lifestyle
 const BookShelfPage = lazy(() => import('./pages/BookShelfPage'));
@@ -579,6 +580,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <UnifiedTaskPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/settings"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <SettingsPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }

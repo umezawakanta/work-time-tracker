@@ -966,11 +966,25 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
                   {isDarkMode ? '☀️' : '🌙'}
                 </Button>
 
-                <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 dark:text-gray-300"
+                  onClick={() => {
+                    // 通知ページへの遷移（将来的に実装）
+                    toast('通知機能は準備中です', { icon: '🔔' });
+                  }}
+                >
                   <Bell className="h-4 w-4" />
                 </Button>
 
-                <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 dark:text-gray-300"
+                  onClick={() => navigate('/settings')}
+                  aria-label="設定"
+                >
                   <Settings className="h-4 w-4" />
                 </Button>
               </div>
