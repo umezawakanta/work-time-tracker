@@ -4,12 +4,13 @@ import { Task } from '@/types/task';
 import { Todo } from '@/types/todo';
 
 // AI Provider Types
-export type AIProvider = 'gemini' | 'claude';
+export type AIProvider = 'gemini' | 'claude' | 'openai';
 
 // API Configuration
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 import { ENV } from '@/utils/env';
 
@@ -101,9 +102,50 @@ const getClaudeApiKey = (): string => {
   return apiKey;
 };
 
+// OpenAI API キーの取得
+const getOpenAIApiKey = (): string => {
+  let apiKey = '';
+
+  // 方法1: ENVヘルパーを使用
+  try {
+    apiKey = ENV.OPENAI_API_KEY?.() || '';
+  } catch (e) {
+    // 無視
+  }
+
+  // 方法2: import.meta.envから直接取得
+  if (!apiKey) {
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
+        apiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
+      }
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  // 方法3: windowオブジェクトから取得（フォールバック）
+  if (!apiKey && typeof window !== 'undefined') {
+    try {
+      apiKey = (window as any)?.import?.meta?.env?.VITE_OPENAI_API_KEY || '';
+    } catch (e) {
+      // 無視
+    }
+  }
+
+  // デバッグ情報を出力（開発環境のみ）
+  if (ENV.isDev() && apiKey) {
+    console.log('✅ OpenAI API Key: 設定済み');
+    console.log('  - APIキー長さ:', apiKey.length, '文字');
+  }
+
+  return apiKey;
+};
+
 // API_KEYを遅延評価に変更
 let _geminiApiKey: string | null = null;
 let _claudeApiKey: string | null = null;
+let _openaiApiKey: string | null = null;
 
 const getApiKey = (provider: AIProvider = 'gemini'): string => {
   if (provider === 'claude') {
@@ -111,6 +153,11 @@ const getApiKey = (provider: AIProvider = 'gemini'): string => {
       _claudeApiKey = getClaudeApiKey();
     }
     return _claudeApiKey;
+  } else if (provider === 'openai') {
+    if (_openaiApiKey === null) {
+      _openaiApiKey = getOpenAIApiKey();
+    }
+    return _openaiApiKey;
   } else {
     if (_geminiApiKey === null) {
       _geminiApiKey = getGeminiApiKey();
@@ -354,6 +401,11 @@ export class QuadrantClassificationService {
         available: !!getApiKey('claude'),
         name: 'Anthropic Claude',
       },
+      {
+        provider: 'openai',
+        available: !!getApiKey('openai'),
+        name: 'OpenAI GPT-4',
+      },
     ];
   }
 
@@ -464,6 +516,36 @@ export class QuadrantClassificationService {
           );
 
           generatedText = response.data.content[0].text;
+        } else if (this.currentProvider === 'openai') {
+          // OpenAI API コール
+          const response = await axios.post(
+            OPENAI_API_URL,
+            {
+              model: 'gpt-4-turbo-preview', // GPT-4 Turbo（高速・低コスト版）
+              max_tokens: 1500,
+              temperature: 0.3,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    'あなたはタスク管理の専門家です。タスクをアイゼンハワーマトリックスの4象限に分類し、JSON形式で回答してください。',
+                },
+                {
+                  role: 'user',
+                  content: prompt,
+                },
+              ],
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${apiKey}`,
+              },
+              timeout: 30000, // 30秒のタイムアウト
+            }
+          );
+
+          generatedText = response.data.choices[0].message.content;
         } else {
           // Gemini API コール
           const response = await axios.post(

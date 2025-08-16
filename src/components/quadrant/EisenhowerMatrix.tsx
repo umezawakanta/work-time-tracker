@@ -320,7 +320,9 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
   const handleProviderChange = (provider: AIProvider) => {
     setCurrentProvider(provider);
     classificationService.setProvider(provider);
-    toast.info(`AIプロバイダーを ${provider === 'claude' ? 'Claude' : 'Gemini'} に切り替えました`);
+    const providerName =
+      provider === 'claude' ? 'Claude' : provider === 'openai' ? 'GPT-4' : 'Gemini';
+    toast.info(`AIプロバイダーを ${providerName} に切り替えました`);
   };
 
   // 分析の実行
@@ -450,7 +452,12 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
               <p className="text-lg font-medium">AI による4象限分析実行中...</p>
               <p className="text-sm text-gray-600 mt-2">
-                {currentProvider === 'claude' ? 'Claude AI' : 'Gemini AI'}が未完了タスク
+                {currentProvider === 'claude'
+                  ? 'Claude AI'
+                  : currentProvider === 'openai'
+                    ? 'GPT-4'
+                    : 'Gemini AI'}
+                が未完了タスク
                 {unifiedTasks.length}件を分析しています
               </p>
             </div>
@@ -502,7 +509,9 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
                 {availableProviders.map((p) => (
                   <SelectItem key={p.provider} value={p.provider} disabled={!p.available}>
                     <div className="flex items-center gap-2">
-                      <span>{p.provider === 'claude' ? '🤖' : '✨'}</span>
+                      <span>
+                        {p.provider === 'claude' ? '🤖' : p.provider === 'openai' ? '🧠' : '✨'}
+                      </span>
                       <span>{p.name}</span>
                       {!p.available && <span className="text-xs text-red-500">(未設定)</span>}
                     </div>

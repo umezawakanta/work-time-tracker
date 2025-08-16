@@ -18,9 +18,10 @@ echo
 echo "Select AI Providers to configure:"
 echo "1. Gemini only (Recommended for free usage)"
 echo "2. Claude only"
-echo "3. Both Gemini and Claude"
+echo "3. OpenAI GPT-4 only"
+echo "4. All providers"
 echo
-read -p "Enter your choice (1-3): " choice
+read -p "Enter your choice (1-4): " choice
 
 setup_gemini() {
     echo
@@ -42,6 +43,16 @@ setup_claude() {
     echo "✓ Claude API key configured"
 }
 
+setup_openai() {
+    echo
+    echo "Setting up OpenAI API..."
+    echo "Please visit: https://platform.openai.com/api-keys"
+    echo
+    read -p "Enter your OpenAI API key: " openai_key
+    echo "VITE_OPENAI_API_KEY=$openai_key" >> .env
+    echo "✓ OpenAI API key configured"
+}
+
 case $choice in
     1)
         setup_gemini
@@ -50,8 +61,12 @@ case $choice in
         setup_claude
         ;;
     3)
+        setup_openai
+        ;;
+    4)
         setup_gemini
         setup_claude
+        setup_openai
         ;;
     *)
         echo "Invalid choice. Exiting..."

@@ -19,13 +19,15 @@ echo.
 echo Select AI Providers to configure:
 echo 1. Gemini only (Recommended for free usage)
 echo 2. Claude only
-echo 3. Both Gemini and Claude
+echo 3. OpenAI GPT-4 only
+echo 4. All providers
 echo.
-set /p choice="Enter your choice (1-3): "
+set /p choice="Enter your choice (1-4): "
 
 if "%choice%"=="1" goto :gemini
 if "%choice%"=="2" goto :claude
-if "%choice%"=="3" goto :both
+if "%choice%"=="3" goto :openai
+if "%choice%"=="4" goto :all
 echo Invalid choice. Exiting...
 exit /b 1
 
@@ -49,7 +51,17 @@ echo VITE_CLAUDE_API_KEY=%claude_key%>> .env
 echo ✓ Claude API key configured
 goto :complete
 
-:both
+:openai
+echo.
+echo Setting up OpenAI API...
+echo Please visit: https://platform.openai.com/api-keys
+echo.
+set /p openai_key="Enter your OpenAI API key: "
+echo VITE_OPENAI_API_KEY=%openai_key%>> .env
+echo ✓ OpenAI API key configured
+goto :complete
+
+:all
 echo.
 echo Setting up Gemini API...
 echo Please visit: https://makersuite.google.com/app/apikey
@@ -65,6 +77,14 @@ echo.
 set /p claude_key="Enter your Claude API key: "
 echo VITE_CLAUDE_API_KEY=%claude_key%>> .env
 echo ✓ Claude API key configured
+
+echo.
+echo Setting up OpenAI API...
+echo Please visit: https://platform.openai.com/api-keys
+echo.
+set /p openai_key="Enter your OpenAI API key: "
+echo VITE_OPENAI_API_KEY=%openai_key%>> .env
+echo ✓ OpenAI API key configured
 goto :complete
 
 :complete
