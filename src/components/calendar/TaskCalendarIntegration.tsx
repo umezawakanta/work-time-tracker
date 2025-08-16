@@ -351,10 +351,10 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
             messages={messages}
             culture="ja"
             formats={{
-              monthHeaderFormat: 'YYYY年M月',
-              dayHeaderFormat: 'M月D日(ddd)',
+              monthHeaderFormat: 'yyyy年M月',
+              dayHeaderFormat: 'M月d日(EEE)',
               dayRangeHeaderFormat: ({ start, end }) =>
-                `${format(start, 'M月D日', { locale: ja })} - ${format(end, 'M月D日', { locale: ja })}`,
+                `${format(start, 'M月d日', { locale: ja })} - ${format(end, 'M月d日', { locale: ja })}`,
             }}
           />
         </CardContent>
@@ -384,7 +384,7 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
                 {selectedEvent.type === 'deadline' && (
                   <Badge variant="outline">
                     <CalendarIcon className="h-3 w-3 mr-1" />
-                    期限: {format(selectedEvent.start, 'M月D日', { locale: ja })}
+                    期限: {format(selectedEvent.start, 'M月d日', { locale: ja })}
                   </Badge>
                 )}
 
@@ -427,7 +427,7 @@ const TaskCalendarIntegration: React.FC<TaskCalendarIntegrationProps> = ({ heigh
           <DialogHeader>
             <DialogTitle>新規タスク作成</DialogTitle>
             <DialogDescription>
-              {selectedSlot && format(selectedSlot.start, 'M月D日', { locale: ja })}{' '}
+              {selectedSlot && format(selectedSlot.start, 'M月d日', { locale: ja })}{' '}
               にタスクを作成します
             </DialogDescription>
           </DialogHeader>

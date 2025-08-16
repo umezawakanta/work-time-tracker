@@ -555,14 +555,14 @@ export const BigCalendarView: React.FC<BigCalendarViewProps> = ({ className }) =
                 allDay: '終日',
               }}
               formats={{
-                monthHeaderFormat: 'YYYY年M月',
-                dayHeaderFormat: 'M月D日(ddd)',
+                monthHeaderFormat: 'yyyy年M月',
+                dayHeaderFormat: 'M月d日(EEE)',
                 dayRangeHeaderFormat: ({ start, end }) => {
                   const startDate = new Date(start);
                   const endDate = new Date(end);
                   return `${startDate.getMonth() + 1}月${startDate.getDate()}日 - ${endDate.getMonth() + 1}月${endDate.getDate()}日`;
                 },
-                agendaDateFormat: 'M月D日(ddd)',
+                agendaDateFormat: 'M月d日(EEE)',
                 agendaTimeFormat: 'HH:mm',
                 agendaTimeRangeFormat: ({ start, end }) => {
                   const startTime = new Date(start);

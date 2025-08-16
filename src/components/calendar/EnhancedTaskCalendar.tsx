@@ -742,8 +742,8 @@ export const EnhancedTaskCalendar: React.FC<EnhancedTaskCalendarProps> = ({ clas
               noEventsInRange: 'この期間にイベントはありません',
             }}
             formats={{
-              monthHeaderFormat: 'YYYY年 M月',
-              dayHeaderFormat: 'M月D日 (ddd)',
+              monthHeaderFormat: 'yyyy年 M月',
+              dayHeaderFormat: 'M月d日 (EEE)',
               dayRangeHeaderFormat: ({ start, end }) =>
                 `${moment(start).format('M月D日')} - ${moment(end).format('M月D日')}`,
             }}
