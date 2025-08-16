@@ -13,7 +13,7 @@ const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const OLLAMA_API_URL = 'http://localhost:11434/api/chat';
 
-import { ENV } from '@/utils/env';
+import { ENV, getEnv, isDev as isDevEnv } from '@/utils/env';
 
 // 環境変数取得（修正版）
 const getGeminiApiKey = (): string => {
@@ -23,24 +23,9 @@ const getGeminiApiKey = (): string => {
   // 方法1: ENVヘルパーを使用
   apiKey = ENV.GEMINI_API_KEY() || '';
 
-  // 方法2: import.meta.envから直接取得
+  // 方法2: getEnvを使用して取得
   if (!apiKey) {
-    try {
-      if (typeof import.meta !== 'undefined' && import.meta.env) {
-        apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-      }
-    } catch (e) {
-      // 無視
-    }
-  }
-
-  // 方法3: windowオブジェクトから取得（フォールバック）
-  if (!apiKey && typeof window !== 'undefined') {
-    try {
-      apiKey = (window as any)?.import?.meta?.env?.VITE_GEMINI_API_KEY || '';
-    } catch (e) {
-      // 無視
-    }
+    apiKey = getEnv('VITE_GEMINI_API_KEY') || '';
   }
 
   // 方法4: ユーザー提供のAPIキーを使用（一時的な解決策）
@@ -74,28 +59,9 @@ const getClaudeApiKey = (): string => {
     // 無視
   }
 
-  // 方法2: import.meta.envから直接取得（両方のキー名をサポート）
+  // 方法2: getEnvを使用して取得（両方のキー名をサポート）
   if (!apiKey) {
-    try {
-      if (typeof import.meta !== 'undefined' && import.meta.env) {
-        apiKey =
-          import.meta.env.VITE_CLAUDE_API_KEY || import.meta.env.VITE_ANTHROPIC_API_KEY || '';
-      }
-    } catch (e) {
-      // 無視
-    }
-  }
-
-  // 方法3: windowオブジェクトから取得（フォールバック）
-  if (!apiKey && typeof window !== 'undefined') {
-    try {
-      apiKey =
-        (window as any)?.import?.meta?.env?.VITE_CLAUDE_API_KEY ||
-        (window as any)?.import?.meta?.env?.VITE_ANTHROPIC_API_KEY ||
-        '';
-    } catch (e) {
-      // 無視
-    }
+    apiKey = getEnv('VITE_CLAUDE_API_KEY') || getEnv('VITE_ANTHROPIC_API_KEY') || '';
   }
 
   // デバッグ情報を出力（開発環境のみ）
@@ -118,24 +84,9 @@ const getOpenAIApiKey = (): string => {
     // 無視
   }
 
-  // 方法2: import.meta.envから直接取得
+  // 方法2: getEnvを使用して取得
   if (!apiKey) {
-    try {
-      if (typeof import.meta !== 'undefined' && import.meta.env) {
-        apiKey = import.meta.env.VITE_OPENAI_API_KEY || '';
-      }
-    } catch (e) {
-      // 無視
-    }
-  }
-
-  // 方法3: windowオブジェクトから取得（フォールバック）
-  if (!apiKey && typeof window !== 'undefined') {
-    try {
-      apiKey = (window as any)?.import?.meta?.env?.VITE_OPENAI_API_KEY || '';
-    } catch (e) {
-      // 無視
-    }
+    apiKey = getEnv('VITE_OPENAI_API_KEY') || '';
   }
 
   // デバッグ情報を出力（開発環境のみ）
@@ -153,23 +104,7 @@ const getOllamaModel = (): string => {
   const defaultModel = 'llama3.2:3b'; // または 'mistral', 'phi3', 'qwen2.5' など
 
   // 環境変数から取得を試みる
-  let model = '';
-
-  try {
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      model = import.meta.env.VITE_OLLAMA_MODEL || '';
-    }
-  } catch (e) {
-    // 無視
-  }
-
-  if (!model && typeof window !== 'undefined') {
-    try {
-      model = (window as any)?.import?.meta?.env?.VITE_OLLAMA_MODEL || '';
-    } catch (e) {
-      // 無視
-    }
-  }
+  let model = getEnv('VITE_OLLAMA_MODEL') || '';
 
   return model || defaultModel;
 };

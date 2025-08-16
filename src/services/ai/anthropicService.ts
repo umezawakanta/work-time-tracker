@@ -1,9 +1,15 @@
 import { TodoItem } from '@/types';
+import { getEnv, isDev } from '@/utils/env';
 
 /**
  * Anthropic Claude API Service
  * Provides comprehensive AI features using Claude models
  */
+
+// 環境変数取得のヘルパー（getEnvのラッパー）
+const getEnvVar = (key: string, defaultValue: string = ''): string => {
+  return getEnv(key) || defaultValue;
+};
 
 // Types and Interfaces
 export interface AnthropicConfig {
@@ -81,7 +87,7 @@ export class AnthropicError extends Error {
 class AnthropicService {
   private config: AnthropicConfig;
   // Use local API server in development, relative path in production
-  private baseUrl = import.meta.env.DEV
+  private baseUrl = isDev()
     ? 'http://localhost:3001/api/ai/anthropic' // Local API server (same as other APIs)
     : '/api/ai/anthropic'; // Vercel Functions in production
   private conversationHistory: Map<string, AnthropicMessage[]> = new Map();
@@ -121,9 +127,9 @@ class AnthropicService {
 
   constructor() {
     this.config = {
-      apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-      model: import.meta.env.VITE_ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022',
-      maxTokens: parseInt(import.meta.env.VITE_ANTHROPIC_MAX_TOKENS || '8192'),
+      apiKey: getEnvVar('VITE_ANTHROPIC_API_KEY', ''),
+      model: getEnvVar('VITE_ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
+      maxTokens: parseInt(getEnvVar('VITE_ANTHROPIC_MAX_TOKENS', '8192')),
       temperature: 0.7,
       topP: 0.95,
     };
