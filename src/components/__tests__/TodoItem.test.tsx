@@ -48,7 +48,7 @@ describe('📝 TodoItem コンポーネント', () => {
     title: 'テストタスク',
     description: 'これはテスト用のタスクです',
     completed: false,
-    priority: 'medium',
+    priority: 3,
     type: 'task',
     category: 'personal',
     tags: ['test', 'important'],
@@ -177,7 +177,7 @@ describe('📝 TodoItem コンポーネント', () => {
       await user.type(taskInput, '編集されたタスク');
 
       // 保存ボタンをクリック
-      const saveButton = screen.getByRole('button', { name: /save/i });
+      const saveButton = screen.getByRole('button', { name: '保存' });
       await user.click(saveButton);
 
       expect(mockProps.onUpdate).toHaveBeenCalledWith(
@@ -206,7 +206,7 @@ describe('📝 TodoItem コンポーネント', () => {
       await user.type(taskInput, '変更内容');
 
       // キャンセルボタンをクリック
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      const cancelButton = screen.getByRole('button', { name: 'キャンセル' });
       await user.click(cancelButton);
 
       // 元の内容が表示されることを確認
@@ -266,20 +266,20 @@ describe('📝 TodoItem コンポーネント', () => {
       await user.click(editButton);
 
       // 優先度を変更
-      const prioritySelect = screen.getByRole('combobox', { name: /priority/i });
+      const prioritySelect = screen.getByRole('combobox', { name: '優先度' });
       await user.click(prioritySelect);
 
-      const highPriorityOption = screen.getByRole('option', { name: /high/i });
+      const highPriorityOption = screen.getByRole('option', { name: '高' });
       await user.click(highPriorityOption);
 
       // 保存
-      const saveButton = screen.getByRole('button', { name: /save/i });
+      const saveButton = screen.getByRole('button', { name: '保存' });
       await user.click(saveButton);
 
       expect(mockProps.onUpdate).toHaveBeenCalledWith(
         mockTodo._id,
         expect.objectContaining({
-          priority: 'high',
+          priority: 4,
         })
       );
     });

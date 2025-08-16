@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.04% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/173</span>
+                <span class='fraction'>7/173</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">1.13% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/88</span>
+                <span class='fraction'>1/88</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">4.14% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/169</span>
+                <span class='fraction'>7/169</span>
             </div>
         
             
@@ -558,13 +558,13 @@
 <a name='L493'></a><a href='#L493'>493</a>
 <a name='L494'></a><a href='#L494'>494</a>
 <a name='L495'></a><a href='#L495'>495</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -578,7 +578,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -831,8 +831,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1050,15 +1050,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// src/services/TaskPriorityService.ts
-<span class="cstat-no" title="statement not covered" >import axios from 'axios';</span>
-<span class="cstat-no" title="statement not covered" >import { ENV } from '@/utils/env';</span>
+import axios from 'axios';
+import { ENV } from '@/utils/env';
 &nbsp;
 // Gemini APIエンドポイントとAPIキー
 const GEMINI_API_URL =
-<span class="cstat-no" title="statement not covered" >  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';</span>
-const API_KEY = <span class="cstat-no" title="statement not covered" >ENV.GEMINI_API_KEY() || '';</span>
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const API_KEY = ENV.GEMINI_API_KEY() || <span class="branch-1 cbranch-no" title="branch not covered" >'';</span>
 &nbsp;
 // 優先度の分析結果インターフェース
 export interface PriorityAnalysis {
@@ -1072,7 +1072,7 @@ export interface PriorityAnalysis {
 /**
  * Gemini APIを使用してタスクの優先度を分析するサービス
  */
-export const <span class="cstat-no" title="statement not covered" >TaskPriorityService = {</span>
+export const TaskPriorityService = {
   /**
    * タスクの内容から優先度を分析する
    * @param taskText タスク内容のテキスト
@@ -1325,7 +1325,7 @@ function <span class="fstat-no" title="function not covered" >manualJsonParsing(
 }
 &nbsp;
 // ローカルでの優先度分析（APIが利用できない場合のフォールバック）
-<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >l</span>ocalPriorityAnalysis(</span>taskText: string): PriorityAnalysis {
+export function <span class="fstat-no" title="function not covered" >localPriorityAnalysis(</span>taskText: string): PriorityAnalysis {
   const lowerText = <span class="cstat-no" title="statement not covered" >taskText.toLowerCase();</span>
 &nbsp;
   // 高優先度を示すキーワード
@@ -1544,7 +1544,7 @@ function <span class="fstat-no" title="function not covered" >extractDateFromTas
 <span class="cstat-no" title="statement not covered" >  return undefined;</span>
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default TaskPriorityService;</span>
+export default TaskPriorityService;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -1552,7 +1552,7 @@ function <span class="fstat-no" title="function not covered" >extractDateFromTas
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-16T17:56:55.010Z
+                at 2025-08-16T18:11:51.835Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
