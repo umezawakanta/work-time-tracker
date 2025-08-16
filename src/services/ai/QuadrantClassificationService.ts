@@ -186,8 +186,38 @@ if (isDev) {
 /**
  * 4象限タスク分類サービス - Gemini AI統合
  */
+// レート制限の設定
+const RATE_LIMIT = {
+  requestsPerMinute: 10, // より保守的な制限（Gemini無料プラン向け）
+  retryDelay: 2000, // リトライまでの初期遅延（ミリ秒）
+  maxRetries: 3, // 最大リトライ回数
+  batchSize: 2, // 同時処理の最大数（さらに少なく）
+  maxTasksPerAnalysis: 20, // 一度に分析する最大タスク数
+};
+
+// キャッシュの実装（最大100件まで保持）
+const classificationCache = new Map<string, TaskQuadrantClassification>();
+const MAX_CACHE_SIZE = 100;
+
+// キャッシュのクリーンアップ
+const cleanupCache = () => {
+  if (classificationCache.size > MAX_CACHE_SIZE) {
+    const entriesToDelete = classificationCache.size - MAX_CACHE_SIZE;
+    const keys = Array.from(classificationCache.keys());
+    for (let i = 0; i < entriesToDelete; i++) {
+      classificationCache.delete(keys[i]);
+    }
+  }
+};
+
+// スリープ関数
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export class QuadrantClassificationService {
   private static instance: QuadrantClassificationService | null = null;
+  private lastRequestTime = 0;
+  private requestQueue: Array<() => Promise<any>> = [];
+  private isProcessingQueue = false;
 
   public static getInstance(): QuadrantClassificationService {
     if (!QuadrantClassificationService.instance) {
@@ -197,65 +227,182 @@ export class QuadrantClassificationService {
   }
 
   /**
-   * 単一タスクを4象限に分類
+   * キャッシュをクリア
+   */
+  public clearCache(): void {
+    classificationCache.clear();
+    console.log('✅ 分類キャッシュをクリアしました');
+  }
+
+  /**
+   * レート制限を考慮した待機処理
+   */
+  private async waitForRateLimit(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    const minInterval = (60 * 1000) / RATE_LIMIT.requestsPerMinute; // ミリ秒単位の最小間隔
+
+    if (timeSinceLastRequest < minInterval) {
+      const waitTime = minInterval - timeSinceLastRequest;
+      await sleep(waitTime);
+    }
+
+    this.lastRequestTime = Date.now();
+  }
+
+  /**
+   * 単一タスクを4象限に分類（レート制限とリトライ対応）
    */
   public async classifyTask(task: UnifiedTaskData): Promise<TaskQuadrantClassification> {
-    try {
-      const apiKey = getApiKey();
-      if (!apiKey) {
-        if (ENV.isDev()) {
-          console.warn(
-            '🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。'
-          );
-        }
-        return this.fallbackClassification(task);
+    // キャッシュチェック
+    const cacheKey = `${task.id}_${task.updatedAt || task.createdAt}`;
+    if (classificationCache.has(cacheKey)) {
+      return classificationCache.get(cacheKey)!;
+    }
+
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      if (ENV.isDev()) {
+        console.warn('🚨 Gemini APIキーが設定されていません。ヒューリスティック分析を使用します。');
       }
-
-      const prompt = this.createClassificationPrompt(task);
-
-      const response = await axios.post(
-        `${GEMINI_API_URL}?key=${apiKey}`,
-        {
-          contents: [
-            {
-              parts: [{ text: prompt }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1500,
-          },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const generatedText = response.data.candidates[0].content.parts[0].text;
-      return this.parseGeminiResponse(generatedText, task);
-    } catch (error) {
-      console.error('Gemini API分類エラー:', error);
       return this.fallbackClassification(task);
     }
+
+    // リトライロジック
+    let retryCount = 0;
+    let lastError: any;
+
+    while (retryCount <= RATE_LIMIT.maxRetries) {
+      try {
+        // レート制限の待機
+        await this.waitForRateLimit();
+
+        const prompt = this.createClassificationPrompt(task);
+
+        const response = await axios.post(
+          `${GEMINI_API_URL}?key=${apiKey}`,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 1500,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            timeout: 30000, // 30秒のタイムアウト
+          }
+        );
+
+        const generatedText = response.data.candidates[0].content.parts[0].text;
+        const result = this.parseGeminiResponse(generatedText, task);
+
+        // キャッシュに保存
+        classificationCache.set(cacheKey, result);
+        cleanupCache();
+
+        return result;
+      } catch (error: any) {
+        lastError = error;
+
+        // 429エラーの場合
+        if (error.response?.status === 429) {
+          retryCount++;
+          if (retryCount <= RATE_LIMIT.maxRetries) {
+            const delay = RATE_LIMIT.retryDelay * Math.pow(2, retryCount - 1); // 指数バックオフ
+            console.warn(
+              `⏳ レート制限に達しました。${delay / 1000}秒後にリトライします... (${retryCount}/${RATE_LIMIT.maxRetries})`
+            );
+            await sleep(delay);
+            continue;
+          }
+        }
+
+        // その他のエラーまたはリトライ上限に達した場合
+        break;
+      }
+    }
+
+    // エラーの詳細をログ
+    if (lastError?.response?.status === 429) {
+      console.warn('⚠️ Gemini APIのレート制限に達しました');
+      console.log('💡 ヒューリスティック分析で代替します（十分な精度があります）');
+    } else {
+      console.error('Gemini API分類エラー:', lastError?.message || lastError);
+    }
+
+    const fallbackResult = this.fallbackClassification(task);
+
+    // フォールバック結果もキャッシュに保存
+    classificationCache.set(cacheKey, fallbackResult);
+
+    return fallbackResult;
   }
 
   /**
-   * 複数タスクをバッチで分類
+   * 複数タスクをバッチで分類（レート制限対応）
    */
   public async classifyTasks(tasks: UnifiedTaskData[]): Promise<TaskQuadrantClassification[]> {
-    const classifications = await Promise.all(tasks.map((task) => this.classifyTask(task)));
-    return classifications;
+    console.log(`📊 ${tasks.length}個のタスクを分類開始...`);
+
+    const results: TaskQuadrantClassification[] = [];
+
+    // バッチ処理で順次実行
+    for (let i = 0; i < tasks.length; i += RATE_LIMIT.batchSize) {
+      const batch = tasks.slice(i, i + RATE_LIMIT.batchSize);
+      const batchNumber = Math.floor(i / RATE_LIMIT.batchSize) + 1;
+      const totalBatches = Math.ceil(tasks.length / RATE_LIMIT.batchSize);
+
+      console.log(`🔄 バッチ ${batchNumber}/${totalBatches} を処理中...`);
+
+      // バッチ内のタスクを順次処理（レート制限を厳守）
+      const batchResults: TaskQuadrantClassification[] = [];
+      for (const task of batch) {
+        try {
+          const result = await this.classifyTask(task);
+          batchResults.push(result);
+        } catch (error) {
+          console.error(`タスク "${task.title}" の分類に失敗:`, error);
+          const fallback = this.fallbackClassification(task);
+          batchResults.push(fallback);
+        }
+      }
+
+      results.push(...batchResults);
+
+      // 次のバッチまで待機（最後のバッチ以外）
+      if (i + RATE_LIMIT.batchSize < tasks.length) {
+        console.log(`⏳ 次のバッチまで2秒待機...`);
+        await sleep(2000);
+      }
+    }
+
+    console.log(`✅ ${results.length}個のタスクの分類が完了しました`);
+    return results;
   }
 
   /**
-   * 4象限分析を実行
+   * 4象限分析を実行（レート制限対応）
    */
   public async analyzeQuadrants(tasks: UnifiedTaskData[]): Promise<QuadrantAnalysisResult> {
-    console.log('🎯 4象限分析を開始します...', { taskCount: tasks.length });
+    // タスク数が多すぎる場合は制限
+    const tasksToAnalyze = tasks.slice(0, RATE_LIMIT.maxTasksPerAnalysis);
 
-    const classifications = await this.classifyTasks(tasks);
+    if (tasks.length > RATE_LIMIT.maxTasksPerAnalysis) {
+      console.warn(
+        `⚠️ タスク数が制限を超えています。最初の${RATE_LIMIT.maxTasksPerAnalysis}件のみを分析します。` +
+          `（全${tasks.length}件中）`
+      );
+    }
+    console.log('🎯 4象限分析を開始します...', { taskCount: tasksToAnalyze.length });
+
+    const classifications = await this.classifyTasks(tasksToAnalyze);
 
     // 象限別の集計
     const quadrantBreakdown: Record<QuadrantType, any> = {

@@ -324,24 +324,41 @@ export const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({
     }
   };
 
-  // 初回実行
+  // 初回実行（一度だけ）
   useEffect(() => {
-    runAnalysis();
-  }, [unifiedTasks]);
+    if (unifiedTasks.length > 0) {
+      runAnalysis();
+    } else {
+      setIsLoading(false);
+    }
+  }, []); // 空の依存配列で初回のみ実行
+
+  // タスクが大きく変更された場合の手動更新
+  useEffect(() => {
+    const taskCount = unifiedTasks.length;
+    const prevTaskCount = analysis?.totalTasks || 0;
+
+    // タスク数が大きく変わった場合（±5件以上）のみ再分析
+    if (Math.abs(taskCount - prevTaskCount) >= 5) {
+      console.log('📊 タスク数が大きく変更されたため再分析します');
+      runAnalysis();
+    }
+  }, [unifiedTasks.length]);
 
   // 自動更新
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!autoRefresh || unifiedTasks.length === 0) return;
 
     const interval = setInterval(
       () => {
+        console.log('🔄 自動更新: 4象限分析を再実行');
         runAnalysis();
       },
       refreshInterval * 60 * 1000
     );
 
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, unifiedTasks]);
+  }, [autoRefresh, refreshInterval]);
 
   // チャートデータの準備
   const chartData = useMemo(() => {

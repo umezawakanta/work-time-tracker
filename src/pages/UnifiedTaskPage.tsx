@@ -277,8 +277,8 @@ const UnifiedTaskPage: React.FC = () => {
                 <EisenhowerMatrix
                   tasks={todos}
                   showAnalytics={true}
-                  autoRefresh={true}
-                  refreshInterval={5}
+                  autoRefresh={false}
+                  refreshInterval={10}
                   onTaskClick={(task) => {
                     console.log('Task clicked:', task);
                     toast.success(`タスク「${task.title || task.text}」を選択しました`);
