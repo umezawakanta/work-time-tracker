@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,7 +42,7 @@ import {
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { isPremium, premiumFeatures, expiresAt } = usePremiumFeatures();
+  const { isPremium, features: premiumFeatures, expiresAt } = usePremiumFeatures();
 
   const [activeTab, setActiveTab] = useState('general');
   const [notifications, setNotifications] = useState({
@@ -55,6 +55,12 @@ const SettingsPage: React.FC = () => {
   const [language, setLanguage] = useState('ja');
   const [timezone, setTimezone] = useState('Asia/Tokyo');
   const [dateFormat, setDateFormat] = useState('YYYY/MM/DD');
+  const [username, setUsername] = useState(user?.name || '');
+
+  // ユーザー情報が変更された場合に状態を更新
+  useEffect(() => {
+    setUsername(user?.name || '');
+  }, [user?.name]);
 
   const handleSaveSettings = () => {
     // 設定を保存する処理
@@ -63,7 +69,7 @@ const SettingsPage: React.FC = () => {
 
   const handleExportData = () => {
     // データエクスポート処理
-    toast.info('データのエクスポートを開始しました');
+    toast('データのエクスポートを開始しました', { icon: '💾' });
   };
 
   const handleDeleteAccount = () => {
@@ -74,11 +80,7 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <PageLayout
-      title="設定"
-      description="アプリケーションの設定を管理します"
-      icon={<Settings className="h-6 w-6" />}
-    >
+    <PageLayout title="設定">
       <div className="max-w-6xl mx-auto space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
@@ -187,7 +189,12 @@ const SettingsPage: React.FC = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="username">ユーザー名</Label>
-                  <Input id="username" value={user?.name || ''} placeholder="ユーザー名を入力" />
+                  <Input
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="ユーザー名を入力"
+                  />
                 </div>
 
                 <div className="pt-4">
