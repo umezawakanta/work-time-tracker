@@ -29,6 +29,10 @@ function customRender(
     ...renderOptions
   }: CustomRenderOptions = {}
 ) {
+  // Always render into an explicit container to avoid createRoot target errors
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
   // モックAuthを使用する場合
   if (useMockAuth) {
     const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -36,10 +40,7 @@ function customRender(
         {children}
       </MockAuthProvider>
     );
-    const container = document.createElement('div');
-    document.body.appendChild(container);
-    const result = rtlRender(ui, { container, wrapper: Wrapper, ...renderOptions });
-    return result;
+    return rtlRender(ui, { wrapper: Wrapper, ...renderOptions, container });
   }
 
   // 通常のTestProvidersを使用
@@ -47,9 +48,7 @@ function customRender(
     <TestProviders initialEntries={initialEntries}>{children}</TestProviders>
   );
 
-  const container = document.createElement('div');
-  document.body.appendChild(container);
-  return rtlRender(ui, { container, wrapper: Wrapper, ...renderOptions });
+  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions, container });
 }
 
 /**

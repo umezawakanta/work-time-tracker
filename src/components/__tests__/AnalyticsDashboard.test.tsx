@@ -140,24 +140,25 @@ const mockAnalytics: UserAnalytics = {
 
 describe('📊 AnalyticsDashboard コンポーネント', () => {
   beforeEach(() => {
-    // Enable fake timers for all tests
+    // Use fake timers globally so waitFor/user-event can advance timers deterministically
     jest.useFakeTimers();
     jest.clearAllMocks();
     (userTrackingService.getAnalytics as jest.Mock).mockResolvedValue(mockAnalytics);
+    // Silence expected error logs in tests that simulate failures
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    (console.error as jest.Mock | undefined)?.mockRestore?.();
   });
 
   describe('✅ 基本表示機能', () => {
     test('管理者ユーザーにダッシュボードが表示される', async () => {
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      });
+      await screen.findByText('📊 ユーザー解析ダッシュボード');
 
       expect(screen.getByText('リアルタイムユーザー行動とサイト解析')).toBeInTheDocument();
     });
@@ -224,9 +225,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      });
+      await screen.findByText('📊 ユーザー解析ダッシュボード');
 
       const refreshButton = screen.getByRole('button', { name: /更新/i });
       await user.click(refreshButton);
@@ -238,9 +237,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      });
+      await screen.findByText('📊 ユーザー解析ダッシュボード');
 
       // 時間範囲セレクターを操作
       const timeRangeSelect = screen.getByRole('combobox');
@@ -248,9 +245,6 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
       const monthOption = screen.getByRole('option', { name: '過去30日' });
       await user.click(monthOption);
-
-      // Allow time for async state updates
-      jest.advanceTimersByTime(100);
 
       await waitFor(() => {
         expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('month');
@@ -263,9 +257,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      });
+      await screen.findByText('📊 ユーザー解析ダッシュボード');
 
       // デバイスタブに切り替え
       const devicesTab = screen.getByRole('tab', { name: 'デバイス' });
@@ -315,26 +307,39 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
         setAttribute: jest.fn(),
         style: {},
       };
-      jest.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-      jest.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
-      jest.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
+      const realCreateElement = document.createElement.bind(document);
+      const createElSpy = jest.spyOn(document, 'createElement').mockImplementation(((
+        tagName: any,
+        options?: any
+      ) => {
+        if (tagName === 'a') return mockLink as any;
+        return realCreateElement(tagName, options as any);
+      }) as any);
+      const appendSpy = jest
+        .spyOn(document.body, 'appendChild')
+        .mockImplementation(() => mockLink as any);
+      const removeSpy = jest
+        .spyOn(document.body, 'removeChild')
+        .mockImplementation(() => mockLink as any);
 
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      });
+      await screen.findByText('📊 ユーザー解析ダッシュボード');
 
       const exportButton = screen.getByRole('button', { name: /エクスポート/i });
       await user.click(exportButton);
 
-      // Allow time for export functionality to complete
-      jest.advanceTimersByTime(100);
-
-      await waitFor(() => {
-        expect(mockCreateObjectURL).toHaveBeenCalled();
-        expect(mockClick).toHaveBeenCalled();
-      });
+      try {
+        await waitFor(() => {
+          expect(mockCreateObjectURL).toHaveBeenCalled();
+          expect(mockClick).toHaveBeenCalled();
+          expect(mockRevokeObjectURL).not.toHaveBeenCalled();
+        });
+      } finally {
+        createElSpy.mockRestore();
+        appendSpy.mockRestore();
+        removeSpy.mockRestore();
+      }
     });
   });
 
@@ -515,8 +520,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 
 describe('📊 AnalyticsDashboard 統合テスト', () => {
   test('完全なダッシュボード操作フローが正常に動作する', async () => {
-    // Use real timers for this test to avoid timer conflicts
-    const user = userEvent.setup();
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
     // Mock the service to resolve immediately
     const mockGetAnalytics = jest.fn().mockResolvedValue(mockAnalytics);
@@ -525,12 +529,7 @@ describe('📊 AnalyticsDashboard 統合テスト', () => {
     renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
     // 1. 初期読み込み - ローディング状態からダッシュボード表示まで待つ
-    await waitFor(
-      () => {
-        expect(screen.getByText('📊 ユーザー解析ダッシュボード')).toBeInTheDocument();
-      },
-      { timeout: 10000 }
-    );
+    await screen.findByText('📊 ユーザー解析ダッシュボード');
 
     // ローディング状態が終了していることを確認
     expect(screen.queryByText('解析データを読み込み中...')).not.toBeInTheDocument();
@@ -549,17 +548,30 @@ describe('📊 AnalyticsDashboard 統合テスト', () => {
     const monthOption = screen.getByTestId('select-item-month');
     await user.click(monthOption);
 
-    // 5. データ更新確認 - 初期ロードとオプション変更の呼び出しを確認
+    // 5. データ更新確認 - 呼び出しが行われていることと、最後の引数が最新の範囲であること
     expect(userTrackingService.getAnalytics).toHaveBeenCalled();
-    expect(userTrackingService.getAnalytics).toHaveBeenCalledTimes(1);
+    const calls = (userTrackingService.getAnalytics as jest.Mock).mock.calls;
+    expect(calls[calls.length - 1][0]).toBe('month');
 
     // 6. エクスポート機能
     global.URL.createObjectURL = jest.fn(() => 'blob:test-url');
-    jest.spyOn(document, 'createElement').mockReturnValue({ click: jest.fn() } as any);
+    const linkMock = { click: jest.fn(), href: '', download: '' } as any;
+    const realCreateEl = document.createElement.bind(document);
+    const spyCreate = jest.spyOn(document, 'createElement').mockImplementation(((
+      tagName: any,
+      options?: any
+    ) => {
+      if (tagName === 'a') return linkMock;
+      return realCreateEl(tagName, options as any);
+    }) as any);
 
     const exportButton = screen.getByRole('button', { name: /エクスポート/i });
     await user.click(exportButton);
 
-    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(global.URL.createObjectURL).toHaveBeenCalled();
+    });
+
+    spyCreate.mockRestore();
   });
 });

@@ -151,6 +151,33 @@ jest.mock('./hooks/useInternationalization', () => ({
 }));
 
 // ========================================
+// Firebase App mock (initializeApp and friends)
+// ========================================
+jest.mock('firebase/app', () => ({
+  __esModule: true,
+  initializeApp: jest.fn(() => ({ mock: true })),
+}));
+
+jest.mock('firebase/auth', () => ({
+  __esModule: true,
+  getAuth: jest.fn(() => ({ mock: true })),
+  signInWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
+}));
+
+jest.mock('firebase/firestore', () => ({
+  __esModule: true,
+  getFirestore: jest.fn(() => ({ mock: true })),
+}));
+
+jest.mock('firebase/storage', () => ({
+  __esModule: true,
+  getStorage: jest.fn(() => ({ mock: true })),
+}));
+
+// ========================================
 // TypeScript Global Type Declarations
 // ========================================
 
@@ -924,15 +951,8 @@ global.testUtils = asyncTestUtilities;
 // Form Testing Enhancements
 // ========================================
 
-// Mock react-hook-form validation timing - keep original setTimeout behavior
-const originalSetTimeout = global.setTimeout;
-global.setTimeout = jest.fn().mockImplementation((fn: (...args: any[]) => void, delay = 0) => {
-  // For form validation, execute immediately in tests
-  if (delay <= 100) {
-    return originalSetTimeout(fn, 0);
-  }
-  return originalSetTimeout(fn, delay);
-}) as unknown as typeof setTimeout;
+// NOTE: Do not override global.setTimeout here.
+// Overriding it interferes with Jest fake timers detection used by Testing Library.
 
 // ========================================
 // Additional DOM Event Fixes

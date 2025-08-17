@@ -71,6 +71,8 @@ const EnhancedSubscriptionForm: React.FC<EnhancedSubscriptionFormProps> = ({
   onSubscriptionCreate,
   onError,
 }) => {
+  // 安全対策: plansのデフォルト値
+  const safePlans: SubscriptionPlan[] = Array.isArray(plans) ? plans : [];
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
@@ -534,7 +536,7 @@ const EnhancedSubscriptionForm: React.FC<EnhancedSubscriptionFormProps> = ({
 
       {/* プラン一覧 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {plans.filter((plan) => plan.billingCycle === billingCycle).map(renderPlanCard)}
+        {safePlans.filter((plan) => plan.billingCycle === billingCycle).map(renderPlanCard)}
       </div>
 
       {/* 選択されたプランの詳細 */}

@@ -8,6 +8,16 @@ import { Todo, NewTodo, TodoUpdate, TodoFilter, TodoStats } from '@/types/todo';
 // Mock dependencies
 jest.mock('../useAuth');
 jest.mock('@/services/data/TodoService');
+// Ensure config/firebase never executes real initialization during this suite
+jest.mock('@/config/firebase', () => ({
+  __esModule: true,
+  app: {},
+  auth: {},
+  db: {},
+  storage: {},
+  analytics: null,
+  isFirebaseEnabled: false,
+}));
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockTodoService = TodoService as jest.Mocked<typeof TodoService>;
