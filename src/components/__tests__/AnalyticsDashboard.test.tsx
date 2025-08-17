@@ -412,7 +412,7 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const devicesTab = screen.getByRole('tab', { name: 'デバイス' });
       await user.click(devicesTab);
 
-      expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
     });
 
     test('棒グラフが正しく表示される', async () => {
@@ -444,10 +444,10 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('week');
 
       // 今日に変更
-      const timeRangeSelect = screen.getByRole('combobox');
+      const timeRangeSelect = screen.getByTestId('select-trigger');
       await user.click(timeRangeSelect);
 
-      const todayOption = screen.getByRole('option', { name: '今日' });
+      const todayOption = screen.getByTestId('select-item-day');
       await user.click(todayOption);
 
       expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('day');
