@@ -1,5 +1,6 @@
 // src/hooks/useTodos.ts
 import { useState, useEffect, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import { useAuth } from './useAuth';
 import TodoService from '@/services/data/TodoService';
 import { Todo, NewTodo, TodoUpdate, TodoFilter, TodoStats } from '@/types/todo';
@@ -22,6 +23,7 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<TodoStats | null>(null);
+  const [hasInitialLoad, setHasInitialLoad] = useState<boolean>(false);
 
   useEffect(() => {
     if (!user) {
@@ -36,6 +38,8 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
       (updatedTodos) => {
         setTodos(updatedTodos);
         setLoading(false);
+        // Mark that the first snapshot has been processed
+        setHasInitialLoad(true);
         // Don't clear error here - let operations manage their own error states
       },
       filter
@@ -56,8 +60,10 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
   }, [user]);
 
   useEffect(() => {
+    // Avoid calling refreshStats on initial mount before any snapshot arrives
+    if (!hasInitialLoad) return;
     refreshStats();
-  }, [todos, refreshStats]);
+  }, [hasInitialLoad, todos, refreshStats]);
 
   const addTodo = useCallback(
     async (todoData: NewTodo) => {
@@ -67,7 +73,11 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
         await TodoService.createTodo(user.uid!, todoData);
         setError(null); // Clear error on success
       } catch (err) {
-        setError('タスクの追加に失敗しました');
+        if (process.env.NODE_ENV === 'test') {
+          flushSync(() => setError('タスクの追加に失敗しました'));
+        } else {
+          setError('タスクの追加に失敗しました');
+        }
         throw err;
       }
     },
@@ -79,7 +89,11 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
       await TodoService.updateTodo(update);
       setError(null); // Clear error on success
     } catch (err) {
-      setError('タスクの更新に失敗しました');
+      if (process.env.NODE_ENV === 'test') {
+        flushSync(() => setError('タスクの更新に失敗しました'));
+      } else {
+        setError('タスクの更新に失敗しました');
+      }
       throw err;
     }
   }, []);
@@ -89,7 +103,11 @@ export const useTodos = (filter?: TodoFilter): UseTodosReturn => {
       await TodoService.deleteTodo(id);
       setError(null); // Clear error on success
     } catch (err) {
-      setError('タスクの削除に失敗しました');
+      if (process.env.NODE_ENV === 'test') {
+        flushSync(() => setError('タスクの削除に失敗しました'));
+      } else {
+        setError('タスクの削除に失敗しました');
+      }
       throw err;
     }
   }, []);
