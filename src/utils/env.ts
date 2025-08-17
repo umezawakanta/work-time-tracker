@@ -25,8 +25,12 @@ export function getEnv(key: string): string | undefined {
 
   // ブラウザ環境（Vite）
   try {
-    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
-      return (globalThis as any).import.meta.env[key];
+    // 直接 import.meta.env を参照（Vite ランタイム）
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - import.meta は Vite 環境で提供される
+    if (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      return import.meta.env[key];
     }
   } catch {
     // 無視

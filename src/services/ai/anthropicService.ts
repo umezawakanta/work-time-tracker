@@ -127,15 +127,23 @@ class AnthropicService {
 
   constructor() {
     this.config = {
-      apiKey: getEnvVar('VITE_ANTHROPIC_API_KEY', ''),
+      apiKey:
+        getEnvVar('VITE_ANTHROPIC_API_KEY', '') ||
+        // Backward-compat: some envs use VITE_CLAUDE_API_KEY
+        getEnvVar('VITE_CLAUDE_API_KEY', ''),
       model: getEnvVar('VITE_ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
       maxTokens: parseInt(getEnvVar('VITE_ANTHROPIC_MAX_TOKENS', '8192')),
       temperature: 0.7,
       topP: 0.95,
     };
 
-    if (!this.config.apiKey) {
-      console.warn('Anthropic API key not configured. AI features will be limited.');
+    // Note: Client does not require exposing the API key when using the proxy endpoint.
+    // Avoid noisy warnings that confuse users who have keys configured on the server.
+    // In development, show a gentle info once if neither key is present.
+    if (!this.config.apiKey && isDev()) {
+      console.info(
+        'Anthropic client key not found (VITE_ANTHROPIC_API_KEY or VITE_CLAUDE_API_KEY). Using proxy auth.'
+      );
     }
   }
 
