@@ -394,7 +394,8 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 
       await waitFor(() => {
-        expect(screen.getByText('0')).toBeInTheDocument();
+        // 0表示は複数箇所に出るため、少なくとも1つ以上存在することを確認
+        expect(screen.getAllByText('0').length).toBeGreaterThan(0);
       });
     });
   });
@@ -412,7 +413,8 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const devicesTab = screen.getByRole('tab', { name: 'デバイス' });
       await user.click(devicesTab);
 
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+      // 複数生成されることがあるため *All* で検証
+      expect(screen.getAllByTestId('chart-container').length).toBeGreaterThan(0);
     });
 
     test('棒グラフが正しく表示される', async () => {
@@ -450,7 +452,10 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const todayOption = screen.getByTestId('select-item-day');
       await user.click(todayOption);
 
-      expect(userTrackingService.getAnalytics).toHaveBeenCalledWith('day');
+      // 初回（week）+ 今日（day）の2回以上呼ばれる可能性があるため、最後の呼び出しを検証
+      const calls = (userTrackingService.getAnalytics as jest.Mock).mock.calls;
+      expect(calls.length).toBeGreaterThan(0);
+      expect(calls[calls.length - 1][0]).toBe('day');
     });
   });
 

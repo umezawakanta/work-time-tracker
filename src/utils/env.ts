@@ -25,12 +25,8 @@ export function getEnv(key: string): string | undefined {
 
   // ブラウザ環境（Vite）
   try {
-    // 直接 import.meta.env を参照（Vite ランタイム）
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - import.meta は Vite 環境で提供される
-    if (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore
-      return import.meta.env[key];
+    if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
+      return (globalThis as any).import.meta.env[key];
     }
   } catch {
     // 無視
@@ -63,7 +59,7 @@ export function isDev(): boolean {
   if (typeof process !== 'undefined') {
     return process.env.NODE_ENV === 'development';
   }
-  
+
   try {
     if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
       return (globalThis as any).import.meta.env.DEV === true;
@@ -71,7 +67,7 @@ export function isDev(): boolean {
   } catch {
     // 無視
   }
-  
+
   return false;
 }
 
@@ -82,7 +78,7 @@ export function isTest(): boolean {
   if (typeof process !== 'undefined') {
     return process.env.NODE_ENV === 'test' || Boolean(process.env.JEST_WORKER_ID);
   }
-  
+
   return false;
 }
 
@@ -93,7 +89,7 @@ export function isProd(): boolean {
   if (typeof process !== 'undefined') {
     return process.env.NODE_ENV === 'production';
   }
-  
+
   try {
     if (typeof globalThis !== 'undefined' && (globalThis as any).import?.meta?.env) {
       return (globalThis as any).import.meta.env.PROD === true;
@@ -101,7 +97,7 @@ export function isProd(): boolean {
   } catch {
     // 無視
   }
-  
+
   return false;
 }
 
@@ -114,7 +110,7 @@ export const ENV = {
   OPENAI_API_KEY: () => getEnv('VITE_OPENAI_API_KEY'),
   CLAUDE_API_KEY: () => getEnv('VITE_CLAUDE_API_KEY'),
   ANTHROPIC_API_KEY: () => getEnv('VITE_ANTHROPIC_API_KEY'),
-  
+
   // Firebase
   FIREBASE_API_KEY: () => getEnv('VITE_FIREBASE_API_KEY'),
   FIREBASE_AUTH_DOMAIN: () => getEnv('VITE_FIREBASE_AUTH_DOMAIN'),
@@ -122,22 +118,22 @@ export const ENV = {
   FIREBASE_STORAGE_BUCKET: () => getEnv('VITE_FIREBASE_STORAGE_BUCKET'),
   FIREBASE_MESSAGING_SENDER_ID: () => getEnv('VITE_FIREBASE_MESSAGING_SENDER_ID'),
   FIREBASE_APP_ID: () => getEnv('VITE_FIREBASE_APP_ID'),
-  
+
   // API URLs
   API_BASE_URL: () => getEnv('VITE_API_BASE_URL'),
   APP_URL: () => getEnv('VITE_APP_URL'),
-  
+
   // Stripe
   STRIPE_PUBLISHABLE_KEY: () => getEnv('VITE_STRIPE_PUBLISHABLE_KEY'),
-  
+
   // GitHub
   GITHUB_TOKEN: () => getEnv('VITE_GITHUB_TOKEN'),
-  
+
   // Flags
   USE_MOCK_DATA: () => getEnv('VITE_USE_MOCK_DATA') === 'true',
   ENABLE_ANALYTICS: () => getEnv('VITE_ENABLE_ANALYTICS') === 'true',
   DEBUG: () => getEnv('VITE_DEBUG') === 'true',
-  
+
   // Environment checks
   isDev,
   isTest,
