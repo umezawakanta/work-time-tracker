@@ -8,6 +8,18 @@ if (typeof window !== 'undefined') {
   (window as any).React = React;
 }
 
+// Do not replace global URL constructor. Only attach blob helpers if missing.
+try {
+  if (typeof URL !== 'undefined') {
+    if (!(URL as any).createObjectURL) {
+      (URL as any).createObjectURL = jest.fn(() => 'blob:test');
+    }
+    if (!(URL as any).revokeObjectURL) {
+      (URL as any).revokeObjectURL = jest.fn();
+    }
+  }
+} catch {}
+
 // Now import other dependencies
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -219,6 +231,18 @@ Object.assign(global, {
   Response: global.Response || class Response {},
   Headers: global.Headers || class Headers {},
 });
+
+// Add blob helpers for components that expect them (do not replace URL constructor)
+try {
+  if (typeof URL !== 'undefined') {
+    if (!(URL as any).createObjectURL) {
+      (URL as any).createObjectURL = jest.fn(() => 'blob:test');
+    }
+    if (!(URL as any).revokeObjectURL) {
+      (URL as any).revokeObjectURL = jest.fn();
+    }
+  }
+} catch {}
 
 // ========================================
 // Environment Variables
@@ -852,9 +876,14 @@ jest.mock('firebase/auth', () => {
 
 // Mock Radix UI Portal for better test reliability
 jest.mock('@radix-ui/react-portal', () => {
+  const React = require('react');
+  const Portal = React.forwardRef(({ children, asChild, ...props }: any, ref: any) =>
+    React.createElement('div', { 'data-testid': 'radix-portal', ref, ...props }, children)
+  );
+  Portal.displayName = 'RadixPortalMock';
   return {
-    Portal: ({ children }: { children: React.ReactNode }) => children,
-    Root: ({ children }: { children: React.ReactNode }) => children,
+    Portal,
+    Root: Portal,
   };
 });
 
