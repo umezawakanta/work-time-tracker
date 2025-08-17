@@ -31,34 +31,46 @@ jest.mock('react-hot-toast', () => ({
 // Radix UI Select components
 jest.mock('@radix-ui/react-select', () => {
   const React = require('react');
+
+  const state: { onValueChange?: (value: any) => void } = {};
+
   const MockComponent = ({ children, ...props }: any) =>
     React.createElement('div', props, children);
   MockComponent.displayName = 'MockSelectComponent';
 
+  const Root = ({ children, onValueChange, ...props }: any) => {
+    state.onValueChange = onValueChange;
+    return React.createElement('div', { 'data-testid': 'select-root', ...props }, children);
+  };
+
+  const Trigger = ({ children, ...props }: any) =>
+    React.createElement(
+      'button',
+      { role: 'combobox', 'data-testid': 'select-trigger', ...props },
+      children
+    );
+
+  const Item = ({ children, value, ...props }: any) =>
+    React.createElement(
+      'div',
+      {
+        role: 'option',
+        'data-testid': `select-item-${value}`,
+        onClick: () => state.onValueChange && state.onValueChange(value),
+        ...props,
+      },
+      children
+    );
+
   return {
-    Root: MockComponent,
-    Trigger: ({ children, ...props }: any) =>
-      React.createElement(
-        'button',
-        { role: 'combobox', 'data-testid': 'select-trigger', ...props },
-        children
-      ),
+    Root,
+    Trigger,
     Value: MockComponent,
     Icon: MockComponent,
-    Portal: MockComponent,
+    Portal: ({ children }: any) => children,
     Content: MockComponent,
     Viewport: MockComponent,
-    Item: ({ children, value, ...props }: any) =>
-      React.createElement(
-        'div',
-        {
-          role: 'option',
-          'data-testid': `select-item-${value}`,
-          // avoid incorrect accessible name from object labels; use text content instead
-          ...props,
-        },
-        children
-      ),
+    Item,
     ItemText: MockComponent,
     ItemIndicator: MockComponent,
     ScrollUpButton: MockComponent,
@@ -339,9 +351,10 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
       const devicesTab = screen.getByRole('tab', { name: 'デバイス' });
       await user.click(devicesTab);
 
-      expect(screen.getByText('Desktop')).toBeInTheDocument();
-      expect(screen.getByText('Mobile')).toBeInTheDocument();
-      expect(screen.getByText('Tablet')).toBeInTheDocument();
+      // ラベルはlowercaseで描画されるため
+      expect(screen.getByText(/desktop/i)).toBeInTheDocument();
+      expect(screen.getByText(/mobile/i)).toBeInTheDocument();
+      expect(screen.getByText(/tablet/i)).toBeInTheDocument();
       expect(screen.getByText('67%')).toBeInTheDocument();
       expect(screen.getByText('28%')).toBeInTheDocument();
       expect(screen.getByText('5%')).toBeInTheDocument();

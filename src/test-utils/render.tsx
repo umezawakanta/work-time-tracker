@@ -31,20 +31,25 @@ function customRender(
 ) {
   // モックAuthを使用する場合
   if (useMockAuth) {
-    const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <MockAuthProvider isAuthenticated={isAuthenticated} user={user} isAdmin={isAdmin}>
         {children}
       </MockAuthProvider>
     );
-    return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const result = rtlRender(ui, { container, wrapper: Wrapper, ...renderOptions });
+    return result;
   }
 
   // 通常のTestProvidersを使用
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <TestProviders initialEntries={initialEntries}>{children}</TestProviders>
   );
 
-  return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  return rtlRender(ui, { container, wrapper: Wrapper, ...renderOptions });
 }
 
 /**
