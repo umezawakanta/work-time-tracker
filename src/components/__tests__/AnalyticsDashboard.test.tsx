@@ -519,6 +519,12 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
 });
 
 describe('📊 AnalyticsDashboard 統合テスト', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   test('完全なダッシュボード操作フローが正常に動作する', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
@@ -565,6 +571,8 @@ describe('📊 AnalyticsDashboard 統合テスト', () => {
       return realCreateEl(tagName, options as any);
     }) as any);
 
+    // ヘッダー描画の完了を待ってから操作
+    await screen.findByText('📊 ユーザー解析ダッシュボード');
     const exportButton = screen.getByRole('button', { name: /エクスポート/i });
     await user.click(exportButton);
 
