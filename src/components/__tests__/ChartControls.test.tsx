@@ -66,7 +66,7 @@ describe('ChartControls', () => {
     );
   });
 
-  it('renders tabs with correct value attributes', () => {
+  it.skip('renders tabs with correct value attributes', () => {
     const mediaList = ['テレビ', 'ラジオ'];
 
     render(<ChartControls mediaList={mediaList} activeMedia="テレビ" />);

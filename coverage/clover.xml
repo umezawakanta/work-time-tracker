@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1755531389235" clover="3.2.0">
-  <project timestamp="1755531389235" name="All files">
+<coverage generated="1755532009869" clover="3.2.0">
+  <project timestamp="1755532009870" name="All files">
     <metrics statements="74644" coveredstatements="3241" conditionals="33864" coveredconditionals="961" methods="18763" coveredmethods="581" elements="127271" coveredelements="4783" complexity="0" loc="74644" ncloc="74644" packages="211" files="1067" classes="1067"/>
     <package name="src">
       <metrics statements="153" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="146" coveredmethods="0"/>
@@ -735,8 +735,8 @@
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="9" count="1" type="stmt"/>
-        <line num="10" count="10" type="stmt"/>
-        <line num="14" count="35" type="stmt"/>
+        <line num="10" count="9" type="stmt"/>
+        <line num="14" count="33" type="stmt"/>
         <line num="29" count="1" type="stmt"/>
       </file>
       <file name="CustomTooltip.tsx" path="C:\Users\kanta\GitHub\work-time-tracker\src\components\CustomTooltip.tsx">
@@ -10552,8 +10552,8 @@
         <line num="112" count="864" type="stmt"/>
         <line num="113" count="864" type="stmt"/>
         <line num="114" count="864" type="cond" truecount="3" falsecount="0"/>
-        <line num="115" count="849" type="stmt"/>
-        <line num="116" count="849" type="stmt"/>
+        <line num="115" count="853" type="stmt"/>
+        <line num="116" count="853" type="stmt"/>
         <line num="120" count="144" type="cond" truecount="1" falsecount="0"/>
         <line num="121" count="144" type="stmt"/>
         <line num="125" count="24" type="stmt"/>
@@ -28099,10 +28099,10 @@
         <line num="6" count="3" type="stmt"/>
         <line num="8" count="3" type="stmt"/>
         <line num="10" count="3" type="stmt"/>
-        <line num="14" count="58" type="stmt"/>
+        <line num="14" count="57" type="stmt"/>
         <line num="23" count="3" type="stmt"/>
         <line num="25" count="3" type="stmt"/>
-        <line num="29" count="389" type="stmt"/>
+        <line num="29" count="387" type="stmt"/>
         <line num="38" count="3" type="stmt"/>
         <line num="40" count="3" type="stmt"/>
         <line num="44" count="111" type="stmt"/>
@@ -35895,7 +35895,7 @@
         <line num="1" count="26" type="stmt"/>
         <line num="2" count="26" type="stmt"/>
         <line num="4" count="26" type="stmt"/>
-        <line num="5" count="15953" type="stmt"/>
+        <line num="5" count="15950" type="stmt"/>
       </file>
     </package>
     <package name="src.lib.api">
@@ -47716,7 +47716,7 @@
         <line num="279" count="150" type="stmt"/>
         <line num="289" count="44" type="stmt"/>
         <line num="290" count="40044" type="cond" truecount="2" falsecount="0"/>
-        <line num="291" count="45412" type="stmt"/>
+        <line num="291" count="49068" type="stmt"/>
         <line num="293" count="44" type="cond" truecount="1" falsecount="0"/>
         <line num="295" count="40" type="stmt"/>
         <line num="297" count="40" type="stmt"/>
@@ -70215,9 +70215,9 @@
         <line num="454" count="0" type="stmt"/>
         <line num="461" count="4" type="stmt"/>
         <line num="462" count="4" type="stmt"/>
-        <line num="463" count="5" type="stmt"/>
+        <line num="463" count="7" type="stmt"/>
         <line num="470" count="13" type="stmt"/>
-        <line num="477" count="4" type="stmt"/>
+        <line num="477" count="5" type="stmt"/>
         <line num="484" count="0" type="stmt"/>
         <line num="491" count="4" type="stmt"/>
         <line num="492" count="4" type="stmt"/>
