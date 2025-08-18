@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/176</span>
+                <span class='fraction'>0/178</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/143</span>
+                <span class='fraction'>0/145</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/107</span>
+                <span class='fraction'>0/108</span>
             </div>
         
             
@@ -1164,7 +1164,18 @@
 <a name='L1099'></a><a href='#L1099'>1099</a>
 <a name='L1100'></a><a href='#L1100'>1100</a>
 <a name='L1101'></a><a href='#L1101'>1101</a>
-<a name='L1102'></a><a href='#L1102'>1102</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L1102'></a><a href='#L1102'>1102</a>
+<a name='L1103'></a><a href='#L1103'>1103</a>
+<a name='L1104'></a><a href='#L1104'>1104</a>
+<a name='L1105'></a><a href='#L1105'>1105</a>
+<a name='L1106'></a><a href='#L1106'>1106</a>
+<a name='L1107'></a><a href='#L1107'>1107</a>
+<a name='L1108'></a><a href='#L1108'>1108</a>
+<a name='L1109'></a><a href='#L1109'>1109</a>
+<a name='L1110'></a><a href='#L1110'>1110</a>
+<a name='L1111'></a><a href='#L1111'>1111</a>
+<a name='L1112'></a><a href='#L1112'>1112</a>
+<a name='L1113'></a><a href='#L1113'>1113</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1327,6 +1338,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1372,6 +1384,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2428,6 +2450,7 @@ const MobileOptimizationPage = <span class="cstat-no" title="statement not cover
 const AbstinenceManager = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>./pages/AbstinenceManager'))</span>;</span>
 const SleepTrackerPage = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>./pages/SleepTrackerPage'))</span>;</span>
 const ImpulseTrackerPage = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>./pages/ImpulseTrackerPage'))</span>;</span>
+const QuitSmokingCoachPage = <span class="cstat-no" title="statement not covered" >lazy(<span class="fstat-no" title="function not covered" >() =</span>&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > import('</span>./pages/QuitSmokingCoachPage'))</span>;</span>
 // const LifeEventTimelinePage = lazy(() =&gt; import('./pages/LifeEventTimelinePage'));
 // const PersonalAnalyticsPage = lazy(() =&gt; import('./pages/PersonalAnalyticsPage'));
 &nbsp;
@@ -3109,6 +3132,16 @@ const App: React.FC = <span class="cstat-no" title="statement not covered" ><spa
                                 &lt;/LayoutWrapper&gt;
                               }
                             /&gt;
+                            &lt;Route
+                              path="/quit-smoking"
+                              element={
+                                &lt;LayoutWrapper&gt;
+                                  &lt;LazyWrapper&gt;
+                                    &lt;QuitSmokingCoachPage /&gt;
+                                  &lt;/LazyWrapper&gt;
+                                &lt;/LayoutWrapper&gt;
+                              }
+                            /&gt;
                             {/*&lt;Route
                               path="/life-timeline"
                               element={
@@ -3373,7 +3406,7 @@ const AppWithProviders: React.FC = <span class="cstat-no" title="statement not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-17T06:20:30.179Z
+                at 2025-08-18T12:32:25.106Z
             </div>
         <script src="../prettify.js"></script>
         <script>

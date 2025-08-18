@@ -50,6 +50,7 @@ jest.mock('@radix-ui/react-dropdown-menu', () => ({
       data-testid="dropdown-content"
       className={className}
       data-side-offset={sideOffset}
+      role="menu"
       {...props}
     >
       {children}
