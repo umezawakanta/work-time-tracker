@@ -76,14 +76,19 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
 
   const copyToClipboard = async () => {
     try {
-      const maybeNav: any = typeof navigator !== 'undefined' ? navigator : undefined;
-      if (maybeNav?.clipboard?.writeText) {
-        await maybeNav.clipboard.writeText(url);
-      } else if ((window as any)?.navigator?.clipboard?.writeText) {
-        await (window as any).navigator.clipboard.writeText(url);
-      }
+      // eslint-disable-next-line no-console
+      console.log('[copy] handler start', {
+        hasNavigator: typeof navigator !== 'undefined',
+        hasClipboard: !!(navigator as any)?.clipboard,
+        hasWrite: typeof (navigator as any)?.clipboard?.writeText,
+      });
+      await (navigator as any).clipboard.writeText(url);
+      // eslint-disable-next-line no-console
+      console.log('[copy] wrote', url);
       toast.success('🔗 リンクをクリップボードにコピーしました！');
-    } catch (error) {
+    } catch {
+      // eslint-disable-next-line no-console
+      console.log('[copy] failed');
       toast.error('リンクのコピーに失敗しました');
     } finally {
       trackShare('copy');
@@ -121,6 +126,14 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleMenuKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    if (e.key === 'Enter') {
+      const active = document.activeElement as HTMLElement | null;
+      if (active && active.getAttribute('role') === 'menuitem') {
+        active.click();
+        e.preventDefault();
+        return;
+      }
+    }
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
     const container = menuRef.current;
     if (!container) return;
@@ -137,10 +150,38 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
     e.preventDefault();
   };
 
+  const handleTriggerKeyDown: React.KeyboardEventHandler<HTMLButtonElement> = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      // Focus first menu item after opening
+      setTimeout(() => {
+        const container = menuRef.current;
+        if (!container) return;
+        const items = container.querySelectorAll<HTMLElement>('[role="menuitem"]');
+        if (items.length > 0) {
+          items[0].focus();
+        }
+      }, 0);
+    } else if (e.key === 'ArrowDown') {
+      const container = menuRef.current;
+      if (!container) return;
+      const items = container.querySelectorAll<HTMLElement>('[role="menuitem"]');
+      if (items.length > 0) {
+        items[0].focus();
+        e.preventDefault();
+      }
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size} className="gap-2" aria-label="シェア">
+        <Button
+          variant={variant}
+          size={size}
+          className="gap-2"
+          aria-label="シェア"
+          onKeyDown={handleTriggerKeyDown}
+        >
           <Share2 className="h-4 w-4" />
           シェア
         </Button>
@@ -151,27 +192,47 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
         ref={menuRef as any}
         onKeyDown={handleMenuKeyDown}
       >
-        <DropdownMenuItem onClick={shareToTwitter} className="gap-2" tabIndex={-1}>
+        <DropdownMenuItem
+          onClick={shareToTwitter as any}
+          onSelect={shareToTwitter as any}
+          className="gap-2"
+          tabIndex={-1}
+        >
           <Twitter className="h-4 w-4 text-blue-500" />
           Twitter / X で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={shareToFacebook} className="gap-2" tabIndex={-1}>
+        <DropdownMenuItem
+          onClick={shareToFacebook as any}
+          onSelect={shareToFacebook as any}
+          className="gap-2"
+          tabIndex={-1}
+        >
           <Facebook className="h-4 w-4 text-blue-600" />
           Facebook で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={shareToLinkedIn} className="gap-2" tabIndex={-1}>
+        <DropdownMenuItem
+          onClick={shareToLinkedIn as any}
+          onSelect={shareToLinkedIn as any}
+          className="gap-2"
+          tabIndex={-1}
+        >
           <Linkedin className="h-4 w-4 text-blue-700" />
           LinkedIn で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={shareByEmail} className="gap-2" tabIndex={-1}>
+        <DropdownMenuItem
+          onClick={shareByEmail as any}
+          onSelect={shareByEmail as any}
+          className="gap-2"
+          tabIndex={-1}
+        >
           <Mail className="h-4 w-4 text-gray-600" />
           メールで共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={copyToClipboard} className="gap-2" tabIndex={-1}>
+        <DropdownMenuItem onClick={copyToClipboard as any} className="gap-2" data-copy-url={url}>
           <Link className="h-4 w-4 text-gray-600" />
           リンクをコピー
         </DropdownMenuItem>

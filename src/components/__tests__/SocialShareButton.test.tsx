@@ -30,8 +30,10 @@ const mockWriteText = jest.fn();
 Object.defineProperty(navigator, 'clipboard', {
   value: {
     writeText: mockWriteText,
+    readText: jest.fn(),
   },
   writable: true,
+  configurable: true,
 });
 
 // fetchをモック

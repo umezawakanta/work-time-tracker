@@ -435,10 +435,7 @@ Object.defineProperty(window, 'navigator', {
     languages: ['en-US', 'en'],
     onLine: true,
     cookieEnabled: true,
-    clipboard: {
-      writeText: jest.fn(() => Promise.resolve()),
-      readText: jest.fn(() => Promise.resolve('')),
-    },
+    // Do not force a clipboard mock here; individual tests will configure as needed
   },
   writable: true,
   configurable: true,
@@ -828,19 +825,36 @@ jest.mock('@radix-ui/react-dropdown-menu', () => {
       asChild && React.isValidElement(children)
         ? React.cloneElement(children, { ...props, 'data-testid': 'dropdown-trigger' })
         : React.createElement('button', { 'data-testid': 'dropdown-trigger', ...props }, children),
-    Content: ({ children, ...props }: any) =>
+    Content: React.forwardRef(({ children, sideOffset, ...props }: any, ref: any) =>
       React.createElement(
         'div',
-        { 'data-testid': 'dropdown-content', role: 'menu', ...props },
+        { 'data-testid': 'dropdown-content', role: 'menu', ref, ...props },
         children
-      ),
+      )
+    ),
     Portal: ({ children }: any) => children,
-    Item: ({ children, ...props }: any) =>
-      React.createElement(
-        'div',
-        { 'data-testid': 'dropdown-item', role: 'menuitem', ...props },
+    Item: ({ children, ...props }: any) => {
+      const { onClick, onPointerDown, onSelect, ...rest } = props || {};
+      const handleClick = (e: any) => {
+        if (typeof onClick === 'function') onClick(e);
+        if (typeof onSelect === 'function') onSelect(e);
+      };
+      const handlePointerDown = (e: any) => {
+        if (typeof onPointerDown === 'function') onPointerDown(e);
+      };
+      return React.createElement(
+        'button',
+        {
+          'data-testid': 'dropdown-item',
+          role: 'menuitem',
+          type: 'button',
+          onClick: handleClick,
+          onPointerDown: handlePointerDown,
+          ...rest,
+        },
         children
-      ),
+      );
+    },
     CheckboxItem: ({ children, ...props }: any) =>
       React.createElement(
         'div',
