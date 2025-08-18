@@ -76,24 +76,22 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
 
   const copyToClipboard = async () => {
     try {
-      const navWrite: any = (navigator as any)?.clipboard?.writeText;
-      const winWrite: any = (window as any)?.navigator?.clipboard?.writeText;
-      let wrote = false;
-      if (typeof navWrite === 'function') {
-        await navWrite(url);
-        wrote = true;
-      }
-      if (typeof winWrite === 'function' && winWrite !== navWrite) {
-        await winWrite(url);
-        wrote = true;
-      }
-      if (wrote) {
-        toast.success('🔗 リンクをクリップボードにコピーしました！');
-      } else {
-        throw new Error('Clipboard API unavailable');
-      }
+      // Call as a method to preserve `this` binding expected by some test environments
+      await (navigator as any).clipboard.writeText(url);
+      toast.success('🔗 リンクをクリップボードにコピーしました！');
     } catch {
-      toast.error('リンクのコピーに失敗しました');
+      // Fallback only if a distinct navigator object exists
+      try {
+        const winNav = (window as any).navigator;
+        if (winNav && winNav !== navigator && winNav.clipboard?.writeText) {
+          await winNav.clipboard.writeText(url);
+          toast.success('🔗 リンクをクリップボードにコピーしました！');
+        } else {
+          throw new Error('no distinct navigator');
+        }
+      } catch {
+        toast.error('リンクのコピーに失敗しました');
+      }
     } finally {
       trackShare('copy');
     }
@@ -196,42 +194,22 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
         ref={menuRef as any}
         onKeyDown={handleMenuKeyDown}
       >
-        <DropdownMenuItem
-          onClick={shareToTwitter as any}
-          onSelect={shareToTwitter as any}
-          className="gap-2"
-          tabIndex={-1}
-        >
+        <DropdownMenuItem onClick={shareToTwitter as any} className="gap-2" tabIndex={-1}>
           <Twitter className="h-4 w-4 text-blue-500" />
           Twitter / X で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={shareToFacebook as any}
-          onSelect={shareToFacebook as any}
-          className="gap-2"
-          tabIndex={-1}
-        >
+        <DropdownMenuItem onClick={shareToFacebook as any} className="gap-2" tabIndex={-1}>
           <Facebook className="h-4 w-4 text-blue-600" />
           Facebook で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={shareToLinkedIn as any}
-          onSelect={shareToLinkedIn as any}
-          className="gap-2"
-          tabIndex={-1}
-        >
+        <DropdownMenuItem onClick={shareToLinkedIn as any} className="gap-2" tabIndex={-1}>
           <Linkedin className="h-4 w-4 text-blue-700" />
           LinkedIn で共有
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={shareByEmail as any}
-          onSelect={shareByEmail as any}
-          className="gap-2"
-          tabIndex={-1}
-        >
+        <DropdownMenuItem onClick={shareByEmail as any} className="gap-2" tabIndex={-1}>
           <Mail className="h-4 w-4 text-gray-600" />
           メールで共有
         </DropdownMenuItem>

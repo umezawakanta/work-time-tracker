@@ -222,6 +222,8 @@ describe('📢 SocialShareButton コンポーネント', () => {
   describe('🔗 リンクコピー', () => {
     test('リンクコピーが正常に動作する', async () => {
       const user = userEvent.setup();
+      // Ensure our spy is the active clipboard writer even if user-event modifies clipboard
+      (navigator as any).clipboard.writeText = mockWriteText;
       mockWriteText.mockResolvedValueOnce(undefined);
 
       renderWithAuth(<SocialShareButton {...defaultProps} />);
@@ -246,6 +248,8 @@ describe('📢 SocialShareButton コンポーネント', () => {
 
     test('リンクコピー失敗時のエラーハンドリング', async () => {
       const user = userEvent.setup();
+      // Ensure our spy is used
+      (navigator as any).clipboard.writeText = mockWriteText;
       mockWriteText.mockRejectedValueOnce(new Error('Clipboard error'));
 
       renderWithAuth(<SocialShareButton {...defaultProps} />);
@@ -253,7 +257,7 @@ describe('📢 SocialShareButton コンポーネント', () => {
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
 
-      const copyOption = screen.getByText('リンクをコピー');
+      const copyOption = screen.getByRole('menuitem', { name: 'リンクをコピー' });
       await user.click(copyOption);
 
       const { toast } = await import('react-hot-toast');
@@ -493,6 +497,8 @@ describe('📢 SocialShareButton 統合テスト', () => {
 
     // 3. リンクコピー確認
     const copyOption = screen.getByRole('menuitem', { name: 'リンクをコピー' });
+    // Ensure clipboard spy is the active method before clicking
+    (navigator as any).clipboard.writeText = mockWriteText;
     await user.click(copyOption);
 
     await waitFor(() => {

@@ -315,12 +315,9 @@ describe('📊 AnalyticsDashboard コンポーネント', () => {
         if (tagName === 'a') return mockLink as any;
         return realCreateElement(tagName, options as any);
       }) as any);
-      const appendSpy = jest
-        .spyOn(document.body, 'appendChild')
-        .mockImplementation(() => mockLink as any);
-      const removeSpy = jest
-        .spyOn(document.body, 'removeChild')
-        .mockImplementation(() => mockLink as any);
+      // Do not override body append/remove to avoid breaking RTL container mounting
+      const appendSpy = jest.spyOn(document.body, 'appendChild');
+      const removeSpy = jest.spyOn(document.body, 'removeChild');
 
       renderWithAdminAuth(<AnalyticsDashboard isAdminUser={true} />);
 

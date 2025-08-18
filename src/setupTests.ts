@@ -441,6 +441,24 @@ Object.defineProperty(window, 'navigator', {
   configurable: true,
 });
 
+// Ensure clipboard exists by default for suites that rely on it implicitly
+try {
+  const nav: any = (window as any).navigator;
+  if (!nav.clipboard) {
+    nav.clipboard = {
+      writeText: jest.fn(() => Promise.resolve()),
+      readText: jest.fn(() => Promise.resolve('')),
+    };
+  } else {
+    if (typeof nav.clipboard.writeText !== 'function') {
+      nav.clipboard.writeText = jest.fn(() => Promise.resolve());
+    }
+    if (typeof nav.clipboard.readText !== 'function') {
+      nav.clipboard.readText = jest.fn(() => Promise.resolve(''));
+    }
+  }
+} catch {}
+
 // ========================================
 // Storage Mocks
 // ========================================
