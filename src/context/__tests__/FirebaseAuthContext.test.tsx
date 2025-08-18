@@ -85,6 +85,8 @@ const createFirebaseError = (code: string, message?: string) => {
   return error;
 };
 
+type AuthState = NonNullable<ReturnType<typeof useFirebaseAuth>>;
+
 describe('FirebaseAuthContext', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <FirebaseAuthProvider>{children}</FirebaseAuthProvider>
@@ -104,12 +106,13 @@ describe('FirebaseAuthContext', () => {
 
   describe('初期化', () => {
     it('初期状態が正しく設定される', () => {
-      const { result } = renderHook(() => useFirebaseAuth(), { wrapper });
+      const { result } = renderHook<AuthState>(() => useFirebaseAuth(), { wrapper });
 
-      expect(result.current.isAuthenticated).toBe(false);
-      expect(result.current.user).toBeNull();
-      expect(result.current.error).toBeNull();
-      expect(result.current.isFirebaseEnabled).toBe(true);
+      const auth = result.current!; // safe after render
+      expect(auth.isAuthenticated).toBe(false);
+      expect(auth.user).toBeNull();
+      expect(auth.error).toBeNull();
+      expect(auth.isFirebaseEnabled).toBe(true);
     });
 
     it('Firebase有効時に認証監視が開始される', () => {
@@ -135,8 +138,9 @@ describe('FirebaseAuthContext', () => {
         authCallback?.(mockUser);
       });
 
-      expect(result.current.isAuthenticated).toBe(true);
-      expect(result.current.user).toEqual(
+      const auth = result.current!; // safe after render
+      expect(auth.isAuthenticated).toBe(true);
+      expect(auth.user).toEqual(
         expect.objectContaining({
           uid: mockUser.uid,
           email: mockUser.email,
@@ -467,15 +471,16 @@ describe('FirebaseAuthContext', () => {
         authCallback?.(null);
       });
 
-      expect(result.current.user).toBeNull();
-      expect(result.current.isAuthenticated).toBe(false);
+      const auth = result.current!; // safe after render
+      expect(auth.user).toBeNull();
+      expect(auth.isAuthenticated).toBe(false);
 
       // ログイン状態に変化
       act(() => {
         authCallback?.(mockUser);
       });
 
-      expect(result.current.user).toEqual(
+      expect(auth.user).toEqual(
         expect.objectContaining({
           uid: mockUser.uid,
           email: mockUser.email,
@@ -484,15 +489,15 @@ describe('FirebaseAuthContext', () => {
           emailVerified: mockUser.emailVerified,
         })
       );
-      expect(result.current.isAuthenticated).toBe(true);
+      expect(auth.isAuthenticated).toBe(true);
 
       // ログアウト状態に変化
       act(() => {
         authCallback?.(null);
       });
 
-      expect(result.current.user).toBeNull();
-      expect(result.current.isAuthenticated).toBe(false);
+      expect(auth.user).toBeNull();
+      expect(auth.isAuthenticated).toBe(false);
     });
 
     it('クリーンアップ時に認証監視を解除する', () => {
