@@ -161,6 +161,7 @@ const MobileOptimizationPage = lazy(() => import('./pages/MobileOptimizationPage
 const AbstinenceManager = lazy(() => import('./pages/AbstinenceManager'));
 const SleepTrackerPage = lazy(() => import('./pages/SleepTrackerPage'));
 const ImpulseTrackerPage = lazy(() => import('./pages/ImpulseTrackerPage'));
+const QuitSmokingCoachPage = lazy(() => import('./pages/QuitSmokingCoachPage'));
 // const LifeEventTimelinePage = lazy(() => import('./pages/LifeEventTimelinePage'));
 // const PersonalAnalyticsPage = lazy(() => import('./pages/PersonalAnalyticsPage'));
 
@@ -838,6 +839,16 @@ const App: React.FC = () => {
                                 <LayoutWrapper>
                                   <LazyWrapper>
                                     <ImpulseTrackerPage />
+                                  </LazyWrapper>
+                                </LayoutWrapper>
+                              }
+                            />
+                            <Route
+                              path="/quit-smoking"
+                              element={
+                                <LayoutWrapper>
+                                  <LazyWrapper>
+                                    <QuitSmokingCoachPage />
                                   </LazyWrapper>
                                 </LayoutWrapper>
                               }

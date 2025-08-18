@@ -266,6 +266,14 @@ const appPages: SearchItem[] = [
     icon: <Clock className="h-4 w-4" />,
   },
   {
+    id: 'quit-smoking',
+    title: '禁煙コーチ',
+    description: '禁煙 依存 衝動 コーチ 節約 健康 quit smoking',
+    type: 'page',
+    path: '/quit-smoking',
+    icon: <Target className="h-4 w-4" />,
+  },
+  {
     id: 'guitar-practice',
     title: 'ギター練習',
     description: 'ギター練習記録 音楽 guitar practice',

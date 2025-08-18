@@ -443,6 +443,15 @@ const personalMenuItems: MenuItem[] = [
   },
   {
     icon: <Zap className="h-5 w-5" />,
+    label: '🚭 禁煙コーチ',
+    path: '/quit-smoking',
+    description: 'AIコーチ・衝動対処・節約可視化',
+    badge: '最優先',
+    gradient: 'from-slate-500 via-gray-500 to-zinc-500',
+    accentColor: 'slate',
+  },
+  {
+    icon: <Zap className="h-5 w-5" />,
     label: '⚡ 衝動トラッカー',
     path: '/impulse-tracker',
     description: 'ADHD衝動性の記録と管理',
