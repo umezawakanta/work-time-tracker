@@ -229,10 +229,14 @@ describe('📢 SocialShareButton コンポーネント', () => {
       const shareButton = screen.getByRole('button', { name: /シェア/i });
       await user.click(shareButton);
 
-      const copyOption = screen.getByText('リンクをコピー');
+      const copyOption = screen.getByRole('menuitem', { name: 'リンクをコピー' });
       await user.click(copyOption);
 
-      expect(mockWriteText).toHaveBeenCalledWith('https://example.com/test');
+      await waitFor(() => {
+        expect(mockWriteText).toHaveBeenCalled();
+      });
+      const copyArg = (mockWriteText.mock.calls[0] || [])[0];
+      expect(copyArg).toBe('https://example.com/test');
 
       const { toast } = await import('react-hot-toast');
       await waitFor(() => {
@@ -488,10 +492,14 @@ describe('📢 SocialShareButton 統合テスト', () => {
     }
 
     // 3. リンクコピー確認
-    const copyOption = screen.getByText('リンクをコピー');
+    const copyOption = screen.getByRole('menuitem', { name: 'リンクをコピー' });
     await user.click(copyOption);
 
-    expect(mockWriteText).toHaveBeenCalledWith('https://work-time-tracker.com');
+    await waitFor(() => {
+      expect(mockWriteText).toHaveBeenCalled();
+    });
+    const arg = (mockWriteText.mock.calls[0] || [])[0];
+    expect(arg).toBe('https://work-time-tracker.com');
 
     // 4. アナリティクス記録確認
     expect(mockFetch).toHaveBeenCalledTimes(4); // Twitter, Facebook, LinkedIn, Copy
