@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 // src/__tests__/payment-integration.test.tsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -7,6 +8,7 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 import '@testing-library/jest-dom';
+import type { User } from '../types';
 
 // Import components and services
 import SubscriptionPage from '../pages/SubscriptionPage';
@@ -62,21 +64,36 @@ const createMockStore = (initialState = {}) => {
   });
 };
 
-// Mock user data
-const mockUser = {
-  uid: 'test-user-123',
+// Mock user data (matches app User type)
+const mockUser: User = {
+  id: 'test-user-id',
+  _id: 'mongo-test-user-id',
+  username: 'testuser',
+  name: 'Test User',
   email: 'test@example.com',
+  isAdmin: false,
+  uid: 'test-user-123',
   displayName: 'Test User',
 };
 
-// Mock auth context
-const createAuthContext = (user = mockUser) => ({
-  user,
+// Mock auth context (matches AuthContextType shape)
+const createAuthContext = (user: User | null = mockUser) => ({
+  isAuthenticated: Boolean(user),
+  setIsAuthenticated: jest.fn(),
   loading: false,
-  error: null,
-  signIn: jest.fn(),
-  signOut: jest.fn(),
-  signUp: jest.fn(),
+  user,
+  setUser: jest.fn(),
+  fetchUser: async (): Promise<void> => {},
+  updateProfile: async (_data: { name: string; email: string }): Promise<void> => {},
+  sessionExpired: false,
+  refreshAuth: async (): Promise<void> => {},
+  sessionInfo: {
+    isAuthenticated: Boolean(user),
+    expiresAt: null,
+    refreshExpiresAt: null,
+    timeUntilExpiry: 0,
+    timeUntilRefreshExpiry: 0,
+  },
 });
 
 describe.skip('Payment Integration Tests', () => {
@@ -98,6 +115,29 @@ describe.skip('Payment Integration Tests', () => {
       </Provider>
     );
   };
+
+  // Shared mock plans for subscription tests
+  const mockPlans = [
+    {
+      id: 'basic-monthly',
+      name: 'ベーシックプラン',
+      description: '個人利用に最適',
+      price: 980,
+      currency: 'jpy',
+      billingCycle: 'monthly' as const,
+      features: ['作業時間記録', 'AI分析', 'レポート'],
+      limits: {
+        workHours: -1,
+        projects: 10,
+        tasks: 500,
+        reports: 50,
+        apiCalls: 5000,
+        storage: 1000,
+        teamMembers: 1,
+      },
+      trialDays: 14,
+    },
+  ];
 
   describe('SubscriptionPage', () => {
     it('should display all subscription plans correctly', () => {
@@ -157,28 +197,6 @@ describe.skip('Payment Integration Tests', () => {
   });
 
   describe('EnhancedSubscriptionForm', () => {
-    const mockPlans = [
-      {
-        id: 'basic-monthly',
-        name: 'ベーシックプラン',
-        description: '個人利用に最適',
-        price: 980,
-        currency: 'jpy',
-        billingCycle: 'monthly' as const,
-        features: ['作業時間記録', 'AI分析', 'レポート'],
-        limits: {
-          workHours: -1,
-          projects: 10,
-          tasks: 500,
-          reports: 50,
-          apiCalls: 5000,
-          storage: 1000,
-          teamMembers: 1,
-        },
-        trialDays: 14,
-      },
-    ];
-
     it('should render subscription form with plans', () => {
       renderWithProviders(
         <EnhancedSubscriptionForm
@@ -197,7 +215,7 @@ describe.skip('Payment Integration Tests', () => {
       const onError = jest.fn();
 
       // Mock successful API response
-      (userSubscriptionApi.createSubscription as jest.MockedFunction<any>).mockResolvedValue({
+      (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockResolvedValue({
         success: true,
         data: {
           subscription: { id: 'sub_123' },
@@ -228,7 +246,7 @@ describe.skip('Payment Integration Tests', () => {
       const onError = jest.fn();
 
       // Mock error response
-      (userSubscriptionApi.createSubscription as jest.MockedFunction<any>).mockRejectedValue(
+      (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockRejectedValue(
         new Error('Payment method required')
       );
 
@@ -252,7 +270,7 @@ describe.skip('Payment Integration Tests', () => {
   describe('Payment Flow Integration', () => {
     it.skip('should complete full payment flow without errors', async () => {
       // Mock successful payment flow
-      (userSubscriptionApi.createSubscription as jest.MockedFunction<any>).mockResolvedValue({
+      (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockResolvedValue({
         success: true,
         data: {
           subscription: {
@@ -284,7 +302,7 @@ describe.skip('Payment Integration Tests', () => {
 
       await waitFor(
         () => {
-          expect(userSubscriptionApi.createSubscription).toHaveBeenCalled();
+          expect(userSubscriptionApi.createUserSubscription).toHaveBeenCalled();
         },
         { timeout: 5000 }
       );
@@ -292,7 +310,7 @@ describe.skip('Payment Integration Tests', () => {
 
     it.skip('should handle Stripe-specific errors correctly', async () => {
       // Mock Stripe error
-      (userSubscriptionApi.createSubscription as jest.MockedFunction<any>).mockRejectedValue({
+      (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockRejectedValue({
         code: 'card_declined',
         message: 'Your card was declined.',
         type: 'card_error',
@@ -358,7 +376,7 @@ describe.skip('Payment Integration Tests', () => {
         paymentMethodId: undefined,
       };
 
-      (userSubscriptionApi.createSubscription as jest.MockedFunction<any>).mockRejectedValue({
+      (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockRejectedValue({
         error: 'Plan ID is required',
         errorCode: 'PLAN_ID_MISSING',
       });
@@ -401,19 +419,25 @@ describe('API Integration Tests', () => {
       },
     };
 
-    (userSubscriptionApi.createSubscription as Mock).mockResolvedValue(mockResponse);
+    (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockResolvedValue(
+      mockResponse
+    );
 
-    const result = await userSubscriptionApi.createSubscription({
+    const result = await userSubscriptionApi.createUserSubscription({
+      userId: 'test-user-id',
       planId: 'basic-monthly',
-      paymentMethodId: 'pm_test_123',
-      billingCycle: 'monthly',
+      status: 'active',
+      currentPeriodEnd: new Date(),
+      cancelAtPeriodEnd: false,
     });
 
     expect(result).toEqual(mockResponse);
-    expect(userSubscriptionApi.createSubscription).toHaveBeenCalledWith({
+    expect(userSubscriptionApi.createUserSubscription).toHaveBeenCalledWith({
+      userId: 'test-user-id',
       planId: 'basic-monthly',
-      paymentMethodId: 'pm_test_123',
-      billingCycle: 'monthly',
+      status: 'active',
+      currentPeriodEnd: expect.any(Date),
+      cancelAtPeriodEnd: false,
     });
   });
 
@@ -425,13 +449,17 @@ describe('API Integration Tests', () => {
       retryable: true,
     };
 
-    (userSubscriptionApi.createSubscription as Mock).mockRejectedValue(mockError);
+    (userSubscriptionApi.createUserSubscription as jest.MockedFunction<any>).mockRejectedValue(
+      mockError
+    );
 
     try {
-      await userSubscriptionApi.createSubscription({
+      await userSubscriptionApi.createUserSubscription({
+        userId: 'test-user-id',
         planId: 'basic-monthly',
-        paymentMethodId: 'pm_invalid',
-        billingCycle: 'monthly',
+        status: 'active',
+        currentPeriodEnd: new Date(),
+        cancelAtPeriodEnd: false,
       });
     } catch (error) {
       expect(error).toEqual(mockError);
