@@ -635,7 +635,7 @@ class FinalVerificationService {
       ];
 
       // 簡易チェック（実際の実装では詳細な静的解析）
-      let foundMocks = 0;
+      const foundMocks = 0;
 
       if (foundMocks === 0) {
         return {

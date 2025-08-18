@@ -104,7 +104,7 @@ const getOllamaModel = (): string => {
   const defaultModel = 'llama3.2:3b'; // または 'mistral', 'phi3', 'qwen2.5' など
 
   // 環境変数から取得を試みる
-  let model = getEnv('VITE_OLLAMA_MODEL') || '';
+  const model = getEnv('VITE_OLLAMA_MODEL') || '';
 
   return model || defaultModel;
 };

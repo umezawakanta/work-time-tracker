@@ -18,7 +18,7 @@ setupGlobalErrorHandling();
 // 🚫 ServiceWorker完全無効化（デバッグのため）
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function (registrations) {
-    for (let registration of registrations) {
+    for (const registration of registrations) {
       registration.unregister().then(function () {
         console.log('🗑️ ServiceWorker unregistered:', registration.scope);
       });
