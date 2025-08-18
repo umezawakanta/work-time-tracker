@@ -36,6 +36,13 @@ Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
 });
 
+// window.navigator を navigator と同一参照にして、コンポーネント側の参照差分を吸収
+Object.defineProperty(window, 'navigator', {
+  value: navigator,
+  writable: true,
+  configurable: true,
+});
+
 // fetchをモック
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
