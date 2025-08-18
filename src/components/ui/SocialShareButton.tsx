@@ -76,19 +76,23 @@ export const SocialShareButton: React.FC<SocialShareButtonProps> = ({
 
   const copyToClipboard = async () => {
     try {
-      // eslint-disable-next-line no-console
-      console.log('[copy] handler start', {
-        hasNavigator: typeof navigator !== 'undefined',
-        hasClipboard: !!(navigator as any)?.clipboard,
-        hasWrite: typeof (navigator as any)?.clipboard?.writeText,
-      });
-      await (navigator as any).clipboard.writeText(url);
-      // eslint-disable-next-line no-console
-      console.log('[copy] wrote', url);
-      toast.success('🔗 リンクをクリップボードにコピーしました！');
+      const navWrite: any = (navigator as any)?.clipboard?.writeText;
+      const winWrite: any = (window as any)?.navigator?.clipboard?.writeText;
+      let wrote = false;
+      if (typeof navWrite === 'function') {
+        await navWrite(url);
+        wrote = true;
+      }
+      if (typeof winWrite === 'function' && winWrite !== navWrite) {
+        await winWrite(url);
+        wrote = true;
+      }
+      if (wrote) {
+        toast.success('🔗 リンクをクリップボードにコピーしました！');
+      } else {
+        throw new Error('Clipboard API unavailable');
+      }
     } catch {
-      // eslint-disable-next-line no-console
-      console.log('[copy] failed');
       toast.error('リンクのコピーに失敗しました');
     } finally {
       trackShare('copy');
