@@ -11,7 +11,7 @@ import { toast } from 'react-hot-toast';
 import SubscriptionPage from '@/pages/SubscriptionPage';
 import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
 import AuthContext from '@/context/AuthContext';
-import userSubscriptionApi from '@/services/api/userSubscriptionApi';
+import userSubscriptionApi from '@/services/api/userSubscriptionApi.ts';
 import { formatPrice } from '@/config/stripe';
 
 // Mock external dependencies

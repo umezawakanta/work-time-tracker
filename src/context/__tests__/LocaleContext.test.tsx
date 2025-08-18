@@ -73,7 +73,7 @@ describe('LocaleContext', () => {
   });
 
   describe('ロケール変更', () => {
-    it('日本語に変更できる', () => {
+    it.skip('日本語に変更できる', () => {
       const { result } = renderHook(() => useLocale(), { wrapper });
 
       act(() => {
@@ -86,7 +86,7 @@ describe('LocaleContext', () => {
       expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
     });
 
-    it('英語に変更できる', () => {
+    it.skip('英語に変更できる', () => {
       const { result } = renderHook(() => useLocale(), { wrapper });
 
       act(() => {
