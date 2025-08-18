@@ -1,35 +1,35 @@
 // Mock for Firebase modules
 export const initializeApp = jest.fn(() => ({
-    name: '[DEFAULT]',
-    options: {},
+  name: '[DEFAULT]',
+  options: {},
 }));
 
 export const getFirestore = jest.fn(() => ({
-    type: 'firestore',
-    app: {},
+  type: 'firestore',
+  app: {},
 }));
 
 export const getAuth = jest.fn(() => ({
-    app: {},
-    currentUser: null,
+  app: {},
+  currentUser: null,
 }));
 
 export const getStorage = jest.fn(() => ({
-    app: {},
+  app: {},
 }));
 
 export const getAnalytics = jest.fn(() => ({
-    app: {},
+  app: {},
 }));
 
 export const isSupported = jest.fn(() => Promise.resolve(true));
 
 export const getFunctions = jest.fn(() => ({
-    app: {},
+  app: {},
 }));
 
 export const getDatabase = jest.fn(() => ({
-    app: {},
+  app: {},
 }));
 
 export const collection = jest.fn();
@@ -46,24 +46,24 @@ export const limit = jest.fn();
 export const onSnapshot = jest.fn();
 
 export default {
-    initializeApp,
-    getFirestore,
-    getAuth,
-    getStorage,
-    getAnalytics,
-    isSupported,
-    getFunctions,
-    getDatabase,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    orderBy,
-    limit,
-    onSnapshot,
+  initializeApp,
+  getFirestore,
+  getAuth,
+  getStorage,
+  getAnalytics,
+  isSupported,
+  getFunctions,
+  getDatabase,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  onSnapshot,
 };

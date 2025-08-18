@@ -123,7 +123,6 @@ ${JSON.stringify(userPreferences, null, 2)}
         prompt: analysisPrompt,
         taskType: 'planning',
         priority: 'high',
-        useThinking: true, // Gemini 2.5 Pro の thinking mode 活用
       });
 
       return this.parseScheduleResponse(response.content);
@@ -179,7 +178,6 @@ JSON 形式で構造化されたレポートを返してください。定量的
         prompt: reportPrompt,
         taskType: 'analysis',
         priority: 'normal',
-        useThinking: true,
       });
 
       return this.parseWeeklyReport(response.content);
@@ -226,7 +224,6 @@ JSON 形式で回答してください。`;
         prompt: suggestionPrompt,
         taskType: 'planning',
         priority: 'normal',
-        useThinking: true,
       });
 
       return this.parseProactiveSuggestions(response.content);
