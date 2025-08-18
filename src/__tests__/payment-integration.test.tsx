@@ -8,16 +8,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 
 // Import components and services
-import SubscriptionPage from '@/pages/SubscriptionPage';
-import EnhancedSubscriptionForm from '@/components/subscription/EnhancedSubscriptionForm';
-import AuthContext from '@/context/AuthContext';
-import userSubscriptionApi from '@/services/api/userSubscriptionApi.ts';
-import { formatPrice } from '@/config/stripe';
+import SubscriptionPage from '../pages/SubscriptionPage';
+import EnhancedSubscriptionForm from '../components/subscription/EnhancedSubscriptionForm';
+import AuthContext from '../context/AuthContext';
+import userSubscriptionApi from '../services/api/userSubscriptionApi';
+import { formatPrice } from '../config/stripe';
 
 // Mock external dependencies
 jest.mock('react-hot-toast');
-jest.mock('@/services/api/userSubscriptionApi');
-jest.mock('@/config/stripe', () => ({
+jest.mock('../services/api/userSubscriptionApi');
+jest.mock('../config/stripe', () => ({
   formatPrice: jest.fn((amount: number, currency: string) => {
     if (currency === 'jpy') {
       return `¥${amount.toLocaleString()}`;
