@@ -177,10 +177,14 @@ Provide a realistic time estimate.
       if (task.priority < 4) {
         suggestions.push({
           id: `priority-${task._id}`,
+          taskId: task._id,
           type: 'priority',
           title: '期限切れタスクの優先度を上げる',
           description: `「${task.task}」は期限切れです。優先度を「高」に設定することをお勧めします。`,
           confidence: 95,
+          impact: 'high',
+          effort: 'low',
+          aiGenerated: false,
           suggestedAction: {
             action: 'update_priority',
             targetTaskId: task._id,
@@ -188,6 +192,11 @@ Provide a realistic time estimate.
           },
           reasoning: '期限を過ぎたタスクは緊急対応が必要です',
           estimatedTimeImpact: -15, // 15分の遅延回避
+          metadata: {
+            currentPriority: task.priority,
+            suggestedPriority: 4,
+            reason: '期限超過のため優先度を引き上げ',
+          },
         });
       }
     });
@@ -203,16 +212,24 @@ Provide a realistic time estimate.
     staleTasks.slice(0, 2).forEach((task) => {
       suggestions.push({
         id: `stale-${task._id}`,
+        taskId: task._id,
         type: 'optimization',
         title: '長期未完了タスクの見直し',
         description: `「${task.task}」は2週間以上未完了です。分割または削除を検討してください。`,
         confidence: 80,
+        impact: 'medium',
+        effort: 'medium',
+        aiGenerated: false,
         suggestedAction: {
           action: 'split_task',
           targetTaskId: task._id,
         },
         reasoning: '長期間放置されたタスクは分割すると進捗しやすくなります',
         estimatedTimeImpact: 30, // 30分の効率化
+        metadata: {
+          currentPriority: task.priority,
+          reason: '長期未完了のためタスク分割を提案',
+        },
       });
     });
 
@@ -239,15 +256,18 @@ Provide a realistic time estimate.
     }
 
     // 最適な時間スロット提案（簡易版）
-    const optimalTimeSlots = this.generateOptimalTimeSlots(task, estimatedDuration);
+    const optimalTimeSlots = this.generateOptimalTimeSlots(task, Math.round(estimatedDuration));
 
     return {
       taskId: task._id,
       estimatedDuration: Math.round(estimatedDuration),
+      confidence: 70,
       difficulty,
       optimalTimeSlots,
       dependencies: [],
       prerequisites: [],
+      factors: ['complexity', 'estimatedDuration'],
+      aiGenerated: false,
     };
   }
 
@@ -278,16 +298,23 @@ Provide a realistic time estimate.
       return [
         {
           id: `breakdown-${task._id}`,
+          taskId: task._id,
           type: 'breakdown',
           title: 'タスクの分割提案',
           description: `「${task.task}」は複雑そうです。より小さなタスクに分割することをお勧めします。`,
           confidence: 75,
+          impact: 'medium',
+          effort: 'low',
+          aiGenerated: false,
           suggestedAction: {
             action: 'split_task',
             targetTaskId: task._id,
           },
           reasoning: '大きなタスクは小さく分けると取り組みやすくなります',
           estimatedTimeImpact: 20,
+          metadata: {
+            reason: '長文タスクのため分割を推奨',
+          },
         },
       ];
     }
@@ -304,36 +331,38 @@ Provide a realistic time estimate.
     return Math.min(wordCount / 100 + complexWordCount * 0.2, 1);
   }
 
-  private generateOptimalTimeSlots(task: TodoItem, duration: number) {
+  private generateOptimalTimeSlots(task: TodoItem, durationMinutes: number): string[] {
     const today = new Date();
-    const slots = [];
+    const candidates: { slot: string; score: number }[] = [];
 
     for (let i = 1; i <= 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
 
-      // 午前と午後の時間スロットを提案
-      slots.push({
-        date: date.toISOString().split('T')[0],
-        startTime: '09:00',
-        endTime: `${9 + Math.ceil(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`,
+      const endMorningHour = 9 + Math.floor(durationMinutes / 60);
+      const endMorningMin = durationMinutes % 60;
+      const endMorning = `${String(endMorningHour).padStart(2, '0')}:${String(endMorningMin).padStart(2, '0')}`;
+      candidates.push({
+        slot: `${dateStr} 09:00-${endMorning}`,
         score: Math.floor(Math.random() * 30) + 70,
-        reasoning: '集中力が高い午前中の時間帯',
       });
 
-      if (duration <= 120) {
-        // 2時間以下のタスク
-        slots.push({
-          date: date.toISOString().split('T')[0],
-          startTime: '14:00',
-          endTime: `${14 + Math.ceil(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`,
+      if (durationMinutes <= 120) {
+        const endAfternoonHour = 14 + Math.floor(durationMinutes / 60);
+        const endAfternoonMin = durationMinutes % 60;
+        const endAfternoon = `${String(endAfternoonHour).padStart(2, '0')}:${String(endAfternoonMin).padStart(2, '0')}`;
+        candidates.push({
+          slot: `${dateStr} 14:00-${endAfternoon}`,
           score: Math.floor(Math.random() * 20) + 60,
-          reasoning: '午後の落ち着いた時間帯',
         });
       }
     }
 
-    return slots.sort((a, b) => b.score - a.score).slice(0, 5);
+    return candidates
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map((c) => c.slot);
   }
 
   private calculateProductivity(tasks: TodoItem[]): number {
@@ -430,8 +459,9 @@ Provide a realistic time estimate.
         effort: 'low',
         aiGenerated: true,
         metadata: {
-          source: 'ai_analysis',
-          timestamp: new Date().toISOString(),
+          currentPriority: task.priority,
+          suggestedPriority: Math.min(task.priority + 1, 10),
+          reason: 'AI分析による優先度調整提案',
         },
       });
     });
@@ -449,10 +479,18 @@ Provide a realistic time estimate.
       ? parseInt(timeMatch[1]) * (timeMatch[2].includes('hour') ? 60 : 1)
       : 60;
 
+    const est = estimatedMinutes;
+    const difficulty: 'easy' | 'medium' | 'hard' =
+      est < 30 ? 'easy' : est <= 90 ? 'medium' : 'hard';
     return {
       taskId: task._id,
-      estimatedMinutes,
+      estimatedDuration: est,
+      estimatedMinutes: est,
       confidence: this.extractConfidenceFromAI(aiResponse),
+      difficulty,
+      optimalTimeSlots: this.generateOptimalTimeSlots(task, est),
+      dependencies: [],
+      prerequisites: [],
       factors: this.extractFactorsFromAI(aiResponse),
       aiGenerated: true,
     };
@@ -488,8 +526,8 @@ Provide a realistic time estimate.
         effort: 'low',
         aiGenerated: false,
         metadata: {
-          source: 'heuristic_analysis',
-          timestamp: new Date().toISOString(),
+          currentPriority: task.priority,
+          reason: 'ヒューリスティック分析',
         },
       };
     });
@@ -499,13 +537,23 @@ Provide a realistic time estimate.
    * ヒューリスティック時間予測（AI不可時のフォールバック）
    */
   private generateHeuristicPredictions(tasks: TodoItem[]): TaskPrediction[] {
-    return tasks.map((task) => ({
-      taskId: task._id,
-      estimatedMinutes: this.calculateHeuristicTime(task),
-      confidence: 60,
-      factors: ['complexity', 'priority'],
-      aiGenerated: false,
-    }));
+    return tasks.map((task) => {
+      const minutes = this.calculateHeuristicTime(task);
+      const difficulty: 'easy' | 'medium' | 'hard' =
+        minutes < 30 ? 'easy' : minutes <= 90 ? 'medium' : 'hard';
+      return {
+        taskId: task._id,
+        estimatedDuration: minutes,
+        estimatedMinutes: minutes,
+        confidence: 60,
+        difficulty,
+        optimalTimeSlots: this.generateOptimalTimeSlots(task, minutes),
+        dependencies: [],
+        prerequisites: [],
+        factors: ['complexity', 'priority'],
+        aiGenerated: false,
+      };
+    });
   }
 
   private calculateHeuristicTime(task: TodoItem): number {
@@ -516,8 +564,8 @@ Provide a realistic time estimate.
     else if (task.priority <= 3) baseTime *= 0.7;
 
     // タスクタイプによる調整
-    if (task.type === 'planning') baseTime *= 0.8;
-    else if (task.type === 'development') baseTime *= 2.0;
+    if (task.type === 'input') baseTime *= 0.8;
+    else if (task.type === 'output') baseTime *= 2.0;
 
     return Math.round(baseTime);
   }
